@@ -4,6 +4,7 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.util.Magic
 import java.awt.Component
@@ -27,7 +28,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
-    private var missingLabelMinimumLevel: ComboBox<LatexRegularCommand>? = null
+    private var missingLabelMinimumLevel: ComboBox<LatexCommand>? = null
 
     override fun getId() = "TexifyConfigurable"
 
@@ -69,7 +70,7 @@ class TexifyConfigurable : SearchableConfigurable {
         return list
     }
 
-    private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexRegularCommand> {
+    private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexCommand> {
         val list = ComboBox(Magic.Command.labeledLevels.keys.toTypedArray())
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
@@ -79,7 +80,7 @@ class TexifyConfigurable : SearchableConfigurable {
         )
         list.renderer = object : DefaultListCellRenderer() {
             override fun getListCellRendererComponent(list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, celHasFocus: Boolean): Component {
-                val item = (value as? LatexRegularCommand)?.command ?: value
+                val item = (value as? LatexCommand)?.command ?: value
                 return super.getListCellRendererComponent(list, item, index, isSelected, celHasFocus)
             }
         }
@@ -128,7 +129,7 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
         settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
-        settings.missingLabelMinimumLevel = missingLabelMinimumLevel?.selectedItem as? LatexRegularCommand ?: LatexRegularCommand.SUBSECTION
+        settings.missingLabelMinimumLevel = missingLabelMinimumLevel?.selectedItem as? LatexCommand ?: LatexRegularCommand.SUBSECTION
     }
 
     override fun reset() {

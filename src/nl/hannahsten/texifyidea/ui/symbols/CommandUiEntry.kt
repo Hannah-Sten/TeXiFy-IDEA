@@ -10,11 +10,11 @@ import nl.hannahsten.texifyidea.util.formatAsFileName
  *
  * - By default it generates only the command with slash, this can be changed by setting `generatedLatex`.
  * - The file path is "/nl/hannahsten/texifyidea/symbols/".
- * - The file name is either "math_ENUM-CONSTANT-LOWERCASE.png" for [LatexMathCommand], is
- *      "text_<ENUM-CONSTANT-LOWERCASE>.png" for [LatexRegularCommand], and
+ * - The file name is either "math_ENUM-CONSTANT-LOWERCASE.png" for math commands, is
+ *      "text_<ENUM-CONSTANT-LOWERCASE>.png" for regular commands, and
  *      "misc_<PACKAGE><FILENAME-SAFE-COMMAND>.png" for other commands. This can be changed by setting `customFileName`.
  * - The description is the command with a slash, can be changed by setting `customDescription`.
- * - Uses the command (in math mode if [LatexMathCommand]) to generate the image, can be changed by setting
+ * - Uses the command (in math mode if applicable) to generate the image, can be changed by setting
  *      `customImageLatex`.
  *
  * @author Hannah Schellekens
@@ -31,21 +31,18 @@ open class CommandUiEntry(
 
     override val generatedLatex: String = generatedLatex ?: command.commandDisplay
 
-    override val fileName = customFileName ?: when (command) {
-        is LatexMathCommand -> "math_${command.name.toLowerCase()}.png"
-        is LatexRegularCommand -> "text_${command.name.toLowerCase()}.png"
-        else -> "misc_${command.dependency.name}${command.command.formatAsFileName()}.png"
+    override val fileName = customFileName ?: if (command.isMathMode) {
+        "math_${command.identifyer.formatAsFileName()}.png"
     }
+    else "text_${command.identifyer.formatAsFileName()}.png"
 
     override val imagePath = "/nl/hannahsten/texifyidea/symbols/$fileName"
 
     override val imageLatex = customImageLatex ?: command.commandDisplay
 
-    override val description = customDescription ?: when (command) {
-        is LatexMathCommand -> command.name.toLowerCase().replace("_", " ") + " (math)"
-        is LatexRegularCommand -> command.name.toLowerCase().replace("_", " ")
-        else -> command.commandDisplay
-    }
+    override val description = customDescription ?: command.identifyer
+            .toLowerCase()
+            .replace("_", " ") + if (command.isMathMode) " (math)" else ""
 
-    override val isMathSymbol = command is LatexMathCommand
+    override val isMathSymbol = command.isMathMode
 }

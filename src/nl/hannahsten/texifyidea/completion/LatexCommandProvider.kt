@@ -77,7 +77,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         result.addAllElements(
             commands.flatMap { cmd: LatexCommand ->
                 cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
-                    val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler(args.toList()) else LatexMathInsertHandler(args.toList())
+                    val handler = if (cmd.isMathMode.not()) LatexNoMathInsertHandler(args.toList()) else LatexMathInsertHandler(args.toList())
                     LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                         .withPresentableText(cmd.commandDisplay)
                         .bold()

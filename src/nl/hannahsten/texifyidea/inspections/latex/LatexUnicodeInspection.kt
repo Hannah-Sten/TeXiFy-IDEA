@@ -153,17 +153,15 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     /**
      * Attempts to escape the non-ASCII character to avoid encoding issues.
      *
-     *
      * The following attempts are made, in order, to determine a suitable replacement:   1.  The
-     * character is matched against the *display* attribute of either [ ] or [LatexMathCommand] (where appropriate). When there is a match,
-     * the corresponding command is used as replacement.   1.  The character is decomposed to
+     * character is matched against the *display* attribute of either [ ] or [LatexCommand] (where appropriate).
+     * When there is a match, the corresponding command is used as replacement. 1.  The character is decomposed to
      * separate combining marks (see also [Unicode](http://unicode.org/reports/tr15/)).
      * An attempt is made to match the combining sequence against LaTeX character diacritical
      * commands. See [Diacritic] for a list of supported diacritics for both non-math and math
      * mode. When there is a match for all combining marks, the sequence of LaTeX commands is used
      * as replacement. Also, when the letters *i* or *j* are used in combination with
      * a diacritic their dotless versions are substituted.
-     *
      *
      * When neither of these steps is successful, the character is too exotic to replace and an
      * appropriate fail message is shown.

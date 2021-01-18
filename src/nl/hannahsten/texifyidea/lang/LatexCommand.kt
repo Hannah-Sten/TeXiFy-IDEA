@@ -12,7 +12,7 @@ interface LatexCommand : Dependend {
     companion object {
 
         /**
-         * Looks up the given command name in all [LatexMathCommand]s and [LatexRegularCommand]s.
+         * Looks up the given command name in all predefined [LatexCommand]s.
          *
          * @param commandName
          *          The command name to look up. Can start with or without `\`
@@ -45,6 +45,13 @@ interface LatexCommand : Dependend {
     }
 
     /**
+     * Uniquely identifies the command, when two commands are the same, but from different packages, the identifyer
+     * should be different.
+     */
+    val identifyer: String
+        get() = commandDisplay
+
+    /**
      * Get the name of the command without the first backslash.
      */
     val command: String
@@ -61,6 +68,11 @@ interface LatexCommand : Dependend {
      * Get all the command arguments.
      */
     val arguments: Array<out Argument>
+
+    /**
+     * Whether this command must be used in math mode (`true`).
+     */
+    val isMathMode: Boolean
 
     /**
      * Concatenates all arguments to each other.

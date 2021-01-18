@@ -61,7 +61,8 @@ interface SymbolUiEntry : Described {
 
     /**
      * Whether this is a math symbol.
+     * `false` when no command is linked to the ui entry.
      */
     val isMathSymbol: Boolean
-        get() = command is LatexMathCommand
+        get() = command?.isMathMode ?: false
 }

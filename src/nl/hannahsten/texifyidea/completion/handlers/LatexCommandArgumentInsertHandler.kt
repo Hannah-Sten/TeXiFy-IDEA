@@ -24,34 +24,7 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
 
     override fun handleInsert(insertionContext: InsertionContext, lookupElement: LookupElement) {
         removeWhiteSpaces(insertionContext)
-
-        when (val `object` = lookupElement.getObject()) {
-            is LatexCommands -> {
-                insertCommands(insertionContext, lookupElement)
-            }
-            is LatexMathCommand -> {
-                insertMathCommand(`object`, insertionContext, lookupElement)
-            }
-            is LatexRegularCommand -> {
-                insertNoMathCommand(`object`, insertionContext, lookupElement)
-            }
-        }
-    }
-
-    private fun insertCommands(context: InsertionContext, lookupElement: LookupElement) {
-        insert(context, lookupElement)
-    }
-
-    private fun insertMathCommand(mathCommand: LatexMathCommand, context: InsertionContext, lookupElement: LookupElement) {
-        if (mathCommand.autoInsertRequired()) {
-            insert(context, lookupElement)
-        }
-    }
-
-    private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext, lookupElement: LookupElement) {
-        if (noMathCommand.autoInsertRequired()) {
-            insert(context, lookupElement)
-        }
+        insert(insertionContext, lookupElement)
     }
 
     private fun insert(context: InsertionContext, lookupElement: LookupElement) {

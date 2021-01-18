@@ -19,6 +19,7 @@ enum class LatexMathCommand(
     override vararg val arguments: Argument = emptyArray(),
     override val dependency: LatexPackage = DEFAULT,
     override val display: String? = null,
+    override val isMathMode: Boolean = true,
     val collapse: Boolean = false
 ) : LatexCommand {
 
@@ -712,10 +713,13 @@ enum class LatexMathCommand(
     BIG_SQUARE_CAP("bigsqcap", dependency = STMARYRD, display = "⊓", collapse = true),
     ;
 
+    override val identifyer: String
+        get() = name
+
     companion object {
 
-        private val lookup = HashMap<String, MutableSet<LatexMathCommand>>()
-        private val lookupDisplay = HashMap<String, MutableSet<LatexMathCommand>>()
+        private val lookup = HashMap<String, MutableSet<LatexCommand>>()
+        private val lookupDisplay = HashMap<String, MutableSet<LatexCommand>>()
 
         init {
             for (command in values()) {

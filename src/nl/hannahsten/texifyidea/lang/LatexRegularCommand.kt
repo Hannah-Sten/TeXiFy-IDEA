@@ -30,7 +30,8 @@ enum class LatexRegularCommand(
         override val command: String,
         override vararg val arguments: Argument = emptyArray(),
         override val dependency: LatexPackage = DEFAULT,
-        override val display: String? = null
+        override val display: String? = null,
+        override val isMathMode: Boolean = false
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
@@ -791,12 +792,16 @@ enum class LatexRegularCommand(
     /**
      * Listings
      */
-    LSTINPUTLISTING("lstinputlisting", "options".asOptional(), RequiredFileArgument("filename", false, false), dependency = LISTINGS);
+    LSTINPUTLISTING("lstinputlisting", "options".asOptional(), RequiredFileArgument("filename", false, false), dependency = LISTINGS)
+    ;
+
+    override val identifyer: String
+        get() = name
 
     companion object {
 
-        private val lookup = HashMap<String, MutableSet<LatexRegularCommand>>()
-        private val lookupDisplay = HashMap<String, MutableSet<LatexRegularCommand>>()
+        private val lookup = HashMap<String, MutableSet<LatexCommand>>()
+        private val lookupDisplay = HashMap<String, MutableSet<LatexCommand>>()
 
         init {
             @Suppress("RemoveRedundantQualifierName")
