@@ -70,6 +70,7 @@ enum class InternalPdfViewer(
         }
 
         fun availableSubset(): List<InternalPdfViewer> = values().filter { it.isAvailable() }
+
         fun firstAvailable(): InternalPdfViewer = availableSubset().first()
     }
 }
