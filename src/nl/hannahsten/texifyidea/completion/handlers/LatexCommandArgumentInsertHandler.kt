@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.util.parentOfType
 class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
 
     override fun handleInsert(insertionContext: InsertionContext, lookupElement: LookupElement) {
-        removeWhiteSpaces(insertionContext)
+        removeFromFirstWhiteSpace(insertionContext)
 
         when (val `object` = lookupElement.getObject()) {
             is LatexCommands -> {
@@ -93,14 +93,16 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
     }
 
     /**
-     * Remove whitespaces that are inserted by the lookup text...
+     * Remove whitespaces and everything after that that was inserted by the lookup text.
      */
-    private fun removeWhiteSpaces(context: InsertionContext) {
+    private fun removeFromFirstWhiteSpace(context: InsertionContext) {
         val editor = context.editor
         val document = editor.document
         val offset = editor.caretModel.offset
-        val textUntilOffset = document.text.run { dropLast(length - offset) }
-        val indexOfLastChar = textUntilOffset.indexOfLast { it != ' ' }
-        document.deleteString(indexOfLastChar + 1, offset)
+        // context.startOffset is the offset of the start of the just inserted text.
+        val insertedText = document.text.substring(context.startOffset, offset)
+        val indexFirstSpace = insertedText.indexOfFirst { it == ' ' }
+        if (indexFirstSpace == -1) return
+        document.deleteString(context.startOffset + indexFirstSpace, offset)
     }
 }

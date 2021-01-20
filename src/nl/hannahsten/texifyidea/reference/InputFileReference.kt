@@ -24,7 +24,12 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  *
  * @param defaultExtension Default extension of the command in which this reference is.
  */
-class InputFileReference(element: LatexCommands, val range: TextRange, val extensions: Set<String>, val defaultExtension: String) : PsiReferenceBase<LatexCommands>(element) {
+class InputFileReference(
+        element: LatexCommands,
+        val range: TextRange,
+        val extensions: Set<String>,
+        val defaultExtension: String
+) : PsiReferenceBase<LatexCommands>(element) {
 
     init {
         rangeInElement = range
@@ -39,13 +44,22 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     }
 
     /**
-     * @param lookForInstalledPackages Whether to look for packages installed elsewhere on the filesystem.
-     * Set to false when it would make the operation too expensive, for example when trying to calculate the fileset of many files.
-     * @param includeGraphicsFiles True if we also need to resolve to graphics files. Doing so is really expensive at the moment (at least until the implementation in LatexGraphicsPathProvider is improved): for projects with 500+ include commands in hundreds of files this can take 10 seconds in total if you call this function for every include command.
-     * However, note that doing only one resolve is not too expensive at all (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve (if requested by the user).
+     * @param lookForInstalledPackages
+     *              Whether to look for packages installed elsewhere on the filesystem.
+     *              Set to false when it would make the operation too expensive, for example when trying to
+     *              calculate the fileset of many files.
+     * @param includeGraphicsFiles
+     *              True if we also need to resolve to graphics files. Doing so is really expensive at
+     *              the moment (at least until the implementation in LatexGraphicsPathProvider is improved):
+     *              for projects with 500 include commands in hundreds of files this can take 10 seconds in total if
+     *              you call this function for every include command.
+     *              However, note that doing only one resolve is not too expensive at all
+     *              (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve
+     *              (if requested by the user).
      */
     fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, includeGraphicsFiles: Boolean = true): PsiFile? {
-        // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
+        // IMPORTANT In this method, do not use any functionality which makes use of the file set,
+        // because this function is used to find the file set so that would cause an infinite loop
 
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = mutableListOf<String>()
@@ -60,11 +74,11 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
         val texInputPath = runManager.allConfigurationsList
-            .filterIsInstance<LatexRunConfiguration>()
-            .firstOrNull { it.mainFile == rootFile }
-            ?.environmentVariables
-            ?.envs
-            ?.getOrDefault("TEXINPUTS", null)
+                .filterIsInstance<LatexRunConfiguration>()
+                .firstOrNull { it.mainFile == rootFile }
+                ?.environmentVariables
+                ?.envs
+                ?.getOrDefault("TEXINPUTS", null)
         if (texInputPath != null) {
             val path = texInputPath.trimEnd(':')
             searchPaths.add(path.trimEnd('/'))
@@ -72,9 +86,9 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             if (path.endsWith("//")) {
                 LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
                     searchPaths.addAll(
-                        parent.allChildDirectories()
-                            .filter { it.isDirectory }
-                            .map { it.path }
+                            parent.allChildDirectories()
+                                    .filter { it.isDirectory }
+                                    .map { it.path }
                     )
                 }
             }
@@ -111,9 +125,9 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Look for packages/files elsewhere using the kpsewhich command.
         if (targetFile == null && lookForInstalledPackages) {
             targetFile = element.getFileNameWithExtensions(processedKey)
-                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
-                .mapNotNull { getExternalFile(it) }
-                .firstOrNull()
+                    .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
+                    .mapNotNull { getExternalFile(it) }
+                    .firstOrNull()
         }
 
         if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
@@ -150,7 +164,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Recall that \ is a file separator on Windows
         val newText = if (elementNameIsJustFilename) {
             oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
-                ?.let { "\\" + it } ?: default
+                    ?.let { "\\" + it } ?: default
         }
         else {
             default
