@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.util.isDefinition
  * values are cached.
  *
  * @receiver The file to find the reference set of.
- * @return All the files that are cross referenced between each other.
+ * @return All the LaTeX and BibTeX files that are cross referenced between each other.
  */
 // Internal because only ReferencedFileSetCache should call this
 internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
