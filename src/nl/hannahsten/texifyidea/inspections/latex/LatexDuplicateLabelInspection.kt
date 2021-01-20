@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.lang.Integer.max
 import java.util.*
 
@@ -41,7 +43,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                 when (this) {
                     is LatexCommands -> {
                         val name = this.name ?: return@getProblemDescriptors null
-                        if (Magic.Command.labelAsParameter.contains(this.name)) {
+                        if (CommandMagic.labelAsParameter.contains(this.name)) {
                             return@getProblemDescriptors getParameterLabelDescriptor(this)
                         }
                         else {
@@ -52,7 +54,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                         }
                     }
                     is LatexEnvironment -> {
-                        if (Magic.Environment.labelAsParameter.contains(this.environmentName)) {
+                        if (EnvironmentMagic.labelAsParameter.contains(this.environmentName)) {
                             return@getProblemDescriptors getParameterLabelDescriptor(this)
                         }
 
