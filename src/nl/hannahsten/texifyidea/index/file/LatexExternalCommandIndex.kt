@@ -19,7 +19,9 @@ import nl.hannahsten.texifyidea.file.LatexSourceFileType
  * @author Thomas
  */
 class LatexExternalCommandIndex : FileBasedIndexExtension<String, String>() {
+
     companion object {
+
         val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.commands")
     }
 

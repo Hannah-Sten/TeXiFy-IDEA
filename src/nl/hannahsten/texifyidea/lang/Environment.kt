@@ -6,9 +6,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 import nl.hannahsten.texifyidea.util.startsWithAny
 

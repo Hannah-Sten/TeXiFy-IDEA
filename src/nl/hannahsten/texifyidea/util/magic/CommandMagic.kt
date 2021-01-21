@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import java.awt.Color
 
 object CommandMagic {
+
     /**
      * LaTeX commands that make the text take up more vertical space.
      */

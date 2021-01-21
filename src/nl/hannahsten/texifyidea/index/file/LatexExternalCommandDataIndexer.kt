@@ -8,7 +8,9 @@ import com.intellij.util.indexing.FileContent
  * @author Thomas
  */
 class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent> {
+
     companion object {
+
         /**
          * Capture the command being defined with the macro environment and the part directly after that that probably contains docs.
          * We limit to a certain length to avoid matching very large strings if the regex fails.

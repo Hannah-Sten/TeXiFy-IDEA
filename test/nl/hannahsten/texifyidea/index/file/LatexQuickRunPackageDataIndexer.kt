@@ -7,6 +7,7 @@ import java.io.FileNotFoundException
  * Run the package indexer on a local file.
  */
 class LatexQuickRunPackageDataIndexer : BasePlatformTestCase() {
+
     fun testRun() {
         try {
 //            val filesToIndex = mutableSetOf<VirtualFile>()

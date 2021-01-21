@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
-import org.jetbrains.annotations.NotNull
 
 /**
  * Try to find out which index program the user wants to use, based on the given options.
