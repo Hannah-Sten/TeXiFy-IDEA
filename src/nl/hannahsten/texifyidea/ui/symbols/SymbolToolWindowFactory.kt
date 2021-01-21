@@ -191,7 +191,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          *          The category the symbol is in.
          */
         private fun SymbolUiEntry.queryString(category: SymbolCategory? = null) = buildString {
-            command?.let { append(it.commandDisplay) }
+            command?.let { append(it.commandWithSlash) }
             append(generatedLatex)
             append(dependency.name)
             append(description.replace(" ", ""))

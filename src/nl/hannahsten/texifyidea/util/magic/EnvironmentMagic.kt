@@ -14,12 +14,12 @@ object EnvironmentMagic {
      * environment name `=>` label prefix without colon
      */
     val labeled = mapOf(
-        FIGURE.env to "fig",
-        TABLE.env to "tab",
-        EQUATION.env to "eq",
-        ALGORITHM.env to "alg",
-        LISTINGS.env to "lst",
-        VERBATIM_CAPITAL.env to "verb",
+            FIGURE.env to "fig",
+            TABLE.env to "tab",
+            EQUATION.env to "eq",
+            ALGORITHM.env to "alg",
+            LISTINGS.env to "lst",
+            VERBATIM_CAPITAL.env to "verb",
     )
 
     /**
@@ -42,8 +42,8 @@ object EnvironmentMagic {
      * Maps the name of the environment to the registered Language id.
      */
     val languageInjections = hashMapOf(
-        LUACODE.env to "Lua",
-        LUACODE_STAR.env to "Lua"
+            LUACODE.env to "Lua",
+            LUACODE_STAR.env to "Lua"
     )
 
     val algorithmEnvironments = setOf(ALGORITHMIC.env)
@@ -52,20 +52,20 @@ object EnvironmentMagic {
      * All environments that define a matrix.
      */
     val matrixEnvironments = setOf(
-        "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
-        "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
-        "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
-        "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
-        "gmatrix", "tikz-cd"
+            "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
+            "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
+            "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
+            "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
+            "gmatrix", "tikz-cd"
     )
 
     val alignableEnvironments = setOf(
-        "eqnarray", "eqnarray*",
-        "split",
-        "align", "align*",
-        "alignat", "alignat*",
-        "flalign", "flalign*",
-        "aligned", "alignedat",
-        "cases", "dcases"
+            "eqnarray", "eqnarray*",
+            "split",
+            "align", "align*",
+            "alignat", "alignat*",
+            "flalign", "flalign*",
+            "aligned", "alignedat",
+            "cases", "dcases"
     ) + matrixEnvironments
 }

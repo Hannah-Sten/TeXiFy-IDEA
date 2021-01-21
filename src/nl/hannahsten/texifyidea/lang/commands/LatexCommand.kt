@@ -5,6 +5,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.lang.Described
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.length
@@ -45,16 +48,16 @@ interface LatexCommand : Described, Dependend {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
-                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()// todo
-//                val defaultcmds = emptyList<LatexCommand>()
+                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
                 val cmd = if (defaultcmds.isNotEmpty()) {
-                    val defaultCmd = defaultcmds.first()
+                    val defaultCommand = defaultcmds.first()
                     object : LatexCommand {
                         override val command = cmdWithoutSlash
-                        override val display = defaultCmd.display
-                        override val arguments = defaultCmd.arguments
+                        override val display = defaultCommand.display
+                        override val arguments = defaultCommand.arguments
                         override val description = value
                         override val dependency = dependency
+                        override val isMathMode = defaultCommand.isMathMode
                     }
                 }
                 else {
@@ -64,6 +67,7 @@ interface LatexCommand : Described, Dependend {
                         override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
                         override val description = value
                         override val dependency = dependency
+                        override val isMathMode = false
                     }
                 }
                 cmds.add(cmd)
@@ -82,9 +86,9 @@ interface LatexCommand : Described, Dependend {
             """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
                 if (it.range.first == counter) {
                     when (it.groups["command"]?.value) {
-                        LatexRegularCommand.OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
-                        LatexRegularCommand.MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
-                        LatexRegularCommand.PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                        OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
+                        MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                        PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
                     }
                     counter += it.range.length + 1
                 }
@@ -98,7 +102,7 @@ interface LatexCommand : Described, Dependend {
          */
         fun extractArgumentsFromDocs(docs: String, commandWithSlash: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs
-            val argCommands = arrayOf(LatexRegularCommand.OARG, LatexRegularCommand.MARG, LatexRegularCommand.PARG).map { it.commandWithSlash }.toTypedArray()
+            val argCommands = arrayOf(OARG, MARG, PARG).map { it.commandWithSlash }.toTypedArray()
             if (docs.startsWithAny(*argCommands)) {
                 return getArgumentsFromStartOfString(docs, 0)
             }
@@ -137,7 +141,10 @@ interface LatexCommand : Described, Dependend {
      * should be different.
      */
     val identifyer: String
-        get() = commandDisplay
+        get() = commandWithSlash
+
+    override val description: String
+        get() = identifyer
 
     /**
      * Get the name of the command without the first backslash.

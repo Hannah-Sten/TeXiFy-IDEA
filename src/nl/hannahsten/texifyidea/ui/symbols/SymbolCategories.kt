@@ -992,9 +992,9 @@ object SymbolCategories {
         val rightCmd = if (requireLeftRight) "\\right" else ""
         add(DryUiEntry(
                 description = description,
-                generatedLatex = "$leftCmd${left.commandDisplay} <caret> $rightCmd${right.commandDisplay}",
+                generatedLatex = "$leftCmd${left.commandWithSlash} <caret> $rightCmd${right.commandWithSlash}",
                 fileName = fileName,
-                imageLatex = "$leftCmd${left.commandDisplay}...$rightCmd${right.commandDisplay}",
+                imageLatex = "$leftCmd${left.commandWithSlash}...$rightCmd${right.commandWithSlash}",
                 isMathSymbol = true,
                 dependency = left.dependency
         ))

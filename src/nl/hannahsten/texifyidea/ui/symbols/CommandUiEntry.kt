@@ -27,7 +27,7 @@ open class CommandUiEntry(
 
     override val command: LatexCommand? = command
 
-    override val generatedLatex: String = generatedLatex ?: command.commandDisplay
+    override val generatedLatex: String = generatedLatex ?: command.commandWithSlash
 
     override val fileName = customFileName ?: if (command.isMathMode) {
         "math_${command.identifyer.formatAsFileName()}.png"
@@ -36,7 +36,7 @@ open class CommandUiEntry(
 
     override val imagePath = "/nl/hannahsten/texifyidea/symbols/$fileName"
 
-    override val imageLatex = customImageLatex ?: command.commandDisplay
+    override val imageLatex = customImageLatex ?: command.commandWithSlash
 
     override val description = customDescription ?: command.identifyer
             .toLowerCase()

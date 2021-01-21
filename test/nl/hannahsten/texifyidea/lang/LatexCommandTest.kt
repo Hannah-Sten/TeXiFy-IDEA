@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.lang
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 
 class LatexCommandTest : BasePlatformTestCase() {
 

@@ -5,6 +5,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 import nl.hannahsten.texifyidea.util.startsWithAny
 
@@ -50,7 +54,7 @@ interface Environment : Dependend, Described {
 
         fun extractArgumentsFromDocs(docs: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs
-            val argCommands = arrayOf(LatexRegularCommand.OARG, LatexRegularCommand.MARG, LatexRegularCommand.PARG).map { it.commandWithSlash }.toTypedArray()
+            val argCommands = arrayOf(OARG, MARG, PARG).map { it.commandWithSlash }.toTypedArray()
             if (docs.startsWithAny(*argCommands)) {
                 return LatexCommand.getArgumentsFromStartOfString(docs, 0)
             }
