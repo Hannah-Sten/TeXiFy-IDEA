@@ -4,10 +4,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.inDirectEnvironment
-import nl.hannahsten.texifyidea.util.isComment
+import nl.hannahsten.texifyidea.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -38,8 +35,14 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         if (this.inDirectEnvironment(Magic.Environment.tableEnvironments)) return true
         if (this.inDirectEnvironment(Magic.Environment.alignableEnvironments)) return true
 
-        // Do not trigger in URLs.
-        if (this.firstParentOfType(LatexCommands::class)?.name in Magic.Command.urls) return true
+        // Other exceptions
+        val command = this.firstParentOfType(LatexCommands::class)?.name
+        if (command in Magic.Command.urls ||
+            command in project.getLabelReferenceCommands() ||
+            command in project.getLabelDefinitionCommands()
+        ) {
+            return true
+        }
 
         return false
     }
