@@ -552,6 +552,7 @@ object Magic {
             "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
             "\\" + BIBLIOGRAPHY.command to listOf(".bib"),
             "\\" + INCLUDEGRAPHICS.command to File.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
+            USEPACKAGE.commandDisplay to listOf(".sty")
         )
 
         /**
