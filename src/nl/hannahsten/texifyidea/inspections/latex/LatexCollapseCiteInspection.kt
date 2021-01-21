@@ -4,14 +4,14 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.refactoring.suggested.endOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
@@ -33,17 +33,19 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
     override fun getDisplayName() = "Collapse cite commands"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
+    override fun inspectFile(
+        file: PsiFile,
+        manager: InspectionManager,
+        isOntheFly: Boolean
+    ): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-        for (cmd in commands) {
-            if (cmd.name !in CommandMagic.bibliographyReference) {
-                continue
-            }
+            .filter { it.name in Magic.Command.bibliographyReference }
 
-            val bundle = cmd.findCiteBundle()
-            if (bundle.size <= 1) {
+        for (cmd in commands) {
+            val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
+            if (bundle.size < 2 || !bundle.contains(cmd)) {
                 continue
             }
 
@@ -88,20 +90,34 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
     private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexContent }
 
+    /**
+     * Search for a cite command in the "direction" of [nextThing]. This cite command should be similar to this with
+     * respect to the following:
+     *  - Same cite command (e.g., both `\cite` or both `\footcite`).
+     *  - Both are or both are not the starred version.
+     *
+     * @param nextThing function to get the next psi element that is searched for a cite command.
+     *
+     * @return null if no suitable cite command is found.
+     */
     private inline fun LatexCommands.searchCite(nextThing: (LatexContent) -> LatexContent?): LatexCommands? {
+        // The cite commands are not direct siblings, but their grandparents are.
         val content = grandparent(2) as? LatexContent ?: return null
         val nextContent = nextThing(content) ?: return null
 
         var cite = nextContent.firstChildOfType(LatexCommands::class)
+        // If there is no command inside the sibling grandparent, it can still be a non-breaking space.
         if (cite == null) {
-            if (!nextContent.isCorrect()) {
-                return null
+            // If it is a non-breaking space, we want to check if the next grandparent sibling contains a cite.
+            if (nextContent.isNonBreakingSpace()) {
+                val secondNextContent = nextThing(nextContent) ?: return null
+                cite = secondNextContent.firstChildOfType(LatexCommands::class) ?: return null
             }
-
-            val secondNextContent = nextThing(nextContent) ?: return null
-            cite = secondNextContent.firstChildOfType(LatexCommands::class) ?: return null
+            // If it is not a non-breaking space it is some other text and we won't find another cite in this direction.
+            else return null
         }
 
+        // Check if the found command is a similar cite command as the one we started at.
         val name = cite.name ?: return null
         val nextCommandIsACitation = name in CommandMagic.bibliographyReference
         val previousCommandIsOfTheSameType = this.name == name
@@ -109,13 +125,18 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         return if (nextCommandIsACitation && previousCommandIsOfTheSameType && equalStars) cite else null
     }
 
-    private fun LatexContent.isCorrect(): Boolean {
-        val normalText = firstChildOfType(LatexParameterText::class) ?: return false
-        return normalText.text.length == 1
+    /**
+     * Check if [LatexContent] is a non breaking space.
+     */
+    private fun LatexContent.isNonBreakingSpace(): Boolean {
+        val normalText = firstChildOfType(LatexNormalText::class) ?: return false
+        return normalText.text == "~"
     }
 
     /**
-     * @author Hannah Schellekens
+     * @property citeBundle a bundle of cite commands that have to be merged into one command. All commands
+     * in this bundle have only required parameters, as cites with optional parameters should not
+     * be collapsed.
      */
     private inner class InspectionFix(val citeBundle: List<LatexCommands>) : LocalQuickFix {
 
@@ -124,18 +145,45 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val file = descriptor.psiElement.containingFile ?: return
-            val document = file.document() ?: return
             val sortedBundle = citeBundle.sortedBy { it.textOffset }
-            val offsetRange = sortedBundle.first().textOffset until sortedBundle.last().endOffset()
+            // The bundle can contain a gap when the cite commands in it surround a cite command
+            // that is not in the bundle, e.g., a cite command that has an optional parameter.
+            val bundleContainsGap = sortedBundle
+                .zipWithNext { a, b -> a.nextSibling != b }
+                .any()
 
+            // Create the content of the required parameter of the new cite command.
             val bundle = sortedBundle
                 .flatMap { it.requiredParameters }
                 .joinToString(",")
 
-            val first = citeBundle.first()
-            val star = if (first.hasStar()) "*" else ""
-            document.replaceString(offsetRange.toTextRange(), "${first.name}$star{$bundle}")
+            // Find the cite command that has to be replaced. When the bundle contains a gap, this is the command
+            // underneath the caret.
+            val targetCite = if (bundleContainsGap) {
+                val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return
+                sortedBundle.firstOrNull { it.endOffset >= editor.caretOffset() }
+                    // When something went wrong with finding a cite at the caret we target the last of the cites
+                    // based on the assumption that cites that have an optional argument are more specific and/or
+                    // important cites and "should" come first.
+                    ?: sortedBundle.lastOrNull() ?: return
+            }
+            // When the bundle does not contain a gap this is the first command, as it doesn't matter
+            // whichever one we pick.
+            else sortedBundle.firstOrNull() ?: return
+
+            // Construct the entire text of the new cite command.
+            val star = if (targetCite.hasStar()) "*" else ""
+            val replacement = "${targetCite.name}$star{$bundle}"
+
+            val psiHelper = LatexPsiHelper(project)
+            for (cite in sortedBundle) {
+                // Replace the target cite with the new cite command, using the psi tree.
+                if (cite == targetCite) {
+                    cite.replace(psiHelper.createFromText(replacement).firstChild)
+                }
+                // Remove any other cite from the psi tree.
+                else cite.parent.node.removeChild(cite.node)
+            }
         }
     }
 }
