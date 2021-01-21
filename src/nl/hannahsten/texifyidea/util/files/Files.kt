@@ -12,7 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
@@ -44,7 +44,7 @@ object FileUtil {
      */
     @JvmStatic
     fun fileTypeByExtension(extensionWithoutDot: String): FileType {
-        return Magic.File.fileTypes.firstOrNull {
+        return FileMagic.fileTypes.firstOrNull {
             it.defaultExtension == extensionWithoutDot
         } ?: LatexFileType
     }

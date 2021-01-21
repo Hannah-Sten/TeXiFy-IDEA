@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 
 /**
  * @author Hannah Schellekens
@@ -146,12 +147,12 @@ object PackageUtils {
         }
 
         // Don't insert when a conflicting package is already present
-        if (Magic.Package.conflictingPackages.any { it.contains(pack) }) {
-            for (conflicts in Magic.Package.conflictingPackages) {
+        if (PackageMagic.conflictingPackages.any { it.contains(pack) }) {
+            for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
                 if (conflicts.contains(pack) && file.includedPackages().toSet()
-                    .intersect(conflicts.map { it.name })
-                    .isNotEmpty()
+                        .intersect(conflicts.map { it.name })
+                        .isNotEmpty()
                 ) {
                     return false
                 }

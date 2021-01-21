@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -109,12 +110,13 @@ object CommandManager : Iterable<String?>, Serializable {
      * It is not so nice to have to maintain this separately, but maintaining
      * parameter position mappings between general alias sets is too much overhead for now.
      */
-    val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> = Magic.Command.labelDefinitionsWithoutCustomCommands.associateWith {
-        LabelingCommandInformation(
-            listOf(0),
-            true
-        )
-    }.toMutableMap()
+    val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> =
+        CommandMagic.labelDefinitionsWithoutCustomCommands.associateWith {
+            LabelingCommandInformation(
+                listOf(0),
+                true
+            )
+        }.toMutableMap()
 
     /**
      * Registers a brand new command to the command manager.
@@ -277,7 +279,7 @@ object CommandManager : Iterable<String?>, Serializable {
         // Extract label parameter positions
         // Assumes the predefined label definitions all have the label parameter in the same position
         // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
-        if (aliasSet.intersect(Magic.Command.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
+        if (aliasSet.intersect(CommandMagic.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
             indexedCommandDefinitions.forEach { commandDefinition ->
                 val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
                 if (definedCommand.isBlank()) return@forEach
@@ -292,7 +294,7 @@ object CommandManager : Iterable<String?>, Serializable {
 
                 // Positions of label parameters in the custom commands (starting from 0)
                 val positions = parameterCommands
-                    ?.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
+                    ?.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
                     ?.mapNotNull { it.requiredParameter(0) }
                     ?.mapNotNull {
                         if (it.indexOf('#') != -1) {
@@ -312,10 +314,10 @@ object CommandManager : Iterable<String?>, Serializable {
                 // Check if there is a command which increases a counter before the \label
                 // If so, the \label just labels the counter increasing command, and not whatever will appear before usages of the custom labeling command
                 val definitionContainsIncreaseCounterCommand =
-                    parameterCommands.takeWhile { it.name !in Magic.Command.labelDefinitionsWithoutCustomCommands }
-                        .any { it.name in Magic.Command.increasesCounter }
+                    parameterCommands.takeWhile { it.name !in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                        .any { it.name in CommandMagic.increasesCounter }
 
-                val prefix = parameterCommands.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
+                val prefix = parameterCommands.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
                     .mapNotNull { it.requiredParameter(0) }
                     .map {
                         if (it.indexOf('#') != -1) {

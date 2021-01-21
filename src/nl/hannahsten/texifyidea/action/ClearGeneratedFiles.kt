@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.allRunConfigurations
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.io.File
 
 /**
@@ -33,7 +34,7 @@ class ClearGeneratedFiles : AnAction() {
         for (folder in setOf("src")) {
             File(basePath, folder).walk().maxDepth(1)
                 .filter { it.isFile }
-                .filter { it.extension in Magic.File.generatedFileTypes }
+                .filter { it.extension in FileMagic.generatedFileTypes }
                 .forEach { it.delete() }
         }
 

@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMathContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import org.jetbrains.annotations.Nls
 
 /**
@@ -55,7 +55,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
                             it.psiElement == element && it.descriptionTemplate == "Non-escaped math operator"
                         } != null
 
-                        if (element.text in SLASHLESS_MATH_OPERATORS && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
+                        if (CommandMagic.slashlessMathOperators.contains(element.text) && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
                             descriptors.add(
                                     manager.createProblemDescriptor(
                                             element,

@@ -26,6 +26,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.util.*
 
 /**
@@ -125,7 +126,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             }
 
             // Packages included in other packages
-            for (packageInclusion in Magic.Package.packagesLoadingOtherPackages) {
+            for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
                 if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
                     continue@commandLoop
                 }

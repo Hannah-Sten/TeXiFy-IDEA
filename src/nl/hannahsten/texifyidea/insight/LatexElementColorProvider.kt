@@ -7,9 +7,9 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexXcolorCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
+import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.usesColor
 import java.awt.Color
 
@@ -23,11 +23,11 @@ object LatexElementColorProvider : ElementColorProvider {
             if (command.usesColor()) {
                 val colorArgument = when (command?.name?.substring(1)) {
                     // Show the defined color.
-                    in Magic.Colors.colorDefinitions.map { it.command } -> {
+                    in ColorMagic.colorDefinitions.map { it.command } -> {
                         command?.getRequiredArgumentValueByName("name")
                     }
                     // Show the used color.
-                    in Magic.Colors.takeColorCommands -> {
+                    in ColorMagic.takeColorCommands -> {
                         command?.getRequiredArgumentValueByName("color")
                     }
                     else -> null
@@ -42,13 +42,13 @@ object LatexElementColorProvider : ElementColorProvider {
     }
 
     fun findColor(colorName: String, file: PsiFile): Color? {
-        val defaultHex = Magic.Colors.defaultXcolors[colorName]
+        val defaultHex = ColorMagic.defaultXcolors[colorName]
 
         return if (defaultHex != null) Color(defaultHex)
         else {
             val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(
                 file,
-                *Magic.Colors.colorDefinitions.map { "\\${it.command}" }
+                *ColorMagic.colorDefinitions.map { "\\${it.command}" }
                     .toTypedArray()
             )
             // If this color is a single color (not a mix, and thus does not contain a !)
@@ -132,7 +132,7 @@ object LatexElementColorProvider : ElementColorProvider {
     /**
      * Mix two colors, used to support red!50!yellow color definitions.
      */
-    private fun mix(a: Color, b: Color, percent: Int): Color? {
+    private fun mix(a: Color, b: Color, percent: Int): Color {
         return (percent / 100.0).let {
             Color(
                 (a.red * it + b.red * (1.0 - it)).toInt(),

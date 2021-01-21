@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.6.4"
+    id("org.jetbrains.intellij") version "0.6.5"
     kotlin("jvm") version("1.4.30-M1")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2"
+version = "0.7.3-alpha.2"
 
 repositories {
     mavenCentral()
@@ -81,6 +81,11 @@ dependencies {
     implementation("com.github.hypfvieh:dbus-java:3.2.3")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
 
+    // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
+    implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
+    implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.2.3")
+
     // Test dependencies
 
     // Also implementation junit 4, just in case
@@ -117,7 +122,8 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java")
+    // indices plugin doesn't work in tests
+    setPlugins("tanvd.grazi", "java") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false

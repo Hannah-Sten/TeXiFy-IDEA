@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.TextRange
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import kotlin.math.max
 import kotlin.math.min
@@ -64,7 +65,7 @@ fun String.trimRange(startTrim: Int, endTrim: Int): String {
  * Returns the leading whitespace of a string.
  */
 fun String.getIndent(): String {
-    val matcher = Magic.Pattern.leadingWhitespace.matcher(this)
+    val matcher = PatternMagic.leadingWhitespace.matcher(this)
     return if (matcher.find()) matcher.group(0) else ""
 }
 
@@ -131,7 +132,7 @@ fun List<String>.removeIndents(): List<String> {
  *
  * @return All lines with shared indents removed.
  */
-fun String.removeIndents() = Magic.Pattern.newline.split(this)
+fun String.removeIndents() = PatternMagic.newline.split(this)
     .toList()
     .removeIndents()
     .joinToString("\n")
@@ -188,7 +189,7 @@ fun String.splitWhitespace() = split(Regex("\\s+"))
  *
  * @see [Magic.Pattern.htmlTag]
  */
-fun String.removeHtmlTags() = this.replace(Magic.Pattern.htmlTag.toRegex(), "")
+fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 
 /**
  * Run a command in the terminal.
@@ -210,6 +211,9 @@ fun String.firstIndexOfAny(vararg chars: Char): Int {
 
 /** If this contains any of the given set. */
 fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
+
+/** If this starts with any of the given set. */
+fun String.startsWithAny(vararg prefix: String) = prefix.any { this.startsWith(it) }
 
 /** Shrink textrange with the given amount at both sides. */
 fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))

@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 
 /**
@@ -37,7 +38,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (cmd.name !in Magic.Command.bibliographyReference) {
+            if (cmd.name !in CommandMagic.bibliographyReference) {
                 continue
             }
 
@@ -102,7 +103,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         }
 
         val name = cite.name ?: return null
-        val nextCommandIsACitation = name in Magic.Command.bibliographyReference
+        val nextCommandIsACitation = name in CommandMagic.bibliographyReference
         val previousCommandIsOfTheSameType = this.name == name
         val equalStars = hasStar() == cite.hasStar()
         return if (nextCommandIsACitation && previousCommandIsOfTheSameType && equalStars) cite else null

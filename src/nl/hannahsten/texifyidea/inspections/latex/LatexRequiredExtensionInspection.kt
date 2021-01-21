@@ -11,10 +11,10 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
 
@@ -35,9 +35,9 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         file.commandsInFile().asSequence()
-            .filter { it.name in Magic.Command.requiredExtensions }
+            .filter { it.name in CommandMagic.requiredExtensions }
             .filter { command ->
-                Magic.Command.requiredExtensions[command.name]!!.any {
+                CommandMagic.requiredExtensions[command.name]!!.any {
                     extension ->
                     command.requiredParameters.any { !it.split(",").any { parameter -> parameter.endsWith(extension) } }
                 }
@@ -46,7 +46,7 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
                 val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
                 var offset = 0
                 for (parameter in parameterList) {
-                    if (Magic.Command.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
+                    if (CommandMagic.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
                         descriptors.add(
                             manager.createProblemDescriptor(
                                 command,
@@ -81,9 +81,9 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
             val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
             var offset = 0
             for (parameter in parameterList) {
-                if (Magic.Command.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
+                if (CommandMagic.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
                     val range = TextRange(offset, offset + parameter.length).shiftRight(command.parameterList.first { it.requiredParam != null }.textOffset + 1)
-                    val replacement = Magic.Command.requiredExtensions[command.name]
+                    val replacement = CommandMagic.requiredExtensions[command.name]
                         ?.find { !parameter.endsWith(it) }
                         ?.run { parameter.appendExtension(this) } ?: break
                     document.replaceString(range, replacement)

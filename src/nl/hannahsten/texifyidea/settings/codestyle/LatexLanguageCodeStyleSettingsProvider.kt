@@ -10,7 +10,7 @@ import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.*
 import com.intellij.psi.codeStyle.extractor.values.Value.VAR_KIND.RIGHT_MARGIN
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.removeHtmlTags
 
 /**
@@ -21,7 +21,7 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
 
     companion object {
 
-        private val demoText = Magic.General.latexDemoText.removeHtmlTags()
+        private val demoText = GeneralMagic.latexDemoText.removeHtmlTags()
     }
 
     override fun getLanguage() = LatexLanguage.INSTANCE

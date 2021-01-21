@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Environment.Context
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHMICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GAUSS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
@@ -20,6 +21,7 @@ enum class DefaultEnvironment(
         override val context: Context = Context.NORMAL,
         override val dependency: LatexPackage = LatexPackage.DEFAULT,
         override vararg val arguments: Argument,
+        override val description: String = ""
 ) : Environment {
 
     // Vanilla LaTeX
@@ -70,6 +72,7 @@ enum class DefaultEnvironment(
     TITLEPAGE(environmentName = "titlepage"),
     TRIVLIST(environmentName = "trivlist"),
     VERBATIM(environmentName = "verbatim"),
+    VERBATIM_CAPITAL(environmentName = "Verbatim"),
     VERBATIM_STAR(environmentName = "verbatim*"),
     VERSE(environmentName = "verse"),
 
@@ -122,23 +125,17 @@ enum class DefaultEnvironment(
     VSMALLMATRIX_CAPITAL(environmentName = "Vsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
     VSMALLMATRIX_CAPITAL_STAR(environmentName = "Vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
 
-    // gauss
+    // other
+    ALGORITHM("algorithm"),
+    ALGORITHMIC("algorithmic", dependency = ALGORITHMICX),
     GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
-
-    // comment
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = LatexPackage.COMMENT),
-
-    // lualatex
-    LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
-
-    // listings
     LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),
-
-    // tikz
+    LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
+    LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
+    TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
-
-    // xcolor
-    TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models")));
+    ;
 
     companion object {
 

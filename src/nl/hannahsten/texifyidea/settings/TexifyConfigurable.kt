@@ -6,7 +6,7 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.awt.Component
 import java.awt.FlowLayout
 import javax.swing.*
@@ -71,7 +71,7 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexCommand> {
-        val list = ComboBox(Magic.Command.labeledLevels.keys.toTypedArray())
+        val list = ComboBox(CommandMagic.labeledLevels.keys.toTypedArray())
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
                 add(JBLabel("Minimum sectioning level which should trigger the missing label inspection: "))

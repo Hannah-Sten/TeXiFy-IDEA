@@ -6,7 +6,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexOtherCommandPresentation
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * @author Hannah Schellekens
@@ -18,9 +18,9 @@ class CommandDefinitionFilter : Filter {
             true
         }
         else !(
-            treeElement.commandName == "\\newcommand" ||
-                treeElement.commandName in Magic.Command.mathCommandDefinitions ||
-                treeElement.presentation is LatexOtherCommandPresentation
+                treeElement.commandName == "\\newcommand" ||
+                        treeElement.commandName in CommandMagic.mathCommandDefinitions ||
+                        treeElement.presentation is LatexOtherCommandPresentation
             )
     }
 

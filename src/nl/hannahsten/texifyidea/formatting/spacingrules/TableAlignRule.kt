@@ -6,9 +6,9 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.getIndent
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import kotlin.math.min
 
 /** At this length, we put table cells on their own line. */
@@ -20,7 +20,7 @@ const val LINE_LENGTH = 80
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments
+            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments
     ) return null
 
     if (left.node?.text?.endsWith("&") == false) return null
@@ -40,7 +40,7 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments) return null
 
     val tableLineSeparator = "\\\\"
     if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null

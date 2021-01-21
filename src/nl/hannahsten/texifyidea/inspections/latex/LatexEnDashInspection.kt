@@ -3,9 +3,9 @@ package nl.hannahsten.texifyidea.inspections.latex
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.length
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.toTextRange
 import java.util.regex.Pattern
 
@@ -18,7 +18,7 @@ open class LatexEnDashInspection : TexifyRegexInspection(
     errorMessage = { "En dash expected" },
     pattern = Pattern.compile("(?<![0-9\\-])\\s+(([0-9]+)\\s*[\\- ]+\\s*([0-9]+))(\\s+|.)(?=[^0-9\\-])")!!,
     quickFixName = { "Convert to en dash" },
-    cancelIf = { matcher, _ -> Magic.Pattern.correctEnDash.matcher(matcher.group(1)).matches() },
+    cancelIf = { matcher, _ -> PatternMagic.correctEnDash.matcher(matcher.group(1)).matches() },
     replacementRange = { it.groupRange(1) },
     highlightRange = { it.groupRange(1).toTextRange() },
     groupFetcher = { listOf(it.group(2), it.group(3)) }

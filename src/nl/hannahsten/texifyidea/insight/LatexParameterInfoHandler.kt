@@ -53,6 +53,6 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexComma
             return
         }
 
-        context.setupUIComponentPresentation(cmd.commandDisplay + cmd.getArgumentsDisplay(), 0, 0, false, false, true, context.defaultParameterColor)
+        context.setupUIComponentPresentation(cmd.commandWithSlash + cmd.getArgumentsDisplay(), 0, 0, false, false, true, context.defaultParameterColor)
     }
 }

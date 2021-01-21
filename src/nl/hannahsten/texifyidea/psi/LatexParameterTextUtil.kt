@@ -5,7 +5,12 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.extractLabelName
+import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -15,11 +20,11 @@ fun getReferences(element: LatexParameterText): Array<PsiReference> {
     // If the command is a label reference
     // NOTE When adding options here, also update getNameIdentifier below
     return when {
-        Magic.Command.labelReferenceWithoutCustomCommands.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
+        CommandMagic.labelReferenceWithoutCustomCommands.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(LatexLabelParameterReference(element))
         }
         // If the command is a bibliography reference
-        Magic.Command.bibliographyReference.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
+        CommandMagic.bibliographyReference.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(BibtexIdReference(element))
         }
         // If the command is an \end command (references to \begin)
@@ -51,11 +56,11 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
     // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
     val name = element.firstParentOfType(LatexCommands::class)?.name
     val environmentName = element.firstParentOfType(LatexEnvironment::class)?.environmentName
-    if (!Magic.Command.labelReferenceWithoutCustomCommands.contains(name) &&
-        !Magic.Command.labelDefinitionsWithoutCustomCommands.contains(name) &&
-        !Magic.Command.bibliographyReference.contains(name) &&
-        !Magic.Command.labelAsParameter.contains(name) &&
-        !Magic.Environment.labelAsParameter.contains(environmentName) &&
+    if (!CommandMagic.labelReferenceWithoutCustomCommands.contains(name) &&
+        !CommandMagic.labelDefinitionsWithoutCustomCommands.contains(name) &&
+        !CommandMagic.bibliographyReference.contains(name) &&
+        !CommandMagic.labelAsParameter.contains(name) &&
+        !EnvironmentMagic.labelAsParameter.contains(environmentName) &&
         element.firstParentOfType(LatexEndCommand::class) == null &&
         element.firstParentOfType(LatexBeginCommand::class) == null
     ) {
@@ -68,7 +73,7 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
     val command = element.firstParentOfType(LatexCommands::class)
     val environment = element.firstParentOfType(LatexEnvironment::class)
     // If we want to rename a label
-    if (Magic.Command.reference.contains(command?.name) || element.project.getLabelDefinitionCommands().contains(command?.name)) {
+    if (CommandMagic.reference.contains(command?.name) || element.project.getLabelDefinitionCommands().contains(command?.name)) {
         // Get a new psi element for the complete label command (\label included),
         // because if we replace the complete command instead of just the normal text
         // then the indices will be updated, which is necessary for the reference resolve to work
@@ -85,7 +90,7 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
             command.parent.node.replaceChild(oldNode, newNode)
         }
     }
-    else if (Magic.Command.labelAsParameter.contains(command?.name) || Magic.Environment.labelAsParameter.contains(
+    else if (CommandMagic.labelAsParameter.contains(command?.name) || EnvironmentMagic.labelAsParameter.contains(
             environment?.environmentName
         )
     ) {

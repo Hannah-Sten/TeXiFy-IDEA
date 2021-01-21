@@ -74,24 +74,35 @@ class LatexDocumentationProvider : DocumentationProvider {
             return stringBuilder.toString()
         }
 
-        if (element.previousSiblingIgnoreWhitespace() != null) {
-            return lookup?.description
+        // Indexed documentation
+        if (lookup == null) {
+            // Apparently the lookup item is not yet initialised, so let's do that first
+            // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion?
+            if (element !is LatexCommands) return null
+            lookup = LatexCommand.lookup(element)?.firstOrNull()
         }
-        else lookup = null
+        var docString = if (lookup != null) lookup?.description else ""
 
+        // Link to package docs
         originalElement ?: return null
-        val urls = getUrlFor(element, originalElement) ?: return null
+        val urls = if (lookup is LatexCommand) runTexdoc((lookup as LatexCommand).dependency) else getUrlFor(element, originalElement)
 
-        if (urls.isEmpty()) {
-            return null
+        if (docString?.isNotBlank() == true && !urls.isNullOrEmpty()) {
+            docString += "<br/>"
         }
 
-        val sb = StringBuilder("<h3>External package documentation</h3>")
-        for (url in urls) {
-            sb.append("<a href=\"file:///$url\">$url</a><br/>")
+        if (urls != null) {
+            for (url in urls) {
+                docString += "<a href=\"file:///$url\">$url</a><br/>"
+            }
         }
 
-        return sb.toString()
+        if (element.previousSiblingIgnoreWhitespace() == null) {
+            lookup = null
+        }
+
+        // If we return a blank string, the popup will just say "Fetching documentation..."
+        return if (docString.isNullOrBlank()) "<br>" else docString
     }
 
     override fun getDocumentationElementForLookupItem(
@@ -100,6 +111,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         psiElement: PsiElement?
     ): PsiElement? {
         if (obj == null || obj !is Described) {
+            // Cancel documentation popup
             lookup = null
             return null
         }
@@ -115,7 +127,8 @@ class LatexDocumentationProvider : DocumentationProvider {
     ): PsiElement? = null
 
     private fun runTexdoc(pkg: LatexPackage): List<String> {
-        val name = if (pkg == DEFAULT) "source2e" else pkg.name
+        // base/lt... files are documented in source2e.pdf
+        val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
         val stream: InputStream
         try {
