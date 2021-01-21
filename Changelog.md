@@ -1,12 +1,10 @@
 # Beta 0.7.3
 
-ETA: First half of February, 2021
-
 # Additions
 * Added a wizard to insert graphics. (#1729)
 * Paste html tables from the clipboard directly into LaTeX tables using a table insert wizard. (#1738)
 * Paste images from the clipboard directly into LaTeX using the insert graphic wizard. (#1739)
-* Added support for labels defined in optional parameters of commands. (#1698)
+* Added support for labels defined in optional parameters of commands. (#1698, #1751)
 * Added Detexify tool window. (#1731)
 * Added BibTeX unused entry inspection. (#1717)
 * Added label intention for \item commands. (#1719)
@@ -23,6 +21,7 @@ ETA: First half of February, 2021
 * Supported lstlisting for add label quickfix. (#1733)
 * Performance improvements. (#1716)
 * Picture arguments are now considered as command arguments in the formatter. (#1712, #1741)
+* Don't collapse citations when optional parameters are not the same. (#1732)
 
 # Bug fixes
 * Fixed compile gutter icons showing up on parameters. (#1734)
