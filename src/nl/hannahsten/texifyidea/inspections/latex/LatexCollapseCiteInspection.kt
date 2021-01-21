@@ -40,7 +40,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-            .filter { it.name in Magic.Command.bibliographyReference }
+            .filter { it.name in CommandMagic.bibliographyReference }
 
         for (cmd in commands) {
             val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
