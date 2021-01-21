@@ -27,14 +27,31 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
             """(?=\\DescribeMacro(?:(?<key>\\[a-zA-Z_:]+\*?)|\{(?<key1>\\[a-zA-Z_:]+\*?)})\s*(?<value>[\s\S]{0,500}))""".toRegex()
 
         val directCommandDefinitionRegex = """\\(DeclareRobustCommand|newcommand)\*?\{(?<key>\\[a-zA-Z_:]+\*?)}(?<value>)""".toRegex()
+
+        /**
+         * See sourc2e.pdf:
+         *
+         * ```\DeclareTextCommand{command}{encoding}[number][default]{commands}```
+         * This command is like \newcommand, except that it defines a command which is specific to one encoding.
+         *
+         * Similar: \DeclareTextSymbol, \DeclareTextAccent, \DeclareTextComposite, \DeclareTextCompositeCommand
+         */
+        val declareTextSymbolRegex = """\\DeclareText(?:Symbol|Accent)\{(?<key>[^}]+)\}(?<value>\{(?<encoding>[^}]+)\}(?:.+)*?\{(?<slot>[^}]+)\})""".toRegex()
+        val declareTextCommandRegex = """\\DeclareTextCommand\{(?<key>[^}]+)\}\{(?<value>[^}]+)\}""".toRegex()
     }
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
         val map = mutableMapOf<String, String>()
 
-        LatexDocsRegexer.getDocsByRegex(inputData, map, macroWithDocsRegex)
-        LatexDocsRegexer.getDocsByRegex(inputData, map, describeMacroRegex)
-        LatexDocsRegexer.getDocsByRegex(inputData, map, directCommandDefinitionRegex)
+        listOf(
+            macroWithDocsRegex,
+            describeMacroRegex,
+            directCommandDefinitionRegex,
+            directCommandDefinitionRegex,
+            declareTextSymbolRegex,
+            declareTextCommandRegex,
+        ).forEach { LatexDocsRegexer.getDocsByRegex(inputData, map, it) }
+
         return map
     }
 }

@@ -55,7 +55,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
                             it.psiElement == element && it.descriptionTemplate == "Non-escaped math operator"
                         } != null
 
-                        if (CommandMagic.slashlessMathOperators.contains(element.text) && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
+                        if (element.text in SLASHLESS_MATH_OPERATORS && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
                             descriptors.add(
                                     manager.createProblemDescriptor(
                                             element,

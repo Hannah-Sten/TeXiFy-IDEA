@@ -21,11 +21,12 @@ object LatexDocsRegexer {
         Pair("""\\(cite|footnote)\{(\{[^}]*}|[^}])+?}\s*""".toRegex(), { "" }),
         // \cs command from the doctools package
         Pair("""(?<pre>[^|]|^)\\c[sn]\{(?<command>[^}]+?)}""".toRegex(), { result -> result.groups["pre"]?.value + "\\" + result.groups["command"]?.value }),
-        // todo use html formatting for textbf/cmd/env
         // Other commands, except when in short verbatim
         Pair<Regex, (MatchResult) -> String>("""(?<pre>[^|]|^)\\(?:textbf|emph|textsf|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex(), { result -> result.groups["pre"]?.value + result.groups["argument"]?.value }),
         // Short verbatim, provided by ltxdoc
         Pair("""\|""".toRegex(), { "" }),
+        // While it is true that text reflows in the documentation popup, so we don't need linebreaks, often package authors include an environment or something else
+        // which does depend on linebreaks to be readable, and therefore we keep linebreaks by default.
         Pair("""\n""".toRegex(), { "<br>" }),
     )
 
@@ -52,9 +53,9 @@ object LatexDocsRegexer {
      * Only done when indexing, but it should still be fast because it can be done up to 28714 times for full TeX Live.
      */
     fun format(docs: String): String {
-        var formatted = docs
-        formattingReplacers.forEach { formatted = it.first.replace(formatted, it.second) }
-        return formatted
+        var formatted = docs.trim()
+        formattingReplacers.forEach { formatted = it.first.replace(formatted, it.second).trim() }
+        return formatted.trim()
     }
 
     /**
@@ -90,7 +91,12 @@ object LatexDocsRegexer {
                         }
                     }
                 }
-                map[key] = format(docs.trim())
+
+                // Avoid overwriting existing docs with an empty string
+                val formatted = format(docs.trim())
+                if (key in map.keys && formatted.isBlank()) return@loop
+
+                map[key] = formatted
                 if (macrosBeingOverloaded.isNotEmpty()) {
                     macrosBeingOverloaded.forEach { map[it] = format(docs.trim()) }
                     macrosBeingOverloaded.clear()

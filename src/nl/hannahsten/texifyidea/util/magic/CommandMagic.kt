@@ -5,11 +5,13 @@ package nl.hannahsten.texifyidea.util.magic
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.*
+import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.*
@@ -99,22 +101,20 @@ object CommandMagic {
 
     /**
      * All commands that represent a reference to a bibliography entry/item.
-     * Commands listed here should also be listed in [nl.hannahsten.texifyidea.lang.LatexRegularCommand].
      */
-    @JvmField
     val bibliographyReference = hashSetOf(
-            "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
-            "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
-            "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
-            "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar", "\\parencite", "\\Parencite",
-            "\\footcite", "\\footcitetext", "\\textcite", "\\Textcite", "\\smartcite", "\\Smartcite",
-            "\\cite*", "\\parencite*", "\\supercite", "\\autocite", "\\Autocite", "\\autocite*",
-            "\\Autocite*", "\\citetitle", "\\citetitle*", "\\citeyear*", "\\citedate", "\\citedate*",
-            "\\citeurl", "\\volcite", "\\Volcite", "\\pvolcite", "\\Pvolcite", "\\fvolcite",
-            "\\Fvolcite", "\\ftvolcite", "\\svolcite", "\\Svolcite", "\\tvolcite", "\\Tvolcite",
-            "\\avolcite", "\\Avolcite", "\\fullcite", "\\footfullcite", "\\notecite", "\\Notecite",
-            "\\pnotecite", "\\fnotecite"
-    )
+            CITE, NOCITE, CITEP, CITEP_STAR, CITET, CITET_STAR, CITEP,
+            CITEP_STAR_CAPITALIZED, CITET_CAPITALIZED, CITET_STAR_CAPITALIZED, CITEALP, CITEALP_STAR, CITEALT, CITEALT_STAR,
+            CITEALP_CAPITALIZED, CITEALP_STAR_CAPITALIZED, CITEALT_CAPITALIZED, CITEALT_STAR_CAPITALIZED, CITEAUTHOR, CITEAUTHOR_STAR,
+            CITEAUTHOR_CAPITALIZED, CITEAUTHOR_STAR_CAPITALIZED, CITEYEAR, CITEYEARPAR, PARENCITE, PARENCITE_CAPITALIZED,
+            FOOTCITE, FOOTCITETEXT, TEXTCITE, TEXTCITE_CAPITALIZED, SMARTCITE, SMARTCITE_CAPITALIZED,
+            CITE_STAR, PARENCITE_STAR, SUPERCITE, AUTOCITE, AUTOCITE_CAPITALIZED, AUTOCITE_STAR,
+            AUTOCITE_STAR_CAPITALIZED, CITETITLE, CITETITLE_STAR, CITEYEAR_STAR, CITEDATE, CITEDATE_STAR,
+            CITEURL, VOLCITE, VOLCITE_CAPITALIZED, PVOLCITE, PVOLCITE_CAPITALIZED, FVOLCITE,
+            FVOLCITE_CAPITALIZED, FTVOLCITE, SVOLCITE, SVOLCITE_CAPITALIZED, TVOLCITE, TVOLCITE_CAPITALIZED,
+            AVOLCITE, AVOLCITE_CAPITALIZED, FULLCITE, FOOTFULLCITE, NOTECITE, NOTECITE_CAPITALIZED,
+            PNOTECITE, FNOTECITE
+    ).map { it.cmd }.toSet()
 
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
@@ -135,7 +135,6 @@ object CommandMagic {
      * All commands that define labels and that are present by default.
      * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
      */
-    @JvmField
     val labelDefinitionsWithoutCustomCommands = setOf(LABEL.cmd)
 
     /**
@@ -158,11 +157,12 @@ object CommandMagic {
     /**
      * All commands that define bibliography items.
      */
-    @JvmField
     val bibliographyItems = setOf(BIBITEM.cmd)
 
     /**
      * All math operators without a leading slash.
+     *
+     * Reference [Unofficial LaTeX2e reference manual](https://latexref.xyz/Math-functions.html)
      */
     @JvmField
     val slashlessMathOperators = hashSetOf(

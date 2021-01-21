@@ -55,7 +55,7 @@ interface LatexCommand : Described, Dependend {
                         override val command = cmdWithoutSlash
                         override val display = defaultCommand.display
                         override val arguments = defaultCommand.arguments
-                        override val description = value
+                        override val description = format(value)
                         override val dependency = dependency
                         override val isMathMode = defaultCommand.isMathMode
                     }
@@ -65,7 +65,7 @@ interface LatexCommand : Described, Dependend {
                         override val command = cmdWithoutSlash
                         override val display: String? = null
                         override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
-                        override val description = value
+                        override val description = format(value)
                         override val dependency = dependency
                         override val isMathMode = false
                     }
@@ -77,20 +77,53 @@ interface LatexCommand : Described, Dependend {
         }
 
         /**
+         * Do the last bit of formatting, to remove things that [nl.hannahsten.texifyidea.index.file.LatexDocsRegexer] needed to keep in because we needed the information here.
+         */
+        fun format(docs: String): String {
+            return """^(?:\s*\\[mop]arg\{[^}]+}\s*)*(?:\\\\)?\s*""".toRegex().replace(docs, "")
+        }
+
+        /**
          * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).
          */
         fun getArgumentsFromStartOfString(docs: String, counterInit: Int): Array<Argument> {
             val arguments = mutableListOf<Argument>()
             var counter = counterInit
-            // Only use the ones at the beginning of the string to avoid matching too much
-            """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
-                if (it.range.first == counter) {
-                    when (it.groups["command"]?.value) {
-                        OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
-                        MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
-                        PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+            run breaker@{
+                // Only use the ones at the beginning of the string to avoid matching too much
+                """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
+                    if (it.range.first == counter) {
+                        when (it.groups["command"]?.value) {
+                            OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
+                            MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                            PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                        }
+                        counter += it.range.length + 1
                     }
-                    counter += it.range.length + 1
+                    else {
+                        return@breaker
+                    }
+                }
+            }
+
+            // Special convention in LaTeX base
+            if (arguments.isEmpty()) {
+                run breaker@{
+                    counter = counterInit
+                    """\s*(?:\{\\meta\{(?<marg>.+?)}}|\[\\meta\{(?<oarg>.+?)}])""".toRegex().findAll(docs, counterInit).forEach { match ->
+                        if (match.range.first == counter) {
+                            match.groups["marg"]?.value?.let {
+                                arguments.add(RequiredArgument(it))
+                            }
+                            match.groups["oarg"]?.value?.let {
+                                arguments.add(OptionalArgument(it))
+                            }
+                            counter += match.range.length + 1
+                        }
+                        else {
+                            return@breaker
+                        }
+                    }
                 }
             }
 
@@ -98,7 +131,7 @@ interface LatexCommand : Described, Dependend {
         }
 
         /**
-         * todo after arguments are extracted, remove from docs?
+         * Given the [docs] of the [commandWithSlash], check if the parameters of the [commandWithSlash] are documented in [docs] and if so, return them.
          */
         fun extractArgumentsFromDocs(docs: String, commandWithSlash: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs

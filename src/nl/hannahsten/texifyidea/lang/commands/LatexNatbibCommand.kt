@@ -36,7 +36,10 @@ enum class LatexNatbibCommand(
     CITEAUTHOR_CAPITALIZED("Citeauthor", "keys".asRequired(), dependency = NATBIB),
     CITEAUTHOR_STAR_CAPITALIZED("Citeauthor*", "keys".asRequired(), dependency = NATBIB),
     CITEYEAR("citeyear", "keys".asRequired(), dependency = NATBIB),
+    CITEYEAR_STAR("citeyear*", "keys".asRequired(), dependency = NATBIB),
     CITEYEARPAR("citeyearpar", "keys".asRequired(), dependency = NATBIB),
+    CITETITLE("citetitle", "keys".asRequired(), dependency = NATBIB),
+    CITETITLE_STAR("citetitle*", "keys".asRequired(), dependency = NATBIB),
     CITENUM("citenum", "key".asRequired(), dependency = NATBIB),
     CITETEXT("citetext", "text".asRequired(), dependency = NATBIB),
     ;

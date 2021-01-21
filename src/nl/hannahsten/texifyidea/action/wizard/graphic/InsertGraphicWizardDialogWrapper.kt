@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.util.addKeyReleasedListener
 import nl.hannahsten.texifyidea.util.addTextChangeListener
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.setInputFilter
+import nl.hannahsten.texifyidea.util.*
 import java.awt.Dimension
 import javax.swing.Box
 import javax.swing.BoxLayout
