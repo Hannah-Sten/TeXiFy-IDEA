@@ -112,7 +112,7 @@ open class LatexAnnotator : Annotator {
             .create()
 
         annotateMathCommands(
-            LatexPsiUtil.getAllChildren(inlineMathElement), annotationHolder,
+            inlineMathElement.childrenOfType(LatexCommands::class), annotationHolder,
             LatexSyntaxHighlighter.COMMAND_MATH_INLINE
         )
     }

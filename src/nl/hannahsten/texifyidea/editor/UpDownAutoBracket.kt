@@ -99,7 +99,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                 when (element.elementType) {
                     END_COMMAND, BEGIN_COMMAND, COMMAND_TOKEN -> {
                         // When it is followed by a LatexCommands or comment tokens.
-                        val noMathContent = element.parent.parent ?: return null
+                        val noMathContent = element.firstParentOfType(LatexNoMathContent::class) ?: return null
                         val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return null
                         return sibling.firstChildOfType(LatexNormalText::class)
                     }
