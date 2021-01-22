@@ -1,3 +1,14 @@
+# Beta 0.7.4
+
+# Additions
+
+# Changes
+* Change Grazie rules to ignore non-text elements in a sentence. (#1744)
+
+# Bug fixes
+* Fix bug in inline math highlighting.(#1744)
+
+
 # Beta 0.7.3
 
 # Additions
