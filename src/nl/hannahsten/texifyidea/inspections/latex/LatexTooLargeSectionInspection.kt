@@ -160,7 +160,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 val nextSibling = cmd.firstParentOfType(LatexNoMathContent::class)
                     ?.nextSiblingIgnoreWhitespace()
                     ?.firstChildOfType(LatexCommands::class) ?: return null
-                return if (nextSibling.name == LatexRegularCommand.LABEL.commandDisplay) nextSibling else null
+                return if (nextSibling.name == LatexRegularCommand.LABEL.commandWithSlash) nextSibling else null
             }
         }
 
