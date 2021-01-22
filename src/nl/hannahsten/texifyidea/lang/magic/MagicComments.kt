@@ -178,7 +178,7 @@ fun PsiFile.magicComment(): MagicComment<String, String> {
  * Get the magic comment that directly precedes the environment.
  */
 fun LatexEnvironment.magicComment(): MagicComment<String, String> {
-    val outerContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    val outerContent = parentOfType(LatexNoMathContent::class) ?: return MagicComment.empty()
     return outerContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
 }
 
@@ -215,7 +215,7 @@ fun LatexMathEnvironment.magicComment(): MagicComment<String, String> {
     }
 
     // Case 2.
-    val outerContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    val outerContent = parentOfType(LatexNoMathContent::class) ?: return MagicComment.empty()
     return outerContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
 }
 
@@ -238,7 +238,7 @@ fun LatexMathEnvironment.allMagicComments(): MagicComment<String, String> {
  * Get the magic comment that directly targets this command.
  */
 fun LatexCommands.magicComment(): MagicComment<String, String> {
-    val directParentContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    val directParentContent = parentOfType(LatexNoMathContent::class) ?: return MagicComment.empty()
     val parentContentPreviousSibling = directParentContent.previousSiblingIgnoreWhitespace()
 
     if (parentContentPreviousSibling.isMagicComment()) {

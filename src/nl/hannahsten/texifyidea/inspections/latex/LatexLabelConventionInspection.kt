@@ -41,8 +41,8 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                         label.parentOfType(LatexEnvironment::class)
                     }
                     else {
-                        val grandparent = label.parent.parent
-                        val sibling = LatexPsiUtil.getPreviousSiblingIgnoreWhitespace(grandparent) ?: return null
+                        val parent = label.parentOfType(LatexNoMathContent::class) ?: return null
+                        val sibling = parent.previousSiblingIgnoreWhitespace() ?: return null
                         sibling.firstChildOfType(LatexCommands::class)
                     }
                 }

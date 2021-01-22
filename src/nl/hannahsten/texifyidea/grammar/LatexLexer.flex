@@ -64,6 +64,8 @@ CLOSE_PAREN=")"
 
 SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
 WHITE_SPACE={SINGLE_WHITE_SPACE}+
+
+// Commands
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
@@ -71,6 +73,8 @@ COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:]+|.|\r) // _ and : are only LaTeX3 syntax
 LATEX3_ON=\\ExplSyntaxOn
 LATEX3_OFF=\\ExplSyntaxOff
+NEWENVIRONMENT=\\(re)?newenvironment
+NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 
 // Comments
 MAGIC_COMMENT_PREFIX=("!"|" !"[tT][eE][xX])
@@ -92,7 +96,7 @@ MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
-%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END
+%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC
 
 // latex3 has some special syntax
 %states LATEX3
@@ -246,18 +250,40 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
  */
 
 // For new environment definitions, we need to switch to new states because the \begin..\end will interleave with groups
-\\newenvironment        { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
-\\renewenvironment      { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+// \newenvironment{name}{begin}{end}
+// Extra required argument with args spec, so we need an extra state for that
+// \NewDocumentEnvironment{name}{args spec}{start}{end}
+{NEWENVIRONMENT}        { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+{NEWDOCUMENTENVIRONMENT} { yypushState(NEW_DOCUMENT_ENV_DEFINITION_NAME); return COMMAND_TOKEN; }
 
 // A separate state is used to track when we start with the second parameter of \newenvironment, this state denotes the first one
 <NEW_ENVIRONMENT_DEFINITION_NAME> {
     {CLOSE_BRACE}       { yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION); return CLOSE_BRACE; }
 }
 
+<NEW_DOCUMENT_ENV_DEFINITION_NAME> {
+    {CLOSE_BRACE}       { yypopState(); yypushState(NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC); newEnvironmentBracesNesting = 0; return CLOSE_BRACE; }
+}
+
+// Unfortunately, the args spec can contain braces as well, so we need to keep track when we leave the required argument
+<NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC> {
+    {OPEN_BRACE}        { newEnvironmentBracesNesting++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       {
+        newEnvironmentBracesNesting--;
+        if (newEnvironmentBracesNesting <= 0) {
+            yypopState();
+            yypushState(NEW_ENVIRONMENT_DEFINITION);
+        }
+        return CLOSE_BRACE;
+    }
+}
+
 // We are visiting a second parameter of a \newenvironment definition, so we need to keep track of braces
 // The idea is that we will skip the }{ separating the second and third parameter, so that the \begin and \end of the
 // environment to be defined will not appear in a separate group
-<NEW_ENVIRONMENT_DEFINITION> {
+// Include possible verbatim begin state, because after a \begin we are in that state (and we cannot leave it because we might be needing to start a vebatim environment)
+// but we still need to count braces.
+<NEW_ENVIRONMENT_DEFINITION,POSSIBLE_VERBATIM_BEGIN> {
     {OPEN_BRACE}       { newEnvironmentBracesNesting++; return OPEN_BRACE; }
     {CLOSE_BRACE}      {
         newEnvironmentBracesNesting--;

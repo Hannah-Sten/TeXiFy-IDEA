@@ -84,9 +84,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         return bundle
     }
 
-    private fun LatexCommands.nextCite() = searchCite { it.nextSiblingIgnoreWhitespace() as? LatexContent }
+    private fun LatexCommands.nextCite() = searchCite { it.nextSiblingIgnoreWhitespace() as? LatexNoMathContent }
 
-    private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexContent }
+    private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexNoMathContent }
 
     /**
      * Search for a cite command in the "direction" of [nextThing]. This cite command should be similar to this with
@@ -98,9 +98,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      *
      * @return null if no suitable cite command is found.
      */
-    private inline fun LatexCommands.searchCite(nextThing: (LatexContent) -> LatexContent?): LatexCommands? {
+    private inline fun LatexCommands.searchCite(nextThing: (LatexNoMathContent) -> LatexNoMathContent?): LatexCommands? {
         // The cite commands are not direct siblings, but their grandparents are.
-        val content = grandparent(2) as? LatexContent ?: return null
+        val content = firstParentOfType(LatexNoMathContent::class) ?: return null
         val nextContent = nextThing(content) ?: return null
 
         var cite = nextContent.firstChildOfType(LatexCommands::class)
@@ -126,7 +126,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     /**
      * Check if [LatexContent] is a non breaking space.
      */
-    private fun LatexContent.isNonBreakingSpace(): Boolean {
+    private fun LatexNoMathContent.isNonBreakingSpace(): Boolean {
         val normalText = firstChildOfType(LatexNormalText::class) ?: return false
         return normalText.text == "~"
     }

@@ -6,6 +6,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -49,7 +50,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
                 stack.pop()
             }
-            else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs && command.previousCommand()?.name != "\\newif") {
+            else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs && command.previousCommand()?.name != LatexRegularCommand.NEWIF.commandDisplay) {
                 stack.push(command)
             }
         }

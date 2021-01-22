@@ -81,8 +81,8 @@ fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
  * @return The next command in the file, or `null` when there is no such command.
  */
 fun LatexCommands.nextCommand(): LatexCommands? {
-    val content = parentOfType(LatexContent::class) ?: return null
-    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent
+    val content = parentOfType(LatexNoMathContent::class) ?: return null
+    val next = content.nextSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
     return next.firstChildOfType(LatexCommands::class)
 }
@@ -93,8 +93,8 @@ fun LatexCommands.nextCommand(): LatexCommands? {
  * @return The previous command in the file, or `null` when there is no such command.
  */
 fun LatexCommands.previousCommand(): LatexCommands? {
-    val content = parentOfType(LatexContent::class) ?: return null
-    val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent
+    val content = parentOfType(LatexNoMathContent::class) ?: return null
+    val previous = content.previousSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
     return previous.firstChildOfType(LatexCommands::class)
 }
@@ -198,8 +198,8 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
         return if (found.size == 1) found.first() else null
     }
 
-    val parent = PsiTreeUtil.getParentOfType(this, LatexContent::class.java)
-    val sibling = PsiTreeUtil.getNextSiblingOfType(parent, LatexContent::class.java)
+    val parent = PsiTreeUtil.getParentOfType(this, LatexNoMathContent::class.java)
+    val sibling = PsiTreeUtil.getNextSiblingOfType(parent, LatexNoMathContent::class.java)
     return PsiTreeUtil.findChildOfType(sibling, LatexCommands::class.java)
 }
 
