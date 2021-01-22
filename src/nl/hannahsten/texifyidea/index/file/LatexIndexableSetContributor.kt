@@ -8,6 +8,7 @@ import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager
 import java.io.File
+import java.io.IOException
 
 /**
  * Specify the paths that have to be indexed for the [LatexExternalCommandIndex].
@@ -30,7 +31,14 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                     File(root.path).list { _, name -> name.endsWith("tar.xz") }?.forEach { zipName ->
                         txArchiver.sourceFile = File(root.path, zipName)
                         // Note that by keeping the target path the same for everything, some packages will install in source/latex and some in source/latex/latex depending on how they were zipped
-                        txArchiver.destDirectory = File(root.path, "latex")
+                        val destination = File(root.path, "latex")
+                        // Try to create if not exists
+                        if (!destination.exists() && (!destination.canWrite() || !destination.mkdir())) {
+                            // If the user has e.g. a MiKTeX admin install, we do not have rights to extract zips
+                            extractedFiles = true
+                            return mutableSetOf()
+                        }
+                        txArchiver.destDirectory = destination
                         txArchiver.extract()
                     }
                     val bz2Archiver = TarBZip2UnArchiver()
