@@ -25,8 +25,10 @@
 
 # Bug fixes
 * Fixed compile gutter icons showing up on parameters. (#1734)
+* Fix parse errors for \NewDocumentEnvironment-like commands and \newenvironment. (#1754)
 * Fixed a bug with run configurations not being copied correctly. (#1728, #1745)
 * Fixed overriding backspace handlers in non-LaTeX files. (#1740, #1745)
-* Fixed crashes. (#1720, #1721)
+* Ignore \& when counting & for aligning tables. (#1754)
+* Fixed crashes. (#1720, #1721, #1754)
 
 Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) for contributing to this release.

@@ -1,6 +1,7 @@
 :experimental:
 
 See https://github.com/Ruben-Sten/TeXiFy-IDEA/blob/master/CONTRIBUTING.md for the general contributing guide.
+Note that we keep track of 'internal' tasks at a YouTrack instance: https://texify-idea.myjetbrains.com/youtrack/issues
 
 == Debugging performance issues
 

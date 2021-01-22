@@ -260,6 +260,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 == Inspections
 
 * link:Inspection-suppression[Inspection suppression]
+* https://www.jetbrains.com/help/idea/creating-custom-inspections.html[Creating Custom Inspections]
 
 === BibTeX
 * Duplicate ID
