@@ -8,7 +8,6 @@ import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager
 import java.io.File
-import java.io.IOException
 
 /**
  * Specify the paths that have to be indexed for the [LatexExternalCommandIndex].
