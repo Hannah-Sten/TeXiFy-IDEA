@@ -30,6 +30,7 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
     override fun getStealthyRanges(root: PsiElement, text: CharSequence): LinkedSet<IntRange> {
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
         val ranges = root.childrenOfType(LatexNormalText::class)
+            .asSequence()
             .filter { it.isNotInMathEnvironment() && it.isNotInSquareBrackets() }
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
