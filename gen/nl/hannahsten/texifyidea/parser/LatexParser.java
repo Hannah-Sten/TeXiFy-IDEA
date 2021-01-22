@@ -1,16 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
-import static com.intellij.lang.WhitespacesBinders.*;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.WhitespacesBinders.GREEDY_LEFT_BINDER;
+import static com.intellij.lang.WhitespacesBinders.GREEDY_RIGHT_BINDER;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -298,7 +299,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // keyval_key (EQUALS keyval_value)?
+  // keyval_key (EQUALS keyval_value?)?
   public static boolean keyval_pair(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_pair")) return false;
     boolean r;
@@ -309,22 +310,29 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (EQUALS keyval_value)?
+  // (EQUALS keyval_value?)?
   private static boolean keyval_pair_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_pair_1")) return false;
     keyval_pair_1_0(b, l + 1);
     return true;
   }
 
-  // EQUALS keyval_value
+  // EQUALS keyval_value?
   private static boolean keyval_pair_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_pair_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EQUALS);
-    r = r && keyval_value(b, l + 1);
+    r = r && keyval_pair_1_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  // keyval_value?
+  private static boolean keyval_pair_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_pair_1_0_1")) return false;
+    keyval_value(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -450,7 +458,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)*) | optional_param_content*) CLOSE_BRACKET
+  // OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET
   public static boolean optional_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
@@ -463,7 +471,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (keyval_pair  (COMMA keyval_pair)*) | optional_param_content*
+  // (keyval_pair  (COMMA keyval_pair)* COMMA?) | optional_param_content*
   private static boolean optional_param_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1")) return false;
     boolean r;
@@ -474,13 +482,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // keyval_pair  (COMMA keyval_pair)*
+  // keyval_pair  (COMMA keyval_pair)* COMMA?
   private static boolean optional_param_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = keyval_pair(b, l + 1);
     r = r && optional_param_1_0_1(b, l + 1);
+    r = r && optional_param_1_0_2(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -505,6 +514,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
     r = r && keyval_pair(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  // COMMA?
+  private static boolean optional_param_1_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_0_2")) return false;
+    consumeToken(b, COMMA);
+    return true;
   }
 
   // optional_param_content*
