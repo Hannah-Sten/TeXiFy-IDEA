@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
-import org.jetbrains.annotations.NotNull
 
 /**
  * Try to find out which index program the user wants to use, based on the given options.
@@ -78,7 +77,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
 /**
  * Get optional parameters of the \makeindex command. If an option key does not have a value it will map to the empty string.
  */
-fun getMakeindexOptions(mainFile: VirtualFile?, project: @NotNull Project): HashMap<String, String> {
+fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): HashMap<String, String> {
     return runReadAction {
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         val makeindexOptions = HashMap<String, String>()

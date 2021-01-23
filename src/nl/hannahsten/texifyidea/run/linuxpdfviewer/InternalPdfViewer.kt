@@ -5,20 +5,22 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.skim.SkimConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.zathura.ZathuraConversation
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.runCommand
 
 /**
  * List of supported PDF viewers on Linux.
  *
+ * These pdf viewers have their support built-in in TeXiFy.
  * @param viewerCommand The command to call the viewer from the command line.
  * @param conversation The conversation class needed/used to talk to this viewer.
  */
-enum class PdfViewer(
+enum class InternalPdfViewer(
     private val viewerCommand: String,
-    val displayName: String,
+    override val displayName: String,
     val conversation: ViewerConversation?
-) {
+) : PdfViewer {
 
     EVINCE("evince", "Evince", EvinceConversation),
     OKULAR("okular", "Okular", OkularConversation),
@@ -27,7 +29,7 @@ enum class PdfViewer(
     SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
     NONE("", "No PDF viewer", null);
 
-    fun isAvailable(): Boolean = availability[this] ?: false
+    override fun isAvailable(): Boolean = availability[this] ?: false
 
     /**
      * Check if the viewer is installed and available from the path.
@@ -61,13 +63,14 @@ enum class PdfViewer(
 
     companion object {
 
-        private val availability: Map<PdfViewer, Boolean> by lazy {
+        private val availability: Map<InternalPdfViewer, Boolean> by lazy {
             values().associateWith {
                 it.checkAvailability()
             }
         }
 
-        fun availableSubset(): List<PdfViewer> = values().filter { it.isAvailable() }
-        fun firstAvailable(): PdfViewer = availableSubset().first()
+        fun availableSubset(): List<InternalPdfViewer> = values().filter { it.isAvailable() }
+
+        fun firstAvailable(): InternalPdfViewer = availableSubset().first()
     }
 }
