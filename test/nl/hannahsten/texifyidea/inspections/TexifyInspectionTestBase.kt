@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.inspections
 
-import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

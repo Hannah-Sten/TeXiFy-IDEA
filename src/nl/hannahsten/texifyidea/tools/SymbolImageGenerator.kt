@@ -107,7 +107,7 @@ private fun latex(symbol: SymbolUiEntry, theme: Theme): String {
  * Creates an aux directory if it does not yet exists and deletes it afterwards.
  */
 private fun auxDirectory(symbolDirectory: String, auxDir: String = "auxil", block: () -> Unit) {
-    val auxDirFile = File("$symbolDirectory/auxil")
+    val auxDirFile = File("$symbolDirectory/$auxDir")
     if (auxDirFile.exists().not()) {
         auxDirFile.mkdir()
     }
