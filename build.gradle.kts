@@ -8,7 +8,7 @@ plugins {
     kotlin("jvm") version("1.4.30-M1")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.35.0"
+    id("com.github.ben-manes.versions") version "0.36.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.15"
@@ -74,11 +74,8 @@ dependencies {
     implementation(files("lib/JavaDDE.dll"))
     implementation(files("lib/JavaDDEx64.dll"))
 
-    // From Kotlin documentation
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
-
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java:3.2.3")
+    implementation("com.github.hypfvieh:dbus-java:3.2.4")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
 
     // Test dependencies
@@ -99,7 +96,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.10.2")
+    testImplementation("io.mockk:mockk:1.10.5")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -117,7 +114,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java")
+    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -127,7 +124,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "2020.3"
+    version = "2020.3.1"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
