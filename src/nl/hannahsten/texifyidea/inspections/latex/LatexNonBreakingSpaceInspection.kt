@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -60,7 +60,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             // Get the NORMAL_TEXT in front of the command.
             val sibling = command.prevSibling
                     ?: command.parent?.prevSibling
-                    ?: command.parentOfType(LatexContent::class)?.prevSibling
+                    ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
                     ?: continue
 
             // When sibling is whitespace, it's obviously bad news.

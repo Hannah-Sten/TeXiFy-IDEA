@@ -75,8 +75,19 @@ class LatexParserTest : BasePlatformTestCase() {
             \newenvironment{test}{\begin{center}}{\end{center}}
             \newenvironment{test2}{ \[ }{ \] }
             \newenvironment{test2}{ $ x$ and $ }{ $ }
-            
+            \newenvironment{test}[1]{\begin{test*}{#1}}{\end{test*}}
             $\xi$
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNewDocumentEnvironmentDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \usepackage{xparse}
+            \NewDocumentEnvironment{name}{args spec}{\begin{center}{arg}}{\end{center}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

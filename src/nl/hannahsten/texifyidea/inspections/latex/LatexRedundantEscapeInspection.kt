@@ -16,8 +16,9 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.Diacritic
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.allCommands
 import java.text.Normalizer
 import java.util.*
@@ -26,6 +27,15 @@ import java.util.*
  * @author Sten Wessel
  */
 open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
+
+    companion object {
+
+        fun getNormalTextSibling(command: LatexCommands): LatexNormalText? {
+            val content = PsiTreeUtil.getParentOfType(command, LatexNoMathContent::class.java)
+            val siblingContent = PsiTreeUtil.getNextSiblingOfType(content, LatexNoMathContent::class.java)
+            return siblingContent?.normalText
+        }
+    }
 
     override val inspectionGroup = InsightGroup.LATEX
 
@@ -50,7 +60,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             }
 
             val diacritic = Diacritic.Normal.fromCommand(command.commandToken.text) ?: continue
-            if (diacritic.isTypeable && (command.requiredParameters.isNotEmpty() || hasNormalTextSibling(command))) {
+            if (diacritic.isTypeable && (command.requiredParameters.isNotEmpty() || getNormalTextSibling(command) != null)) {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         command,
@@ -64,12 +74,6 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
         }
 
         return descriptors
-    }
-
-    private fun hasNormalTextSibling(command: LatexCommands): Boolean {
-        val content = PsiTreeUtil.getParentOfType(command, LatexContent::class.java)
-        val siblingContent = PsiTreeUtil.getNextSiblingOfType(content, LatexContent::class.java)
-        return siblingContent?.noMathContent?.normalText != null
     }
 
     /**
@@ -97,9 +101,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             }
             else {
                 // Now find a sibling
-                val content = PsiTreeUtil.getParentOfType(command, LatexContent::class.java)
-                val siblingContent = PsiTreeUtil.getNextSiblingOfType(content, LatexContent::class.java)
-                val siblingText = siblingContent?.noMathContent?.normalText
+                val siblingText = getNormalTextSibling(command)
 
                 if (siblingText != null) {
                     base = siblingText.text

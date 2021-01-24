@@ -346,6 +346,20 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testEscapedAmpersands() {
+        """
+            \begin{tabular}{cc}
+                a & b \\
+                c\&e & d \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cc}
+                a    & b \\
+                c\&e & d \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
     fun testVeryWideTable() {
         val start = """
 \documentclass[11pt]{article}

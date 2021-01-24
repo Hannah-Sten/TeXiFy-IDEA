@@ -104,7 +104,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 .inside(LatexRequiredParam::class.java)
                 .with(object : PatternCondition<PsiElement>("File name completion pattern") {
                     override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                        val command = getParentOfType(psiElement, LatexCommands::class.java)
                             ?: return false
 
                         val name = command.commandToken.text
@@ -127,7 +127,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 .inside(LatexRequiredParam::class.java)
                 .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
                     override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                        val command = getParentOfType(psiElement, LatexCommands::class.java)
                             ?: return false
 
                         val name = command.commandToken.text
@@ -150,7 +150,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 .inside(LatexRequiredParam::class.java)
                 .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
                     override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                        val command = getParentOfType(psiElement, LatexCommands::class.java)
                             ?: return false
 
                         val name = command.commandToken.text
@@ -172,7 +172,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
             PlatformPatterns.psiElement().inside(LatexRequiredParam::class.java)
                 .with(object : PatternCondition<PsiElement>("xcolor color completion pattern") {
                     override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
-                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                        val command = getParentOfType(psiElement, LatexCommands::class.java)
                             ?: return false
 
                         val name = command.commandToken.text
