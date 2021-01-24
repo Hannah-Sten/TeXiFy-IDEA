@@ -78,7 +78,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
 /**
  * Get optional parameters of the \makeindex command. If an option key does not have a value it will map to the empty string.
  */
-fun getMakeindexOptions(mainFile: VirtualFile?, project: @NotNull Project): HashMap<String, String> {
+fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): HashMap<String, String> {
     return runReadAction {
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         val makeindexOptions = HashMap<String, String>()
