@@ -1,6 +1,7 @@
 # Beta 0.7.4
 
 # Additions
+* Add support for an internal pdf viewer using the IntelliJ PDF Viewer plugin. (#1675)
 
 # Changes
 * Change Grazie rules to ignore non-text elements in a sentence. (#1744)
