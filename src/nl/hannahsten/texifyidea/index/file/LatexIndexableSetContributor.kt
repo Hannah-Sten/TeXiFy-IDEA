@@ -31,12 +31,19 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                         txArchiver.sourceFile = File(root.path, zipName)
                         // Note that by keeping the target path the same for everything, some packages will install in source/latex and some in source/latex/latex depending on how they were zipped
                         val destination = File(root.path, "latex")
-                        // Try to create if not exists
-                        if (!destination.exists() && (!destination.canWrite() || !destination.mkdir())) {
-                            // If the user has e.g. a MiKTeX admin install, we do not have rights to extract zips
+
+                        // If the user has e.g. a MiKTeX admin install, we do not have rights to extract zips
+                        if (!destination.canWrite()) {
                             extractedFiles = true
                             return mutableSetOf()
                         }
+
+                        // Try to create if not exists
+                        if (!destination.exists() && !destination.mkdir()) {
+                            extractedFiles = true
+                            return mutableSetOf()
+                        }
+
                         txArchiver.destDirectory = destination
                         txArchiver.extract()
                     }
