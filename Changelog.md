@@ -1,15 +1,17 @@
 # Beta 0.7.4
 
 # Additions
-* Add support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (#1675)
-* Add commands from all installed LaTeX packages to autocompletion. (#1710)
-* Add symbol tool window. (#1752)
+* Added support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (#1675)
+* Added commands from all installed LaTeX packages to autocompletion. (#1710)
+* Added symbol tool window. (#1752)
 
 # Changes
-* Change Grazie rules to ignore non-text elements in a sentence. (#1744)
+* Changed Grazie rules to ignore non-text elements in a sentence. (#1744)
+* Implemented a file based index for commands and environments. (#1710)
 
 # Bug fixes
-* Fix bug in inline math highlighting.(#1744)
+* Fixed plugin icon not showing up in the marketplace. (#1759)
+* Fixed bug in inline math highlighting. (#1744)
 
 
 # Beta 0.7.3
