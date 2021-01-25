@@ -46,7 +46,7 @@
         </p>
         <ul>
             <li>Syntax highlighting</li>
-            <li>Autocompletion of labels, (custom defined) commands and environments</li>
+            <li>Autocompletion of labels, (custom defined and package defined) commands and environments</li>
             <li>Writer ergonomics - writing LaTeX made less cumbersome</li>
             <li>Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber</li>
             <li>Inspections. Intentions. And heaps more inspections</li>

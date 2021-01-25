@@ -41,7 +41,9 @@ class LatexDocumentationProvider : DocumentationProvider {
             return null
         }
 
-        val command = LatexCommand.lookup(element) ?: return null
+        val command = LatexCommand.lookup(element)
+
+        if (command.isNullOrEmpty()) return null
 
         // Special case for package inclusion commands
         if (command.first().command in PACKAGE_COMMANDS) {
