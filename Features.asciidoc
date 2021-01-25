@@ -33,7 +33,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 == Writing LaTeX
 
 * link:Unicode[Unicode support]
-* link:Autocomplete[Autocomplete of labels, many common commands, custom defined commands and (custom) environments]
+* link:Autocomplete[Autocomplete of labels, all commands from installed packages, custom defined commands and (custom) environments]
 * link:Gobal-settings#smart-quotes[Smart quotes]
 * link:Automatic-package-importing[Automagically import packages of common commands]
 * link:Features#Menu-entries[Shortcuts for styling text]
