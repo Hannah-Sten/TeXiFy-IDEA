@@ -8,6 +8,8 @@ import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * Specify the paths that have to be indexed for the [LatexExternalCommandIndex].
@@ -33,7 +35,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                         val destination = File(root.path, "latex")
 
                         // If the user has e.g. a MiKTeX admin install, we do not have rights to extract zips
-                        if (!destination.canWrite()) {
+                        if (!Files.isWritable(Path.of(root.path))) {
                             extractedFiles = true
                             return mutableSetOf()
                         }
