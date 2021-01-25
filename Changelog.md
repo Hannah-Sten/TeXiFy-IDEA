@@ -1,7 +1,9 @@
 # Beta 0.7.4
 
 # Additions
-* Add support for an internal pdf viewer using the IntelliJ PDF Viewer plugin. (#1675)
+* Add support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (#1675)
+* Add commands from all installed LaTeX packages to autocompletion. (#1710)
+* Add symbol tool window. (#1752)
 
 # Changes
 * Change Grazie rules to ignore non-text elements in a sentence. (#1744)
