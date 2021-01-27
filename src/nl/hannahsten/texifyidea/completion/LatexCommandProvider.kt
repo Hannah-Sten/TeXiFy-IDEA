@@ -85,7 +85,14 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                         // Avoid duplicates of commands defined in LaTeX base, because they are often very similar commands defined in different document classes so it makes not
                         // much sense at the moment to have them separately in the autocompletion.
                         // Effectively this results in just taking the first one we found
-                        .filter { newBuilder -> if ( cmd.dependency.isDefault) commands.none {it.lookupString == newBuilder.lookupString } else true }
+                        .filter { newBuilder ->
+                            if (cmd.dependency.isDefault) {
+                                commands.none { it.lookupString == newBuilder.lookupString }
+                            }
+                            else {
+                                true
+                            }
+                        }
                         .forEach { commands.add(it) }
                 }
             }
