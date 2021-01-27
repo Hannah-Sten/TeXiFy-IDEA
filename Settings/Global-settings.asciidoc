@@ -93,6 +93,8 @@ Instead of writing opening and closing quotes like `+`quote'+` and ```quote''` y
 
 Typing `\"` will still always work. In other cases, there are three options.
 
+_Since b0.7.4:_ Smart quote substitution is disabled in verbatim contexts.
+
 === Ligatures
 
 If you type single quotes, so you type `'quote'`, the opening single quote will be replaced by ```, so the result is `+`quote'+`.
