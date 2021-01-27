@@ -2,13 +2,8 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
-import com.intellij.codeInsight.completion.CompletionResultSet
-import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
-import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.completion.LatexBibliographyStyleProvider
 import nl.hannahsten.texifyidea.completion.LatexListTypeProvider
-import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 
 /**
  * @author Sten Wessel
@@ -43,6 +38,11 @@ abstract class Argument @JvmOverloads protected constructor(val name: String, va
          * Text contents.
          */
         TEXT,
+
+        /**
+         * Contains a bibliography style.
+         */
+        BIBLIOGRAPHY_STYLE(completionProvider = LatexBibliographyStyleProvider),
 
         /**
          * enumerate, itemize, etc.

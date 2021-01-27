@@ -463,8 +463,8 @@
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
-        <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
-        <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.LatexCompletionContributor"/>
+        <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.BibtexCompletionContributor"/>
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <moveLeftRightHandler language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexMoveElementLeftRightHandler"/>
