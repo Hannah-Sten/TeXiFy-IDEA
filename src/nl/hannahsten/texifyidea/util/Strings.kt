@@ -34,7 +34,7 @@ fun String.camelCase(): String {
  */
 fun String.repeat(count: Int) = buildString(count * this.length) {
     for (i in 0 until count) {
-        append(this)
+        append(this@repeat)
     }
 }
 

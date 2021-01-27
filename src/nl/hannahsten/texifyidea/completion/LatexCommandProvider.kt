@@ -66,7 +66,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
             // Add the package name to the lookup text so we can distinguish between the same commands that come from different packages.
             // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
-            LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString("") + " ${cmd.dependency}")
+            val default = cmd.dependency.isDefault
+            LookupElementBuilder.create(cmd, cmd.command + " ".repeat(index + default.not().int) + cmd.dependency.displayString)
                 .withPresentableText(cmd.commandWithSlash)
                 .bold()
                 .withTailText(args.joinToString("") + " " + packageName(cmd), true)

@@ -86,6 +86,11 @@ open class LatexPackage @JvmOverloads constructor(
         get() = equals(DEFAULT)
 
     /**
+     * The name of the package, or the empty string when this is the default package.
+     */
+    val displayString = if (isDefault) "" else name
+
+    /**
      * Creates a new package object with the same name and with the given parameters.
      */
     fun with(vararg parameters: String) = LatexPackage(name, *parameters)
