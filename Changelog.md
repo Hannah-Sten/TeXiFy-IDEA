@@ -2,7 +2,7 @@
 
 # Additions
 * Added support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (#1675)
-* Added commands from all installed LaTeX packages to autocompletion. (#1710)
+* Added commands from all installed LaTeX packages to autocompletion. (#1710, #1762)
 * Added symbol tool window. (#1752)
 
 # Changes
