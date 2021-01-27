@@ -1,11 +1,14 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.patterns.PatternCondition
+import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
@@ -118,7 +121,9 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
-    return hasParent(LatexMathContent::class) || hasParent(LatexDisplayMath::class) || inDirectEnvironmentContext(Environment.Context.MATH)
+    return hasParent(LatexMathContent::class) || hasParent(LatexDisplayMath::class) || inDirectEnvironmentContext(
+        Environment.Context.MATH
+    )
 }
 
 /**
@@ -323,10 +328,33 @@ fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean
 }
 
 /**
- * Performs the given [action] on each child.
+ * Performs the given [action] on each child, in order.
  */
 inline fun PsiElement.forEachChild(action: (PsiElement) -> Unit) {
     for (child in children) action(child)
+}
+
+/**
+ * Performs the given [action] on each child of the given type `Psi`, in order.
+ */
+inline fun <reified Psi : PsiElement> PsiElement.forEachChildOfType(action: (PsiElement) -> Unit) = forEachChild {
+    if (it is Psi) {
+        action(it)
+    }
+}
+
+/**
+ * Finds the `n`th (index) child of the given type.
+ */
+inline fun <reified ChildPsi : PsiElement> PsiElement.nthChildOfType(index: Int): ChildPsi? {
+    var pointer = 0
+    forEachChildOfType<ChildPsi> {
+        if (pointer == index) {
+            return it as ChildPsi
+        }
+        pointer++
+    }
+    return null
 }
 
 /**
@@ -346,7 +374,8 @@ fun PsiElement.firstChildIgnoringWhitespaceOrNull(): PsiElement? {
  *
  * @return `true` if it is a magic comment, `false` otherwise.
  */
-fun PsiElement?.isMagicComment(): Boolean = this?.text?.let { t -> TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(t) } ?: false
+fun PsiElement?.isMagicComment(): Boolean =
+    this?.text?.let { t -> TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(t) } ?: false
 
 /**
  * Get a sequence of all the parents of this PsiElement with the given type.
@@ -364,3 +393,52 @@ fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequenc
  * Get a sequence of all parents of this element.
  */
 fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.parent }
+
+/**
+ * Adds the pattern condition to this psi element pattern.
+ */
+fun <Psi : PsiElement> PsiElementPattern.Capture<Psi>.withPattern(
+    debugName: String? = null,
+    acceptFunction: (psiElement: PsiElement, context: ProcessingContext?) -> Boolean
+) = with(object : PatternCondition<PsiElement>(debugName) {
+
+    // This helper function allows for a simple lambda on  the call site.
+    override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
+        return acceptFunction(psiElement, context)
+    }
+})
+
+/**
+ * Looks for the index of this child element in the children of the parent that share the type with this child.
+ * Zero indexed.
+ *
+ * Example:
+ * PARENT
+ * - CHILD A
+ * - CHILD B
+ * - BREAD A
+ * - BREAD B
+ * - CHILD C
+ *
+ * `CHILD C.indexOfChildByType(PARENT) = 2`.
+ *
+ * @param parent
+ *          The parent of the children to get the index of.
+ * @return The index of this element in the child list, ignoring children of a different type, or `null` when the parent
+ *          could not be found, or when no child could be found that matches `this`.
+ */
+inline fun <reified PsiChild : PsiElement, reified PsiParent : PsiElement> PsiChild.indexOfChildByType(): Int? {
+    val parentElement = parentOfType(PsiParent::class) ?: return null
+
+    // Loop over all children to find this parameter.
+    var currentIndex = 0
+    parentElement.forEachChildOfType<PsiChild> {
+        if (it == this) {
+            return currentIndex
+        }
+        currentIndex++
+    }
+
+    // No child found.
+    return null
+}

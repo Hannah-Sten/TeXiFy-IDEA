@@ -29,6 +29,7 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val AMSMATH = LatexPackage("amsmath")
         @JvmField val AMSSYMB = LatexPackage("amssymb")
         @JvmField val BIBLATEX = LatexPackage("biblatex")
+        @JvmField val BLINDTEXT = LatexPackage("blindtext")
         @JvmField val BM = LatexPackage("bm")
         @JvmField val BOOKTABS = LatexPackage("booktabs")
         @JvmField val COLOR = LatexPackage("color")

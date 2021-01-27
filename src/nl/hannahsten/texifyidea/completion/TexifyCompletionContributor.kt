@@ -19,10 +19,7 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexMode
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredFolderArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredPicturePathArgument
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -202,21 +199,44 @@ open class TexifyCompletionContributor : CompletionContributor() {
         val inspectionIds = InsightGroup.byFileType(LatexFileType)
             .flatMap { ALL_TEXIFY_INSPECTIONS[it] ?: emptyList() }
             .toHashSet()
-        extendMagicCommentValues("suppress", suppressRegex, LatexMagicCommentValueProvider(suppressRegex, inspectionIds, AllIcons.General.InspectionsEye))
+        extendMagicCommentValues(
+            "suppress",
+            suppressRegex,
+            LatexMagicCommentValueProvider(suppressRegex, inspectionIds, AllIcons.General.InspectionsEye)
+        )
 
         // List containing tikz/math to autocomplete the begin/end/preamble values in magic comments
         val beginEndRegex = Regex("""(begin|end|preview) preamble\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("preamble", beginEndRegex, LatexMagicCommentValueProvider(beginEndRegex, CommentMagic.preambleValues))
+        extendMagicCommentValues(
+            "preamble",
+            beginEndRegex,
+            LatexMagicCommentValueProvider(beginEndRegex, CommentMagic.preambleValues)
+        )
 
         // List of LaTeX compilers
         val compilerRegex = Regex("""compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("compiler", compilerRegex, LatexMagicCommentValueProvider(compilerRegex, LatexCompiler.values().map { it.executableName }.toHashSet()))
+        extendMagicCommentValues(
+            "compiler",
+            compilerRegex,
+            LatexMagicCommentValueProvider(compilerRegex, LatexCompiler.values().map { it.executableName }.toHashSet())
+        )
 
         val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(bibtexCompilerRegex, BibliographyCompiler.values().map { it.executableName }.toHashSet()))
+        extendMagicCommentValues(
+            "bibtex compiler",
+            bibtexCompilerRegex,
+            LatexMagicCommentValueProvider(
+                bibtexCompilerRegex,
+                BibliographyCompiler.values().map { it.executableName }.toHashSet()
+            )
+        )
 
         val fakeRegex = Regex("""fake\s*(=\s*)?""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(fakeRegex, CommentMagic.fakeSectionValues))
+        extendMagicCommentValues(
+            "fake",
+            fakeRegex,
+            LatexMagicCommentValueProvider(fakeRegex, CommentMagic.fakeSectionValues)
+        )
 
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
@@ -229,6 +249,26 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         // Bibliography styles
         extendLatexCommand(LatexBibliographyStyleProvider, "\\bibliographystyle")
+
+        registerLatexArgumentTypeCompletion()
+    }
+
+    private fun registerLatexArgumentTypeCompletion() = Argument.Type.values().forEach { type ->
+        val completionProvider = type.completionProvider ?: return@forEach
+        extend(
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement()
+                .inside(LatexParameterText::class.java)
+                .withPattern { psiElement, _ ->
+                    val parameter = psiElement.parentOfType(LatexParameter::class) ?: return@withPattern false
+                    val command = parameter.parentOfType(LatexCommands::class)?.defaultCommand() ?: return@withPattern false
+                    val index = parameter.indexOf() ?: return@withPattern false
+                    val argument = command.arguments.getOrNull(index) ?: return@withPattern false
+                    argument.type == type
+                }
+                .withLanguage(LatexLanguage.INSTANCE),
+            completionProvider
+        )
     }
 
     private fun registerBibtexCompletion() {
@@ -282,14 +322,20 @@ open class TexifyCompletionContributor : CompletionContributor() {
     /**
      * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
      */
-    private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, vararg commandNamesWithSlash: String) {
+    private fun extendLatexCommands(
+        provider: CompletionProvider<CompletionParameters>,
+        vararg commandNamesWithSlash: String
+    ) {
         extendLatexCommands(provider, setOf(*commandNamesWithSlash))
     }
 
     /**
      * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
      */
-    private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, commandNamesWithSlash: Set<String>) {
+    private fun extendLatexCommands(
+        provider: CompletionProvider<CompletionParameters>,
+        commandNamesWithSlash: Set<String>
+    ) {
         extend(
             CompletionType.BASIC,
             PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
@@ -302,7 +348,8 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         }
 
                         CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
-                        return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
+                        return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash)
+                            .isNotEmpty()
                     }
                 })
                 .withLanguage(LatexLanguage.INSTANCE),
@@ -313,7 +360,11 @@ open class TexifyCompletionContributor : CompletionContributor() {
     /**
      * Adds a completions contributor that gets activated when typing a value for a magic comment.
      */
-    private fun extendMagicCommentValues(commentName: String, regex: Regex, completionProvider: CompletionProvider<CompletionParameters>) {
+    private fun extendMagicCommentValues(
+        commentName: String,
+        regex: Regex,
+        completionProvider: CompletionProvider<CompletionParameters>
+    ) {
         extend(
             CompletionType.BASIC,
             PlatformPatterns.psiElement().inside(LatexMagicComment::class.java)
