@@ -49,6 +49,7 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val IMPORT = LatexPackage("import")
         @JvmField val INPUTENC = LatexPackage("inputenc")
         @JvmField val LATEXSYMB = LatexPackage("latexsymb")
+        @JvmField val LIPSUM = LatexPackage("lipsum")
         @JvmField val LISTINGS = LatexPackage("listings")
         @JvmField val LUACODE = LatexPackage("luacode")
         @JvmField val MARVOSYM = LatexPackage("marvosym")

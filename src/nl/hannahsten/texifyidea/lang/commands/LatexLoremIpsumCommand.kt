@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang.commands
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BLINDTEXT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LIPSUM
 
 /**
  * @author Hannah Schellekens
@@ -28,6 +29,8 @@ enum class LatexLoremIpsumCommand(
     BLIND_ITEMIZE("blinditemize", dependency = BLINDTEXT),
     BLIND_ENUMERATE("blindenumerate", dependency = BLINDTEXT),
     BLIND_DESCRIPTION("blinddescription", dependency = BLINDTEXT),
+    LIPSUM("lipsum", "paragraph range".asOptional(), "sentence range".asOptional(), dependency = LatexPackage.LIPSUM),
+    LIPSUM_AS_SINGLE_PARAGRAPH("lipsum*", "paragraph range".asOptional(), "sentence range".asOptional(), dependency = LatexPackage.LIPSUM),
     ;
 
     override val identifyer: String
