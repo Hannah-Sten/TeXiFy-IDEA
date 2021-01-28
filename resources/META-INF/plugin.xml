@@ -164,7 +164,7 @@
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
 
-            <separator></separator>
+            <separator/>
 
             <!-- Table Creation Wizard-->
             <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableCreationWizard" text="Insert _Table..."
@@ -173,6 +173,10 @@
             <!-- Graphic Wizard-->
             <action class="nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction" id="texify.GraphicInsertWizard" text="Insert _Graphic..."
                     description="Shows a popup to insert a graphic."/>
+
+            <!-- Dummy text -->
+            <action class="nl.hannahsten.texifyidea.action.wizard.ipsum.InsertDummyTextAction" id="texify.DummyTextWizard" text="Insert _Dummy Text..."
+                    description="Shows a popup to insert dummy text."/>
         </group>
 
         <!-- LaTeX Analyze commands -->
