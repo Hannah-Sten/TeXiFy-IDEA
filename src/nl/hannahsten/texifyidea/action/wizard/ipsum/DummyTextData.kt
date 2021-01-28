@@ -39,13 +39,13 @@ data class DummyTextData(
     /**
      * @author Hannah Schellekens
      */
-    enum class BlindtextType {
+    enum class BlindtextType(val commandNoSlash: String) {
 
-        DOCUMENT,
-        PARAGRAPH,
-        ITEMIZE,
-        ENUMERATE,
-        DESCRIPTION;
+        DOCUMENT("blinddocument"),
+        PARAGRAPH("blindtext"),
+        ITEMIZE("blindlist{itemize}"),
+        ENUMERATE("blindlist{enumerate}"),
+        DESCRIPTION("blindlist{description}");
 
         override fun toString() = name.toLowerCase()
     }
