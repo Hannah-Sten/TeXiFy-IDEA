@@ -74,7 +74,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
     /**
      * Contains the lipsum end paragraph number (1-150).
      */
-    private val intLipsumParagraphsMax = JBIntSpinner(1, 1, 150)
+    private val intLipsumParagraphsMax = JBIntSpinner(7, 1, 150)
 
     /**
      * Contains the lipsum start sentence number.

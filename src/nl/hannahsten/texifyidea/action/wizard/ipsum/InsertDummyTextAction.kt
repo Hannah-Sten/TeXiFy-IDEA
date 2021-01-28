@@ -80,7 +80,30 @@ open class InsertDummyTextAction : AnAction() {
     }
 
     private fun Editor.insertLipsum(file: PsiFile, data: DummyTextData, indent: String) {
+        // Import blindtext
+        WriteCommandAction.runWriteCommandAction(file.project) {
+            file.insertUsepackage(LatexPackage.LIPSUM)
+        }
 
+        val star = if (data.lipsumParagraphSeparator == DummyTextData.LipsumParagraphSeparation.SPACE) "*" else ""
+
+        // By default, \lipsum prints the first 7 paragraphs.
+        if (data.lipsumParagraphs == 1..7 && data.lipsumSentences == 1..999) {
+            insertAtCaretAndMove("\\lipsum$star")
+            return
+        }
+
+        // When the sentences is at max value (999), assume no specific sentences are selected => only first optional
+        // parameter.
+        val paragraphRange = data.lipsumParagraphs.toRangeString()
+        if (data.lipsumSentences == 1..999) {
+            insertAtCaretAndMove("\\lipsum$star[$paragraphRange]")
+            return
+        }
+
+        // Otherwise, specify both paragraphs and sentences.
+        val sentenceRange = data.lipsumSentences.toRangeString()
+        insertAtCaretAndMove("\\lipsum$star[$paragraphRange][$sentenceRange]")
     }
 
     private fun Editor.insertRaw(file: PsiFile, data: DummyTextData, indent: String) {
