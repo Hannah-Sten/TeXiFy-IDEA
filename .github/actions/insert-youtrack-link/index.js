@@ -82,7 +82,7 @@ try {
         return;
     }
 
-    const regex = new RegExp(`(?<!\\[)\\b(${prefix}-\\d+)\\b(?!\\])`, 'g');
+    const regex = new RegExp(`(?<!\\[|\/issue\/)\\b(${prefix}-\\d+)\\b(?!\\])`, 'g');
 
     if (!regex.test(text)) {
         // Exit early when no links need to be inserted to avoid API calls
