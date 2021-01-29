@@ -52,9 +52,9 @@ open class TexifyIpsumGenerator(
     val random: Random = Random(Random.nextInt()),
 
     /**
-     * The classpath location of the input file to use to load the template.
+     * What ipsum template to use.
      */
-    val generatorClasspath: String = "/nl/hannahsten/texifyidea/ipsum/texify.txt"
+    val ipsum: Ipsum = Ipsum.TEXIFY_IDEA_IPSUM
 ) {
 
     /**
@@ -62,7 +62,7 @@ open class TexifyIpsumGenerator(
      * Only options with the TEXT key can contain $TEMPLATE keys.
      */
     private val template: Map<String, List<String>> by lazy {
-        val input = TexifyIpsumGenerator::class.java.getResource(generatorClasspath).readText()
+        val input = ipsum.generateInput()
         val parts = input.split(System.lineSeparator() + System.lineSeparator())
 
         parts.associate { templatePart ->

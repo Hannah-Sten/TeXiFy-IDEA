@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.action.wizard.ipsum
 
 import nl.hannahsten.texifyidea.lang.Described
+import nl.hannahsten.texifyidea.util.text.Ipsum
 import kotlin.random.Random
 
 /**
@@ -19,6 +20,7 @@ data class DummyTextData(
     val lipsumSentences: IntRange = 1..999,
     val lipsumParagraphSeparator: LipsumParagraphSeparation = LipsumParagraphSeparation.PARAGRAPH,
 
+    val rawDummyTextType: Ipsum = Ipsum.TEXIFY_IDEA_IPSUM,
     val rawParagraphs: IntRange = 3..7,
     val rawSentencesPerParagraph: IntRange = 2..20,
     val rawSeed: Int = Random.nextInt()

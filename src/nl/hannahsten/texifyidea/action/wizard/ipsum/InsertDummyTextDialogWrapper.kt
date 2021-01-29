@@ -9,6 +9,7 @@ import com.intellij.ui.layout.jbTextField
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import nl.hannahsten.texifyidea.util.hbox
+import nl.hannahsten.texifyidea.util.text.Ipsum
 import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.*
@@ -107,7 +108,14 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
         addLabeledComponent(hbox(8, intLipsumParagraphsMin, JLabel("to"), intLipsumParagraphsMax), "Paragraph numbers:", labelWidth)
         addLabeledComponent(hbox(8, intLipsumSentencesMin, JLabel("to"), intLipsumSentencesMax), "Sentence numbers:", labelWidth)
         addLabeledComponent(cboxLipsumSeparator, "Paragraph separation:", labelWidth)
-        add(Box.createRigidArea(Dimension(0, 24)))
+        add(Box.createRigidArea(Dimension(0, 28)))
+    }
+
+    /**
+     * Which dummy text teplate to use.
+     */
+    private val cboxRawTemplate = ComboBox(Ipsum.values()).apply {
+        selectedItem = Ipsum.TEXIFY_IDEA_IPSUM
     }
 
     /**
@@ -146,10 +154,10 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
         }
 
         val labelWidth = 160
+        addLabeledComponent(cboxRawTemplate, "Dummy text template:", labelWidth)
         addLabeledComponent(hbox(8, intRawParagraphsMin, JLabel("to"), intRawParagraphsMax), "Number of paragraphs:", labelWidth)
         addLabeledComponent(hbox(8, intRawSentencesMin, JLabel("to"), intRawSentencessMax), "Sentences per paragraph:", labelWidth)
         addLabeledComponent(txtRawSeed, "Seed:", labelWidth)
-        add(Box.createRigidArea(Dimension(0, 24)))
     }
 
     private val tabPane = JBTabbedPane().apply {
@@ -183,6 +191,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
         )
         else -> DummyTextData(
             ipsumType = DummyTextData.IpsumType.RAW,
+            rawDummyTextType = cboxRawTemplate.selectedItem as Ipsum,
             rawParagraphs = intRawParagraphsMin.number..intRawParagraphsMax.number,
             rawSentencesPerParagraph = intRawSentencesMin.number..intRawSentencessMax.number,
             rawSeed = txtRawSeed.text.toInt()
