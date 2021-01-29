@@ -109,7 +109,9 @@ open class InsertDummyTextAction : AnAction() {
     }
 
     private fun Editor.insertRaw(data: DummyTextData, indent: String) {
-        val generator = TexifyIpsumGenerator(data.rawParagraphs, data.rawSentencesPerParagraph, Random(data.rawSeed))
+        val generator = TexifyIpsumGenerator(
+            data.rawParagraphs, data.rawSentencesPerParagraph, Random(data.rawSeed), data.rawDummyTextType
+        )
         val dummyText = generator.generate()
 
         val result = StringBuilder()

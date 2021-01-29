@@ -690,6 +690,7 @@ object SymbolCategories {
             add(TEXT_PESO)
             add(POUNDS)
             add(TEXT_FLORIN)
+            add(EURO_AMOUNT, latex = "\\EUR{<caret>}", image = "\\EUR{\\ldots}")
             add(OFFICIAL_EURO)
             add(EURO_WIDE)
             add(EURO_NARROW)
