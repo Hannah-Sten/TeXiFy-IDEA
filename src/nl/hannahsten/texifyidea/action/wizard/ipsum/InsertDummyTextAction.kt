@@ -5,10 +5,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.text.TexifyIpsumGenerator
+import java.lang.StringBuilder
+import kotlin.random.Random
 
 /**
  * @author Hannah Schellekens
@@ -41,8 +43,8 @@ open class InsertDummyTextAction : AnAction() {
 
     private fun Editor.insertDummyText(file: PsiFile, data: DummyTextData, indent: String) = when (data.ipsumType) {
         DummyTextData.IpsumType.BLINDTEXT -> insertBlindtext(file, data)
-        DummyTextData.IpsumType.LIPSUM -> insertLipsum(file, data, indent)
-        DummyTextData.IpsumType.RAW -> insertRaw(file, data, indent)
+        DummyTextData.IpsumType.LIPSUM -> insertLipsum(file, data)
+        DummyTextData.IpsumType.RAW -> insertRaw(data, indent)
     }
 
     private fun Editor.insertBlindtext(file: PsiFile, data: DummyTextData) {
@@ -79,7 +81,7 @@ open class InsertDummyTextAction : AnAction() {
         insertAtCaretAndMove(command)
     }
 
-    private fun Editor.insertLipsum(file: PsiFile, data: DummyTextData, indent: String) {
+    private fun Editor.insertLipsum(file: PsiFile, data: DummyTextData) {
         // Import blindtext
         WriteCommandAction.runWriteCommandAction(file.project) {
             file.insertUsepackage(LatexPackage.LIPSUM)
@@ -106,7 +108,20 @@ open class InsertDummyTextAction : AnAction() {
         insertAtCaretAndMove("\\lipsum$star[$paragraphRange][$sentenceRange]")
     }
 
-    private fun Editor.insertRaw(file: PsiFile, data: DummyTextData, indent: String) {
-        // TODO: Create generator.
+    private fun Editor.insertRaw(data: DummyTextData, indent: String) {
+        val generator = TexifyIpsumGenerator(data.rawParagraphs, data.rawSentencesPerParagraph, Random(data.rawSeed))
+        val dummyText = generator.generate()
+
+        val result = StringBuilder()
+        var currentIndent = ""
+        dummyText.forEach { paragraph ->
+            paragraph.forEach { sentence ->
+                result.append(currentIndent).append(sentence).append("\n")
+                currentIndent = indent
+            }
+            result.append("\n")
+        }
+
+        insertAtCaretAndMove(result.toString().trimEnd())
     }
 }

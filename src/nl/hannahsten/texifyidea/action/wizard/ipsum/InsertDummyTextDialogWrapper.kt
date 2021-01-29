@@ -128,7 +128,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
     /**
      * The maximum number of raw sentences in a paragraph.
      */
-    private val intRawSentencessMax = JBIntSpinner(20, 1, 99999)
+    private val intRawSentencessMax = JBIntSpinner(14, 1, 99999)
 
     /**
      * Contains the seed to generate random numbers.
