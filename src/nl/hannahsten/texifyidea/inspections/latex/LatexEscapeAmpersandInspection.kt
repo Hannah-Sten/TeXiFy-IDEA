@@ -32,12 +32,12 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         if (this.isComment()) return true
 
         // Do not trigger in environments that use the ampersand as special character.
-        if (this.inDirectEnvironment(Magic.Environment.tableEnvironments)) return true
-        if (this.inDirectEnvironment(Magic.Environment.alignableEnvironments)) return true
+        if (this.inDirectEnvironment(EnvironmentMagic.tableEnvironments)) return true
+        if (this.inDirectEnvironment(EnvironmentMagic.alignableEnvironments)) return true
 
         // Other exceptions
         val command = this.firstParentOfType(LatexCommands::class)?.name
-        if (command in Magic.Command.urls ||
+        if (command in CommandMagic.urls ||
             command in project.getLabelReferenceCommands() ||
             command in project.getLabelDefinitionCommands()
         ) {

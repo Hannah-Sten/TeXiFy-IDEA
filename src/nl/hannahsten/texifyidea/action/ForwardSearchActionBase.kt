@@ -5,10 +5,10 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
-open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
+open class ForwardSearchActionBase(val viewer: InternalPdfViewer) : EditorAction(
     name = "_ForwardSearch",
     icon = TexifyIcons.RIGHT
 ) {

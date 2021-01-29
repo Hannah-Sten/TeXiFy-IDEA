@@ -14,6 +14,9 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.*
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -29,13 +32,13 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun getLabeledCommand(label: PsiElement): PsiElement? {
             return when (label) {
                 is LatexCommands -> {
-                    if (Magic.Command.labelAsParameter.contains(label.name)) {
+                    if (CommandMagic.labelAsParameter.contains(label.name)) {
                         return label
                     }
 
                     if (label.inDirectEnvironmentMatching {
-                        Magic.Environment.labeled.containsKey(it.environmentName) &&
-                            !Magic.Environment.labelAsParameter.contains(it.environmentName)
+                        EnvironmentMagic.labeled.containsKey(it.environmentName) &&
+                            !EnvironmentMagic.labelAsParameter.contains(it.environmentName)
                     }
                     ) {
                         label.parentOfType(LatexEnvironment::class)
@@ -59,10 +62,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun getLabelPrefix(labeledCommand: PsiElement): String? {
             return when (labeledCommand) {
                 is LatexCommands -> {
-                    Magic.Command.labeledPrefixes.getOrDefault(labeledCommand.name, null)
+                    CommandMagic.labeledPrefixes.getOrDefault(labeledCommand.name, null)
                 }
                 is LatexEnvironment -> {
-                    Magic.Environment.labeled.getOrDefault(labeledCommand.environmentName, null)
+                    EnvironmentMagic.labeled.getOrDefault(labeledCommand.environmentName, null)
                 }
                 else -> null
             }
@@ -123,7 +126,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             val prefix: String = getLabelPrefix(labeledCommand) ?: return
             val labelName = oldLabel.formatAsLabel()
             val createdLabelBase = if (labelName.contains(":")) {
-                Magic.Pattern.labelPrefix.matcher(labelName).replaceAll("$prefix:")
+                PatternMagic.labelPrefix.matcher(labelName).replaceAll("$prefix:")
             }
             else {
                 "$prefix:$labelName"
@@ -133,7 +136,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // Replace in command label definition
             if (command is LatexCommands) {
-                if (Magic.Command.labelAsParameter.contains(command.name)) {
+                if (CommandMagic.labelAsParameter.contains(command.name)) {
                     latexPsiHelper.setOptionalParameter(command, "label", "{$createdLabel}")
                 }
                 else {
@@ -172,7 +175,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             // Loop over every file
             for (pair in commandsAndFiles) {
                 // Only look at commands which refer to something
-                val commands = pair.second.filter { Magic.Command.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
+                val commands = pair.second.filter { CommandMagic.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
                 val requiredParams = mutableListOf<LatexRequiredParam>()
 
                 // Find all the parameters with the given labelName

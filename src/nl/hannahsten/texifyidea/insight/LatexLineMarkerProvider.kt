@@ -7,7 +7,7 @@ import com.intellij.codeInsight.daemon.impl.LineMarkersPass
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Provides line markers for the LaTeX language.
@@ -22,9 +22,9 @@ class LatexLineMarkerProvider : LineMarkerProvider {
 
         val colourManager = EditorColorsManager.getInstance()
         val commandToken = element.commandToken.text
-        return if (commandToken in Magic.Command.sectionMarkers) {
+        return if (commandToken in CommandMagic.sectionMarkers) {
             LineMarkersPass.createMethodSeparatorLineMarker(element.commandToken, colourManager).apply {
-                separatorColor = Magic.Command.sectionSeparatorColors[commandToken]
+                separatorColor = CommandMagic.sectionSeparatorColors[commandToken]
             }
         }
         else null

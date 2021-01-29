@@ -5,6 +5,12 @@ import com.intellij.openapi.util.TextRange
 import java.util.regex.Pattern
 
 /**
+ * Returns `1` when `true`, returns `0` when `false`.
+ */
+val Boolean.int: Int
+    get() = if (this) 1 else 0
+
+/**
  * Creates a pair of two objects, analogous to [to].
  */
 infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)

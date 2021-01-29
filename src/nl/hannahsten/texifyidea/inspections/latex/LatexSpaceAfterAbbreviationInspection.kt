@@ -12,10 +12,10 @@ import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 /**
  * @author Hannah Schellekens
@@ -38,13 +38,13 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
             }
 
             // We find ranges where comments start and end, to check if matches are in there
-            val commentMatcher = Magic.Pattern.comments.matcher(text.text)
+            val commentMatcher = PatternMagic.comments.matcher(text.text)
             val commentParts = arrayListOf<IntRange>()
             while (commentMatcher.find()) {
                 commentParts.add(commentMatcher.start()..commentMatcher.end())
             }
 
-            val matcher = Magic.Pattern.abbreviationWithoutNormalSpace.matcher(text.text)
+            val matcher = PatternMagic.abbreviationWithoutNormalSpace.matcher(text.text)
             while (matcher.find()) {
                 val matchRange = matcher.start()..matcher.end()
 

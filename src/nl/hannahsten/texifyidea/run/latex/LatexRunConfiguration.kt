@@ -29,9 +29,11 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -238,7 +240,8 @@ class LatexRunConfiguration constructor(
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
         try {
-            this.pdfViewer = PdfViewer.valueOf(viewerName ?: "")
+            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
+                ?: InternalPdfViewer.valueOf(viewerName ?: "")
         }
         catch (e: IllegalArgumentException) {
             // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
@@ -489,7 +492,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = PdfViewer.firstAvailable()
+        pdfViewer = InternalPdfViewer.firstAvailable()
     }
 
     fun setDefaultOutputFormat() {

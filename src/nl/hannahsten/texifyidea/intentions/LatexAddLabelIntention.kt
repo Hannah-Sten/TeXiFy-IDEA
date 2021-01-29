@@ -13,6 +13,9 @@ import com.intellij.refactoring.rename.RenameProcessor
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
 import kotlin.math.max
 

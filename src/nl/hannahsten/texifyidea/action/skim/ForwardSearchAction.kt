@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.action.skim
 
 import nl.hannahsten.texifyidea.action.ForwardSearchActionBase
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 
 /**
  * Starts a forward search action in Skim.
@@ -10,4 +10,4 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
  *
  * @author Stephan Sundermann
  */
-open class ForwardSearchAction : ForwardSearchActionBase(PdfViewer.SKIM)
+open class ForwardSearchAction : ForwardSearchActionBase(InternalPdfViewer.SKIM)

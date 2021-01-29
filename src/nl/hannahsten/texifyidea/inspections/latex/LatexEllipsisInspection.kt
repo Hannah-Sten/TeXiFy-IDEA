@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 /**
  * @author Sten Wessel
@@ -33,7 +34,7 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
         for (text in texts) {
             ProgressManager.checkCanceled()
 
-            for (match in Magic.Pattern.ellipsis.findAll(text.text)) {
+            for (match in PatternMagic.ellipsis.findAll(text.text)) {
                 // Ignore the inspection when the ellipsis is inside a comment.
                 if (file.findElementAt(match.range.first + text.startOffset)?.isComment() == true) {
                     continue

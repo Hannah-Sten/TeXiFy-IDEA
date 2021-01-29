@@ -8,7 +8,6 @@ import javax.swing.Icon
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-@Suppress("unused", "MemberVisibilityCanBePrivate")
 object TexifyIcons {
 
     /**
@@ -433,6 +432,13 @@ object TexifyIcons {
      */
     val TIKZ_PREVIEW = IconLoader.getIcon(
             "/nl/hannahsten/texifyidea/icons/tikz-preview.svg", TexifyIcons::class.java
+    )
+
+    /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val SYMBOLS = IconLoader.getIcon(
+            "/nl/hannahsten/texifyidea/icons/symbols.svg", TexifyIcons::class.java
     )
 
     // From IntelliJ
