@@ -271,6 +271,7 @@ object CommandMagic {
             SUBFILEINCLUDE.cmd to listOf(".tex"),
             BIBLIOGRAPHY.cmd to listOf(".bib"),
             INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
+            USEPACKAGE.cmd to listOf(".sty"),
     )
 
     /**

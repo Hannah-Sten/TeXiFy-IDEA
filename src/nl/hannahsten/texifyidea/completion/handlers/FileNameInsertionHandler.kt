@@ -4,9 +4,9 @@ import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
@@ -22,7 +22,7 @@ open class FileNameInsertionHandler : InsertHandler<LookupElement> {
         val normalTextWord = file.findElementAt(offset) ?: return
         val command = normalTextWord.parentOfType(LatexCommands::class) ?: return
 
-        if (command.name !in Magic.Command.illegalExtensions.keys) return
+        if (command.name !in CommandMagic.illegalExtensions.keys) return
 
         val extensionless = text.toString().removeFileExtension()
         document.replaceString(offset, context.tailOffset, extensionless)
