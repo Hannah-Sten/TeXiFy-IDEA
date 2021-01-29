@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import kotlin.reflect.KClass
 
 /**
@@ -157,6 +158,11 @@ fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMM
     is PsiComment -> true
     else -> this is LeafPsiElement && elementType == LatexTypes.COMMAND_TOKEN
 }
+
+/**
+ * Checks if the element is inside a verbatim context.
+ */
+fun PsiElement.inVerbatim() = inDirectEnvironment(EnvironmentMagic.verbatim)
 
 /**
  * Finds the previous sibling of an element but skips over whitespace.
