@@ -70,7 +70,6 @@ open class WordCountAction : AnAction(
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
         val psiFile = virtualFile.psiFile(project) ?: return
 
-
         val dialog = if (SystemEnvironment.isTexcountAvailable) {
             val root = psiFile.findRootFile().virtualFile
             val words = "texcount -1 -inc -sum ${root.path}".runCommand(workingDirectory = File(root.parent.path))?.toIntOrNull()
