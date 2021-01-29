@@ -5,6 +5,9 @@
 menu:Analyze[LaTeX > Word count]
 
 Count words in the currently open file, excluding LaTeX commands.
+Since 0.7.4, in case the https://app.uio.no/ifi/texcount/intro.html[texcount] LaTeX package is available, that will be used.
+It also counts words in included files.
+Otherwise, a built-in word counting tool will be used.
 Also includes the text in:
 
 - Sections (\section, \subsection etc.)
