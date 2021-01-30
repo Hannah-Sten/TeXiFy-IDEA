@@ -15,6 +15,7 @@
 * Fixed duplicate local packages in autocompletion. (#1756)
 * Fixed bibtex autocompletion for @preamble and @string. (#1756)
 * Fixed bug in inline math highlighting. (#1744)
+* Disable smart quotes and default live templates in verbatim. (#1764)
 
 
 # Beta 0.7.3
