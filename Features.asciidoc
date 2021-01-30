@@ -153,6 +153,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * link:Menu-entries#file-templates[Customizable file templates for .tex, .sty, .cls and .bib files]
 * link:++Menu-entries#table-creation-wizard++[Table Creation Wizard]
 * link:++Menu-entries#insert-graphic-wizard++[Graphic Insertion Wizard]
+* link:++Menu-entries#insert-dummy-text-wizard++[Dummy Text (Lorem Ipsum) Wizard]
 * link:++Menu-entries#clear-aux-files++[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
 * File creation dialog
