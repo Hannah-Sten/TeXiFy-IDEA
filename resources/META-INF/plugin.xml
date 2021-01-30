@@ -355,6 +355,14 @@
                     text="Generate Symbol Images" description="Generate symbol images"/>
         </group>
 
+        <!-- Generate Latex -->
+        <group id="texify.LatexGenerate" text="_LaTeX" description="Latex generation actions" popup="true">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+
+            <!-- Dummy text -->
+            <action class="nl.hannahsten.texifyidea.action.wizard.ipsum.InsertDummyTextAction" id="texify.DummyTextWizardPopup" text="_Dummy Text..."
+                    description="Shows a popup to insert dummy text."/>
+        </group>
     </actions>
 
     <!-- Listeners -->
