@@ -5,6 +5,8 @@ import com.intellij.execution.ui.*
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.ui.RawCommandLineEditor
+import com.intellij.util.ui.JBDimension
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.ui.compiler.LatexCompilerEditor
 import java.util.function.BiConsumer
@@ -29,7 +31,7 @@ object CommonLatexFragments {
                                                        name: String? = null,
                                                        group: String? = null): SettingsEditorFragment<S, RawCommandLineEditor> {
         val editor = RawCommandLineEditor().apply {
-            CommandLinePanel.setMinimumWidth(this, 400)
+            minimumSize = JBDimension(400, 30)
 
             editorField.emptyText.text = message
             editorField.accessibleContext.accessibleName = message
@@ -52,20 +54,20 @@ object CommonLatexFragments {
         return fragment
     }
 
-    fun latexCompiler(commandLinePosition: Int): SettingsEditorFragment<LatexRunConfiguration, LatexCompilerEditor> {
+    fun latexCompiler(commandLinePosition: Int, settingsProperty: (LatexRunConfiguration) -> KMutableProperty0<LatexCompiler?>): SettingsEditorFragment<LatexRunConfiguration, LatexCompilerEditor> {
         val editor = LatexCompilerEditor()
         val combobox = editor.component
 
         CommonParameterFragments.setMonospaced(combobox)
-
-        CommandLinePanel.setMinimumWidth(editor, 200)
+        editor.minimumSize = JBDimension(200, 30)
         editor.label.isVisible = false
+
         combobox.accessibleContext.accessibleName = editor.label.text
 
         val fragment = SettingsEditorFragment<LatexRunConfiguration, LatexCompilerEditor>(
             "latexCompiler", "&LaTeX compiler", null, editor, commandLinePosition,
-            { settings, component ->  },
-            { settings, component ->  },
+            { settings, component -> component.setSelectedCompiler(settingsProperty(settings).get()) },
+            { settings, component -> settingsProperty(settings).set(component.getSelectedCompiler()) },
             { true }
         )
 

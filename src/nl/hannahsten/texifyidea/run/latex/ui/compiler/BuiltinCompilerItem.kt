@@ -1,25 +1,19 @@
 package nl.hannahsten.texifyidea.run.latex.ui.compiler
 
-import com.intellij.ui.SimpleColoredComponent
-import com.intellij.util.ui.EmptyIcon
+import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
 
 /**
  * LaTeX compiler selector item for the default compilers for which we have support built-in.
  *
  * @author Sten Wessel
  */
-sealed class BuiltinCompilerItem : LatexCompilerComboBoxItem {
+class BuiltinCompilerItem(val compiler: SupportedLatexCompiler) : LatexCompilerComboBoxItem {
+
+    override val presentableText
+        get() = compiler.displayName
+
+    override val command
+        get() = compiler.executableName
 
     override val order = 2
-
-    override fun render(component: SimpleColoredComponent, selected: Boolean) {
-        component.append(presentableText)
-        component.icon = EmptyIcon.ICON_16
-    }
-}
-
-
-class PdflatexCompilerItem : BuiltinCompilerItem() {
-
-    override val presentableText = "pdflatex"
 }

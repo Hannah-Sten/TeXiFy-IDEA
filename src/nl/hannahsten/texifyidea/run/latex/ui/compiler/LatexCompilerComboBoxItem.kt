@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui.compiler
 
 import com.intellij.ui.SimpleColoredComponent
+import com.intellij.ui.SimpleTextAttributes
 
 /**
  * @author Sten Wessel
@@ -8,11 +9,17 @@ import com.intellij.ui.SimpleColoredComponent
 interface LatexCompilerComboBoxItem {
 
     val presentableText: String
-
-    val id: String?
-        get() = null
+    val command: String
 
     val order: Int
 
-    fun render(component: SimpleColoredComponent, selected: Boolean)
+    fun render(component: SimpleColoredComponent, selected: Boolean) {
+        if (selected) {
+            component.append("$command ")
+            component.append(presentableText, SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
+        }
+        else {
+            component.append(presentableText)
+        }
+    }
 }

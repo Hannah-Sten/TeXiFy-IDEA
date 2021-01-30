@@ -26,7 +26,8 @@ import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
+import nl.hannahsten.texifyidea.run.compiler.PdflatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -36,6 +37,7 @@ import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -46,7 +48,7 @@ import javax.swing.JPanel
 class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexRunConfiguration>() {
 
     private lateinit var panel: JPanel
-    private lateinit var compiler: LabeledComponent<ComboBox<LatexCompiler>>
+    private lateinit var compiler: LabeledComponent<ComboBox<SupportedLatexCompiler>>
     private lateinit var enableCompilerPath: JBCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
@@ -163,7 +165,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     @Throws(ConfigurationException::class)
     override fun applyEditorTo(runConfiguration: LatexRunConfiguration) {
         // Apply chosen compiler.
-        val chosenCompiler = compiler.component.selectedItem as? LatexCompiler ?: PDFLATEX
+        val chosenCompiler = compiler.component.selectedItem as? SupportedLatexCompiler ?: PdflatexCompiler.INSTANCE
         runConfiguration.compiler = chosenCompiler
 
         // Remove bibtex run config when switching to a compiler which includes running bibtex
@@ -324,7 +326,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compileTwice)
 
         // Output format.
-        val selectedCompiler = compiler.component.selectedItem as LatexCompiler
+        val selectedCompiler = compiler.component.selectedItem as SupportedLatexCompiler
         val cboxFormat = ComboBox(selectedCompiler.outputFormats)
         outputFormat = LabeledComponent.create(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
@@ -381,7 +383,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      */
     private fun addCompilerPathField(panel: JPanel) {
         // Compiler
-        val compilerField = ComboBox(LatexCompiler.values())
+        val compilerField = ComboBox(CompilerMagic.compilerByExecutableName.values.toTypedArray())
         compiler = LabeledComponent.create(compilerField, "Compiler")
         panel.add(compiler)
 
@@ -392,7 +394,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compilerPath.addBrowseFolderListener(
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                    .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as LatexCompiler).executableName }
+                    .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as SupportedLatexCompiler).executableName }
                     .withTitle("Choose " + compilerField.selectedItem + " executable")
             )
         )

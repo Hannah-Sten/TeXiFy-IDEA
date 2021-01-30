@@ -7,7 +7,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
 import javax.swing.Icon
 
-class LatexMagicCommentValueProvider(private val prefixRegex: Regex, val values: HashSet<String>, val icon: Icon? = null) :
+class LatexMagicCommentValueProvider(private val prefixRegex: Regex, val values: Set<String>, val icon: Icon? = null) :
     CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(

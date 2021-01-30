@@ -9,7 +9,8 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.PdflatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
 
 /**
  * @author Hannah Schellekens
@@ -51,7 +52,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             command.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
         }
         else command
-        runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
+        runConfiguration.compiler = SupportedLatexCompiler.byExecutableName(compiler) ?: PdflatexCompiler.INSTANCE
         runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
         return true
     }

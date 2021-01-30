@@ -11,11 +11,7 @@ import com.intellij.util.ui.EmptyIcon
 class AddCompilerItem : LatexCompilerComboBoxItem {
 
     override val presentableText = "Select alternative compiler..."
+    override val command = "latex"
     override val order = Int.MAX_VALUE
-
-    override fun render(component: SimpleColoredComponent, selected: Boolean) {
-        component.append(presentableText)
-        component.icon = EmptyIcon.ICON_16
-    }
 
 }

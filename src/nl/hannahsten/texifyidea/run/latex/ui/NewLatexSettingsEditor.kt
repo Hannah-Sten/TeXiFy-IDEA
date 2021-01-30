@@ -29,7 +29,7 @@ class NewLatexSettingsEditor(settings: LatexRunConfiguration) : RunConfiguration
 
         fragments.add(compilerArguments)
 
-        fragments.add(CommonLatexFragments.latexCompiler(100))
+        fragments.add(CommonLatexFragments.latexCompiler(100) { s -> s::compiler })
 
         return fragments
     }

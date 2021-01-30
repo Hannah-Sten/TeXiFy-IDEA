@@ -29,6 +29,8 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.compiler.PdflatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.NewLatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
@@ -46,6 +48,7 @@ import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
+import kotlin.properties.ReadWriteProperty
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -80,13 +83,13 @@ class LatexRunConfiguration constructor(
         private const val OUT_DIR = "out-dir"
     }
 
-    var compiler: LatexCompiler? = null
+    var compiler: LatexCompiler? by serialized(options::compiler, LatexCompiler.Serializer.INSTANCE)
     var compilerPath: String? = null
     var sumatraPath: String? = null
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
-    var compilerArguments: String? by options::compilerArguments
+    var compilerArguments: String? by transformed(options::compilerArguments) { it?.trim() }
 
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
@@ -229,7 +232,7 @@ class LatexRunConfiguration constructor(
         // Read compiler.
         val compilerName = parent.getChildText(COMPILER)
         try {
-            this.compiler = LatexCompiler.valueOf(compilerName)
+            this.compiler = SupportedLatexCompiler.byExecutableName(compilerName.toLowerCase())
         }
         catch (e: IllegalArgumentException) {
             this.compiler = null
@@ -354,7 +357,7 @@ class LatexRunConfiguration constructor(
             parent.removeContent()
         }
 
-        parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
+        parent.addContent(Element(COMPILER).also { it.text = (compiler as? SupportedLatexCompiler)?.executableName ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
@@ -494,7 +497,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun setDefaultCompiler() {
-        compiler = LatexCompiler.PDFLATEX
+        compiler = PdflatexCompiler.INSTANCE
     }
 
     fun setDefaultPdfViewer() {

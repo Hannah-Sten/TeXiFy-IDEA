@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
 
 /**
- * Utility functions which are not specific to a [LatexSdk] or a [nl.hannahsten.texifyidea.run.compiler.LatexCompiler].
+ * Utility functions which are not specific to a [LatexSdk] or a [nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler].
  */
 object LatexSdkUtil {
 
