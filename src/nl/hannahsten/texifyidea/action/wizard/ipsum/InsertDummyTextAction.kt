@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.text.TexifyIpsumGenerator
 import java.lang.StringBuilder
 import kotlin.random.Random
@@ -39,6 +40,14 @@ open class InsertDummyTextAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.PSI_FILE) ?: return
         executeAction(file)
+    }
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+
+        val file = e.getData(PlatformDataKeys.PSI_FILE)
+        val shouldDisplayMenu = file?.isLatexFile() == true
+        e.presentation.isVisible = shouldDisplayMenu
     }
 
     private fun Editor.insertDummyText(file: PsiFile, data: DummyTextData, indent: String) = when (data.ipsumType) {
