@@ -51,6 +51,16 @@ Helps you generate LaTeX for inserting graphics. The wizard also opens when drop
 
 See https://user-images.githubusercontent.com/17410729/103922867-b0108300-5114-11eb-92d8-25d63eaeb1f1.mp4[demo video].
 
+== [[insert-dummy-text]]Insert Dummy Text Wizard
+
+_Since b0.7.4_
+
+menu:Edit[LaTeX > Insert Dummy Text...]
+
+Tool for inserting `blindtext` and `lipsum` commands. Also provides a `raw text` option that just pastes raw dummy text in the editor. There is currently one style available: TeXiFy IDEA Ipsum. This is a report and business style ipsum generator.
+
+You can also access this action via the Generate menu by pressing kbd:[Alt + Insert] in a LaTeX document.
+
 == [[clear-aux-files]]Clear Auxiliary Files
 
 menu:Tools[LaTeX > Clear Auxiliary Files]
