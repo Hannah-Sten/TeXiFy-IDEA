@@ -29,7 +29,7 @@ data class DummyTextData(
     /**
      * @author Hannah Schellekens
      */
-    enum class IpsumType(override val description: String): Described {
+    enum class IpsumType(override val description: String) : Described {
 
         BLINDTEXT("blindtext package"),
         LIPSUM("lipsum package"),

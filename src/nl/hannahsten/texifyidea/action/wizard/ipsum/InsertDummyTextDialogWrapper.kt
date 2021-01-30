@@ -5,8 +5,6 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.components.*
-import com.intellij.ui.layout.jbTextField
-import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import nl.hannahsten.texifyidea.util.hbox
 import nl.hannahsten.texifyidea.util.text.Ipsum
