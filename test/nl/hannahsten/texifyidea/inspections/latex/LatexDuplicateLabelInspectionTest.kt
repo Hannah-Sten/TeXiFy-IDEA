@@ -40,4 +40,40 @@ class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicat
         CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting()
     }
+
+    fun testDuplicateLabelWithEnvironmentAndCommand() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \label{<error descr="Duplicate label 'some-label'">some-label</error>}
+            \begin{lstlisting}[label=<error descr="Duplicate label 'some-label'">{some-label}</error>]
+            \end{lstlisting}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testDuplicateLabelWithCommandAndCommand() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \label{<error descr="Duplicate label 'some-label'">some-label</error>}
+            \lstinputlisting[label=<error descr="Duplicate label 'some-label'">some-label</error>]{some/file}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testDuplicateLabelBetweenEnvironments() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{lstlisting}[label=<error descr="Duplicate label 'some-label'">some-label</error>]
+            \end{lstlisting}
+            \begin{lstlisting}[label=<error descr="Duplicate label 'some-label'">some-label</error>]
+            \end{lstlisting}                        
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

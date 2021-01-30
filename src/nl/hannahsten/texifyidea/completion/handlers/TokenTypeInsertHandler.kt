@@ -13,7 +13,11 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         val inserted = item.`object` as? BibtexEntryType ?: return
-        insertType(inserted, context)
+        when (inserted.token) {
+            "string" -> insertString(context)
+            "preamble" -> insertPreamble(context)
+            else -> insertType(inserted, context)
+        }
     }
 
     private fun insertString(context: InsertionContext) {

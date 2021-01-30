@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
-import nl.hannahsten.texifyidea.lang.Argument
-import nl.hannahsten.texifyidea.lang.OptionalArgument
+import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 
 /**
  * Compute the optional power set of a set of arguments, preserving the ordering.

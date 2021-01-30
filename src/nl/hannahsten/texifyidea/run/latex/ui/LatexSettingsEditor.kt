@@ -31,8 +31,10 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
+import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
@@ -66,7 +68,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     /** Allow users to specify a custom path to SumatraPDF.  */
     private lateinit var sumatraPath: TextFieldWithBrowseButton
 
-    private lateinit var pdfViewer: LabeledComponent<ComboBox<PdfViewer>>
+    private lateinit var pdfViewer: LabeledComponent<ComboBox<out PdfViewer>>
 
     /** Whether to enable the custom pdf viewer command text field. */
     private lateinit var enableViewerCommand: JBCheckBox
@@ -191,7 +193,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
         }
 
-        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailable()
+        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable()
 
         // Apply custom pdf viewer command
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
@@ -441,7 +443,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        val viewerField = ComboBox(PdfViewer.availableSubset().toTypedArray())
+        val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
+                ExternalPdfViewers.getExternalPdfViewers() +
+                listOf(InternalPdfViewer.NONE)
+
+        val viewerField = ComboBox(viewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
         panel.add(pdfViewer)
 

@@ -11,10 +11,11 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexMathContent
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getNextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.util.deleteElement
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parentOfType
 import org.jetbrains.annotations.Nls
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -43,14 +44,14 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
             SmartList()
         val commands = LatexCommandsIndex.getItems(file)
         for (command in commands) {
-            val index = Magic.Command.stylePrimitives.indexOf(command.name)
+            val index = CommandMagic.stylePrimitives.indexOf(command.name)
             if (index < 0) {
                 continue
             }
             descriptors.add(
                 manager.createProblemDescriptor(
                     command,
-                    "Use of TeX primitive " + Magic.Command.stylePrimitives[index] + " is discouraged",
+                    "Use of TeX primitive " + CommandMagic.stylePrimitives[index] + " is discouraged",
                     InspectionFix(),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -74,18 +75,15 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
             val element = descriptor.psiElement as? LatexCommands ?: return
 
             // Find elements that go after the primitive.
-            val cmdIndex = Magic.Command.stylePrimitives.indexOf(element.name)
+            val cmdIndex = CommandMagic.stylePrimitives.indexOf(element.name)
             if (cmdIndex < 0) {
                 return
             }
-            var content = element.parent.parent
-            if (content is LatexMathContent) {
-                content = element.parent
-            }
-            val next = getNextSiblingIgnoreWhitespace(content!!)
+            val content = element.parentOfType(LatexNoMathContent::class)
+            val next = content!!.nextSiblingIgnoreWhitespace()
             val after = if (next == null) "" else next.text
             val replacement =
-                String.format(Magic.Command.stylePrimitveReplacements[cmdIndex], after)
+                String.format(CommandMagic.stylePrimitveReplacements[cmdIndex], after)
             val document =
                 PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
 

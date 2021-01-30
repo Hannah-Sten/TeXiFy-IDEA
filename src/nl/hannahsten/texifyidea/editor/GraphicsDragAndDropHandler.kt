@@ -4,10 +4,10 @@ import com.intellij.openapi.editor.CustomFileDropHandler
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.extractFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.awt.datatransfer.Transferable
 import java.io.File
 
@@ -20,7 +20,7 @@ open class GraphicsDragAndDropHandler : CustomFileDropHandler() {
      * Whether the file can be dropped using this handler.
      */
     private fun File.isDroppable(): Boolean {
-        return extension.toLowerCase() in Magic.File.graphicFileExtensions
+        return extension.toLowerCase() in FileMagic.graphicFileExtensions
     }
 
     override fun canHandle(transferable: Transferable, editor: Editor?): Boolean {

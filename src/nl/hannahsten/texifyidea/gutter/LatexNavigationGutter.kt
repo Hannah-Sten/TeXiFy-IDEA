@@ -6,8 +6,8 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.reference.InputFileReference

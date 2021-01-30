@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.action.evince
 
 import nl.hannahsten.texifyidea.action.ForwardSearchActionBase
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 
 /**
  * Starts a forward search action in Evince.
@@ -10,4 +10,4 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
  *
  * @author Thomas Schouten
  */
-open class ForwardSearchAction : ForwardSearchActionBase(PdfViewer.EVINCE)
+open class ForwardSearchAction : ForwardSearchActionBase(InternalPdfViewer.EVINCE)

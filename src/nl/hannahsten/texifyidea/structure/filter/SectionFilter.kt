@@ -5,7 +5,7 @@ import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * @author Hannah Schellekens
@@ -16,7 +16,7 @@ class SectionFilter : Filter {
         return if (treeElement !is LatexStructureViewCommandElement) {
             true
         }
-        else !Magic.Command.sectionMarkers.contains(treeElement.commandName)
+        else !CommandMagic.sectionMarkers.contains(treeElement.commandName)
     }
 
     override fun isReverted() = true

@@ -1,0 +1,15 @@
+name: 'Insert YouTrack Link:'
+description: 'Replace references to YouTrack issues with an actual link'
+inputs:
+  issue-prefix:
+    description: 'YouTrack issue ID (prefix)'
+    required: true
+  youtrack-base-url:
+    description: 'YouTrack base URL (without trailing "/")'
+    required: true
+  repo-token:
+    description: 'Secret repository token'
+    required: true
+runs:
+  using: node12
+  main: index.js

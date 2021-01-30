@@ -11,15 +11,17 @@ import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention
-import nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention
 import nl.hannahsten.texifyidea.lang.LatexDocumentClass
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.hasStar
 import org.jetbrains.annotations.Nls
 import java.util.*
@@ -42,12 +44,13 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val minimumLevel = Magic.Command.labeledLevels[TexifySettings.getInstance().missingLabelMinimumLevel] ?: error("No valid minimum level given")
-        val labeledCommands = Magic.Command.labeledLevels.keys.filter { command ->
-            Magic.Command.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
+        val minimumLevel = CommandMagic.labeledLevels[TexifySettings.getInstance().missingLabelMinimumLevel]
+            ?: error("No valid minimum level given")
+        val labeledCommands = CommandMagic.labeledLevels.keys.filter { command ->
+            CommandMagic.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
         }.map { "\\" + it.command }.toMutableList()
 
-        labeledCommands.addAll(Magic.Command.labelAsParameter)
+        labeledCommands.addAll(CommandMagic.labelAsParameter)
 
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
         if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
@@ -58,7 +61,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             labeledCommands.contains(it.name) && it.name != "\\item" && !it.hasStar()
         }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
 
-        file.environmentsInFile().filter { Magic.Environment.labeled.containsKey(it.environmentName) }
+        file.environmentsInFile().filter { EnvironmentMagic.labeled.containsKey(it.environmentName) }
             .forEach { addEnvironmentDescriptor(it, descriptors, manager, isOntheFly) }
 
         return descriptors
@@ -79,7 +82,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         val fixes = mutableListOf<LocalQuickFix>()
         fixes.add(InsertLabelForCommandFix())
-        if (!Magic.Command.labelAsParameter.contains(command.name)) {
+        if (!CommandMagic.labelAsParameter.contains(command.name)) {
             fixes.add(ChangeMinimumLabelLevelFix())
         }
 
@@ -137,6 +140,29 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         }
     }
 
+    abstract class LabelQuickFix : LocalQuickFix {
+
+        protected fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
+            val labelBase = "$prefix:$base"
+            val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
+            return appendCounter(labelBase, allLabels)
+        }
+
+        /**
+         * Keeps adding a counter behind the label until there is no other label with that name.
+         */
+        private fun appendCounter(label: String, allLabels: Set<String>): String {
+            var counter = 2
+            var candidate = label
+
+            while (allLabels.contains(candidate)) {
+                candidate = label + (counter++)
+            }
+
+            return candidate
+        }
+    }
+
     /**
      * This is also an intention, but in order to keep the same alt+enter+enter functionality (because we have an other
      * quickfix as well) we keep it as a quickfix also.
@@ -156,17 +182,36 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         }
     }
 
-    private class InsertLabelInEnvironmentFix : LocalQuickFix {
+    private class InsertLabelInEnvironmentFix : LabelQuickFix() {
 
         override fun getFamilyName() = "Add label for this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val environment = descriptor.psiElement as LatexEnvironment
-            LatexAddLabelToEnvironmentIntention(environment.createSmartPointer()).invoke(
-                project,
-                environment.containingFile.openedEditor(),
-                environment.containingFile
+            val command = descriptor.psiElement as LatexEnvironment
+            val helper = LatexPsiHelper(project)
+            // Determine label name.
+            val createdLabel = getUniqueLabelName(
+                command.environmentName.formatAsLabel(),
+                EnvironmentMagic.labeled[command.environmentName], command.containingFile
             )
+
+            val moveCaretAfter = if (EnvironmentMagic.labelAsParameter.contains(command.environmentName)) {
+                helper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
+            }
+            else {
+                // in a float environment the label must be inserted after a caption
+                val labelCommand = helper.addToContent(
+                    command, helper.createLabelCommand(createdLabel),
+                    command.environmentContent?.childrenOfType<LatexCommands>()
+                        ?.findLast { c -> c.name == "\\caption" }
+                )
+                labelCommand
+            }
+
+            // Adjust caret offset
+            val openedEditor = command.containingFile.openedEditor() ?: return
+            val caretModel = openedEditor.caretModel
+            caretModel.moveToOffset(moveCaretAfter.endOffset())
         }
     }
 }

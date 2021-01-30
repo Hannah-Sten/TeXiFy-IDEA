@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface LatexContent extends PsiElement {
 
   @NotNull
-  LatexNoMathContent getNoMathContent();
+  List<LatexNoMathContent> getNoMathContentList();
 
 }

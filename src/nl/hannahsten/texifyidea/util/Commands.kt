@@ -4,11 +4,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
-import nl.hannahsten.texifyidea.lang.RequiredPicturePathArgument
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Finds all defined commands within the project.
@@ -17,7 +18,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
  */
 fun Project.findCommandDefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this).filter {
-        it.name in Magic.Command.commandDefinitions
+        it.name in CommandMagic.commandDefinitions
     }
 }
 
@@ -41,7 +42,7 @@ fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): Str
 
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
-        val commandExpansion = LatexCommandsIndex.getCommandsByNames(file ?: return null, *Magic.Command.commandDefinitions.toTypedArray())
+        val commandExpansion = LatexCommandsIndex.getCommandsByNames(file ?: return null, *CommandMagic.commandDefinitions.toTypedArray())
                 .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
                 ?.getRequiredArgumentValueByName("def")
         text = text.replace(command.text, commandExpansion ?: command.text)

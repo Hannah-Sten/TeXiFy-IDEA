@@ -14,6 +14,8 @@ import nl.hannahsten.texifyidea.psi.BibtexTag
 import nl.hannahsten.texifyidea.util.*
 
 /**
+ * I think this provides autocompletion for strings defined with @string{..} commands.
+ *
  * @author Hannah Schellekens
  */
 object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
