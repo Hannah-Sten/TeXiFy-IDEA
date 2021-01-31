@@ -1,20 +1,19 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.configurations.RunConfigurationBase
-import com.intellij.execution.ui.*
+import com.intellij.execution.ui.CommonParameterFragments
+import com.intellij.execution.ui.FragmentedSettingsUtil
+import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.ide.macro.MacrosDialog
-import com.intellij.openapi.options.SettingsEditor
+import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.util.ui.JBDimension
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.ui.compiler.LatexCompilerEditor
-import java.util.function.BiConsumer
-import java.util.function.Predicate
-import javax.swing.JLabel
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KMutableProperty0
-import kotlin.reflect.KMutableProperty1
 
 /**
  * Collection of fragment builders for the run configuration settings UI.
@@ -73,6 +72,39 @@ object CommonLatexFragments {
 
         fragment.isRemovable = false
         fragment.setHint("LaTeX compiler or path to executable")
+
+        return fragment
+    }
+
+    fun <S : RunConfigurationBase<*>> file(id: String,
+                                           message: String,
+                                           commandLinePosition: Int,
+                                           project: Project,
+                                           settingsProperty: (S) -> KMutableProperty0<VirtualFile?>,
+                                           editorVisible: (S) -> Boolean = { true },
+                                           name: String? = null,
+                                           group: String? = null): SettingsEditorFragment<S, VirtualFileEditorWithBrowse> {
+
+        val editor = VirtualFileEditorWithBrowse(id, message, project).apply {
+            addBrowseFolderListener(
+                "Choose a File to Compile",
+                "Select the main LaTeX file passed to the compiler",
+                FileTypeDescriptor("LaTeX File", ".tex")
+            )
+        }
+        editor.label.isVisible = false
+        CommonParameterFragments.setMonospaced(editor.editor)
+        editor.minimumSize = JBDimension(300, 30)
+
+        val fragment = SettingsEditorFragment(
+            id, name, group, editor, commandLinePosition,
+            { settings, component -> component.selected = settingsProperty(settings).get() },
+            { settings, component -> settingsProperty(settings).set(component.selected) },
+            editorVisible
+        )
+
+        fragment.isRemovable = false
+        fragment.setEditorGetter { e -> e.editor }
 
         return fragment
     }

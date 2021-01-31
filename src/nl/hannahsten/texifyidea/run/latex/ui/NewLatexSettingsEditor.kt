@@ -20,16 +20,24 @@ class NewLatexSettingsEditor(settings: LatexRunConfiguration) : RunConfiguration
         val commonParameterFragments = CommonParameterFragments<LatexRunConfiguration>(mySettings.project) { false }
         fragments.addAll(commonParameterFragments.fragments)
 
+        // LaTeX compiler
+        fragments.add(CommonLatexFragments.latexCompiler(100) { s -> s::compiler })
+
         // LaTeX compiler arguments
         val compilerArguments = CommonLatexFragments.programArguments<LatexRunConfiguration>(
             "compilerArguments", "Compiler arguments", 200, { s -> s::compilerArguments },
             name = "Compiler a&rguments"
         )
         compilerArguments.setHint("CLI arguments for the LaTeX compiler")
-
         fragments.add(compilerArguments)
 
-        fragments.add(CommonLatexFragments.latexCompiler(100) { s -> s::compiler })
+        // Main file
+        val mainFile = CommonLatexFragments.file<LatexRunConfiguration>(
+            "mainFile", "Main file", 300, mySettings.project, { s -> s::mainFile },
+            name = "Main &file"
+        )
+        mainFile.setHint("Root file of the document to compile")
+        fragments.add(mainFile)
 
         return fragments
     }
