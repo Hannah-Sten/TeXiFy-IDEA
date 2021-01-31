@@ -3,10 +3,11 @@ package nl.hannahsten.texifyidea.parser
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.parser.GeneratedParserUtilBase
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 @Suppress("FunctionName")
 class LatexParserUtil : GeneratedParserUtilBase() {
+
     companion object {
 
         /**
@@ -25,7 +26,7 @@ class LatexParserUtil : GeneratedParserUtilBase() {
 
             val env = beginText.subSequence(nameStart, nameEnd).toString()
 
-            if (env !in Magic.Environment.verbatim) return false
+            if (env !in EnvironmentMagic.verbatim) return false
 
             val startIndex = builder.currentOffset
             // Exclude the last newline, so it will stay a whitespace,

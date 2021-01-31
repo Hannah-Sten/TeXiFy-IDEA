@@ -12,10 +12,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -156,10 +157,10 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
              * Finds the label command of the given command.
              */
             fun findLabel(cmd: LatexCommands): LatexCommands? {
-                val grandparent = cmd.parent.parent
-                val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return null
-                val child = sibling.firstChildOfType(LatexCommands::class) ?: return null
-                return if (child.name == "\\label") child else null
+                val nextSibling = cmd.firstParentOfType(LatexNoMathContent::class)
+                    ?.nextSiblingIgnoreWhitespace()
+                    ?.firstChildOfType(LatexCommands::class) ?: return null
+                return if (nextSibling.name == LatexGenericRegularCommand.LABEL.commandWithSlash) nextSibling else null
             }
         }
 
@@ -180,7 +181,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
 
             // Create new file.
-            val fileNameBraces = if (cmd.parameterList.size > 0) cmd.parameterList[0].text else return
+            val fileNameBraces = if (cmd.parameterList.isNotEmpty()) cmd.parameterList[0].text else return
 
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")

@@ -5,13 +5,16 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.FileMagic
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.Transferable
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
@@ -41,7 +44,7 @@ object FileUtil {
      */
     @JvmStatic
     fun fileTypeByExtension(extensionWithoutDot: String): FileType {
-        return Magic.File.fileTypes.firstOrNull {
+        return FileMagic.fileTypes.firstOrNull {
             it.defaultExtension == extensionWithoutDot
         } ?: LatexFileType
     }
@@ -83,7 +86,7 @@ fun String.getFileExtension(): String = if (this.contains(".")) FileUtil.FILE_BO
  */
 fun Module.createExcludedDir(path: String) {
     ModuleRootManager.getInstance(this).modifiableModel.addContentEntry(path)
-        .addExcludeFolder(path)
+            .addExcludeFolder(path)
 }
 
 /**
@@ -128,4 +131,47 @@ fun createFile(fileName: String, contents: String): File {
  * Get a(n external) file by its absolute path.
  */
 fun getExternalFile(path: String): VirtualFile? =
-    LocalFileSystem.getInstance().findFileByPath(path)
+        LocalFileSystem.getInstance().findFileByPath(path)
+
+/**
+ * Converts the absolute path to a relative path.
+ */
+fun String.toRelativePath(basePath: String): String {
+    return File(basePath).toURI().relativize(File(this).toURI()).path
+}
+
+/**
+ * Extracts the list of files from the Drag and Drop Transferable, only if java file list is a supported flavour.
+ *
+ * @return The file list transfer data, or `null` when file lists are not supported.
+ */
+fun Transferable.extractFiles(): List<File>? {
+    if (isDataFlavorSupported(DataFlavor.javaFileListFlavor).not()) return null
+
+    @Suppress("UNCHECKED_CAST")
+    return getTransferData(DataFlavor.javaFileListFlavor) as? List<File>
+}
+
+/**
+ * Extracts the first file from the Drag and Drop Transferable, only if java file list is a supported flavour.
+ *
+ * @return The first file in the transfer data, or `null` when file lists are not supported.
+ */
+fun Transferable.extractFile() = extractFiles()?.firstOrNull()
+
+/**
+ * Looks up the relative path of the file represented by the given absolute path.
+ * This relative path is relative to the content roots of this ProjectRootManager.
+ *
+ * @return The relative path, relative to all source roots. `null` when no relative path could be found.
+ */
+fun ProjectRootManager.relativizePath(absoluteFilePath: String): String? = contentSourceRoots.asSequence()
+        .map { it to absoluteFilePath.toRelativePath(it.path) }
+        .firstOrNull { (contentRoot, relativePath) ->
+            // Make sure to convert to the right file when multiple files exist in the content
+            // roots with the same name. Also convert to [File]s to normalize path names.
+            val original = File(absoluteFilePath)
+            val candidate = File("${contentRoot.path}/$relativePath")
+            candidate.absolutePath == original.absolutePath
+        }
+        ?.second

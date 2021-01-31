@@ -5,23 +5,30 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
+import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addEnvironments
+import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addIndexedEnvironments
+import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.util.*
 import java.util.stream.Collectors
 
@@ -38,29 +45,65 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     ) {
         when (mode) {
             LatexMode.NORMAL -> {
-                addNormalCommands(result)
+                addIndexedCommands(result, parameters)
+                addNormalCommands(result, parameters.editor.project ?: return)
                 addCustomCommands(parameters, result)
             }
             LatexMode.MATH -> {
                 addMathCommands(result)
                 addCustomCommands(parameters, result, LatexMode.MATH)
             }
-            LatexMode.ENVIRONMENT_NAME -> addEnvironments(result, parameters)
+            LatexMode.ENVIRONMENT_NAME -> {
+                addEnvironments(result, parameters)
+                addIndexedEnvironments(result, parameters)
+            }
         }
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
     }
 
-    private fun addNormalCommands(result: CompletionResultSet) {
+    private fun createCommandLookupElements(cmd: LatexCommand): List<LookupElementBuilder> {
+        return cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
+            // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
+            // Add the package name to the lookup text so we can distinguish between the same commands that come from different packages.
+            // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
+            val default = cmd.dependency.isDefault
+            LookupElementBuilder.create(cmd, cmd.command + " ".repeat(index + default.not().int) + cmd.dependency.displayString)
+                .withPresentableText(cmd.commandWithSlash)
+                .bold()
+                .withTailText(args.joinToString("") + " " + packageName(cmd), true)
+                .withTypeText(cmd.display)
+                .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
+                .withIcon(TexifyIcons.DOT_COMMAND)
+        }
+    }
+
+    private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
+        result.addAllElements(
+            FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
+                .flatMap { cmdWithSlash ->
+                    val cmdWithoutSlash = cmdWithSlash.substring(1)
+                    LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).flatMap { cmd ->
+                        createCommandLookupElements(cmd)
+                    }
+                }
+        )
+    }
+
+    private fun addNormalCommands(result: CompletionResultSet, project: Project) {
+        val indexedKeys = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project)
+
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
-                cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
-                    LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
-                        .withPresentableText(cmd.commandDisplay)
-                        .bold()
-                        .withTailText(args.joinToString("") + " " + packageName(cmd), true)
-                        .withTypeText(cmd.display)
-                        .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
-                        .withIcon(TexifyIcons.DOT_COMMAND)
+                /** True if there is a package for which we already have the [cmd] command indexed.  */
+                fun alreadyIndexed() = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project)).map { LatexPackage.create(it) }.contains(cmd.dependency)
+
+                // Avoid adding duplicates
+                // Prefer the indexed command (if it really is the same one), as that one has documentation
+                if (cmd.commandWithSlash in indexedKeys && alreadyIndexed()) {
+                    emptyList()
+                }
+                else {
+                    createCommandLookupElements(cmd)
                 }
             }
         )
@@ -69,17 +112,17 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
     private fun addMathCommands(result: CompletionResultSet) {
         // Find all commands.
-        val commands: MutableList<LatexCommand> = ArrayList()
-        Collections.addAll(commands, *LatexMathCommand.values())
-        commands.add(LatexRegularCommand.BEGIN)
+        val commands: MutableList<LatexCommand> = ArrayList(LatexMathCommand.values())
+        commands.add(LatexGenericRegularCommand.BEGIN)
 
         // Create autocomplete elements.
         result.addAllElements(
             commands.flatMap { cmd: LatexCommand ->
                 cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
-                    val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler(args.toList()) else LatexMathInsertHandler(args.toList())
+                    val handler = if (cmd.isMathMode.not()) LatexNoMathInsertHandler(args.toList())
+                    else LatexMathInsertHandler(args.toList())
                     LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
-                        .withPresentableText(cmd.commandDisplay)
+                        .withPresentableText(cmd.commandWithSlash)
                         .bold()
                         .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                         .withTypeText(cmd.display)
@@ -88,38 +131,6 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                 }
             }
         )
-    }
-
-    private fun addEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
-        // Find all environments.
-        val environments: MutableList<Environment> = ArrayList()
-        Collections.addAll(environments, *DefaultEnvironment.values())
-        LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
-            .filter { cmd -> Magic.Command.environmentDefinitions.contains(cmd.name) }
-            .map { cmd -> cmd.requiredParameter(0) }
-            .filter { obj -> Objects.nonNull(obj) }
-            .map { environmentName -> SimpleEnvironment(environmentName!!) }
-            .forEach { e: SimpleEnvironment -> environments.add(e) }
-
-        // Create autocomplete elements.
-        result.addAllElements(
-            ContainerUtil.map2List(environments) { env: Environment ->
-                LookupElementBuilder.create(env, env.environmentName)
-                    .withPresentableText(env.environmentName)
-                    .bold()
-                    .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
-                    .withIcon(TexifyIcons.DOT_ENVIRONMENT)
-            }
-        )
-        result.addLookupAdvertisement(getKindWords())
-    }
-
-    private fun packageName(dependend: Dependend): String {
-        val name = dependend.dependency.name
-        return if ("" == name) {
-            ""
-        }
-        else " ($name)"
     }
 
     private fun addCustomCommands(
@@ -144,7 +155,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             if (!cmd.isDefinition() && !cmd.isEnvironmentDefinition()) {
                 continue
             }
-            if (mode !== LatexMode.MATH && cmd.name in Magic.Command.mathCommandDefinitions) {
+            if (mode !== LatexMode.MATH && cmd.name in CommandMagic.mathCommandDefinitions) {
                 continue
             }
             val cmdName = getCommandName(cmd) ?: continue
@@ -185,7 +196,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     }
 
     private fun getTypeText(commands: LatexCommands): String {
-        if (commands.commandToken.text in Magic.Command.commandDefinitions) {
+        if (commands.commandToken.text in CommandMagic.commandDefinitions) {
             return ""
         }
         val firstNext = commands.nextCommand() ?: return ""
@@ -227,7 +238,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
                 val paramSpecification = commands.requiredParameters.getOrNull(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
-                    if (Magic.Package.xparseParamSpecifiers[c] ?: return@map "") "{param}"
+                    if (PackageMagic.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"
                 }.joinToString("")
             }
@@ -238,7 +249,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
     private fun getCommandName(commands: LatexCommands): String? {
         return when (commands.name) {
-            in Magic.Command.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
+            in CommandMagic.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
             else -> getDefinitionName(commands)
         }
     }

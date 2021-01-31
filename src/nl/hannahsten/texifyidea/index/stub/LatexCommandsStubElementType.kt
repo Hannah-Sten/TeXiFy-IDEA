@@ -2,14 +2,16 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.psi.toStringMap
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.io.IOException
-import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
@@ -18,6 +20,7 @@ import java.util.stream.Collectors
  */
 class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage.INSTANCE) {
+
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return object : LatexCommandsImpl(latexCommandsStub, this) {
             init {
@@ -83,10 +86,10 @@ class LatexCommandsStubElementType(debugName: String) :
         if (getIncludeCommands().contains(token)) {
             indexSink.occurrence(LatexIncludesIndex.key(), token)
         }
-        if (Magic.Command.definitions.contains(token) || Magic.Command.redefinitions.contains(token)) {
+        if (CommandMagic.definitions.contains(token) || CommandMagic.redefinitions.contains(token)) {
             indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
-        if (Magic.Command.labelAsParameter.contains(token) && latexCommandsStub.optionalParams.contains("label")) {
+        if (CommandMagic.labelAsParameter.contains(token) && latexCommandsStub.optionalParams.contains("label")) {
             val label = latexCommandsStub.optionalParams["label"]!!
             indexSink.occurrence(LatexParameterLabeledCommandsIndex.key(), label)
         }
@@ -107,6 +110,7 @@ class LatexCommandsStubElementType(debugName: String) :
     }
 
     companion object {
+
         private val LIST_ELEMENT_SEPARATOR =
             Pattern.compile("\u1923\u9123\u2d20 hello\u0012")
         private val KEY_VALUE_SEPARATOR = "=".toRegex()

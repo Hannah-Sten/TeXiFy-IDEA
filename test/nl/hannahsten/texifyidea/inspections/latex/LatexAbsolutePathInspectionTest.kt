@@ -7,6 +7,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 class LatexAbsolutePathInspectionTest : TexifyInspectionTestBase(LatexAbsolutePathInspection()) {
+
     var absoluteWorkingPath: String
 
     init {

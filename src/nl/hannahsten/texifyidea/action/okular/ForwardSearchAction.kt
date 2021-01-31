@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.action.okular
 
 import nl.hannahsten.texifyidea.action.ForwardSearchActionBase
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 
 /**
  * Starts a forward search action in Okular.
@@ -10,4 +10,4 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
  *
  * @author Abby Berkers
  */
-open class ForwardSearchAction : ForwardSearchActionBase(PdfViewer.OKULAR)
+open class ForwardSearchAction : ForwardSearchActionBase(InternalPdfViewer.OKULAR)

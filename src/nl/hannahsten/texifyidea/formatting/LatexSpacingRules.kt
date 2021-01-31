@@ -7,8 +7,8 @@ import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
     Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
@@ -28,13 +28,13 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             customRule { parent, _, right ->
                 // Don't insert or remove spaces inside the text in a verbatim environment.
                 if (parent.node?.elementType === NORMAL_TEXT) {
-                    if (parent.node?.psi?.inDirectEnvironment(Magic.Environment.verbatim) == true) {
+                    if (parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.verbatim) == true) {
                         return@customRule Spacing.getReadOnlySpacing()
                     }
                 }
                 // Don't insert or remove spaces in front of the first word in a verbatim environment.
                 else if (right.node?.elementType === ENVIRONMENT_CONTENT) {
-                    if (right.node?.psi?.inDirectEnvironment(Magic.Environment.verbatim) == true) {
+                    if (right.node?.psi?.inDirectEnvironment(EnvironmentMagic.verbatim) == true) {
                         return@customRule Spacing.getReadOnlySpacing()
                     }
                 }
@@ -52,7 +52,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             customRule { parent, _, right ->
                 // Lowercase to also catch \STATE from algorithmic
-                if (right.node?.psi?.text?.toLowerCase() in setOf("\\state", "\\statex") && parent.node?.psi?.inDirectEnvironment(Magic.Environment.algorithmEnvironments) == true) {
+                if (right.node?.psi?.text?.toLowerCase() in setOf("\\state", "\\statex") && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {
                     return@customRule Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
                 }
 

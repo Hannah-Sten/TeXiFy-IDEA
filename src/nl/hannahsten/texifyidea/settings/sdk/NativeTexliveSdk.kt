@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -8,11 +7,17 @@ import nl.hannahsten.texifyidea.util.runCommand
  * TeX Live, as installed natively by the OS's package manager.
  * Differences with [TexliveSdk] are for example that not all executables (like tlmgr) are available,
  * and the texmf-dist folder is not assumed to be in a fixed location relative to the executables, but can be anywhere.
+ *
+ * Documentation may or may not be present (on Arch it requires texlive-most-doc).
+ * tlmgr may or may not work (on Arch it requires manual config or tllocalmgr from tllocalmgr-git).
+ * Source files may or may not be present (on Arch they are present for texlive-full, but not for texlive-core).
+ * All in all, it's a lot of fun.
  */
 class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
     companion object {
-        // Path to texmf-dist
+
+        // Path to texmf-dist, e.g. /usr/share/texmf-dist/ for texlive-core on Arch or /opt/texlive/2020/texmf-dist/ for texlive-full
         val texmfDistPath: String by lazy {
             "kpsewhich article.sty".runCommand()?.substringBefore("texmf-dist") + "texmf-dist"
         }
@@ -55,13 +60,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return "$texmfDistPath/doc"
     }
 
-    /**
-     * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
-     * and prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
-     *
-     * @param executable Name of a program, e.g. pdflatex
-     */
-    override fun getExecutableName(executable: String, project: Project): String {
+    override fun getExecutableName(executable: String, homePath: String): String {
         // Even though pdflatex is in path, it may be not the pdflatex we want, so we prefix the path to be sure.
         // Get base path of LaTeX distribution
         val basePath = "/usr/bin"

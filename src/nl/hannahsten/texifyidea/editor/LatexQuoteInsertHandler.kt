@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.getOpenAndCloseQuotes
 import nl.hannahsten.texifyidea.util.insertUsepackage
@@ -120,10 +120,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
             // Package dependencies
             if (char == '"') {
-                file.insertUsepackage(LatexRegularCommand.ENQUOTE.dependency)
+                file.insertUsepackage(LatexGenericRegularCommand.ENQUOTE.dependency)
             }
             else {
-                file.insertUsepackage(LatexRegularCommand.ENQUOTE_STAR.dependency)
+                file.insertUsepackage(LatexGenericRegularCommand.ENQUOTE_STAR.dependency)
             }
         }
     }

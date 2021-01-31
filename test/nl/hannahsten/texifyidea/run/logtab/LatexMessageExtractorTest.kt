@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.util.removeAll
  * For message spanning multiple lines, see [LatexOutputListenerTest].
  */
 class LatexMessageExtractorTest : BasePlatformTestCase() {
+
     private val currentFile = "test.tex"
 
     /*

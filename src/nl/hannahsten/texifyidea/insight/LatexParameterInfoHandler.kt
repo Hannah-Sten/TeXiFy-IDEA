@@ -6,13 +6,14 @@ import com.intellij.lang.parameterInfo.ParameterInfoUIContext
 import com.intellij.lang.parameterInfo.UpdateParameterInfoContext
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
  * @author Sten Wessel
  */
-class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegularCommand> {
+class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexCommand> {
 
     private fun findLatexCommand(file: PsiFile, offset: Int): LatexCommands? {
         val element = file.findElementAt(offset)
@@ -38,7 +39,7 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegul
         context.setCurrentParameter(0)
     }
 
-    override fun updateUI(cmd: LatexRegularCommand?, context: ParameterInfoUIContext) {
+    override fun updateUI(cmd: LatexCommand?, context: ParameterInfoUIContext) {
         if (cmd == null) {
             context.isUIComponentEnabled = false
             return
@@ -52,6 +53,6 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegul
             return
         }
 
-        context.setupUIComponentPresentation(cmd.commandDisplay + cmd.getArgumentsDisplay(), 0, 0, false, false, true, context.defaultParameterColor)
+        context.setupUIComponentPresentation(cmd.commandWithSlash + cmd.getArgumentsDisplay(), 0, 0, false, false, true, context.defaultParameterColor)
     }
 }

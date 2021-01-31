@@ -1,7 +1,8 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -11,6 +12,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
     companion object {
+
         /**
          * Returns year of texlive installation, 0 if it is not texlive.
          * Assumes the pdflatex version output contains something like (TeX Live 2019).
@@ -84,19 +86,13 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         return sdk.homePath
     }
 
-    /**
-     * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
-     * and if needed (if not in path) prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
-     *
-     * @param executable Name of a program, e.g. pdflatex
-     */
-    override fun getExecutableName(executable: String, project: Project): String {
-        if (LatexSdkUtil.isPdflatexInPath) {
-            return executable
-        }
+    override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
+        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
+    }
+
+    override fun getExecutableName(executable: String, homePath: String): String {
         // Get base path of LaTeX distribution
-        val home = LatexSdkUtil.getLatexProjectSdk(project)?.homePath ?: return executable
-        val basePath = LatexSdkUtil.getPdflatexParentPath(home)
+        val basePath = LatexSdkUtil.getPdflatexParentPath(homePath)
         return "$basePath/$executable"
     }
 }

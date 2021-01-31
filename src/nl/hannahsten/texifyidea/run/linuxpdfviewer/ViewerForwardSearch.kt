@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.linuxpdfviewer
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.openedEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -11,6 +12,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  * Provides forward search for the available pdf viewers.
  */
 class ViewerForwardSearch(private val viewer: PdfViewer) {
+
     /**
      * Execute forward search when the process is done.
      */

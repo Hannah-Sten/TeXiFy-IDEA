@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
  * For messages over at most two lines, see [LatexMessageExtractorTest].
  */
 class LatexOutputListenerTest : BasePlatformTestCase() {
+
     private val logTextLatexmk =
         """
         latexmk -pdf -file-line-error -interaction=nonstopmode -synctex=1 -output-format=pdf -output-directory=/home/abby/Documents/texify-test/out main.tex
@@ -527,7 +528,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             """.trimIndent()
 
         val expectedMessages = setOf(
-            // todo possible improvement: detecting line 4
+            // Possible improvement: detecting line 4
             LatexLogMessage("unexpected symbol near '3'.", "./main.tex", -1, ERROR)
         )
 

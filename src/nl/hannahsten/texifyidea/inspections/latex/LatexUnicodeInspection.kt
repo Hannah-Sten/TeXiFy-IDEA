@@ -16,16 +16,17 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection.EscapeUnicodeFix
 import nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection.InsertUnicodePackageFix
 import nl.hannahsten.texifyidea.lang.Diacritic
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
@@ -50,6 +51,7 @@ import java.util.regex.Pattern
 class LatexUnicodeInspection : TexifyInspectionBase() {
 
     companion object {
+
         private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
 
         /**
@@ -70,7 +72,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             }
 
             val included = PackageUtils.getIncludedPackages(file)
-            return Magic.Package.unicode.stream().allMatch { p -> included.contains(p.name) }
+            return PackageMagic.unicode.stream().allMatch { p -> included.contains(p.name) }
         }
     }
 
@@ -91,7 +93,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
         val texts = PsiTreeUtil.findChildrenOfType(file, LatexNormalText::class.java)
         for (text in texts) {
-            val matcher = Magic.Pattern.nonAscii.matcher(text.text)
+            val matcher = PatternMagic.nonAscii.matcher(text.text)
             while (matcher.find()) {
                 val inMathMode = PsiTreeUtil.getParentOfType(text, LatexMathEnvironment::class.java) != null
 
@@ -143,7 +145,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val file = descriptor.psiElement.containingFile
 
-            Magic.Package.unicode.forEach { p ->
+            PackageMagic.unicode.forEach { p ->
                 file.insertUsepackage(p)
             }
         }
@@ -152,17 +154,15 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     /**
      * Attempts to escape the non-ASCII character to avoid encoding issues.
      *
-     *
      * The following attempts are made, in order, to determine a suitable replacement:   1.  The
-     * character is matched against the *display* attribute of either [ ] or [LatexMathCommand] (where appropriate). When there is a match,
-     * the corresponding command is used as replacement.   1.  The character is decomposed to
+     * character is matched against the *display* attribute of either [ ] or [LatexCommand] (where appropriate).
+     * When there is a match, the corresponding command is used as replacement. 1.  The character is decomposed to
      * separate combining marks (see also [Unicode](http://unicode.org/reports/tr15/)).
      * An attempt is made to match the combining sequence against LaTeX character diacritical
      * commands. See [Diacritic] for a list of supported diacritics for both non-math and math
      * mode. When there is a match for all combining marks, the sequence of LaTeX commands is used
      * as replacement. Also, when the letters *i* or *j* are used in combination with
      * a diacritic their dotless versions are substituted.
-     *
      *
      * When neither of these steps is successful, the character is too exotic to replace and an
      * appropriate fail message is shown.

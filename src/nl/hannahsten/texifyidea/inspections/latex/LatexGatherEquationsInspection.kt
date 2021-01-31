@@ -9,7 +9,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
-import nl.hannahsten.texifyidea.psi.LatexContent
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 
@@ -27,10 +27,10 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.childrenOfType(LatexContent::class).asSequence()
+        file.childrenOfType(LatexNoMathContent::class).asSequence()
             .filter { it.isDisplayMath() }
             .map { Pair(it, it.nextSiblingIgnoreWhitespace()) }
-            .filter { (_, next) -> next != null && next is LatexContent && next.isDisplayMath() }
+            .filter { (_, next) -> next != null && next is LatexNoMathContent && next.isDisplayMath() }
             .flatMap { sequenceOf(it.first, it.second) }
             .distinct()
             .forEach {
@@ -56,7 +56,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
         override fun getFamilyName() = "Gather equations"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val element = descriptor.psiElement as? LatexContent ?: return
+            val element = descriptor.psiElement as? LatexNoMathContent ?: return
             val file = element.containingFile
             val document = file.document() ?: return
 
@@ -93,7 +93,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
          * @param equation
          *          The equation to trim, must be display math, will not be checked by this method.
          */
-        private fun trimEquation(equation: LatexContent) = equation.text
+        private fun trimEquation(equation: LatexNoMathContent) = equation.text
             // Remove \[ and \]
             .trimRange(2, 2)
             // Remove whitespace
@@ -102,20 +102,20 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
         /**
          * Finds all adjacent equations.
          */
-        private fun findEquations(base: LatexContent): List<LatexContent> {
-            val equations = ArrayList<LatexContent>()
+        private fun findEquations(base: LatexNoMathContent): List<LatexNoMathContent> {
+            val equations = ArrayList<LatexNoMathContent>()
             equations.add(base)
 
             // Lookbehind.
             var content = base.previousSiblingIgnoreWhitespace()
-            while (content is LatexContent && content.isDisplayMath()) {
+            while (content is LatexNoMathContent && content.isDisplayMath()) {
                 equations.add(0, content)
                 content = content.previousSiblingIgnoreWhitespace()
             }
 
             // Lookahead.
             content = base.nextSiblingIgnoreWhitespace()
-            while (content is LatexContent && content.isDisplayMath()) {
+            while (content is LatexNoMathContent && content.isDisplayMath()) {
                 equations.add(content)
                 content = content.nextSiblingIgnoreWhitespace()
             }

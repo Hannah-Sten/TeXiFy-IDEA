@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.regex.Pattern
 import kotlin.math.max
 
@@ -26,7 +27,7 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         // Let's assume that an abbreviation before a cite which is not directly before a cite does not appear within n characters before the cite
         val range = matcher.groupRange(0)
         val subString = psiFile.text.substring(max(range.first - 6, 0), range.last)
-        Magic.Pattern.abbreviation.toRegex().find(subString)?.groups?.isNotEmpty() == true || Magic.General.unRegexableAbbreviations.any { subString.contains(it) }
+        PatternMagic.abbreviation.toRegex().find(subString)?.groups?.isNotEmpty() == true || PatternMagic.unRegexableAbbreviations.any { subString.contains(it) }
     }
 ) {
 

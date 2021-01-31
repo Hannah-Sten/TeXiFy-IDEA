@@ -26,7 +26,9 @@ object LatexPresentationFactory {
             "\\paragraph" -> LatexParagraphPresentation(commands)
             "\\subparagraph" -> LatexSubParagraphPresentation(commands)
             "\\newcommand", "\\DeclareMathOperator", "\\NewDocumentCommand" -> LatexNewCommandPresentation(commands)
-            "\\DeclarePairedDelimiter", "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> LatexPairedDelimiterPresentation(commands)
+            "\\DeclarePairedDelimiter", "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> LatexPairedDelimiterPresentation(
+                commands
+            )
             "\\label" -> LatexLabelPresentation(commands)
             "\\bibitem" -> BibitemPresentation(commands)
             in getIncludeCommands() -> LatexIncludePresentation(commands)

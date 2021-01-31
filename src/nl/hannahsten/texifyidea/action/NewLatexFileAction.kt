@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.util.files.FileUtil.fileTypeByExtension
  * @author Hannah Schellekens
  */
 class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE) {
+
     override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: java.util.function.Consumer<Array<PsiElement>>) {
         val fileCreator = LatexFileCreator(project, psiDirectory)
         val builder = CreateFileFromTemplateDialog.createDialog(project)
@@ -46,6 +47,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
     }
 
     private inner class LatexFileCreator(private val project: Project, private val directory: PsiDirectory) : FileCreator<PsiElement?> {
+
         private fun openFile(virtualFile: VirtualFile) {
             val fileEditorManager = FileEditorManager.getInstance(project)
             fileEditorManager.openFile(virtualFile, true)
@@ -111,6 +113,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
     }
 
     companion object {
+
         private const val OPTION_TEX_FILE = "tex"
         private const val OPTION_STY_FILE = "sty"
         private const val OPTION_CLS_FILE = "cls"

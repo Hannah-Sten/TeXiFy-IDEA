@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
  */
 @Suppress("PropertyName")
 class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSettings(LatexLanguage.INSTANCE.id, container) {
+
     /**
      * The number of blank lines to use before a sectioning command.
      */
@@ -24,6 +25,7 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
     @JvmField var BLANK_LINES_BEFORE_SUBPARAGRAPH: Int = 1
 
     companion object {
+
         val blankLinesOptions = mapOf(
             LatexCodeStyleSettings::BLANK_LINES_BEFORE_PART to "\\part",
             LatexCodeStyleSettings::BLANK_LINES_BEFORE_CHAPTER to "\\chapter",

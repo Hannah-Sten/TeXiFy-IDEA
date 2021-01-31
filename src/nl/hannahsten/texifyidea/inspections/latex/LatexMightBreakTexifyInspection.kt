@@ -8,14 +8,15 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import org.jetbrains.annotations.Nls
 
 /**
  * @author Sten Wessel
  */
 class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup
         get() = InsightGroup.LATEX
 
@@ -36,9 +37,9 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
         val commands = LatexCommandsIndex.getItems(file)
         for (command in commands) {
             // Error when \newcommand is used on existing command
-            if (Magic.Command.redefinitions.contains(command.name)) {
+            if (CommandMagic.redefinitions.contains(command.name)) {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
-                if (Magic.Command.fragile.contains(newCommand.name)) {
+                if (CommandMagic.fragile.contains(newCommand.name)) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,

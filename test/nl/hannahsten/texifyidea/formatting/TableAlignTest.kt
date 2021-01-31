@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class TableAlignTest : BasePlatformTestCase() {
+
     @Throws(Exception::class)
     override fun setUp() {
         super.setUp()
@@ -341,6 +342,20 @@ class TableAlignTest : BasePlatformTestCase() {
                 \hline
                 \\
                 f  & g \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testEscapedAmpersands() {
+        """
+            \begin{tabular}{cc}
+                a & b \\
+                c\&e & d \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cc}
+                a    & b \\
+                c\&e & d \\
             \end{tabular}
         """.trimIndent()
     }

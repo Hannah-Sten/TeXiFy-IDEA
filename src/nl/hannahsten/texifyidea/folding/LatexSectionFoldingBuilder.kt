@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     companion object {
+
         private val sectionCommandNames = arrayOf(
             "part", "chapter",
             "section", "subsection", "subsubsection",
@@ -76,7 +77,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                 if (nextCommandRank <= currentCommandRank) {
 
                     // Get the location of the next folding command
-                    val end = nextFoldingCommand.parentOfType(LatexContent::class)?.previousSiblingIgnoreWhitespace()
+                    val end = nextFoldingCommand.parentOfType(LatexNoMathContent::class)?.previousSiblingIgnoreWhitespace()
                         ?: break
 
                     // Get the text range between the current and the next folding command
@@ -98,12 +99,12 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
              * use the end of all text as the end of the range.
              */
             if (!foundHigherCommand) {
-                val foldingContent = sectionElements.last().parentOfType(LatexContent::class) ?: continue
-                var nextContent: LatexContent? = foldingContent
-                var previousContent: LatexContent = foldingContent
+                val foldingContent = sectionElements.last().parentOfType(LatexNoMathContent::class) ?: continue
+                var nextContent: LatexNoMathContent? = foldingContent
+                var previousContent: LatexNoMathContent = foldingContent
                 while (nextContent != null) {
                     previousContent = nextContent
-                    nextContent = nextContent.nextSiblingIgnoreWhitespace() as? LatexContent
+                    nextContent = nextContent.nextSiblingIgnoreWhitespace() as? LatexNoMathContent
                 }
                 if (previousContent.textOffset + previousContent.textLength - currentFoldingCommand.textOffset > 0) {
                     val foldingRange = TextRange(

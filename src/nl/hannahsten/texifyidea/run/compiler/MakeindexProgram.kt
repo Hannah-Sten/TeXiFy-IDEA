@@ -6,6 +6,7 @@ package nl.hannahsten.texifyidea.run.compiler
  * @author Thomas Schouten
  */
 enum class MakeindexProgram(val executableName: String) {
+
     XINDY("texindy"),
     TRUEXINDY("xindy"), // requires perl
     MAKEINDEX("makeindex"),

@@ -39,14 +39,14 @@
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
-
+    <depends optional="true" config-file="intellij-pdf-viewer.xml">com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer</depends>
     <description><![CDATA[
         <p>
             Plugin for LaTeX and BibTeX support in IntelliJ.
         </p>
         <ul>
             <li>Syntax highlighting</li>
-            <li>Autocompletion of labels, (custom defined) commands and environments</li>
+            <li>Autocompletion of labels, (custom defined and package defined) commands and environments</li>
             <li>Writer ergonomics - writing LaTeX made less cumbersome</li>
             <li>Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber</li>
             <li>Inspections. Intentions. And heaps more inspections</li>
@@ -158,15 +158,21 @@
                 <!-- MPS doesn't have the EditSmartGroup group, so we register directly in the Edit menu. -->
             <add-to-group group-id="EditMenu" anchor="last"/>
 
-            <!-- Table Creation Wizard-->
-            <action class="nl.hannahsten.texifyidea.action.tablewizard.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
-                    description="Shows popup to create and insert a table."/>
-
             <!-- Toggle Star -->
             <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
+
+            <separator></separator>
+
+            <!-- Table Creation Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableCreationWizard" text="Insert _Table..."
+                    description="Shows a popup to create and insert a table."/>
+
+            <!-- Graphic Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction" id="texify.GraphicInsertWizard" text="Insert _Graphic..."
+                    description="Shows a popup to insert a graphic."/>
         </group>
 
         <!-- LaTeX Analyze commands -->
@@ -336,6 +342,15 @@
             </action>
         </group>
 
+        <!-- Debug/development -->
+        <group id="texify.LatexMenu.Debug" class="nl.hannahsten.texifyidea.action.group.DebugActionGroup" text="TeXiFy IDEA"
+               description="Contains debug- and development actions for TeXiFy developers." popup="true">
+            <add-to-group group-id="Internal" anchor="last"/>
+
+            <action class="nl.hannahsten.texifyidea.action.debug.GenerateSymbolImagesAction" id="texify.debug.GenerateSymbolImages"
+                    text="Generate Symbol Images" description="Generate symbol images"/>
+        </group>
+
     </actions>
 
     <!-- Listeners -->
@@ -361,6 +376,7 @@
         <fileType implementationClass="nl.hannahsten.texifyidea.file.ClassFileType" name="LaTeX class file" language="Latex" extensions="cls" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.BibtexFileType" name="BibTeX bibliography file" language="Bibtex" extensions="bib" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.TikzFileType" name="TikZ picture file" language="Latex" extensions="tikz" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexSourceFileType" name="LaTeX source file (dtx)" language="TEXT" extensions="dtx" />
 
         <!-- Register module type for new project creation in non-IntelliJ IDEs -->
         <directoryProjectGenerator implementation="nl.hannahsten.texifyidea.modules.LatexProjectGenerator"/>
@@ -381,6 +397,8 @@
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
+
+        <liveTemplateMacro implementation="nl.hannahsten.texifyidea.templates.macros.LatexFormatAsLabelMacro"/>
 
         <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostFixTemplateProvider"/>
         <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostfixTemplateFromAmsMathProvider"/>
@@ -461,12 +479,15 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.LatexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewHandler"/>
-        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
+        <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.TablePasteProvider"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
 
         <!-- References and refactoring -->
         <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
@@ -517,9 +538,19 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
 
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex" />
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex" />
+        <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor" />
+
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
+
+        <!-- Tool windows -->
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.symbols.SymbolToolWindowFactory"
+                    id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg" order="before Detexify"/>
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
+                    id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
 
         <!-- Other Services -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
@@ -709,6 +740,12 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerticallyCenteredColonInspection"
+                         groupName="LaTeX" displayName="Vertically uncentered colon"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
+                         groupName="LaTeX" displayName="Use math function instead of \text"
+                         enabledByDefault="true"/>
 
         <!-- Element manipulator -->
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
@@ -719,24 +756,34 @@
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
                          groupName="BibTeX" displayName="Same bibliography is included multiple times"
                          enabledByDefault="true"/>
-        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
+        <localInspection language="Bibtex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
                          groupName="BibTeX" displayName="Unused bib entry"
                          enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexAddLabelIntention</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexAddLabelToEnvironmentIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
@@ -799,4 +846,10 @@
             <descriptionDirectoryName>LatexLanguageInjectionIntention</descriptionDirectoryName>
         </intentionAction>
     </extensions>
+
+    <extensionPoints>
+        <extensionPoint name="pdfViewer"
+                        interface="nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer"
+                        dynamic="true"/>
+    </extensionPoints>
 </idea-plugin>

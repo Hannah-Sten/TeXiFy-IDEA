@@ -6,9 +6,9 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.getIndent
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import kotlin.math.min
 
 /** At this length, we put table cells on their own line. */
@@ -20,10 +20,12 @@ const val LINE_LENGTH = 80
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments
+            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments
     ) return null
 
+    // Only add spaces after &, unless escaped
     if (left.node?.text?.endsWith("&") == false) return null
+    if (left.node?.text?.endsWith("\\&") == true) return null
 
     return createSpacing(
         minSpaces = 1,
@@ -40,7 +42,7 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments) return null
 
     val tableLineSeparator = "\\\\"
     if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
@@ -147,7 +149,8 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
         var removedSpaces = 0
         line.withIndex().forEach { (i, value) ->
             when {
-                value == '&' -> {
+                // Ignore escaped ampersands
+                value == '&' && if (i > 0) line[i - 1] != '\\' else true -> {
                     indices += i - removedSpaces
                 }
                 value == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false -> {
@@ -184,7 +187,8 @@ private fun getSpacesPerCell(
 
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.
-    fun String.ignore(): Boolean {
+    fun String?.ignore(): Boolean {
+        if (this == null) return false
         val containsNewLines = split("\n").filter { it.isNotBlank() }.size > 1
         val lessCells = count { it == '&' } + 1 < nrLevels
         return containsNewLines || lessCells
@@ -192,7 +196,7 @@ private fun getSpacesPerCell(
 
     // In each line, compute the width of each cell.
     val cellWidthsPerLine = relativeIndices.mapIndexed { i, line ->
-        if (contentLinesWithoutRules[i].ignore()) List(nrLevels) { 0 }
+        if (contentLinesWithoutRules.getOrNull(i)?.ignore() == true) List(nrLevels) { 0 }
         else listOf(line.first()) + line.zipWithNext { a, b ->
             // Empty cells should have width 0.
             (b - a).let {
@@ -203,7 +207,7 @@ private fun getSpacesPerCell(
 
     // Take the maximum width of each i-th cell over all lines.
     val cellWidths = cellWidthsPerLine.first().indices.map { level ->
-        cellWidthsPerLine.map { it[level] }.maxOrNull() ?: return mutableListOf()
+        cellWidthsPerLine.mapNotNull { it.getOrNull(level) }.maxOrNull() ?: return mutableListOf()
     }
 
     // The number of spaces that has to be added to this cell is the
@@ -211,9 +215,9 @@ private fun getSpacesPerCell(
     // space that has to be added to every cell.
     return cellWidthsPerLine.mapIndexed { i, line ->
         line.mapIndexed { level, cellWidth ->
-            if (contentLinesWithoutRules[i].ignore()) 1
+            if (contentLinesWithoutRules.getOrNull(i)?.ignore() == true) 1
             // Add 1 for the space that always has to be there.
-            else cellWidths[level] - cellWidth + 1
+            else cellWidths.getOrNull(level)?.minus(cellWidth)?.plus(1) ?: 1
         }
     }
 }
@@ -239,7 +243,7 @@ private fun getSpacesForRightBlock(
                 // Make sure not to only put the \\ on a new line
                 val didPreviousCellGetNewline = if (level == 0) true else relativeIndices.getOrNull(i)?.getOrNull(level - 1) ?: 0 > LINE_LENGTH
                 if (relativeIndices.getOrNull(i)?.getOrNull(level) ?: 0 > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)) return -1
-                return spacesPerCell[min(i, spacesPerCell.size - 1)][level]
+                return spacesPerCell.getOrNull(min(i, spacesPerCell.size - 1))?.getOrNull(level)
             }
         }
     }

@@ -12,13 +12,13 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -26,6 +26,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.util.*
 
 /**
@@ -34,6 +35,7 @@ import java.util.*
  * @author Hannah Schellekens
  */
 open class LatexMissingImportInspection : TexifyInspectionBase() {
+
     override val inspectionGroup = InsightGroup.LATEX
 
     override val inspectionId = "MissingImport"
@@ -124,7 +126,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             }
 
             // Packages included in other packages
-            for (packageInclusion in Magic.Package.packagesLoadingOtherPackages) {
+            for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
                 if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
                     continue@commandLoop
                 }

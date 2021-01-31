@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 import org.junit.Test
 
 class LatexCommandsImplUtilTest : BasePlatformTestCase() {
+
     @Test
     fun `test simple optional parameters map`() {
         // given
@@ -162,5 +163,58 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
         val map = getOptionalParameterMap(parameters).toStringMap()
         assertSize(1, map.keys)
         assertEquals("\\textwidth", map["linewidth"])
+    }
+
+    @Test
+    fun `test empty value parameters map`() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \lstinputlisting[param1=,param2,param3=value]{some/file}
+            \end{document}
+            """.trimIndent()
+        )
+
+        // when
+        val parameters = PsiDocumentManager.getInstance(myFixture.project)
+            .getPsiFile(myFixture.editor.document)!!
+            .children
+            .first()
+            .firstChildOfType(LatexCommands::class)!!
+            .parameterList
+
+        val map = getOptionalParameterMap(parameters).toStringMap()
+        assertSize(3, map.keys)
+        assertEquals("", map["param1"])
+        assertEquals("", map["param2"])
+        assertEquals("value", map["param3"])
+    }
+
+    @Test
+    fun `test parameters ending with comma`() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \lstinputlisting[param1=value1,param2=value2,]{some/file}
+            \end{document}
+            """.trimIndent()
+        )
+
+        // when
+        val parameters = PsiDocumentManager.getInstance(myFixture.project)
+            .getPsiFile(myFixture.editor.document)!!
+            .children
+            .first()
+            .firstChildOfType(LatexCommands::class)!!
+            .parameterList
+
+        val map = getOptionalParameterMap(parameters).toStringMap()
+        assertSize(2, map.keys)
+        assertEquals("value1", map["param1"])
+        assertEquals("value2", map["param2"])
     }
 }

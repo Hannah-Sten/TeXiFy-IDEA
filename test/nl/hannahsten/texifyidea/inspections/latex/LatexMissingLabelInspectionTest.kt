@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missinglabel"
     }
@@ -136,7 +137,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[label={lst:lstlisting}<caret>]
+            \begin{lstlisting}[label={lst:lstlisting}]
             \end{lstlisting}
         \end{document}
         """.trimIndent()
@@ -153,7 +154,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         after = """
         \begin{document}
             \label{lst:lstlisting}
-            \begin{lstlisting}[label={lst:lstlisting2}<caret>]
+            \begin{lstlisting}[label={lst:lstlisting2}]
             \end{lstlisting}
         \end{document}
         """.trimIndent()
@@ -168,7 +169,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}<caret>]
+            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
             \end{lstlisting}
         \end{document}
         """.trimIndent()
@@ -222,6 +223,19 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         after = """
         \begin{document}
                 \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+        \end{document}
+        """.trimIndent()
+    )
+
+    fun `test quick fix in lstinputlistings creates optional parameters at correct position`() = testQuickFix(
+        before = """
+        \begin{document}
+                \lstinputlisting{some/file}
+        \end{document}
+        """.trimIndent(),
+        after = """
+        \begin{document}
+                \lstinputlisting[label={lst:lstinputlisting}]{some/file}
         \end{document}
         """.trimIndent()
     )

@@ -7,10 +7,10 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.definedCommandName
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * @author Hannah Schellekens
@@ -28,7 +28,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
 
         // Find all defined commands.
         val defined = HashMultiset.create<String>()
-        val definitions = file.definitionsInFileSet().filter { it.name in Magic.Command.regularCommandDefinitions }
+        val definitions = file.definitionsInFileSet().filter { it.name in CommandMagic.regularCommandDefinitions }
         for (command in definitions) {
             val name = command.definedCommandName() ?: continue
             defined.add(name)
@@ -36,7 +36,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
 
         // Go monkeys.
         file.definitions()
-            .filter { it.name in Magic.Command.regularStrictCommandDefinitions }
+            .filter { it.name in CommandMagic.regularStrictCommandDefinitions }
             .forEach {
                 val definedCmd = it.definedCommandName() ?: return@forEach
                 if (defined.count(definedCmd) > 1) {

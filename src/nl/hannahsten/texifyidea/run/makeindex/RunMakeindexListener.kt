@@ -13,8 +13,8 @@ import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.appendExtension
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -51,13 +51,13 @@ class RunMakeindexListener(
                 // we choose to copy the aux file first and then run bib2gls next to the main file
                 // In comparison: other makeindex programs we run in the auxil dir and then copy the output files (like .ind)
                 if (makeindexRunConfig.makeindexProgram == MakeindexProgram.BIB2GLS) {
-                    copyIndexOutputFiles(baseFileName, Magic.File.bib2glsDependenciesExtensions)
+                    copyIndexOutputFiles(baseFileName, FileMagic.bib2glsDependenciesExtensions)
                 }
 
                 // Run makeindex
                 RunConfigurationBeforeRunProvider.doExecuteTask(environment, runConfigSettings, null)
 
-                copyIndexOutputFiles(baseFileName, Magic.File.indexFileExtensions)
+                copyIndexOutputFiles(baseFileName, FileMagic.indexFileExtensions)
                 copyBib2glsOutput(makeindexRunConfig, baseFileName)
             }
 

@@ -13,11 +13,11 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.io.File
 import java.util.*
 
@@ -43,7 +43,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         // Loop through commands of file
         for (command in commands) {
             // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions) {
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions) {
                 continue
             }
 
@@ -128,8 +128,8 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     .replace("$root/", "")
 
                 val command = (cmd as? LatexCommands)?.name
-                if (command in illegalExtensions) {
-                    illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
+                if (command in CommandMagic.illegalExtensions) {
+                    CommandMagic.illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
                 }
 
                 reference.handleElementRename(fileNameRelativeToRoot, false)

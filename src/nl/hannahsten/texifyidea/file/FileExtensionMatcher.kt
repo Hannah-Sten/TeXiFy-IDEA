@@ -5,6 +5,7 @@ package nl.hannahsten.texifyidea.file
  */
 @FunctionalInterface
 interface FileExtensionMatcher {
+
     /**
      * Checks if the given extension is supported ('matched')  or not..
      *

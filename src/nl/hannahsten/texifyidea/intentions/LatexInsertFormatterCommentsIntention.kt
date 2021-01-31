@@ -6,8 +6,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 class LatexInsertFormatterCommentsIntention : TexifyIntentionBase("Insert comments to disable the formatter.") {
+
     private val onTag = CodeStyleSettings.getDefaults().FORMATTER_ON_TAG
     private val offTag = CodeStyleSettings.getDefaults().FORMATTER_OFF_TAG
 
@@ -16,7 +18,7 @@ class LatexInsertFormatterCommentsIntention : TexifyIntentionBase("Insert commen
             ?.parentOfType(LatexBeginCommand::class)
             ?.environmentName()
             ?: return false
-        return Magic.Environment.verbatim.any { it == beginName }
+        return EnvironmentMagic.verbatim.any { it == beginName }
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {

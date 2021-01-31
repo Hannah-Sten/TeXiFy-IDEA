@@ -26,6 +26,7 @@ import nl.hannahsten.texifyidea.util.*
  * Check if a LaTeX package is not installed (only for TeX Live, since MiKTeX downloads them automatically).
  */
 class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
+
     // This caches packages which are not installed, which is needed
     // otherwise we are running the expensive call to tlmgr basically on
     // every letter typed - exactly the same call with the same results
@@ -87,6 +88,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     }
 
     private class InstallPackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String, val knownNotInstalledPackages: MutableSet<String>) : LocalQuickFix {
+
         override fun getFamilyName(): String = "Install $packageName"
 
         /**

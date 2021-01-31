@@ -29,9 +29,11 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -53,6 +55,7 @@ class LatexRunConfiguration constructor(
 ) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
+
         private const val TEXIFY_PARENT = "texify"
         private const val COMPILER = "compiler"
         private const val COMPILER_PATH = "compiler-path"
@@ -237,7 +240,8 @@ class LatexRunConfiguration constructor(
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
         try {
-            this.pdfViewer = PdfViewer.valueOf(viewerName ?: "")
+            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
+                ?: InternalPdfViewer.valueOf(viewerName ?: "")
         }
         catch (e: IllegalArgumentException) {
             // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
@@ -488,7 +492,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = PdfViewer.firstAvailable()
+        pdfViewer = InternalPdfViewer.firstAvailable()
     }
 
     fun setDefaultOutputFormat() {
@@ -606,5 +610,14 @@ class LatexRunConfiguration constructor(
             ", mainFile=" + mainFile +
             ", outputFormat=" + outputFormat +
             '}'.toString()
+    }
+
+    // Explicitly deep clone references, otherwise a copied run config has references to the original objects
+    override fun clone(): RunConfiguration {
+        return super.clone().also {
+            val runConfiguration = it as? LatexRunConfiguration ?: return@also
+            runConfiguration.outputPath = this.outputPath.clone()
+            runConfiguration.auxilPath = this.auxilPath.clone()
+        }
     }
 }
