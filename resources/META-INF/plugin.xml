@@ -343,13 +343,14 @@
         </group>
 
         <!-- Debug/development -->
-        <group id="texify.LatexMenu.Debug" class="nl.hannahsten.texifyidea.action.group.DebugActionGroup" text="TeXiFy IDEA"
-               description="Contains debug- and development actions for TeXiFy developers." popup="true">
-            <add-to-group group-id="Internal" anchor="last"/>
+        <!-- Currently disabled because the Internal menu group does not exist by default. -->
+<!--        <group id="texify.LatexMenu.Debug" class="nl.hannahsten.texifyidea.action.group.DebugActionGroup" text="TeXiFy IDEA"-->
+<!--               description="Contains debug- and development actions for TeXiFy developers." popup="true">-->
+<!--            <add-to-group group-id="Internal" anchor="last"/>-->
 
-            <action class="nl.hannahsten.texifyidea.action.debug.GenerateSymbolImagesAction" id="texify.debug.GenerateSymbolImages"
-                    text="Generate Symbol Images" description="Generate symbol images"/>
-        </group>
+<!--            <action class="nl.hannahsten.texifyidea.action.debug.GenerateSymbolImagesAction" id="texify.debug.GenerateSymbolImages"-->
+<!--                    text="Generate Symbol Images" description="Generate symbol images"/>-->
+<!--        </group>-->
 
     </actions>
 
