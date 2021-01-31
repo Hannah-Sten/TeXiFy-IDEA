@@ -35,6 +35,7 @@ object CommonLatexFragments {
             editorField.emptyText.text = message
             editorField.accessibleContext.accessibleName = message
             FragmentedSettingsUtil.setupPlaceholderVisibility(editorField)
+            // TODO: make these actually work
             MacrosDialog.addMacroSupport(editorField, MacrosDialog.Filters.ALL) { false }
 
             CommonParameterFragments.setMonospaced(textField)
