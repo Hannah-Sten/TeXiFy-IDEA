@@ -43,21 +43,15 @@ sealed class LatexCompiler {
     abstract fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>?
 
 
-    class Serializer private constructor() : nl.hannahsten.texifyidea.run.latex.Serializer<LatexCompiler?, String?> {
+    class Converter : com.intellij.util.xmlb.Converter<LatexCompiler>() {
 
-        companion object {
-
-            val INSTANCE = Serializer()
-        }
-
-        override fun serialize(value: LatexCompiler?) = when (value) {
+        override fun toString(value: LatexCompiler)= when (value) {
             is SupportedLatexCompiler -> value.executableName
             is CustomLatexCompiler -> value.executablePath
-            null -> null
         }
 
-        override fun deserialize(value: String?): LatexCompiler? {
-            return value?.let { SupportedLatexCompiler.byExecutableName(value) ?: CustomLatexCompiler(value) }
+        override fun fromString(value: String): LatexCompiler {
+            return SupportedLatexCompiler.byExecutableName(value) ?: CustomLatexCompiler(value)
         }
     }
 

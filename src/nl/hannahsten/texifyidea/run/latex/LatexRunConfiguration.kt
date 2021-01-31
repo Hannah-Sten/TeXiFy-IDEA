@@ -36,8 +36,8 @@ import nl.hannahsten.texifyidea.run.latex.ui.NewLatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -48,7 +48,6 @@ import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
-import kotlin.properties.ReadWriteProperty
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -83,7 +82,7 @@ class LatexRunConfiguration constructor(
         private const val OUT_DIR = "out-dir"
     }
 
-    var compiler: LatexCompiler? by serialized(options::compiler, LatexCompiler.Serializer.INSTANCE)
+    var compiler: LatexCompiler? by options::compiler
     var compilerPath: String? = null
     var sumatraPath: String? = null
     var pdfViewer: PdfViewer? = null
