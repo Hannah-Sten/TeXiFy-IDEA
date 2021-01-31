@@ -121,3 +121,12 @@ This probably means your Gradle cache is corrupt, delete (on Windows) `C:\Users\
 * Select your IntelliJ installation directory (e.g. `C:\Program Files (x86)\JetBrains\IntelliJ IDEA xxxx.x`).
 * Remove your old SDK. It is called 'IntelliJ IDEA IU-xxx' where `xxx` is anything but the highest number.
 * Go to Project Structure - Project and select the new SDK.
+
+== Updating the MiKTeX Docker image
+
+Because the official https://hub.docker.com/r/miktex/miktex[miktex/miktex] is at the moment rather out of date, we provide an updated version.
+It can be updated as follows.
+* Clone the source repo https://github.com/MiKTeX/docker-miktex
+* Create a Docker run config with image tag `docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest` and run it.
+* Make sure that there is a valid Docker Registry for GitHub in Settings > Build, ..., > Docker > Registry, point it to `docker.pkg.github.com` and as a password provide a PAT (see https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry).
+* Right-click the image and click Push, provide as repository `hannah-sten/texify-idea/miktex` and tag `latest`.
