@@ -28,11 +28,6 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
     }
 
     /**
-     * Wheter to generate a longer version of  the defaults.
-     */
-    private val checkBlindLonger = JBCheckBox()
-
-    /**
      * The amount of repetitions of blind text.
      */
     private val intBlindRepetitions = JBIntSpinner(1, 1, 99999)
@@ -57,12 +52,11 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
             alignmentX = 0.0f
         }
 
-        val labelWidth = 160
+        val labelWidth = 140
         addLabeledComponent(cboxBlindType, "Type of text:", labelWidth)
         addLabeledComponent(hbox(8, intBlindParagraphs, JLabel("Repetitions:"), intBlindRepetitions), "Paragraphs:", labelWidth)
         addLabeledComponent(intBlindLevel, "List level:", labelWidth)
-        add(Box.createRigidArea(Dimension(0, 6)))
-        addLabeledComponent(checkBlindLonger, "Generate longer text:", labelWidth)
+        add(Box.createRigidArea(Dimension(0, 28)))
     }
 
     /**
@@ -102,7 +96,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
             alignmentX = 0.0f
         }
 
-        val labelWidth = 160
+        val labelWidth = 192
         addLabeledComponent(hbox(8, intLipsumParagraphsMin, JLabel("to"), intLipsumParagraphsMax), "Paragraph numbers:", labelWidth)
         addLabeledComponent(hbox(8, intLipsumSentencesMin, JLabel("to"), intLipsumSentencesMax), "Sentence numbers:", labelWidth)
         addLabeledComponent(cboxLipsumSeparator, "Paragraph separation:", labelWidth)
@@ -151,7 +145,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
             alignmentX = 0.0f
         }
 
-        val labelWidth = 160
+        val labelWidth = 192
         addLabeledComponent(cboxRawTemplate, "Dummy text template:", labelWidth)
         addLabeledComponent(hbox(8, intRawParagraphsMin, JLabel("to"), intRawParagraphsMax), "Number of paragraphs:", labelWidth)
         addLabeledComponent(hbox(8, intRawSentencesMin, JLabel("to"), intRawSentencessMax), "Sentences per paragraph:", labelWidth)
@@ -176,7 +170,6 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
         0 -> DummyTextData(
             ipsumType = DummyTextData.IpsumType.BLINDTEXT,
             blindtextType = cboxBlindType.selectedItem as DummyTextData.BlindtextType,
-            blindtextLonger = checkBlindLonger.isSelected,
             blindtextRepetitions = intBlindRepetitions.number,
             blindtextParagraphs = intBlindParagraphs.number,
             blindtextLevel = intBlindLevel.number

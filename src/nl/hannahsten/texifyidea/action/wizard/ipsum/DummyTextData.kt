@@ -11,7 +11,6 @@ data class DummyTextData(
     val ipsumType: IpsumType,
 
     val blindtextType: BlindtextType = BlindtextType.PARAGRAPH,
-    val blindtextLonger: Boolean = false,
     val blindtextRepetitions: Int = 1,
     val blindtextParagraphs: Int = 1,
     val blindtextLevel: Int = 1,

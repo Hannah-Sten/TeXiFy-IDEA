@@ -59,7 +59,7 @@ open class InsertDummyTextAction : AnAction() {
     private fun Editor.insertBlindtext(file: PsiFile, data: DummyTextData) {
         // Import blindtext
         WriteCommandAction.runWriteCommandAction(file.project) {
-            file.insertUsepackage(LatexPackage.TEXTCOMP)
+            file.insertUsepackage(LatexPackage.BLINDTEXT)
         }
 
         // When itemize/enumerate/description is selected the level can be selected as well when larger than 1.
@@ -86,8 +86,7 @@ open class InsertDummyTextAction : AnAction() {
 
         // Otherwise, there is no special treatment needed, so just insert the command.
         val baseCommand = data.blindtextType.commandNoSlash
-        val command = "\\" + if (data.blindtextLonger) baseCommand.capitalizeFirst() else baseCommand
-        insertAtCaretAndMove(command)
+        insertAtCaretAndMove("\\$baseCommand")
     }
 
     private fun Editor.insertLipsum(file: PsiFile, data: DummyTextData) {
