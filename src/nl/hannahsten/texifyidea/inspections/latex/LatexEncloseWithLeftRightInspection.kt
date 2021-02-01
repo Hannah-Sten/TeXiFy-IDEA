@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 
 /**
@@ -178,7 +179,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
         return closeOffset
     }
 
-    private fun affectedCommands() = Magic.Command.high + lines
+    private fun affectedCommands() = CommandMagic.high + lines
 
     /**
      * @author Hannah Schellekens

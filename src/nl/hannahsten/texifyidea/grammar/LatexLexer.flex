@@ -5,7 +5,7 @@ import java.util.*;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import nl.hannahsten.texifyidea.util.Magic;
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
@@ -68,8 +68,11 @@ WHITE_SPACE={SINGLE_WHITE_SPACE}+
 // Commands
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z@_:]+|.|\r) // _ and : are technically only LaTeX3 syntax
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
+COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
+COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:]+|.|\r) // _ and : are only LaTeX3 syntax
+LATEX3_ON=\\ExplSyntaxOn
+LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 
@@ -94,6 +97,10 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC
+
+// latex3 has some special syntax
+%states LATEX3
+
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %xstates INLINE_VERBATIM_START INLINE_VERBATIM
@@ -141,16 +148,16 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     // Assumes the close brace is the last one of the \begin{...}, and that if a verbatim environment was detected, that this state has been left
     {CLOSE_BRACE}       { yypopState(); return CLOSE_BRACE; }
     {NORMAL_TEXT_WORD}  {
-        yypopState();
-        // toString to fix comparisons of charsequence subsequences with string
-        if (Magic.Environment.verbatim.contains(yytext().toString())) {
-            yypushState(VERBATIM_START);
+            yypopState();
+            // toString to fix comparisons of charsequence subsequences with string
+            if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+                yypushState(VERBATIM_START);
+            }
+            else if (yytext().toString().equals("algorithmic")) {
+                yypushState(PSEUDOCODE);
+            }
+            return NORMAL_TEXT_WORD;
         }
-        else if (yytext().toString().equals("algorithmic")) {
-            yypushState(PSEUDOCODE);
-        }
-        return NORMAL_TEXT_WORD;
-    }
 }
 
 // Jump over the closing } of the \begin{verbatim} before starting verbatim state
@@ -195,7 +202,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {NORMAL_TEXT_WORD}  {
         // Pop current state
         yypopState();
-        if (Magic.Environment.verbatim.contains(yytext().toString())) {
+        if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
             // Pop verbatim state
             yypopState();
             return NORMAL_TEXT_WORD;
@@ -356,6 +363,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 <DISPLAY_MATH> {
     "\\]"               { yypopState(); return DISPLAY_MATH_END; }
+}
+
+{LATEX3_ON}                 { yypushState(LATEX3); return COMMAND_TOKEN; }
+<LATEX3> {
+    {LATEX3_OFF}            { yypopState(); return COMMAND_TOKEN; }
+    {COMMAND_TOKEN_LATEX3}  { return COMMAND_TOKEN; }
 }
 
 /*

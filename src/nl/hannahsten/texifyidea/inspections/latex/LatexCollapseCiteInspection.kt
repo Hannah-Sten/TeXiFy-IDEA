@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 
 /**
@@ -39,7 +40,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-            .filter { it.name in Magic.Command.bibliographyReference }
+            .filter { it.name in CommandMagic.bibliographyReference }
 
         for (cmd in commands) {
             val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
@@ -84,9 +85,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         return bundle
     }
 
-    private fun LatexCommands.nextCite() = searchCite { it.nextSiblingIgnoreWhitespace() as? LatexContent }
+    private fun LatexCommands.nextCite() = searchCite { it.nextSiblingIgnoreWhitespace() as? LatexNoMathContent }
 
-    private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexContent }
+    private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexNoMathContent }
 
     /**
      * Search for a cite command in the "direction" of [nextThing]. This cite command should be similar to this with
@@ -98,9 +99,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      *
      * @return null if no suitable cite command is found.
      */
-    private inline fun LatexCommands.searchCite(nextThing: (LatexContent) -> LatexContent?): LatexCommands? {
+    private inline fun LatexCommands.searchCite(nextThing: (LatexNoMathContent) -> LatexNoMathContent?): LatexCommands? {
         // The cite commands are not direct siblings, but their grandparents are.
-        val content = grandparent(2) as? LatexContent ?: return null
+        val content = firstParentOfType(LatexNoMathContent::class) ?: return null
         val nextContent = nextThing(content) ?: return null
 
         var cite = nextContent.firstChildOfType(LatexCommands::class)
@@ -117,7 +118,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
         // Check if the found command is a similar cite command as the one we started at.
         val name = cite.name ?: return null
-        val nextCommandIsACitation = name in Magic.Command.bibliographyReference
+        val nextCommandIsACitation = name in CommandMagic.bibliographyReference
         val previousCommandIsOfTheSameType = this.name == name
         val equalStars = hasStar() == cite.hasStar()
         return if (nextCommandIsACitation && previousCommandIsOfTheSameType && equalStars) cite else null
@@ -126,7 +127,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     /**
      * Check if [LatexContent] is a non breaking space.
      */
-    private fun LatexContent.isNonBreakingSpace(): Boolean {
+    private fun LatexNoMathContent.isNonBreakingSpace(): Boolean {
         val normalText = firstChildOfType(LatexNormalText::class) ?: return false
         return normalText.text == "~"
     }

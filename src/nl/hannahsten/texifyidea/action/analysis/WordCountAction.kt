@@ -109,6 +109,11 @@ open class WordCountAction : AnAction(
         val fileSet = baseFile.referencedFileSet()
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
+        val parameterText = fileSet.flatMap { it.childrenOfType(LatexParameterText::class) }
+                .filter {
+                    val commandText = it.command?.text ?: return@filter false
+                    return@filter commandText !in IGNORE_COMMANDS
+                }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
             .filter {
@@ -127,9 +132,10 @@ open class WordCountAction : AnAction(
         val bibliography = bibliographies.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val (wordsNormal, charsNormal) = countWords(allNormalText)
+        val (wordsParameter, charsParameter) = countWords(parameterText)
         val (wordsBib, charsBib) = countWords(bibliography)
 
-        return Pair(wordsNormal - wordsBib, charsNormal - charsBib)
+        return Pair(wordsNormal + wordsParameter - wordsBib, charsNormal + charsParameter - charsBib)
     }
 
     /**
@@ -137,7 +143,7 @@ open class WordCountAction : AnAction(
      *
      * @return A pair of the total amount of words, and the amount of characters that make up the words.
      */
-    private fun countWords(latexNormalText: List<LatexNormalText>): Pair<Int, Int> {
+    private fun countWords(latexNormalText: List<PsiElement>): Pair<Int, Int> {
         // separate all latex words.
         val latexWords: MutableSet<PsiElement> = HashSet()
         var characters = 0

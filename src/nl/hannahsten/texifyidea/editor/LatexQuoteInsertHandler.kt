@@ -8,9 +8,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.getOpenAndCloseQuotes
+import nl.hannahsten.texifyidea.util.inVerbatim
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import kotlin.math.min
 
@@ -22,7 +23,6 @@ import kotlin.math.min
 open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
-
         // Only do this for latex files and if the option is enabled
         if (file.fileType != LatexFileType || TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.NONE) {
             return super.charTyped(char, project, editor, file)
@@ -31,6 +31,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         val document = editor.document
         val caret = editor.caretModel
         val offset = caret.offset
+
+        // Disable in verbatim context.
+        val psi = file.findElementAt(offset)
+        if (psi?.inVerbatim() == true) return super.charTyped(char, project, editor, file)
 
         // Only do smart things with double and single quotes
         if (char != '"' && char != '\'') {
@@ -120,10 +124,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
             // Package dependencies
             if (char == '"') {
-                file.insertUsepackage(LatexRegularCommand.ENQUOTE.dependency)
+                file.insertUsepackage(LatexGenericRegularCommand.ENQUOTE.dependency)
             }
             else {
-                file.insertUsepackage(LatexRegularCommand.ENQUOTE_STAR.dependency)
+                file.insertUsepackage(LatexGenericRegularCommand.ENQUOTE_STAR.dependency)
             }
         }
     }

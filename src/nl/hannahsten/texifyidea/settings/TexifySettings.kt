@@ -4,8 +4,9 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 
 /**
  * @author Sten Wessel
@@ -37,7 +38,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var includeBackslashInSelection = false
     var showPackagesInStructureView = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
-    var missingLabelMinimumLevel = LatexRegularCommand.SUBSECTION
+    var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION
 
     /**
      * Backwards compatibility. This value is never altered, only read from/to memory.
@@ -45,7 +46,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
      * We keep it here so that when the user migrates from when the pdf viewer was set in TeXiFy settings to when it is
      * set in the run config, we can recover their old setting.
      */
-    var pdfViewer = PdfViewer.firstAvailable()
+    var pdfViewer = InternalPdfViewer.firstAvailable()
 
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(

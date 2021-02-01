@@ -6,7 +6,7 @@ import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
 import com.intellij.packageDependencies.ui.PackageDependenciesNode
 import com.intellij.ui.ColoredTreeCellRenderer
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.IconMagic
 
 /**
  * @author Hannah Schellekens
@@ -31,7 +31,7 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         // Allow Material design plugins to take over the icons
         // For file types registered in plugin.xml this happens automatically
         if (PluginManager.getLoadedPlugins().none { it.name.contains("Material") }) {
-            val icon = Magic.Icon.fileIcons[extension.toLowerCase()] ?: return
+            val icon = IconMagic.fileIcons[extension.toLowerCase()] ?: return
             presentationData.setIcon(icon)
         }
     }

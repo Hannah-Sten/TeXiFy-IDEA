@@ -9,12 +9,14 @@ import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.codeInsight.template.impl.TextExpression
-import nl.hannahsten.texifyidea.lang.Argument
 import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.RequiredArgument
+import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -25,10 +27,10 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
         val command = item.`object` as LatexCommand
 
         when (command.command) {
-            "begin" -> {
+            LatexGenericRegularCommand.BEGIN.command -> {
                 insertBegin(context)
             }
-            in Magic.Typography.pseudoCodeBeginEndOpposites -> {
+            in TypographyMagic.pseudoCodeBeginEndOpposites -> {
                 insertPseudocodeEnd(command.command, context)
             }
             else -> {
@@ -47,7 +49,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
 
         val templateText = List(numberRequiredArguments) {
             "{\$__Variable${it}\$}"
-        }.joinToString("") + "\n\$END\$\n\\${Magic.Typography.pseudoCodeBeginEndOpposites[name]}"
+        }.joinToString("") + "\n\$END\$\n\\${TypographyMagic.pseudoCodeBeginEndOpposites[name]}"
         val parameterTemplate = object : TemplateImpl("", templateText, "") {
             override fun isToReformat(): Boolean = false
         }

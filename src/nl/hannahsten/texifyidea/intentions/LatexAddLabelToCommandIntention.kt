@@ -9,11 +9,13 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.formatAsLabel
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * @author Hannah Schellekens
@@ -26,7 +28,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             return false
         }
 
-        return findTarget<LatexCommands>(editor, file)?.name in Magic.Command.labeledPrefixes
+        return findTarget<LatexCommands>(editor, file)?.name in CommandMagic.labeledPrefixes
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
@@ -39,12 +41,12 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             ?: findTarget(editor, file)
             ?: return
 
-        val prefix = Magic.Command.labeledPrefixes[command.name!!] ?: return
+        val prefix = CommandMagic.labeledPrefixes[command.name!!] ?: return
 
         val factory = LatexPsiHelper(project)
 
         // For sections we can infer a reasonable label name from the required parameter
-        if (Magic.Command.sectionMarkers.contains(command.name)) {
+        if (CommandMagic.sectionMarkers.contains(command.name)) {
             val required = command.requiredParameters
 
             // Section commands should all have a required parameter
@@ -55,8 +57,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             )
 
             // Insert label
-            // command -> NoMathContent -> Content -> Container containing the command
-            val commandContent = command.parent.parent
+            val commandContent = command.firstParentOfType(LatexNoMathContent::class) ?: return
             val labelCommand =
                 commandContent.parent.addAfter(factory.createLabelCommand(createdLabel.labelText), commandContent)
 
@@ -65,7 +66,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             caret.moveToOffset(labelCommand.endOffset())
         }
         else {
-            if (Magic.Command.labelAsParameter.contains(command.name)) {
+            if (CommandMagic.labelAsParameter.contains(command.name)) {
                 // Create a label parameter and initiate the rename process
                 val createdLabel = getUniqueLabelName(
                     command.name!!.replace("\\", ""),
