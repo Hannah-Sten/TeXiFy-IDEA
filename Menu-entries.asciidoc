@@ -38,7 +38,7 @@ The available column types are:
 LaTeX.
 - Numbers: As per convention, numbers are aligned on the right.
 
-_Since b0.7.3:_ the table wizard also opens when you paste an HTML table (in your browser, Excel, LibreOffice, ...) into the editor.
+_Since b0.7.3:_ the table wizard also opens when you paste an HTML table (in your browser, Excel, LibreOffice, ...) into the editor. _Since b0.7.4_ you can also open the wizard in the Generate menu (kbd:[Alt+Insert]).
 
 
 == [[insert-graphic-wizard]]Insert Graphic Wizard
@@ -47,7 +47,7 @@ _Since b0.7.3_
 
 menu:Edit[LaTeX > Insert Graphic...]
 
-Helps you generate LaTeX for inserting graphics. The wizard also opens when dropping a supported image file into a .tex file. You can also paste an image directly from your clipboard into the editor. You'll be prompted with the wizard after you have saved the image from your clipboard using another dialog.
+Helps you generate LaTeX for inserting graphics. The wizard also opens when dropping a supported image file into a .tex file. You can also paste an image directly from your clipboard into the editor. You'll be prompted with the wizard after you have saved the image from your clipboard using another dialog. _Since b0.7.4_ you can also open the wizard in the Generate menu (kbd:[Alt+Insert]).
 
 See https://user-images.githubusercontent.com/17410729/103922867-b0108300-5114-11eb-92d8-25d63eaeb1f1.mp4[demo video].
 
