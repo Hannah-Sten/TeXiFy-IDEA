@@ -162,7 +162,7 @@
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
 
-            <separator></separator>
+            <separator/>
 
             <!-- Table Creation Wizard-->
             <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableCreationWizard" text="Insert _Table..."
@@ -171,6 +171,10 @@
             <!-- Graphic Wizard-->
             <action class="nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction" id="texify.GraphicInsertWizard" text="Insert _Graphic..."
                     description="Shows a popup to insert a graphic."/>
+
+            <!-- Dummy text -->
+            <action class="nl.hannahsten.texifyidea.action.wizard.ipsum.InsertDummyTextAction" id="texify.DummyTextWizard" text="Insert _Dummy Text..."
+                    description="Shows a popup to insert dummy text."/>
         </group>
 
         <!-- LaTeX Analyze commands -->
@@ -349,6 +353,14 @@
                     text="Generate Symbol Images" description="Generate symbol images"/>
         </group>
 
+        <!-- Generate Latex -->
+        <group id="texify.LatexGenerate" text="_LaTeX" description="Latex generation actions" popup="true">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+
+            <!-- Dummy text -->
+            <action class="nl.hannahsten.texifyidea.action.wizard.ipsum.InsertDummyTextAction" id="texify.DummyTextWizardPopup" text="_Dummy Text..."
+                    description="Shows a popup to insert dummy text."/>
+        </group>
     </actions>
 
     <!-- Listeners -->
@@ -461,8 +473,8 @@
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
-        <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
-        <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.LatexCompletionContributor"/>
+        <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.BibtexCompletionContributor"/>
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <moveLeftRightHandler language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexMoveElementLeftRightHandler"/>

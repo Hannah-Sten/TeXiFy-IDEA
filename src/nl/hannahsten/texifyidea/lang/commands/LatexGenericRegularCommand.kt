@@ -43,7 +43,7 @@ enum class LatexGenericRegularCommand(
     BF("bf"),
     BFSERIES("bfseries"),
     BIBITEM("bibitem", "label".asOptional(), "citekey".asRequired()),
-    BIBLIOGRAPHYSTYLE("bibliographystyle", "style".asRequired()),
+    BIBLIOGRAPHYSTYLE("bibliographystyle", "style".asRequired(Argument.Type.BIBLIOGRAPHY_STYLE)),
     BIBLIOGRAPHY("bibliography", RequiredFileArgument("bibliographyfile", true, true, "bib")),
     BIGSKIP("bigskip"),
     BLENDCOLORS("blendcolors", "mix expr".asRequired(), dependency = XCOLOR),

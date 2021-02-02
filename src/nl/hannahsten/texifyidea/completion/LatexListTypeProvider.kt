@@ -11,16 +11,16 @@ import nl.hannahsten.texifyidea.TexifyIcons
 /**
  * @author Hannah Schellekens
  */
-object LatexBibliographyStyleProvider : CompletionProvider<CompletionParameters>() {
+object LatexListTypeProvider : CompletionProvider<CompletionParameters>() {
 
     /**
-     * List of all available default bibliography styles.
+     * List of all available default list types.
      */
-    private val DEFAULT_STYLES = setOf("abbrv", "acm", "alpha", "apalike", "ieeetr", "plain", "siam", "unsrt")
+    private val DEFAULT_LIST_TYPES = setOf("itemize", "enumerate", "description")
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         result.addAllElements(
-            ContainerUtil.map2List(DEFAULT_STYLES) { name ->
+            ContainerUtil.map2List(DEFAULT_LIST_TYPES) { name ->
                 LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()

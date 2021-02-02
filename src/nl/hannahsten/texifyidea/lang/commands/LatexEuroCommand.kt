@@ -15,6 +15,8 @@ enum class LatexEuroCommand(
         val collapse: Boolean = false
 ) : LatexCommand {
 
+    EURO_SYMBOL("euro", dependency = EUROSYM, display = "€"),
+    EURO_AMOUNT("EUR", "amount".asRequired(), dependency = EUROSYM, display = "€"),
     EURO("geneuro", dependency = EUROSYM, display = "€"),
     EURO_NARROW("geneuronarrow", dependency = EUROSYM, display = "€"),
     EURO_WIDE("geneurowide", dependency = EUROSYM, display = "€"),

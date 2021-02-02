@@ -4,10 +4,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -48,4 +50,17 @@ fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): Str
         text = text.replace(command.text, commandExpansion ?: command.text)
     }
     return text
+}
+
+/**
+ * Get the index of the parameter in the command. This includes both required and optional parameters.
+ */
+fun LatexParameter.indexOf() = indexOfChildByType<LatexParameter, LatexCommands>()
+
+/**
+ * Get the predefined [LatexCommand] if a matching one could be found.
+ * When multiple versions are available, only a random one will be selected.
+ */
+fun LatexCommands.defaultCommand(): LatexCommand? {
+    return LatexCommand.lookup(this.name)?.firstOrNull()
 }
