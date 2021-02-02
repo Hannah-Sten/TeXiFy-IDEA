@@ -1,10 +1,10 @@
 # Beta 0.7.4
 
 # Additions
-* Added dummy text insertion wizard.
 * Added support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (#1675)
 * Added commands from all installed LaTeX packages to autocompletion. (#1710, #1762, #1763)
 * Added symbol tool window. (#1752)
+* Added dummy text insertion wizard. (#1767)
 
 # Changes
 * Changed Grazie rules to ignore non-text elements in a sentence. (#1744)
