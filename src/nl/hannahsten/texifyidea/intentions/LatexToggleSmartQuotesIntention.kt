@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.intentions
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.settings.QuoteReplacement
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import kotlin.math.max
 
@@ -22,7 +23,7 @@ open class LatexToggleSmartQuotesIntention : TexifyIntentionBase("Toggle smart q
      * Contains the preferred setting of the user if they have already selected one.
      */
     private var selectedSmartQuoteSetting = when (val replacement = settings.automaticQuoteReplacement) {
-        TexifySettings.QuoteReplacement.NONE -> TexifySettings.QuoteReplacement.LIGATURES
+        QuoteReplacement.NONE -> QuoteReplacement.LIGATURES
         else -> replacement
     }
 
@@ -42,8 +43,8 @@ open class LatexToggleSmartQuotesIntention : TexifyIntentionBase("Toggle smart q
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         val result = when (settings.automaticQuoteReplacement) {
-            TexifySettings.QuoteReplacement.NONE -> selectedSmartQuoteSetting
-            else -> TexifySettings.QuoteReplacement.NONE
+            QuoteReplacement.NONE -> selectedSmartQuoteSetting
+            else -> QuoteReplacement.NONE
         }
 
         settings.automaticQuoteReplacement = result

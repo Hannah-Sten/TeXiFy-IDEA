@@ -36,8 +36,8 @@ object ControlTracker : KeyListener, TypedHandlerDelegate() {
             return
         }
 
-        component.addKeyListener(this)
-        registered.add(component)
+//        component.addKeyListener(this)
+//        registered.add(component)
     }
 
     override fun beforeCharTyped(c: Char, project: Project, editor: Editor, file: PsiFile, fileType: FileType): Result {

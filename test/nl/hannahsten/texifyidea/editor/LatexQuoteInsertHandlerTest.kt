@@ -8,7 +8,7 @@ class LatexQuoteInsertHandlerTest : BasePlatformTestCase() {
 
     fun testCsquotes() {
         myFixture.configureByText(LatexFileType, """Typing <caret> test""")
-        TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.CSQUOTES
+        TexifySettings.getInstance().automaticQuoteReplacement = QuoteReplacement.CSQUOTES
         myFixture.type("\"")
         myFixture.checkResult("""\usepackage{csquotes}Typing \enquote{<caret>} test""")
         myFixture.type("quote\"")
@@ -17,28 +17,28 @@ class LatexQuoteInsertHandlerTest : BasePlatformTestCase() {
 
     fun testCsquotesInWord() {
         myFixture.configureByText(LatexFileType, """Typ<caret>ing test""")
-        TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.CSQUOTES
+        TexifySettings.getInstance().automaticQuoteReplacement = QuoteReplacement.CSQUOTES
         myFixture.type("\"")
         myFixture.checkResult("""\usepackage{csquotes}Typ\enquote{<caret>}ing test""")
     }
 
     fun testCsquotesEndOfLine() {
         myFixture.configureByText(LatexFileType, """Typing <caret>""")
-        TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.CSQUOTES
+        TexifySettings.getInstance().automaticQuoteReplacement = QuoteReplacement.CSQUOTES
         myFixture.type("\"")
         myFixture.checkResult("""\usepackage{csquotes}Typing \enquote{<caret>}""")
     }
 
     fun testEscapedQuotes() {
         myFixture.configureByText(LatexFileType, """Typing \<caret>""")
-        TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.LIGATURES
+        TexifySettings.getInstance().automaticQuoteReplacement = QuoteReplacement.LIGATURES
         myFixture.type("\"")
         myFixture.checkResult("""Typing \"""")
     }
 
     fun `test no replacement of single quote in word`() {
         myFixture.configureByText(LatexFileType, """Typing John<caret>""")
-        TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.CSQUOTES
+        TexifySettings.getInstance().automaticQuoteReplacement = QuoteReplacement.CSQUOTES
         myFixture.type('\'')
         myFixture.checkResult("""Typing John'""")
     }

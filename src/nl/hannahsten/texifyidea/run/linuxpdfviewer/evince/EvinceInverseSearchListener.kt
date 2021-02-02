@@ -5,10 +5,8 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.BufferedReader
 import java.io.IOException
@@ -50,9 +48,9 @@ object EvinceInverseSearchListener {
 
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
-        currentCoroutineJob = GlobalScope.launch {
-            startListening()
-        }
+//        currentCoroutineJob = GlobalScope.launch {
+//            startListening()
+//        }
     }
 
     /**

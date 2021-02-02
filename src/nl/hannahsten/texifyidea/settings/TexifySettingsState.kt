@@ -12,7 +12,7 @@ data class TexifySettingsState(
     var continuousPreview: Boolean = false,
     var includeBackslashInSelection: Boolean = false,
     var showPackagesInStructureView: Boolean = false,
-    var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
+    var automaticQuoteReplacement: QuoteReplacement = QuoteReplacement.NONE,
     var missingLabelMinimumLevel: LatexRegularCommand = LatexRegularCommand.SUBSECTION,
     var pdfViewer: InternalPdfViewer = InternalPdfViewer.firstAvailable()
 )

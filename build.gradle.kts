@@ -25,10 +25,11 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2"
+version = "0.7.2-restart"
 
 repositories {
     mavenCentral()
+    maven(url = "https://www.jetbrains.com/intellij-repository/releases")
 }
 
 sourceSets {
@@ -111,10 +112,17 @@ tasks.processResources {
     }
 }
 
+// https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
+tasks.runIde {
+    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions")
+
+    systemProperty("ide.plugins.snapshot.on.unload.fail", "true")
+}
+
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0")
+    setPlugins("tanvd.grazi", "java")//, "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -124,7 +132,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "2020.3.1"
+    version = "211.4961.30-EAP-SNAPSHOT"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
