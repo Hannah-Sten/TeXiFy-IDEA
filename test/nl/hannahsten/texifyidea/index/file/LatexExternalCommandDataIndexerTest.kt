@@ -227,6 +227,19 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals("", map["\\textless"])
     }
 
+    fun testDef() {
+        val text = """
+            \blank@linefalse \def\par{\ifblank@line
+                             \leavevmode\fi
+                             \blank@linetrue\@@par
+                             \penalty\interlinepenalty}
+        """.trimIndent()
+        val file = myFixture.configureByText("doc.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(1, map.size)
+        assertEquals("", map["\\par"])
+    }
+
     class MockContent(val file: PsiFile) : FileContent {
 
         override fun <T : Any?> getUserData(key: Key<T>): T? { return null }

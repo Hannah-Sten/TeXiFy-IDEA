@@ -236,7 +236,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
         // Do nothing if the user selected that they do not want a viewer to open.
         else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
-        else if (runConfig.pdfViewer == InternalPdfViewer.SUMATRA && (runConfig.sumatraPath != null || isSumatraAvailable)) {
+        // Sumatra does not support DVI
+        else if (runConfig.pdfViewer == InternalPdfViewer.SUMATRA && (runConfig.sumatraPath != null || isSumatraAvailable) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }

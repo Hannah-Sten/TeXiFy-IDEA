@@ -68,8 +68,11 @@ WHITE_SPACE={SINGLE_WHITE_SPACE}+
 // Commands
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z@_:]+|.|\r) // _ and : are technically only LaTeX3 syntax
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
+COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
+COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:]+|.|\r) // _ and : are only LaTeX3 syntax
+LATEX3_ON=\\ExplSyntaxOn
+LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 
@@ -94,6 +97,10 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC
+
+// latex3 has some special syntax
+%states LATEX3
+
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %xstates INLINE_VERBATIM_START INLINE_VERBATIM
@@ -356,6 +363,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 <DISPLAY_MATH> {
     "\\]"               { yypopState(); return DISPLAY_MATH_END; }
+}
+
+{LATEX3_ON}                 { yypushState(LATEX3); return COMMAND_TOKEN; }
+<LATEX3> {
+    {LATEX3_OFF}            { yypopState(); return COMMAND_TOKEN; }
+    {COMMAND_TOKEN_LATEX3}  { return COMMAND_TOKEN; }
 }
 
 /*

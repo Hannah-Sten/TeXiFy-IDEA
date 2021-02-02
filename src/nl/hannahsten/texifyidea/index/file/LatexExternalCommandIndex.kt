@@ -43,7 +43,7 @@ class LatexExternalCommandIndex : FileBasedIndexExtension<String, String>() {
         return EnumeratorStringDescriptor.INSTANCE
     }
 
-    override fun getVersion() = 0
+    override fun getVersion() = 1
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return FileBasedIndex.InputFilter {
