@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
@@ -57,6 +58,14 @@ class LatexTableWizardAction : AnAction() {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT) ?: return
         executeAction(file, project)
+    }
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+
+        val file = e.getData(PlatformDataKeys.PSI_FILE)
+        val shouldDisplayMenu = file?.isLatexFile() == true
+        e.presentation.isVisible = shouldDisplayMenu
     }
 
     /**

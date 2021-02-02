@@ -52,6 +52,14 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         executeAction(file, project)
     }
 
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+
+        val file = e.getData(PlatformDataKeys.PSI_FILE)
+        val shouldDisplayMenu = file?.isLatexFile() == true
+        e.presentation.isVisible = shouldDisplayMenu
+    }
+
     private fun Editor.insertGraphic(project: Project, data: InsertGraphicData, indent: String, tab: String = "    ") {
         // Only the graphics (non-centered).
         val toInsert = if (data.center.not() && data.placeInFigure.not()) {
