@@ -13,6 +13,8 @@ import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
+ * Warns for commands that are defined twice in the same fileset.
+ *
  * @author Hannah Schellekens
  */
 open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {

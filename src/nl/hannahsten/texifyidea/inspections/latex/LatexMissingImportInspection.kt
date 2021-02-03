@@ -13,11 +13,7 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSFONTS
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -70,7 +66,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             .mapNotNull { it.requiredParameter(0) }
             .toSet()
 
-        for (env in environments) {
+        outerLoop@ for (env in environments) {
             // Don't consider environments that have been defined.
             if (env.name()?.text in defined) {
                 continue
@@ -84,14 +80,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 continue
             }
 
-            // amsfonts is included in amssymb
-            if (pack == AMSFONTS && includedPackages.contains(AMSSYMB.name)) {
-                continue
-            }
-
-            // amsmath is included in mathtools
-            if (pack == AMSMATH && includedPackages.contains(MATHTOOLS.name)) {
-                continue
+            // Packages included in other packages
+            for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
+                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key.name)) {
+                    continue@outerLoop
+                }
             }
 
             descriptors.add(
@@ -114,6 +107,17 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     ) {
         val commands = file.commandsInFile()
         commandLoop@ for (command in commands) {
+
+            // If we are actually defining the command, then it doesn't need any dependency
+            if (command.parent.firstParentOfType(LatexCommands::class).isCommandDefinition()) {
+                continue
+            }
+
+            // If defined within the project, also fine
+            if (command.project.findCommandDefinitions().map { it.definedCommandName() }.contains(command.name)) {
+                continue
+            }
+
             val name = command.commandToken.text.substring(1)
             val latexCommands = LatexCommand.lookup(name) ?: continue
 

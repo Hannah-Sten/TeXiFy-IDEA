@@ -9,9 +9,9 @@ class LatexCommandAlreadyDefinedInspectionTest : TexifyInspectionTestBase(LatexC
         myFixture.configureByText(
             LatexFileType,
             """
-            <error descr="Command is already defined">\newcommand{\cite}{\citeauthor}</error>
+            <warning descr="Command may already be defined in a LaTeX package">\newcommand{\cite}{\citeauthor}</warning>
             
-            <warning descr="Command is already defined">\def</warning>\citeauthor\cite
+            <warning descr="Command may already be defined in a LaTeX package">\def</warning>\citeauthor\cite
             
             \newcommand{\notexists}{}
             """.trimIndent()

@@ -18,6 +18,8 @@ import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
 
 /**
+ * Warns for commands that (maybe by mistake) redefine commands that are defined by LaTeX (packages).
+ *
  * @author Sten Wessel
  */
 class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
@@ -49,9 +51,10 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "Command is already defined",
+                            "Command may already be defined in a LaTeX package",
                             true,
-                            ProblemHighlightType.GENERIC_ERROR,
+                            // Warning because may not be true: command may be defined in a LaTeX package which is not actually imported
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly, RenewCommandFix
                         )
                     )
@@ -65,7 +68,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "Command is already defined",
+                            "Command may already be defined in a LaTeX package",
                             true,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly

@@ -25,10 +25,12 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
 
     override fun suggestHomePaths(): MutableCollection<String> {
         val results = mutableSetOf<String>()
-        val path = "where pdflatex".runCommand()
-        if (path != null) {
-            val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: path.length - 1
-            results.add(path.substring(0, index))
+        val paths = "where pdflatex".runCommand()
+        if (paths != null) {
+            paths.split("\r\n").forEach { path ->
+                val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: path.length - 1
+                results.add(path.substring(0, index))
+            }
         }
         else {
             results.add(suggestHomePath())
