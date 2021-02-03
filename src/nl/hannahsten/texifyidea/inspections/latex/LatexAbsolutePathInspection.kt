@@ -7,9 +7,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.RequiredArgument
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import java.io.File
 

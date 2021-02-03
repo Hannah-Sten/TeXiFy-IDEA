@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
@@ -24,10 +24,10 @@ import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
-import nl.hannahsten.texifyidea.util.Magic.Package
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
 
 /**
@@ -126,7 +126,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandsInFileSet = mainFile.psiFile(environment.project)?.commandsInFileSet()?.mapNotNull { it.name } ?: emptyList()
 
             // Option 1 in http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf
-            val usesTexForGlossaries = "\\" + LatexRegularCommand.MAKENOIDXGLOSSARIES.command in commandsInFileSet
+            val usesTexForGlossaries = "\\" + LatexGenericRegularCommand.MAKENOIDXGLOSSARIES.commandWithSlash in commandsInFileSet
 
             if (usesTexForGlossaries) {
                 runConfig.compileTwice = true
@@ -138,7 +138,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 ?.includedPackages()
                 ?: setOf()
 
-            isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
+            isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 
             // Some packages do handle makeindex themselves
             // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
@@ -236,7 +236,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
         // Do nothing if the user selected that they do not want a viewer to open.
         else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
-        else if (runConfig.pdfViewer == InternalPdfViewer.SUMATRA && (runConfig.sumatraPath != null || isSumatraAvailable)) {
+        // Sumatra does not support DVI
+        else if (runConfig.pdfViewer == InternalPdfViewer.SUMATRA && (runConfig.sumatraPath != null || isSumatraAvailable) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }

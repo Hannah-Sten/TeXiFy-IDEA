@@ -1,7 +1,8 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Paths
@@ -13,18 +14,9 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
 
     override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
 
-    override fun getExecutableName(executable: String, project: Project): String {
-        return getExecutableName(executable, LatexSdkUtil.getLatexProjectSdk(project)?.homePath)
-    }
-
-    private fun getExecutableName(executable: String, homePath: String?): String {
-        return if (LatexSdkUtil.isPdflatexInPath || homePath == null) {
-            executable
-        }
-        else {
-            val path = LatexSdkUtil.getPdflatexParentPath(Paths.get(homePath, "miktex").toString()) ?: return executable
-            return Paths.get(path, executable).toString()
-        }
+    override fun getExecutableName(executable: String, homePath: String): String {
+        val path = LatexSdkUtil.getPdflatexParentPath(Paths.get(homePath, "miktex").toString()) ?: return executable
+        return Paths.get(path, executable).toString()
     }
 
     override fun suggestHomePath(): String {
@@ -33,15 +25,22 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
 
     override fun suggestHomePaths(): MutableCollection<String> {
         val results = mutableSetOf<String>()
-        val path = "where pdflatex".runCommand()
-        if (path != null) {
-            val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: path.length - 1
-            results.add(path.substring(0, index))
+        val paths = "where pdflatex".runCommand()
+        if (paths != null) {
+            paths.split("\r\n").forEach { path ->
+                val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: path.length - 1
+                results.add(path.substring(0, index))
+            }
         }
         else {
             results.add(suggestHomePath())
         }
         return results
+    }
+
+    override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
+        // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
+        return LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
     }
 
     override fun isValidSdkHome(path: String?): Boolean {
@@ -57,7 +56,7 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
     override fun getVersionString(sdk: Sdk): String? {
         version?.let { return version }
 
-        val executable = getExecutableName("pdflatex", sdk.homePath)
+        val executable = sdk.homePath?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
         val output = "$executable --version".runCommand() ?: ""
         version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
 

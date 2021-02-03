@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.PsiContainer
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
@@ -69,7 +69,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
         // When having multiple breaks, don't find new commands to fold.
         // When whitespace without multiple breaks, look further.
         if (next is PsiWhiteSpace) {
-            return if (Magic.Pattern.containsMultipleNewlines.matcher(next.text).matches()) {
+            return if (PatternMagic.containsMultipleNewlines.matcher(next.text).matches()) {
                 null
             }
             else next.nextCommand()

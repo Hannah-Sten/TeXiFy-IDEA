@@ -5,12 +5,14 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 
@@ -73,4 +75,12 @@ fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
 fun Project.currentTextEditor(): TextEditor? {
     val editors = FileEditorManager.getInstance(this).selectedEditors
     return editors.firstOrNull { it is TextEditor } as TextEditor?
+}
+
+/**
+ * Checks if there is a LaTeX module in this project.
+ */
+fun Project.hasLatexModule(): Boolean {
+    return ModuleManager.getInstance(this).modules
+            .any { it.moduleTypeName == LatexModuleType.ID }
 }

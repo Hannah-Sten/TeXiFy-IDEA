@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.action
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.LocalFileSystem
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.io.File
 
 /**
@@ -17,7 +17,7 @@ class ClearAuxFiles : AnAction() {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
         File(basePath).walk().filter { it.isFile }
-            .filter { it.extension in Magic.File.auxiliaryFileTypes }
+            .filter { it.extension in FileMagic.auxiliaryFileTypes }
             .forEach { it.delete() }
         LocalFileSystem.getInstance().refresh(true)
     }

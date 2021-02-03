@@ -11,8 +11,10 @@ import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import java.io.File
 import java.util.regex.Pattern
 import javax.swing.JLabel
 import javax.swing.SwingConstants
@@ -68,8 +70,15 @@ open class WordCountAction : AnAction(
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
         val psiFile = virtualFile.psiFile(project) ?: return
 
-        val (words, chars) = countWords(psiFile)
-        val dialog = makeDialog(psiFile, words, chars)
+        val dialog = if (SystemEnvironment.isTexcountAvailable) {
+            val root = psiFile.findRootFile().virtualFile
+            val words = "texcount -1 -inc -sum ${root.path}".runCommand(workingDirectory = File(root.parent.path))?.toIntOrNull()
+            makeDialog(psiFile, words)
+        }
+        else {
+            val (words, chars) = countWords(psiFile)
+            makeDialog(psiFile, words, chars)
+        }
 
         dialog.show()
     }
@@ -77,17 +86,23 @@ open class WordCountAction : AnAction(
     /**
      * Builds the dialog that must show the word count.
      */
-    private fun makeDialog(baseFile: PsiFile, wordCount: Int, characters: Int): DialogBuilder {
+    private fun makeDialog(baseFile: PsiFile, wordCount: Int?, characters: Int? = null): DialogBuilder {
         return DialogBuilder().apply {
-            setTitle("Word count")
+            setTitle("Word Count")
 
+            val characterString = if (characters == null) {
+                ""
+            }
+            else {
+                "|   <tr><td style='text-align:right'>Character count:</td><td><b>$characters</b></td>"
+            }
             setCenterPanel(
                 JLabel(
                     """|<html>
                         |<p>Analysis of <i>${baseFile.name}</i> (and inclusions):</p>
                         |<table cellpadding=1 style='margin-top:4px'>
                         |   <tr><td style='text-align:right'>Word count:</td><td><b>$wordCount</b></td></tr>
-                        |   <tr><td style='text-align:right'>Character count:</td><td><b>$characters</b></td>
+                        $characterString
                         |</table>
                         |</html>""".trimMargin(),
                     AllIcons.General.InformationDialog,
@@ -109,6 +124,11 @@ open class WordCountAction : AnAction(
         val fileSet = baseFile.referencedFileSet()
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
+        val parameterText = fileSet.flatMap { it.childrenOfType(LatexParameterText::class) }
+                .filter {
+                    val commandText = it.command?.text ?: return@filter false
+                    return@filter commandText !in IGNORE_COMMANDS
+                }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
             .filter {
@@ -127,9 +147,10 @@ open class WordCountAction : AnAction(
         val bibliography = bibliographies.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val (wordsNormal, charsNormal) = countWords(allNormalText)
+        val (wordsParameter, charsParameter) = countWords(parameterText)
         val (wordsBib, charsBib) = countWords(bibliography)
 
-        return Pair(wordsNormal - wordsBib, charsNormal - charsBib)
+        return Pair(wordsNormal + wordsParameter - wordsBib, charsNormal + charsParameter - charsBib)
     }
 
     /**
@@ -137,7 +158,7 @@ open class WordCountAction : AnAction(
      *
      * @return A pair of the total amount of words, and the amount of characters that make up the words.
      */
-    private fun countWords(latexNormalText: List<LatexNormalText>): Pair<Int, Int> {
+    private fun countWords(latexNormalText: List<PsiElement>): Pair<Int, Int> {
         // separate all latex words.
         val latexWords: MutableSet<PsiElement> = HashSet()
         var characters = 0

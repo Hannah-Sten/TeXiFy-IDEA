@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2"
+version = "0.7.4-alpha.1"
 
 repositories {
     mavenCentral()
@@ -78,6 +78,11 @@ dependencies {
     implementation("com.github.hypfvieh:dbus-java:3.2.4")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
 
+    // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
+    implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
+    implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.2.3")
+
     // Test dependencies
 
     // Also implementation junit 4, just in case
@@ -114,7 +119,8 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java")//, "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0")
+    // indices plugin doesn't work in tests
+    setPlugins("tanvd.grazi", "java")//, "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false

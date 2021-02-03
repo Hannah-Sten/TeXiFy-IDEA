@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -52,7 +51,7 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         return "Docker MiKTeX ($tag)"
     }
 
-    override fun getExecutableName(executable: String, project: Project): String {
+    override fun getExecutableName(executable: String, homePath: String): String {
         // Could be improved by prefixing docker command here, but needs to be in sync with LatexCompiler
         return executable
     }

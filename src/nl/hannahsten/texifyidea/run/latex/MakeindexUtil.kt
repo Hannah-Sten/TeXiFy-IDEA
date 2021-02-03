@@ -8,11 +8,11 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 
 /**
  * Try to find out which index program the user wants to use, based on the given options.
@@ -28,7 +28,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
 
     val indexPrograms = mutableSetOf<MakeindexProgram>()
 
-    if (usedPackages.intersect(Magic.Package.index).isNotEmpty()) {
+    if (usedPackages.intersect(PackageMagic.index).isNotEmpty()) {
         val makeindexProgram = if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
         indexPrograms.add(makeindexProgram)
     }
@@ -69,7 +69,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
-            .filter { command -> command.requiredParameters.any { it in Magic.Package.index || it in Magic.Package.glossary } }
+            .filter { command -> command.requiredParameters.any { it in PackageMagic.index || it in PackageMagic.glossary } }
             .flatMap { it.optionalParameterMap.toStringMap().keys }
     }
 }

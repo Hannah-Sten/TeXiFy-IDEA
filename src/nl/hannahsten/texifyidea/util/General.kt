@@ -5,6 +5,12 @@ import com.intellij.openapi.util.TextRange
 import java.util.regex.Pattern
 
 /**
+ * Returns `1` when `true`, returns `0` when `false`.
+ */
+val Boolean.int: Int
+    get() = if (this) 1 else 0
+
+/**
  * Creates a pair of two objects, analogous to [to].
  */
 infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
@@ -46,6 +52,12 @@ fun IntRange.toTextRange() = TextRange(this.first, this.last + 1)
  */
 val IntRange.length: Int
     get() = endInclusive - start
+
+/**
+ * Converts the range to a range representation with the given seperator.
+ * When the range has size 0, it will only print the single number.
+ */
+fun IntRange.toRangeString(separator: String = "-") = if (start == endInclusive) start else "$start-$endInclusive"
 
 /**
  * Converts a [TextRange] to [IntRange].

@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 
 /**
  * Get the file search scope for this psi file.
@@ -131,7 +132,7 @@ fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val file = directory?.findFile(
         path,
         extensions
-            ?: Magic.File.includeExtensions
+            ?: FileMagic.includeExtensions
     )
         ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
@@ -156,7 +157,7 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
     val arguments = command.getAllRequiredArguments() ?: return emptySet()
 
     return arguments.filter { it.isNotEmpty() }.mapNotNull {
-        val extension = Magic.File.automaticExtensions[command.name]
+        val extension = FileMagic.automaticExtensions[command.name]
         if (extension != null) {
             findFile(it, setOf(extension))
         }
@@ -179,7 +180,7 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
         val file = root.findFile(
             path,
             extensions
-                ?: Magic.File.includeExtensions
+                ?: FileMagic.includeExtensions
         )
         if (file != null) {
             return file.psiFile(project)

@@ -16,6 +16,19 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarning() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\citet}[1]{\citeauthor{#1} \shortcite{#1}}
+            \begin{document}
+                \citet{X}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun `test warning non breaking space`() {
         testHighlighting("<warning>\\cite{a}</warning>~<warning>\\cite{b}</warning>")
     }

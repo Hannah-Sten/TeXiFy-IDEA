@@ -6,10 +6,12 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.GeneralMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.matches
 import nl.hannahsten.texifyidea.util.previousCommand
 import java.util.*
@@ -33,14 +35,14 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         val commands = file.commandsInFile().sortedBy { it.textOffset }
         for (command in commands) {
             val name = command.name
-            if (command.name in Magic.Command.endIfs) {
+            if (command.name in CommandMagic.endIfs) {
                 // Non-opened fi.
                 if (stack.isEmpty()) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
                             "No matching \\if-command found",
-                            Magic.General.noQuickFix,
+                            GeneralMagic.noQuickFix,
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly
                         )
@@ -50,7 +52,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
                 stack.pop()
             }
-            else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs && command.previousCommand()?.name != LatexRegularCommand.NEWIF.commandDisplay) {
+            else if (PatternMagic.ifCommand.matches(name) && name !in CommandMagic.ignoredIfs && command.previousCommand()?.name != LatexNewDefinitionCommand.NEWIF.commandWithSlash) {
                 stack.push(command)
             }
         }
@@ -61,7 +63,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     cmd,
                     "If statement should probably be closed with \\fi",
-                    Magic.General.noQuickFix,
+                    GeneralMagic.noQuickFix,
                     ProblemHighlightType.WARNING,
                     isOntheFly
                 )

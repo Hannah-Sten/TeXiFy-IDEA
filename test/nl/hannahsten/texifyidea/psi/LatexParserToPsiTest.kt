@@ -14,4 +14,8 @@ class LatexParserToPsiTest : ParsingTestCase("", "tex", LatexParserDefinition())
     fun testParsingInlineVerbatim() {
         doTest(true)
     }
+
+    fun testLatex3Syntax() {
+        doTest(true)
+    }
 }

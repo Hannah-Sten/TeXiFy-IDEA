@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 
 /**
@@ -39,7 +40,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-            .filter { it.name in Magic.Command.bibliographyReference }
+            .filter { it.name in CommandMagic.bibliographyReference }
 
         for (cmd in commands) {
             val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
@@ -103,21 +104,22 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         val content = firstParentOfType(LatexNoMathContent::class) ?: return null
         val nextContent = nextThing(content) ?: return null
 
-        var cite = nextContent.firstChildOfType(LatexCommands::class)
+        var cite = nextContent.firstChild
         // If there is no command inside the sibling grandparent, it can still be a non-breaking space.
-        if (cite == null) {
+        if (cite !is LatexCommands) {
             // If it is a non-breaking space, we want to check if the next grandparent sibling contains a cite.
             if (nextContent.isNonBreakingSpace()) {
                 val secondNextContent = nextThing(nextContent) ?: return null
-                cite = secondNextContent.firstChildOfType(LatexCommands::class) ?: return null
+                cite = secondNextContent.firstChild ?: return null
             }
             // If it is not a non-breaking space it is some other text and we won't find another cite in this direction.
             else return null
         }
 
         // Check if the found command is a similar cite command as the one we started at.
+        if (cite !is LatexCommands) return null
         val name = cite.name ?: return null
-        val nextCommandIsACitation = name in Magic.Command.bibliographyReference
+        val nextCommandIsACitation = name in CommandMagic.bibliographyReference
         val previousCommandIsOfTheSameType = this.name == name
         val equalStars = hasStar() == cite.hasStar()
         return if (nextCommandIsACitation && previousCommandIsOfTheSameType && equalStars) cite else null

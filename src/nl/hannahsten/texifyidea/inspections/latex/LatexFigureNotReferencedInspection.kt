@@ -10,6 +10,8 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -39,7 +41,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
         val referenceCommands = file.project.getLabelReferenceCommands()
         for (command in file.commandsInFileSet()) {
             // Don't resolve references in command definitions
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions ||
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions ||
                 referenceCommands.contains(command.name)
             ) {
                 command.referencedLabelNames.forEach { figureLabels.remove(it) }
@@ -66,7 +68,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             .toMutableMap()
 
     private fun isFigureLabel(label: LatexCommands): Boolean =
-        label.inDirectEnvironment(Magic.Environment.figures)
+        label.inDirectEnvironment(EnvironmentMagic.figures)
 }
 
 private val LatexCommands.labelName: String?
