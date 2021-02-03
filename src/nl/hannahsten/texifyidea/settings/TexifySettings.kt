@@ -7,14 +7,6 @@ import com.intellij.openapi.components.Storage
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 
-// Options for smart quote replacement, in the order as they appear in the combobox
-enum class QuoteReplacement {
-    NONE,
-    LIGATURES,
-    COMMANDS,
-    CSQUOTES // Context Sensitive quotes from the csquotes package
-}
-
 /**
  * @author Sten Wessel
  */
@@ -25,6 +17,15 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
         @JvmStatic
         fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
+    }
+
+    // Options for smart quote replacement, in the order as they appear in the combobox
+    enum class QuoteReplacement {
+
+        NONE,
+        LIGATURES,
+        COMMANDS,
+        CSQUOTES // Context Sensitive quotes from the csquotes package
     }
 
     var automaticSecondInlineMathSymbol = true

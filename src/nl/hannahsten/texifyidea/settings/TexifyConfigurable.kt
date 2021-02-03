@@ -127,7 +127,7 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.continuousPreview = continuousPreview?.isSelected == true
         settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
         settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
-        settings.automaticQuoteReplacement = QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
+        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
         settings.missingLabelMinimumLevel = missingLabelMinimumLevel?.selectedItem as? LatexRegularCommand ?: LatexRegularCommand.SUBSECTION
     }
 

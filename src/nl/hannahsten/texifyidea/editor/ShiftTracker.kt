@@ -35,8 +35,8 @@ object ShiftTracker : KeyListener, TypedHandlerDelegate() {
             return
         }
 
-//        component.addKeyListener(this)
-//        registered.add(component)
+        component.addKeyListener(this)
+        registered.add(component)
     }
 
     /**
