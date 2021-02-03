@@ -25,11 +25,10 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2-restart"
+version = "0.7.2"
 
 repositories {
     mavenCentral()
-    maven(url = "https://www.jetbrains.com/intellij-repository/releases")
 }
 
 sourceSets {
@@ -110,13 +109,6 @@ tasks.processResources {
         include("JavaDDE.dll")
         include("JavaDDEx64.dll")
     }
-}
-
-// https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
-tasks.runIde {
-    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions")
-
-    systemProperty("ide.plugins.snapshot.on.unload.fail", "true")
 }
 
 intellij {

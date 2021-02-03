@@ -8,6 +8,7 @@ class LoadUnloadListener : DynamicPluginListener {
     override fun beforePluginUnload(pluginDescriptor: IdeaPluginDescriptor, isUpdate: Boolean) {
         super.beforePluginUnload(pluginDescriptor, isUpdate)
         AnalyzeMenuRegistration().unload()
+        // Apparently it's not needed to unload these anymore? Were a problem in the past.
 //        ControlTracker.unload()
 //        ShiftTracker.unload()
 //        runBlocking { EvinceInverseSearchListener.unload() }
