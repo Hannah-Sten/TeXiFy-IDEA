@@ -144,7 +144,7 @@ object LatexSdkUtil {
     private fun getPreferredSdkType(): Sdk? {
         val allSdks = ProjectJdkTable.getInstance().allJdks.filter { it.sdkType is LatexSdk }
         allSdks.firstOrNull { it.sdkType is TexliveSdk }?.let { return it }
-        allSdks.firstOrNull { it.sdkType is MiktexSdk }?.let { return it }
+        allSdks.firstOrNull { it.sdkType is MiktexWindowsSdk }?.let { return it }
         allSdks.firstOrNull { it.sdkType is DockerSdk }?.let { return it }
         return null
     }
@@ -177,7 +177,7 @@ object LatexSdkUtil {
             val default = if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultSourcesPath(sdk.homePath!!)).filterNotNull() else emptySet()
             return userProvided + default
         }
-        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexSdk())) {
+        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexWindowsSdk())) {
             val roots = sdkType.suggestHomePaths().mapNotNull { homePath ->
                 sdkType.getDefaultSourcesPath(homePath)
             }.toSet()

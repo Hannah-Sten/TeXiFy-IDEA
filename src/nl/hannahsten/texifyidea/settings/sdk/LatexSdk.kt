@@ -8,6 +8,11 @@ import org.jdom.Element
 /**
  * Represents the location of the LaTeX installation.
  *
+ * NOTES for subclasses:
+ * - suggestHomePath() will be the starting point when someone opens the file explorer dialog to select an SDK of this type
+ * - suggestHomePaths() appear under "Detected SDK's" when adding an SDK
+ * - HOWEVER they only do so, when getVersionString(sdkHome: String?) is implemented (implementing getVersionString(sdk: SDK?) is NOT enough)
+ *
  * @author Thomas
  */
 abstract class LatexSdk(name: String) : SdkType(name) {
