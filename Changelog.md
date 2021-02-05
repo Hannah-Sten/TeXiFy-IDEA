@@ -5,6 +5,7 @@
 * Added commands from all installed LaTeX packages to autocompletion. (#1710, #1762, #1763)
 * Added symbol tool window. (#1752)
 * Added dummy text insertion wizard. (#1767)
+* Added graphic, table and dummy text wizards to a generate actions popup. (#1770)
 
 # Changes
 * Changed Grazie rules to ignore non-text elements in a sentence. (#1744)
