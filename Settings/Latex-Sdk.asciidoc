@@ -14,3 +14,43 @@ It is probably a good idea to do that for your link:Run-configurations[run confi
 If you don't have `pdflatex` in your PATH, TeXiFy will show a warning that you won't be able to compile.
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Settings/figures/set-up-sdk.png[]
+
+Because there are many different ways to install LaTeX, and many have their own SDK type, we provide a small overview.
+The home path is the default path you need to select if you add such an SDK types, of course only if you did install it to the default location.
+In most cases, these should be detected automatically.
+
+The column 'Support package index' indicates if TeXiFy is able to locate package sources, which is required to have autocompletion for all commands in packages.
+Note that MiKTeX can be installed for the user only or as admin, both of which are handled by the same SDK type.
+
+|===
+|SDK type |Default home path |Supports package index
+
+|MiKTeX on Mac/Linux (user install)
+|`~/bin`
+|yes
+
+|MiKTeX on Mac/Linux (admin install)
+|`/usr/local/bin`
+|no
+
+|MiKTeX on Windows (user install)
+|`C:\Users\myusername\AppData\Local\Programs\MiKTeX 2.9`
+|yes
+
+|MiKTeX on Windows (admin install)
+|?
+|no
+
+|MiKTeX Docker image
+|`/usr/bin` (location of the `docker` executable)
+|no
+
+|TeX Live (recommended installation)
+|`~/texlive/2020`
+|yes
+
+|Native TeX Live (installation using package manager)
+|`/usr/bin` (location of `pdflatex` executable)
+|no
+
+|===
