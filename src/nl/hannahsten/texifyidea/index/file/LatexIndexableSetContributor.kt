@@ -26,7 +26,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                 // MiKTeX keeps the dtx files in tar.xz/tar.bz2 files, so we have to extract them ourselves.
                 // We could check if the target files exist and in that case not extract again, however then we would never update packages
                 // Because maintaining extraction dates seems a bit too much work for now, just extract again after reboot only
-                if (root.path.contains("MiKTeX") && !extractedFiles) {
+                if (root.path.contains("MiKTeX", ignoreCase = true) && !extractedFiles) {
                     val txArchiver = TarXZUnArchiver()
                     txArchiver.enableLogging(ConsoleLoggerManager().also { it.initialize() }.getLoggerForComponent("noop"))
                     File(root.path).list { _, name -> name.endsWith("tar.xz") }?.forEach { zipName ->

@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Paths
 
 /**
- * todo only show on Windows?
+ * MiKTeX on Windows.
  */
 class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
