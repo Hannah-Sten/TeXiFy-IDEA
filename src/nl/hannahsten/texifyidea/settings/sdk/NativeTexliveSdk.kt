@@ -59,5 +59,4 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
         return "$texmfDistPath/doc"
     }
-
 }

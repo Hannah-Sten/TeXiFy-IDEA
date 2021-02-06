@@ -47,7 +47,6 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         return "$path${File.separator}pdflatex --version".runCommand()?.contains("pdfTeX") == true
     }
 
-
     override fun getVersionString(sdk: Sdk): String? {
         return getVersionString(sdk.homePath)
     }
