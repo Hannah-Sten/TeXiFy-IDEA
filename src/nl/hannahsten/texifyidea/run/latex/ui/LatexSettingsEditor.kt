@@ -30,6 +30,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.ListCellRenderer
 
 /**
  * @author Sten Wessel
