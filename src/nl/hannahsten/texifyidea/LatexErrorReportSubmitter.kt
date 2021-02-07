@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.blame
+package nl.hannahsten.texifyidea
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter

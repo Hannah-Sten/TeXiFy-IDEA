@@ -6,7 +6,7 @@
  */
 {
     parserClass="nl.hannahsten.texifyidea.parser.LatexParser"
-    parserUtilClass="nl.hannahsten.texifyidea.parser.LatexParserUtil"
+    parserUtilClass="nl.hannahsten.texifyidea.psi.LatexParserUtil"
     parserImports=["static com.intellij.lang.WhitespacesBinders.*"]
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 

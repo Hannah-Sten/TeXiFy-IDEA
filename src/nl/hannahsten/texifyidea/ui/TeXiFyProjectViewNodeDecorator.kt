@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.project
+package nl.hannahsten.texifyidea.ui
 
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.projectView.PresentationData

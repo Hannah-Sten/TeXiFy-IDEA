@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.tools
+package nl.hannahsten.texifyidea.ui.symbols.tools
 
 import nl.hannahsten.texifyidea.ui.symbols.SymbolCategories
 import nl.hannahsten.texifyidea.ui.symbols.SymbolUiEntry

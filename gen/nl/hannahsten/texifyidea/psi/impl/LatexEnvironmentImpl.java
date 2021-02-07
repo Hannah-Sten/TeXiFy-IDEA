@@ -79,7 +79,8 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
   }
 
   @Override
-  public @NotNull LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
+  @NotNull
+  public LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
     return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 

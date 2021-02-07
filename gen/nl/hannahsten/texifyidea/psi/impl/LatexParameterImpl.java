@@ -58,7 +58,8 @@ public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexPar
   }
 
   @Override
-  public @NotNull LiteralTextEscaper<LatexParameter> createLiteralTextEscaper() {
+  @NotNull
+  public LiteralTextEscaper<LatexParameter> createLiteralTextEscaper() {
     return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 

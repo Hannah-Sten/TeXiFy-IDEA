@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.project
+package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.codeInsight.daemon.ProjectSdkSetupValidator
 import com.intellij.openapi.module.ModuleManager
@@ -14,8 +14,6 @@ import com.intellij.ui.EditorNotificationPanel
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 /**
  * https://jetbrains.org/intellij/sdk/docs/reference_guide/project_model/sdk.html#assisting-in-setting-up-an-sdk

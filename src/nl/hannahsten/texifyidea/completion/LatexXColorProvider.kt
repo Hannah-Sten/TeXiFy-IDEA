@@ -9,7 +9,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import com.intellij.util.ui.ColorIcon
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.insight.LatexElementColorProvider
+import nl.hannahsten.texifyidea.gutter.LatexElementColorProvider
 import nl.hannahsten.texifyidea.util.Kindness
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName

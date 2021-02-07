@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.insight
+package nl.hannahsten.texifyidea.editor
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzerSettings
 import com.intellij.codeInsight.daemon.LineMarkerInfo

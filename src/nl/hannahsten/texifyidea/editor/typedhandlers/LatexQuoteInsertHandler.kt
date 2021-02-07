@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.editor
+package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.CaretModel
