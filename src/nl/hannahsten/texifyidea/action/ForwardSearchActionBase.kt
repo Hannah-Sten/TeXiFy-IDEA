@@ -6,10 +6,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
-open class ForwardSearchActionBase(val viewer: InternalPdfViewer) : EditorAction(
-    name = "_ForwardSearch",
+open class ForwardSearchActionBase(val viewer: PdfViewer, val id: String = "texify.${viewer.name}") : EditorAction(
+    name = "${viewer.displayName} _Forward Search",
     icon = TexifyIcons.RIGHT
 ) {
 
@@ -21,7 +23,11 @@ open class ForwardSearchActionBase(val viewer: InternalPdfViewer) : EditorAction
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
-        viewer.conversation!!.forwardSearch(null, file.path, line, project, focusAllowed = true)
+        when (viewer) {
+            is ExternalPdfViewer -> viewer.forwardSearch(null, file.path, line, project, focusAllowed = true)
+            is InternalPdfViewer -> viewer.conversation!!.forwardSearch(null, file.path, line, project, focusAllowed = true)
+            else -> return
+        }
     }
 
     override fun update(e: AnActionEvent) {
