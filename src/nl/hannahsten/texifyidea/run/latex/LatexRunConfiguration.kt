@@ -32,6 +32,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
+import nl.hannahsten.texifyidea.run.latex.step.LatexCompileStep
 import nl.hannahsten.texifyidea.run.latex.ui.NewLatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
@@ -166,6 +167,8 @@ class LatexRunConfiguration constructor(
     // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
+
+    val compileSteps: MutableList<LatexCompileStep> = mutableListOf()
 
     override fun getDefaultOptionsClass(): Class<out LatexRunConfigurationOptions> {
         // Data holder for the options

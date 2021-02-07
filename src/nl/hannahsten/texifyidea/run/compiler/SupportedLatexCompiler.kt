@@ -45,7 +45,7 @@ sealed class LatexCompiler {
 
     class Converter : com.intellij.util.xmlb.Converter<LatexCompiler>() {
 
-        override fun toString(value: LatexCompiler)= when (value) {
+        override fun toString(value: LatexCompiler) = when (value) {
             is SupportedLatexCompiler -> value.executableName
             is CustomLatexCompiler -> value.executablePath
         }

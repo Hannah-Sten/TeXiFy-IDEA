@@ -30,7 +30,7 @@ class LatexCompileSequenceFragment(private val component: LatexCompileSequenceCo
     }
 
     init {
-//        component.changeListener = { fireEditorStateChanged() }
+        component.changeListener = { fireEditorStateChanged() }
         actionHint = "Specify steps needed for compiling the document"
     }
 
@@ -39,6 +39,6 @@ class LatexCompileSequenceFragment(private val component: LatexCompileSequenceCo
     }
 
     override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-        component.reset(s)
+        component.reset(s.configuration as LatexRunConfiguration)
     }
 }

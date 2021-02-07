@@ -11,4 +11,15 @@ enum class BibliographyCompiler(private val compiler: Compiler<BibtexRunConfigur
     BIBER(BiberCompiler);
 
     override fun toString() = displayName
+
+    // TODO: overhaul this as well
+    class Converter : com.intellij.util.xmlb.Converter<BibliographyCompiler>() {
+
+        override fun toString(value: BibliographyCompiler) = value.name
+
+        override fun fromString(value: String) = try {
+            valueOf(value)
+        } catch (_: IllegalArgumentException) { null }
+    }
+
 }

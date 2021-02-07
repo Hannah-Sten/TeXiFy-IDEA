@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
-import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.FragmentedSettingsBuilder
 import com.intellij.execution.ui.TagButton
 import com.intellij.icons.AllIcons
@@ -17,7 +16,10 @@ import com.intellij.ui.InplaceButton
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
-import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.step.LatexCompileStep
+import nl.hannahsten.texifyidea.run.latex.step.LatexCompileStepProvider
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
@@ -58,6 +60,8 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
 
     var changeListener: () -> Unit = {  }
 
+    private lateinit var configuration: LatexRunConfiguration
+
     init {
         Disposer.register(parentDisposable, this)
         add(Box.createVerticalStrut(30))
@@ -82,12 +86,15 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         steps.forEach { add(it) }
         add(addPanel)
         add(addLabel)
-
+        addLabel.isVisible = steps.isEmpty()
     }
 
     private fun showPopup() {
         val group = DefaultActionGroup()
-        group.add(TagAction())
+
+        for (provider in CompilerMagic.compileStepProviders) {
+            group.add(TagAction(provider))
+        }
 
         val popup = JBPopupFactory.getInstance().createActionGroupPopup(
             "Add New Step",
@@ -99,19 +106,36 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         popup.showUnderneathOf(addButton)
     }
 
-    private fun createTask(e: AnActionEvent?, tagAction: TagAction) {
-        val tag = StepButton(tagAction)
+    private fun createStep(provider: LatexCompileStepProvider) {
+        val step = provider.createStep(configuration)
+        val tag = StepButton(step)
         steps.add(tag)
         buildPanel()
         changeListener()
     }
 
-    fun reset(s: RunnerAndConfigurationSettingsImpl) {
+    fun reset(c: LatexRunConfiguration) {
+        configuration = c
+        steps.forEach { remove(it) }
+        steps.clear()
+
+        configuration.compileSteps.forEach {
+            val tag = StepButton(it)
+            steps.add(tag)
+        }
+
         buildPanel()
     }
 
+    fun apply(c: LatexRunConfiguration) {
+        c.compileSteps.apply {
+            clear()
+            addAll(steps.map { it.step })
+        }
+    }
+
     override fun update(event: DnDEvent?): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 
     override fun drop(event: DnDEvent) {
@@ -122,7 +146,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
 
     }
 
-    private inner class StepButton(private val action: TagAction) : TagButton(action.templateText, { changeListener() }), DnDSource {
+    private inner class StepButton(val step: LatexCompileStep) : TagButton(step.provider.name, { changeListener() }), DnDSource {
 
         private val dropPlace = JLabel(AllIcons.General.DropPlace)
 
@@ -131,12 +155,12 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
             add(dropPlace, JLayeredPane.DRAG_LAYER)
             dropPlace.isVisible = false
 
-            myButton.icon = action.templatePresentation.icon
+            myButton.icon = step.provider.icon
 
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
-                        // TODO: edit step
+                        step.configure()
                     }
                 }
             })
@@ -163,10 +187,10 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         override fun startDragging(action: DnDAction?, dragOrigin: Point?) = DnDDragStartBean(this)
     }
 
-    private inner class TagAction : AnAction("Compile LaTeX", null, TexifyIcons.BUILD) {
+    private inner class TagAction(private val provider: LatexCompileStepProvider) : AnAction(provider.name, null, provider.icon) {
 
         override fun actionPerformed(e: AnActionEvent) {
-            createTask(e, this)
+            createStep(provider)
         }
     }
 }
