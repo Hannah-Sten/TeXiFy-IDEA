@@ -25,7 +25,7 @@ import javax.swing.JTextField
  *
  * @author Sten Wessel
  */
-class VirtualFileEditorWithBrowse(label: String, message: String, private val project: Project) : LabeledComponent<TextFieldWithBrowseButton>(),
+class VirtualFileEditorWithBrowse(label: String?, message: String?, private val project: Project) : LabeledComponent<TextFieldWithBrowseButton>(),
                                                                                                   PanelWithAnchor {
 
     private var _selected: VirtualFile? = null
@@ -49,8 +49,12 @@ class VirtualFileEditorWithBrowse(label: String, message: String, private val pr
     val editor = textField.textField
 
     init {
-        text = label
+        text = label ?: ""
         labelLocation = BorderLayout.WEST
+
+        if (label == null) {
+            this.label.isVisible = false
+        }
 
         // TODO: highlight when path is not valid / virtual file could not be found
         textField.addVetoableChangeListener {
@@ -58,7 +62,7 @@ class VirtualFileEditorWithBrowse(label: String, message: String, private val pr
                 ?: LocalFileSystem.getInstance().findFileByPath(text)
         }
 
-        (textField.textField as? JBTextField)?.emptyText?.text = message
+        (textField.textField as? JBTextField)?.emptyText?.text = message ?: ""
         textField.accessibleContext.accessibleName = message
 
         component = textField

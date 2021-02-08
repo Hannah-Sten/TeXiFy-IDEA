@@ -24,8 +24,6 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredFolderArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -211,10 +209,10 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         // List of LaTeX compilers
         val compilerRegex = Regex("""compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("compiler", compilerRegex, LatexMagicCommentValueProvider(compilerRegex, CompilerMagic.compilerByExecutableName.keys))
+        extendMagicCommentValues("compiler", compilerRegex, LatexMagicCommentValueProvider(compilerRegex, CompilerMagic.latexCompilerByExecutableName.keys))
 
         val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(bibtexCompilerRegex, BibliographyCompiler.values().map { it.executableName }.toHashSet()))
+        extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(bibtexCompilerRegex, CompilerMagic.bibliographyCompilerByExecutableName.keys))
 
         val fakeRegex = Regex("""fake\s*(=\s*)?""", EnumSet.of(RegexOption.IGNORE_CASE))
         extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(fakeRegex, CommentMagic.fakeSectionValues))

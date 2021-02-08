@@ -4,7 +4,7 @@ import com.intellij.configurationStore.Property
 import com.intellij.execution.configurations.LocatableRunConfigurationOptions
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.XMap
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.LatexCompiler
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty

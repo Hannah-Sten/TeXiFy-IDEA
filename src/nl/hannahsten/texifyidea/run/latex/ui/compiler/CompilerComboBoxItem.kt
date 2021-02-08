@@ -6,7 +6,7 @@ import com.intellij.ui.SimpleTextAttributes
 /**
  * @author Sten Wessel
  */
-interface LatexCompilerComboBoxItem {
+interface CompilerComboBoxItem {
 
     val presentableText: String
     val command: String

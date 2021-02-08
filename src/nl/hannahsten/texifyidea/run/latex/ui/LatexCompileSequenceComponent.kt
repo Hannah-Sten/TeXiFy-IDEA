@@ -17,8 +17,8 @@ import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.step.LatexCompileStep
-import nl.hannahsten.texifyidea.run.latex.step.LatexCompileStepProvider
+import nl.hannahsten.texifyidea.run.step.LatexCompileStep
+import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.Dimension
 import java.awt.FlowLayout

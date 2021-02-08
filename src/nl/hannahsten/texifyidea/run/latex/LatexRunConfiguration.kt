@@ -26,17 +26,19 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.run.compiler.PdflatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
+import nl.hannahsten.texifyidea.run.bibtex.compiler.BiberCompiler
+import nl.hannahsten.texifyidea.run.bibtex.compiler.BibtexCompiler
+import nl.hannahsten.texifyidea.run.bibtex.compiler.SupportedBibliographyCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.compiler.PdflatexCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
-import nl.hannahsten.texifyidea.run.latex.step.LatexCompileStep
 import nl.hannahsten.texifyidea.run.latex.ui.NewLatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.allCommands
@@ -46,6 +48,7 @@ import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePa
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
@@ -380,7 +383,7 @@ class LatexRunConfiguration constructor(
     /**
      * Create a new bib run config and add it to the set.
      */
-    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?, compilerArguments: String? = null) {
+    private fun addBibRunConfig(defaultCompiler: SupportedBibliographyCompiler, mainFile: VirtualFile?, compilerArguments: String? = null) {
         val runManager = RunManagerImpl.getInstanceImpl(project)
 
         val bibSettings = runManager.createConfiguration(
@@ -413,7 +416,7 @@ class LatexRunConfiguration constructor(
      */
     internal fun generateBibRunConfig() {
         // Get a pair of Bib compiler and compiler arguments.
-        val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
+        val compilerFromMagicComment: Pair<SupportedBibliographyCompiler, String>? by lazy {
             val runCommand = psiFile?.allParentMagicComments()
                 ?.value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
             val compilerString = if (runCommand.contains(' ')) {
@@ -421,7 +424,7 @@ class LatexRunConfiguration constructor(
                     .toString()
             }
             else runCommand
-            val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
+            val compiler = CompilerMagic.bibliographyCompilerByExecutableName[compilerString.toLowerCase()] ?: return@lazy null
             val compilerArguments = runCommand.removePrefix(compilerString)
                 .trim()
             Pair(compiler, compilerArguments)
@@ -429,8 +432,8 @@ class LatexRunConfiguration constructor(
 
         val defaultCompiler = when {
             compilerFromMagicComment != null -> compilerFromMagicComment!!.first
-            psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
-            psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
+            psiFile?.hasBibliography() == true -> BibtexCompiler
+            psiFile?.usesBiber() == true -> BiberCompiler
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
@@ -499,7 +502,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun setDefaultCompiler() {
-        compiler = PdflatexCompiler.INSTANCE
+        compiler = PdflatexCompiler
     }
 
     fun setDefaultPdfViewer() {

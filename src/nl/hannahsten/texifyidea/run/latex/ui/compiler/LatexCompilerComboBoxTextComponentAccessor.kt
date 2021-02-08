@@ -4,19 +4,19 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.SortedComboBoxModel
-import nl.hannahsten.texifyidea.run.compiler.CustomLatexCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.CustomLatexCompiler
 
-class LatexCompilerComboBoxTextComponentAccessor : TextComponentAccessor<ComboBox<LatexCompilerComboBoxItem>> {
+class LatexCompilerComboBoxTextComponentAccessor : TextComponentAccessor<ComboBox<CompilerComboBoxItem>> {
 
     companion object {
         val INSTANCE = LatexCompilerComboBoxTextComponentAccessor()
     }
 
-    override fun getText(component: ComboBox<LatexCompilerComboBoxItem>) = component.item?.presentableText ?: ""
+    override fun getText(component: ComboBox<CompilerComboBoxItem>) = component.item?.presentableText ?: ""
 
-    override fun setText(component: ComboBox<LatexCompilerComboBoxItem>, text: String) {
+    override fun setText(component: ComboBox<CompilerComboBoxItem>, text: String) {
         val item = CustomCompilerItem(CustomLatexCompiler(FileUtil.toSystemIndependentName(text)))
-        (component.model as SortedComboBoxModel<LatexCompilerComboBoxItem>).add(item)
+        (component.model as SortedComboBoxModel<CompilerComboBoxItem>).add(item)
         component.item = item
     }
 }

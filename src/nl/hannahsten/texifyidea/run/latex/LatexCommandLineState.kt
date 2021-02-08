@@ -16,12 +16,13 @@ import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
+import nl.hannahsten.texifyidea.run.step.CompileLatexCompileStepProvider
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -69,7 +70,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
     private fun createHandler(mainFile: VirtualFile, compiler: LatexCompiler): KillableProcessHandler {
         // Make sure to create the command after generating the bib run config (which might change the output path)
-        val command: List<String> = compiler.getCommand(runConfig, environment.project)
+        val command: List<String> = compiler.getCommand(CompileLatexCompileStepProvider.createStep(runConfig))
             ?: throw ExecutionException("Compile command could not be created.")
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)

@@ -10,7 +10,8 @@ import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
+import nl.hannahsten.texifyidea.run.bibtex.compiler.SupportedBibliographyCompiler
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.event.ItemEvent
 import javax.swing.JCheckBox
 import javax.swing.JComponent
@@ -22,7 +23,7 @@ import javax.swing.JPanel
 class BibtexSettingsEditor(private val project: Project) : SettingsEditor<BibtexRunConfiguration>() {
 
     private lateinit var panel: JPanel
-    private lateinit var compiler: LabeledComponent<ComboBox<BibliographyCompiler>>
+    private lateinit var compiler: LabeledComponent<ComboBox<SupportedBibliographyCompiler>>
     private lateinit var enableCompilerPath: JCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
@@ -48,7 +49,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     }
 
     override fun applyEditorTo(runConfig: BibtexRunConfiguration) {
-        runConfig.compiler = compiler.component.selectedItem as BibliographyCompiler?
+        runConfig.compiler = compiler.component.selectedItem as SupportedBibliographyCompiler?
         runConfig.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
         runConfig.compilerArguments = compilerArguments.component.text
         runConfig.environmentVariables = environmentVariables.envData
@@ -61,7 +62,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Compiler
-            val compilerField = ComboBox(BibliographyCompiler.values())
+            val compilerField = ComboBox(CompilerMagic.bibliographyCompilerByExecutableName.values.toTypedArray())
             compiler = LabeledComponent.create(compilerField, "Compiler")
             add(compiler)
 
@@ -70,7 +71,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
                         FileChooserDescriptor(true, false, false, false, false, false)
-                            .withFileFilter { file -> file.nameWithoutExtension == (compiler.component.selectedItem as BibliographyCompiler?)?.executableName }
+                            .withFileFilter { file -> file.nameWithoutExtension == (compiler.component.selectedItem as SupportedBibliographyCompiler?)?.executableName }
                             .withTitle("Choose ${compiler.component.selectedItem} executable")
                     )
                 )

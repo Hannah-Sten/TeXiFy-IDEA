@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.latex.step
+package nl.hannahsten.texifyidea.run.step
 
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import javax.swing.Icon

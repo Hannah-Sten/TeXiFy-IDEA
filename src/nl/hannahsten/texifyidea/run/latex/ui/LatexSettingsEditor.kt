@@ -24,13 +24,12 @@ import com.intellij.ui.components.DropDownLink
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.run.compiler.PdflatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.compiler.PdflatexCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
@@ -165,7 +164,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     @Throws(ConfigurationException::class)
     override fun applyEditorTo(runConfiguration: LatexRunConfiguration) {
         // Apply chosen compiler.
-        val chosenCompiler = compiler.component.selectedItem as? SupportedLatexCompiler ?: PdflatexCompiler.INSTANCE
+        val chosenCompiler = compiler.component.selectedItem as? SupportedLatexCompiler ?: PdflatexCompiler
         runConfiguration.compiler = chosenCompiler
 
         // Remove bibtex run config when switching to a compiler which includes running bibtex
@@ -383,7 +382,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      */
     private fun addCompilerPathField(panel: JPanel) {
         // Compiler
-        val compilerField = ComboBox(CompilerMagic.compilerByExecutableName.values.toTypedArray())
+        val compilerField = ComboBox(CompilerMagic.latexCompilerByExecutableName.values.toTypedArray())
         compiler = LabeledComponent.create(compilerField, "Compiler")
         panel.add(compiler)
 

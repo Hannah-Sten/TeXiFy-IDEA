@@ -1,6 +1,5 @@
-package nl.hannahsten.texifyidea.run.compiler
+package nl.hannahsten.texifyidea.run.bibtex.compiler
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -8,15 +7,12 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 /**
  * @author Sten Wessel
  */
-internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
+object BibtexCompiler : SupportedBibliographyCompiler("BibTeX", "bibtex") {
 
-    override val displayName = "BibTeX"
-    override val executableName = "bibtex"
-
-    override fun getCommand(runConfig: BibtexRunConfiguration, project: Project): List<String>? {
+    override fun createCommand(runConfig: BibtexRunConfiguration): List<String>? {
         val command = mutableListOf<String>()
 
-        val moduleRoots = ProjectRootManager.getInstance(project).contentSourceRoots
+        val moduleRoots = ProjectRootManager.getInstance(runConfig.project).contentSourceRoots
 
         command.apply {
             add(runConfig.compilerPath ?: executableName)

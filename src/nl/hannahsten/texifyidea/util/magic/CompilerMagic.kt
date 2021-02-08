@@ -1,22 +1,31 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import nl.hannahsten.texifyidea.run.compiler.*
-import nl.hannahsten.texifyidea.run.latex.step.BibliographyCompileStepProvider
-import nl.hannahsten.texifyidea.run.latex.step.CompileLatexCompileStepProvider
+import nl.hannahsten.texifyidea.run.bibtex.compiler.BiberCompiler
+import nl.hannahsten.texifyidea.run.bibtex.compiler.BibtexCompiler
+import nl.hannahsten.texifyidea.run.bibtex.compiler.SupportedBibliographyCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.*
+import nl.hannahsten.texifyidea.run.step.BibliographyCompileStepProvider
+import nl.hannahsten.texifyidea.run.step.CompileLatexCompileStepProvider
+import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 
 object CompilerMagic {
 
-    val compilerByExecutableName = mapOf(
-        "pdflatex" to PdflatexCompiler.INSTANCE,
-        "lualatex" to LualatexCompiler.INSTANCE,
-        "latexmk" to LatexmkCompiler.INSTANCE,
-        "xelatex" to XelatexCompiler.INSTANCE,
-        "texliveonfly" to TexliveonflyCompiler.INSTANCE,
-        "tectonic" to TectonicCompiler.INSTANCE,
-    )
-
-    val compileStepProviders = listOf(
+    val compileStepProviders: List<LatexCompileStepProvider> = listOf(
         CompileLatexCompileStepProvider,
         BibliographyCompileStepProvider,
+    )
+
+    val latexCompilerByExecutableName: Map<String, SupportedLatexCompiler> = mapOf(
+        "pdflatex" to PdflatexCompiler,
+        "lualatex" to LualatexCompiler,
+        "latexmk" to LatexmkCompiler,
+        "xelatex" to XelatexCompiler,
+        "texliveonfly" to TexliveonflyCompiler,
+        "tectonic" to TectonicCompiler,
+    )
+
+    val bibliographyCompilerByExecutableName: Map<String, SupportedBibliographyCompiler> = mapOf(
+        "bibtex" to BibtexCompiler,
+        "biber" to BiberCompiler,
     )
 }

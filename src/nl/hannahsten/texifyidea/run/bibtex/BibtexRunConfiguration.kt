@@ -11,8 +11,8 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.bibtex.compiler.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogTabComponent
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import org.jdom.Element
 
 /**
@@ -34,7 +34,7 @@ class BibtexRunConfiguration(
         private const val AUX_DIR = "aux-dir"
     }
 
-    var compiler: BibliographyCompiler? = null
+    var compiler: SupportedBibliographyCompiler? = null
     var compilerPath: String? = null
     var compilerArguments: String? = null
         set(value) {
@@ -79,7 +79,7 @@ class BibtexRunConfiguration(
         val parent = element.getChild(PARENT_ELEMENT)
 
         compiler = try {
-            BibliographyCompiler.valueOf(parent.getChildText(COMPILER))
+            SupportedBibliographyCompiler.byExecutableName(parent.getChildText(COMPILER).toLowerCase())
         }
         catch (e: IllegalArgumentException) {
             null
@@ -116,7 +116,7 @@ class BibtexRunConfiguration(
         val parent = element.getChild(PARENT_ELEMENT) ?: Element(PARENT_ELEMENT).apply { element.addContent(this) }
         parent.removeContent()
 
-        parent.addContent(Element(COMPILER).apply { text = compiler?.name ?: "" })
+        parent.addContent(Element(COMPILER).apply { text = compiler?.executableName ?: "" })
         parent.addContent(Element(COMPILER_PATH).apply { text = compilerPath ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).apply { text = compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)

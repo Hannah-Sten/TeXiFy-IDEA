@@ -1,13 +1,14 @@
 package nl.hannahsten.texifyidea.run.latex.ui.compiler
 
-import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
+import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 
 /**
  * LaTeX compiler selector item for the default compilers for which we have support built-in.
  *
  * @author Sten Wessel
  */
-class BuiltinCompilerItem(val compiler: SupportedLatexCompiler) : LatexCompilerComboBoxItem {
+class BuiltinCompilerItem<in S : LatexCompileStep>(val compiler: SupportedCompiler<S>) : CompilerComboBoxItem {
 
     override val presentableText
         get() = compiler.displayName

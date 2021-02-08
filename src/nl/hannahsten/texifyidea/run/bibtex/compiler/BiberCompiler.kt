@@ -1,17 +1,13 @@
-package nl.hannahsten.texifyidea.run.compiler
+package nl.hannahsten.texifyidea.run.bibtex.compiler
 
-import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 
 /**
  * @author Thomas Schouten
  */
-internal object BiberCompiler : Compiler<BibtexRunConfiguration> {
+object BiberCompiler : SupportedBibliographyCompiler("Biber", "biber") {
 
-    override val displayName = "Biber"
-    override val executableName = "biber"
-
-    override fun getCommand(runConfig: BibtexRunConfiguration, project: Project): List<String>? = mutableListOf<String>().apply {
+    override fun createCommand(runConfig: BibtexRunConfiguration): List<String>? = mutableListOf<String>().apply {
         add(runConfig.compilerPath ?: executableName)
 
         // Biber can find auxiliary files, but the flag is different from bibtex.

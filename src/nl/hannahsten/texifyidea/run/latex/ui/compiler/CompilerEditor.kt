@@ -8,10 +8,10 @@ import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.PanelWithAnchor
 import com.intellij.ui.SortedComboBoxModel
 import com.intellij.util.ui.JBInsets
-import nl.hannahsten.texifyidea.run.compiler.CustomLatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler
-import nl.hannahsten.texifyidea.util.magic.CompilerMagic
+import nl.hannahsten.texifyidea.run.compiler.Compiler
+import nl.hannahsten.texifyidea.run.compiler.CustomCompiler
+import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
+import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import java.awt.BorderLayout
 import javax.swing.JList
 
@@ -22,23 +22,23 @@ import javax.swing.JList
  *
  * @author Sten Wessel
  */
-class LatexCompilerEditor : LabeledComponent<ComboBox<LatexCompilerComboBoxItem>>(), PanelWithAnchor {
+class CompilerEditor<C : LatexCompileStep, in S : SupportedCompiler<C>>(label: String, compilers: Iterable<S>) : LabeledComponent<ComboBox<CompilerComboBoxItem>>(), PanelWithAnchor {
 
-    private val comboBoxModel: SortedComboBoxModel<LatexCompilerComboBoxItem>
+    private val comboBoxModel: SortedComboBoxModel<CompilerComboBoxItem>
 
     init {
         comboBoxModel = initComboBoxModel()
-        populateModel()
+        populateModel(compilers)
         initComboBox()
 
-        text = "&LaTeX compiler:"
+        text = label
         labelLocation = BorderLayout.WEST
 
         updateUI()
     }
 
-    private fun initComboBoxModel() = object : SortedComboBoxModel<LatexCompilerComboBoxItem>(
-        compareBy<LatexCompilerComboBoxItem> { it.order }.thenBy { it.presentableText.toLowerCase() }
+    private fun initComboBoxModel() = object : SortedComboBoxModel<CompilerComboBoxItem>(
+        compareBy<CompilerComboBoxItem> { it.order }.thenBy { it.presentableText.toLowerCase() }
     ) {
 
         override fun setSelectedItem(anItem: Any?) {
@@ -52,9 +52,9 @@ class LatexCompilerEditor : LabeledComponent<ComboBox<LatexCompilerComboBoxItem>
         }
     }
 
-    private fun populateModel() {
+    private fun populateModel(compilers: Iterable<S>) {
         comboBoxModel.apply {
-            addAll(CompilerMagic.compilerByExecutableName.values.map { BuiltinCompilerItem(it) })
+            addAll(compilers.map { BuiltinCompilerItem(it) })
             add(AddCompilerItem())
         }
     }
@@ -62,7 +62,7 @@ class LatexCompilerEditor : LabeledComponent<ComboBox<LatexCompilerComboBoxItem>
     private fun initComboBox() {
         val comboBox = ComboBox(comboBoxModel).apply {
             isEditable = false
-            renderer = object : ColoredListCellRenderer<LatexCompilerComboBoxItem>() {
+            renderer = object : ColoredListCellRenderer<CompilerComboBoxItem>() {
 
                 init {
                     ipad = JBInsets.create(1, 0)
@@ -70,8 +70,8 @@ class LatexCompilerEditor : LabeledComponent<ComboBox<LatexCompilerComboBoxItem>
                 }
 
                 override fun customizeCellRenderer(
-                    list: JList<out LatexCompilerComboBoxItem>,
-                    value: LatexCompilerComboBoxItem?,
+                    list: JList<out CompilerComboBoxItem>,
+                    value: CompilerComboBoxItem?,
                     index: Int,
                     selected: Boolean,
                     hasFocus: Boolean
@@ -85,39 +85,39 @@ class LatexCompilerEditor : LabeledComponent<ComboBox<LatexCompilerComboBoxItem>
     }
 
     private fun buildBrowseRunnable(): Runnable = BrowseFolderRunnable(
-        "Select Alternative LaTeX Compiler",
-        "Select LaTeX compiler executable to run with",
+        "Select Alternative Compiler",
+        "Select compiler executable to run with",
         null,
         BrowseFilesListener.SINGLE_FILE_DESCRIPTOR,
         component,
         LatexCompilerComboBoxTextComponentAccessor.INSTANCE
     )
 
-    fun setSelectedCompiler(compiler: LatexCompiler?) {
+    fun setSelectedCompiler(compiler: Compiler<C>?) {
         comboBoxModel.selectedItem = when (compiler) {
-            is SupportedLatexCompiler -> findSupportedCompiler(compiler)
-            is CustomLatexCompiler -> findOrCreateCustomCompiler(compiler)
-            null -> null
-        }
-    }
-
-    fun getSelectedCompiler(): LatexCompiler? {
-        return when (val selected = comboBoxModel.selectedItem) {
-            is BuiltinCompilerItem -> selected.compiler
-            is CustomCompilerItem -> selected.compiler
+            is SupportedCompiler<C> -> findSupportedCompiler(compiler)
+            is CustomCompiler<C> -> findOrCreateCustomCompiler(compiler)
             else -> null
         }
     }
 
-    private fun findSupportedCompiler(compiler: SupportedLatexCompiler): BuiltinCompilerItem? {
+    fun getSelectedCompiler(): Compiler<C>? {
+        return when (val selected = comboBoxModel.selectedItem) {
+            is BuiltinCompilerItem<*> -> selected.compiler as Compiler<C>
+            is CustomCompilerItem<*> -> selected.compiler as Compiler<C>
+            else -> null
+        }
+    }
+
+    private fun findSupportedCompiler(compiler: SupportedCompiler<C>): BuiltinCompilerItem<C>? {
         return comboBoxModel.items.asSequence()
-            .mapNotNull { it as? BuiltinCompilerItem }
+            .mapNotNull { it as? BuiltinCompilerItem<C> }
             .firstOrNull { it.compiler == compiler }
     }
 
-    private fun findOrCreateCustomCompiler(compiler: CustomLatexCompiler): CustomCompilerItem {
+    private fun findOrCreateCustomCompiler(compiler: CustomCompiler<C>): CustomCompilerItem<C> {
         return comboBoxModel.items.asSequence()
-            .mapNotNull { it as? CustomCompilerItem }
+            .mapNotNull { it as? CustomCompilerItem<C> }
             .firstOrNull { it.compiler.executablePath == compiler.executablePath }
             ?: CustomCompilerItem(compiler).also { comboBoxModel.add(it) }
     }
