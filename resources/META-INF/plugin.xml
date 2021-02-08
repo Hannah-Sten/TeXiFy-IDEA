@@ -480,6 +480,7 @@
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <moveLeftRightHandler language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexMoveElementLeftRightHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterBetweenBracesHandler"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInCommentHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexParameterInfoHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
