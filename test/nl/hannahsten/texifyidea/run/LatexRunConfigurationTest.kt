@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.latex.compiler.SupportedLatexCompiler
+import nl.hannahsten.texifyidea.run.latex.compiler.LatexmkCompiler
 import org.jdom.Element
 import org.jdom.Namespace
 
@@ -14,12 +14,12 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
     fun testWriteRead() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         val element = Element("configuration", Namespace.getNamespace("", ""))
-        runConfig.compiler = SupportedLatexCompiler.LATEXMK
+        runConfig.compiler = LatexmkCompiler
         runConfig.outputPath.pathString = LatexOutputPath.projectDirString + "otherout"
         runConfig.writeExternal(element)
         runConfig.readExternal(element)
         // Not sure if this actually tests anything
-        assertEquals(runConfig.compiler, SupportedLatexCompiler.LATEXMK)
+        assertEquals(runConfig.compiler, LatexmkCompiler)
         assertEquals(runConfig.outputPath.pathString, LatexOutputPath.projectDirString + "otherout")
     }
 
