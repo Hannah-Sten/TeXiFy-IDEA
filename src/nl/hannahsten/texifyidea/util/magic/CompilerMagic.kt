@@ -10,9 +10,9 @@ import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 
 object CompilerMagic {
 
-    val compileStepProviders: List<LatexCompileStepProvider> = listOf(
-        CompileLatexCompileStepProvider,
-        BibliographyCompileStepProvider,
+    val compileStepProviders: LinkedHashMap<String, LatexCompileStepProvider> = linkedMapOf(
+        CompileLatexCompileStepProvider.id to CompileLatexCompileStepProvider,
+        BibliographyCompileStepProvider.id to BibliographyCompileStepProvider,
     )
 
     val latexCompilerByExecutableName: Map<String, SupportedLatexCompiler> = mapOf(

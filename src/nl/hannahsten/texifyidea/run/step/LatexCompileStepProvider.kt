@@ -12,5 +12,7 @@ interface LatexCompileStepProvider {
 
     val icon: Icon
 
+    val id: String
+
     fun createStep(configuration: LatexRunConfiguration): LatexCompileStep
 }

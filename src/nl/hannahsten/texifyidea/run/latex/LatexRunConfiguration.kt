@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex
 
+import com.intellij.configurationStore.deserializeAndLoadState
+import com.intellij.configurationStore.serializeStateInto
 import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.CommonProgramRunConfigurationParameters
 import com.intellij.execution.ExecutionException
@@ -13,6 +15,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -80,6 +83,8 @@ class LatexRunConfiguration constructor(
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
+        private const val COMPILE_STEP = "compile-step"
+        private const val COMPILE_STEP_NAME_ATTR = "name"
 
         // For backwards compatibility
         private const val AUX_DIR = "aux-dir"
@@ -344,6 +349,20 @@ class LatexRunConfiguration constructor(
         if (makeindexRunConfigElt != null) {
             this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
         }
+
+        // Read compile steps
+        // This should be the last option that is read, as it may depend on other options.
+        for (compileStepElement in element.getChildren(COMPILE_STEP)) {
+            val key = compileStepElement.getAttributeValue(COMPILE_STEP_NAME_ATTR)
+            val provider = CompilerMagic.compileStepProviders[key] ?: continue
+
+            val step = provider.createStep(this)
+            if (step is PersistentStateComponent<*>) {
+                deserializeAndLoadState(step, compileStepElement)
+            }
+
+            this.compileSteps.add(step)
+        }
     }
 
     @Throws(WriteExternalException::class)
@@ -378,6 +397,17 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
         parent.addContent(Element(BIB_RUN_CONFIG).also { it.text = bibRunConfigIds.toString() })
         parent.addContent(Element(MAKEINDEX_RUN_CONFIG).also { it.text = makeindexRunConfigIds.toString() })
+
+        for (step in compileSteps) {
+            val stepElement = Element(COMPILE_STEP)
+            stepElement.setAttribute(COMPILE_STEP_NAME_ATTR, step.provider.id)
+
+            if (step is PersistentStateComponent<*>) {
+                serializeStateInto(step, stepElement)
+            }
+
+            parent.addContent(stepElement)
+        }
     }
 
     /**

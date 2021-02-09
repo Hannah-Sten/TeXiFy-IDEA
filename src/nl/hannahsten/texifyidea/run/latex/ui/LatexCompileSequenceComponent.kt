@@ -92,7 +92,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
     private fun showPopup() {
         val group = DefaultActionGroup()
 
-        for (provider in CompilerMagic.compileStepProviders) {
+        for (provider in CompilerMagic.compileStepProviders.values) {
             group.add(TagAction(provider))
         }
 

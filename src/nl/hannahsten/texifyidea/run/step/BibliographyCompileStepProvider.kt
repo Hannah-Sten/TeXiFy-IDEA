@@ -9,5 +9,7 @@ object BibliographyCompileStepProvider : LatexCompileStepProvider {
 
     override val icon = TexifyIcons.BUILD_BIB
 
+    override val id = "bibliography"
+
     override fun createStep(configuration: LatexRunConfiguration) = BibliographyCompileStep(this, configuration)
 }

@@ -9,5 +9,7 @@ object CompileLatexCompileStepProvider : LatexCompileStepProvider {
 
     override val icon = TexifyIcons.BUILD
 
+    override val id = "compile-latex"
+
     override fun createStep(configuration: LatexRunConfiguration) = CompileLatexCompileStep(this, configuration)
 }

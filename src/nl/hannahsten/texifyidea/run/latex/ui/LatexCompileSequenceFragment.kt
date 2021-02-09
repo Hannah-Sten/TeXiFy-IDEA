@@ -35,7 +35,7 @@ class LatexCompileSequenceFragment(private val component: LatexCompileSequenceCo
     }
 
     override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-//        component.apply(s)
+        component.apply(s.configuration as LatexRunConfiguration)
     }
 
     override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
