@@ -13,6 +13,11 @@ class NewLatexSettingsEditor(settings: LatexRunConfiguration) : RunConfiguration
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
 
+        // Compile sequence
+        val compileSequenceComponent = LatexCompileSequenceComponent(this)
+        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent)
+        fragments.add(compileSequenceFragment)
+
         val beforeRunComponent = BeforeRunComponent(this)
         fragments.add(BeforeRunFragment.createBeforeRun(beforeRunComponent, null))
         fragments.addAll(BeforeRunFragment.createGroup())
@@ -23,16 +28,11 @@ class NewLatexSettingsEditor(settings: LatexRunConfiguration) : RunConfiguration
         val commonParameterFragments = CommonParameterFragments<LatexRunConfiguration>(mySettings.project) { false }
         fragments.addAll(commonParameterFragments.fragments)
 
-        // Compile sequence
-        val compileSequenceComponent = LatexCompileSequenceComponent(this)
-        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent)
-        fragments.add(compileSequenceFragment)
-
-        // Label compile LaTex
+        // Label compile LaTeX
         val compileLabel = JLabel("Compile LaTeX").apply {
             font = JBUI.Fonts.label().deriveFont(Font.BOLD)
         }
-        val compileLabelFragment = SettingsEditorFragment<LatexRunConfiguration, JLabel>("compileLabel", null, null, compileLabel, 0, { _, _ -> }, { _, _ -> }) { true }
+        val compileLabelFragment = SettingsEditorFragment<LatexRunConfiguration, JLabel>("compileLabel", null, null, compileLabel, -1, { _, _ -> }, { _, _ -> }) { true }
         fragments.add(compileLabelFragment)
 
         // LaTeX compiler
