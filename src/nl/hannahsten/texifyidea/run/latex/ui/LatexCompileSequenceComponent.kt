@@ -12,6 +12,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.Conditions
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
@@ -23,6 +24,7 @@ import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.Box
@@ -134,16 +136,76 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         }
     }
 
-    override fun update(event: DnDEvent?): Boolean {
-        return true
+    override fun update(event: DnDEvent): Boolean {
+        val buttonToReplace = findButtonToReplace(event)
+        if (buttonToReplace == null) {
+            steps.forEach { it.showDropPlace(false) }
+            event.isDropPossible = false
+            return true
+        }
+
+        val dropButton = findDropButton(buttonToReplace, event)
+        steps.forEach { it.showDropPlace(it == dropButton) }
+        dropFirst.isVisible = (dropButton == null)
+        event.isDropPossible = true
+
+        return false
     }
 
     override fun drop(event: DnDEvent) {
+        val (index, _) = findButtonToReplace(event) ?: return
+        val droppedButton = event.attachedObject as? StepButton ?: return
+
+        steps.remove(droppedButton)
+        steps.add(index, droppedButton)
         buildPanel()
+        changeListener()
+        IdeFocusManager.getInstance(configuration.project).requestFocus(droppedButton, false)
+    }
+
+    private fun findButtonToReplace(event: DnDEvent): IndexedValue<StepButton>? {
+        if (event.attachedObject !is StepButton) return null
+
+        val area = Rectangle(event.point.x - 5, event.point.y - 5, 10, 10)
+        val indexedSteps = steps.withIndex()
+
+        val intersectedButtonWithIndex = indexedSteps.find { (_, it) -> it.isVisible && it.bounds.intersects(area) } ?: return null
+        val (index, intersectedButton) = intersectedButtonWithIndex
+        if (intersectedButton == event.attachedObject) {
+            return null
+        }
+
+        val left = intersectedButton.bounds.centerX > event.point.x
+        val buttonToReplace = if (index < steps.indexOf(event.attachedObject)) {
+            if (!left) {
+                indexedSteps.find { (i, it) -> it.isVisible && i > index }
+            }
+            else intersectedButtonWithIndex
+        }
+        else if (left) {
+            indexedSteps.findLast { (i, it) -> it.isVisible && i < index }
+        }
+        else intersectedButtonWithIndex
+
+        return if (buttonToReplace == event.attachedObject) null else buttonToReplace
+    }
+
+    private fun findDropButton(replaceButton: IndexedValue<StepButton>, event: DnDEvent): StepButton? {
+        return if (replaceButton.index > steps.indexOf(event.attachedObject)) {
+            replaceButton.value
+        }
+        else {
+            steps.withIndex().findLast { (i, it) -> it.isVisible && i < replaceButton.index }?.value
+        }
     }
 
     override fun dispose() {
+    }
 
+    @Suppress("UNNECESSARY_SAFE_CALL")
+    override fun cleanUpOnLeave() {
+        steps?.forEach { it.showDropPlace(false) }
+        dropFirst?.isVisible = false
     }
 
     private inner class StepButton(val step: LatexCompileStep) : TagButton(step.provider.name, { changeListener() }), DnDSource {
@@ -185,6 +247,10 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         override fun canStartDragging(action: DnDAction?, dragOrigin: Point?) = true
 
         override fun startDragging(action: DnDAction?, dragOrigin: Point?) = DnDDragStartBean(this)
+
+        fun showDropPlace(show: Boolean) {
+            dropPlace.isVisible = show
+        }
     }
 
     private inner class TagAction(private val provider: LatexCompileStepProvider) : AnAction(provider.name, null, provider.icon) {
