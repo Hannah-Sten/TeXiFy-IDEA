@@ -7,13 +7,17 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.dialog
+import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
+import com.intellij.util.ui.JBDimension
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.run.bibtex.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.ui.compiler.CompilerEditor
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
 
 class BibliographyCompileStep(
@@ -34,48 +38,63 @@ class BibliographyCompileStep(
 
     private var state = State()
 
-
     override fun configure() {
-        // TODO: cancel: reset state?
+        val compilerEditor = CompilerEditor("Compiler", CompilerMagic.bibliographyCompilerByExecutableName.values).apply {
+            CommonParameterFragments.setMonospaced(component)
+            minimumSize = JBDimension(200, 30)
+            label.isVisible = false
+            component.setMinimumAndPreferredWidth(150)
 
-//        val compilerModel = SortedComboBoxModel<BibliographyCompiler>(compareBy { it.displayName }).apply {
-//            addAll(CompilerMagic.)
-//        }
+            setSelectedCompiler(state.compiler)
+        }
+
+        val compilerArguments = ExpandableTextField().apply {
+            emptyText.text = "Compiler arguments"
+            MacrosDialog.addMacroSupport(this, MacrosDialog.Filters.ALL) { false }
+            CommonParameterFragments.setMonospaced(this)
+
+            text = state.compilerArguments
+        }
+
+        val workingDirectory = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                "Select Working Directory",
+                "Working directory should typically be the directory where the .aux file can be found.",
+                configuration.project,
+                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+            )
+            // TODO: make these actually work
+            MacrosDialog.addMacroSupport(textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
+
+            text = state.workingDirectory ?: ""
+        }
 
         val panel = panel {
             row("Compiler:") {
-//                comboBox()
-//                CommonParameterFragments.setMonospaced()
-            }
-            row("Compiler arguments:") {
-                this.
-                component(RawCommandLineEditor().apply {
-                    // TODO: make these actually work
-                    MacrosDialog.addMacroSupport(editorField, MacrosDialog.Filters.ALL) { false }
-                    CommonParameterFragments.setMonospaced(textField)
-                })
+                cell {
+                    component(compilerEditor.component)
+                    compilerArguments(CCFlags.growX, CCFlags.pushX)
+                }
             }
             row("Working directory:") {
-                component(TextFieldWithBrowseButton().apply {
-                    addBrowseFolderListener(
-                        "Select Working Directory",
-                        "Working directory should typically be the directory where the .aux file can be found",
-                        configuration.project,
-                        FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                        TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
-                    )
-                    // TODO: make these actually work
-                    MacrosDialog.addMacroSupport(textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
-                })
+                component(workingDirectory)
+                    .comment("Working directory should typically be the directory where the .aux file can be found.")
             }
         }
 
-        dialog(
+        val modified = dialog(
             "Configure Bibliography Step",
             panel = panel,
             resizable = true,
-            focusedComponent = null,
-        ).show()
+            focusedComponent = compilerEditor.component,
+        ).showAndGet()
+
+        if (modified) {
+            state.compiler = compilerEditor.getSelectedCompiler() as BibliographyCompiler?
+            state.compilerArguments = compilerArguments.text.trim().ifEmpty { null }
+            state.workingDirectory = workingDirectory.text.trim().ifEmpty { null }
+        }
     }
 
     override fun execute() {
