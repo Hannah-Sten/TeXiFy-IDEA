@@ -15,5 +15,5 @@ interface LatexCompileStep {
 
     fun configure()
 
-    fun execute()
+    fun getCommand(): List<String>?
 }

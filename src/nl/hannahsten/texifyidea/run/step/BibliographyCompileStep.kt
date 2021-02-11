@@ -97,7 +97,7 @@ class BibliographyCompileStep(
         }
     }
 
-    override fun execute() {
+    override fun getCommand(): List<String>? {
         TODO("Not yet implemented")
     }
 

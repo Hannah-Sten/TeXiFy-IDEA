@@ -6,17 +6,17 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
 
-        override fun createCommand(
-            runConfig: LatexRunConfiguration,
-            auxilPath: String?,
-            outputPath: String?,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
-        ): MutableList<String> {
-            // For now only support custom executable for TeX Live
-            // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
-            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project)
-            val command = mutableListOf(runConfig.compilerPath ?: executable)
+    override fun createCommand(
+        runConfig: LatexRunConfiguration,
+        auxilPath: String?,
+        outputPath: String?,
+        moduleRoot: VirtualFile?,
+        moduleRoots: Array<VirtualFile>
+    ): MutableList<String> {
+        // For now only support custom executable for TeX Live
+        // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
+        val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project)
+        val command = mutableListOf(runConfig.compilerPath ?: executable)
 
         command.add("-file-line-error")
         command.add("-interaction=nonstopmode")

@@ -12,7 +12,5 @@ class CompileLatexCompileStep(
 
     }
 
-    override fun execute() {
-        TODO("Not yet implemented")
-    }
+    override fun getCommand() = configuration.compiler?.getCommand(this)
 }
