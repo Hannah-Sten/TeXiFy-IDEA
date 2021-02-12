@@ -59,7 +59,13 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
         val currentVersion = PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
         // Don't do the check when there's no internet connection
-        val latestVersion = try { getLatestVersion() } catch (e: UnknownHostException) { currentVersion }
+        val latestVersion = try {
+            getLatestVersion()
+        }
+        catch (e: UnknownHostException) {
+            currentVersion
+        }
+
         if (latestVersion?.isNotBlank() == true && DefaultArtifactVersion(currentVersion) < DefaultArtifactVersion(latestVersion)) {
 
             JBPopupFactory.getInstance().createMessage("")
