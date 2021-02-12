@@ -96,6 +96,7 @@ This can lead to strange behaviour (see e.g. https://github.com/Hannah-Sten/TeXi
 == Debugging plugin unload fail
 
 See https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html?from=jetbrains.org#troubleshooting
+
 * Make sure the runIde run config has Allow parallel run selected
 * Run runIde
 * Set registry key `ide.plugins.snapshot.on.unload.fail` (if not already set)
