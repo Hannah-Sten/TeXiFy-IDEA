@@ -45,7 +45,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
                 val response = inputStream.bufferedReader().readLine()
                 val releases = Parser.default().parse(StringBuilder(response)) as? JsonArray<*>
-                latestVersionCached =  (releases?.firstOrNull() as? JsonObject)?.string("tag_name") ?: ""
+                latestVersionCached = (releases?.firstOrNull() as? JsonObject)?.string("tag_name") ?: ""
                 return latestVersionCached
             }
         }
