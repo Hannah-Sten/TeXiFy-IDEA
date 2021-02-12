@@ -13,4 +13,6 @@ class CompileLatexCompileStep(
     }
 
     override fun getCommand() = configuration.compiler?.getCommand(this)
+
+    override fun getWorkingDirectory() = configuration.workingDirectory ?: configuration.mainFile?.parent?.path
 }

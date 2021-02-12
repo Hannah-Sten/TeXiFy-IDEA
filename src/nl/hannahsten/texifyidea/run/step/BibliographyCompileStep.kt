@@ -101,6 +101,8 @@ class BibliographyCompileStep(
         TODO("Not yet implemented")
     }
 
+    override fun getWorkingDirectory() = state.workingDirectory ?: configuration.getAuxilDirectory()?.path ?: configuration.mainFile?.parent?.path
+
     override fun getState() = state
 
     override fun loadState(state: State) {

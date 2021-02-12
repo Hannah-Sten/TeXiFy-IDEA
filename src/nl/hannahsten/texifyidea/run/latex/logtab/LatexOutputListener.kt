@@ -24,7 +24,7 @@ class LatexOutputListener(
     val mainFile: VirtualFile?,
     val messageList: MutableList<LatexLogMessage>,
     val bibMessageList: MutableList<BibtexLogMessage>,
-    val treeView: LatexCompileMessageTreeView
+    val treeView: LatexCompileMessageTreeView,
 ) : ProcessListener {
 
     // This should probably be located somewhere else
@@ -59,6 +59,8 @@ class LatexOutputListener(
 
     // Stack with the filenames, where the first is the current file.
     private var fileStack = LatexFileStack()
+
+    var newMessageListener: ((LatexLogMessage, VirtualFile?) -> Unit)? = null
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         if (outputType !is ProcessOutputType) return
@@ -221,7 +223,10 @@ class LatexOutputListener(
             val message = LatexLogMessage(logMessage.message.trim(), logMessage.fileName, logMessage.line, logMessage.type, file)
             messageList.add(message)
             treeView.applyFilters(message)
+            newMessageListener?.invoke(logMessage, file)
         }
+
+
     }
 
     override fun processTerminated(event: ProcessEvent) {

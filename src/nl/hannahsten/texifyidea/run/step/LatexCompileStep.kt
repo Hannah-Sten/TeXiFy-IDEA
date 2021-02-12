@@ -16,4 +16,6 @@ interface LatexCompileStep {
     fun configure()
 
     fun getCommand(): List<String>?
+
+    fun getWorkingDirectory(): String?
 }

@@ -9,7 +9,6 @@ import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
-import com.intellij.execution.filters.RegexpFilter
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -27,6 +26,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.PathUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.run.LatexRunState
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.bibtex.compiler.BiberCompiler
@@ -216,21 +216,21 @@ class LatexRunConfiguration constructor(
     }
 
     @Throws(ExecutionException::class)
-    override fun getState(
-        executor: Executor,
-        environment: ExecutionEnvironment
-    ): RunProfileState {
-        val filter = RegexpFilter(
-            environment.project,
-            "^\$FILE_PATH$:\$LINE$"
-        )
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
+//        val filter = RegexpFilter(
+//            environment.project,
+//            "^\$FILE_PATH$:\$LINE$"
+//        )
+//
+//        val state = LatexCommandLineState(
+//            environment,
+//            this
+//        )
+//        state.addConsoleFilters(filter)
+//        return state
 
-        val state = LatexCommandLineState(
-            environment,
-            this
-        )
-        state.addConsoleFilters(filter)
-        return state
+        // ExternalSystemRunnableState, GradleRunConfiguration, BuildView, MultipleBuildView
+        return LatexRunState(this, environment)
     }
 
     @Throws(InvalidDataException::class)
