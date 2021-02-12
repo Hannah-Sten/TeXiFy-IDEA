@@ -105,7 +105,7 @@ See https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html?from=jetbra
 * Install YourKit (I have also tried with Eclips MAT, IntelliJ and visualvm but none worked)
 * Open the generated hprof file
 * Go to Class loader, find the class loader which references TeXiFy things and click Paths from GC Roots.
-* The classes that are mentioned there, were not unloaded successfully for whatever reason.
+* The classes that are mentioned there, were not unloaded successfully for whatever reason. (However, even on a partially successful unload, I see classes present here, so not sure what that means)
 
 == Troubleshooting
 
