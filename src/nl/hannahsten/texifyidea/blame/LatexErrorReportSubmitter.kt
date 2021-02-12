@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
+import java.net.UnknownHostException
 
 /**
  * Send error report to GitHub issue tracker.
@@ -32,7 +33,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         private const val URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&title="
         private const val ENCODING = "UTF-8"
 
-        var latestVersionCached = ""
+        private var latestVersionCached = ""
 
         fun getLatestVersion(): String {
             if (latestVersionCached.isNotBlank()) return latestVersionCached
@@ -57,8 +58,9 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
     override fun submit(events: Array<out IdeaLoggingEvent>?, additionalInfo: String?, parentComponent: Component, consumer: Consumer<in SubmittedReportInfo>): Boolean {
 
         val currentVersion = PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
-        val latestVersion = getLatestVersion()
-        if (latestVersion.isNotBlank() && DefaultArtifactVersion(currentVersion) < DefaultArtifactVersion(latestVersion)) {
+        // Don't do the check when there's no internet connection
+        val latestVersion = try { getLatestVersion() } catch (e: UnknownHostException) { currentVersion }
+        if (latestVersion?.isNotBlank() == true && DefaultArtifactVersion(currentVersion) < DefaultArtifactVersion(latestVersion)) {
 
             JBPopupFactory.getInstance().createMessage("")
                 .showInCenterOf(parentComponent)
