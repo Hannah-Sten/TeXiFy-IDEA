@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.formatting
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.psi.codeStyle.CodeStyleManager
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
@@ -185,22 +187,22 @@ fun Int?.ifPositiveAddTwo(): Int =
             \end{algorithm}
         """.trimIndent()
     }
-//
-//    fun testComments() {
-//        // Wanted to test line breaking, but not sure how to enable it in test
-//        val text = """
-//            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
-//        """.trimIndent()
-//        val file = myFixture.configureByText(LatexFileType, text)
-//        CodeStyle.getLanguageSettings(file).RIGHT_MARGIN = 50
-//        CodeStyle.getLanguageSettings(file).WRAP_ON_TYPING = CommonCodeStyleSettings.WrapOnTyping.WRAP.intValue
+
+    fun testComments() {
+        // Wanted to test line breaking, but not sure how to enable it in test
+        val text = """
+            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
+        """.trimIndent()
+        val file = myFixture.configureByText(LatexFileType, text)
+        CodeStyle.getLanguageSettings(file).RIGHT_MARGIN = 50
+        CodeStyle.getLanguageSettings(file).WRAP_ON_TYPING = CommonCodeStyleSettings.WrapOnTyping.WRAP.intValue
 //        CodeStyle.getDefaultSettings().WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN = true
-//        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
-//        val expected = """
-//            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
-//        """.trimIndent()
-//        myFixture.checkResult(expected)
-//    }
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+        val expected = """
+            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
+        """.trimIndent()
+        myFixture.checkResult(expected)
+    }
 
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)

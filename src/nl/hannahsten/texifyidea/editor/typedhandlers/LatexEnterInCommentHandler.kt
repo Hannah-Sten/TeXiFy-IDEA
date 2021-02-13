@@ -39,6 +39,12 @@ class LatexEnterInCommentHandler : EnterHandlerDelegateAdapter() {
             val lineEnd = editor.document.getLineEndOffset(previousLineNumber)
             val previousLine = editor.document[IntRange(lineStart, lineEnd)]
 
+            // If we pressed enter right before or after the %, then don't do anything, as we're not actually splitting a comment
+            // To clarify the second case: consider wanting to type a % at the end of a line
+            if (!previousLine.contains("%") || previousLine.endsWith("%")) {
+                return super.postProcessEnter(file, editor, dataContext)
+            }
+
             // Since the enter handler already inserted the indent of the previous line, subtract it
             val numberOfSpacesBeforePercent = previousLine.takeWhile { it == ' ' }.length
             val numberOfSpacesAfterPercent = previousLine.dropWhile { it == ' ' }.dropWhile { it == '%' }.takeWhile { it == ' ' }.length
