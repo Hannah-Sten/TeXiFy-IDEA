@@ -10,7 +10,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
-import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -22,7 +21,6 @@ import nl.hannahsten.texifyidea.util.parentOfType
 class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
 
     override fun handleInsert(insertionContext: InsertionContext, lookupElement: LookupElement) {
-        removeWhiteSpaces(insertionContext)
         insert(insertionContext, lookupElement)
     }
 
@@ -65,19 +63,5 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         if (psiElement.text in setOf("{", "[")) {
             caret.moveToOffset((psiElement.parentOfType(LatexCommands::class)?.endOffset() ?: return) - extraSpaces)
         }
-    }
-
-    /**
-     * Remove whitespaces and everything after that that was inserted by the lookup text.
-     */
-    private fun removeWhiteSpaces(context: InsertionContext) {
-        val editor = context.editor
-        val document = editor.document
-        val offset = editor.caretModel.offset
-        // context.startOffset is the offset of the start of the just inserted text.
-        val insertedText = document.text.substring(context.startOffset, offset)
-        val indexFirstSpace = insertedText.indexOfFirst { it == ' ' }
-        if (indexFirstSpace == -1) return
-        document.deleteString(context.startOffset + indexFirstSpace, offset)
     }
 }
