@@ -47,6 +47,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         registerPackageNameCompletion()
         registerDocumentClassCompletion()
         registerLatexArgumentTypeCompletion()
+        registerDefaultEnvironmentCompletion()
     }
 
     /**
@@ -334,13 +335,6 @@ open class LatexCompletionContributor : CompletionContributor() {
             .withLanguage(LatexLanguage.INSTANCE),
         LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
     )
-
-    /**
-     * Adds a completion contributor that gets activated within the first required parameter of a given command.
-     */
-    private fun extendLatexCommand(provider: CompletionProvider<CompletionParameters>, commandNameWithSlash: String) {
-        extendLatexCommands(provider, setOf(commandNameWithSlash))
-    }
 
     /**
      * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.

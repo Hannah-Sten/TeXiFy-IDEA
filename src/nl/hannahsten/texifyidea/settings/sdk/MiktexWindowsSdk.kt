@@ -7,10 +7,16 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Paths
 
-class MiktexSdk : LatexSdk("MiKTeX SDK") {
+/**
+ * MiKTeX on Windows.
+ */
+class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
-    // Cache version
-    var version: String? = null
+    companion object {
+
+        // Cache version
+        var version: String? = null
+    }
 
     override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
 
@@ -54,9 +60,13 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
     }
 
     override fun getVersionString(sdk: Sdk): String? {
+        return getVersionString(sdk.homePath)
+    }
+
+    override fun getVersionString(sdkHome: String?): String? {
         version?.let { return version }
 
-        val executable = sdk.homePath?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
+        val executable = sdkHome?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
         val output = "$executable --version".runCommand() ?: ""
         version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
 

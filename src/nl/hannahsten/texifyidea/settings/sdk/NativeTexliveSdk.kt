@@ -59,11 +59,4 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
         return "$texmfDistPath/doc"
     }
-
-    override fun getExecutableName(executable: String, homePath: String): String {
-        // Even though pdflatex is in path, it may be not the pdflatex we want, so we prefix the path to be sure.
-        // Get base path of LaTeX distribution
-        val basePath = "/usr/bin"
-        return "$basePath/$executable"
-    }
 }

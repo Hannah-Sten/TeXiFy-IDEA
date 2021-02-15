@@ -358,6 +358,14 @@
         <group id="texify.LatexGenerate" text="_LaTeX" description="Latex generation actions" popup="true">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
 
+            <!-- Table wizard -->
+            <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableWizardPopup" text="_Table..."
+                    description="Shows a wizard to insert a table."/>
+
+            <!-- Figure/graphic wizard -->
+            <action class="nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction" id="texify.GraphicsWizardPopup" text="_Graphic..."
+                    description="Shows a wizard to insert a graphic."/>
+
             <!-- Dummy text -->
             <action class="nl.hannahsten.texifyidea.action.wizard.ipsum.InsertDummyTextAction" id="texify.DummyTextWizardPopup" text="_Dummy Text..."
                     description="Shows a popup to insert dummy text."/>
@@ -437,8 +445,9 @@
         <projectService serviceImplementation="nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexErrorTreeViewConfiguration"/>
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.TexliveSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.DockerSdk" />
-        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.NativeTexliveSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexLinuxSdk" />
         <projectSdkSetupValidator implementation="nl.hannahsten.texifyidea.settings.sdk.LatexProjectSdkSetupValidator" />
 
         <!-- Languages -->
