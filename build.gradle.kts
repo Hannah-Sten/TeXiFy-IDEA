@@ -138,7 +138,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "211.4961.30-EAP-SNAPSHOT"
+    version = "211.5787.15-EAP-SNAPSHOT"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
