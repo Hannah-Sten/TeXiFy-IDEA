@@ -55,7 +55,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             "Figure is not referenced",
             isOntheFly,
             emptyArray(),
-            ProblemHighlightType.WEAK_WARNING
+            ProblemHighlightType.GENERIC_ERROR_OR_WARNING
         )
 
     /**

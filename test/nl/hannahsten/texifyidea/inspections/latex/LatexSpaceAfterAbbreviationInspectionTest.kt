@@ -10,7 +10,7 @@ class LatexSpaceAfterAbbreviationInspectionTest : TexifyInspectionTestBase(Latex
         myFixture.configureByText(
             LatexFileType,
             """
-            e.g<weak_warning descr="Abbreviation should be followed by a normal space">. </weak_warning>text
+            e.g<warning descr="Abbreviation should be followed by a normal space">. </warning>text
             """.trimIndent()
         )
         myFixture.checkHighlighting()

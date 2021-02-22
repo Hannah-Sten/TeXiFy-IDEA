@@ -56,9 +56,9 @@ abstract class TexifyRegexInspection(
     val replacementRange: (Matcher) -> IntRange = { it.start()..it.end() },
 
     /**
-     * The highlight level of the problem, WEAK_WARNING by default.
+     * The highlight level of the problem, GENERIC_ERROR_OR_WARNING by default.
      */
-    val highlight: ProblemHighlightType = ProblemHighlightType.WEAK_WARNING,
+    val highlight: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
 
     /**
      * Name of the quick fix.

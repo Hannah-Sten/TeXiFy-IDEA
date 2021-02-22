@@ -92,7 +92,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                 command,
                 "Missing label",
                 fixes.toTypedArray(),
-                ProblemHighlightType.WEAK_WARNING,
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
                 false
             )
@@ -114,7 +114,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                 environment,
                 "Missing label",
                 arrayOf(InsertLabelInEnvironmentFix()),
-                ProblemHighlightType.WEAK_WARNING,
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
                 false
             )

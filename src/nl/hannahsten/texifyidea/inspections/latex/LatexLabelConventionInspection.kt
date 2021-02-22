@@ -100,7 +100,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                         label,
                         "Unconventional label prefix",
                         LabelPreFix(),
-                        ProblemHighlightType.WEAK_WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

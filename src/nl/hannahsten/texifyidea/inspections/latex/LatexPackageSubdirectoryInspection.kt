@@ -46,7 +46,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
                         command,
                         displayName,
                         FixSubdirectoryQuickFix(providedDir, if (providedDir.isEmpty()) "$subDir/" else subDir),
-                        ProblemHighlightType.WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

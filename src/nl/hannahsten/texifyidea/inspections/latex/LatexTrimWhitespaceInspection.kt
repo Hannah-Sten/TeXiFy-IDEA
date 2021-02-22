@@ -54,7 +54,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
                     command,
                     TextRange.from(name.length + 1, sectionName.length),
                     "Unnecessary whitespace",
-                    ProblemHighlightType.WEAK_WARNING,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     TrimFix()
                 )

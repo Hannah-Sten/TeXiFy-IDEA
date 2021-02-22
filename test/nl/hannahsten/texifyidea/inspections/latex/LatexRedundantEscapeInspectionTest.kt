@@ -16,7 +16,7 @@ class LatexRedundantEscapeInspectionTest : TexifyInspectionTestBase(LatexRedunda
     fun `test warning with unicode support`() {
         setUnicodeSupport(myFixture.project, true)
 
-        myFixture.configureByText(LatexFileType, "<weak_warning descr=\"Redundant diacritic escape\">\\'</weak_warning>e")
+        myFixture.configureByText(LatexFileType, "<warning descr=\"Redundant diacritic escape\">\\'</warning>e")
         myFixture.checkHighlighting()
     }
 

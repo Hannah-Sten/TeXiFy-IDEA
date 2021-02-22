@@ -108,7 +108,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                     commands[i],
                     "Section is long and may be moved to a separate file.",
                     InspectionFix(),
-                    ProblemHighlightType.WEAK_WARNING,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
             )
