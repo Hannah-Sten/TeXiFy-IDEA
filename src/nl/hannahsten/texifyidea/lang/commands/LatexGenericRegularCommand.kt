@@ -145,7 +145,7 @@ enum class LatexGenericRegularCommand(
     INPUT("input", RequiredFileArgument("sourcefile", true, false, "tex")),
     INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", true, false, "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
-    INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, false, "tex")),
+    INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, true, "tex")),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),
     INDEX("intex", "entry".asRequired()),
