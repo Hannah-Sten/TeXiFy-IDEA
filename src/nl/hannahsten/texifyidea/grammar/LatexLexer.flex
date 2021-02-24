@@ -75,6 +75,7 @@ LATEX3_ON=\\ExplSyntaxOn
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
+VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline | \\url | \\path
 
 // Comments
 MAGIC_COMMENT_PREFIX=("!"|" !"[tT][eE][xX])
@@ -121,11 +122,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
  */
 
 // Use a separate state to start verbatim, to be able to return a command token for \verb
-\\verb                  |
-\\verb\*                |
-\\directlua             |
-\\luaexec               |
-\\lstinline             { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
+{VERBATIM_COMMAND}        { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
 
 <INLINE_VERBATIM_START> {
     // Experimental syntax of \lstinline: \lstinline{verbatim}
