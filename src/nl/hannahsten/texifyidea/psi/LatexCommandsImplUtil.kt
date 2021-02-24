@@ -15,8 +15,6 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
-import nl.hannahsten.texifyidea.reference.LatexLabelReference
-import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.requiredParameters

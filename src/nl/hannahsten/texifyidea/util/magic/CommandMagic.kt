@@ -294,6 +294,7 @@ object CommandMagic {
             REQUIREPACKAGE.cmd to hashSetOf("sty"),
             USEPACKAGE.cmd to hashSetOf("sty"),
             DOCUMENTCLASS.cmd to hashSetOf("cls"),
+            LOADCLASS.cmd to hashSetOf("cls"),
             EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels
     )
 
