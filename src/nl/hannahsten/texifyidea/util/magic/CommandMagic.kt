@@ -143,7 +143,7 @@ object CommandMagic {
      *
      * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
      */
-    fun getLabelDefinitionCommands(project: Project): Set<String> {
+    fun getLabelDefinitionCommands(project: Project): Set<String>? {
         // Check if updates are needed
         CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
         return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
@@ -195,7 +195,8 @@ object CommandMagic {
             DECLAREDOCUMENTCOMMAND,
             DEF,
             LET,
-            RENEWENVIRONMENT
+            RENEWENVIRONMENT,
+            CATCODE, // Not really redefining commands, but characters
     ).map { it.cmd }
 
     /**
