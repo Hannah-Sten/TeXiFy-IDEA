@@ -75,7 +75,9 @@ LATEX3_ON=\\ExplSyntaxOn
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
-VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline | \\url | \\path
+VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline
+ // These can contain unescaped % for example
+ | \\url | \\path | \\href
 
 // Comments
 MAGIC_COMMENT_PREFIX=("!"|" !"[tT][eE][xX])
