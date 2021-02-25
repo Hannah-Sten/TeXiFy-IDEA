@@ -2,8 +2,12 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.previousSiblingOfType
 
 fun getNameIdentifier(element: BibtexId): PsiElement {
     return element
@@ -21,4 +25,14 @@ fun setName(element: BibtexId, name: String): PsiElement {
 
 fun getName(element: BibtexId): String {
     return element.text
+}
+
+fun delete(element: BibtexId) {
+    val text = element.text ?: return
+
+    val searchScope = GlobalSearchScope.fileScope(element.containingFile)
+    BibtexEntryIndex.getEntryByName(text, element.project, searchScope).forEach {
+        it.previousSiblingOfType(PsiWhiteSpace::class)?.let { w -> w.parent.node.removeChild(w.node) }
+        it.parent.node.removeChild(it.node)
+    }
 }

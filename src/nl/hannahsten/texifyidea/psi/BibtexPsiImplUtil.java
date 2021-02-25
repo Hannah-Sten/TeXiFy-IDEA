@@ -101,6 +101,10 @@ public class BibtexPsiImplUtil {
         return BibtexIdUtilKt.getName(element);
     }
 
+    public static void delete(@NotNull BibtexId element) {
+        BibtexIdUtilKt.delete(element);
+    }
+
     /*
      * BibtexTag
      */
