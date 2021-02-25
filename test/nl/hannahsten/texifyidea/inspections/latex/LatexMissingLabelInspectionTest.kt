@@ -19,8 +19,8 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """
             \begin{document}
                 % figure without label
-                <warning descr="Missing label">\begin{figure}
-                \end{figure}</warning>
+                <weak_warning descr="Missing label">\begin{figure}
+                \end{figure}</weak_warning>
     
                 % figure with label
                 \begin{figure}
@@ -89,8 +89,8 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """
             \usepackage{listings}
             \begin{document}
-                <warning descr="Missing label">\begin{lstlisting}
-                \end{lstlisting}</warning>
+                <weak_warning descr="Missing label">\begin{lstlisting}
+                \end{lstlisting}</weak_warning>
                 
                 \begin{lstlisting}[label=somelabel]
                 \end{lstlisting}
@@ -194,7 +194,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """
             \usepackage{listings}
             \begin{document}
-                <warning descr="Missing label">\lstinputlisting{some/file}</warning>
+                <weak_warning descr="Missing label">\lstinputlisting{some/file}</weak_warning>
                 
                 \lstinputlisting[label={lst:inputlisting}]{some/file}
                 

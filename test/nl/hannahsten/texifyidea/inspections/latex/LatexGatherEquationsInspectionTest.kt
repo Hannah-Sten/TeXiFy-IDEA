@@ -7,12 +7,12 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
 
     fun `test two consecutive display math environments`() {
         myFixture.configureByText(LatexFileType, """
-            <warning descr="Equations can be gathered">\[
+            <weak_warning descr="Equations can be gathered">\[
                 x = y
-            \]</warning>
-            <warning descr="Equations can be gathered">\[
+            \]</weak_warning>
+            <weak_warning descr="Equations can be gathered">\[
                 y = x
-            \]</warning>
+            \]</weak_warning>
         """.trimIndent())
         myFixture.checkHighlighting()
     }

@@ -36,7 +36,7 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
                         i,
                         TextRange(0, i.text.length),
                         "\\graphicspath is already used elsewhere",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         RemoveFix()
                     )

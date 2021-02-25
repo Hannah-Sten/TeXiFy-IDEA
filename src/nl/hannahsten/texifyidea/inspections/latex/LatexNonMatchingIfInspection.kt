@@ -43,7 +43,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                             command,
                             "No matching \\if-command found",
                             GeneralMagic.noQuickFix,
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )

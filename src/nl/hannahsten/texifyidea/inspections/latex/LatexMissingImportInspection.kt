@@ -92,7 +92,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                     env,
                     TextRange(7, 7 + name.length),
                     "Environment requires ${pack.name} package",
-                    ProblemHighlightType.GENERIC_ERROR,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)
                 )
@@ -147,7 +147,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                         command,
                         range,
                         "Command requires $dependencyNames package",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         *fixes
                     )

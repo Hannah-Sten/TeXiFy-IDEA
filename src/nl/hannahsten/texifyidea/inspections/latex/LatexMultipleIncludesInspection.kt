@@ -52,7 +52,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
                         it,
                         TextRange.from(parameter.textOffset + 1 - it.textOffset, parameter.textLength - 2),
                         "Package has already been included",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

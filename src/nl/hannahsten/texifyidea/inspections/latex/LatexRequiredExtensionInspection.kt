@@ -52,7 +52,7 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
                                 command,
                                 TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
                                 "File argument should include the extension",
-                                ProblemHighlightType.GENERIC_ERROR,
+                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly,
                                 AddExtensionFix
                             )

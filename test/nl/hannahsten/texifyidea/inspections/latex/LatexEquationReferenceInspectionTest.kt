@@ -13,7 +13,7 @@ class LatexEquationReferenceInspectionTest : TexifyInspectionTestBase(LatexEquat
             \begin{equation}
             \label{eq:time3}
             \end{equation}
-            test constraints <warning descr="Use \eqref">(\ref{eq:time3})</warning> enforce node
+            test constraints <weak_warning descr="Use \eqref">(\ref{eq:time3})</weak_warning> enforce node
             """.trimIndent()
         )
         myFixture.checkHighlighting()

@@ -45,7 +45,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
                             command,
                             "This might break TeXiFy functionality",
                             null as LocalQuickFix?,
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )

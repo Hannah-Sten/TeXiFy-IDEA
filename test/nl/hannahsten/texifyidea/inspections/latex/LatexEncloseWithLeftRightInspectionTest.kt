@@ -10,7 +10,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
         myFixture.configureByText(
             LatexFileType,
             """
-            ${'$'} <warning descr="Parentheses pair could be replaced by \left(..\right)">(</warning>\frac 1 2<warning descr="Parentheses pair could be replaced by \left(..\right)">)</warning>${'$'}
+            ${'$'} <weak_warning descr="Parentheses pair could be replaced by \left(..\right)">(</weak_warning>\frac 1 2<weak_warning descr="Parentheses pair could be replaced by \left(..\right)">)</weak_warning>${'$'}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

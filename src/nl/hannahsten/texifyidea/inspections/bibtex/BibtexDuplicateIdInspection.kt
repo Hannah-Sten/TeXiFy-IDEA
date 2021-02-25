@@ -51,7 +51,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
                         bibtexEntry,
                         TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )
@@ -66,7 +66,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
                         bibtexEntry,
                         TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

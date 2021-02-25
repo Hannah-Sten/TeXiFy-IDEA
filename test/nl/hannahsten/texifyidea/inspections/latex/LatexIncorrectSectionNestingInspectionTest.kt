@@ -94,7 +94,7 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
             """
              \begin{document}
                 \section{}
-                <warning descr="Incorrect nesting">\subsubsection{}</warning>
+                <weak_warning descr="Incorrect nesting">\subsubsection{}</weak_warning>
              \end{document}
             """.trimIndent()
         )

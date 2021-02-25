@@ -11,7 +11,7 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             """
             \begin{document}
                 \section{some section}
-                <warning descr="Unconventional label prefix">\label{some-section}</warning>
+                <weak_warning descr="Unconventional label prefix">\label{some-section}</weak_warning>
             \end{document}
             """.trimIndent()
         )
@@ -24,7 +24,7 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             """
             \begin{document}
                 \begin{figure}
-                    <warning descr="Unconventional label prefix">\label{some-figure}</warning>
+                    <weak_warning descr="Unconventional label prefix">\label{some-figure}</weak_warning>
                 \end{figure}
             \end{document}
             """.trimIndent()
@@ -54,8 +54,8 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             LatexFileType,
             """
             \begin{document}
-                <warning descr="Unconventional label prefix">\begin{lstlisting}[label={some label}]
-                \end{lstlisting}</warning>
+                <weak_warning descr="Unconventional label prefix">\begin{lstlisting}[label={some label}]
+                \end{lstlisting}</weak_warning>
             \end{document}
             """.trimIndent()
         )
@@ -67,7 +67,7 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             LatexFileType,
             """
             \begin{document}
-                <warning descr="Unconventional label prefix">\lstinputlisting[label={input listing}]{some/file}</warning>
+                <weak_warning descr="Unconventional label prefix">\lstinputlisting[label={input listing}]{some/file}</weak_warning>
             \end{document}
             """.trimIndent()
         )

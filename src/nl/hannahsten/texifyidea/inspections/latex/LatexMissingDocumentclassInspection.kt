@@ -50,7 +50,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
                     file,
                     "Document doesn't contain a \\documentclass command.",
                     InspectionFix(),
-                    ProblemHighlightType.GENERIC_ERROR,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
             )

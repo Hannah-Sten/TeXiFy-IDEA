@@ -8,11 +8,11 @@ class LatexTrimWhiteSpaceInspectionTest : TexifyInspectionTestBase(LatexTrimWhit
 
     fun `test no warning in non-section command`() = testHighlighting("""\box{ test}""")
 
-    fun `test warning whitespace front`() = testHighlighting("""\section{<warning descr="Unnecessary whitespace"> test</warning>}""")
+    fun `test warning whitespace front`() = testHighlighting("""\section{<weak_warning descr="Unnecessary whitespace"> test</weak_warning>}""")
 
-    fun `test warning whitespace back`() = testHighlighting("""\section{<warning descr="Unnecessary whitespace">test </warning>}""")
+    fun `test warning whitespace back`() = testHighlighting("""\section{<weak_warning descr="Unnecessary whitespace">test </weak_warning>}""")
 
-    fun `test warning whitespace front and back`() = testHighlighting("""\section{<warning descr="Unnecessary whitespace"> test </warning>}""")
+    fun `test warning whitespace front and back`() = testHighlighting("""\section{<weak_warning descr="Unnecessary whitespace"> test </weak_warning>}""")
 
     fun `test quick fix front`() = testQuickFix(
             before = """\section{ test}""",
