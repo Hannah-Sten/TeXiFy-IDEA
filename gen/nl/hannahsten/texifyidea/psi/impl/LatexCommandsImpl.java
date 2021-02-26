@@ -53,7 +53,8 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  public @NotNull PsiReference[] getReferences() {
+  @NotNull
+  public PsiReference[] getReferences() {
     return LatexPsiImplUtil.getReferences(this);
   }
 
@@ -85,6 +86,11 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   @Override
   public PsiElement setName(String name) {
     return LatexPsiImplUtil.setName(this, name);
+  }
+
+  @Override
+  public void delete() {
+    LatexPsiImplUtil.delete(this);
   }
 
 }

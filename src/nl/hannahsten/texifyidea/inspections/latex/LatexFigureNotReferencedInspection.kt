@@ -1,9 +1,13 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
+import com.intellij.codeInsight.daemon.impl.quickfix.SafeDeleteFix
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -11,7 +15,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import org.jetbrains.annotations.NotNull
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -31,7 +35,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
 
         val descriptors = descriptorList()
         for (label in figureLabels.values) {
-            descriptors.add(createDescriptor(manager, label, isOntheFly))
+            descriptors.add(createDescriptor(manager, label, isOntheFly) ?: continue)
         }
 
         return descriptors
@@ -49,26 +53,33 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
         }
     }
 
-    private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor =
-        manager.createProblemDescriptor(
+    private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor? {
+        val labelValue = label.requiredParameters().firstOrNull()
+        println(labelValue?.text)
+        return manager.createProblemDescriptor(
             label,
             "Figure is not referenced",
-            isOntheFly,
-            emptyArray(),
-            ProblemHighlightType.WEAK_WARNING
+            RemoveFigureFix(label.createSmartPointer()),
+            ProblemHighlightType.LIKE_UNUSED_SYMBOL,
+            isOntheFly
         )
+    }
 
     /**
      * Find all commands in the file that label a figure.
      */
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
         file.findLabelingCommandsInFileAsSequence()
-            .filter(this::isFigureLabel)
+            .filter(LatexCommands::isFigureLabel)
             .associateBy(LatexCommands::labelName)
             .toMutableMap()
 
-    private fun isFigureLabel(label: LatexCommands): Boolean =
-        label.inDirectEnvironment(EnvironmentMagic.figures)
+    class RemoveFigureFix(label: SmartPsiElementPointer<LatexCommands>) : SafeDeleteFix(label.element as @NotNull PsiElement) {
+
+        override fun getText(): String {
+            return "Safe delete figure environment"
+        }
+    }
 }
 
 private val LatexCommands.labelName: String?
@@ -76,3 +87,5 @@ private val LatexCommands.labelName: String?
 
 private val LatexCommands.referencedLabelNames: List<String>
     get() = requiredParameter(0)?.split(",") ?: emptyList()
+
+fun dummy() = Unit

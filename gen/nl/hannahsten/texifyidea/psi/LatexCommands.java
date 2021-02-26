@@ -18,7 +18,8 @@ public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithP
   @NotNull
   PsiElement getCommandToken();
 
-  @NotNull PsiReference[] getReferences();
+  @NotNull
+  PsiReference[] getReferences();
 
   PsiReference getReference();
 
@@ -33,5 +34,7 @@ public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithP
   String getName();
 
   PsiElement setName(String name);
+
+  void delete();
 
 }

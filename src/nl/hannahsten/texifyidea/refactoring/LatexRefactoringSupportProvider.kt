@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.refactoring
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 
 /**
@@ -15,5 +16,9 @@ class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
             is LatexParameterText -> true
             else -> false
         }
+    }
+
+    override fun isSafeDeleteAvailable(element: PsiElement): Boolean {
+        return (element is LatexCommands)
     }
 }
