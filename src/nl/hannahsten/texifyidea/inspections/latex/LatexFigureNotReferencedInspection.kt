@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -53,17 +54,16 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
         }
     }
 
-    private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor? {
-        val labelValue = label.requiredParameters().firstOrNull()
-        println(labelValue?.text)
-        return manager.createProblemDescriptor(
-            label,
-            "Figure is not referenced",
-            RemoveFigureFix(label.createSmartPointer()),
-            ProblemHighlightType.LIKE_UNUSED_SYMBOL,
-            isOntheFly
-        )
-    }
+    private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor? =
+        label.firstChildOfType(LatexParameterText::class)?.let {
+            manager.createProblemDescriptor(
+                it,
+                "Figure is not referenced",
+                RemoveFigureFix(it.createSmartPointer()),
+                ProblemHighlightType.LIKE_UNUSED_SYMBOL,
+                isOntheFly
+            )
+        }
 
     /**
      * Find all commands in the file that label a figure.
@@ -74,7 +74,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             .associateBy(LatexCommands::labelName)
             .toMutableMap()
 
-    class RemoveFigureFix(label: SmartPsiElementPointer<LatexCommands>) : SafeDeleteFix(label.element as @NotNull PsiElement) {
+    class RemoveFigureFix(label: SmartPsiElementPointer<LatexParameterText>) : SafeDeleteFix(label.element as @NotNull PsiElement) {
 
         override fun getText(): String {
             return "Safe delete figure environment"

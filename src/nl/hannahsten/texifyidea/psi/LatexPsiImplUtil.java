@@ -87,10 +87,6 @@ public class LatexPsiImplUtil {
         return LatexCommandsImplUtilKt.hasLabel(element);
     }
 
-    public static void delete(@NotNull LatexCommands element) {
-        LatexCommandsImplUtilKt.delete(element);
-    }
-
     /*
      * LatexEnvironment
      */
@@ -140,6 +136,10 @@ public class LatexPsiImplUtil {
         return LatexParameterTextUtilKt.getName(element);
     }
 
+
+    public static void delete(@NotNull LatexParameterText element) {
+        LatexParameterTextUtilKt.delete(element);
+    }
     /*
      * LatexParameter
      */

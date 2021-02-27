@@ -35,6 +35,4 @@ public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithP
 
   PsiElement setName(String name);
 
-  void delete();
-
 }

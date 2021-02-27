@@ -88,9 +88,4 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
     return LatexPsiImplUtil.setName(this, name);
   }
 
-  @Override
-  public void delete() {
-    LatexPsiImplUtil.delete(this);
-  }
-
 }

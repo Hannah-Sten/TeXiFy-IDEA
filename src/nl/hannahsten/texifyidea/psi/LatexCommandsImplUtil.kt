@@ -198,16 +198,6 @@ fun hasLabel(element: LatexCommands): Boolean {
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }
 
-fun delete(element: LatexCommands) {
-    if (element.isFigureLabel()) {
-        // Look for the NoMathContent that is around the environment, because that is the PsiElement that has the
-        // whitespace and other normal text as siblings.
-        element.parentOfType(LatexEnvironment::class)
-            ?.parentOfType(LatexNoMathContent::class)
-            ?.remove()
-    }
-}
-
 fun setName(element: LatexCommands, newName: String): PsiElement {
     val newText = element.text.replace(element.name ?: return element, newName)
     val newElement = LatexPsiHelper(element.project).createFromText(newText).firstChild
