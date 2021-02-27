@@ -200,6 +200,8 @@ fun hasLabel(element: LatexCommands): Boolean {
 
 fun delete(element: LatexCommands) {
     if (element.isFigureLabel()) {
+        // Look for the NoMathContent that is around the environment, because that is the PsiElement that has the
+        // whitespace and other normal text as siblings.
         element.parentOfType(LatexEnvironment::class)
             ?.parentOfType(LatexNoMathContent::class)
             ?.remove()

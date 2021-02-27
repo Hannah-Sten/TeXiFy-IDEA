@@ -19,6 +19,6 @@ class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
     }
 
     override fun isSafeDeleteAvailable(element: PsiElement): Boolean {
-        return (element is LatexCommands)
+        return element is LatexCommands
     }
 }
