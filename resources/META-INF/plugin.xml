@@ -82,9 +82,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.3</strong></p>
+        <p><strong>Beta 0.7.4</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.3, which brings to you a couple of great UI experience improvements, among which is a graphics insert wizard, and a wizard for pasting html tables directly into LaTeX tables, and many more enhancements and bug fixes.
+            Welcome to TeXiFy IDEA 0.7.4, with as main new feature the symbol tool window! This version also adds a lot of commands and their documentation to the autocompletion, and contains a lot of bug fixes to create an even smoother usage experience.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -95,47 +95,41 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Added a wizard to insert graphics. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1729">#1729</a>)</li>
-            <li> Paste html tables from the clipboard directly into LaTeX tables using a table insert wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1738">#1738</a>)</li>
-            <li> Paste images from the clipboard directly into LaTeX using the insert graphic wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1739">#1739</a>)</li>
-            <li> Added support for labels defined in optional parameters of commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1698">#1698</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1751">#1751</a>)</li>
-            <li> Added Detexify tool window. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1731">#1731</a>)</li>
-            <li> Added BibTeX unused entry inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1717">#1717</a>)</li>
-            <li> Added label intention for \item commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1719">#1719</a>)</li>
-            <li> Added vertically centered colon inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1743">#1743</a>)</li>
-            <li> Added inspection to encourage replacing \text{min} by \min for a lot of similar math operators. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1737">#1737</a>)</li>
-            <li> Added sectioning commands with label live template. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1746">#1746</a>)</li>
-            <li> Added support for custom output directories to the 'Delete generated files' action. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1726">#1726</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1745">#1745</a>)</li>
-            <li> Improve performance of file set cache creation for large projects. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1749">#1749</a>)</li>
+            <li> Added support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1675">#1675</a>)</li>
+            <li> Added commands from all installed LaTeX packages to autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1710">#1710</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1762">#1762</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1763">#1763</a>)</li>
+            <li> Added symbol tool window. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1752">#1752</a>)</li>
+            <li> Added dummy text insertion wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1767">#1767</a>)</li>
+            <li> Added graphic, table and dummy text wizards to a generate actions popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1770">#1770</a>)</li>
+            <li> Added SDK type for MiKTeX on Linux/Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1774">#1774</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li> Decreased size of gutter icons to 12x12. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1715">#1715</a>)</li>
-            <li> Dragging and dropping graphic files opens a graphic insertion wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1729">#1729</a>)</li>
-            <li> Adding labels with no reasonable defaults now starts a refactoring. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1733">#1733</a>)</li>
-            <li> Supported lstlisting for add label quickfix. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1733">#1733</a>)</li>
-            <li> Performance improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1716">#1716</a>)</li>
-            <li> Picture arguments are now considered as command arguments in the formatter. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1712">#1712</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1741">#1741</a>)</li>
-            <li> Don't collapse citations when optional parameters are not the same. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1732">#1732</a>)</li>
+            <li> Changed Grazie rules to ignore non-text elements in a sentence. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1744">#1744</a>)</li>
+            <li> Implemented a file based index for commands and environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1710">#1710</a>)</li>
+            <li> _ and : are now only part of commands when latex3 syntax is explicitly switched on. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Include text in headings and quotes (and more) in word count. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1727">#1727</a>)</li>
+            <li> Add BSTINPUTS by default to the bibtex run config. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+            <li> Use texcount for word count functionality when available. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fixed compile gutter icons showing up on parameters. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1734">#1734</a>)</li>
-            <li> Fix parse errors for \NewDocumentEnvironment-like commands and \newenvironment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1754">#1754</a>)</li>
-            <li> Fixed a bug with run configurations not being copied correctly. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1728">#1728</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1745">#1745</a>)</li>
-            <li> Fixed overriding backspace handlers in non-LaTeX files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1740">#1740</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1745">#1745</a>)</li>
-            <li> Ignore \& when counting & for aligning tables. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1754">#1754</a>)</li>
-            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1720">#1720</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1721">#1721</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1754">#1754</a>)</li>
+            <li> Fixed plugin icon not showing up in the marketplace. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1759">#1759</a>)</li>
+            <li> Fixed duplicate local packages in autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Fixed bibtex autocompletion for @preamble and @string. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Fixed bug in inline math highlighting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1744">#1744</a>)</li>
+            <li> Disable smart quotes and default live templates in verbatim. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1764">#1764</a>)</li>
+            <li> Fixed a crash when multiple MiKTeX installs are present. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+            <li> Fixed a false positive for the missing import inspection for commands being defined. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
         </ul>
         <br>
         <p>
-            Thanks to <a href="https://github.com/fberlakovich">Felix Berlakovich</a> for contributing to this release.
+            Thanks to <a href="https://github.com/StefanLobbenmeier">Stefan Lobbenmeier</a> for contributing to this release.
         </p>
         <br>
         <p>
