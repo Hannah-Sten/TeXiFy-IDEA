@@ -35,11 +35,12 @@ Multiple display math equations (which are surrounded by `\[..\]`) can be groupe
 
 _Since b0.6.6_
 
-
 You should always reference your figures, otherwise you have figure floating around in your document with no connection to the text.
 This is undesirable, because then it may not be clear why the figure is there.
 
 Because figures float around (LaTeX determines the location automatically) you should never refer to figures as 'The figure below'.
+
+This inspection includes a quick fix to safe delete the figure environment.
 
 .Example file which triggers the inspection.
 [source,latex]
