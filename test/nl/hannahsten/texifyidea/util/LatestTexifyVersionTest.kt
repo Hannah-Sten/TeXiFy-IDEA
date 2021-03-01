@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.blame.LatexErrorReportSubmitter
+import nl.hannahsten.texifyidea.LatexErrorReportSubmitter
 
 class LatestTexifyVersionTest : BasePlatformTestCase() {
 

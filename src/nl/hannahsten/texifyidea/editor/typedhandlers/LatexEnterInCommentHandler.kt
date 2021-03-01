@@ -9,6 +9,7 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.get
 
@@ -16,6 +17,7 @@ class LatexEnterInCommentHandler : EnterHandlerDelegateAdapter() {
 
     // Used to enable the preprocess to tell the postprocess what to do
     var isComment = false
+    var isMagicComment = false
 
     override fun preprocessEnter(
         file: PsiFile,
@@ -25,12 +27,14 @@ class LatexEnterInCommentHandler : EnterHandlerDelegateAdapter() {
         dataContext: DataContext,
         originalHandler: EditorActionHandler?
     ): EnterHandlerDelegate.Result {
-        isComment = file.findElementAt(caretOffset.get()) is PsiComment
+        val element = file.findElementAt(caretOffset.get())
+        isComment = element is PsiComment
+        isMagicComment = element?.parent is LatexMagicComment
         return super.preprocessEnter(file, editor, caretOffset, caretAdvance, dataContext, originalHandler)
     }
 
     override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result {
-        if (isComment) {
+        if (isComment || isMagicComment) {
             // Check location of the % on the previous line, especially the number of spaces before and after it
             // because that's what we want to have on the current line as well
             // (note the cursor is on the second line, after the enter has been processed)
@@ -47,18 +51,23 @@ class LatexEnterInCommentHandler : EnterHandlerDelegateAdapter() {
 
             // Since the enter handler already inserted the indent of the previous line, subtract it
             val numberOfSpacesBeforePercent = previousLine.takeWhile { it == ' ' }.length
-            val numberOfSpacesAfterPercent = previousLine.dropWhile { it == ' ' }.dropWhile { it == '%' }.takeWhile { it == ' ' }.length
+            val numberOfSpacesAfterPercent = previousLine.dropWhile { it == ' ' }
+                // ! for magic comments
+                .dropWhile { it == '%' || it == '!' }
+                .takeWhile { it == ' ' }.length
+
+            val percent = if (isComment) "%" else "%!"
 
             if (numberOfSpacesBeforePercent == 0) {
                 // It was right at the start of the line, so we only have to insert it there again
                 // and insert the spaces that were probably not part of the indent (which is already done by the enter handler)
                 val startOfLine = editor.caretModel.currentCaret.visualLineStart
-                file.document()?.insertString(startOfLine, "%" + " ".repeat(numberOfSpacesAfterPercent % 4))
+                file.document()?.insertString(startOfLine, percent + " ".repeat(numberOfSpacesAfterPercent % 4))
             }
             else {
                 // There was indent before it, but that's handled by the enter handler already
                 // So we just need to insert any spaces after it
-                file.document()?.insertString(editor.caretModel.currentCaret.offset, "%" + " ".repeat(numberOfSpacesAfterPercent))
+                file.document()?.insertString(editor.caretModel.currentCaret.offset, percent + " ".repeat(numberOfSpacesAfterPercent))
             }
             // Alternatively, consider the setting CodeStyle.getLanguageSettings(file).LINE_COMMENT_AT_FIRST_COLUMN
         }

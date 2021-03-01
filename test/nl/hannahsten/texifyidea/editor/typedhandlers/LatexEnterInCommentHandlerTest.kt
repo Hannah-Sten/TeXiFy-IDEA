@@ -38,4 +38,15 @@ class LatexEnterInCommentHandlerTest : BasePlatformTestCase() {
             <caret>%   to sin the clear found by genes.
         """.trimIndent())
     }
+
+    fun testMagicComment() {
+        myFixture.configureByText(LatexFileType, """
+            %! compiler=<caret>lualatex
+        """.trimIndent())
+        myFixture.type("\n")
+        myFixture.checkResult("""
+            %! compiler=
+            <caret>%! lualatex
+        """.trimIndent())
+    }
 }
