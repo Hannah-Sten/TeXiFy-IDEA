@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.4"
+version = "0.7.4-alpha.2"
 
 repositories {
     mavenCentral()
@@ -82,6 +82,12 @@ dependencies {
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
     implementation("org.codehaus.plexus:plexus-archiver:4.2.3")
+
+    // Parsing json
+    implementation("com.beust:klaxon:5.4")
+
+    // Comparing versions
+    implementation("org.apache.maven:maven-artifact:3.6.3")
 
     // Test dependencies
 

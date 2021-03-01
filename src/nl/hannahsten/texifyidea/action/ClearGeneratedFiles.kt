@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.action
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.allRunConfigurations
@@ -15,7 +16,7 @@ import java.io.File
 class ClearGeneratedFiles : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        showOkCancelDialog(
+        val result = showOkCancelDialog(
             "Clear Auxiliary and Generated Files",
             "Delete all LaTeX auxiliary and generated files? \n" +
                 "All auxiliary and generated files in output directories will be deleted, \n" +
@@ -23,6 +24,8 @@ class ClearGeneratedFiles : AnAction() {
                 "You might not be able to fully undo this operation!",
             "Delete"
         )
+
+        if (result != Messages.OK) return
 
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
