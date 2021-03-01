@@ -88,8 +88,10 @@ class CustomLatexCompiler(override val executablePath: String) : LatexCompiler()
  *
  * When adding compilers as a subclass, be sure to add it to [CompilerMagic.latexCompilerByExecutableName].
  */
-abstract class SupportedLatexCompiler(override val displayName: String, override val executableName: String) : LatexCompiler(),
-                                                                                                             SupportedCompiler<CompileLatexCompileStep> {
+abstract class SupportedLatexCompiler(
+    override val displayName: String,
+    override val executableName: String
+) : LatexCompiler(), SupportedCompiler<CompileLatexCompileStep> {
 
     /**
      * Convert Windows paths to WSL paths.

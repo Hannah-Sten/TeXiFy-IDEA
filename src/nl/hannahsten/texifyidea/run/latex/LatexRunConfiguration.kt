@@ -189,6 +189,7 @@ class LatexRunConfiguration constructor(
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return NewLatexSettingsEditor(this)
+
 //        return LatexSettingsEditor(project)
     }
 
