@@ -54,7 +54,7 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
                             command,
                             range,
                             "No absolute path allowed here",
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )

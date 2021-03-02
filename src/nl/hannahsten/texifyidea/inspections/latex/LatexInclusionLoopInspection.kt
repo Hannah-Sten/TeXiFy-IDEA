@@ -54,7 +54,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                                 command,
                                 TextRange(0, command.textLength - 1),
                                 "File inclusion loop found for files ${referenced.name} and ${declaredIn.name}.",
-                                ProblemHighlightType.GENERIC_ERROR,
+                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly
                             )
                         )

@@ -51,7 +51,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
                             it,
                             TextRange(0, it.commandToken.textLength),
                             "\\bibliographystyle is already used elsewhere",
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly,
                             RemoveOtherCommandsFix
                         )

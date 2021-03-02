@@ -92,7 +92,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                     env,
                     TextRange(7, 7 + name.length),
                     "Environment requires ${pack.name} package",
-                    ProblemHighlightType.ERROR,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)
                 )
@@ -147,7 +147,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                         command,
                         range,
                         "Command requires $dependencyNames package",
-                        ProblemHighlightType.ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         *fixes
                     )
@@ -161,7 +161,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
      */
     private class ImportCommandFix(val pack: LatexPackage) : LocalQuickFix {
 
-        override fun getFamilyName() = "Add import for package '${pack.name}'"
+        override fun getFamilyName() = "Add import for package '${pack.name}' which provides this command"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
@@ -178,7 +178,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
      */
     private class ImportEnvironmentFix(val import: String) : LocalQuickFix {
 
-        override fun getFamilyName() = "Add import for package '$import'"
+        override fun getFamilyName() = "Add import for package '$import' which provides this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val environment = descriptor.psiElement as? LatexEnvironment ?: return

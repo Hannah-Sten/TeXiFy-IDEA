@@ -63,7 +63,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                             command,
                             TextRange(parameterIndex, parameterIndex + fileName.length).shiftRight(command.commandToken.textLength + 1),
                             "Bibliography file '$fileName' is included multiple times",
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly,
                             RemoveOtherCommandsFix(fileName, commands)
                         )

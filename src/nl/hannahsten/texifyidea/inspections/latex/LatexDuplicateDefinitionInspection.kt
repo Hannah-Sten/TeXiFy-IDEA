@@ -47,7 +47,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
                             it,
                             "Command '$definedCmd' is defined multiple times",
                             true,
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )

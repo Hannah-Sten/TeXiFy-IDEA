@@ -107,7 +107,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                         text,
                         TextRange(matcher.start(), matcher.end()),
                         "Unsupported non-ASCII character",
-                        ProblemHighlightType.ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         EscapeUnicodeFix(inMathMode),
                         if (inMathMode) {

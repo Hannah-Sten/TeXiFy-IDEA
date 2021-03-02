@@ -67,7 +67,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                         openElement,
                         TextRange.from(0, 1),
                         "Parentheses pair could be replaced by \\left(..\\right)",
-                        ProblemHighlightType.WEAK_WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
                     )
@@ -78,7 +78,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                         closeElement,
                         TextRange.from(0, 1),
                         "Parentheses pair could be replaced by \\left(..\\right)",
-                        ProblemHighlightType.WEAK_WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
                     )

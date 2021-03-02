@@ -35,7 +35,7 @@ class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
                             documentClass,
                             displayName,
                             true,
-                            ProblemHighlightType.WARNING,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                     )
             )

@@ -53,7 +53,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
                         it,
                         TextRange.allOf(it.text),
                         "Includes cannot be nested",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         ConvertToInputFix
                     )

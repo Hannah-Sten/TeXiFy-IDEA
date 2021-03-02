@@ -66,7 +66,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
                         command,
                         "Redundant diacritic escape",
                         RemoveEscapeFix(),
-                        ProblemHighlightType.WEAK_WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

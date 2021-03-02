@@ -88,7 +88,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 reference.element,
                 reference.rangeInElement,
                 "File '${fileName.appendExtension(extension)}' not found",
-                ProblemHighlightType.GENERIC_ERROR,
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
                 *(fixes.toTypedArray())
             )

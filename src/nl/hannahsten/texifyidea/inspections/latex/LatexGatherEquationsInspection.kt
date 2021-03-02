@@ -39,7 +39,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
                         it ?: return@forEach,
                         "Equations can be gathered",
                         GatherEnvironments(),
-                        ProblemHighlightType.WEAK_WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

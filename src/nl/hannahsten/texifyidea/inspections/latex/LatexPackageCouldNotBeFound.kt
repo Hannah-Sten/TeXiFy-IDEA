@@ -44,7 +44,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
                         command,
                         displayName,
                         GeneralMagic.noQuickFix,
-                        ProblemHighlightType.WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

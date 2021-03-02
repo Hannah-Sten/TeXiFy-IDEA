@@ -577,190 +577,252 @@
         <!-- Latex inspections -->
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
                          groupName="LaTeX" displayName="Non-escaped common math operators"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCommandAlreadyDefinedInspection"
                          groupName="LaTeX" displayName="Command is already defined"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
                          groupName="LaTeX" displayName="Might break TeXiFy functionality"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection"
                          groupName="LaTeX" displayName="Unsupported Unicode character"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexOverInsteadOfFracInspection"
                          groupName="LaTeX" displayName="Use of \over discouraged"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
                          groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeHashOutsideCommandInspection"
                          groupName="LaTeX" displayName="Unescaped # outside of command definition"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
                          groupName="LaTeX" displayName="Missing documentclass"
-                         enabledByDefault="false"/>
+                         enabledByDefault="false"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentEnvironmentInspection"
                          groupName="LaTeX" displayName="Missing document environment"
-                         enabledByDefault="false"/>
+                         enabledByDefault="false"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTooLargeSectionInspection"
                          groupName="LaTeX" displayName="Too large sections"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveStyleInspection"
                          groupName="LaTeX" displayName="TeX styling primitives usage is discouraged"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection"
                          groupName="LaTeX" displayName="Start sentences on a new line"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection"
                          groupName="LaTeX" displayName="Non-breaking spaces before references"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiscouragedUseOfDefInspection"
                          groupName="LaTeX" displayName="Discouraged use of \def and \let"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingLabelInspection"
                          groupName="LaTeX" displayName="Missing labels"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexIncorrectSectionNestingInspection"
                          groupName="LaTeX" displayName="Incorrect nesting"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelBeforeCaptionInspection"
                          groupName="LaTeX" displayName="Label before caption"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
                          groupName="LaTeX" displayName="Duplicate labels"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelConventionInspection"
                          groupName="LaTeX" displayName="Label conventions"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingImportInspection"
                          groupName="LaTeX" displayName="Missing imports"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnresolvedReferenceInspection"
                          groupName="LaTeX" displayName="Unresolved references"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEquationReferenceInspection"
                          groupName="LaTeX" displayName="Use \eqref{...} instead of (\ref{...})"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonMatchingEnvironmentInspection"
                          groupName="LaTeX" displayName="Non matching environment commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEllipsisInspection"
                          groupName="LaTeX" displayName="Ellipsis with ... instead of \ldots or \dots"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexAvoidEqnarrayInspection"
                          groupName="LaTeX" displayName="Avoid eqnarray"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSpaceAfterAbbreviationInspection"
                          groupName="LaTeX" displayName="Normal space after abbreviation"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEnDashInspection"
                          groupName="LaTeX" displayName="En dash in number ranges"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSentenceEndWithCapitalInspection"
                          groupName="LaTeX" displayName="End-of-sentence space after sentences ending with capitals"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCdotInspection"
                          groupName="LaTeX" displayName="Use of . instead of \cdot"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexXInsteadOfTimesInspection"
                          groupName="LaTeX" displayName="Use of x instead of \times"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGroupedSubSupScriptInspection"
                          groupName="LaTeX" displayName="Grouped superscript and subscript"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantParInspection"
                          groupName="LaTeX" displayName="Redundant use of \par"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonMatchingIfInspection"
                          groupName="LaTeX" displayName="Open if-then-else control sequence"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexQedHereInspection"
                          groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexExtremeInequalityInspection"
                          groupName="LaTeX" displayName="Use the matching amssymb symbol for extreme inequalities"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFileNotFoundInspection"
                          groupName="LaTeX" displayName="File not found"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexInclusionLoopInspection"
                          groupName="LaTeX" displayName="Inclusion loops"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveEquationInspection"
                          groupName="LaTeX" displayName="Discouraged use of primitive TeX display math"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCollapseCiteInspection"
                          groupName="LaTeX" displayName="Collapse cite commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiacriticIJInspection"
                          groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
                          groupName="LaTeX" displayName="Package has been imported multiple times"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
                          groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEncloseWithLeftRightInspection"
                          groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
                          groupName="LaTeX" displayName="Citations must be placed before interpunction"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
                          groupName="LaTeX" displayName="Duplicate command definitions"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
                          groupName="LaTeX" displayName="Gather equations"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNoExtensionInspection"
                          groupName="LaTeX" displayName="File argument should not include the extension"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRequiredExtensionInspection"
                          groupName="LaTeX" displayName="File argument should include the extension"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
                          groupName="LaTeX" displayName="Nested includes"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
                          groupName="LaTeX" displayName="Figure not referenced"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
                          groupName="LaTeX" displayName="Multiple definition of graphicspath"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexAbsolutePathInspection"
                          groupName="LaTeX" displayName="No absolute path allowed here"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageCouldNotBeFound"
                          groupName="LaTeX" displayName="Package could not be found"
-                         enabledByDefault="false"/>
+                         enabledByDefault="false"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNameDoesNotMatchFileNameInspection"
                          groupName="LaTeX" displayName="Package name does not match file name"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageSubdirectoryInspection"
                          groupName="LaTeX" displayName="Package name does not have the correct directory"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
                          groupName="LaTeX" displayName="Package is not installed"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeUnderscoreInspection"
                          groupName="LaTeX" displayName="Unescaped _ character"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeAmpersandInspection"
                          groupName="LaTeX" displayName="Unescaped &amp; character"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerticallyCenteredColonInspection"
                          groupName="LaTeX" displayName="Vertically uncentered colon"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
                          groupName="LaTeX" displayName="Use math function instead of \text"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
 
         <!-- Element manipulator -->
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
@@ -770,23 +832,28 @@
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
                          groupName="BibTeX" displayName="Same bibliography is included multiple times"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Bibtex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
                          groupName="BibTeX" displayName="Unused bib entry"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
 
         <!-- Intentions -->
         <intentionAction>

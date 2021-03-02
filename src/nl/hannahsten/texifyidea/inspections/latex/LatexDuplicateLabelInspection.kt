@@ -164,7 +164,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
             desc.element,
             desc.textRange,
             "Duplicate label '${desc.label}'",
-            ProblemHighlightType.GENERIC_ERROR,
+            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
             isOntheFly
         )
     }

@@ -43,7 +43,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                             command,
                             "No matching \\if-command found",
                             GeneralMagic.noQuickFix,
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )
@@ -64,7 +64,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                     cmd,
                     "If statement should probably be closed with \\fi",
                     GeneralMagic.noQuickFix,
-                    ProblemHighlightType.WARNING,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
             )

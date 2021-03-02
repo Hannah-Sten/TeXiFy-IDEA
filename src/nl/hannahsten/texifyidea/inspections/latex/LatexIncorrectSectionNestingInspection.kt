@@ -37,7 +37,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
                     it.second,
                     "Incorrect nesting",
                     arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
-                    ProblemHighlightType.WEAK_WARNING,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     false
                 )

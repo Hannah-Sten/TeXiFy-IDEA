@@ -13,7 +13,7 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
 
     fun `test if not closed`() = testHighlighting("<warning descr=\"If statement should probably be closed with \\fi\">\\if</warning>")
 
-    fun `test fi not opened`() = testHighlighting("<error descr=\"No matching \\if-command found\">\\fi</error>")
+    fun `test fi not opened`() = testHighlighting("<warning descr=\"No matching \\if-command found\">\\fi</warning>")
 
     fun `test closed newif`() = testHighlighting(
         """
@@ -33,7 +33,7 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
     fun `test newif not opened`() = testHighlighting(
         """
         \newif\ifpaper
-        <error descr="No matching \if-command found">\fi</error>
+        <warning descr="No matching \if-command found">\fi</warning>
         """.trimIndent()
     )
 }

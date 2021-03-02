@@ -38,7 +38,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
                         command,
                         displayName,
                         PackageNameMatchFileNameQuickFix,
-                        ProblemHighlightType.WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )
