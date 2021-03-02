@@ -57,7 +57,7 @@ fun Project.allFiles(type: FileType): Collection<VirtualFile> {
 /**
  * Get all LaTeX run configurations in the project.
  */
-fun Project.allRunConfigurations(): Collection<LatexRunConfiguration> {
+fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     return (RunManagerImpl.getInstanceImpl(this) as RunManager).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
 }
 
