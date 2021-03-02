@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import java.nio.file.InvalidPathException
 import java.nio.file.Paths
 
 /**
@@ -45,8 +46,12 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
     }
 
     override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
-        // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
-        return LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
+        return try {
+            // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
+            LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
+        } catch (ignored: InvalidPathException) {
+            null
+        }
     }
 
     override fun isValidSdkHome(path: String?): Boolean {
