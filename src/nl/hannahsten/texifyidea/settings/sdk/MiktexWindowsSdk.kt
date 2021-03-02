@@ -49,7 +49,8 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         return try {
             // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
             LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
-        } catch (ignored: InvalidPathException) {
+        }
+        catch (ignored: InvalidPathException) {
             null
         }
     }
