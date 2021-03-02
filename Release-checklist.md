@@ -1,16 +1,16 @@
-- [x] Run 'Usage of IntelliJ API not available in older IDEs' and 'Stateful extension' inspection (ctrl+alt+shift+i)
-- [x] Increase stub version in LatexParserDefinition
-- [x] Gradle clean, create new empty project and check that document compiles and pdf viewer is opened
-- [x] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
-- [x] Forward/backward search
-- [x] Does it work in PyCharm?
-- [x] Run ctan.py
+- [ ] Run 'Usage of IntelliJ API not available in older IDEs' and 'Stateful extension' inspection (ctrl+alt+shift+i)
+- [ ] Increase stub version in LatexParserDefinition
+- [ ] Gradle clean, create new empty project and check that document compiles and pdf viewer is opened
+- [ ] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
+- [ ] Forward/backward search
+- [ ] Does it work in PyCharm?
+- [ ] Run ctan.py
 
-- [x] Copy changelog to plugin.xml, replace using regexes below and update welcome text
-- [x] runIDE and check the changelog is formatted correctly
-- [x] Update version in plugin.xml and build.gradle
-- [x] Update feature list in readme/plugin.xml if needed
-- [x] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
+- [ ] Copy changelog to plugin.xml, replace using regexes below and update welcome text
+- [ ] runIDE and check the changelog is formatted correctly
+- [ ] Update version in plugin.xml and build.gradle
+- [ ] Update feature list in readme/plugin.xml if needed
+- [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
 - [ ] Merge PR
 - [ ] buildPlugin and release on GitHub, using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone
