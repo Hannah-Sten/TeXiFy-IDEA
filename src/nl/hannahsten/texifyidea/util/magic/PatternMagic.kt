@@ -27,7 +27,8 @@ object PatternMagic {
      *
      * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
      */
-    val sentenceEnd = RegexPattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%\\s])|(^\\. )")!!
+    const val sentenceEndPrefix = "[^.A-Z][^.A-Z]"
+    val sentenceEnd = RegexPattern.compile("($sentenceEndPrefix[.?!;;] +[^%\\s])|(^\\. )")!!
 
     /**
      * Matches all interpunction that marks the end of a sentence.
