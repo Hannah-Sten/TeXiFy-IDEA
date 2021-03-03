@@ -555,6 +555,7 @@
 
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex" />
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex" />
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionIndex" />
         <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor" />
 
         <!-- Documentation -->

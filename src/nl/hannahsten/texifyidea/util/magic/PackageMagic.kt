@@ -32,7 +32,7 @@ object PackageMagic {
     )
 
     /**
-     * Maps packages to the packages it loads.
+     * Maps packages to the packages it loads. // todo replace by file based index
      */
     val packagesLoadingOtherPackages: Map<LatexPackage, Set<LatexPackage>> = mapOf(
             LatexPackage.AMSSYMB to setOf(LatexPackage.AMSFONTS),

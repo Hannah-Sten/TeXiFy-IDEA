@@ -19,6 +19,9 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
     private var extractedFiles = false
 
     override fun getAdditionalProjectRootsToIndex(project: Project): MutableSet<VirtualFile> {
+
+        // todo add sty files, but they are in a different location
+
         // Avoid indexing in tests
         return if (!project.name.contains("_temp_")) {
             val roots = LatexSdkUtil.getSdkSourceRoots(project).toMutableSet()
