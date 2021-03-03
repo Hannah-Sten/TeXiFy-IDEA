@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
+import nl.hannahsten.texifyidea.reference.LatexLabelReference
+import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.requiredParameters
@@ -28,26 +30,29 @@ import java.util.regex.Pattern
 fun getReferences(element: LatexCommands): Array<PsiReference> {
     val firstParam = readFirstParam(element)
 
-    // If it is a reference to a file
-    val references: List<PsiReference> = element.getFileArgumentsReferences()
-    if (firstParam != null && references.isNotEmpty()) {
-        return references.toTypedArray()
+    val references = mutableListOf<PsiReference>()
+
+    // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
+    if (element.project.getLabelReferenceCommands().contains(element.commandToken.text) && firstParam != null) {
+        references.addAll(extractLabelReferences(element, firstParam))
     }
 
+    // If it is a reference to a file
+    references.addAll(element.getFileArgumentsReferences())
+
     if (CommandMagic.urls.contains(element.name) && firstParam != null) {
-        return element.extractUrlReferences(firstParam)
+        references.addAll(element.extractUrlReferences(firstParam))
     }
 
     // Else, we assume the command itself is important instead of its parameters,
     // and the user is interested in the location of the command definition
-    val reference = CommandDefinitionReference(element)
+    val definitionReference = CommandDefinitionReference(element)
     // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
-    return if (reference.multiResolve(false).isEmpty()) {
-        emptyArray()
+    if (definitionReference.multiResolve(false).isNotEmpty()) {
+        references.add(definitionReference)
     }
-    else {
-        arrayOf(reference)
-    }
+
+    return references.toTypedArray()
 }
 
 /**
@@ -91,6 +96,22 @@ private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference>
     }
 
     return inputFileReferences
+}
+
+/**
+ * Create label references from the command parameter given.
+ */
+fun extractLabelReferences(element: LatexCommands, firstParam: LatexRequiredParam): List<PsiReference> {
+    val subParamRanges = extractSubParameterRanges(firstParam)
+    val references: MutableList<PsiReference> = ArrayList()
+    for (range in subParamRanges) {
+        references.add(
+            LatexLabelReference(
+                element, range.shiftRight(firstParam.textOffset - element.textOffset)
+            )
+        )
+    }
+    return references
 }
 
 fun readFirstParam(element: LatexCommands): LatexRequiredParam? {
