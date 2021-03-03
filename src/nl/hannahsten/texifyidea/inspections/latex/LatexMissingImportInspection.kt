@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -79,6 +80,9 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             if (pack == DEFAULT || includedPackages.contains(pack.name)) {
                 continue
             }
+
+            val inclusionsFromIndex = LatexExternalPackageInclusionCache.getAllPackageInclusions(file.project)
+            // todo use
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
