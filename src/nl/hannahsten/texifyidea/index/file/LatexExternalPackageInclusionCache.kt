@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.index.file
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
+import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.algorithm.DFS
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
@@ -14,27 +15,29 @@ import nl.hannahsten.texifyidea.util.files.removeFileExtension
  */
 object LatexExternalPackageInclusionCache {
 
-    private val cache = mutableMapOf<LatexPackage, Set<LatexPackage>>()
+    private val cache = concurrentMapOf<LatexPackage, Set<LatexPackage>>()
 
     /**
      * Map every LaTeX package style file to all the style files it includes, directly or indirectly.
      */
+    @Synchronized
     fun getAllPackageInclusions(project: Project): Map<LatexPackage, Set<LatexPackage>> {
         if (cache.isNotEmpty()) return cache
 
-        val directChildren = mapOf<LatexPackage, MutableSet<LatexPackage>>()
+        val directChildren = mutableMapOf<LatexPackage, MutableSet<LatexPackage>>()
 
         // Get direct children from the index
-        FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.id, project).forEach { key ->
-            FileBasedIndex.getInstance().processValues(LatexExternalPackageInclusionIndex.id, key, null, { file, _ ->
-                directChildren.getOrDefault(LatexPackage(file.name.removeFileExtension()), mutableSetOf()).add(LatexPackage((key)))
+        FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.id, project).forEach { indexKey ->
+            FileBasedIndex.getInstance().processValues(LatexExternalPackageInclusionIndex.id, indexKey, null, { file, _ ->
+                val key = LatexPackage(file.name.removeFileExtension())
+                directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
                 true
             }, GlobalSearchScope.everythingScope(project))
         }
 
         // Do some DFS for indirect inclusions
-        for (latexPackage in cache.keys) {
-            cache[latexPackage] = DFS(latexPackage) { parent -> cache[parent] ?: emptySet() }.execute()
+        for (latexPackage in directChildren.keys) {
+            cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
         }
 
         return cache

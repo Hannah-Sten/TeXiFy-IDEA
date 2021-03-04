@@ -242,7 +242,7 @@ object PackageUtils {
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
-     * Classes will not be included.
+     * Classes will not be included. todo add packages from index?
      *
      * Note that not all elements returned may be valid package names.
      */

@@ -81,9 +81,6 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val inclusionsFromIndex = LatexExternalPackageInclusionCache.getAllPackageInclusions(file.project)
-            // todo use
-
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
                 if (packageInclusion == pack && includedPackages.contains(packageInclusion.key.name)) {

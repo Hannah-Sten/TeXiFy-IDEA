@@ -10,6 +10,7 @@ class LatexExternalPackageInclusionDataIndexer : DataIndexer<String, String, Fil
 
     companion object {
 
+        // todo handle multiple imports with comma separated
         val packageInclusionsRegex = """\\(RequirePackage|usepackage)\{(?<package>[^}]+)}""".toRegex()
     }
 
