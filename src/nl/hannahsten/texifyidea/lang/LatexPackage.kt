@@ -10,7 +10,7 @@ open class LatexPackage @JvmOverloads constructor(
     val name: String,
     vararg val parameters: String = emptyArray(),
     /**
-     * Filename without extension.
+     * Source (dtx) filename without extension.
      * Since a package can consist of multiple source/doc files, we do want
      * to track in which source file a command is defined, for example to find
      * the matching pdf file.

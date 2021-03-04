@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.index.file
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
+import nl.hannahsten.texifyidea.algorithm.DFS
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 
 /**
@@ -12,23 +14,28 @@ import nl.hannahsten.texifyidea.util.files.removeFileExtension
  */
 object LatexExternalPackageInclusionCache {
 
-    // todo maybe LatexPackage instead of string
-    private var cache = mapOf<String, MutableSet<String>>()
+    private val cache = mutableMapOf<LatexPackage, Set<LatexPackage>>()
 
     /**
      * Map every LaTeX package style file to all the style files it includes, directly or indirectly.
      */
-    fun getAllPackageInclusions(project: Project): Map<String, Set<String>> {
+    fun getAllPackageInclusions(project: Project): Map<LatexPackage, Set<LatexPackage>> {
         if (cache.isNotEmpty()) return cache
 
+        val directChildren = mapOf<LatexPackage, MutableSet<LatexPackage>>()
+
+        // Get direct children from the index
         FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.id, project).forEach { key ->
-            FileBasedIndex.getInstance().processValues(LatexExternalPackageInclusionIndex.id, key, null, { file, value ->
-                cache.getOrDefault(file.name.removeFileExtension(), mutableSetOf()).add(key)
+            FileBasedIndex.getInstance().processValues(LatexExternalPackageInclusionIndex.id, key, null, { file, _ ->
+                directChildren.getOrDefault(LatexPackage(file.name.removeFileExtension()), mutableSetOf()).add(LatexPackage((key)))
                 true
             }, GlobalSearchScope.everythingScope(project))
         }
 
-        // todo do some DFS for indirect inclusions
+        // Do some DFS for indirect inclusions
+        for (latexPackage in cache.keys) {
+            cache[latexPackage] = DFS(latexPackage) { parent -> cache[parent] ?: emptySet() }.execute()
+        }
 
         return cache
     }

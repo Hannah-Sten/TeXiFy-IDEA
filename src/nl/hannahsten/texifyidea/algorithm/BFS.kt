@@ -1,165 +1,143 @@
-package nl.hannahsten.texifyidea.algorithm;
+package nl.hannahsten.texifyidea.algorithm
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Deque
+import java.lang.IllegalStateException
+import java.util.ArrayDeque
+import java.util.ArrayList
+import java.util.HashSet
+import java.util.function.Function
 
 /**
  * A generic implementation of the breadth first search algorithm.
- * <p>
+ *
+ *
  * If you want to...
- * <ul>
- * <li>Find the shortest path, use {@linkplain BFS#BFS(Object, Object, Function)}.</li>
- * <li>Execute something at every visited node, use
- * {@linkplain BFS#BFS(Object, Function)} in
- * combination with {@linkplain BFS#setIterationAction(Function)}.
- * </li>
- * </ul>
+ *
+ *  * Find the shortest path, use [BFS.BFS].
+ *  * Execute something at every visited node, use
+ * [BFS.BFS] in
+ * combination with [BFS.setIterationAction].
+ *
+ *
  *
  * @param <N>
- *         The node type.
+ * The node type.
  * @author Hannah Schellekens
- */
-@SuppressWarnings("unchecked")
-public class BFS<N> implements PathAlgorithm<N> {
-
-    /**
-     * Iteration action that literally does nothing and lets the algorithm continue.
-     */
-    public static final Function NO_ITERATION_ACTION = n -> BFSAction.CONTINUE;
-
+</N> */
+class BFS<N>(startNode: N, endNode: N?, adjacencyFunction: Function<N, List<N>>) : PathAlgorithm<N> {
     /**
      * The node to start branching from.
      */
-    private final BFSNode start;
+    private val start: BFSNode
 
     /**
      * The node where the pathfinding should end.
-     * <p>
-     * Or {@code null} when the algorithm should branch over all nodes.
+     *
+     *
+     * Or `null` when the algorithm should branch over all nodes.
      */
-    private final N end;
+    private val end: N?
 
     /**
      * Set containing all the nodes that have been visited by the algorithm.
      */
-    private Set<N> visited;
+    private var visited: MutableSet<N>? = null
 
     /**
-     * A shortest path from {@link BFS#start} to {@link BFS#end}.
-     * <p>
-     * {@code null} if no shortest path is found.
+     * A shortest path from [BFS.start] to [BFS.end].
+     *
+     *
+     * `null` if no shortest path is found.
      */
-    private List<N> shortestPath;
+    private var shortestPath: List<N>? = null
 
     /**
      * The function that fetches all adjacent nodes of a given node.
-     * <p>
+     *
+     *
      * Should not return itself in the result list.
      */
-    private Function<N, List<N>> adjacencyFunction;
+    private val adjacencyFunction: Function<N, List<N>>
 
     /**
      * The action that will be executed for every node that the algorithm visits.
-     * <p>
+     *
+     *
      * The function returns how the algorithm should continue.
      */
-    private Function<N, BFSAction> iterationAction;
-
-    /**
-     * Creates a new BFS that will branch until it finds the end node.
-     * <p>
-     * By default, the algorithm will not fire an action for each visited node (including the
-     * starting node). You can alter this by setting an iteration action
-     * ({@link BFS#setIterationAction(Function)}).
-     *
-     * @param startNode
-     *         The node where the BFS should start.
-     * @param endNode
-     *         The node where the BFS should stop.
-     * @param adjacencyFunction
-     *         Function that fetches all adjacent nodes of a given node with the given node
-     *         <em>excluded</em>.
-     */
-    public BFS(N startNode, N endNode, Function<N, List<N>> adjacencyFunction) {
-        this.start = new BFSNode(startNode, 0);
-        this.end = endNode;
-        this.adjacencyFunction = adjacencyFunction;
-        this.iterationAction = NO_ITERATION_ACTION;
-    }
+    private var iterationAction: Function<N, BFSAction>
 
     /**
      * Creates a new BFS that will keep on branching.
-     * <p>
+     *
+     *
      * By default, the algorithm will not fire an action for each visited node (including the
      * starting node). You can alter
-     * this by setting an iteration action ({@link BFS#setIterationAction(Function)}).
+     * this by setting an iteration action ([BFS.setIterationAction]).
      *
      * @param startNode
-     *         The node where the BFS should start.
+     * The node where the BFS should start.
      * @param adjacencyFunction
-     *         Function that fetches all adjacent nodes of a given node with the given node
-     *         <em>excluded</em>.
+     * Function that fetches all adjacent nodes of a given node with the given node
+     * *excluded*.
      */
-    public BFS(N startNode, Function<N, List<N>> adjacencyFunction) {
-        this(startNode, null, adjacencyFunction);
-    }
+    constructor(startNode: N, adjacencyFunction: Function<N, List<N>>) : this(startNode, null, adjacencyFunction) {}
 
-    @Override
-    public void execute() {
+    override fun execute() {
         // Terminate when the end is also the start node, but only if the algorithm
         // has a goal (aka end-node) in mind.
         if (!hasGoal()) {
-            if (start.getNode().equals(end)) {
-                return;
+            if (start.node == end) {
+                return
             }
         }
 
         // Queue that contains all the nodes that have to be covered next.
-        Deque<BFSNode> toCover = new ArrayDeque<>();
+        val toCover: Deque<BFSNode> = ArrayDeque()
 
         // Initialise state: mark only the start node as visited.
-        visited = new HashSet<>();
-        visited.add(start.getNode());
-        toCover.add(start);
+        visited = HashSet()
+        (visited as HashSet<N>).add(start.node)
+        toCover.add(start)
 
         // Execute iteration action for the starting node. Abort algorithm if needed.
-        BFSAction startAction = iterationAction.apply(start.getNode());
+        val startAction = iterationAction.apply(start.node)
         if (startAction == BFSAction.ABORT) {
-            return;
+            return
         }
 
         // Keep on keepin' on until all nodes are covered.
-        while (toCover.size() > 0) {
+        while (toCover.size > 0) {
             // The node that is currently being processed.
-            BFSNode current = toCover.remove();
+            val current = toCover.remove()
 
             // Process all adjacent nodes.
-            List<N> adjacencyList = getAdjacencyList(current);
-            for (N adjacentNode : adjacencyList) {
+            val adjacencyList = getAdjacencyList(current)
+            for (adjacentNode in adjacencyList) {
                 // Don't process a node that has already been visited.
                 if (isVisited(adjacentNode)) {
-                    continue;
+                    continue
                 }
 
                 // Setup distance & predecessor for discovered node.
-                BFSNode newNode = new BFSNode(adjacentNode, current.getDistance() + 1);
-                newNode.setPredecessor(current);
+                val newNode = BFSNode(adjacentNode, current.distance + 1)
+                newNode.predecessor = current
 
                 // Execute iteration action for every node visited. Abort algorithm if needed.
-                BFSAction action = iterationAction.apply(adjacentNode);
+                val action = iterationAction.apply(adjacentNode)
                 if (action == BFSAction.ABORT) {
-                    return;
+                    return
                 }
 
                 // When looking for a shortest path, terminate when it has been found.
-                if (!hasGoal() && newNode.getNode().equals(end)) {
-                    shortestPath = constructShortestPath(newNode);
-                    return;
+                if (!hasGoal() && newNode.node == end) {
+                    shortestPath = constructShortestPath(newNode)
+                    return
                 }
 
                 // Make sure the adjacent node gets processed during the next iteration.
-                toCover.add(newNode);
-                markVisited(newNode);
+                toCover.add(newNode)
+                markVisited(newNode)
             }
         }
     }
@@ -168,100 +146,98 @@ public class BFS<N> implements PathAlgorithm<N> {
      * Set what action has to be executed each time a node gets visited (including the start node).
      *
      * @param iterationAction
-     *         The action to execute each node or {@link BFS#NO_ITERATION_ACTION} if you want to
-     *         execute nothing. The result of the function (a {@link BFSAction}) determines if the
-     *         algorithm should continue or not.
+     * The action to execute each node or [BFS.NO_ITERATION_ACTION] if you want to
+     * execute nothing. The result of the function (a [BFSAction]) determines if the
+     * algorithm should continue or not.
      */
-    public void setIterationAction(Function<N, BFSAction> iterationAction) {
-        this.iterationAction = iterationAction;
+    fun setIterationAction(iterationAction: Function<N, BFSAction>) {
+        this.iterationAction = iterationAction
     }
 
     /**
      * Get the shortest path from the starting node to the ending node.
-     * <p>
+     *
+     *
      * This method requires that the BFS ran in goal-oriented mode. This means that the BFS will
-     * actively search for a path ({@link BFS#BFS(Object, Object, Function)} constructor used).
-     * <p>
-     * Also, {@link BFS#execute()} must have been called, otherwise the algorithm didn't even
+     * actively search for a path ([BFS.BFS] constructor used).
+     *
+     *
+     * Also, [BFS.execute] must have been called, otherwise the algorithm didn't even
      * have a chance of calculating it.
      *
      * @return The shortest path from the start node to the end node.
      * @throws IllegalStateException
-     *         When the BFS is not set to find a shortest path, i.e. covers all nodes, or when
-     *         {@link BFS#execute()} hasn't been called.
+     * When the BFS is not set to find a shortest path, i.e. covers all nodes, or when
+     * [BFS.execute] hasn't been called.
      */
-    @Override
-    public List<N> getPath() throws IllegalStateException {
-        if (shortestPath == null) {
-            throw new IllegalStateException("The BFS has no found shortest path.");
+    override val path: List<N>
+        get() {
+            checkNotNull(shortestPath) { "The BFS has no found shortest path." }
+            return shortestPath as List<N>
         }
-
-        return shortestPath;
-    }
 
     /**
      * Marks that the given node is visited.
      *
      * @param node
-     *         The node to mark as visited.
+     * The node to mark as visited.
      */
-    private void markVisited(BFSNode node) {
-        visited.add(node.getNode());
+    private fun markVisited(node: BFSNode) {
+        visited!!.add(node.node)
     }
 
     /**
      * Checks if the given node has already been visited by the algorithm.
      *
      * @param node
-     *         The node to check for if it's been visited already.
-     * @return {@code true} if the node has been visited, {@code false} when the node hasn't been
+     * The node to check for if it's been visited already.
+     * @return `true` if the node has been visited, `false` when the node hasn't been
      * visited.
      */
-    private boolean isVisited(N node) {
-        return visited.contains(node);
+    private fun isVisited(node: N): Boolean {
+        return visited!!.contains(node)
     }
 
     /**
      * Get all the adjacent nodes of a given BFSNode.
      *
      * @param node
-     *         The node to get all adjacent nodes of.
-     * @return A list containing all adjacent nodes relative to {@code node}.
+     * The node to get all adjacent nodes of.
+     * @return A list containing all adjacent nodes relative to `node`.
      */
-    private List<N> getAdjacencyList(BFSNode node) {
-        return adjacencyFunction.apply(node.getNode());
+    private fun getAdjacencyList(node: BFSNode): List<N> {
+        return adjacencyFunction.apply(node.node)
     }
 
     /**
      * Reconstructs the shortest path from the end node towards the node with distance 0.
      *
      * @param end
-     *         The end node from which to backtrack to the starting node.
+     * The end node from which to backtrack to the starting node.
      * @return The shortest path from start to end nodes.
      */
-    private List<N> constructShortestPath(BFSNode end) {
-        List<N> shortestPath = new ArrayList<>();
-        BFSNode node = end;
-
-        while (node.getDistance() != 0) {
-            shortestPath.add(0, node.getNode());
-            node = node.getPredecessor();
+    private fun constructShortestPath(end: BFSNode): List<N> {
+        val shortestPath: MutableList<N> = ArrayList()
+        var node = end
+        while (node.distance != 0) {
+            shortestPath.add(0, node.node)
+            node = node.predecessor!!
         }
-
-        return shortestPath;
+        return shortestPath
     }
 
     /**
      * Checks if the BFS algorithm will visit all nodes.
-     * <p>
+     *
+     *
      * In other words: if the BFS will stop at a target node or not.
      *
-     * @return {@code true} if the algorithm stop only when all nodes are covered: the algorithm
-     * executes without a goal in mind, {@code false} if the algorithm stops when the target has
+     * @return `true` if the algorithm stop only when all nodes are covered: the algorithm
+     * executes without a goal in mind, `false` if the algorithm stops when the target has
      * been found.
      */
-    public boolean hasGoal() {
-        return end == null;
+    fun hasGoal(): Boolean {
+        return end == null
     }
 
     /**
@@ -269,88 +245,51 @@ public class BFS<N> implements PathAlgorithm<N> {
      *
      * @author Hannah Schellekens, Dylan ter Veen
      */
-    @SuppressWarnings("unchecked")
-    private class BFSNode {
-
+    private inner class BFSNode constructor(
         /**
          * The original version of the node.
          */
-        private final N node;
-
+        val node: N,
         /**
          * The distance from the starting node to this node.
          */
-        private int distance;
-
-        /**
-         * The predecessing node from the start node to this one.
-         */
-        private BFSNode predecessor;
-
-        private BFSNode(N node, int distance) {
-            this.node = node;
-            this.distance = distance;
-        }
-
+        var distance: Int
+    ) {
         /**
          * Get the original (wrapped) node.
          *
          * @return The wrapped node object.
          */
-        private N getNode() {
-            return node;
-        }
-
-        /**
-         * Get the predecessing node from the start node to this one.
-         */
-        private BFSNode getPredecessor() {
-            return predecessor;
-        }
-
-        /**
-         * Set the predecessing node from the start node to this one.
-         *
-         * @param predecessor
-         *         The new predecessing node.
-         */
-        private void setPredecessor(BFSNode predecessor) {
-            this.predecessor = predecessor;
-        }
-
         /**
          * Get the distance from the starting node to this node.
          */
-        private int getDistance() {
-            return distance;
-        }
-
         /**
          * Set the distance from the starting node to this node.
          *
          * @param distance
-         *         The new distance from the start node to this node.
+         * The new distance from the start node to this node.
          */
-        private void setDistance(int distance) {
-            this.distance = distance;
+        /**
+         * Get the predecessing node from the start node to this one.
+         */
+        /**
+         * The predecessing node from the start node to this one.
+         */
+        var predecessor: BFSNode? = null
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+            if (other!!.javaClass != javaClass) {
+                return false
+            }
+            val bfsNode = other as? BFS<*>.BFSNode
+            return node == bfsNode?.node
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!o.getClass().equals(getClass())) {
-                return false;
-            }
-
-            BFSNode bfsNode = (BFSNode)o;
-            return node.equals(bfsNode.node);
-        }
-
-        @Override
-        public int hashCode() {
-            return node.hashCode();
+        override fun hashCode(): Int {
+            return node.hashCode()
         }
     }
 
@@ -359,19 +298,47 @@ public class BFS<N> implements PathAlgorithm<N> {
      *
      * @author Hannah Schellekens
      */
-    public enum BFSAction {
+    enum class BFSAction {
+        CONTINUE, ABORT;
 
-        CONTINUE,
-        ABORT;
-
-        /**
-         * @param abort
-         *         {@code true} if the BFS must abort, {@code false} if the BFS must continue.
-         * @return {@link BFSAction#ABORT} when {@code abort == true} and {@link BFSAction#CONTINUE}
-         * when {@code abort == false}.
-         */
-        public static BFSAction valueOf(boolean abort) {
-            return abort ? ABORT : CONTINUE;
+        companion object {
+            /**
+             * @param abort
+             * `true` if the BFS must abort, `false` if the BFS must continue.
+             * @return [BFSAction.ABORT] when `abort == true` and [BFSAction.CONTINUE]
+             * when `abort == false`.
+             */
+            fun valueOf(abort: Boolean): BFSAction {
+                return if (abort) ABORT else CONTINUE
+            }
         }
+    }
+
+    /**
+     * Iteration action that literally does nothing and lets the algorithm continue.
+     */
+    val NO_ITERATION_ACTION: Function<N, BFSAction> = Function { n: Any? -> BFSAction.CONTINUE }
+
+    /**
+     * Creates a new BFS that will branch until it finds the end node.
+     *
+     *
+     * By default, the algorithm will not fire an action for each visited node (including the
+     * starting node). You can alter this by setting an iteration action
+     * ([BFS.setIterationAction]).
+     *
+     * @param startNode
+     * The node where the BFS should start.
+     * @param endNode
+     * The node where the BFS should stop.
+     * @param adjacencyFunction
+     * Function that fetches all adjacent nodes of a given node with the given node
+     * *excluded*.
+     */
+    init {
+        start = BFSNode(startNode, 0)
+        end = endNode
+        this.adjacencyFunction = adjacencyFunction
+        iterationAction = NO_ITERATION_ACTION
     }
 }

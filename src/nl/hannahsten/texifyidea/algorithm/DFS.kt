@@ -3,11 +3,11 @@ package nl.hannahsten.texifyidea.algorithm
 import java.util.*
 
 /**
- * Depth first search that checks if a goal node is a child of the given start node.
+ * Depth first search.
  *
  * @author Hannah Schellekens
  */
-open class IsChildDFS<Node>(
+open class DFS<Node>(
 
     /**
      * The starting node.
@@ -17,20 +17,13 @@ open class IsChildDFS<Node>(
     /**
      * Function that gets all the children of a certain node.
      */
-    inline val children: (Node) -> Collection<Node>,
-
-    /**
-     * Function that tests of the given node is the end node.
-     */
-    inline val isGoal: (Node) -> Boolean
+    val children: (Node) -> Collection<Node>,
 ) {
 
-    open fun execute(): Boolean {
-        // Done when starting at the goal.
-        if (isGoal(start)) {
-            return true
-        }
-
+    /**
+     * @return All direct and indirect children of the start node, excluding the start node.
+     */
+    open fun execute(): Set<Node> {
         // Maintain list of visited nodes, to detect loops
         val visited = mutableSetOf<Node>()
 
@@ -41,14 +34,12 @@ open class IsChildDFS<Node>(
         while (!stack.isEmpty()) {
             val child = stack.pop()
             visited.add(child)
-            if (isGoal(child)) {
-                return true
-            }
 
             // Don't visit nodes twice to avoid loops
             children(child).filter { it !in visited }.forEach(stack::push)
         }
 
-        return false
+        visited.remove(start)
+        return visited
     }
 }
