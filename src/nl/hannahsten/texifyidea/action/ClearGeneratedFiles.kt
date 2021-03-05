@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
-import nl.hannahsten.texifyidea.util.allRunConfigurations
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
@@ -48,7 +48,7 @@ class ClearGeneratedFiles : AnAction() {
         }
 
         // Custom out/aux dirs
-        val customOutput = project.allRunConfigurations().flatMap { listOf(it.outputPath.getAndCreatePath(), it.auxilPath.getAndCreatePath()) }
+        val customOutput = project.getLatexRunConfigurations().flatMap { listOf(it.outputPath.getAndCreatePath(), it.auxilPath.getAndCreatePath()) }
         runWriteAction {
             for (path in customOutput) {
                 path?.children?.forEach { it.delete(this) }

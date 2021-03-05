@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexMode

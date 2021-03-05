@@ -10,6 +10,8 @@ import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.SafeDeleteFix
+import nl.hannahsten.texifyidea.index.BibtexEntryIndex
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.util.childrenOfType

@@ -82,9 +82,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.3</strong></p>
+        <p><strong>Beta 0.7.4</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.3, which brings to you a couple of great UI experience improvements, among which is a graphics insert wizard, and a wizard for pasting html tables directly into LaTeX tables, and many more enhancements and bug fixes.
+            Welcome to TeXiFy IDEA 0.7.4, with as main new feature the symbol tool window! This version also adds a lot of commands and their documentation to the autocompletion, and contains a lot of bug fixes to create an even smoother usage experience.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -95,47 +95,41 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Added a wizard to insert graphics. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1729">#1729</a>)</li>
-            <li> Paste html tables from the clipboard directly into LaTeX tables using a table insert wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1738">#1738</a>)</li>
-            <li> Paste images from the clipboard directly into LaTeX using the insert graphic wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1739">#1739</a>)</li>
-            <li> Added support for labels defined in optional parameters of commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1698">#1698</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1751">#1751</a>)</li>
-            <li> Added Detexify tool window. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1731">#1731</a>)</li>
-            <li> Added BibTeX unused entry inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1717">#1717</a>)</li>
-            <li> Added label intention for \item commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1719">#1719</a>)</li>
-            <li> Added vertically centered colon inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1743">#1743</a>)</li>
-            <li> Added inspection to encourage replacing \text{min} by \min for a lot of similar math operators. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1737">#1737</a>)</li>
-            <li> Added sectioning commands with label live template. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1746">#1746</a>)</li>
-            <li> Added support for custom output directories to the 'Delete generated files' action. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1726">#1726</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1745">#1745</a>)</li>
-            <li> Improve performance of file set cache creation for large projects. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1749">#1749</a>)</li>
+            <li> Added support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1675">#1675</a>)</li>
+            <li> Added commands from all installed LaTeX packages to autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1710">#1710</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1762">#1762</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1763">#1763</a>)</li>
+            <li> Added symbol tool window. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1752">#1752</a>)</li>
+            <li> Added dummy text insertion wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1767">#1767</a>)</li>
+            <li> Added graphic, table and dummy text wizards to a generate actions popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1770">#1770</a>)</li>
+            <li> Added SDK type for MiKTeX on Linux/Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1774">#1774</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li> Decreased size of gutter icons to 12x12. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1715">#1715</a>)</li>
-            <li> Dragging and dropping graphic files opens a graphic insertion wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1729">#1729</a>)</li>
-            <li> Adding labels with no reasonable defaults now starts a refactoring. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1733">#1733</a>)</li>
-            <li> Supported lstlisting for add label quickfix. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1733">#1733</a>)</li>
-            <li> Performance improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1716">#1716</a>)</li>
-            <li> Picture arguments are now considered as command arguments in the formatter. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1712">#1712</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1741">#1741</a>)</li>
-            <li> Don't collapse citations when optional parameters are not the same. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1732">#1732</a>)</li>
+            <li> Changed Grazie rules to ignore non-text elements in a sentence. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1744">#1744</a>)</li>
+            <li> Implemented a file based index for commands and environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1710">#1710</a>)</li>
+            <li> _ and : are now only part of commands when latex3 syntax is explicitly switched on. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Include text in headings and quotes (and more) in word count. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1727">#1727</a>)</li>
+            <li> Add BSTINPUTS by default to the bibtex run config. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+            <li> Use texcount for word count functionality when available. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fixed compile gutter icons showing up on parameters. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1734">#1734</a>)</li>
-            <li> Fix parse errors for \NewDocumentEnvironment-like commands and \newenvironment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1754">#1754</a>)</li>
-            <li> Fixed a bug with run configurations not being copied correctly. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1728">#1728</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1745">#1745</a>)</li>
-            <li> Fixed overriding backspace handlers in non-LaTeX files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1740">#1740</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1745">#1745</a>)</li>
-            <li> Ignore \& when counting & for aligning tables. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1754">#1754</a>)</li>
-            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1720">#1720</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1721">#1721</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1754">#1754</a>)</li>
+            <li> Fixed plugin icon not showing up in the marketplace. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1759">#1759</a>)</li>
+            <li> Fixed duplicate local packages in autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Fixed bibtex autocompletion for @preamble and @string. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Fixed bug in inline math highlighting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1744">#1744</a>)</li>
+            <li> Disable smart quotes and default live templates in verbatim. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1764">#1764</a>)</li>
+            <li> Fixed a crash when multiple MiKTeX installs are present. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+            <li> Fixed a false positive for the missing import inspection for commands being defined. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
         </ul>
         <br>
         <p>
-            Thanks to <a href="https://github.com/fberlakovich">Felix Berlakovich</a> for contributing to this release.
+            Thanks to <a href="https://github.com/StefanLobbenmeier">Stefan Lobbenmeier</a> for contributing to this release.
         </p>
         <br>
         <p>
@@ -448,7 +442,7 @@
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.NativeTexliveSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexLinuxSdk" />
-        <projectSdkSetupValidator implementation="nl.hannahsten.texifyidea.project.LatexProjectSdkSetupValidator" />
+        <projectSdkSetupValidator implementation="nl.hannahsten.texifyidea.settings.sdk.LatexProjectSdkSetupValidator" />
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
@@ -471,7 +465,7 @@
         <breadcrumbsInfoProvider implementation="nl.hannahsten.texifyidea.structure.bibtex.BibtexBreadcrumbsInfo"/>
 
         <!-- Project view -->
-        <projectViewNodeDecorator implementation="nl.hannahsten.texifyidea.project.TeXiFyProjectViewNodeDecorator"/>
+        <projectViewNodeDecorator implementation="nl.hannahsten.texifyidea.ui.TeXiFyProjectViewNodeDecorator"/>
 
         <!-- Editor -->
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
@@ -488,21 +482,22 @@
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <moveLeftRightHandler language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexMoveElementLeftRightHandler"/>
-        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterBetweenBracesHandler"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInCommentHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
-        <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexParameterInfoHandler"/>
+        <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexParameterInfoHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
         <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InsertEnumerationItem"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.UpDownAutoBracket"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.BibtexQuoteInsertHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.LatexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.UpDownAutoBracket"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.BibtexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
-        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.InlineMathBackspaceHandler" />
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
         <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
@@ -524,12 +519,12 @@
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoSectionDefinitionSymbolContributor"/>
 
         <!-- Line markers -->
-        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexNavigationGutter"/>
         <runLineMarkerContributor language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>
 
         <!-- Colors -->
-        <colorProvider implementation="nl.hannahsten.texifyidea.insight.LatexElementColorProvider"/>
+        <colorProvider implementation="nl.hannahsten.texifyidea.gutter.LatexElementColorProvider"/>
 
         <!-- Run configurations -->
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
@@ -543,7 +538,7 @@
         <annotator language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexAnnotator"/>
 
         <!-- Blame -->
-        <errorHandler implementation="nl.hannahsten.texifyidea.blame.LatexErrorReportSubmitter"/>
+        <errorHandler implementation="nl.hannahsten.texifyidea.LatexErrorReportSubmitter"/>
 
         <!-- Index -->
         <stubElementTypeHolder class="nl.hannahsten.texifyidea.psi.LatexTypes"/>
@@ -582,190 +577,252 @@
         <!-- Latex inspections -->
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
                          groupName="LaTeX" displayName="Non-escaped common math operators"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCommandAlreadyDefinedInspection"
                          groupName="LaTeX" displayName="Command is already defined"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
                          groupName="LaTeX" displayName="Might break TeXiFy functionality"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection"
                          groupName="LaTeX" displayName="Unsupported Unicode character"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexOverInsteadOfFracInspection"
                          groupName="LaTeX" displayName="Use of \over discouraged"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
                          groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeHashOutsideCommandInspection"
                          groupName="LaTeX" displayName="Unescaped # outside of command definition"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
                          groupName="LaTeX" displayName="Missing documentclass"
-                         enabledByDefault="false"/>
+                         enabledByDefault="false"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentEnvironmentInspection"
                          groupName="LaTeX" displayName="Missing document environment"
-                         enabledByDefault="false"/>
+                         enabledByDefault="false"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTooLargeSectionInspection"
                          groupName="LaTeX" displayName="Too large sections"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveStyleInspection"
                          groupName="LaTeX" displayName="TeX styling primitives usage is discouraged"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection"
                          groupName="LaTeX" displayName="Start sentences on a new line"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection"
                          groupName="LaTeX" displayName="Non-breaking spaces before references"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiscouragedUseOfDefInspection"
                          groupName="LaTeX" displayName="Discouraged use of \def and \let"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingLabelInspection"
                          groupName="LaTeX" displayName="Missing labels"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexIncorrectSectionNestingInspection"
                          groupName="LaTeX" displayName="Incorrect nesting"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelBeforeCaptionInspection"
                          groupName="LaTeX" displayName="Label before caption"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
                          groupName="LaTeX" displayName="Duplicate labels"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelConventionInspection"
                          groupName="LaTeX" displayName="Label conventions"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingImportInspection"
                          groupName="LaTeX" displayName="Missing imports"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnresolvedReferenceInspection"
                          groupName="LaTeX" displayName="Unresolved references"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEquationReferenceInspection"
                          groupName="LaTeX" displayName="Use \eqref{...} instead of (\ref{...})"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonMatchingEnvironmentInspection"
                          groupName="LaTeX" displayName="Non matching environment commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEllipsisInspection"
                          groupName="LaTeX" displayName="Ellipsis with ... instead of \ldots or \dots"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexAvoidEqnarrayInspection"
                          groupName="LaTeX" displayName="Avoid eqnarray"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSpaceAfterAbbreviationInspection"
                          groupName="LaTeX" displayName="Normal space after abbreviation"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEnDashInspection"
                          groupName="LaTeX" displayName="En dash in number ranges"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSentenceEndWithCapitalInspection"
                          groupName="LaTeX" displayName="End-of-sentence space after sentences ending with capitals"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCdotInspection"
                          groupName="LaTeX" displayName="Use of . instead of \cdot"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexXInsteadOfTimesInspection"
                          groupName="LaTeX" displayName="Use of x instead of \times"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGroupedSubSupScriptInspection"
                          groupName="LaTeX" displayName="Grouped superscript and subscript"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantParInspection"
                          groupName="LaTeX" displayName="Redundant use of \par"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonMatchingIfInspection"
                          groupName="LaTeX" displayName="Open if-then-else control sequence"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexQedHereInspection"
                          groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexExtremeInequalityInspection"
                          groupName="LaTeX" displayName="Use the matching amssymb symbol for extreme inequalities"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFileNotFoundInspection"
                          groupName="LaTeX" displayName="File not found"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexInclusionLoopInspection"
                          groupName="LaTeX" displayName="Inclusion loops"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveEquationInspection"
                          groupName="LaTeX" displayName="Discouraged use of primitive TeX display math"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCollapseCiteInspection"
                          groupName="LaTeX" displayName="Collapse cite commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiacriticIJInspection"
                          groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
                          groupName="LaTeX" displayName="Package has been imported multiple times"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
                          groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEncloseWithLeftRightInspection"
                          groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
                          groupName="LaTeX" displayName="Citations must be placed before interpunction"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
                          groupName="LaTeX" displayName="Duplicate command definitions"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
                          groupName="LaTeX" displayName="Gather equations"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNoExtensionInspection"
                          groupName="LaTeX" displayName="File argument should not include the extension"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRequiredExtensionInspection"
                          groupName="LaTeX" displayName="File argument should include the extension"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
                          groupName="LaTeX" displayName="Nested includes"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
                          groupName="LaTeX" displayName="Figure not referenced"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WEAK WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
                          groupName="LaTeX" displayName="Multiple definition of graphicspath"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexAbsolutePathInspection"
                          groupName="LaTeX" displayName="No absolute path allowed here"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageCouldNotBeFound"
                          groupName="LaTeX" displayName="Package could not be found"
-                         enabledByDefault="false"/>
+                         enabledByDefault="false"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNameDoesNotMatchFileNameInspection"
                          groupName="LaTeX" displayName="Package name does not match file name"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageSubdirectoryInspection"
                          groupName="LaTeX" displayName="Package name does not have the correct directory"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
                          groupName="LaTeX" displayName="Package is not installed"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeUnderscoreInspection"
                          groupName="LaTeX" displayName="Unescaped _ character"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeAmpersandInspection"
                          groupName="LaTeX" displayName="Unescaped &amp; character"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerticallyCenteredColonInspection"
                          groupName="LaTeX" displayName="Vertically uncentered colon"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
                          groupName="LaTeX" displayName="Use math function instead of \text"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
 
         <!-- Element manipulator -->
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
@@ -775,23 +832,28 @@
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
                          groupName="BibTeX" displayName="Same bibliography is included multiple times"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="ERROR" />
         <localInspection language="Bibtex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
                          groupName="BibTeX" displayName="Unused bib entry"
-                         enabledByDefault="true"/>
+                         enabledByDefault="true"
+                         level="WARNING" />
 
         <!-- Intentions -->
         <intentionAction>

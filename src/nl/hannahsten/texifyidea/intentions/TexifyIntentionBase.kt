@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.intentions
 
 import com.intellij.codeInsight.intention.IntentionAction
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 
 /**
  * @author Hannah Schellekens

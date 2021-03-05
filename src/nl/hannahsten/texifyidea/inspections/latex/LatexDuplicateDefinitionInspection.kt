@@ -5,7 +5,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.util.definedCommandName
 import nl.hannahsten.texifyidea.util.files.definitions
@@ -47,7 +47,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
                             it,
                             "Command '$definedCmd' is defined multiple times",
                             true,
-                            ProblemHighlightType.GENERIC_ERROR,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )

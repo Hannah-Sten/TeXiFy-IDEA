@@ -33,7 +33,9 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         // Note that suggested paths appear under "Detected SDK's" when adding an SDK
         val results = mutableSetOf<String>()
         val path = "which pdflatex".runCommand()
-        if (!path.isNullOrEmpty()) {
+
+        // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
+        if (!path.isNullOrEmpty() && !path.contains("x86_64-linux")) {
             results.add(path.substringBefore("/pdflatex"))
         }
         results.add(suggestHomePath())

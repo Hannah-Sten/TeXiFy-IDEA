@@ -1,8 +1,7 @@
-package nl.hannahsten.texifyidea.parser
+package nl.hannahsten.texifyidea.psi
 
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.parser.GeneratedParserUtilBase
-import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 @Suppress("FunctionName")

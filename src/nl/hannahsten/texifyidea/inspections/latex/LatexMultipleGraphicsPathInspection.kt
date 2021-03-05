@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 
@@ -36,7 +36,7 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
                         i,
                         TextRange(0, i.text.length),
                         "\\graphicspath is already used elsewhere",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         RemoveFix()
                     )

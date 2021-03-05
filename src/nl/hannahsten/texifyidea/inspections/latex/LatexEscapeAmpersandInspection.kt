@@ -17,7 +17,7 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
     inspectionDisplayName = "Unescaped & character",
     inspectionId = "EscapeAmpersand",
     errorMessage = { """Escape character \ expected""" },
-    highlight = ProblemHighlightType.WARNING,
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     pattern = Pattern.compile("""(?<!\\)&"""),
     replacement = { _, _ -> """\&""" },
     quickFixName = { """Change to \&""" }

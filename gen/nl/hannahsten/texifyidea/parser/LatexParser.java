@@ -1,16 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
-import static com.intellij.lang.WhitespacesBinders.*;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.WhitespacesBinders.GREEDY_LEFT_BINDER;
+import static com.intellij.lang.WhitespacesBinders.GREEDY_RIGHT_BINDER;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {

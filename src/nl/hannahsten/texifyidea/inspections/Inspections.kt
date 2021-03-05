@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.codeInspection.ex.InspectionToolRegistrar
-import nl.hannahsten.texifyidea.insight.InsightGroup
 
 /**
  * Map where each [InsightGroup] is mapped to all the relevant inspection ids.

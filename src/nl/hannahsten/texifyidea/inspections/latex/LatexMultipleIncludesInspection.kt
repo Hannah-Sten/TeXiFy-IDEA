@@ -5,7 +5,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
@@ -52,7 +52,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
                         it,
                         TextRange.from(parameter.textOffset + 1 - it.textOffset, parameter.textLength - 2),
                         "Package has already been included",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

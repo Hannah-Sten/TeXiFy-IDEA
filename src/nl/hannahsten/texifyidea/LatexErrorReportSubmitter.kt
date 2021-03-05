@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.blame
+package nl.hannahsten.texifyidea
 
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject

@@ -18,7 +18,7 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
     inspectionDisplayName = "Unescaped _ character",
     inspectionId = "EscapeUnderscore",
     errorMessage = { """Escape character \ expected""" },
-    highlight = ProblemHighlightType.WARNING,
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     pattern = Pattern.compile("""(?<!\\)_"""),
     replacement = { _, _ -> """\_""" },
     quickFixName = { """Change to \_""" }

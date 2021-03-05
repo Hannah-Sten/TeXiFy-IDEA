@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "0.6.5"
-    kotlin("jvm") version("1.4.30-M1")
+    kotlin("jvm") version("1.4.30")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.36.0"
@@ -54,6 +54,7 @@ tasks.compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
+        useIR = true // https://blog.jetbrains.com/kotlin/2021/02/the-jvm-backend-is-in-beta-let-s-make-it-stable-together
     }
 }
 
@@ -126,7 +127,7 @@ intellij {
     pluginName = "TeXiFy-IDEA"
 
     // indices plugin doesn't work in tests
-    setPlugins("tanvd.grazi", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0") // , "com.jetbrains.hackathon.indices.viewer:1.12")
+    setPlugins("tanvd.grazi", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.2") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false

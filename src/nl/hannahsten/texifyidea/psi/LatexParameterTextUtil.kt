@@ -17,7 +17,7 @@ fun getReferences(element: LatexParameterText): Array<PsiReference> {
     // If the command is a label reference
     // NOTE When adding options here, also update getNameIdentifier below
     return when {
-        CommandMagic.labelReferenceWithoutCustomCommands.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
+        element.project.getLabelReferenceCommands().contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(LatexLabelParameterReference(element))
         }
         // If the command is a bibliography reference
