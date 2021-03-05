@@ -27,6 +27,7 @@ import com.intellij.refactoring.safeDelete.SafeDeleteHandler
  * Source: com.intellij.codeInsight.daemon.impl.quickfix.SafeDeleteFix
  */
 open class SafeDeleteFix(element: PsiElement) : LocalQuickFixAndIntentionActionOnPsiElement(element) {
+
     override fun getText(): String {
         val startElement = startElement
         return "Safe delete " + startElement.text

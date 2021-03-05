@@ -13,7 +13,7 @@ class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFig
             \usepackage{listings}
             \begin{document}
                 \begin{figure}
-                    \label{<warning descr="Figure is not referenced">fig:some-figure</warning>}
+                    \label{<weak_warning descr="Figure is not referenced">fig:some-figure</weak_warning>}
                 \end{figure}
             \end{document}
             """.trimIndent()
