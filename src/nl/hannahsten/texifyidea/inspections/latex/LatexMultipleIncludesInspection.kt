@@ -9,9 +9,9 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
-import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 import kotlin.collections.HashSet
@@ -35,7 +35,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Find all duplicates.
-        val packages = PackageUtils.getIncludedPackagesList(file)
+        val packages = file.includedPackages()
         val covered = HashSet<String>()
         val duplicates = HashSet<String>()
         packages.filterNotTo(duplicates) {

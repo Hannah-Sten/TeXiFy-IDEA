@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 
 /**
@@ -28,6 +29,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
 
     val indexPrograms = mutableSetOf<MakeindexProgram>()
 
+    // todo same
     if (usedPackages.intersect(PackageMagic.index).isNotEmpty()) {
         val makeindexProgram = if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
         indexPrograms.add(makeindexProgram)
@@ -68,7 +70,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         // Find index package options
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-            .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
+            .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
             .filter { command -> command.requiredParameters.any { it in PackageMagic.index || it in PackageMagic.glossary } }
             .flatMap { it.optionalParameterMap.toStringMap().keys }
     }

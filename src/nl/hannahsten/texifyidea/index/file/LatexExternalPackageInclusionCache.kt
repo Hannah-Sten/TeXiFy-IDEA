@@ -42,4 +42,16 @@ object LatexExternalPackageInclusionCache {
 
         return cache
     }
+
+    /**
+     * Given a certain set of [LatexPackage]s, return the set of all those packages plus all the packages they directly or indirectly include.
+     */
+    fun getAllIndirectlyIncludedPackages(packages: Set<LatexPackage>, project: Project): Set<LatexPackage> {
+        val result = mutableSetOf<LatexPackage>()
+        val allInclusions = getAllPackageInclusions(project)
+        for (latexPackage in packages) {
+            result.addAll(allInclusions[latexPackage] ?: emptySet())
+        }
+        return result
+    }
 }

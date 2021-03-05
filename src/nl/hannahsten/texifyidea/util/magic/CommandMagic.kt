@@ -275,6 +275,17 @@ object CommandMagic {
     )
 
     /**
+     * Commands which can include packages in optional or required arguments.
+     */
+    val packageInclusionCommands = setOf(
+        USEPACKAGE, REQUIREPACKAGE, DOCUMENTCLASS
+    ).map { it.cmd }.toSet()
+
+    val tikzLibraryInclusionCommands = setOf(USETIKZLIBRARY.cmd)
+
+    val pgfplotsLibraryInclusionCommands = setOf(USEPGFPLOTSLIBRARY.cmd)
+
+    /**
      * Commands that should have the given file extensions.
      */
     val requiredExtensions = mapOf(

@@ -380,6 +380,8 @@ enum class LatexGenericRegularCommand(
     UPSHAPE("upshape"),
     URL("url", "url".asRequired(), dependency = LatexPackage.HYPERREF),
     USEPACKAGE("usepackage", "options".asOptional(), RequiredFileArgument("package", true, true, "sty")),
+    USEPGFPLOTSLIBRARY("usepgfplotslibrary", "libraries".asRequired()),
+    USETIKZLIBRARY("usetikzlibrary", "libraries".asRequired()),
     VDOTS("vdots", display = "⋮"),
     VLINE("vline"),
     VREF("vref", "key".asRequired(), dependency = CLEVEREF),

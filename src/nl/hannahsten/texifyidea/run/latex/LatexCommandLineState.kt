@@ -138,6 +138,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 ?.includedPackages()
                 ?: setOf()
 
+            // todo now we're intersecting LatexPackage and Strings
             isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 
             // Some packages do handle makeindex themselves

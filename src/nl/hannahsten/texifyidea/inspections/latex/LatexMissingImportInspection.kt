@@ -9,7 +9,6 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -49,7 +48,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
         val descriptors = descriptorList()
 
-        val includedPackages = PackageUtils.getIncludedPackages(file)
+        val includedPackages = file.includedPackages()
         analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
         analyseEnvironments(file, includedPackages, descriptors, manager, isOntheFly)
 
@@ -57,7 +56,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     }
 
     private fun analyseEnvironments(
-        file: PsiFile, includedPackages: Collection<String>,
+        file: PsiFile, includedPackages: Collection<LatexPackage>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
@@ -77,13 +76,13 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.dependency
 
-            if (pack == DEFAULT || includedPackages.contains(pack.name)) {
+            if (pack == DEFAULT || includedPackages.contains(pack)) {
                 continue
             }
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key.name)) {
+                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key)) {
                     continue@outerLoop
                 }
             }
@@ -102,7 +101,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     }
 
     private fun analyseCommands(
-        file: PsiFile, includedPackages: Collection<String>,
+        file: PsiFile, includedPackages: Collection<LatexPackage>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
@@ -132,7 +131,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
+                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key)) {
                     continue@commandLoop
                 }
             }

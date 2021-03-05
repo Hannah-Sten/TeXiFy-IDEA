@@ -1,19 +1,18 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.progress.Task
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 
 /**
@@ -32,11 +31,6 @@ object PackageUtils {
         .readLine()
         .split(";")
         .toList()
-
-    /** Commands which can include packages in optional or required arguments. **/
-    val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
-    private val TIKZ_IMPORT_COMMANDS = setOf("\\usetikzlibrary")
-    private val PGF_IMPORT_COMMANDS = setOf("\\usepgfplotslibrary")
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
@@ -142,7 +136,7 @@ object PackageUtils {
             return true
         }
 
-        if (file.includedPackages().contains(pack.name)) {
+        if (file.includedPackages().contains(pack)) {
             return true
         }
 
@@ -151,7 +145,7 @@ object PackageUtils {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
                 if (conflicts.contains(pack) && file.includedPackages().toSet()
-                        .intersect(conflicts.map { it.name })
+                        .intersect(conflicts)
                         .isNotEmpty()
                 ) {
                     return false
@@ -167,17 +161,6 @@ object PackageUtils {
         insertUsepackage(rootFile, pack.name, parameterString)
 
         return true
-    }
-
-    /**
-     * Analyses the given file to finds all the used packages in the included file set.
-     *
-     * @return A set containing all used package names.
-     */
-    @JvmStatic
-    fun getIncludedPackages(baseFile: PsiFile): Set<String> {
-        val commands = baseFile.commandsInFileSet()
-        return getIncludedPackages(commands, HashSet())
     }
 
     /**
@@ -203,50 +186,30 @@ object PackageUtils {
     }
 
     /**
-     * Analyses the given file and finds all the used packages in the included file set.
-     *
-     * @return A list containing all used package names (including duplicates).
-     */
-    @JvmStatic
-    fun getIncludedPackagesList(baseFile: PsiFile): List<String> {
-        val commands = baseFile.commandsInFileSet()
-        return getIncludedPackages(commands, ArrayList())
-    }
-
-    /**
-     * Gets all packages imported with [PACKAGE_COMMANDS].
-     */
-    @JvmStatic
-    fun <T : MutableCollection<String>> getIncludedPackages(
-        commands: Collection<LatexCommands>,
-        result: T
-    ) = getPackagesFromCommands(commands, PACKAGE_COMMANDS, result)
-
-    /**
-     * Gets all packages imported with [TIKZ_IMPORT_COMMANDS].
+     * Gets all packages imported with tikz library import commands.
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedTikzLibraries(
         commands: Collection<LatexCommands>,
         result: T
-    ) = getPackagesFromCommands(commands, TIKZ_IMPORT_COMMANDS, result)
+    ) = getPackagesFromCommands(commands, CommandMagic.tikzLibraryInclusionCommands, result)
 
     /**
-     * Gets all packages imported with [PGF_IMPORT_COMMANDS].
+     * Gets all packages imported with pgf library import commands.
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPgfLibraries(
         commands: Collection<LatexCommands>,
         result: T
-    ) = getPackagesFromCommands(commands, PGF_IMPORT_COMMANDS, result)
+    ) = getPackagesFromCommands(commands, CommandMagic.pgfplotsLibraryInclusionCommands, result)
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
-     * Classes will not be included. todo add packages from index?
+     * Classes will not be included.
      *
      * Note that not all elements returned may be valid package names.
      */
-    private fun <T : MutableCollection<String>> getPackagesFromCommands(
+    fun <T : MutableCollection<LatexPackage>> getPackagesFromCommands(
         commands: Collection<LatexCommands>,
         packageCommands: Set<String>,
         initial: T
@@ -289,80 +252,17 @@ object PackageUtils {
                 // Multiple includes.
                 if (packageName.contains(",")) {
                     initial.addAll(
-                        packageName.split(",")
-                            .dropLastWhile(String::isNullOrEmpty)
+                        packageName.split(",").dropLastWhile(String::isNullOrEmpty).map { LatexPackage(it) }
                     )
                 }
                 // Single include.
                 else {
-                    initial.add(packageName)
+                    initial.add(LatexPackage(packageName))
                 }
             }
         }
 
         return initial
-    }
-}
-
-object TexLivePackages {
-
-    /**
-     * List of installed packages.
-     */
-    var packageList: MutableList<String> = mutableListOf()
-
-    /**
-     * Given a package name used in \usepackage or \RequirePackage, find the
-     * name needed to install from TeX Live. E.g. to be able to use \usepackage{rubikrotation}
-     * we need to install the rubik package.
-     *
-     * In the output
-     *
-     *    tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
-     *    rubik:
-     *            texmf-dist/tex/latex/rubik/rubikrotation.sty
-     *
-     * we are looking for "rubik". Possibly tex live outputs a "TeX Live 2019 is frozen" message before, so
-     * we search for the line that starts with tlmgr. Then the name of the package we are
-     * looking for will be on the next line, if it exists.
-     */
-    fun findTexLiveName(task: Task.Backgroundable, packageName: String, project: Project): String? {
-        // Find the package name for tlmgr.
-        task.title = "Searching for $packageName..."
-        val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
-        // Assume that you can not use the bundle name in a \usepackage if it is different from the package name (otherwise this search won't work and we would need to use tlmgr search --global $packageName
-        val searchResult = "$tlmgrExecutable search --file --global /$packageName.sty".runCommand()
-            ?: return null
-
-        // Check if tlmgr needs to be updated first, and do so if needed.
-        val tlmgrUpdateCommand = "$tlmgrExecutable update --self"
-        if (searchResult.contains(tlmgrUpdateCommand)) {
-            task.title = "Updating tlmgr..."
-            tlmgrUpdateCommand.runCommand()
-        }
-
-        return extractRealPackageNameFromOutput(searchResult)
-    }
-
-    fun extractRealPackageNameFromOutput(output: String): String? {
-        val tlFrozen = Regex(
-            """
-            TeX Live \d{4} is frozen forever and will no
-            longer be updated\.  This happens in preparation for a new release\.
-
-            If you're interested in helping to pretest the new release \(when
-            pretests are available\), please read https:\/\/tug\.org\/texlive\/pretest\.html\.
-            Otherwise, just wait, and the new release will be ready in due time\.
-            """.trimIndent()
-        )
-        val lines = tlFrozen.replace(output, "").trim().split('\n')
-        val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
-        return try {
-            lines[tlmgrIndex + 1].trim().dropLast(1) // Drop the : behind the package name.
-        }
-        catch (e: IndexOutOfBoundsException) {
-            null
-        }
     }
 }
 
@@ -372,6 +272,13 @@ object TexLivePackages {
 fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
 
 /**
- * @see PackageUtils.getIncludedPackages
+ * Find all included LaTeX packages in the file set of this file.
+ *
+ * These may be packages that are in the project, installed in the LateX distribution or somewhere else.
+ * This includes packages that are included indirectly (via other packages).
  */
-fun PsiFile.includedPackages(): Collection<String> = PackageUtils.getIncludedPackages(this)
+fun PsiFile.includedPackages(): Collection<LatexPackage> {
+    val commands = this.commandsInFileSet()
+    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableSetOf())
+    return LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project)
+}

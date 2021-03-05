@@ -9,6 +9,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -32,7 +33,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
 
         // Chapterbib allows multiple bibliographies
-        if (file.includedPackages().any { it == "chapterbib" }) {
+        if (file.includedPackages().any { it == LatexPackage.CHAPTERBIB }) {
             return mutableListOf()
         }
 
