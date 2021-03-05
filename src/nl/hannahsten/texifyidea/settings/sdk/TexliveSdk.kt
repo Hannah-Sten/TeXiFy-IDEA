@@ -93,6 +93,6 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
     override fun getExecutableName(executable: String, homePath: String): String {
         // Get base path of LaTeX distribution
         val basePath = LatexSdkUtil.getPdflatexParentPath(homePath)
-        return "$basePath/$executable"
+        return if (basePath != null) "$basePath/$executable" else executable
     }
 }
