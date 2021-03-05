@@ -274,3 +274,10 @@ just with GitHub.
 http://learngitbranching.js.org/[learngitbranching.js.org].
 * Want to know even more of advanced use of git? Read the excellent
 https://git-scm.com/book/en/v2[Pro Git book] for free.
+
+=== Installing a specific version.
+
+* Go to https://plugins.jetbrains.com/plugin/9473-texify-idea/versions and download the version you want
+* Go to menu:Settings[Plugins] and click the gear icon, click Install Plugin from Disk, select the zip file and install.
+
+For installing alpha versions, see link:Alpha-builds[Alpha builds].

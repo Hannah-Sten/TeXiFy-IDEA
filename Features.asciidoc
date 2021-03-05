@@ -22,11 +22,12 @@ You can search through this wiki by using the GitHub global search bar at the to
 
 == Installation
 
-* Support for Windows, Mac and Unix (via MiKTeX or link:Installation#texlive[TeX Live])
-* MIT license
-// todo link to IJ docs
-* Built on the IntelliJ IDE which has many features built in
-* Works with all Jetbrains IDEs, including IntelliJ, PyCharm, PhpStorm, DataGrip, Rider, GoLand, RubyMine, Android Studio, WebStorm and CLion.
+Also see the link:Installation[installation guide].
+
+* Support for link:Installation#windows-instructions[Windows], link:Installation#mac-instructions[Mac] and link:Installation#linux-instructions[Unix] (via for example MiKTeX or link:Installation#texlive[TeX Live])
+* https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/LICENSE[MIT license]
+* Built on the IntelliJ IDE which has many features built in (https://www.jetbrains.com/help/[documentation])
+* https://plugins.jetbrains.com/plugin/9473-texify-idea/versions[Works with all Jetbrains IDEs], including IntelliJ, PyCharm, PhpStorm, DataGrip, Rider, GoLand, RubyMine, Android Studio, WebStorm and CLion.
 * Suggested updates of TeXiFy and one click to update
 * link:Alpha-builds[Prerelease alpha builds available]
 
