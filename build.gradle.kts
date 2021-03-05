@@ -126,7 +126,7 @@ intellij {
     pluginName = "TeXiFy-IDEA"
 
     // indices plugin doesn't work in tests
-    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0") // , "com.jetbrains.hackathon.indices.viewer:1.12")
+    setPlugins("tanvd.grazi", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -137,6 +137,7 @@ intellij {
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
     version = "2020.3.1"
+//    version = "PY-2020.3.3"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
