@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
@@ -34,7 +33,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
         indexPrograms.add(makeindexProgram)
     }
 
-    if (LatexPackage.GLOSSARIES.name in usedPackages) {
+    if (LatexPackage.GLOSSARIES in usedPackages) {
         val glossaryProgram = if (SystemEnvironment.isPerlInstalled) {
             MakeindexProgram.MAKEGLOSSARIES
         }
@@ -43,7 +42,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
         }
         indexPrograms.add(glossaryProgram)
     }
-    else if (LatexPackage.GLOSSARIESEXTRA.name in usedPackages && "record" in indexPackageOptions) {
+    else if (LatexPackage.GLOSSARIESEXTRA in usedPackages && "record" in indexPackageOptions) {
         indexPrograms.add(MakeindexProgram.BIB2GLS)
     }
 

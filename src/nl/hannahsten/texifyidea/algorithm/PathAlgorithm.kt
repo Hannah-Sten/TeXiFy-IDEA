@@ -11,6 +11,7 @@ package nl.hannahsten.texifyidea.algorithm
  * @author Hannah Schellekens
 </N> */
 interface PathAlgorithm<N> : Algorithm {
+
     /**
      * Get the path that has been found by the algorithm.
      *

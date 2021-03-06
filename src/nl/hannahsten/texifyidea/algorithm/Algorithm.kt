@@ -13,6 +13,7 @@ package nl.hannahsten.texifyidea.algorithm
  * @author Hannah Schellekens
  */
 interface Algorithm {
+
     /**
      * Executes the algorithm.
      *

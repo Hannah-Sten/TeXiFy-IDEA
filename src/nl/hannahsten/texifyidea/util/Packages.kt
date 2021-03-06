@@ -130,7 +130,6 @@ object PackageUtils {
      *
      * @return false if the package was not inserted, because a conflicting package is already present.
      */
-    @JvmStatic
     fun insertUsepackage(file: PsiFile, pack: LatexPackage): Boolean {
         if (pack.isDefault) {
             return true
@@ -279,10 +278,11 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * This includes packages that are included indirectly (via other packages).
  *
  * @param onlyDirectInclusions If true, only packages included directly are returned.
+ * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
-fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Collection<LatexPackage> {
+fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexPackage> {
     val commands = this.commandsInFileSet()
-    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableSetOf())
-        .map { LatexPackage(it) }.toSet()
-    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project)
+    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
+        .map { LatexPackage(it) }
+    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
 }

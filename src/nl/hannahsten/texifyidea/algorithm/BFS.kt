@@ -25,10 +25,11 @@ import java.util.function.Function
  * @author Hannah Schellekens
 </N> */
 class BFS<N>(startNode: N, endNode: N?, adjacencyFunction: Function<N, List<N>>) : PathAlgorithm<N> {
+
     /**
      * The node to start branching from.
      */
-    private val start: BFSNode
+    private val start: BFSNode = BFSNode(startNode, 0)
 
     /**
      * The node where the pathfinding should end.
@@ -36,7 +37,7 @@ class BFS<N>(startNode: N, endNode: N?, adjacencyFunction: Function<N, List<N>>)
      *
      * Or `null` when the algorithm should branch over all nodes.
      */
-    private val end: N?
+    private val end: N? = endNode
 
     /**
      * Set containing all the nodes that have been visited by the algorithm.
@@ -255,6 +256,7 @@ class BFS<N>(startNode: N, endNode: N?, adjacencyFunction: Function<N, List<N>>)
          */
         var distance: Int
     ) {
+
         /**
          * Get the original (wrapped) node.
          *
@@ -299,9 +301,11 @@ class BFS<N>(startNode: N, endNode: N?, adjacencyFunction: Function<N, List<N>>)
      * @author Hannah Schellekens
      */
     enum class BFSAction {
+
         CONTINUE, ABORT;
 
         companion object {
+
             /**
              * @param abort
              * `true` if the BFS must abort, `false` if the BFS must continue.
@@ -336,8 +340,6 @@ class BFS<N>(startNode: N, endNode: N?, adjacencyFunction: Function<N, List<N>>)
      * *excluded*.
      */
     init {
-        start = BFSNode(startNode, 0)
-        end = endNode
         this.adjacencyFunction = adjacencyFunction
         iterationAction = NO_ITERATION_ACTION
     }
