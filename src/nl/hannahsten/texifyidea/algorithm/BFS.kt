@@ -321,7 +321,7 @@ class BFS<N>(startNode: N, endNode: N?, adjacencyFunction: Function<N, List<N>>)
     /**
      * Iteration action that literally does nothing and lets the algorithm continue.
      */
-    val NO_ITERATION_ACTION: Function<N, BFSAction> = Function { n: Any? -> BFSAction.CONTINUE }
+    val NO_ITERATION_ACTION: Function<N, BFSAction> = Function { BFSAction.CONTINUE }
 
     /**
      * Creates a new BFS that will branch until it finds the end node.

@@ -10,7 +10,6 @@ class LatexExternalPackageInclusionDataIndexer : DataIndexer<String, String, Fil
 
     companion object {
 
-        // todo handle multiple imports with comma separated
         val packageInclusionsRegex = """\\(RequirePackage|usepackage)\{(?<package>[^}]+)}""".toRegex()
     }
 
@@ -18,8 +17,10 @@ class LatexExternalPackageInclusionDataIndexer : DataIndexer<String, String, Fil
         val result = mutableMapOf<String, String>()
 
         packageInclusionsRegex.findAll(inputData.contentAsText).forEach {
-            val key = it.groups["package"]?.value ?: return@forEach
-            result[key] = ""
+            val packages = it.groups["package"]?.value ?: return@forEach
+            for (key in packages.split(",")) {
+                result[key] = ""
+            }
         }
 
         return result
