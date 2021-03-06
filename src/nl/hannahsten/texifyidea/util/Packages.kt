@@ -204,12 +204,13 @@ object PackageUtils {
     ) = getPackagesFromCommands(commands, CommandMagic.pgfplotsLibraryInclusionCommands, result)
 
     /**
-     * Analyses all the given commands and reduces it to a set of all included packages.
+     * Analyses all the given commands and reduces it to a set of all included packages, libraries or whatever is imported
+     * with the given [packageCommands].
      * Classes will not be included.
      *
      * Note that not all elements returned may be valid package names.
      */
-    fun <T : MutableCollection<LatexPackage>> getPackagesFromCommands(
+    fun <T : MutableCollection<String>> getPackagesFromCommands(
         commands: Collection<LatexCommands>,
         packageCommands: Set<String>,
         initial: T
@@ -228,7 +229,7 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Except a class, because a class is not a package
             val packages = if (cmd.commandToken
-                .text == "\\documentclass" || cmd.commandToken
+                    .text == "\\documentclass" || cmd.commandToken
                     .text == "\\LoadClass"
             ) {
                 setOf(cmd.optionalParameterMap.toStringMap().keys.toList())
@@ -252,12 +253,12 @@ object PackageUtils {
                 // Multiple includes.
                 if (packageName.contains(",")) {
                     initial.addAll(
-                        packageName.split(",").dropLastWhile(String::isNullOrEmpty).map { LatexPackage(it) }
+                        packageName.split(",").dropLastWhile(String::isNullOrEmpty)
                     )
                 }
                 // Single include.
                 else {
-                    initial.add(LatexPackage(packageName))
+                    initial.add(packageName)
                 }
             }
         }
@@ -276,9 +277,12 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  *
  * These may be packages that are in the project, installed in the LateX distribution or somewhere else.
  * This includes packages that are included indirectly (via other packages).
+ *
+ * @param onlyDirectInclusions If true, only packages included directly are returned.
  */
-fun PsiFile.includedPackages(): Collection<LatexPackage> {
+fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Collection<LatexPackage> {
     val commands = this.commandsInFileSet()
     val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableSetOf())
-    return LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project)
+        .map { LatexPackage(it) }.toSet()
+    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project)
 }

@@ -29,7 +29,6 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
 
     val indexPrograms = mutableSetOf<MakeindexProgram>()
 
-    // todo same
     if (usedPackages.intersect(PackageMagic.index).isNotEmpty()) {
         val makeindexProgram = if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
         indexPrograms.add(makeindexProgram)
@@ -71,7 +70,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
-            .filter { command -> command.requiredParameters.any { it in PackageMagic.index || it in PackageMagic.glossary } }
+            .filter { command -> command.requiredParameters.any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
             .flatMap { it.optionalParameterMap.toStringMap().keys }
     }
 }
