@@ -77,7 +77,7 @@ Also see the link:Installation[installation guide].
 * link:Language-injection[Language injection]
 * Special highlighting and marker for `todo` comments, customizable
 * Links in comments and in commands which provide links (e.g. \url and \href) are clickable
-* link:LaTeX-documentation[Easy links to LaTeX package documentation]
+* link:LaTeX-documentation[Easy links to LaTeX package documentation, and documentation for many commands and environments]
 
 == Preview
 * link:Preview#Unicode-math-preview[Unicode math preview]
