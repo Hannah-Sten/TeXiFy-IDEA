@@ -276,6 +276,13 @@ object CommandMagic {
     )
 
     /**
+     * Commands which can include packages in optional or required arguments.
+     */
+    val packageInclusionCommands = setOf(
+        USEPACKAGE, REQUIREPACKAGE, DOCUMENTCLASS, LOADCLASS
+    ).map { it.cmd }.toSet()
+
+    /**
      * Commands that should have the given file extensions.
      */
     val requiredExtensions = mapOf(
