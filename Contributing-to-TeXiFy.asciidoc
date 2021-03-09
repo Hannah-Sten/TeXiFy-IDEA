@@ -149,3 +149,41 @@ It can be updated as follows.
 * Create a Docker run config with image tag `docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest` and run it.
 * Make sure that there is a valid Docker Registry for GitHub in Settings > Build, ..., > Docker > Registry, point it to `docker.pkg.github.com` and as a password provide a PAT (see https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry).
 * Right-click the image and click Push, provide as repository `hannah-sten/texify-idea/miktex` and tag `latest`.
+
+== Debugging the intellij-pdf-viewer plugin with TeXiFy
+
+TeXiFy provides the `pdfViewer` extension point which is implemented by the https://github.com/FirstTimeInForever/intellij-pdf-viewer[intellij-pdf-viewer] plugin.
+This means that, to debug forward search and inverse search for this pdf viewer, you have to debug the `intellij-pdf-viewer` plugin.
+
+=== Setting up TeXiFy as a dependency
+
+This plugin has an optional dependency on TeXiFy. If this version of TeXiFy is in the JetBrains repo, you can immediately run the pdf viewer plugin (I think). If this is not the case or if this doesn't work, do the following (based on https://plugins.jetbrains.com/docs/intellij/update-plugins-format.html[https://plugins.jetbrains.com/docs/intellij/update-plugins-format.html]):
+
+* Build the TeXiFy version you want to debug with.
+* Create an empty directory somewhere.
+* Put the TeXiFy zip file of plugin in this directory.
+* Create a file `updatePlugins.xml` in this directory, with the following contents
+
+    <plugins>
+        <plugin id="nl.rubensten.texifyidea" url="http://127.0.0.1:8000/<zip-file>.zip" versoin="<TeXiFy-Version>">
+            <idea-version since-build="<FULL build number>"/>
+        </plugin>
+    </plugins>
+
+
+* Create a local JetBrains plugin repo in this folder by running: `python -m http.server 8000 --bind 127.0.0.1`.
+* In `build.gradle.kts` of the pdf viewer plugin (that has TeXiFy as dependency), add the following to the `intellij` block:
+
+    pluginsRepo {
+        custom("http://127.0.0.1:8000")
+    }
+    setPlugins("nl.rubensten.texifyidea:<TeXiFy-version>")
+
+where the plugin id and version should match that given in `updatePlugins.xml` and in the zip of the plugin.
+
+=== Debugging
+
+**TypeScript** When the pdf viewer plugin is running, right click on an open PDF to open the dev tools.
+This will open the ordinary dev tools that is in any browser, and you can print stuff to the console here by using `console.log(...)`.
+
+**Kotlin** The Kotlin part of the plugin can be debugged as usual.
