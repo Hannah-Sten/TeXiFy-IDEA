@@ -16,11 +16,9 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
-import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.requiredParameters
-import nl.hannahsten.texifyidea.util.shrink
 import java.util.*
 import java.util.regex.Pattern
 
@@ -146,7 +144,7 @@ fun stripGroup(text: String): String {
 }
 
 /**
- * Generates a map of parameter names and values (assuming they are in the form []name=]value) for all optional parameters, comma-separated and separate optional parameters are treated equally.
+ * Generates a map of parameter names and values (assuming they are in the form name=value) for all optional parameters, comma-separated and separate optional parameters are treated equally.
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order

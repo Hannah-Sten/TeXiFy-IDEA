@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /**
  * Finds all defined commands within the project.
@@ -64,3 +65,6 @@ fun LatexParameter.indexOf() = indexOfChildByType<LatexParameter, LatexCommands>
 fun LatexCommands.defaultCommand(): LatexCommand? {
     return LatexCommand.lookup(this.name)?.firstOrNull()
 }
+
+fun LatexCommands.isFigureLabel(): Boolean =
+    name in project.getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)

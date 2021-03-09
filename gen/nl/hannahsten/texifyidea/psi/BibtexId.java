@@ -17,4 +17,6 @@ public interface BibtexId extends PsiNameIdentifierOwner {
 
   PsiElement setName(String name);
 
+  void delete();
+
 }
