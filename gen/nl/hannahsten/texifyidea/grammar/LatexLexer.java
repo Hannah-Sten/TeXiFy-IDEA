@@ -1356,7 +1356,10 @@ public class LatexLexer implements FlexLexer {
             // fall through
           case 94: break;
           case 25: 
-            { yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION); return CLOSE_BRACE;
+            { yypopState();
+          newEnvironmentBracesNesting = 0;
+          yypushState(NEW_ENVIRONMENT_DEFINITION);
+          return CLOSE_BRACE;
             } 
             // fall through
           case 95: break;
@@ -1369,7 +1372,7 @@ public class LatexLexer implements FlexLexer {
             { newEnvironmentBracesNesting--;
         if(newEnvironmentBracesNesting == 0) {
             yypopState(); yypushState(NEW_ENVIRONMENT_SKIP_BRACE);
-            // We could have return normal text, but in this way the braces still match
+            // We could have returned normal text, but in this way the braces still match
             return OPEN_BRACE;
         } else {
             return CLOSE_BRACE;
