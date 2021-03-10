@@ -27,10 +27,13 @@ class LatexProjectStructureDetector : ProjectStructureDetector() {
         base: File,
         result: MutableList<DetectedProjectRoot>
     ): DirectoryProcessingResult {
+        // We only add a LaTeX module when there are no other modules,
+        // so we create it on the project root to make the Project view work (it apparently needs at least one top-level module?)
         if (children.any { it.extension == LatexFileType.defaultExtension }) {
             result.add(object : DetectedProjectRoot(base) {
                 override fun getRootTypeName() = "LaTeX"
             })
+            return DirectoryProcessingResult.SKIP_CHILDREN
         }
         return DirectoryProcessingResult.PROCESS_CHILDREN
     }
@@ -40,9 +43,9 @@ class LatexProjectStructureDetector : ProjectStructureDetector() {
         projectDescriptor: ProjectDescriptor?,
         stepIcon: Icon?
     ): MutableList<ModuleWizardStep> {
-        if (builder?.hasRootsFromOtherDetectors(this) == true) return mutableListOf()
 
-        // Note that at least one DetectedProjectRoot needs to be added as above for this to work
+        // Note that at least one DetectedProjectRoot needs to be added as above for the steps to be actually added
+        // (to avoid showing the step for non-LaTeX project creations)
 
         // Custom step with TeXiFy-specific options
         // At the moment it contains no settings which are relevant for creation from existing sources, so we leave it out
