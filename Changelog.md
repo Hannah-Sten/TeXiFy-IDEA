@@ -2,6 +2,7 @@
 
 # Additions
 * Add quick fix for normal space insertion to line break inspection. (#1791)
+* Add .cbx and biblatex-dm.cfg to recognised file extensions. (#1805)
 
 # Changes
 * Show a warning when trying to submit a crash report when not using the latest version of TeXiFy. (#1778)
@@ -9,6 +10,7 @@
 * Look in run configurations for possible paths to latex executables when using PyCharm on a Mac. (#1791)
 * Underscore is now a valid bibtex type character. (#1791)
 * \url and \href are now verbatim commands. (#1784)
+* Use safe delete quickfixes for some 'unused element' inspections. (#1787)
 
 # Bug fixes
 * Fix line breaking of comments during formatting. (#1776)
