@@ -393,6 +393,7 @@
 
         <!-- Register module type for new project creation in non-IntelliJ IDEs -->
         <directoryProjectGenerator implementation="nl.hannahsten.texifyidea.modules.LatexProjectGenerator"/>
+        <projectStructureDetector implementation="nl.hannahsten.texifyidea.modules.LatexProjectStructureDetector" />
 
         <!-- Templates -->
         <internalFileTemplate name="LaTeX Source"/>
