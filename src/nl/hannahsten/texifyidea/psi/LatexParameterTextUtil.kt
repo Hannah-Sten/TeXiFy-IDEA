@@ -127,3 +127,14 @@ val LatexParameterText.command: PsiElement?
     get() {
         return this.firstParentOfType(LatexCommands::class)?.firstChild
     }
+
+fun delete(element: LatexParameterText) {
+    val cmd = element.parentOfType(LatexCommands::class) ?: return
+    if (cmd.isFigureLabel()) {
+        // Look for the NoMathContent that is around the environment, because that is the PsiElement that has the
+        // whitespace and other normal text as siblings.
+        cmd.parentOfType(LatexEnvironment::class)
+            ?.parentOfType(LatexNoMathContent::class)
+            ?.remove()
+    }
+}

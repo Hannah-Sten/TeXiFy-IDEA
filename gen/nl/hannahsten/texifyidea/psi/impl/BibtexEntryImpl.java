@@ -121,7 +121,7 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
   }
 
   @Override
-  public PsiElement setName(@NonNls @NotNull String name) {
+  public PsiElement setName(@NotNull @NonNls String name) {
     return BibtexPsiImplUtil.setName(this, name);
   }
 

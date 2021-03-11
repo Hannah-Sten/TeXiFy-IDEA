@@ -139,7 +139,7 @@ keyval_content ::= parameter_text | parameter_group
 // This assumes that parameter text which is a reference, appears directly under param_content
 // Commands is here instead of in required_param_content because it can be part of reference text for example to a file
 parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
-   methods=[getReferences getReference getNameIdentifier getName setName]
+   methods=[getReferences getReference getNameIdentifier getName setName delete]
 }
 
 group ::= OPEN_BRACE content CLOSE_BRACE { pin=1 }
