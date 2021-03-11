@@ -3,6 +3,9 @@
 # Additions
 * Add quick fix for normal space insertion to line break inspection. (#1791)
 * Add .cbx and biblatex-dm.cfg to recognised file extensions. (#1805)
+* Add documentation popup for environments. (#1802)
+* Add warning when trying to use documentation while texdoc is not installed. (#1802)
+* Index which LaTeX packages include which other LaTeX packages. (#1799)
 
 # Changes
 * Show a warning when trying to submit a crash report when not using the latest version of TeXiFy. (#1778)
@@ -15,3 +18,4 @@
 # Bug fixes
 * Fix line breaking of comments during formatting. (#1776)
 * Fix go to command definition when it is a custom label referencing command. (#1784)
+* Fix parse error on \newenvironment. (#1802)

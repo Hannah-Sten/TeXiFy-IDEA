@@ -98,6 +98,13 @@ This can lead to strange behaviour (see e.g. https://github.com/Hannah-Sten/TeXi
 * menu:Tools[View PSI Structure]
 * menu:Tools[Internal Actions > UI > UI Inspector] to view information about any UI element
 
+== Adding code which uses classes from the java plugin
+
+Instead of registering the implementation of a class in `plugin.xml`, add it to `java.xml`.
+The java plugin is an optional dependency so the plugin can still be used in non-IntelliJ IDEs.
+
+At the moment, it does not seem to be possible to debug in PyCharm because to build the plugin, the java plugin is needed.
+
 == Debugging plugin unload fail
 
 See https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html?from=jetbrains.org#troubleshooting
@@ -165,7 +172,7 @@ This plugin has an optional dependency on TeXiFy. If this version of TeXiFy is i
 * Create a file `updatePlugins.xml` in this directory, with the following contents
 
     <plugins>
-        <plugin id="nl.rubensten.texifyidea" url="http://127.0.0.1:8000/<zip-file>.zip" versoin="<TeXiFy-Version>">
+        <plugin id="nl.rubensten.texifyidea" url="http://127.0.0.1:8000/<zip-file>.zip" version="<TeXiFy-Version>">
             <idea-version since-build="<FULL build number>"/>
         </plugin>
     </plugins>
