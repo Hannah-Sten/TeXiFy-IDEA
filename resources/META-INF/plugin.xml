@@ -384,8 +384,8 @@
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
         <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex;glstex" />
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.StyleFileType" name="LaTeX style file" language="Latex" extensions="sty;dbx;bbx" /> <!-- dbx is a Biblatex Data Model, bbx a Biblatex Style -->
-        <fileType name="LaTeX style file" fileNames="biblatex.cfg" /> <!-- Biblatex configuration -->
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.StyleFileType" name="LaTeX style file" language="Latex" extensions="sty;dbx;bbx;cbx" /> <!-- dbx is a Biblatex Data Model, bbx a Biblatex Style -->
+        <fileType name="LaTeX style file" fileNames="biblatex.cfg;biblatex-dm.cfg" /> <!-- Biblatex configuration -->
         <fileType implementationClass="nl.hannahsten.texifyidea.file.ClassFileType" name="LaTeX class file" language="Latex" extensions="cls" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.BibtexFileType" name="BibTeX bibliography file" language="Bibtex" extensions="bib" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.TikzFileType" name="TikZ picture file" language="Latex" extensions="tikz" />

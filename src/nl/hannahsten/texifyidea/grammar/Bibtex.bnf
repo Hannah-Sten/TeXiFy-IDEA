@@ -35,7 +35,7 @@ type ::= TYPE_TOKEN
 preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
 
 id ::= comment* IDENTIFIER comment* {
-    methods=[getNameIdentifier getName setName]
+    methods=[getNameIdentifier getName setName delete]
 }
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* {
