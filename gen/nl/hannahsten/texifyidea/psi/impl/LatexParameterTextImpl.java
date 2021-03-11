@@ -59,4 +59,9 @@ public class LatexParameterTextImpl extends ASTWrapperPsiElement implements Late
     return LatexPsiImplUtil.setName(this, name);
   }
 
+  @Override
+  public void delete() {
+    LatexPsiImplUtil.delete(this);
+  }
+
 }

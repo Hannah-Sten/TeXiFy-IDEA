@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.allRunConfigurations
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.childrenOfType
 
 /**
@@ -80,7 +80,7 @@ fun PsiFile.isRoot(): Boolean {
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
-    val isMainFileInAnyConfiguration = project.allRunConfigurations().any { it.mainFile == this.virtualFile }
+    val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.mainFile == this.virtualFile }
 
     return (isMainFileInAnyConfiguration || documentEnvironment()) && !usesSubFiles()
 }

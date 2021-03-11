@@ -60,6 +60,13 @@ val IntRange.length: Int
 fun IntRange.toRangeString(separator: String = "-") = if (start == endInclusive) start else "$start$separator$endInclusive"
 
 /**
+ * Shift the range to the right by the number of places given.
+ */
+fun IntRange.shiftRight(displacement: Int): IntRange {
+    return (this.first + displacement)..(this.last + displacement)
+}
+
+/**
  * Converts a [TextRange] to [IntRange].
  */
 fun TextRange.toIntRange() = startOffset..endOffset

@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
 
@@ -132,7 +133,14 @@ object LatexSdkUtil {
         if (isPdflatexInPath) {
             return executableName
         }
-        // If it's also not it path, just try a few sdk types with the default home path
+
+        // Maybe we're on a Mac but in a non-IntelliJ IDE, in which case the user provided the path to pdflatex in the run config (as it's not possible to configure an SDK)
+        project.getLatexRunConfigurations().mapNotNull { it.compilerPath?.substringBefore("/pdflatex") }.forEach {
+            val file = File(it, executableName)
+            if (file.isFile) return file.path
+        }
+
+        // If it's also not in path, just try a few sdk types with the default home path
         val preferredSdk = getPreferredSdkType()?.sdkType as? LatexSdk ?: return executableName
         return preferredSdk.suggestHomePath()?.let { preferredSdk.getExecutableName(executableName, it) } ?: executableName
     }
@@ -152,7 +160,7 @@ object LatexSdkUtil {
     /**
      * If a LaTeX SDK is selected as project SDK, return it, otherwise return null.
      */
-    fun getLatexProjectSdk(project: Project): Sdk? {
+    private fun getLatexProjectSdk(project: Project): Sdk? {
         val sdk = ProjectRootManager.getInstance(project).projectSdk
         if (sdk?.sdkType is LatexSdk) {
             return sdk

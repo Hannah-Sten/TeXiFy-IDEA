@@ -9,6 +9,8 @@
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/Hannah-Sten/TeXiFy-IDEA.svg)](http://isitmaintained.com/project/Hannah-Sten/TeXiFy-IDEA "Percentage of issues still open")
 
 # TeXiFy-IDEA
+<sup><sub>(Pronounced as `/ˈtɛxɪfaɪ aɪˈdɪə/` with a greek letter Chi (χ), just as in LaTeX)</sub></sup>
+
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
 No idea where to start? Have a look at the [installation instructions](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation). Otherwise, take a look at the [tips](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation) instead, or browse through the documentation in the [Wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features)

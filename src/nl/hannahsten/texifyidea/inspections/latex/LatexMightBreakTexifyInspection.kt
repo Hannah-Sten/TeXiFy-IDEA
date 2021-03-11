@@ -8,8 +8,10 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
 import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import org.jetbrains.annotations.Nls
 
 /**
@@ -38,8 +40,8 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
         for (command in commands) {
             // Error when \newcommand is used on existing command
             if (CommandMagic.redefinitions.contains(command.name)) {
-                val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
-                if (CommandMagic.fragile.contains(newCommand.name)) {
+                val newCommand = command.forcedFirstRequiredParameterAsCommand()
+                if (CommandMagic.fragile.contains(newCommand?.name) || command.name == LatexNewDefinitionCommand.CATCODE.cmd) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,

@@ -384,6 +384,20 @@ fun PsiElement?.isMagicComment(): Boolean =
     this?.text?.let { t -> TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(t) } ?: false
 
 /**
+ * Remove a psi element from the psi tree.
+ *
+ * Also remove the white space in front of the psi element when [removeLeadingWhiteSpace] is true, so we don't end up
+ * with ridiculous amounts of white space.
+ */
+fun PsiElement.remove(removeLeadingWhiteSpace: Boolean = true) {
+    if (removeLeadingWhiteSpace) {
+        previousSiblingOfType(PsiWhiteSpace::class)?.let {
+            it.parent.node.removeChild(it.node)
+        }
+    }
+    parent.node.removeChild(node)
+}
+/**
  * Get a sequence of all the parents of this PsiElement with the given type.
  */
 inline fun <reified Psi : PsiElement> PsiElement.parentsOfType(): Sequence<Psi> = parentsOfType(Psi::class)
