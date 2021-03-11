@@ -39,6 +39,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     CompletionProvider<CompletionParameters>() {
 
     companion object {
+
         /** Cache for commands which are indexed and which should be added to the autocompletion. */
         val indexedCommands = mutableSetOf<LookupElementBuilder>()
     }
