@@ -257,7 +257,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // A separate state is used to track when we start with the second parameter of \newenvironment, this state denotes the first one
 <NEW_ENVIRONMENT_DEFINITION_NAME> {
-    {CLOSE_BRACE}       { yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION); return CLOSE_BRACE; }
+    {CLOSE_BRACE}       {
+          yypopState();
+          newEnvironmentBracesNesting = 0;
+          yypushState(NEW_ENVIRONMENT_DEFINITION);
+          return CLOSE_BRACE;
+    }
 }
 
 <NEW_DOCUMENT_ENV_DEFINITION_NAME> {
@@ -280,15 +285,15 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // We are visiting a second parameter of a \newenvironment definition, so we need to keep track of braces
 // The idea is that we will skip the }{ separating the second and third parameter, so that the \begin and \end of the
 // environment to be defined will not appear in a separate group
-// Include possible verbatim begin state, because after a \begin we are in that state (and we cannot leave it because we might be needing to start a vebatim environment)
-// but we still need to count braces.
+// Include possible verbatim begin state, because after a \begin we are in that state (and we cannot leave it because we might be needing to start a verbatim environment)
+// but we still need to count braces (specifically, the open brace after \begin)
 <NEW_ENVIRONMENT_DEFINITION,POSSIBLE_VERBATIM_BEGIN> {
     {OPEN_BRACE}       { newEnvironmentBracesNesting++; return OPEN_BRACE; }
     {CLOSE_BRACE}      {
         newEnvironmentBracesNesting--;
         if(newEnvironmentBracesNesting == 0) {
             yypopState(); yypushState(NEW_ENVIRONMENT_SKIP_BRACE);
-            // We could have return normal text, but in this way the braces still match
+            // We could have returned normal text, but in this way the braces still match
             return OPEN_BRACE;
         } else {
             return CLOSE_BRACE;
