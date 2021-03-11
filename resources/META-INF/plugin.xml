@@ -40,6 +40,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
     <depends optional="true" config-file="intellij-pdf-viewer.xml">com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer</depends>
+    <depends optional="true" config-file="java.xml">com.intellij.modules.java</depends>
     <description><![CDATA[
         <p>
             Plugin for LaTeX and BibTeX support in IntelliJ.
@@ -393,7 +394,6 @@
 
         <!-- Register module type for new project creation in non-IntelliJ IDEs -->
         <directoryProjectGenerator implementation="nl.hannahsten.texifyidea.modules.LatexProjectGenerator"/>
-        <projectStructureDetector implementation="nl.hannahsten.texifyidea.modules.LatexProjectStructureDetector" />
 
         <!-- Templates -->
         <internalFileTemplate name="LaTeX Source"/>

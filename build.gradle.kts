@@ -138,7 +138,7 @@ intellij {
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
     version = "2020.3.1"
-//    version = "PY-203.5419.8-EAP-SNAPSHOT"
+//    version = "PY-2020.3.3"
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
