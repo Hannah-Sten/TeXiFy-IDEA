@@ -189,9 +189,9 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Clear files -->
-            <action class="nl.hannahsten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+            <action class="nl.hannahsten.texifyidea.action.DeleteAuxFiles" id="texify.ClearAuxFiles" text="Delete Auxiliary Files">
             </action>
-            <action class="nl.hannahsten.texifyidea.action.ClearGeneratedFiles" id="texify.ClearGeneratedFiles" text="Clear Auxiliary and Generated Files">
+            <action class="nl.hannahsten.texifyidea.action.DeleteGeneratedFiles" id="texify.ClearGeneratedFiles" text="Delete All Output Files">
             </action>
 
             <separator/>
