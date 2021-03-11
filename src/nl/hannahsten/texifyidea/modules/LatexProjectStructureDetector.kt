@@ -54,10 +54,9 @@ class LatexProjectStructureDetector : ProjectStructureDetector() {
         // Step to set up SDK
         val filter = Condition { id: SdkTypeId -> id is LatexSdk }
         val sdkSettingsStep = ProjectSettingsStep(builder?.context)
-        val sdkSetupStep =  SdkSettingsStep(sdkSettingsStep, LatexModuleBuilder(), filter)
+        val sdkSetupStep = SdkSettingsStep(sdkSettingsStep, LatexModuleBuilder(), filter)
         return mutableListOf(sdkSetupStep)
     }
-
 
     override fun setupProjectStructure(
         roots: MutableCollection<DetectedProjectRoot>,
