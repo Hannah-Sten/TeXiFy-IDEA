@@ -57,7 +57,7 @@ val IntRange.length: Int
  * Converts the range to a range representation with the given seperator.
  * When the range has size 0, it will only print the single number.
  */
-fun IntRange.toRangeString(separator: String = "-") = if (start == endInclusive) start else "$start-$endInclusive"
+fun IntRange.toRangeString(separator: String = "-") = if (start == endInclusive) start else "$start$separator$endInclusive"
 
 /**
  * Shift the range to the right by the number of places given.

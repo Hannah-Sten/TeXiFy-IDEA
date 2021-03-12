@@ -50,4 +50,10 @@ abstract class LatexSdk(name: String) : SdkType(name) {
      * where the sources path is, we implement a default on the SDK type (which will be invisible for the user unfortunately).
      */
     open fun getDefaultSourcesPath(homePath: String): VirtualFile? = null
+
+    /**
+     * Default path to the location of package style (.sty) files.
+     * Example: texlive/2020/texmf-dist/tex/latex
+     */
+    open fun getDefaultStyleFilesPath(homePath: String): VirtualFile? = null
 }

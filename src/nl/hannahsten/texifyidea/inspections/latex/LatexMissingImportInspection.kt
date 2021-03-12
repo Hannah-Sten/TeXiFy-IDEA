@@ -48,7 +48,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
         val descriptors = descriptorList()
 
-        val includedPackages = PackageUtils.getIncludedPackages(file)
+        val includedPackages = file.includedPackages()
         analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
         analyseEnvironments(file, includedPackages, descriptors, manager, isOntheFly)
 
@@ -56,7 +56,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     }
 
     private fun analyseEnvironments(
-        file: PsiFile, includedPackages: Collection<String>,
+        file: PsiFile, includedPackages: Collection<LatexPackage>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
@@ -76,13 +76,13 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.dependency
 
-            if (pack == DEFAULT || includedPackages.contains(pack.name)) {
+            if (pack == DEFAULT || includedPackages.contains(pack)) {
                 continue
             }
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key.name)) {
+                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key)) {
                     continue@outerLoop
                 }
             }
@@ -101,7 +101,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     }
 
     private fun analyseCommands(
-        file: PsiFile, includedPackages: Collection<String>,
+        file: PsiFile, includedPackages: Collection<LatexPackage>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
@@ -131,13 +131,13 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
+                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key)) {
                     continue@commandLoop
                 }
             }
 
             // If none of the dependencies are included
-            if (includedPackages.toSet().intersect(dependencies.map { it.name }).isEmpty()) {
+            if (includedPackages.toSet().intersect(dependencies).isEmpty()) {
                 // We know dependencies is not empty
                 val range = TextRange(0, latexCommands.minByOrNull { it.command.length }!!.command.length + 1)
                 val dependencyNames = dependencies.joinToString { it.name }.replaceAfterLast(", ", "or ${dependencies.last().name}")

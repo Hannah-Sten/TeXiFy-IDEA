@@ -129,7 +129,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
                 .toSet()
 
             // Include packages.
-            if (!file.includedPackages().contains(pack.name) && envName !in envDefinitions) {
+            if (!file.includedPackages().contains(pack) && envName !in envDefinitions) {
                 file.insertUsepackage(pack)
             }
 
