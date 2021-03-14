@@ -38,6 +38,12 @@ import java.util.stream.Collectors
 class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     CompletionProvider<CompletionParameters>() {
 
+    companion object {
+
+        /** Cache for commands which are indexed and which should be added to the autocompletion. */
+        val indexedCommands = mutableSetOf<LookupElementBuilder>()
+    }
+
     override fun addCompletions(
         parameters: CompletionParameters,
         context: ProcessingContext,
@@ -77,7 +83,16 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         }
     }
 
+    /**
+     * Add all indexed commands to the autocompletion.
+     */
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
+        // Use cache if available
+        if (indexedCommands.isNotEmpty()) {
+            result.addAllElements(indexedCommands)
+            return
+        }
+
         val commands = mutableSetOf<LookupElementBuilder>()
         FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
             .forEach { cmdWithSlash ->
@@ -98,6 +113,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                         .forEach { commands.add(it) }
                 }
             }
+        indexedCommands.addAll(commands)
         result.addAllElements(commands)
     }
 

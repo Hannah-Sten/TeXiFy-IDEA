@@ -58,7 +58,11 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return """TeX Live (\d\d\d\d\/.+)""".toRegex().find(LatexSdkUtil.pdflatexVersionText)?.value ?: "Unknown version"
     }
 
-    override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
+    override fun getDefaultDocumentationUrl(sdk: Sdk): String {
         return "$texmfDistPath/doc"
+    }
+
+    override fun getExecutableName(executable: String, homePath: String): String {
+        return "$homePath/$executable"
     }
 }
