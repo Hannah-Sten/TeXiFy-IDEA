@@ -6,6 +6,7 @@
 * Add documentation popup for environments. (#1802)
 * Add warning when trying to use documentation while texdoc is not installed. (#1802)
 * Index which LaTeX packages include which other LaTeX packages. (#1799)
+* Improve autocompletion performance. (#1798)
 
 # Changes
 * Show a warning when trying to submit a crash report when not using the latest version of TeXiFy. (#1778)
@@ -19,3 +20,5 @@
 * Fix line breaking of comments during formatting. (#1776)
 * Fix go to command definition when it is a custom label referencing command. (#1784)
 * Fix parse error on \newenvironment. (#1802)
+* Fix exception when MiKTeX is not installed on Windows. (#1798)
+* Fix executable path for native TeX Live SDK. (#1798)
