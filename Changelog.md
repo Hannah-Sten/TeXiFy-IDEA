@@ -7,6 +7,7 @@
 * Add warning when trying to use documentation while texdoc is not installed. (#1802)
 * Index which LaTeX packages include which other LaTeX packages. (#1799)
 * Improve autocompletion performance. (#1798)
+* Add support for 'create project from existing sources'. (#1807)
 
 # Changes
 * Show a warning when trying to submit a crash report when not using the latest version of TeXiFy. (#1778)
