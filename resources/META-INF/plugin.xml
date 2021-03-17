@@ -208,6 +208,10 @@
             <action class="nl.hannahsten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz Picture">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
+
+            <action class="nl.hannahsten.texifyidea.action.ForwardSearchAction" id="texify.ForwardSearch" text="_Forward Search">
+                <keyboard-shortcut first-keystroke="ctrl shift alt PERIOD" keymap="$default"/>
+            </action>
         </group>
 
         <!-- Insert: Sectioning -->
@@ -310,7 +314,6 @@
         <!-- Startup -->
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.StartEvinceInverseSearchListener"/>
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.AnalyzeMenuRegistration"/>
-        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.ForwardSearchActionRegistration"/>
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.TexLivePackageListInitializer"/>
 
         <!-- Files and project -->

@@ -10,13 +10,15 @@ import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
-open class ForwardSearchActionBase(val viewer: PdfViewer, val id: String = "texify.${viewer.name}") : EditorAction(
-    name = "${viewer.displayName} _Forward Search",
+open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
+    name = "_Forward Search",
     icon = TexifyIcons.RIGHT
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        if (!viewer.isAvailable()) {
+        if (viewer == null) return
+
+        if (!viewer!!.isAvailable()) {
             return
         }
 
@@ -24,8 +26,8 @@ open class ForwardSearchActionBase(val viewer: PdfViewer, val id: String = "texi
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
         when (viewer) {
-            is ExternalPdfViewer -> viewer.forwardSearch(null, file.path, line, project, focusAllowed = true)
-            is InternalPdfViewer -> viewer.conversation!!.forwardSearch(null, file.path, line, project, focusAllowed = true)
+            is ExternalPdfViewer -> (viewer as ExternalPdfViewer).forwardSearch(null, file.path, line, project, focusAllowed = true)
+            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation!!.forwardSearch(null, file.path, line, project, focusAllowed = true)
             else -> return
         }
     }

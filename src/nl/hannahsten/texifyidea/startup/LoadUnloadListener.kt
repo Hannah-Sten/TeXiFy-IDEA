@@ -12,7 +12,6 @@ class LoadUnloadListener : DynamicPluginListener {
     override fun beforePluginUnload(pluginDescriptor: IdeaPluginDescriptor, isUpdate: Boolean) {
         super.beforePluginUnload(pluginDescriptor, isUpdate)
         AnalyzeMenuRegistration().unload()
-        ForwardSearchActionRegistration().unload()
         ControlTracker.unload()
         ShiftTracker.unload()
         runBlocking { EvinceInverseSearchListener.unload() }
