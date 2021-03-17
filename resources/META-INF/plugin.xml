@@ -509,6 +509,7 @@
         <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
         <lang.refactoringSupport language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexRefactoringSupportProvider" />
         <lang.namesValidator language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexNamesValidator" />
+        <moveFileHandler implementation="nl.hannahsten.texifyidea.refactoring.LatexMoveFileHandler" />
 
         <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
         <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
