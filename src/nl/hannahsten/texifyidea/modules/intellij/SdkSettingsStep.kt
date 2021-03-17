@@ -202,7 +202,7 @@ class SdkSettingsStep(
                 1,
                 1.0,
                 1.0,
-                GridBagConstraints.CENTER,
+                GridBagConstraints.NORTH,
                 GridBagConstraints.HORIZONTAL,
                 JBUI.emptyInsets(),
                 0,

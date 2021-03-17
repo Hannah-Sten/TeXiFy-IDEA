@@ -40,6 +40,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
     <depends optional="true" config-file="intellij-pdf-viewer.xml">com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer</depends>
+    <depends optional="true" config-file="java.xml">com.intellij.modules.java</depends>
     <description><![CDATA[
         <p>
             Plugin for LaTeX and BibTeX support in IntelliJ.
@@ -188,9 +189,9 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Clear files -->
-            <action class="nl.hannahsten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+            <action class="nl.hannahsten.texifyidea.action.DeleteAuxFiles" id="texify.ClearAuxFiles" text="Delete Auxiliary Files">
             </action>
-            <action class="nl.hannahsten.texifyidea.action.ClearGeneratedFiles" id="texify.ClearGeneratedFiles" text="Clear Auxiliary and Generated Files">
+            <action class="nl.hannahsten.texifyidea.action.DeleteGeneratedFiles" id="texify.ClearGeneratedFiles" text="Delete All Output Files">
             </action>
 
             <separator/>

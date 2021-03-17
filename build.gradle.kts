@@ -139,7 +139,6 @@ intellij {
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
     version = "2020.3.1"
 //    version = "PY-2020.3.3"
-//    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
