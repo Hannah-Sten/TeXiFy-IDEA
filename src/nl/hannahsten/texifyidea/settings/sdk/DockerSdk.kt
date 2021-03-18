@@ -32,7 +32,7 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         ) } ?: mutableListOf()
     }
 
-    override fun isValidSdkHome(path: String?): Boolean {
+    override fun isValidSdkHome(path: String): Boolean {
         // For now we only support miktex images
         return "$path/docker image ls".runCommand()?.contains("miktex") ?: false
     }

@@ -65,9 +65,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         return results
     }
 
-    override fun isValidSdkHome(path: String?): Boolean {
-        if (path == null) return false
-
+    override fun isValidSdkHome(path: String): Boolean {
         // We expect the location of the LaTeX installation, for example ~/texlive/2020
 
         // If this is a valid LaTeX installation, pdflatex should be present in a subfolder in bin, e.g. $path/bin/x86_64-linux/pdflatex

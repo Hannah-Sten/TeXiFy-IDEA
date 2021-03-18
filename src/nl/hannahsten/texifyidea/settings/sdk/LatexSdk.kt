@@ -18,7 +18,7 @@ abstract class LatexSdk(name: String) : SdkType(name) {
         return null
     }
 
-    override fun suggestSdkName(currentSdkName: String?, sdkHome: String?) = name
+    override fun suggestSdkName(currentSdkName: String?, sdkHome: String) = name
 
     override fun getPresentableName() = name
 
