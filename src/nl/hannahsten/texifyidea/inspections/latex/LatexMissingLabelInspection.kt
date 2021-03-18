@@ -8,7 +8,7 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.createSmartPointer
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention
 import nl.hannahsten.texifyidea.lang.LatexDocumentClass
@@ -92,7 +92,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                 command,
                 "Missing label",
                 fixes.toTypedArray(),
-                ProblemHighlightType.WEAK_WARNING,
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
                 false
             )
@@ -114,7 +114,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                 environment,
                 "Missing label",
                 arrayOf(InsertLabelInEnvironmentFix()),
-                ProblemHighlightType.WEAK_WARNING,
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
                 false
             )

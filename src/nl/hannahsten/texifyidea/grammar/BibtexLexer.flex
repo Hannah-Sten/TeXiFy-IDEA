@@ -33,7 +33,7 @@ CONCATENATE="#"
 QUOTES="\""
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
-TYPE_TOKEN=@[a-zA-Z]+
+TYPE_TOKEN=@[a-zA-Z_]+
 COMMENT_TOKEN=%[^\r\n]*
 // Characters disallowed by bibtex or biber (non-ascii or not depends on LaTeX compiler)
 IDENTIFIER=[^,{}\(\)\"#%'=~\\ \n]+

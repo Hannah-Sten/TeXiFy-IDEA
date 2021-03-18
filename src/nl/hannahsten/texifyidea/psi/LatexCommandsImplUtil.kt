@@ -16,47 +16,41 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
-import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.requiredParameters
-import nl.hannahsten.texifyidea.util.shrink
 import java.util.*
 import java.util.regex.Pattern
 
 /**
  * Get the references for this command.
- * For example for a \ref{label1,label2} command, then label1 and label2 are the references.
  */
 fun getReferences(element: LatexCommands): Array<PsiReference> {
     val firstParam = readFirstParam(element)
 
-    // If it is a reference to a label
+    val references = mutableListOf<PsiReference>()
+
+    // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
     if (element.project.getLabelReferenceCommands().contains(element.commandToken.text) && firstParam != null) {
-        val references = extractLabelReferences(element, firstParam)
-        return references.toTypedArray()
+        references.addAll(extractLabelReferences(element, firstParam))
     }
 
     // If it is a reference to a file
-    val references: List<PsiReference> = element.getFileArgumentsReferences()
-    if (firstParam != null && references.isNotEmpty()) {
-        return references.toTypedArray()
-    }
+    references.addAll(element.getFileArgumentsReferences())
 
     if (CommandMagic.urls.contains(element.name) && firstParam != null) {
-        return element.extractUrlReferences(firstParam)
+        references.addAll(element.extractUrlReferences(firstParam))
     }
 
     // Else, we assume the command itself is important instead of its parameters,
     // and the user is interested in the location of the command definition
-    val reference = CommandDefinitionReference(element)
+    val definitionReference = CommandDefinitionReference(element)
     // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
-    return if (reference.multiResolve(false).isEmpty()) {
-        emptyArray()
+    if (definitionReference.multiResolve(false).isNotEmpty()) {
+        references.add(definitionReference)
     }
-    else {
-        arrayOf(reference)
-    }
+
+    return references.toTypedArray()
 }
 
 /**
@@ -150,7 +144,7 @@ fun stripGroup(text: String): String {
 }
 
 /**
- * Generates a map of parameter names and values (assuming they are in the form []name=]value) for all optional parameters, comma-separated and separate optional parameters are treated equally.
+ * Generates a map of parameter names and values (assuming they are in the form name=value) for all optional parameters, comma-separated and separate optional parameters are treated equally.
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order

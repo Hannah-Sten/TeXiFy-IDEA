@@ -5,12 +5,19 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import java.nio.file.InvalidPathException
 import java.nio.file.Paths
 
-class MiktexSdk : LatexSdk("MiKTeX SDK") {
+/**
+ * MiKTeX on Windows.
+ */
+class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
-    // Cache version
-    var version: String? = null
+    companion object {
+
+        // Cache version
+        var version: String? = null
+    }
 
     override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
 
@@ -26,7 +33,7 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
     override fun suggestHomePaths(): MutableCollection<String> {
         val results = mutableSetOf<String>()
         val paths = "where pdflatex".runCommand()
-        if (paths != null) {
+        if (paths != null && !paths.contains("Could not find")) { // Full output is INFO: Could not find files for the given pattern(s).
             paths.split("\r\n").forEach { path ->
                 val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: path.length - 1
                 results.add(path.substring(0, index))
@@ -39,8 +46,13 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
     }
 
     override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
-        // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
-        return LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
+        return try {
+            // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
+            LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
+        }
+        catch (ignored: InvalidPathException) {
+            null
+        }
     }
 
     override fun isValidSdkHome(path: String): Boolean {
@@ -51,9 +63,13 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
     }
 
     override fun getVersionString(sdk: Sdk): String? {
+        return getVersionString(sdk.homePath)
+    }
+
+    override fun getVersionString(sdkHome: String?): String? {
         version?.let { return version }
 
-        val executable = sdk.homePath?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
+        val executable = sdkHome?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
         val output = "$executable --version".runCommand() ?: ""
         version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
 

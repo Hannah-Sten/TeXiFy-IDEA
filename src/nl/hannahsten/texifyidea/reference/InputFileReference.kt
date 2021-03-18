@@ -67,7 +67,7 @@ class InputFileReference(
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
         val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
-        val rootDirectory = rootFile.parent ?: return null
+        val rootDirectory = rootFile?.parent ?: return null
 
         var targetFile: VirtualFile? = null
 

@@ -36,7 +36,7 @@ class LatexProjectGenerator :
     override fun createStep(
         projectGenerator: DirectoryProjectGenerator<TexifySettings>,
         callback: AbstractNewProjectStep.AbstractCallback<TexifySettings>
-    ) = ProjectSettingsStepBase(projectGenerator, AbstractNewProjectStep.AbstractCallback<TexifySettings>())
+    ) = ProjectSettingsStepBase(projectGenerator, AbstractNewProjectStep.AbstractCallback())
 
     override fun getName() = "LaTeX"
 

@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexMode
@@ -47,6 +47,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         registerPackageNameCompletion()
         registerDocumentClassCompletion()
         registerLatexArgumentTypeCompletion()
+        registerDefaultEnvironmentCompletion()
     }
 
     /**
@@ -334,13 +335,6 @@ open class LatexCompletionContributor : CompletionContributor() {
             .withLanguage(LatexLanguage.INSTANCE),
         LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
     )
-
-    /**
-     * Adds a completion contributor that gets activated within the first required parameter of a given command.
-     */
-    private fun extendLatexCommand(provider: CompletionProvider<CompletionParameters>, commandNameWithSlash: String) {
-        extendLatexCommands(provider, setOf(commandNameWithSlash))
-    }
 
     /**
      * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.

@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.editor
+package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 
 /**
+ * In the situation $a_3<caret>$, typing 'b' should end up in $a_{32}$ as that is probably what the user intended to type.
+ *
  * @author Hannah Schellekens
  */
 open class UpDownAutoBracket : TypedHandlerDelegate() {

@@ -6,7 +6,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
@@ -46,7 +46,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
                     begin,
                     "DefaultEnvironment name does not match with the name in \\end.",
                     MatchBeginFix(beginEnvironment),
-                    ProblemHighlightType.GENERIC_ERROR,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
             )
@@ -57,7 +57,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
                     end,
                     "DefaultEnvironment name does not match with the name in \\begin.",
                     MatchEndFix(endEnvironment),
-                    ProblemHighlightType.GENERIC_ERROR,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
             )

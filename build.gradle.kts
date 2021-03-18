@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.4-alpha.1"
+version = "0.7.5-alpha.4"
 
 repositories {
     mavenCentral()
@@ -54,6 +54,7 @@ tasks.compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
+        useIR = true // https://blog.jetbrains.com/kotlin/2021/02/the-jvm-backend-is-in-beta-let-s-make-it-stable-together
     }
 }
 
@@ -82,6 +83,12 @@ dependencies {
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
     implementation("org.codehaus.plexus:plexus-archiver:4.2.4")
+
+    // Parsing json
+    implementation("com.beust:klaxon:5.4")
+
+    // Comparing versions
+    implementation("org.apache.maven:maven-artifact:3.6.3")
 
     // Test dependencies
 

@@ -6,7 +6,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -51,7 +51,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
                         bibtexEntry,
                         TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )
@@ -66,7 +66,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
                         bibtexEntry,
                         TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

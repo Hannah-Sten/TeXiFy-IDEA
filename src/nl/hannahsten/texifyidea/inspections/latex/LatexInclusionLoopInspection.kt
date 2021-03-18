@@ -6,7 +6,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.util.files.findIncludedFile
 import nl.hannahsten.texifyidea.util.files.searchFileByImportPaths
@@ -54,7 +54,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                                 command,
                                 TextRange(0, command.textLength - 1),
                                 "File inclusion loop found for files ${referenced.name} and ${declaredIn.name}.",
-                                ProblemHighlightType.GENERIC_ERROR,
+                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly
                             )
                         )

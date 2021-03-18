@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
 
@@ -132,7 +133,14 @@ object LatexSdkUtil {
         if (isPdflatexInPath) {
             return executableName
         }
-        // If it's also not it path, just try a few sdk types with the default home path
+
+        // Maybe we're on a Mac but in a non-IntelliJ IDE, in which case the user provided the path to pdflatex in the run config (as it's not possible to configure an SDK)
+        project.getLatexRunConfigurations().mapNotNull { it.compilerPath?.substringBefore("/pdflatex") }.forEach {
+            val file = File(it, executableName)
+            if (file.isFile) return file.path
+        }
+
+        // If it's also not in path, just try a few sdk types with the default home path
         val preferredSdk = getPreferredSdkType()?.sdkType as? LatexSdk ?: return executableName
         return preferredSdk.suggestHomePath()?.let { preferredSdk.getExecutableName(executableName, it) } ?: executableName
     }
@@ -144,7 +152,7 @@ object LatexSdkUtil {
     private fun getPreferredSdkType(): Sdk? {
         val allSdks = ProjectJdkTable.getInstance().allJdks.filter { it.sdkType is LatexSdk }
         allSdks.firstOrNull { it.sdkType is TexliveSdk }?.let { return it }
-        allSdks.firstOrNull { it.sdkType is MiktexSdk }?.let { return it }
+        allSdks.firstOrNull { it.sdkType is MiktexWindowsSdk }?.let { return it }
         allSdks.firstOrNull { it.sdkType is DockerSdk }?.let { return it }
         return null
     }
@@ -152,7 +160,7 @@ object LatexSdkUtil {
     /**
      * If a LaTeX SDK is selected as project SDK, return it, otherwise return null.
      */
-    fun getLatexProjectSdk(project: Project): Sdk? {
+    private fun getLatexProjectSdk(project: Project): Sdk? {
         val sdk = ProjectRootManager.getInstance(project).projectSdk
         if (sdk?.sdkType is LatexSdk) {
             return sdk
@@ -168,16 +176,30 @@ object LatexSdkUtil {
     }
 
     /**
+     * Similar to [getSdkSourceRoots] but for package style files.
+     * Only works when a LaTeX project sdk is selected.
+     */
+    fun getSdkStyleFileRoots(project: Project): Set<VirtualFile> {
+        getLatexProjectSdk(project)?.let { sdk ->
+            return if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultStyleFilesPath(sdk.homePath!!)).filterNotNull().toSet() else emptySet()
+        }
+        return emptySet()
+    }
+
+    /**
      * Collect SDK source paths, so paths to texmf-dist/source/latex, based on Project SDK if available (combining the default
      * for the SDK type and any user-added source roots) and otherwise on a random guess (ok not really).
      */
     fun getSdkSourceRoots(project: Project): Set<VirtualFile> {
+        // Get user provided and default source roots
         getLatexProjectSdk(project)?.let { sdk ->
             val userProvided = sdk.rootProvider.getFiles(OrderRootType.SOURCES).toSet()
             val default = if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultSourcesPath(sdk.homePath!!)).filterNotNull() else emptySet()
             return userProvided + default
         }
-        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexSdk())) {
+
+        // If no sdk is known, guess something
+        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexWindowsSdk())) {
             val roots = sdkType.suggestHomePaths().mapNotNull { homePath ->
                 sdkType.getDefaultSourcesPath(homePath)
             }.toSet()
