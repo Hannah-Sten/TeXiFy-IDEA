@@ -380,7 +380,7 @@ fun PsiElement.firstChildIgnoringWhitespaceOrNull(): PsiElement? {
  *
  * @return `true` if it is a magic comment, `false` otherwise.
  */
-fun PsiElement?.isMagicComment(): Boolean =
+fun PsiElement?.containsMagicComment(): Boolean =
     this?.text?.let { t -> TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(t) } ?: false
 
 /**
