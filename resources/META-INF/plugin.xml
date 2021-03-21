@@ -71,6 +71,9 @@
     <xi:include href="/META-INF/extensions/documentation.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/tool-windows.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
+
+    <xi:include href="/META-INF/extensions/inspections/duplicates.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
@@ -78,10 +81,6 @@
         <!-- Latex inspections -->
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
                          groupName="LaTeX" displayName="Non-escaped common math operators"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCommandAlreadyDefinedInspection"
-                         groupName="LaTeX" displayName="Command is already defined"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
@@ -144,10 +143,7 @@
                          groupName="LaTeX" displayName="Label before caption"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
-                         groupName="LaTeX" displayName="Duplicate labels"
-                         enabledByDefault="true"
-                         level="ERROR" />
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelConventionInspection"
                          groupName="LaTeX" displayName="Label conventions"
                          enabledByDefault="true"
@@ -236,10 +232,7 @@
                          groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
-                         groupName="LaTeX" displayName="Package has been imported multiple times"
-                         enabledByDefault="true"
-                         level="ERROR" />
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
                          groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
                          enabledByDefault="true"
@@ -252,10 +245,6 @@
                          groupName="LaTeX" displayName="Citations must be placed before interpunction"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
-                         groupName="LaTeX" displayName="Duplicate command definitions"
-                         enabledByDefault="true"
-                         level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
                          groupName="LaTeX" displayName="Gather equations"
                          enabledByDefault="true"

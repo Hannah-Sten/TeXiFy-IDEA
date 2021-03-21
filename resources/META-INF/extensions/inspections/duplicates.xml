@@ -1,0 +1,20 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.duplicates.LatexCommandAlreadyDefinedInspection"
+                         groupName="LaTeX" displayName="Command is already defined"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.duplicates.LatexDuplicateLabelInspection"
+                         groupName="LaTeX" displayName="Duplicate labels"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.duplicates.LatexMultipleIncludesInspection"
+                         groupName="LaTeX" displayName="Package has been imported multiple times"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.duplicates.LatexDuplicateDefinitionInspection"
+                         groupName="LaTeX" displayName="Duplicate command definitions"
+                         enabledByDefault="true"
+                         level="ERROR" />
+    </extensions>
+</idea-plugin>
