@@ -1,0 +1,8 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.symbols.SymbolToolWindowFactory"
+                    id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg" order="before Detexify"/>
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
+                    id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
+    </extensions>
+</idea-plugin>

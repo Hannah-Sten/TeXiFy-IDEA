@@ -1,0 +1,98 @@
+<idea-plugin>
+    <description><![CDATA[
+        <p>
+            Plugin for LaTeX and BibTeX support in IntelliJ.
+        </p>
+        <ul>
+            <li>Syntax highlighting</li>
+            <li>Autocompletion of labels, (custom defined and package defined) commands and environments</li>
+            <li>Writer ergonomics - writing LaTeX made less cumbersome</li>
+            <li>Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber</li>
+            <li>Inspections. Intentions. And heaps more inspections</li>
+            <li>Full BibTeX support</li>
+            <li>Formatter for LaTeX and BibTeX</li>
+            <li>Structure view for LaTeX and BibTeX with filters</li>
+            <li>Code folding for imports, sections, and environments</li>
+            <li>SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search</li>
+            <li>Smart quotes</li>
+            <li>Unicode math preview</li>
+            <li>Equation and TikZ picture preview</li>
+            <li>Gutter icons for quick compilation and file includes</li>
+            <li>Fancy icons that fit in with the IntelliJ style</li>
+            <li>Brace matching</li>
+            <li>Word counting tool</li>
+            <li>File templates for <code>.tex</code>, <code>.sty</code>, <code>.cls</code>, <code>.bib</code>, and <code>.tikz</code> files</li>
+            <li>Automagically import packages of common commands</li>
+            <li>Go to declaration of labels</li>
+            <li>Shortcuts for styling text</li>
+            <li>Line commenter</li>
+            <li>Support for user-created document classes and packages</li>
+            <li>Toggle star action</li>
+            <li>Words of encouragement</li>
+            <li>A complete feature list can be found at our <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features">wiki</a> (work in progress).</li>
+        </ul>
+        <p>
+            All critique, questions, suggestions, requests, bug reports, kudos, and (non-)creative ideas are
+            welcome on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA">plugin's GitHub page</a>.
+            If you want to directly chat with us, take a peek at the project's
+            <a href="https://gitter.im/TeXiFy-IDEA">gitter</a>.
+        </p>
+    ]]></description>
+
+    <!-- Changelog -->
+    <change-notes><![CDATA[
+        <p><strong>Beta 0.7.4</strong></p>
+        <p>
+            Welcome to TeXiFy IDEA 0.7.4, with as main new feature the symbol tool window! This version also adds a lot of commands and their documentation to the autocompletion, and contains a lot of bug fixes to create an even smoother usage experience.
+        <p>
+        <p>
+            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+            Your input is valuable and well appreciated.
+        </p>
+        <br>
+        <p>
+            <em>Additions</em>
+        </p>
+        <ul>
+            <li> Added support for opening an internal pdf viewer using the IntelliJ PDF Viewer plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1675">#1675</a>)</li>
+            <li> Added commands from all installed LaTeX packages to autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1710">#1710</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1762">#1762</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1763">#1763</a>)</li>
+            <li> Added symbol tool window. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1752">#1752</a>)</li>
+            <li> Added dummy text insertion wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1767">#1767</a>)</li>
+            <li> Added graphic, table and dummy text wizards to a generate actions popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1770">#1770</a>)</li>
+            <li> Added SDK type for MiKTeX on Linux/Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1774">#1774</a>)</li>
+        </ul>
+        <br>
+        <p>
+            <em>Changes</em>
+        </p>
+        <ul>
+            <li> Changed Grazie rules to ignore non-text elements in a sentence. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1744">#1744</a>)</li>
+            <li> Implemented a file based index for commands and environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1710">#1710</a>)</li>
+            <li> _ and : are now only part of commands when latex3 syntax is explicitly switched on. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Include text in headings and quotes (and more) in word count. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1727">#1727</a>)</li>
+            <li> Add BSTINPUTS by default to the bibtex run config. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+            <li> Use texcount for word count functionality when available. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+        </ul>
+        <br>
+        <p>
+            <em>Bug fixes</em>
+        </p>
+        <ul>
+            <li> Fixed plugin icon not showing up in the marketplace. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1759">#1759</a>)</li>
+            <li> Fixed duplicate local packages in autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Fixed bibtex autocompletion for @preamble and @string. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1756">#1756</a>)</li>
+            <li> Fixed bug in inline math highlighting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1744">#1744</a>)</li>
+            <li> Disable smart quotes and default live templates in verbatim. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1764">#1764</a>)</li>
+            <li> Fixed a crash when multiple MiKTeX installs are present. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+            <li> Fixed a false positive for the missing import inspection for commands being defined. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1766">#1766</a>)</li>
+        </ul>
+        <br>
+        <p>
+            Thanks to <a href="https://github.com/StefanLobbenmeier">Stefan Lobbenmeier</a> for contributing to this release.
+        </p>
+        <br>
+        <p>
+            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+        </p>
+    ]]></change-notes>
+</idea-plugin>

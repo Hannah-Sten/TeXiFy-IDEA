@@ -1,0 +1,7 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexNavigationGutter"/>
+        <runLineMarkerContributor language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>
+    </extensions>
+</idea-plugin>

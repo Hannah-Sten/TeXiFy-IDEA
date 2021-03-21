@@ -1,0 +1,14 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
+        <lang.parserDefinition language="Bibtex" implementationClass="nl.hannahsten.texifyidea.BibtexParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexSyntaxHighlighterFactory"/>
+        <lang.commenter language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
+        <lang.commenter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
+        <lang.braceMatcher language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
+        <lang.braceMatcher language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
+
+        <languageInjector implementation="nl.hannahsten.texifyidea.psi.LatexLanguageInjector" />
+    </extensions>
+</idea-plugin>
