@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.insight
+package nl.hannahsten.texifyidea.documentation
 
 import com.intellij.lang.parameterInfo.CreateParameterInfoContext
 import com.intellij.lang.parameterInfo.ParameterInfoHandler
@@ -11,6 +11,8 @@ import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
+ * This class appears to have something to do with parameter info, but no idea what it does.
+ *
  * @author Sten Wessel
  */
 class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexCommand> {

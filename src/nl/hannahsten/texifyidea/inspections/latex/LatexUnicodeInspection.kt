@@ -11,7 +11,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection.EscapeUnicodeFix
 import nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection.InsertUnicodePackageFix
@@ -23,7 +23,7 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
-import nl.hannahsten.texifyidea.util.PackageUtils
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -71,8 +71,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                 return true
             }
 
-            val included = PackageUtils.getIncludedPackages(file)
-            return PackageMagic.unicode.stream().allMatch { p -> included.contains(p.name) }
+            val included = file.includedPackages()
+            return PackageMagic.unicode.stream().allMatch { p -> included.contains(p) }
         }
     }
 
@@ -107,7 +107,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                         text,
                         TextRange(matcher.start(), matcher.end()),
                         "Unsupported non-ASCII character",
-                        ProblemHighlightType.ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         EscapeUnicodeFix(inMathMode),
                         if (inMathMode) {

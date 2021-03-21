@@ -22,6 +22,7 @@ public interface LatexParameter extends PsiLanguageInjectionHost {
 
   PsiLanguageInjectionHost updateText(@NotNull String text);
 
-  @NotNull LiteralTextEscaper<LatexParameter> createLiteralTextEscaper();
+  @NotNull
+  LiteralTextEscaper<LatexParameter> createLiteralTextEscaper();
 
 }

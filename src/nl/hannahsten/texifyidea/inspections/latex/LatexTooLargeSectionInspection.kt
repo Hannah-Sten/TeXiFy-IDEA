@@ -10,7 +10,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -108,7 +108,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                     commands[i],
                     "Section is long and may be moved to a separate file.",
                     InspectionFix(),
-                    ProblemHighlightType.WEAK_WARNING,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
             )

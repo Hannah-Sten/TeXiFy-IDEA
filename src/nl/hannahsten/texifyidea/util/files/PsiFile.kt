@@ -79,7 +79,7 @@ fun PsiFile.documentClass(): String? {
  *          The name of the package to check for.
  * @return `true` when there is a package with name `packageName` in the file set, `false` otherwise.
  */
-fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this).contains(packageName)
+fun PsiFile.isUsed(packageName: String) = this.includedPackages().map { it.name }.contains(packageName)
 
 /**
  * Checks if the given package is included into the file set.

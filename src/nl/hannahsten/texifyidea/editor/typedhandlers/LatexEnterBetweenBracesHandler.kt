@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.insight
+package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
@@ -15,6 +15,9 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
+ * In the situation \[<caret>\], when pressing enter the caret
+ * should end up with the correct indent.
+ *
  * @author Sten Wessel
  */
 class LatexEnterBetweenBracesHandler : EnterHandlerDelegateAdapter() {

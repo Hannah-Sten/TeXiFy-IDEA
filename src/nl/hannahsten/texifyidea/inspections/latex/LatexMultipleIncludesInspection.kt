@@ -5,13 +5,15 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
-import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 import kotlin.collections.HashSet
@@ -35,7 +37,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Find all duplicates.
-        val packages = PackageUtils.getIncludedPackagesList(file)
+        val packages = file.includedPackages(onlyDirectInclusions = true).map { it.name }
         val covered = HashSet<String>()
         val duplicates = HashSet<String>()
         packages.filterNotTo(duplicates) {
@@ -44,7 +46,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
         // Duplicates!
         file.commandsInFile().asSequence()
-            .filter { it.name == "\\usepackage" && it.requiredParameter(0) in duplicates }
+            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd && it.requiredParameter(0) in duplicates }
             .forEach {
                 val parameter = it.firstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
                 descriptors.add(
@@ -52,7 +54,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
                         it,
                         TextRange.from(parameter.textOffset + 1 - it.textOffset, parameter.textLength - 2),
                         "Package has already been included",
-                        ProblemHighlightType.GENERIC_ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )
                 )

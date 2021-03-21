@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.document
@@ -37,7 +37,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
                     it.second,
                     "Incorrect nesting",
                     arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
-                    ProblemHighlightType.WEAK_WARNING,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     false
                 )

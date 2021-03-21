@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.insight
+package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.openapi.fileTypes.FileType
 import nl.hannahsten.texifyidea.file.BibtexFileType

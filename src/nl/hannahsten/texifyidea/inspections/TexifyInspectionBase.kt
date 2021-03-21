@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.SmartList
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.lang.magic.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment

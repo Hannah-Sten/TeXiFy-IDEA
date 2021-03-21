@@ -16,4 +16,8 @@ class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
             else -> false
         }
     }
+
+    override fun isSafeDeleteAvailable(element: PsiElement): Boolean {
+        return element is LatexParameterText
+    }
 }

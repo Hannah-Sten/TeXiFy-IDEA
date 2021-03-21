@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.childrenOfType
@@ -62,7 +62,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                         text,
                         TextRange(matchRange.last - 2, matchRange.last),
                         "Abbreviation should be followed by a normal space",
-                        ProblemHighlightType.WEAK_WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         NormalSpaceFix(matchRange)
                     )
@@ -91,9 +91,9 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
     /**
      * @author Hannah Schellekens
      */
-    private open class NormalSpaceFix(val whitespaceRange: IntRange) : LocalQuickFix {
+    open class NormalSpaceFix(private val whitespaceRange: IntRange) : LocalQuickFix {
 
-        override fun getFamilyName() = "Insert normal space"
+        override fun getFamilyName() = "Insert normal space after abbreviation"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as LatexNormalText

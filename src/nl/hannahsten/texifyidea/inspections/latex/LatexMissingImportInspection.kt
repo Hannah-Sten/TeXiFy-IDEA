@@ -9,7 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -48,7 +48,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
         val descriptors = descriptorList()
 
-        val includedPackages = PackageUtils.getIncludedPackages(file)
+        val includedPackages = file.includedPackages()
         analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
         analyseEnvironments(file, includedPackages, descriptors, manager, isOntheFly)
 
@@ -56,7 +56,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     }
 
     private fun analyseEnvironments(
-        file: PsiFile, includedPackages: Collection<String>,
+        file: PsiFile, includedPackages: Collection<LatexPackage>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
@@ -76,13 +76,13 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.dependency
 
-            if (pack == DEFAULT || includedPackages.contains(pack.name)) {
+            if (pack == DEFAULT || includedPackages.contains(pack)) {
                 continue
             }
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key.name)) {
+                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key)) {
                     continue@outerLoop
                 }
             }
@@ -92,7 +92,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                     env,
                     TextRange(7, 7 + name.length),
                     "Environment requires ${pack.name} package",
-                    ProblemHighlightType.ERROR,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)
                 )
@@ -101,7 +101,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     }
 
     private fun analyseCommands(
-        file: PsiFile, includedPackages: Collection<String>,
+        file: PsiFile, includedPackages: Collection<LatexPackage>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
@@ -131,13 +131,13 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
+                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key)) {
                     continue@commandLoop
                 }
             }
 
             // If none of the dependencies are included
-            if (includedPackages.toSet().intersect(dependencies.map { it.name }).isEmpty()) {
+            if (includedPackages.toSet().intersect(dependencies).isEmpty()) {
                 // We know dependencies is not empty
                 val range = TextRange(0, latexCommands.minByOrNull { it.command.length }!!.command.length + 1)
                 val dependencyNames = dependencies.joinToString { it.name }.replaceAfterLast(", ", "or ${dependencies.last().name}")
@@ -147,7 +147,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                         command,
                         range,
                         "Command requires $dependencyNames package",
-                        ProblemHighlightType.ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         *fixes
                     )
@@ -161,7 +161,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
      */
     private class ImportCommandFix(val pack: LatexPackage) : LocalQuickFix {
 
-        override fun getFamilyName() = "Add import for package '${pack.name}'"
+        override fun getFamilyName() = "Add import for package '${pack.name}' which provides this command"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
@@ -178,7 +178,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
      */
     private class ImportEnvironmentFix(val import: String) : LocalQuickFix {
 
-        override fun getFamilyName() = "Add import for package '$import'"
+        override fun getFamilyName() = "Add import for package '$import' which provides this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val environment = descriptor.psiElement as? LatexEnvironment ?: return

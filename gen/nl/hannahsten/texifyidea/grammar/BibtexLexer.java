@@ -42,7 +42,7 @@ public class BibtexLexer implements FlexLexer {
    *                  at the beginning of a line
    * l is of the form l = 2*k, k a non negative integer
    */
-  private static final int[] ZZ_LEXSTATE = {
+  private static final int ZZ_LEXSTATE[] = { 
      0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7, 
      8,  8,  9,  9, 10, 10
   };
@@ -57,19 +57,19 @@ public class BibtexLexer implements FlexLexer {
   }
 
   /* The ZZ_CMAP_Z table has 68 entries */
-  static final char[] ZZ_CMAP_Z = zzUnpackCMap(
+  static final char ZZ_CMAP_Z[] = zzUnpackCMap(
     "\1\0\103\200");
 
   /* The ZZ_CMAP_Y table has 256 entries */
-  static final char[] ZZ_CMAP_Y = zzUnpackCMap(
+  static final char ZZ_CMAP_Y[] = zzUnpackCMap(
     "\1\0\1\1\53\2\1\3\22\2\1\4\37\2\1\3\237\2");
 
   /* The ZZ_CMAP_A table has 640 entries */
-  static final char[] ZZ_CMAP_A = zzUnpackCMap(
+  static final char ZZ_CMAP_A[] = zzUnpackCMap(
     "\11\0\1\1\1\3\2\1\1\2\22\0\1\20\1\0\1\13\1\12\1\0\1\16\1\0\1\17\1\6\1\7\2"+
-    "\0\1\10\1\21\2\0\12\21\3\0\1\11\2\0\1\14\32\15\1\0\1\22\4\0\32\15\1\4\1\0"+
-    "\1\5\1\17\6\0\1\23\32\0\1\23\337\0\1\23\177\0\13\23\35\0\2\23\5\0\1\23\57"+
-    "\0\1\23\40\0");
+    "\0\1\10\1\21\2\0\12\21\3\0\1\11\2\0\1\14\32\15\1\0\1\22\2\0\1\15\1\0\32\15"+
+    "\1\4\1\0\1\5\1\17\6\0\1\23\32\0\1\23\337\0\1\23\177\0\13\23\35\0\2\23\5\0"+
+    "\1\23\57\0\1\23\40\0");
 
   /** 
    * Translates DFA states to action switch labels.

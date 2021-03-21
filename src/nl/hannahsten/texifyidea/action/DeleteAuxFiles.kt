@@ -11,7 +11,7 @@ import java.io.File
  *
  * @author Abby Berkers
  */
-class ClearAuxFiles : AnAction() {
+class DeleteAuxFiles : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = getEventProject(e) ?: return

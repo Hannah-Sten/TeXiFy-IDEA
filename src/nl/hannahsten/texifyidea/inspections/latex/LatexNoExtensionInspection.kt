@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -51,7 +51,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
                                 command,
                                 TextRange(offset, offset + parameter.length),
                                 "File argument should not include the extension",
-                                ProblemHighlightType.WARNING,
+                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly,
                                 RemoveExtensionFix
                             )

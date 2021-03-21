@@ -14,6 +14,7 @@ enum class LatexNewDefinitionCommand(
         val collapse: Boolean = false
 ) : LatexCommand {
 
+    CATCODE("catcode"),
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Argument.Type.TEXT)),
     NEWCOMMAND_STAR("newcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Argument.Type.TEXT)),
     NEWIF("newif", "cmd".asRequired()),

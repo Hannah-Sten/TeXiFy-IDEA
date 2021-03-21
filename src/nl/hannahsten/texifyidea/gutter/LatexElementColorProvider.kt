@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.insight
+package nl.hannahsten.texifyidea.gutter
 
 import com.intellij.openapi.editor.ElementColorProvider
 import com.intellij.psi.PsiElement
@@ -13,6 +13,11 @@ import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.usesColor
 import java.awt.Color
 
+/**
+ * Provides colors in the gutter.
+ *
+ * @author Abby
+ */
 object LatexElementColorProvider : ElementColorProvider {
 
     override fun setColorTo(element: PsiElement, color: Color) {}

@@ -8,12 +8,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.startOffset
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic.sentenceEndPrefix
 import kotlin.math.min
 
 /**
@@ -54,14 +55,20 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                     continue
                 }
 
+                // It may be that this inspection is incorrectly triggered on an abbreviation.
+                // However, that means that the correct user action is to write a normal space after the abbreviation,
+                // which is what we suggest with this quickfix.
+                val dotPlusSpace = "^$sentenceEndPrefix(\\.\\s)".toRegex().find(text.text.substring(startOffset, matcher.end()))?.groups?.get(0)?.range?.shiftRight(startOffset + 1)
+                val normalSpaceFix = if (dotPlusSpace != null) LatexSpaceAfterAbbreviationInspection.NormalSpaceFix(dotPlusSpace) else null
+
                 descriptors.add(
                     manager.createProblemDescriptor(
                         text,
                         TextRange(startOffset, min(text.textLength, endOffset)),
                         "Sentence does not start on a new line",
-                        ProblemHighlightType.WEAK_WARNING,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InspectionFix()
+                        InspectionFix(), normalSpaceFix
                     )
                 )
             }

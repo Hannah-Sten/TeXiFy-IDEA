@@ -90,9 +90,13 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
     }
 
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
+        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/tex/latex")
+    }
+
     override fun getExecutableName(executable: String, homePath: String): String {
         // Get base path of LaTeX distribution
         val basePath = LatexSdkUtil.getPdflatexParentPath(homePath)
-        return "$basePath/$executable"
+        return if (basePath != null) "$basePath/$executable" else executable
     }
 }

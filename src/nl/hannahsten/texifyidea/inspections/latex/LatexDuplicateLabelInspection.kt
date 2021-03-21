@@ -7,7 +7,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.startOffset
-import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -164,7 +164,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
             desc.element,
             desc.textRange,
             "Duplicate label '${desc.label}'",
-            ProblemHighlightType.GENERIC_ERROR,
+            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
             isOntheFly
         )
     }
