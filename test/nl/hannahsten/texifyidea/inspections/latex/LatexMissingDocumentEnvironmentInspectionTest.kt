@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMissingDocumentEnvironmentInspection
 
 class LatexMissingDocumentEnvironmentInspectionTest : TexifyInspectionTestBase(LatexMissingDocumentEnvironmentInspection()) {
 

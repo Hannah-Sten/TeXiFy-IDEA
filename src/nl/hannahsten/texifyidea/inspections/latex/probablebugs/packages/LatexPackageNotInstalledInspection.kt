@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex
+package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInspection.InspectionManager

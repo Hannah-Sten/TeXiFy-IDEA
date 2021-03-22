@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexMissingImportInspection
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {

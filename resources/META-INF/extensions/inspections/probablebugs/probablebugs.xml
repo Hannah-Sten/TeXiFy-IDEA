@@ -1,0 +1,71 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection"
+                         groupName="LaTeX" displayName="Unsupported Unicode character"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNoExtensionInspection"
+                         groupName="LaTeX" displayName="File argument should not include the extension"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexRequiredExtensionInspection"
+                         groupName="LaTeX" displayName="File argument should include the extension"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMissingDocumentclassInspection"
+                         groupName="LaTeX" displayName="Missing documentclass"
+                         enabledByDefault="false"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMissingDocumentEnvironmentInspection"
+                         groupName="LaTeX" displayName="Missing document environment"
+                         enabledByDefault="false"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnresolvedReferenceInspection"
+                         groupName="LaTeX" displayName="Unresolved references"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNonMatchingEnvironmentInspection"
+                         groupName="LaTeX" displayName="Non matching environment commands"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNonMatchingIfInspection"
+                         groupName="LaTeX" displayName="Open if-then-else control sequence"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexFileNotFoundInspection"
+                         groupName="LaTeX" displayName="File not found"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexAbsolutePathInspection"
+                         groupName="LaTeX" displayName="No absolute path allowed here"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexInclusionLoopInspection"
+                         groupName="LaTeX" displayName="Inclusion loops"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNestedIncludesInspection"
+                         groupName="LaTeX" displayName="Nested includes"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexLabelBeforeCaptionInspection"
+                         groupName="LaTeX" displayName="Label before caption"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexEscapeUnderscoreInspection"
+                         groupName="LaTeX" displayName="Unescaped _ character"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexEscapeAmpersandInspection"
+                         groupName="LaTeX" displayName="Unescaped &amp; character"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexEscapeHashOutsideCommandInspection"
+                         groupName="LaTeX" displayName="Unescaped # outside of command definition"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+    </extensions>
+
+    <xi:include href="/META-INF/extensions/inspections/probablebugs/packages.xml" xpointer="xpointer(/idea-plugin/*)"/>
+</idea-plugin>

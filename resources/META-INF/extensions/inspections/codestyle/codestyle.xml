@@ -1,31 +1,11 @@
-<idea-plugin>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <extensions defaultExtensionNs="com.intellij">
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMathOperatorEscapeInspection"
-                         groupName="LaTeX" displayName="Non-escaped common math operators"
-                         enabledByDefault="true"
-                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMathFunctionTextInspection"
                          groupName="LaTeX" displayName="Use math function instead of \text"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexNonBreakingSpaceInspection"
-                         groupName="LaTeX" displayName="Non-breaking spaces before references"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEllipsisInspection"
-                         groupName="LaTeX" displayName="Ellipsis with ... instead of \ldots or \dots"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexSpaceAfterAbbreviationInspection"
-                         groupName="LaTeX" displayName="Normal space after abbreviation"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEnDashInspection"
                          groupName="LaTeX" displayName="En dash in number ranges"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexSentenceEndWithCapitalInspection"
-                         groupName="LaTeX" displayName="End-of-sentence space after sentences ending with capitals"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexCdotInspection"
@@ -48,10 +28,6 @@
                          groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexExtremeInequalityInspection"
-                         groupName="LaTeX" displayName="Use the matching amssymb symbol for extreme inequalities"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexDiacriticIJInspection"
                          groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
                          enabledByDefault="true"
@@ -73,4 +49,6 @@
                          enabledByDefault="true"
                          level="WEAK WARNING"/>
     </extensions>
+
+    <xi:include href="/META-INF/extensions/inspections/codestyle/spacing.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

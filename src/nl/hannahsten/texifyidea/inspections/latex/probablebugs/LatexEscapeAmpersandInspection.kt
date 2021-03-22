@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex
+package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiElement

@@ -10,7 +10,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexSpaceAfterAbbreviationInspection
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.spacing.LatexSpaceAfterAbbreviationInspection
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document

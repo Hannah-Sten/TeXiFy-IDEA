@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex
+package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import java.util.regex.Pattern

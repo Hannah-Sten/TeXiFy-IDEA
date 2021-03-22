@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex
+package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.codeInspection.InspectionManager
@@ -13,8 +13,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection.EscapeUnicodeFix
-import nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection.InsertUnicodePackageFix
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection.EscapeUnicodeFix
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection.InsertUnicodePackageFix
 import nl.hannahsten.texifyidea.lang.Diacritic
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
