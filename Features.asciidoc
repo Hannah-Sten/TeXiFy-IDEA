@@ -275,24 +275,27 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 === LaTeX
 
 ==== Code style issues
-* link:Code-style-issues#non-escaped-common-math-operators[Non-escaped common math operators]
 * link:Code-style-issues#math-functions-in-text[Math functions in `\text`]
+* link:Code-style-issues#en-dash[En dash in number ranges]
+* link:Code-style-issues#dot[Use of `.` instead of `\cdot`]
+* link:Code-style-issues#times[Use of `x` instead of `\times`]
+* link:Code-style-issues#vertically-uncentered-colon[Vertically uncentered colon: use of raw `:=` instead of `\coloneqq` by mathtools (and variants)]
+* link:Code-style-issues#grouped-superscript-and-subscript[Grouped superscript and subscript]
+* link:Code-style-issues#qedhere[Insert `\qedhere` in trailing displaymath environment]
+* link:Code-style-issues#dotless-i[Dotless versions of i and j must be used with diacritics]
+* link:Code-style-issues#high-commands[Enclose high commands with `\leftX..\rightX`]
+* link:Code-style-issues#citation-before-interpunction[Citations must be placed before interpunction]
+* link:Code-style-issues#Gather-equations[Gather equations]
+* link:Code-style-issues#Figure-not-referenced[Figure not referenced]
+
+===== Spacing
+* link:Code-style-issues#non-escaped-common-math-operators[Non-escaped common math operators]
 * link:Code-style-issues#non-breaking-spaces-before-references[Non-breaking spaces before references]
 * link:Code-style-issues#ellipsis[Ellipsis with `...` instead of `\ldots` or `\dots`]
 * link:Code-style-issues#normal-space-after-abbreviation[Normal space after abbreviation]
-* link:Code-style-issues#en-dash[En dash in number ranges]
 * link:Code-style-issues#end-of-sentence-space-after-capitals[End-of-sentence space after sentences ending with capitals]
-* link:Code-style-issues#dot[Use of `.` instead of `\cdot`]
-* link:Code-style-issues#times[Use of `x` instead of `\times`]
-* Vertically uncentered colon: use of raw `:=` instead of `\coloneqq` by mathtools (and variants)
-* Grouped superscript and subscript
-* Insert `\qedhere` in trailing displaymath environment
-* Use the matching amssymb symbol for extreme inequalities
-* Dotless versions of i and j must be used with diacritics
-* Enclose high commands with `\leftX..\rightX`
-* Citations must be placed before interpunction
-* link:Code-style-issues#Gather-equations[Gather equations]
-* link:Code-style-issues#Figure-not-referenced[Figure not referenced]
+* link:Code-style-issues#extreme-inequalities[Use the matching amssymb symbol for extreme inequalities]
+
 
 ==== Duplicates
 * link:Duplicates[Command is already defined]
@@ -306,20 +309,22 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * link:++Probable-bugs#File argument should include the extension++[File argument should include the extension]
 * link:Probable-bugs#Missing-documentclass[Missing documentclass]
 * link:Probable-bugs#Missing-document-environment[Missing document environment]
-* link:Probable-bugs#Package-may-not-exist[Package may not exist]
+* link:Probable-bugs#Unresolved-references[Unresolved references]
+* link:Probable-bugs#Non-matching-environment-commands[Non matching environment commands]
+* link:Probable-bugs#Open-if-then-else-control-sequence[Open if-then-else control sequence]
+* link:Probable-bugs#File-not-found[File not found]
+* link:Probable-bugs#Absolute-path-not-allowed[Absolute path not allowed]
+* link:Probable-bugs#Inclusion-loops[Inclusion loops]
+* link:Probable-bugs#Nested-includes[Nested includes]
+* link:Probable-bugs#label-is-before-caption[Label is before caption]
+* link:Probable-bugs#unescaped--symbol#[Unescaped `#` symbol]
+
+===== Packages
+* link:Probable-bugs#Package-could-not-be-found[Package could not be found]
 * link:Probable-bugs#Package-not-installed[Package is not installed]
 * link:Probable-bugs#Package-name-does-not-match-file-name[Package name does not match file name]
 * link:Probable-bugs#Package-name-does-not-contain-the-correct-path[Package name does not contain the correct path]
 * link:Probable-bugs#Missing-imports[Missing imports]
-* Unresolved references
-* Non matching environment commands
-* Open if-then-else control sequence
-* link:Probable-bugs#File-not-found[File not found]
-* link:Probable-bugs#Absolute-path-not-allowed[Absolute path not allowed]
-* Inclusion loops
-* Nested includes
-* link:Probable-bugs#label-is-before-caption[Label is before caption]
-* link:Probable-bugs#unescaped--symbol#[Unescaped `#` symbol]
 
 ==== Redundant LaTeX
 * link:Redundant-LaTeX#redundant-escape-when-unicode-is-enabled[Redundant escape when Unicode is enabled]

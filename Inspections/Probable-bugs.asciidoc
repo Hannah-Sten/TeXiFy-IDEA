@@ -1,5 +1,3 @@
-
-
 == Unsupported Unicode character
 
 This inspections highlights Unicode characters which are likely to cause incorrect output if you have not explicitly chosen the right packages and compiler.
@@ -96,17 +94,17 @@ A LaTeX file that is the root of a document should contain a `document` environm
 
 This inspection is off by default.
 
+== Package could not be found
+When using `\usepackage` or `\RequirePackage`, we check if the package exists.
+To do this, we check the project for use defined packages, and we check a list of all available CTAN packages.
+This list of CTAN packages is manually updated by us, and might be out of date.
+
 == Package is not installed
 _Since b0.6.9_
 
 This inspection is for TeX Live only, MiKTeX automatically installs packages on the fly.
 When using `\usepackage` or `\RequirePackage`, TeXiFy checks if the packages is installed.
 If it isn't installed, it provides a quick fix to install the package.
-
-== Package may not exist
-When using `\usepackage` or `\RequirePackage`, we check if the package exists.
-To do this, we check the project for use defined packages, and we check a list of all available CTAN packages.
-This list of CTAN packages is manually updated by us, and might be out of date.
 
 == Package name does not match file name
 _Since b0.6.10_
@@ -129,20 +127,21 @@ For more information, see link:Automatic-package-importing[Automagically import 
 
 Note that if TeXiFy complains incorrectly that you did not import the package, you may need to tell TeXiFy which file is your root file, see link:Magic-comments[Magic comments].
 
-== Unescaped `#`, `&` and `_` symbol
-_Since b0.6.10_
-
-When using a `#` symbol outside of a command definition, an `&` outside a tabular environment or a `_` anywhere, it should be escaped with a backslash, like `\&`.
-
 == Unresolved references
+
+Reports references that could not be resolved, for example to labels or citations that don't exist.
+
 == Non matching environment commands
+
+The environment name in the `\begin` command should match the name in the `\end` command.
+
 == Open if-then-else control sequence
 
 This inspection warns for `\if` commands (and variations) which are not closed with the corresponding `\fi`.
 
 == File not found
 
-If a Latex command takes a path argument TeXiFy checks wether the file or path exists and throws an error if not. 
+If a Latex command takes a path argument TeXiFy checks whether the file or path exists and throws an error if not.
 
 == Absolute path not allowed
 
@@ -156,9 +155,16 @@ On one of the inclusions a warning will be shown.
 
 == Nested includes
 
+You cannot use an `\include` command in file included by a `\include` command.
+
 == Label is before caption
 
 A label command in an environment (e.g., a figure or table environment) should go after the caption.
 This inspection shows a weak warning when the order is the wrong way around, and a quickfix is available to swap the commands.
 
 Currently this inspection will only trigger when the label and caption are directly next to each other (only whitespace inbetween).
+
+== Unescaped `#`, `&` and `_` symbol
+_Since b0.6.10_
+
+When using a `#` symbol outside of a command definition, an `&` outside a tabular environment or a `_` anywhere, it should be escaped with a backslash, like `\&`.

@@ -46,11 +46,40 @@ When multiplying numbers, use `\cdot` instead of `.`.
 
 When multiplying numbers, use `2 \times 4` instead of `2x4`.
 
+[#vertically-uncentered-colon]
+== Vertically uncentered colon
+
+Instead of `:=`, use `\coloneqq` for better vertical centering of the colon.
+
+[#grouped-superscript-and-subscript]
 == Grouped superscript and subscript
+
+If you write `\xi_ij` then you probably meant to write `\xi_{ij}`, because `\xi_ij` will be interpreted as `\xi_{i}j`.
+If not, you probably should have written `\xi_i j` instead.
+
+[#qedhere]
 == Insert `\qedhere` in trailing displaymath environment
+
+If you end a `proof` environment with a displaymath environment, the qed symbol will appear after the displaymath which is one line too low, so you should use `\qedhere` in the displaymath environment to fix that.
+
+[#extreme-inequalities]
 == Use the matching amssymb symbol for extreme inequalities
+
+Instead of writing `<<`, use `\ll` for better spacing. Same for `>>` and more variants.
+
+[#dotless-i]
 == Dotless versions of i and j must be used with diacritics
+
+When you use diacritics like `\^` on an i or j, you should use the dotless version for better readability.
+For example, instead of `\^i` write `\^{\i}`.
+
+[#high-commands]
 == Enclose high commands with `\leftX..\rightX`
+
+Expressions which take up more vertical line space, should also be enclosed with larger parentheses.
+For example, instead of `(\frac 1 2)` write `\left(\frac 1 2\right)`.
+
+[#citation-before-interpunction]
 == Citations must be placed before interpunction
 
 Use `Sentence~\cite{knuth1990}.` and not `Sentence.~\cite{knuth1990}`
