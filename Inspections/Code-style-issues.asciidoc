@@ -1,26 +1,51 @@
 :pygmentize:
 
+[#non-escaped-common-math-operators]
 == Non-escaped common math operators
+
+Math functions like `sin` and `cos` should be escaped to LaTeX commands in math, so `\sin` and `\cos`, otherwise LaTeX will interpret this as the letter `s` times the letter `i` times the letter `n`, resulting in different spacing (try it).
 
 [#math-functions-in-text]
 == Math functions in `\text`
 _Since b0.7.3_
 
-Math functions using `\text{myoperator}` can be replaced by their dedicated function (`\myoperator`).
+Math functions using `\text{myoperator}` can be replaced by their dedicated function (`\myoperator`), for example `\text{sin}` by `\sin`.
 
+[#non-breaking-spaces-before-references]
 == Non-breaking spaces before references
+
+Before a `\ref`-like command there should be a non-breaking space `~`, to avoid a line break just before the reference which would make the sentence harder to read.
+
+[#ellipsis]
 == Ellipsis with `...` instead of `\ldots` or `\dots`
+
+Use a `\dots`-like command instead of `...` for better spacing.
+
+[#normal-space-after-abbreviation]
 == Normal space after abbreviation
 
 After an abbreviation like `e.g.` you should use a normal space instead of an end-of-sentence space, so use `e.g.\ this` instead of `e.g. this` (arguably you need to type `e.g., this` anyway). If you don't do this, LaTeX will interpret `e.g.` as the end of a sentence and thus insert a larger space.
 
+[#en-dash]
 == En dash in number ranges
+
+Instead of typing `0-9` for a number range, use `0--9` to typeset the right dash.
+
+[#end-of-sentence-space-after-capitals]
 == End-of-sentence space after sentences ending with capitals
+
+If you end a sentence with a captial letter, for example like `Then QED. However, next sentence` then LaTeX will interpret `QED.` as an abbreviation and thus typeset a normal space instead of an end-of-sentence space. Use `QED\@.` instead to override this.
+
+[#dot]
 == Use of `.` instead of `\cdot`
 
 When multiplying numbers, use `\cdot` instead of `.`.
 
+[#times]
 == Use of `x` instead of `\times`
+
+When multiplying numbers, use `2 \times 4` instead of `2x4`.
+
 == Grouped superscript and subscript
 == Insert `\qedhere` in trailing displaymath environment
 == Use the matching amssymb symbol for extreme inequalities

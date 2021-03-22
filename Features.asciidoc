@@ -275,15 +275,15 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 === LaTeX
 
 ==== Code style issues
-* Non-escaped common math operators
-* link:Code-style-issues{outfilesuffix}#math-functions-in-text[Math functions in `\text`]
-* Non-breaking spaces before references
-* Ellipsis with `...` instead of `\ldots` or `\dots`
-* Normal space after abbreviation
-* En dash in number ranges
-* End-of-sentence space after sentences ending with capitals
-* Use of `.` instead of `\cdot`
-* Use of `x` instead of `\times`
+* link:Code-style-issues#non-escaped-common-math-operators[Non-escaped common math operators]
+* link:Code-style-issues#math-functions-in-text[Math functions in `\text`]
+* link:Code-style-issues#non-breaking-spaces-before-references[Non-breaking spaces before references]
+* link:Code-style-issues#ellipsis[Ellipsis with `...` instead of `\ldots` or `\dots`]
+* link:Code-style-issues#normal-space-after-abbreviation[Normal space after abbreviation]
+* link:Code-style-issues#en-dash[En dash in number ranges]
+* link:Code-style-issues#end-of-sentence-space-after-capitals[End-of-sentence space after sentences ending with capitals]
+* link:Code-style-issues#dot[Use of `.` instead of `\cdot`]
+* link:Code-style-issues#times[Use of `x` instead of `\times`]
 * Vertically uncentered colon: use of raw `:=` instead of `\coloneqq` by mathtools (and variants)
 * Grouped superscript and subscript
 * Insert `\qedhere` in trailing displaymath environment
