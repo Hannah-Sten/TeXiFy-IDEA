@@ -276,7 +276,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 ==== Code style issues
 * Non-escaped common math operators
-* xref:Inspections/Code-style-issues.asciidoc#math-functions-in-text[Math functions in `\text`]
+* link:Code-style-issues{outfilesuffix}#math-functions-in-text[Math functions in `\text`]
 * Non-breaking spaces before references
 * Ellipsis with `...` instead of `\ldots` or `\dots`
 * Normal space after abbreviation
