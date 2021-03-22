@@ -1,0 +1,40 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMathOperatorEscapeInspection"
+                         groupName="LaTeX" displayName="Non-escaped common math operators"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMathFunctionTextInspection"
+                         groupName="LaTeX" displayName="Use math function instead of \text"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexNonBreakingSpaceInspection"
+                         groupName="LaTeX" displayName="Non-breaking spaces before references"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEllipsisInspection"
+                         groupName="LaTeX" displayName="Ellipsis with ... instead of \ldots or \dots"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexSpaceAfterAbbreviationInspection"
+                         groupName="LaTeX" displayName="Normal space after abbreviation"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEnDashInspection"
+                         groupName="LaTeX" displayName="En dash in number ranges"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexSentenceEndWithCapitalInspection"
+                         groupName="LaTeX" displayName="End-of-sentence space after sentences ending with capitals"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexCdotInspection"
+                         groupName="LaTeX" displayName="Use of . instead of \cdot"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexXInsteadOfTimesInspection"
+                         groupName="LaTeX" displayName="Use of x instead of \times"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+    </extensions>
+</idea-plugin>

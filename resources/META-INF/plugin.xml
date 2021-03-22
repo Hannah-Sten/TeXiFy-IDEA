@@ -73,16 +73,14 @@
 
 
     <xi:include href="/META-INF/extensions/inspections/duplicates.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/codestyle.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 
         <!-- Latex inspections -->
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
-                         groupName="LaTeX" displayName="Non-escaped common math operators"
-                         enabledByDefault="true"
-                         level="WARNING" />
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
                          groupName="LaTeX" displayName="Might break TeXiFy functionality"
                          enabledByDefault="true"
@@ -123,10 +121,7 @@
                          groupName="LaTeX" displayName="Start sentences on a new line"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection"
-                         groupName="LaTeX" displayName="Non-breaking spaces before references"
-                         enabledByDefault="true"
-                         level="WARNING" />
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiscouragedUseOfDefInspection"
                          groupName="LaTeX" displayName="Discouraged use of \def and \let"
                          enabledByDefault="true"
@@ -164,34 +159,16 @@
                          groupName="LaTeX" displayName="Non matching environment commands"
                          enabledByDefault="true"
                          level="ERROR" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEllipsisInspection"
-                         groupName="LaTeX" displayName="Ellipsis with ... instead of \ldots or \dots"
-                         enabledByDefault="true"
-                         level="WARNING" />
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexAvoidEqnarrayInspection"
                          groupName="LaTeX" displayName="Avoid eqnarray"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSpaceAfterAbbreviationInspection"
-                         groupName="LaTeX" displayName="Normal space after abbreviation"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEnDashInspection"
-                         groupName="LaTeX" displayName="En dash in number ranges"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSentenceEndWithCapitalInspection"
-                         groupName="LaTeX" displayName="End-of-sentence space after sentences ending with capitals"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCdotInspection"
-                         groupName="LaTeX" displayName="Use of . instead of \cdot"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexXInsteadOfTimesInspection"
-                         groupName="LaTeX" displayName="Use of x instead of \times"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
+
+
+
+
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGroupedSubSupScriptInspection"
                          groupName="LaTeX" displayName="Grouped superscript and subscript"
                          enabledByDefault="true"
@@ -309,10 +286,7 @@
                          groupName="LaTeX" displayName="Vertically uncentered colon"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
-                         groupName="LaTeX" displayName="Use math function instead of \text"
-                         enabledByDefault="true"
-                         level="WARNING" />
+
 
         <!-- Element manipulator -->
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"

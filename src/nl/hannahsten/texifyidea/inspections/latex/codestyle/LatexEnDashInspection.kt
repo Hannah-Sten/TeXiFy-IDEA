@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex
+package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.psi.PsiFile

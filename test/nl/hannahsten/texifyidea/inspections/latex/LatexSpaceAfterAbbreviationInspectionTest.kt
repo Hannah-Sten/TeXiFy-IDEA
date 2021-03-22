@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexSpaceAfterAbbreviationInspection
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexSpaceAfterAbbreviationInspectionTest : TexifyInspectionTestBase(LatexSpaceAfterAbbreviationInspection()) {
