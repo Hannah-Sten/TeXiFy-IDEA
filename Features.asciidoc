@@ -274,9 +274,9 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 === LaTeX
 
-==== Writing style recommendations
+==== Code style issues
 * Non-escaped common math operators
-* link:Writing-style-recommendations#math-functions-in-text[Math functions in `\text`]
+* link:Inspections/Code-style-issues.asciidoc#math-functions-in-text[Math functions in `\text`]
 * Non-breaking spaces before references
 * Ellipsis with `...` instead of `\ldots` or `\dots`
 * Normal space after abbreviation
@@ -291,8 +291,8 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * Dotless versions of i and j must be used with diacritics
 * Enclose high commands with `\leftX..\rightX`
 * Citations must be placed before interpunction
-* link:Writing-style-recommendations#Gather-equations[Gather equations]
-* link:Writing-style-recommendations#Figure-not-referenced[Figure not referenced]
+* link:Code-style-issues#Gather-equations[Gather equations]
+* link:Code-style-issues#Figure-not-referenced[Figure not referenced]
 
 ==== Duplicates
 * link:Duplicates[Command is already defined]

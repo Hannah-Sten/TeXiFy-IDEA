@@ -1,6 +1,8 @@
 :pygmentize:
 
 == Non-escaped common math operators
+
+[#math-functions-in-text]
 == Math functions in `\text`
 _Since b0.7.3_
 
