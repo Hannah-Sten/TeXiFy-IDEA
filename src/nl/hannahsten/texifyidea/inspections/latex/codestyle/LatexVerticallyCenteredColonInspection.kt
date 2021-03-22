@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex
+package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.util.get
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 /**
  * Highlights uses of mathematical symbols composed of a colon with a equality-like relational symbol, where the colon

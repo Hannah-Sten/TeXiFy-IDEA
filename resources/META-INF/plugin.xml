@@ -169,10 +169,7 @@
 
 
 
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGroupedSubSupScriptInspection"
-                         groupName="LaTeX" displayName="Grouped superscript and subscript"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantParInspection"
                          groupName="LaTeX" displayName="Redundant use of \par"
                          enabledByDefault="true"
@@ -181,14 +178,8 @@
                          groupName="LaTeX" displayName="Open if-then-else control sequence"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexQedHereInspection"
-                         groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexExtremeInequalityInspection"
-                         groupName="LaTeX" displayName="Use the matching amssymb symbol for extreme inequalities"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
+
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFileNotFoundInspection"
                          groupName="LaTeX" displayName="File not found"
                          enabledByDefault="true"
@@ -205,27 +196,15 @@
                          groupName="LaTeX" displayName="Collapse cite commands"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiacriticIJInspection"
-                         groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
-                         enabledByDefault="true"
-                         level="WARNING" />
+
 
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
                          groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEncloseWithLeftRightInspection"
-                         groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
-                         enabledByDefault="true"
-                         level="WEAK WARNING"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
-                         groupName="LaTeX" displayName="Citations must be placed before interpunction"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
-                         groupName="LaTeX" displayName="Gather equations"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
+
+
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
                          enabledByDefault="true"
@@ -242,10 +221,7 @@
                          groupName="LaTeX" displayName="Nested includes"
                          enabledByDefault="true"
                          level="ERROR" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
-                         groupName="LaTeX" displayName="Figure not referenced"
-                         enabledByDefault="true"
-                         level="WEAK WARNING"/>
+
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
                          groupName="LaTeX" displayName="Multiple definition of graphicspath"
                          enabledByDefault="true"
@@ -282,10 +258,7 @@
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
                          enabledByDefault="true"
                          level="WARNING"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerticallyCenteredColonInspection"
-                         groupName="LaTeX" displayName="Vertically uncentered colon"
-                         enabledByDefault="true"
-                         level="WARNING" />
+
 
 
         <!-- Element manipulator -->

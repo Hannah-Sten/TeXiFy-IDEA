@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex
+package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
