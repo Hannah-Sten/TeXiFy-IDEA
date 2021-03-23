@@ -23,15 +23,11 @@ more programming languages as well).
 * Download and install https://miktex.org/download[LaTeX for Windows].
 During installation, choose the option
 `Install missing packages on the fly: yes`.
-* Download and install
-https://www.sumatrapdfreader.org/download-free-pdf-viewer.html[SumatraPDF],
-you will use it to view your compiled pdf files. If you know you are on
-a 64-bit system you can download the 64-bit build. If you have no idea,
-download the normal installer which is the top-most link.
 * Open IntelliJ, in the welcome menu choose menu:Configure[Plugins] (or when
 you already have a project open, use menu:File[Settings > Plugins]).
 * Click on Marketplace and search for `texify`, then click
 `install`.
+* Install the PDF Viewer plugin as well, it provides a built-in pdf viewer but does not have full functionality yet. Alternatively, you can install the https://www.sumatrapdfreader.org/download-free-pdf-viewer.html[SumatraPDF] pdf viewer.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
 * Click on Create New Project (in the welcome menu) or menu:File[New > Project],
 select LaTeX in the left column and click next. Specify a name for your
@@ -58,11 +54,11 @@ Play button) in the top-right menu, or using kbd[Shift+F10].
 
 * When your cursor is in IntelliJ and you have just compiled a document,
 you can look up which line in the pdf corresponds to the line your
-cursor is at by going in IntelliJ to menu:Tools[LaTeX > SumatraPDF > Go to line in PDF], or using the
-shortcut which is listed there. This shortcut can also be used to bring
+cursor is at by going in IntelliJ to menu:Tools[LaTeX > Forward Search], or using the
+shortcut which is listed there. If you use SumatraPDF, this shortcut can also be used to bring
 the SumatraPDF window in view when you do not see it.
-* If you don’t see a SumatraPDF option, reboot your computer to make sure TeXiFy detects SumatraPDF.
-* You can also do the reverse: you have to configure it once by clicking
+* You can also do the reverse: if you have the pdf open inside IntelliJ, you can hold Ctrl and click in the document to bring your cursor to the LaTeX source. Make sure you have compiled the document first.
+If you use SumatraPDF, you have to configure it once by clicking
 menu:[Tools > LaTeX > SumatraPDF > Configure inverse search]. Then double-click
 in SumatraPDF in a pdf you just compiled, and it should make your cursor
 go to the correct location in IntelliJ.
@@ -88,7 +84,7 @@ use tab for autocompletion)
 toolbox directly, `sudo tar xf jetbrains-toolbox-1.11.4269.tar.gz -C /opt/` and
 run `/opt/jetbrains-toolbox-1.11.4269/jetbrains-toolbox`, then install
 IntelliJ.
-* To install LaTeX, you can use the TeX Live distribution. If something
+* To install LaTeX, you can for example use the TeX Live distribution. If something
 is already installed, check that the version is at least 2017 with
 `latex --version`. If not, for example if you are on Ubuntu 16.04, you
 have to first remove the old TeX Live (see for example
@@ -136,7 +132,8 @@ If you have an existing document, you can also use https://tex.stackexchange.com
 you already have a project open, use menu:File[Settings > Plugins]).
 * Click on Marketplace and search for `texify`, then click
 `install`.
-* If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
+* Also install the PDF Viewer plugin to view the pdf within IntelliJ.
+* If you had to install LaTeX, log out and log back in.
 * Click on Create New Project (in the welcome menu) or menu:File[New > Project],
 select LaTeX in the left column and click next. Specify a name for your
 project, and a location. A project can contain multiple LaTeX files and documents, so
@@ -162,10 +159,10 @@ Play button) in the top-right menu, or using kbd[Shift+F10].
 
 * When your cursor is in IntelliJ and you have just compiled a document,
 you can look up which line in the pdf corresponds to the line your
-cursor is at by going in IntelliJ to menu:Tools[LaTeX > Evince > Forward Search], or using the shortcut
-which is listed there. This shortcut can also be used to bring the
+cursor is at by going in IntelliJ to menu:Tools[LaTeX > Forward Search], or using the shortcut
+which is listed there. If you use Evince, this shortcut can also be used to bring the
 Evince window in view when you do not see it.
-* You can also do the reverse: press Ctrl and click in Evince in a pdf
+* You can also do the reverse: press Ctrl and click in a pdf (either in Evince or in IntelliJ)
 you just compiled, and it should make your cursor go to the correct
 location in IntelliJ.
 * Also have a look at the link:#tips[tips].
@@ -185,6 +182,7 @@ for Mac]. During installation, choose the option
 you already have a project open, use menu:File[Settings > Plugins]).
 * Click on Marketplace and search for `texify`, then click
 `install`.
+* Install the PDF Viewer plugin as well to view the pdf inside IntelliJ.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
 * Click on Create New Project (in the welcome menu) or menu:File[New > Project],
 select LaTeX in the left column and click next. Specify a name for your
@@ -205,7 +203,7 @@ click Run. If you see a pdf appearing, congratulations!
 Play button) in the top-right menu.
 * Have a look at the link:#tips[tips].
 
-For configuring forward and backward search with Skim, see the link:Skim-support[Skim support] wiki page.
+If you want to use Skim instead of the built-in pdf viewer, for configuring forward and backward search see the link:Skim-support[Skim support] wiki page.
 
 === Tips
 
@@ -231,6 +229,7 @@ each line) looks messy, reformat with kbd:[Ctrl+Alt+L].
 LaTeX, the http://detexify.kirelabs.org/classify.html[Detexify] tool can
 probably help you. Just draw your symbol in the `draw here` box and the
 command will be listed on the right.
+In LaTeX projects you should have a Detexify tool window on the right.
 * If you want a proper explanation of what LaTeX and its philosophy is
 about, read the http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf[Not
 So Short Introduction To LaTeX2e].
@@ -245,7 +244,7 @@ there exist other tools as well.
 
 Note that you can work with git and LaTeX even if you cannot use IntelliJ, for example because you are at
 school. For those cases, you can use Overleaf, which is a minimalistic but web-based editor, but in that case you have to host your LaTeX at the Overleaf site instead of GitHub.
-* Install https://git-scm.com/downloads[git], during installation just
+* If you are on the IntelliJ welcome screen and want to clone a project with git, IntelliJ will suggest to install git automatically. Otherwise, go to https://git-scm.com/downloads[git], during installation just
 click `next` everywhere.
 * Restart your computer.
 * Make sure you have a GitHub account, and create a new repository.

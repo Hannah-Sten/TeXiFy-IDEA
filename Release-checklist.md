@@ -7,9 +7,8 @@
 - [ ] Run ctan.py
 
 - [ ] Copy changelog to plugin.xml, replace using regexes below and update welcome text
-- [ ] runIDE and check the changelog is formatted correctly
 - [ ] Update version in plugin.xml and build.gradle
-- [ ] Update feature list in readme/plugin.xml if needed
+- [ ] runIDE and check the changelog is formatted correctly
 - [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
 - [ ] Merge PR
 - [ ] buildPlugin and release on GitHub, using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
