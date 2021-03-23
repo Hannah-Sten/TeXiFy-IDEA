@@ -127,7 +127,7 @@ intellij {
     pluginName = "TeXiFy-IDEA"
 
     // indices plugin doesn't work in tests
-    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.2", "com.jetbrains.hackathon.indices.viewer:1.12")
+    setPlugins("tanvd.grazi", "java") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false

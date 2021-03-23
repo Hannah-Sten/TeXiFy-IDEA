@@ -39,7 +39,6 @@
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
-    <depends optional="true" config-file="intellij-pdf-viewer.xml">com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer</depends>
     <depends optional="true" config-file="java.xml">com.intellij.modules.java</depends>
     <description><![CDATA[
         <p>
@@ -55,6 +54,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
+            <li>Built-in pdf viewer via the PDF Viewer plugin, including forward and backward search</li>
             <li>SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search</li>
             <li>Smart quotes</li>
             <li>Unicode math preview</li>
@@ -205,6 +205,17 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
 
+            <separator/>
+            <!-- Forward search -->
+            <action class="nl.hannahsten.texifyidea.action.ForwardSearchAction" id="texify.ForwardSearch" text="_Forward Search">
+                <keyboard-shortcut first-keystroke="ctrl shift alt PERIOD" keymap="$default"/>
+            </action>
+
+            <!-- Configure inverse search-->
+            <action class="nl.hannahsten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
+                    text="Configure Inverse Search for Sumatra" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
+            <action class="nl.hannahsten.texifyidea.action.skim.ConfigureInverseSearchAction" id="texify.skim.ConfigureInverseSearch"
+                    text="Configure Inverse Search for Skim" description="Instructions for configuring inverse search."/>
         </group>
 
         <!-- Insert: Sectioning -->
@@ -275,79 +286,6 @@
                     text="_Emphasis" description="Insert the command to emphasise text.">
             </action>
         </group>
-
-        <!-- SumatraPDF -->
-        <group id="texify.LatexMenu.Sumatra" class="nl.hannahsten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF"
-               description="Interact with SumatraPDF." popup="true" icon="/nl/hannahsten/texifyidea/icons/sumatra.svg">
-            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
-
-            <action class="nl.hannahsten.texifyidea.action.sumatra.ForwardSearchAction" id="texify.sumatra.ForwardSearch"
-                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
-                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
-            </action>
-            <action class="nl.hannahsten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
-                    text="_Configure Inverse Search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
-        </group>
-
-        <!-- Evince -->
-        <group id="texify.LatexMenu.Evince" class="nl.hannahsten.texifyidea.action.group.EvinceActionGroup" text="Evince"
-               description="Interact with Evince." popup="true">
-            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
-
-            <action class="nl.hannahsten.texifyidea.action.evince.ForwardSearchAction" id="texify.evince.ForwardSearch"
-                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
-                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
-            </action>
-        </group>
-
-        <!-- Okular -->
-        <group id="texify.LatexMenu.Okular" class="nl.hannahsten.texifyidea.action.group.OkularActionGroup" text="Okular"
-               description="Interact with Okular." popup="true">
-            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
-
-            <action class="nl.hannahsten.texifyidea.action.okular.ForwardSearchAction" id="texify.okular.ForwardSearch"
-                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
-                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
-            </action>
-
-            <action class="nl.hannahsten.texifyidea.action.okular.ConfigureInverseSearchAction" id="texify.okular.ConfigureInverseSearch"
-                    text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
-        </group>
-
-        <!-- Skim -->
-        <group id="texify.LatexMenu.Skim" class="nl.hannahsten.texifyidea.action.group.SkimActionGroup" text="Skim"
-               description="Interact with Skim." popup="true">
-            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
-
-            <action class="nl.hannahsten.texifyidea.action.skim.ForwardSearchAction" id="texify.skim.ForwardSearch"
-                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
-                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
-            </action>
-
-            <action class="nl.hannahsten.texifyidea.action.skim.ConfigureInverseSearchAction" id="texify.skim.ConfigureInverseSearch"
-                    text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
-        </group>
-
-        <!-- Zathura -->
-        <group id="texify.LatexMenu.Zathura" class="nl.hannahsten.texifyidea.action.group.ZathuraActionGroup" text="Zathura"
-               description="Interact with Zathura." popup="true">
-            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
-
-            <action class="nl.hannahsten.texifyidea.action.zathura.ForwardSearchAction" id="texify.zathura.ForwardSearch"
-                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
-                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
-            </action>
-        </group>
-
-        <!-- Debug/development -->
-        <!-- Currently disabled because the Internal menu group does not exist by default. -->
-<!--        <group id="texify.LatexMenu.Debug" class="nl.hannahsten.texifyidea.action.group.DebugActionGroup" text="TeXiFy IDEA"-->
-<!--               description="Contains debug- and development actions for TeXiFy developers." popup="true">-->
-<!--            <add-to-group group-id="Internal" anchor="last"/>-->
-
-<!--            <action class="nl.hannahsten.texifyidea.action.debug.GenerateSymbolImagesAction" id="texify.debug.GenerateSymbolImages"-->
-<!--                    text="Generate Symbol Images" description="Generate symbol images"/>-->
-<!--        </group>-->
 
         <!-- Generate Latex -->
         <group id="texify.LatexGenerate" text="_LaTeX" description="Latex generation actions" popup="true">
