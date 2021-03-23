@@ -54,6 +54,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
+            <li>Built-in pdf viewer via the PDF Viewer plugin, including forward and backward search</li>
             <li>SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search</li>
             <li>Smart quotes</li>
             <li>Unicode math preview</li>
