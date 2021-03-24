@@ -311,12 +311,6 @@ Issues which do not have influence on the typeset result but improve maintainabi
 * link:Code-style-issues#Might-break-TeXiFy-functionality[Might break TeXiFy functionality]
 * link:Code-style-issues#too-large-section[Too large section]
 
-
-
-
-==== Duplicates
-
-
 ==== Probable bugs
 Issues which indicate probable unintended behaviour and often highlight possible compilation errors.
 
@@ -347,6 +341,7 @@ Probable bugs related to packages.
 
 ==== Redundant LaTeX
 Warns for redundant code.
+
 * link:Redundant-LaTeX#redundant-escape-when-unicode-is-enabled[Redundant escape when Unicode is enabled]
 * link:Redundant-LaTeX#redundant-use-of-par[Redundant use of `\par`]
 * link:Redundant-LaTeX#unnecessary-whitespace-in-section-commands[Unnecessary whitespace in section commands]
