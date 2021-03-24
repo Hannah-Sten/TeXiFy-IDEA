@@ -288,6 +288,15 @@ Issues which have influence on the typeset result.
 * link:Typesetting-issues#high-commands[Enclose high commands with `\leftX..\rightX`]
 * link:Typesetting-issues#citation-before-interpunction[Citations must be placed before interpunction]
 
+===== Spacing
+Typesetting issues related to incorrect spacing.
+* link:Typesetting-issues#non-escaped-common-math-operators[Non-escaped common math operators]
+* link:Typesetting-issues#non-breaking-spaces-before-references[Non-breaking spaces before references]
+* link:Typesetting-issues#ellipsis[Ellipsis with `...` instead of `\ldots` or `\dots`]
+* link:Typesetting-issues#normal-space-after-abbreviation[Normal space after abbreviation]
+* link:Typesetting-issues#end-of-sentence-space-after-capitals[End-of-sentence space after sentences ending with capitals]
+* link:Typesetting-issues#extreme-inequalities[Use the matching amssymb symbol for extreme inequalities]
+
 ==== Code style issues
 Issues which do not have influence on the typeset result but improve maintainability.
 * link:Code-style-issues#math-functions-in-text[Math functions in `\text`]
@@ -302,21 +311,11 @@ Issues which do not have influence on the typeset result but improve maintainabi
 * link:Code-style-issues#Might-break-TeXiFy-functionality[Might break TeXiFy functionality]
 * link:Code-style-issues#too-large-section[Too large section]
 
-===== Spacing
-Typesetting issues related to incorrect spacing.
-* link:Code-style-issues#non-escaped-common-math-operators[Non-escaped common math operators]
-* link:Code-style-issues#non-breaking-spaces-before-references[Non-breaking spaces before references]
-* link:Code-style-issues#ellipsis[Ellipsis with `...` instead of `\ldots` or `\dots`]
-* link:Code-style-issues#normal-space-after-abbreviation[Normal space after abbreviation]
-* link:Code-style-issues#end-of-sentence-space-after-capitals[End-of-sentence space after sentences ending with capitals]
-* link:Code-style-issues#extreme-inequalities[Use the matching amssymb symbol for extreme inequalities]
+
 
 
 ==== Duplicates
-* link:Duplicates[Command is already defined]
-* link:Duplicates[Duplicate labels]
-* link:Duplicates[Package has been imported multiple times]
-* link:Duplicates[Duplicate command definitions]
+
 
 ==== Probable bugs
 Issues which indicate probable unintended behaviour and often highlight possible compilation errors.
@@ -351,6 +350,10 @@ Warns for redundant code.
 * link:Redundant-LaTeX#redundant-escape-when-unicode-is-enabled[Redundant escape when Unicode is enabled]
 * link:Redundant-LaTeX#redundant-use-of-par[Redundant use of `\par`]
 * link:Redundant-LaTeX#unnecessary-whitespace-in-section-commands[Unnecessary whitespace in section commands]
+* link:Redundant-LaTeX[Command is already defined]
+* link:Redundant-LaTeX[Duplicate labels]
+* link:Redundant-LaTeX[Package has been imported multiple times]
+* link:Redundant-LaTeX[Duplicate command definitions]
 
 ==== Discouraged use of TeX or obsolete LaTeX
 Issues related to code maturity and use of deprecated constructs.
