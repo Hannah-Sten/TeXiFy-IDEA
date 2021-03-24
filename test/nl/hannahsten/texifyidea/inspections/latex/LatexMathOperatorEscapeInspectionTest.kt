@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.inspections.latex.codestyle.spacing.LatexMathOperatorEscapeInspection
+import nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexMathOperatorEscapeInspection
 
 class LatexMathOperatorEscapeInspectionTest : TexifyInspectionTestBase(LatexMathOperatorEscapeInspection()) {
 

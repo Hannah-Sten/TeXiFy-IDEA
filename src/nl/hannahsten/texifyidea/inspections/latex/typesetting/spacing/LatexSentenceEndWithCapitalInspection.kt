@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex.codestyle.spacing
+package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection

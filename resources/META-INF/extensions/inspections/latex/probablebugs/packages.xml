@@ -1,23 +1,23 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageCouldNotBeFound"
-                         groupName="LaTeX" displayName="Package could not be found"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package could not be found"
                          enabledByDefault="false"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageNotInstalledInspection"
-                         groupName="LaTeX" displayName="Package is not installed"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package is not installed"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageNameDoesNotMatchFileNameInspection"
-                         groupName="LaTeX" displayName="Package name does not match file name"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package name does not match file name"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageSubdirectoryInspection"
-                         groupName="LaTeX" displayName="Package name does not have the correct directory"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package name does not have the correct directory"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexMissingImportInspection"
-                         groupName="LaTeX" displayName="Missing imports"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Missing imports"
                          enabledByDefault="true"
                          level="ERROR" />
     </extensions>

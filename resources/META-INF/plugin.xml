@@ -71,11 +71,10 @@
     <xi:include href="/META-INF/extensions/documentation.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/tool-windows.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-    <xi:include href="/META-INF/extensions/inspections/latex/duplicates.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/extensions/inspections/latex/codestyle/codestyle.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/codestyle.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/inspections/latex/probablebugs/probablebugs.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/inspections/latex/redundancy.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/extensions/inspections/latex/typesetting.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/typesetting/typesetting.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/inspections/latex/code-maturity.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <xi:include href="/META-INF/extensions/inspections/bibtex.xml" xpointer="xpointer(/idea-plugin/*)"/>

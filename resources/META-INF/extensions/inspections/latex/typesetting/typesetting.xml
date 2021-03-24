@@ -1,43 +1,43 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexIncorrectSectionNestingInspection"
-                         groupName="LaTeX" displayName="Incorrect nesting"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Incorrect nesting"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexCollapseCiteInspection"
-                         groupName="LaTeX" displayName="Collapse cite commands"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Collapse cite commands"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexEnDashInspection"
-                         groupName="LaTeX" displayName="En dash in number ranges"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="En dash in number ranges"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexCdotInspection"
-                         groupName="LaTeX" displayName="Use of . instead of \cdot"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Use of . instead of \cdot"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexXInsteadOfTimesInspection"
-                         groupName="LaTeX" displayName="Use of x instead of \times"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Use of x instead of \times"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexVerticallyCenteredColonInspection"
-                         groupName="LaTeX" displayName="Vertically uncentered colon"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Vertically uncentered colon"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexQedHereInspection"
-                         groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Insert \qedhere in trailing displaymath environment"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexDiacriticIJInspection"
-                         groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Dotless versions of i and j must be used with diacritics"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexEncloseWithLeftRightInspection"
-                         groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Enclose high commands with \leftX..\rightX"
                          enabledByDefault="true"
                          level="WEAK WARNING"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexCiteBeforePeriodInspection"
-                         groupName="LaTeX" displayName="Citations must be placed before interpunction"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Citations must be placed before interpunction"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
     </extensions>

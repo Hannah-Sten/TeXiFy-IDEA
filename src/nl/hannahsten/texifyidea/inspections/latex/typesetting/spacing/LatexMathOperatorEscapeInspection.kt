@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex.codestyle.spacing
+package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix

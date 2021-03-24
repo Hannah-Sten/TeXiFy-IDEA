@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex.duplicates
+package nl.hannahsten.texifyidea.inspections.latex.redundancy
 
 import com.google.common.collect.HashMultiset
 import com.intellij.codeInspection.InspectionManager

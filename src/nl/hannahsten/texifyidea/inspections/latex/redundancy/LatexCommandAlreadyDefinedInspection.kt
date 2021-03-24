@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex.duplicates
+package nl.hannahsten.texifyidea.inspections.latex.redundancy
 
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
