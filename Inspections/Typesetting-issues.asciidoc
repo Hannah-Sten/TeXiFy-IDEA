@@ -51,3 +51,36 @@ For example, instead of `(\frac 1 2)` write `\left(\frac 1 2\right)`.
 == Citations must be placed before interpunction
 
 Use `Sentence~\cite{knuth1990}.` and not `Sentence.~\cite{knuth1990}`
+
+
+= Spacing
+
+[#non-escaped-common-math-operators]
+== Non-escaped common math operators
+
+Math functions like `sin` and `cos` should be escaped to LaTeX commands in math, so `\sin` and `\cos`, otherwise LaTeX will interpret this as the letter `s` times the letter `i` times the letter `n`, resulting in different spacing (try it).
+
+[#non-breaking-spaces-before-references]
+== Non-breaking spaces before references
+
+Before a `\ref`-like command there should be a non-breaking space `~`, to avoid a line break just before the reference which would make the sentence harder to read.
+
+[#ellipsis]
+== Ellipsis with `...` instead of `\ldots` or `\dots`
+
+Use a `\dots`-like command instead of `...` for better spacing.
+
+[#normal-space-after-abbreviation]
+== Normal space after abbreviation
+
+After an abbreviation like `e.g.` you should use a normal space instead of an end-of-sentence space, so use `e.g.\ this` instead of `e.g. this` (arguably you need to type `e.g., this` anyway). If you don't do this, LaTeX will interpret `e.g.` as the end of a sentence and thus insert a larger space.
+
+[#end-of-sentence-space-after-capitals]
+== End-of-sentence space after sentences ending with capitals
+
+If you end a sentence with a captial letter, for example like `Then QED. However, next sentence` then LaTeX will interpret `QED.` as an abbreviation and thus typeset a normal space instead of an end-of-sentence space. Use `QED\@.` instead to override this.
+
+[#extreme-inequalities]
+== Use the matching amssymb symbol for extreme inequalities
+
+Instead of writing `<<`, use `\ll` for better spacing. Same for `>>` and more variants.
