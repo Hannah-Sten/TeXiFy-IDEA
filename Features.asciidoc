@@ -274,21 +274,36 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 === LaTeX
 
+==== Typesetting issues
+Issues which have influence on the typeset result.
+
+* link:Typesetting-issues#Nesting-of-sectioning-commands[Nesting of sectioning commands]
+* link:Typesetting-issues#Collapse-cite-commands[Collapse cite commands]
+* link:Typesetting-issues#en-dash[En dash in number ranges]
+* link:Typesetting-issues#dot[Use of `.` instead of `\cdot`]
+* link:Typesetting-issues#times[Use of `x` instead of `\times`]
+* link:Typesetting-issues#vertically-uncentered-colon[Vertically uncentered colon: use of raw `:=` instead of `\coloneqq` by mathtools (and variants)]
+* link:Typesetting-issues#qedhere[Insert `\qedhere` in trailing displaymath environment]
+* link:Typesetting-issues#dotless-i[Dotless versions of i and j must be used with diacritics]
+* link:Typesetting-issues#high-commands[Enclose high commands with `\leftX..\rightX`]
+* link:Typesetting-issues#citation-before-interpunction[Citations must be placed before interpunction]
+
 ==== Code style issues
+Issues which do not have influence on the typeset result but improve maintainability.
 * link:Code-style-issues#math-functions-in-text[Math functions in `\text`]
-* link:Code-style-issues#en-dash[En dash in number ranges]
-* link:Code-style-issues#dot[Use of `.` instead of `\cdot`]
-* link:Code-style-issues#times[Use of `x` instead of `\times`]
-* link:Code-style-issues#vertically-uncentered-colon[Vertically uncentered colon: use of raw `:=` instead of `\coloneqq` by mathtools (and variants)]
 * link:Code-style-issues#grouped-superscript-and-subscript[Grouped superscript and subscript]
-* link:Code-style-issues#qedhere[Insert `\qedhere` in trailing displaymath environment]
-* link:Code-style-issues#dotless-i[Dotless versions of i and j must be used with diacritics]
-* link:Code-style-issues#high-commands[Enclose high commands with `\leftX..\rightX`]
-* link:Code-style-issues#citation-before-interpunction[Citations must be placed before interpunction]
 * link:Code-style-issues#Gather-equations[Gather equations]
 * link:Code-style-issues#Figure-not-referenced[Figure not referenced]
+* link:Code-style-issues#Missing-labels[Missing labels]
+* link:Code-style-issues#Label-conventions[Label conventions]
+* link:Code-style-issues#Start-sentences-on-a-new-line[Start sentences on a new line]
+* link:Code-style-issues#ins:eqref[Use `\eqref{...}` instead of `(\ref{...})`]
+* link:Code-style-issues#ins:documentclass[File that contains a document environment should contain a `\documentclass` command]
+* link:Code-style-issues#Might-break-TeXiFy-functionality[Might break TeXiFy functionality]
+* link:Code-style-issues#too-large-section[Too large section]
 
 ===== Spacing
+Typesetting issues related to incorrect spacing.
 * link:Code-style-issues#non-escaped-common-math-operators[Non-escaped common math operators]
 * link:Code-style-issues#non-breaking-spaces-before-references[Non-breaking spaces before references]
 * link:Code-style-issues#ellipsis[Ellipsis with `...` instead of `\ldots` or `\dots`]
@@ -304,6 +319,8 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * link:Duplicates[Duplicate command definitions]
 
 ==== Probable bugs
+Issues which indicate probable unintended behaviour and often highlight possible compilation errors.
+
 * link:Probable-bugs#Unsupported-Unicode-character[Unsupported Unicode character]
 * link:++Probable-bugs#File argument should not include the extension++[File argument should not include the extension]
 * link:++Probable-bugs#File argument should include the extension++[File argument should include the extension]
@@ -318,8 +335,11 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * link:Probable-bugs#Nested-includes[Nested includes]
 * link:Probable-bugs#label-is-before-caption[Label is before caption]
 * link:Probable-bugs#unescaped--symbol#[Unescaped `#` symbol]
+* link:Probable-bugs#Multiple-graphicspath[Multiple \graphicspath definitions]
 
 ===== Packages
+Probable bugs related to packages.
+
 * link:Probable-bugs#Package-could-not-be-found[Package could not be found]
 * link:Probable-bugs#Package-not-installed[Package is not installed]
 * link:Probable-bugs#Package-name-does-not-match-file-name[Package name does not match file name]
@@ -327,32 +347,20 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * link:Probable-bugs#Missing-imports[Missing imports]
 
 ==== Redundant LaTeX
+Warns for redundant code.
 * link:Redundant-LaTeX#redundant-escape-when-unicode-is-enabled[Redundant escape when Unicode is enabled]
 * link:Redundant-LaTeX#redundant-use-of-par[Redundant use of `\par`]
 * link:Redundant-LaTeX#unnecessary-whitespace-in-section-commands[Unnecessary whitespace in section commands]
 
-==== Conventions
-* link:Conventions#Missing-labels[Missing labels]
-* link:Conventions#Label-conventions[Label conventions]
-* link:Conventions#Nesting-of-sectioning-commands[Nesting of sectioning commands]
-
 ==== Discouraged use of TeX or obsolete LaTeX
-* Use of `\over` discouraged
-* TeX styling primitives usage is discouraged
-* Discouraged use of `\def` and `\let`
-* link:Obsolete-LaTeX#ins:avoid-eqnarray[Avoid `eqnarray`]
-* Discouraged use of primitive TeX display math
-* Discouraged use of `\makeatletter` in tex sources
+Issues related to code maturity and use of deprecated constructs.
 
-==== LaTeX recommendations
-* Start sentences on a new line
-* Collapse cite commands
-* link:LaTeX-recommendations#ins:eqref[Use `\eqref{...}` instead of `(\ref{...})`]
-* link:LaTeX-recommendations#ins:documentclass[File that contains a document environment should contain a `\documentclass` command]
-
-==== Writing organisation recommendations
-* Might break TeXiFy functionality
-* link:Writing-organisation-recommendations#too-large-section[Too large section]
+* link:Code-maturity#over[Use of `\over` discouraged]
+* link:Code-maturity#styling-primitives[TeX styling primitives usage is discouraged]
+* link:Code-maturity#def[Discouraged use of `\def` and `\let`]
+* link:Code-maturity#ins:avoid-eqnarray[Avoid `eqnarray`]
+* link:Code-maturity#primitive-display-math[Discouraged use of primitive TeX display math]
+* link:Code-maturity#makeatletter[Discouraged use of `\makeatletter` in tex sources]
 
 == Intentions
 

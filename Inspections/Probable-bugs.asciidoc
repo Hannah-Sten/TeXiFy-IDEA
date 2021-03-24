@@ -168,3 +168,8 @@ Currently this inspection will only trigger when the label and caption are direc
 _Since b0.6.10_
 
 When using a `#` symbol outside of a command definition, an `&` outside a tabular environment or a `_` anywhere, it should be escaped with a backslash, like `\&`.
+
+[#Multiple-graphicspath]
+== Multiple \graphicspath definitions
+
+If you have multiple `\graphicspath` commands, only the last one that LaTeX finds defines the graphics path, so you should remove the other one.

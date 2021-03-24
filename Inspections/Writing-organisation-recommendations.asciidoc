@@ -1,7 +1,0 @@
-:experimental:
-
-== Might break TeXiFy functionality
-
-== [[too-large-section]]Too large section
-
-Similar to link:Intentions#selection-to-file[move selection contents to separate file] and link:Intentions#move-section-to-file[move section contents to separate file], except that this is a visible warning on a section command whenever a section is too large (currently some thousand characters).

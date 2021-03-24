@@ -3,6 +3,9 @@
 When unicode is enabled (see * link:Probable-bugs#Unsupported-Unicode-character[Unsupported Unicode character]) then you can use the unicode character instead of escaping the diacritic, so you can write `ú` instead of `\'u`.
 
 == Redundant use of `\par`
+
+When using `\par` in combination with two newlines (before, around or after) then the `\par` is redundant.
+
 == Unnecessary whitespace in section commands
 
 Instead of `\section{test }\label{sec:test}`, write `\section{test}\label{sec:test}` because the whitespace will not be rendered.

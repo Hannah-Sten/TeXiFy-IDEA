@@ -1,88 +1,17 @@
 :pygmentize:
 
-[#non-escaped-common-math-operators]
-== Non-escaped common math operators
-
-Math functions like `sin` and `cos` should be escaped to LaTeX commands in math, so `\sin` and `\cos`, otherwise LaTeX will interpret this as the letter `s` times the letter `i` times the letter `n`, resulting in different spacing (try it).
-
 [#math-functions-in-text]
 == Math functions in `\text`
 _Since b0.7.3_
 
 Math functions using `\text{myoperator}` can be replaced by their dedicated function (`\myoperator`), for example `\text{sin}` by `\sin`.
 
-[#non-breaking-spaces-before-references]
-== Non-breaking spaces before references
-
-Before a `\ref`-like command there should be a non-breaking space `~`, to avoid a line break just before the reference which would make the sentence harder to read.
-
-[#ellipsis]
-== Ellipsis with `...` instead of `\ldots` or `\dots`
-
-Use a `\dots`-like command instead of `...` for better spacing.
-
-[#normal-space-after-abbreviation]
-== Normal space after abbreviation
-
-After an abbreviation like `e.g.` you should use a normal space instead of an end-of-sentence space, so use `e.g.\ this` instead of `e.g. this` (arguably you need to type `e.g., this` anyway). If you don't do this, LaTeX will interpret `e.g.` as the end of a sentence and thus insert a larger space.
-
-[#en-dash]
-== En dash in number ranges
-
-Instead of typing `0-9` for a number range, use `0--9` to typeset the right dash.
-
-[#end-of-sentence-space-after-capitals]
-== End-of-sentence space after sentences ending with capitals
-
-If you end a sentence with a captial letter, for example like `Then QED. However, next sentence` then LaTeX will interpret `QED.` as an abbreviation and thus typeset a normal space instead of an end-of-sentence space. Use `QED\@.` instead to override this.
-
-[#dot]
-== Use of `.` instead of `\cdot`
-
-When multiplying numbers, use `\cdot` instead of `.`.
-
-[#times]
-== Use of `x` instead of `\times`
-
-When multiplying numbers, use `2 \times 4` instead of `2x4`.
-
-[#vertically-uncentered-colon]
-== Vertically uncentered colon
-
-Instead of `:=`, use `\coloneqq` for better vertical centering of the colon.
 
 [#grouped-superscript-and-subscript]
 == Grouped superscript and subscript
 
 If you write `\xi_ij` then you probably meant to write `\xi_{ij}`, because `\xi_ij` will be interpreted as `\xi_{i}j`.
 If not, you probably should have written `\xi_i j` instead.
-
-[#qedhere]
-== Insert `\qedhere` in trailing displaymath environment
-
-If you end a `proof` environment with a displaymath environment, the qed symbol will appear after the displaymath which is one line too low, so you should use `\qedhere` in the displaymath environment to fix that.
-
-[#extreme-inequalities]
-== Use the matching amssymb symbol for extreme inequalities
-
-Instead of writing `<<`, use `\ll` for better spacing. Same for `>>` and more variants.
-
-[#dotless-i]
-== Dotless versions of i and j must be used with diacritics
-
-When you use diacritics like `\^` on an i or j, you should use the dotless version for better readability.
-For example, instead of `\^i` write `\^{\i}`.
-
-[#high-commands]
-== Enclose high commands with `\leftX..\rightX`
-
-Expressions which take up more vertical line space, should also be enclosed with larger parentheses.
-For example, instead of `(\frac 1 2)` write `\left(\frac 1 2\right)`.
-
-[#citation-before-interpunction]
-== Citations must be placed before interpunction
-
-Use `Sentence~\cite{knuth1990}.` and not `Sentence.~\cite{knuth1990}`
 
 == Gather equations
 Multiple display math equations (which are surrounded by `\[..\]`) can be grouped into the `gather` environment.
@@ -112,3 +41,98 @@ This inspection includes a quick fix to safe delete the figure environment.
 
 \end{document}
 ----
+
+== Missing labels
+TeXiFy checks for missing labels for sections, chapters and environments. If any of these elements misses a label, a weak warning is displayed together with a quickfix to insert a label.
+
+image::https://user-images.githubusercontent.com/7955528/73370333-5a045000-42b4-11ea-8148-971fb0a5858b.png[Missing label quickfix]
+
+The inserted label is guaranteed to be unique and follows the label conventions. For sections and chapters the label is inserted after the section, for environments the label is inserted in the environment. If the environment already contains a `\caption`, the label is inserted after the `\caption`. Otherwise the label would label the surrounding environment.
+
+For sectioning commands you can change the sectioning level at which this inspection will trigger, see link:Global-settings#missing-label-minimum-level[the minimum sectioning level global setting].
+
+== Label conventions
+
+TeXiFy defines label conventions to specify how labels should typically look like and includes an inspection to verify that all labels adhere to the convention. Furthermore, labels inserted as part of a quickfix are also named accordingly. The convention states, that labels should have a prefix depending on the command or environment they label. For example, a label for a figure has the prefix `fig:`.
+
+== Start sentences on a new line
+
+In general, we recommend starting every sentence on a new line, especially because this works nicer with version control systems, which work per line.
+That also makes it more meaningful to reference a certain line in a document.
+It also makes it easier to read when soft wrapping is off.
+
+Note that this inspection would trigger on abbreviations like `etc.`.
+However, when you use abbreviations like that you should always tell LaTeX to use a normal space instead of an end-of-sentence space, so instead of `This etc. contains a sentence` you should write ``This etc.\ contains a sentence`.
+(Try it, the spaces are really different in the pdf!)
+
+== [[ins:eqref]] Use `\eqref{...}` instead of `(\ref{...})`
+_Since b0.6.6_
+
+Equations should be referenced using `\eqref{...}` rather than `(\ref{...})` to ensure that all your equation references
+are formatted in the same way. This inspection is only triggered when the corresponding label was defined in a math environment.
+
+== [[ins:documentclass]] File that contains a document environment should contain a `\documentclass` command
+_Since b0.7.1_
+
+A LaTeX root file has the following structure:
+
+[source,latex]
+----
+\documentclass{article}
+
+% Document preamble
+
+\begin{document}
+    % Contents of document.
+\end{document}
+----
+
+Note that the preamble does **not** contain the `\documentclass` command.
+To quote The LaTeX Companion:
+
+> Commands placed between `\documentclass` and `\begin{document}` are in the so-called _document preamble_.
+
+When separating the preamble from the root LaTeX file, keep the `\documentclass` command in the root file.
+Put the preamble in a `sty` (package) file, e.g. `personal.sty`, and include it in the root document with `\usepackage{personal}`.
+When the need arises to specify the document class in the personal package, transform the package to a document class `personal.cls` and include it with `\documentclass{personal}`.
+
+== Might break TeXiFy functionality
+
+If you redefine common commands such as `\begin` or `\newcommand` to do something different, this may confuse TeXiFy and break functionality.
+It will probably also confuse anyone (like your future self) who reads your LaTeX.
+
+== [[too-large-section]]Too large section
+
+Similar to link:Intentions#selection-to-file[move selection contents to separate file] and link:Intentions#move-section-to-file[move section contents to separate file], except that this is a visible warning on a section command whenever a section is too large (currently some thousand characters).
+
+= Spacing
+
+[#non-escaped-common-math-operators]
+== Non-escaped common math operators
+
+Math functions like `sin` and `cos` should be escaped to LaTeX commands in math, so `\sin` and `\cos`, otherwise LaTeX will interpret this as the letter `s` times the letter `i` times the letter `n`, resulting in different spacing (try it).
+
+[#non-breaking-spaces-before-references]
+== Non-breaking spaces before references
+
+Before a `\ref`-like command there should be a non-breaking space `~`, to avoid a line break just before the reference which would make the sentence harder to read.
+
+[#ellipsis]
+== Ellipsis with `...` instead of `\ldots` or `\dots`
+
+Use a `\dots`-like command instead of `...` for better spacing.
+
+[#normal-space-after-abbreviation]
+== Normal space after abbreviation
+
+After an abbreviation like `e.g.` you should use a normal space instead of an end-of-sentence space, so use `e.g.\ this` instead of `e.g. this` (arguably you need to type `e.g., this` anyway). If you don't do this, LaTeX will interpret `e.g.` as the end of a sentence and thus insert a larger space.
+
+[#end-of-sentence-space-after-capitals]
+== End-of-sentence space after sentences ending with capitals
+
+If you end a sentence with a captial letter, for example like `Then QED. However, next sentence` then LaTeX will interpret `QED.` as an abbreviation and thus typeset a normal space instead of an end-of-sentence space. Use `QED\@.` instead to override this.
+
+[#extreme-inequalities]
+== Use the matching amssymb symbol for extreme inequalities
+
+Instead of writing `<<`, use `\ll` for better spacing. Same for `>>` and more variants.
