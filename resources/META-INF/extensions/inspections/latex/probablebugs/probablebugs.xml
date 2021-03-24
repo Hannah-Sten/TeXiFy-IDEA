@@ -71,5 +71,5 @@
                          level="ERROR" />
     </extensions>
 
-    <xi:include href="/META-INF/extensions/inspections/probablebugs/packages.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/probablebugslebugs/packages.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

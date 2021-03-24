@@ -71,122 +71,19 @@
     <xi:include href="/META-INF/extensions/documentation.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/tool-windows.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
+    <xi:include href="/META-INF/extensions/inspections/latex/duplicates.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/codestyle/codestyle.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/probablebugs/probablebugs.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/redundancy.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/typesetting.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/code-maturity.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-    <xi:include href="/META-INF/extensions/inspections/duplicates.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/extensions/inspections/codestyle/codestyle.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/extensions/inspections/probablebugs/probablebugs.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/extensions/inspections/redundancy.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/extensions/inspections/typesetting.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/extensions/inspections/code-maturity.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/bibtex.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/intentions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Inspections -->
+        <!-- Other inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
-
-
-        <!-- Element manipulator -->
-        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
-                                 implementationClass="nl.hannahsten.texifyidea.psi.LatexEnvironmentManipulator"/>
-
-
-        <!-- Bibtex inspections -->
-        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
-                         groupName="BibTeX" displayName="Duplicate ID"
-                         enabledByDefault="true"
-                         level="ERROR" />
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
-                         groupName="BibTeX" displayName="Missing bibliography style"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
-                         groupName="BibTeX" displayName="Duplicate bibliography style commands"
-                         enabledByDefault="true"
-                         level="ERROR" />
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
-                         groupName="BibTeX" displayName="Same bibliography is included multiple times"
-                         enabledByDefault="true"
-                         level="ERROR" />
-        <localInspection language="Bibtex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
-                         groupName="BibTeX" displayName="Unused bib entry"
-                         enabledByDefault="true"
-                         level="WARNING" />
-
-        <!-- Intentions -->
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexAddLabelIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexAddLabelToEnvironmentIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexDisplayMathIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexDisplayMathIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggle</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexInlineDisplayToggleIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexInsertFormatterCommentsIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexInsertFormatterCommentsIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLeftRightParenthesesIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggle</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMathToggleIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMoveSectionToFileIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexMoveSelectionToFileIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMoveSelectionToFileIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexToggleSmartQuotesIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexUnpackUsepackageIntention</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLanguageInjectionIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLanguageInjectionIntention</descriptionDirectoryName>
-        </intentionAction>
     </extensions>
 
     <extensionPoints>

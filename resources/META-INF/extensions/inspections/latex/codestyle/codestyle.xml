@@ -46,5 +46,5 @@
                          level="WEAK WARNING" />
     </extensions>
 
-    <xi:include href="/META-INF/extensions/inspections/codestyle/spacing.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/latex/codestyleestyle/spacing.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

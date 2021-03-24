@@ -9,6 +9,8 @@
         <lang.braceMatcher language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
         <lang.braceMatcher language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
 
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
+                                 implementationClass="nl.hannahsten.texifyidea.psi.LatexEnvironmentManipulator"/>
         <languageInjector implementation="nl.hannahsten.texifyidea.psi.LatexLanguageInjector" />
     </extensions>
 </idea-plugin>
