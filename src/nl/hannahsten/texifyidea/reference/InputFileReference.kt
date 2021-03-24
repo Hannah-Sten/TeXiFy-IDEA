@@ -183,6 +183,14 @@ class InputFileReference(
         return handleElementRename(newElementName, true)
     }
 
+    // Required for moving referenced files
+    override fun bindToElement(element: PsiElement): PsiElement {
+        val newFile = element as? PsiFile ?: return this.element
+        // Assume LaTeX will accept paths relative to the root file
+        val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
+        return handleElementRename(newFileName, false)
+    }
+
     /**
      * Create a set possible complete file names (including extension), based on
      * the command that includes a file, and the name of the file.

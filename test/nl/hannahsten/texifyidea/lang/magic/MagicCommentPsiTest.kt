@@ -13,4 +13,18 @@ class MagicCommentPsiTest : BasePlatformTestCase() {
         val magic = command.magicComment()
         Assertions.assertEquals(arrayListOf("suppress = FileNotFound"), magic.toCommentString())
     }
+
+    fun `test get magic comment for file`() {
+        myFixture.configureByText(LatexFileType, """
+            %!compiler = xelatex
+            \documentclass{article}
+
+            %! suppress = Ellipsis
+            \begin{document}
+                ...
+            \end{document}
+        """.trimIndent())
+        val magic = myFixture.file.magicComment()
+        assertEquals(arrayListOf("compiler = xelatex"), magic.toCommentString())
+    }
 }
