@@ -65,6 +65,10 @@
                          groupName="LaTeX" displayName="Unescaped # outside of command definition"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMultipleGraphicsPathInspection"
+                         groupName="LaTeX" displayName="Multiple \graphicspath definitions"
+                         enabledByDefault="true"
+                         level="ERROR" />
     </extensions>
 
     <xi:include href="/META-INF/extensions/inspections/probablebugs/packages.xml" xpointer="xpointer(/idea-plugin/*)"/>

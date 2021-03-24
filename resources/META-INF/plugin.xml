@@ -75,102 +75,13 @@
     <xi:include href="/META-INF/extensions/inspections/duplicates.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/inspections/codestyle/codestyle.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/inspections/probablebugs/probablebugs.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/redundancy.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/typesetting.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/inspections/code-maturity.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
-
-        <!-- Latex inspections -->
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
-                         groupName="LaTeX" displayName="Might break TeXiFy functionality"
-                         enabledByDefault="true"
-                         level="ERROR" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexOverInsteadOfFracInspection"
-                         groupName="LaTeX" displayName="Use of \over discouraged"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
-                         groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTooLargeSectionInspection"
-                         groupName="LaTeX" displayName="Too large sections"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveStyleInspection"
-                         groupName="LaTeX" displayName="TeX styling primitives usage is discouraged"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection"
-                         groupName="LaTeX" displayName="Start sentences on a new line"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiscouragedUseOfDefInspection"
-                         groupName="LaTeX" displayName="Discouraged use of \def and \let"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingLabelInspection"
-                         groupName="LaTeX" displayName="Missing labels"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexIncorrectSectionNestingInspection"
-                         groupName="LaTeX" displayName="Incorrect nesting"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelConventionInspection"
-                         groupName="LaTeX" displayName="Label conventions"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEquationReferenceInspection"
-                         groupName="LaTeX" displayName="Use \eqref{...} instead of (\ref{...})"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexAvoidEqnarrayInspection"
-                         groupName="LaTeX" displayName="Avoid eqnarray"
-                         enabledByDefault="true"
-                         level="WARNING" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantParInspection"
-                         groupName="LaTeX" displayName="Redundant use of \par"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveEquationInspection"
-                         groupName="LaTeX" displayName="Discouraged use of primitive TeX display math"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCollapseCiteInspection"
-                         groupName="LaTeX" displayName="Collapse cite commands"
-                         enabledByDefault="true"
-                         level="WARNING" />
-
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
-                         groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMakeatletterInspection"
-                         groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
-                         enabledByDefault="true"
-                         level="WARNING" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
-                         groupName="LaTeX" displayName="Multiple definition of graphicspath"
-                         enabledByDefault="true"
-                         level="ERROR" />
-
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
-                         groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
-                         enabledByDefault="true"
-                         level="WARNING"/>
-
 
 
         <!-- Element manipulator -->

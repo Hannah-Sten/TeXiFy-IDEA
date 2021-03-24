@@ -4,43 +4,11 @@
                          groupName="LaTeX" displayName="Use math function instead of \text"
                          enabledByDefault="true"
                          level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEnDashInspection"
-                         groupName="LaTeX" displayName="En dash in number ranges"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexCdotInspection"
-                         groupName="LaTeX" displayName="Use of . instead of \cdot"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexXInsteadOfTimesInspection"
-                         groupName="LaTeX" displayName="Use of x instead of \times"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexVerticallyCenteredColonInspection"
-                         groupName="LaTeX" displayName="Vertically uncentered colon"
-                         enabledByDefault="true"
-                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexGroupedSubSupScriptInspection"
                          groupName="LaTeX" displayName="Grouped superscript and subscript"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexQedHereInspection"
-                         groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexDiacriticIJInspection"
-                         groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
-                         enabledByDefault="true"
-                         level="WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEncloseWithLeftRightInspection"
-                         groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
-                         enabledByDefault="true"
-                         level="WEAK WARNING"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
-                         groupName="LaTeX" displayName="Citations must be placed before interpunction"
-                         enabledByDefault="true"
-                         level="WEAK WARNING" />
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexGatherEquationsInspection"
                          groupName="LaTeX" displayName="Gather equations"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
@@ -48,6 +16,34 @@
                          groupName="LaTeX" displayName="Figure not referenced"
                          enabledByDefault="true"
                          level="WEAK WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMissingLabelInspection"
+                         groupName="LaTeX" displayName="Missing labels"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection"
+                         groupName="LaTeX" displayName="Label conventions"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLineBreakInspection"
+                         groupName="LaTeX" displayName="Start sentences on a new line"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEquationReferenceInspection"
+                         groupName="LaTeX" displayName="Use \eqref{...} instead of (\ref{...})"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexDocumentclassNotInRootInspection"
+                         groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMightBreakTexifyInspection"
+                         groupName="LaTeX" displayName="Might break TeXiFy functionality"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection"
+                         groupName="LaTeX" displayName="Too large sections"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
     </extensions>
 
     <xi:include href="/META-INF/extensions/inspections/codestyle/spacing.xml" xpointer="xpointer(/idea-plugin/*)"/>

@@ -1,0 +1,16 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexRedundantEscapeInspection"
+                         groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexRedundantParInspection"
+                         groupName="LaTeX" displayName="Redundant use of \par"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexTrimWhitespaceInspection"
+                         groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+    </extensions>
+</idea-plugin>
