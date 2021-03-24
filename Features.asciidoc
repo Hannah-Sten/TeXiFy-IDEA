@@ -266,10 +266,10 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * https://www.jetbrains.com/help/idea/creating-custom-inspections.html[Creating Custom Inspections]
 
 === BibTeX
-* Duplicate ID
-* Missing bibliography style
-* Duplicate bibliography style commands
-* Same bibliography is included multiple times
+* link:BibTeX-inspections#Duplicate-ID[Duplicate ID]
+* link:BibTeX-inspections#Missing-bibliography-style[Missing bibliography style]
+* link:BibTeX-inspections#Duplicate-bibliography-style[Duplicate bibliography style commands]
+* link:BibTeX-inspections#Same-bibliography-is-included-multiple-times[Same bibliography is included multiple times]
 * link:BibTex-inspections#Bib-entry-is-not-used[Bib entry is not used]
 
 === LaTeX
