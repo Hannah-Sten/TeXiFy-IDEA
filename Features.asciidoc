@@ -290,6 +290,7 @@ Issues which have influence on the typeset result.
 
 ===== Spacing
 Typesetting issues related to incorrect spacing.
+
 * link:Typesetting-issues#non-escaped-common-math-operators[Non-escaped common math operators]
 * link:Typesetting-issues#non-breaking-spaces-before-references[Non-breaking spaces before references]
 * link:Typesetting-issues#ellipsis[Ellipsis with `...` instead of `\ldots` or `\dots`]
@@ -299,6 +300,7 @@ Typesetting issues related to incorrect spacing.
 
 ==== Code style issues
 Issues which do not have influence on the typeset result but improve maintainability.
+
 * link:Code-style-issues#math-functions-in-text[Math functions in `\text`]
 * link:Code-style-issues#grouped-superscript-and-subscript[Grouped superscript and subscript]
 * link:Code-style-issues#Gather-equations[Gather equations]
