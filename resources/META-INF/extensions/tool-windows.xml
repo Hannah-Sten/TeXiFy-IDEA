@@ -3,6 +3,6 @@
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.symbols.SymbolToolWindowFactory"
                     id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg" order="before Detexify"/>
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
-                    id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
+                    id="Detexify" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/search_13x13.svg"/>
     </extensions>
 </idea-plugin>
