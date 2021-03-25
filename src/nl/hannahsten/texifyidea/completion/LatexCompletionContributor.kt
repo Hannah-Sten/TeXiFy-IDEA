@@ -178,7 +178,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         PlatformPatterns.psiElement()
             .inside(LatexMagicComment::class.java)
             .withPattern("Magic comment completion pattern") { comment, _ ->
-                comment.isMagicComment() && comment.text.contains('=').not()
+                comment.containsMagicComment() && comment.text.contains('=').not()
             }
             .withLanguage(LatexLanguage.INSTANCE),
         LatexMagicCommentKeyProvider
@@ -273,7 +273,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         PlatformPatterns.psiElement()
             .inside(LatexMagicComment::class.java)
             .withPattern("Magic comment $commentName pattern") { comment, _ ->
-                comment.isMagicComment() && comment.text.contains(regex)
+                comment.containsMagicComment() && comment.text.contains(regex)
             }
             .withLanguage(LatexLanguage.INSTANCE),
         completionProvider
