@@ -48,6 +48,7 @@ class InputFileReference(
      *              Whether to look for packages installed elsewhere on the filesystem.
      *              Set to false when it would make the operation too expensive, for example when trying to
      *              calculate the fileset of many files.
+     * @param givenRootFile Used to avoid unnecessarily recalculating the root file.
      * @param includeGraphicsFiles
      *              True if we also need to resolve to graphics files. Doing so is really expensive at
      *              the moment (at least until the implementation in LatexGraphicsPathProvider is improved):
@@ -66,8 +67,8 @@ class InputFileReference(
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
-        val rootDirectory = rootFile?.parent ?: return null
+        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles().mapNotNull { it.virtualFile }
+        val rootDirectories = rootFiles.mapNotNull { it.parent }
 
         var targetFile: VirtualFile? = null
 
@@ -75,7 +76,7 @@ class InputFileReference(
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
         val texInputPath = runManager.allConfigurationsList
                 .filterIsInstance<LatexRunConfiguration>()
-                .firstOrNull { it.mainFile == rootFile }
+                .firstOrNull { it.mainFile in rootFiles }
                 ?.environmentVariables
                 ?.envs
                 ?.getOrDefault("TEXINPUTS", null)
@@ -94,11 +95,14 @@ class InputFileReference(
             }
         }
 
-        val processedKey = expandCommandsOnce(key, element.project, file = rootFile.psiFile(element.project)) ?: key
+        val processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
 
         // Try to find the target file directly from the given path
         if (targetFile == null) {
-            targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+            for (rootDirectory in rootDirectories) {
+                targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+                if (targetFile != null) break
+            }
         }
 
         // Try content roots
@@ -117,7 +121,10 @@ class InputFileReference(
             }
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
-                targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                for (rootDirectory in rootDirectories) {
+                    targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                    if (targetFile != null) break
+                }
                 if (targetFile != null) break
             }
         }

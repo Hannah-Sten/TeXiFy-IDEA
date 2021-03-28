@@ -121,4 +121,10 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         myFixture.configureByFiles("commandexpansion/nest/sub.tex", "commandexpansion/main.tex", "commandexpansion/nest/sub2.tex")
         myFixture.checkHighlighting()
     }
+
+    @Test
+    fun `test subfiles`() {
+        myFixture.configureByFiles("subfiles/dir1/subfile1.tex", "subfiles/main.tex", "subfiles/dir1/dir2/subfile2.tex", "subfiles/dir1/text1.tex", "subfiles/dir1/dir2/text2.tex")
+        myFixture.checkHighlighting()
+    }
 }

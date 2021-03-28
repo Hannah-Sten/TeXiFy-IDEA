@@ -10,15 +10,15 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import java.util.*
 import java.util.regex.Pattern
 
@@ -90,6 +90,15 @@ private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference>
 
         for (subParamRange in subParamRanges) {
             inputFileReferences.add(InputFileReference(this, subParamRange, extensions, fileArgument.defaultExtension))
+        }
+    }
+
+    // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
+    // We reference it because we include the preamble of that file, so it is in the file set (partially)
+    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in requiredParameters && optionalParameterMap.isNotEmpty()) {
+        val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
+        if (range != null) {
+            inputFileReferences.add(InputFileReference(this, range.shrink(1), setOf("tex"), "tex"))
         }
     }
 
