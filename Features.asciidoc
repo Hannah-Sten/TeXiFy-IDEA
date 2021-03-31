@@ -331,6 +331,7 @@ Issues which indicate probable unintended behaviour and often highlight possible
 * link:Probable-bugs#label-is-before-caption[Label is before caption]
 * link:Probable-bugs#unescaped--symbol#[Unescaped `#` symbol]
 * link:Probable-bugs#Multiple-graphicspath[Multiple \graphicspath definitions]
+* link:Probable-bugs#bibinputs-relative-path[Relative path to parent is not allowed when using BIBINPUTS]
 
 ===== Packages
 Probable bugs related to packages.

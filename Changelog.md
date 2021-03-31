@@ -2,6 +2,7 @@
 
 # Additions
 * Update file references when moving an included file. (#1817)
+* Group inspections in settings. (#1830)
 
 # Changes
 
