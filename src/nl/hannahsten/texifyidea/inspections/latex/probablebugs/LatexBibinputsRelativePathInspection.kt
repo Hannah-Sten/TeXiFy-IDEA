@@ -4,6 +4,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
@@ -14,8 +15,11 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.requiredParameters
 
 /**
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.
@@ -29,16 +33,11 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
     override val inspectionId = "BibinputsRelativePath"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val commandsWithRelativePath = file.commandsInFile(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd).filter { it.text.startsWith("../") }
+        val commandsWithRelativePath = file.commandsInFile(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd).filter { it.requiredParameter(0)?.startsWith("../") == true }
         if (commandsWithRelativePath.isEmpty()) return emptyList()
 
         // If not using BIBINPUTS, all is fine and it will work.
-        val usesBibinputs = file.project
-            .getLatexRunConfigurations()
-            .filter { it.mainFile == file.findRootFile().virtualFile }
-            .flatMap { it.bibRunConfigs }
-            .map { it.configuration }
-            .filterIsInstance<BibtexRunConfiguration>()
+        val usesBibinputs = file.getBibtexRunConfigurations()
             .any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }
 
         if (!usesBibinputs) return emptyList()
@@ -60,7 +59,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
     }
 
     object RelativePathFix : LocalQuickFix {
-        override fun getFamilyName() = "Remove relative part from path"
+        override fun getFamilyName() = "Remove relative part from argument and from BIBINPUTS"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val oldNode = descriptor.psiElement.node
@@ -76,10 +75,11 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
                 .map { it.configuration }
                 .filterIsInstance<BibtexRunConfiguration>()
                 .forEach { config ->
-                    val envs = config.environmentVariables.envs
+                    val envs = config.environmentVariables.envs.toMutableMap()
                     val oldPath = envs["BIBINPUTS"] ?: return@forEach
-                    val newPath = oldPath.substring(0, oldPath.lastIndexOf('/') - 1)
+                    val newPath = oldPath.substring(0, oldPath.lastIndexOf('/'))
                     envs["BIBINPUTS"] = newPath
+                    config.environmentVariables = EnvironmentVariablesData.create(envs, config.environmentVariables.isPassParentEnvs)
                 }
         }
     }

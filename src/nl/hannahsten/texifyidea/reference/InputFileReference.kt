@@ -48,8 +48,9 @@ class InputFileReference(
      *              Whether to look for packages installed elsewhere on the filesystem.
      *              Set to false when it would make the operation too expensive, for example when trying to
      *              calculate the fileset of many files.
-     * @param includeGraphicsFiles
-     *              True if we also need to resolve to graphics files. Doing so is really expensive at
+     * @param isBuildingFileset
+     *              True if we are building the fileset.
+     *              If false we also need to resolve to graphics files. Doing so is really expensive at
      *              the moment (at least until the implementation in LatexGraphicsPathProvider is improved):
      *              for projects with 500 include commands in hundreds of files this can take 10 seconds in total if
      *              you call this function for every include command.
@@ -57,7 +58,7 @@ class InputFileReference(
      *              (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve
      *              (if requested by the user).
      */
-    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, includeGraphicsFiles: Boolean = true): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set,
         // because this function is used to find the file set so that would cause an infinite loop
 
@@ -94,6 +95,17 @@ class InputFileReference(
             }
         }
 
+        // BIBINPUTS
+        // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
+        if (!isBuildingFileset && (element.name in CommandMagic.bibliographyIncludeCommands || extensions.contains("bib"))) {
+            val bibRunConfigs = element.containingFile.getBibtexRunConfigurations()
+            if (bibRunConfigs.any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }) {
+                // When using BIBINPUTS, the file will only be sought relative to BIBINPUTS
+                searchPaths.clear()
+                searchPaths.addAll(bibRunConfigs.mapNotNull { it.environmentVariables.envs["BIBINPUTS"] })
+            }
+        }
+
         val processedKey = expandCommandsOnce(key, element.project, file = rootFile.psiFile(element.project)) ?: key
 
         // Try to find the target file directly from the given path
@@ -111,7 +123,7 @@ class InputFileReference(
 
         // Try search paths
         if (targetFile == null) {
-            if (includeGraphicsFiles) {
+            if (!isBuildingFileset) {
                 // Add the graphics paths to the search paths
                 searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
             }

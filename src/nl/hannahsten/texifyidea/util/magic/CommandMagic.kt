@@ -310,6 +310,11 @@ object CommandMagic {
             EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels
     )
 
+    /**
+     * Commands that include bib files.
+     */
+    val bibliographyIncludeCommands = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }
+
     @Suppress("unused")
     val startIfs = hashSetOf(
             IF, IFCAT, IFX,
