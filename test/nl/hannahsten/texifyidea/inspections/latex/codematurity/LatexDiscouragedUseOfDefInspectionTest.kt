@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.codematurity
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexDiscouragedUseOfDefInspection
 
 class LatexDiscouragedUseOfDefInspectionTest : TexifyInspectionTestBase(LatexDiscouragedUseOfDefInspection()) {
 

@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexInclusionLoopInspection
 
 class LatexInclusionLoopInspectionTest : TexifyInspectionTestBase(LatexInclusionLoopInspection()) {
 

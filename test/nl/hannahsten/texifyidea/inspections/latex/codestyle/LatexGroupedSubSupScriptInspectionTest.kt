@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import nl.hannahsten.texifyidea.inspections.latex.TexifyRegexInspectionTestBase
-import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexGroupedSubSupScriptInspection
 
 /**
  * @author Hannah Schellekens

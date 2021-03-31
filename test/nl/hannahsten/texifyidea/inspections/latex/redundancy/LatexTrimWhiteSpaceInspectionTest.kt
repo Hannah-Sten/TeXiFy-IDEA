@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.redundancy
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexTrimWhitespaceInspection
 
 class LatexTrimWhiteSpaceInspectionTest : TexifyInspectionTestBase(LatexTrimWhitespaceInspection()) {
 

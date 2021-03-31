@@ -19,7 +19,6 @@ import nl.hannahsten.texifyidea.util.files.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.requiredParameter
-import nl.hannahsten.texifyidea.util.requiredParameters
 
 /**
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.
@@ -59,6 +58,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
     }
 
     object RelativePathFix : LocalQuickFix {
+
         override fun getFamilyName() = "Remove relative part from argument and from BIBINPUTS"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
