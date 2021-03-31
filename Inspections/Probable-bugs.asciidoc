@@ -173,3 +173,11 @@ When using a `#` symbol outside of a command definition, an `&` outside a tabula
 == Multiple \graphicspath definitions
 
 If you have multiple `\graphicspath` commands, only the last one that LaTeX finds defines the graphics path, so you should remove the other one.
+
+[#bibinputs-relative-path]
+== Relative path to parent is not allowed when using BIBINPUTS
+
+The `BIBINPUTS` environment variable cannot handle paths which start with `../`  in the `\bibliography` command, e.g. `\bibliography{../mybib}`.
+Solution: set the `BIBINPUTS` path to the parent and use `\bibliography{mybib}` instead (or use a "fake" subfolder and do `\bibliography{fake/../../mybib}`).
+This solution can be applied using the quickfix for this inspection.
+See https://tex.stackexchange.com/questions/406024/relative-paths-with-bibinputs
