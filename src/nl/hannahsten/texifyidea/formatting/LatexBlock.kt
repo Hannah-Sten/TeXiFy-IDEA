@@ -53,8 +53,7 @@ class LatexBlock(
             blocks.add(block)
         }
 
-        // todo idea: if we need to have say extra indent of 3 for this block
-        //      then create two dummy children with indent
+        // todo refactor
         while (child != null) {
             val isSectionCommand = child.psi is LatexNoMathContent && child.psi.firstChildOfType(LatexCommands::class)?.name in CommandMagic.labeledLevels.keys.map { it.cmd }
 
@@ -71,9 +70,12 @@ class LatexBlock(
                 else if (level != null && level < sectionLevel) {
                     // I think this will go wrong if you jump levels, e.g. subsubsection after chapter
                     // but that's bad style anyway
-                    val difference = sectionLevel - level
-                    extraSectionIndent = max(targetIndent - difference, 0)
-                    targetIndent = max(targetIndent - difference, 0)
+                    extraSectionIndent = max(targetIndent - (sectionLevel - level), 0)
+                    // Suppose previous text is indented 2 times, and we are a one level higher section command,
+                    // we need for this command itself an indent of 2, minus one for the level, minus one because the
+                    // section command itself is indented one less than the text in the section
+                    // (which will be indented with extraSectionIndent)
+                    targetIndent = max(targetIndent - (sectionLevel - level) - 1, 0)
                     sectionLevel = level
                 }
                 else if (level != null) {
@@ -98,10 +100,6 @@ class LatexBlock(
     }
 
     override fun getIndent(): Indent? {
-        if (sectionIndent > 0) {
-            return Indent.getNormalIndent(false)
-        }
-
         if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT ||
             myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
             // Fix for leading comments inside an environment, because somehow they are not placed inside environments.
@@ -115,7 +113,7 @@ class LatexBlock(
 
         val indentSections = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_SECTIONS
         if (indentSections) {
-            if (myNode.elementType == LatexTypes.NORMAL_TEXT) {
+            if (sectionIndent > 0) {
                 return Indent.getNormalIndent(false)
             }
         }
