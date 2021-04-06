@@ -14,6 +14,7 @@ import javax.swing.JCheckBox
  * See e.g. the YAML plugin "YAMLLanguageCodeStyleSettingsProvider"
  */
 class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider) : SmartIndentOptionsEditor(provider) {
+
     private val sectionIndents = JCheckBox("Nested indent of sections")
 
     override fun addComponents() {

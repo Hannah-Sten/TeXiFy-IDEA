@@ -33,13 +33,14 @@ class LatexBlock(
         val blocks = mutableListOf<LatexBlock>()
         var child = myNode.firstChildNode
 
+        // Only applicable for section indenting:
         // Current sectioning level while walking through the file
         // Uses levels of CommandMagic.labeledLevels
         var sectionLevel = -2
         // Extra indent to do because of sectioning
         var extraSectionIndent = max(sectionIndent - 1, 0)
 
-        // Add fake blocks at the end because we can only add one indent per block but we may need multiple if inside e.g. subsubsection
+        // For section indenting only: add fake blocks at the end because we can only add one indent per block but we may need multiple if inside e.g. subsubsection
         if (child == null && sectionIndent > 0) {
             val block = LatexBlock(
                 myNode,
@@ -52,38 +53,21 @@ class LatexBlock(
             blocks.add(block)
         }
 
-        // todo refactor
+        // Create child blocks
         while (child != null) {
             val isSectionCommand = child.psi is LatexNoMathContent && child.psi.firstChildOfType(LatexCommands::class)?.name in CommandMagic.labeledLevels.keys.map { it.cmd }
 
             var targetIndent = extraSectionIndent
 
             if (isSectionCommand) {
-                // Set flag for next blocks until section end to get indent+1
-                // We need to do it this way because we cannot create blocks which span a section content: blocks
-                // need to correspond to only one psi element.
-                val command = LatexCommand.lookup(child.psi.firstChildOfType(LatexCommands::class)?.name)?.firstOrNull()
-                val level = CommandMagic.labeledLevels[command]
-                if (level != null && level > sectionLevel) {
-                    extraSectionIndent += 1
-                    sectionLevel = level
-                }
-                else if (level != null && level < sectionLevel) {
-                    // I think this will go wrong if you jump levels, e.g. subsubsection after chapter
-                    // but that's bad style anyway
-                    extraSectionIndent = max(targetIndent - (sectionLevel - level), 0)
-                    // Suppose previous text is indented 2 times, and we are a one level higher section command,
-                    // we need for this command itself an indent of 2, minus one for the level, minus one because the
-                    // section command itself is indented one less than the text in the section
-                    // (which will be indented with extraSectionIndent)
-                    targetIndent = max(targetIndent - (sectionLevel - level) - 1, 0)
-                    sectionLevel = level
-                }
-                else if (level != null) {
-                    // We encounter a same level sectioning command, which should be indented one less
-                    targetIndent -= 1
+                updateSectionIndent(sectionLevel, extraSectionIndent, targetIndent, child).apply {
+                    sectionLevel = first
+                    extraSectionIndent = second
+                    targetIndent = third
                 }
             }
+
+            // Normal addition of blocks
             if (child.elementType !== TokenType.WHITE_SPACE) {
                 val block = LatexBlock(
                     child,
@@ -98,6 +82,45 @@ class LatexBlock(
             child = child.treeNext
         }
         return blocks
+    }
+
+    /**
+     * Update the current section indent based on the current child.
+     * Only applicable when indenting text in sections.
+     *
+     * @return sectionLevel, extraSectionIndent, targetIndent
+     */
+    private fun updateSectionIndent(givenSectionLevel: Int, givenExtraSectionIndent: Int, givenTargetIndent: Int, child: ASTNode): Triple<Int, Int, Int> {
+        var extraSectionIndent = givenExtraSectionIndent
+        var sectionLevel = givenSectionLevel
+        var targetIndent = givenTargetIndent
+
+        // Set flag for next blocks until section end to get indent+1
+        // We need to do it this way because we cannot create blocks which span a section content: blocks
+        // need to correspond to only one psi element.
+        val command = LatexCommand.lookup(child.psi.firstChildOfType(LatexCommands::class)?.name)?.firstOrNull()
+        val level = CommandMagic.labeledLevels[command]
+        if (level != null && level > sectionLevel) {
+            extraSectionIndent += 1
+            sectionLevel = level
+        }
+        else if (level != null && level < sectionLevel) {
+            // I think this will go wrong if you jump levels, e.g. subsubsection after chapter
+            // but that's bad style anyway
+            extraSectionIndent = max(targetIndent - (sectionLevel - level), 0)
+            // Suppose previous text is indented 2 times, and we are a one level higher section command,
+            // we need for this command itself an indent of 2, minus one for the level, minus one because the
+            // section command itself is indented one less than the text in the section
+            // (which will be indented with extraSectionIndent)
+            targetIndent = max(targetIndent - (sectionLevel - level) - 1, 0)
+            sectionLevel = level
+        }
+        else if (level != null) {
+            // We encounter a same level sectioning command, which should be indented one less
+            targetIndent -= 1
+        }
+
+        return Triple(sectionLevel, extraSectionIndent, targetIndent)
     }
 
     override fun getIndent(): Indent? {
@@ -173,6 +196,4 @@ class LatexBlock(
         }
         return ChildAttributes(Indent.getNoneIndent(), null)
     }
-
-
 }
