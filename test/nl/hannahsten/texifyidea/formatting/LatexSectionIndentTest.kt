@@ -87,4 +87,48 @@ class LatexSectionIndentTest : BasePlatformTestCase() {
         """.trimIndent()
         )
     }
+
+    fun testEnterHandlerSectionIndentInMiddle() {
+        val file = myFixture.configureByText(
+            LatexFileType, """
+            \section{test}
+                Text.
+                Isn't<caret>
+            \section{two}
+        """.trimIndent()
+        )
+        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_SECTIONS = true
+        myFixture.type('\n')
+        myFixture.checkResult(
+            """
+            \section{test}
+                Text.
+                Isn't
+                <caret>
+            \section{two}
+        """.trimIndent()
+        )
+    }
+
+    fun testEnterHandlerSubsection() {
+        val file = myFixture.configureByText(
+            LatexFileType, """
+            \section{test}
+                \subsection{sub}
+                    Isn't $\xi$<caret>
+            \section{two}
+        """.trimIndent()
+        )
+        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_SECTIONS = true
+        myFixture.type('\n')
+        myFixture.checkResult(
+            """
+            \section{test}
+                \subsection{sub}
+                    Isn't $\xi$
+                    <caret>
+            \section{two}
+        """.trimIndent()
+        )
+    }
 }

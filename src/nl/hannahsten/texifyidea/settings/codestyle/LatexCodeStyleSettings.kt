@@ -29,7 +29,7 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
     /**
      * Indent text inside sections.
      */
-    @JvmField var INDENT_SECTIONS = true
+    @JvmField var INDENT_SECTIONS = false
 
     companion object {
 

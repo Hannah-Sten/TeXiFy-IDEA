@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import java.lang.Integer.max
-import java.util.*
 
 /**
  * @author Sten Wessel
@@ -27,7 +26,7 @@ class LatexBlock(
     alignment: Alignment?,
     private val spacingBuilder: TexSpacingBuilder,
     private val wrappingStrategy: LatexWrappingStrategy,
-    private val sectionIndent: Int = 0,
+    val sectionIndent: Int = 0,
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {
@@ -60,7 +59,9 @@ class LatexBlock(
             var targetIndent = extraSectionIndent
 
             if (isSectionCommand) {
-                // set flag for next blocks until section end to get indent+1
+                // Set flag for next blocks until section end to get indent+1
+                // We need to do it this way because we cannot create blocks which span a section content: blocks
+                // need to correspond to only one psi element.
                 val command = LatexCommand.lookup(child.psi.firstChildOfType(LatexCommands::class)?.name)?.firstOrNull()
                 val level = CommandMagic.labeledLevels[command]
                 if (level != null && level > sectionLevel) {
@@ -111,6 +112,7 @@ class LatexBlock(
             return Indent.getNormalIndent(true)
         }
 
+        // Indentation of sections
         val indentSections = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_SECTIONS
         if (indentSections) {
             if (sectionIndent > 0) {
@@ -142,18 +144,35 @@ class LatexBlock(
     }
 
     override fun isLeaf(): Boolean {
-        return myNode.firstChildNode == null
+        return myNode.firstChildNode == null && sectionIndent <= 0
     }
 
+    // Automatic indent when enter is pressed
     override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
         val type = myNode.elementType
-        if (type === LatexTypes.DISPLAY_MATH) {
+        if (type === LatexTypes.DISPLAY_MATH || type === LatexTypes.ENVIRONMENT) {
             return ChildAttributes(Indent.getNormalIndent(true), null)
         }
-        else if (type === LatexTypes.ENVIRONMENT) {
-            return ChildAttributes(Indent.getNormalIndent(true), null)
+        // This function will be called on the block for which the caret is adding something in the children at the given index,
+        // however this may mean that the current block may be Content and a block will be added in the last child of the children of this block (so not directly into the children of this block).
+        // Therefore to find the section indent of the line the caret was on, we need the previous leaf in the tree
+        var currentBlock = subBlocks.getOrNull(newChildIndex - 1)
+        var indentSize = (currentBlock as? LatexBlock)?.sectionIndent ?: 0
+        while (currentBlock != null && !currentBlock.isLeaf) {
+            currentBlock = currentBlock.subBlocks.lastOrNull()
+            if (currentBlock is LatexBlock) {
+                indentSize = max(indentSize, currentBlock.sectionIndent)
+            }
         }
 
+        if (indentSize > 0) {
+            // We may need to provide more than one indent, because of the problem that the parent-child relationship
+            // does not match the indent sizes
+            val singleIndentSize = CodeStyle.getIndentSize(node.psi.containingFile)
+            return ChildAttributes(Indent.getSpaceIndent(indentSize * singleIndentSize), null)
+        }
         return ChildAttributes(Indent.getNoneIndent(), null)
     }
+
+
 }
