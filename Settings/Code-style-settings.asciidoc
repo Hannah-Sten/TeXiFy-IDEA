@@ -70,3 +70,49 @@ You can specify the number of blank lines the formatter inserts (and keeps) befo
 
 The only place where the formatter does not insert blank lines is right after the `\begin{document}` command or at the first line of a file.
 
+[#section-indentation]
+=== Indent text in sections
+
+When enabled, text inside sections, subsections, etc. will be indented.
+As an example,
+
+[source,latex]
+----
+\section{The End}
+Observations might be touched to their complex easily.
+\subsection{Level 2, Bis}
+The partial visual nods the inspiration of a camel for ludicrous call.
+        \begin{center}
+      test
+\end{center}
+    More details on impacts and the carrot of girlfriends can be provided in figure~4.
+  \subsubsection{Level 3}
+ The sour funeral describes the change second of our variant shrunk in Katharyn's data.
+ \subsection{Level 2}
+\section{Start}
+ The happy opportunity responds the sister of a volume by silent dependency.
+----
+
+will be reformatted as
+
+[source,latex]
+----
+\section{The End}
+    Observations might be touched to their complex easily.
+
+    \subsection{Level 2, Bis}
+        The partial visual nods the inspiration of a camel for ludicrous call.
+        \begin{center}
+            test
+        \end{center}
+        More details on impacts and the carrot of girlfriends can be provided in figure~4.
+
+        \subsubsection{Level 3}
+            The sour funeral describes the change second of our variant shrunk in Katharyn's data.
+
+    \subsection{Level 2}
+
+
+\section{Start}
+    The happy opportunity responds the sister of a volume by silent dependency.
+----
