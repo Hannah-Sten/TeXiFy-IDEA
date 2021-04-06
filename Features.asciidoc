@@ -221,6 +221,7 @@ These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX 
 
 * link:Code-style-settings#indent-comment[Option to start a comment at the same indentation as normal text]
 * link:Code-style-settings#section-newlines[Specify the number of blank lines before a sectioning command]
+* link:Code-style-settings#section-indentation[Indent text in sections]
 
 
 == Menu entries
