@@ -65,6 +65,7 @@ tasks.compileTestKotlin {
     kotlinOptions {
         jvmTarget = "15"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
+        useIR = true
     }
 }
 
