@@ -805,4 +805,26 @@ stack traceback:
 
         testLog(log, expectedMessages)
     }
+
+    fun `test makeindex errors`() {
+        val log =
+            """
+Latexmk: Examining '/home/thomas/GitRepos/random-math/out/random-math.log'
+=== TeX engine is 'pdfTeX'
+Latexmk: applying rule 'makeindex /home/thomas/GitRepos/random-math/out/random-math.idx'...
+
+makeindex: file not writable for security reasons: /home/thomas/GitRepos/random-math/out/random-math.ind
+Can't create output index file /home/thomas/GitRepos/random-math/out/random-math.ind.
+Usage: makeindex [-ilqrcgLT] [-s sty] [-o ind] [-t log] [-p num] [idx0 idx1 ...]
+Latexmk: Errors, so I did not complete making targets
+Latexmk: Summary of warnings from last run of *latex:
+  Latex failed to resolve 7 reference(s)
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("makeindex: file not writable for security reasons: /home/thomas/GitRepos/random-math/out/random-math.ind", null, -1, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
