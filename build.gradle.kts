@@ -14,7 +14,6 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.15"
 
     // Used to debug in a different IDE
-    maven
     id("de.undercouch.download") version "4.1.1"
 
     // Test coverage
@@ -85,10 +84,10 @@ dependencies {
     implementation("org.codehaus.plexus:plexus-archiver:4.2.4")
 
     // Parsing json
-    implementation("com.beust:klaxon:5.4")
+    implementation("com.beust:klaxon:5.5")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:3.6.3")
+    implementation("org.apache.maven:maven-artifact:3.8.1")
 
     // Test dependencies
 
