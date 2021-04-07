@@ -1,0 +1,50 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMathFunctionTextInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Use math function instead of \text"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexGroupedSubSupScriptInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Grouped superscript and subscript"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexGatherEquationsInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Gather equations"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexFigureNotReferencedInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Figure not referenced"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMissingLabelInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Missing labels"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Label conventions"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLineBreakInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Start sentences on a new line"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexEquationReferenceInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Use \eqref{...} instead of (\ref{...})"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexDocumentclassNotInRootInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="File that contains a document environment should contain a \documentclass command"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMightBreakTexifyInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Might break TeXiFy functionality"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Too large sections"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+    </extensions>
+
+    <xi:include href="/META-INF/extensions/inspections/latex/typesetting/spacing.xml" xpointer="xpointer(/idea-plugin/*)"/>
+</idea-plugin>

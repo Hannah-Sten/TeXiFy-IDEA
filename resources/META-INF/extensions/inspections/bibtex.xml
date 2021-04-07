@@ -1,0 +1,28 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
+                         groupName="BibTeX" displayName="Duplicate ID"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+                         groupName="BibTeX" displayName="Missing bibliography style"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+                         groupName="BibTeX" displayName="Duplicate bibliography style commands"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
+                         groupName="BibTeX" displayName="Same bibliography is included multiple times"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Bibtex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
+                         groupName="BibTeX" displayName="Unused bib entry"
+                         enabledByDefault="true"
+                         level="WARNING" />
+    </extensions>
+</idea-plugin>

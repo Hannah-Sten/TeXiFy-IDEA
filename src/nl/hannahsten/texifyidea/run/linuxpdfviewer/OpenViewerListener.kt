@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.run.linuxpdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -32,6 +34,8 @@ class OpenViewerListener(
                         is ExternalPdfViewer -> viewer.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
                         else -> {}
                     }
+                    // Set this viewer as viewer to forward search to in the future.
+                    (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
                 }
                 catch (ignored: TeXception) {
                 }

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection
 
 class LatexTooLargeSectionInspectionTest : TexifyInspectionTestBase(LatexTooLargeSectionInspection()) {
 

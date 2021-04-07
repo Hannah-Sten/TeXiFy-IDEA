@@ -7,6 +7,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
 
+/**
+ * Enable editing environment content in a separate window (when using language injection).
+ */
 class LatexEnvironmentManipulator : AbstractElementManipulator<LatexEnvironmentImpl>() {
 
     override fun handleContentChange(

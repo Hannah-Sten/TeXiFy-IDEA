@@ -1,0 +1,9 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettingsProvider"/>
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexGenerationSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexLanguageCodeStyleSettingsProvider"/>
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexLanguageCodeStyleSettingsProvider"/>
+    </extensions>
+</idea-plugin>

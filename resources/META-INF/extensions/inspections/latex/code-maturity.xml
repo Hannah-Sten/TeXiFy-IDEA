@@ -1,0 +1,28 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexOverInsteadOfFracInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="Use of \over discouraged"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexPrimitiveStyleInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="TeX styling primitives usage is discouraged"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexDiscouragedUseOfDefInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="Discouraged use of \def and \let"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexAvoidEqnarrayInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="Avoid eqnarray"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexPrimitiveEquationInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="Discouraged use of primitive TeX display math"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexMakeatletterInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="Discouraged use of \makeatletter in tex sources"
+                         enabledByDefault="true"
+                         level="WARNING" />
+    </extensions>
+</idea-plugin>

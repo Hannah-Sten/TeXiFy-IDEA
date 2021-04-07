@@ -41,6 +41,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * [Formatter for LaTeX and BibTeX](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-formatting)
 * [Structure view for LaTeX and BibTeX with filters](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Structure%20view)
 * [Code folding for imports, sections, and environments](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-folding)
+* [Built-in pdf viewer via the PDF Viewer plugin, including forward and backward search](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Built-in-pdf-viewer-support)
 * [SumatraPDF (Windows)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/SumatraPDF-support), [Evince (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Evince-support), [Okular (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Okular-support), [Zathura (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Zathura-support) and [Skim (MacOS)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Skim-support) support with forward and backward search
 * [Smart Quotes](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Smart-quotes)
 * [Unicode math preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Unicode-math-preview)

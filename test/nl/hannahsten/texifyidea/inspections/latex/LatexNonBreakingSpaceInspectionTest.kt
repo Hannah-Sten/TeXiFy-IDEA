@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexNonBreakingSpaceInspection
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBreakingSpaceInspection()) {

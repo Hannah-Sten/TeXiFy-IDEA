@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLineBreakInspection
 import java.util.regex.Pattern
 
 typealias RegexPattern = Pattern
