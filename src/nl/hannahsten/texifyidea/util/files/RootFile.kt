@@ -65,7 +65,7 @@ fun PsiFile.isRoot(): Boolean {
     // Function to avoid unnecessary evaluation
     fun documentClass() = this.commandsInFile().find { it.commandToken.text == LatexGenericRegularCommand.DOCUMENTCLASS.cmd }
 
-    fun documentEnvironment() = this.childrenOfType(LatexEnvironment::class).any { it.environmentName == DefaultEnvironment.DOCUMENT.name }
+    fun documentEnvironment() = this.childrenOfType(LatexEnvironment::class).any { it.environmentName == DefaultEnvironment.DOCUMENT.environmentName }
 
     // If the file uses the subfiles documentclass, then it is a root file in the sense that all file inclusions
     // will be relative to this file. Note that it may include the preamble of a different file (using optional parameter of \documentclass)
