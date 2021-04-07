@@ -43,15 +43,15 @@ sourceSets {
 }
 
 // Java target version
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_15
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-    targetCompatibility = JavaVersion.VERSION_1_8.toString()
+    sourceCompatibility = JavaVersion.VERSION_15.toString()
+    targetCompatibility = JavaVersion.VERSION_15.toString()
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "15"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
         useIR = true // https://blog.jetbrains.com/kotlin/2021/02/the-jvm-backend-is-in-beta-let-s-make-it-stable-together
     }
@@ -59,11 +59,11 @@ tasks.compileKotlin {
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-    targetCompatibility = JavaVersion.VERSION_1_8.toString()
+    sourceCompatibility = JavaVersion.VERSION_15.toString()
+    targetCompatibility = JavaVersion.VERSION_15.toString()
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "15"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
 }
