@@ -1,0 +1,28 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexMathOperatorEscapeInspection"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Non-escaped common math operators"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexNonBreakingSpaceInspection"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Non-breaking spaces before references"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexEllipsisInspection"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Ellipsis with ... instead of \ldots or \dots"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexSpaceAfterAbbreviationInspection"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Normal space after abbreviation"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexSentenceEndWithCapitalInspection"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="End-of-sentence space after sentences ending with capitals"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexExtremeInequalityInspection"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Use the matching amssymb symbol for extreme inequalities"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+    </extensions>
+</idea-plugin>

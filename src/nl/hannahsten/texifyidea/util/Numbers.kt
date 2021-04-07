@@ -37,3 +37,18 @@ fun Int.toRoman(): String {
  * @see Integer.toHexString
  */
 fun Int.toHexString(): String = Integer.toHexString(this)
+
+/**
+ * Return true if [this] has a non-empty overlap with [other].
+ */
+fun IntRange.overlaps(other: IntRange): Boolean {
+    return this.last >= other.first && other.last >= this.first
+}
+
+/**
+ * Merge [this] with all [others] to result in one IntRange, assuming that [this] overlaps with all [others].
+ */
+fun IntRange.merge(others: Iterable<IntRange>): IntRange {
+    val all = mutableSetOf(this).also { it.addAll(others) }
+    return IntRange(all.minByOrNull { it.first }!!.first, all.maxByOrNull { it.last }!!.last)
+}

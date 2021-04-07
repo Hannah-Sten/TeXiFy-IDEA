@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 
 object LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContributor() {
+
     private val templates = mutableSetOf<PostfixTemplate>(
         LatexWrapWithGroupPostfixTemplate,
         LatexWrapWithOpenGroupPostfixTemplate,

@@ -20,7 +20,7 @@
 
 bibtexFile ::= (entry | comment)*
 
-entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR? {
+entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) ((id SEPARATOR)? entry_content | preamble) comment* endtry comment* SEPARATOR? {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStub"
     methods=[getReferences getTitle getAuthors getYear getIdentifier getNameIdentifier getAbstract getTagContent getName setName]
@@ -34,8 +34,8 @@ type ::= TYPE_TOKEN
 
 preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
 
-id ::= comment* IDENTIFIER comment* SEPARATOR {
-    methods=[getNameIdentifier getName setName]
+id ::= comment* IDENTIFIER comment* {
+    methods=[getNameIdentifier getName setName delete]
 }
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* {

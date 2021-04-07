@@ -5,6 +5,7 @@ import com.intellij.util.ui.MessageCategory
 import nl.hannahsten.texifyidea.util.capitalizeFirst
 
 data class BibtexLogMessage(val message: String, val fileName: String? = null, val line: Int? = -1, val type: BibtexLogMessageType, val file: VirtualFile? = null) {
+
     fun toTreeViewString(): String {
         val typeString = type.toString().toLowerCase().capitalizeFirst()
         val lineString = if (line != null && line >= 0) "line ($line)" else ""
@@ -13,6 +14,7 @@ data class BibtexLogMessage(val message: String, val fileName: String? = null, v
 }
 
 enum class BibtexLogMessageType(val category: Int) {
+
     ERROR(MessageCategory.ERROR),
     WARNING(MessageCategory.WARNING);
 

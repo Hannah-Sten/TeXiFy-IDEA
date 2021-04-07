@@ -2,11 +2,13 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexAbsolutePathInspection
 import org.junit.Test
 import java.nio.file.Path
 import java.nio.file.Paths
 
 class LatexAbsolutePathInspectionTest : TexifyInspectionTestBase(LatexAbsolutePathInspection()) {
+
     var absoluteWorkingPath: String
 
     init {

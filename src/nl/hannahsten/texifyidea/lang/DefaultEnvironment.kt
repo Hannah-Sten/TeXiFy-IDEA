@@ -1,10 +1,13 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Environment.Context
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHMICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GAUSS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.name
 import java.util.*
@@ -13,16 +16,18 @@ import java.util.*
  * @author Hannah Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-    override vararg val arguments: Argument,
-    override val environmentName: String,
-    override val initialContents: String = "",
-    override val context: Context = Context.NORMAL,
-    override val dependency: LatexPackage = LatexPackage.DEFAULT
+        override val environmentName: String,
+        override val initialContents: String = "",
+        override val context: Context = Context.NORMAL,
+        override val dependency: LatexPackage = LatexPackage.DEFAULT,
+        override vararg val arguments: Argument,
+        override val description: String = ""
 ) : Environment {
 
     // Vanilla LaTeX
     ABSTRACT(environmentName = "abstract"),
     ALLTT(environmentName = "alltt"),
+    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols"))),
     CENTER(environmentName = "center"),
     DESCRIPTION(environmentName = "description", initialContents = "\\item "),
     DISPLAYMATH(environmentName = "displaymath", context = Context.MATH),
@@ -43,10 +48,11 @@ enum class DefaultEnvironment(
     LARGE(environmentName = "large"),
     CAPITAL_LARGE(environmentName = "Large"),
     SCREAMING_LARGE(environmentName = "LARGE"),
-    LIST(RequiredArgument("label"), RequiredArgument("spacing"), environmentName = "list"),
+    LIST(environmentName = "list", arguments = arrayOf(RequiredArgument("label"), RequiredArgument("spacing"))),
+    LONGTABLE(environmentName = "longtable", arguments = arrayOf(RequiredArgument("cols"))),
     LRBOX(environmentName = "lrbox"),
     MATH(environmentName = "math"),
-    MINIPAGE(OptionalArgument("position"), RequiredArgument("width"), environmentName = "minipage"),
+    MINIPAGE(environmentName = "minipage", arguments = arrayOf(OptionalArgument("position"), RequiredArgument("width"))),
     NORMALSIZE(environmentName = "normalsize"),
     QUOTATION(environmentName = "quotation"),
     QUOTE(environmentName = "quote"),
@@ -55,8 +61,10 @@ enum class DefaultEnvironment(
     TABBING(environmentName = "tabbing"),
     TABLE(environmentName = "table", arguments = arrayOf(OptionalArgument("placement"))),
     TABLE_STAR(environmentName = "table*", arguments = arrayOf(OptionalArgument("placement"))),
-    TABULAR(OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular"),
-    TABULAR_STAR(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular*"),
+    TABU(environmentName = "tabu", arguments = arrayOf(RequiredArgument("cols"))),
+    TABULAR(environmentName = "tabular", arguments = arrayOf(OptionalArgument("pos"), RequiredArgument("cols"))),
+    TABULARX(environmentName = "tabularx", arguments = arrayOf(RequiredArgument("width"), RequiredArgument("cols"))),
+    TABULAR_STAR(environmentName = "tabular*", arguments = arrayOf(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"))),
     THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = arrayOf(RequiredArgument("widestlabel"))),
     THEINDEX(environmentName = "theindex"),
     THEOREM(environmentName = "theorem", arguments = arrayOf(OptionalArgument("optional"))),
@@ -64,6 +72,7 @@ enum class DefaultEnvironment(
     TITLEPAGE(environmentName = "titlepage"),
     TRIVLIST(environmentName = "trivlist"),
     VERBATIM(environmentName = "verbatim"),
+    VERBATIM_CAPITAL(environmentName = "Verbatim"),
     VERBATIM_STAR(environmentName = "verbatim*"),
     VERSE(environmentName = "verse"),
 
@@ -116,23 +125,17 @@ enum class DefaultEnvironment(
     VSMALLMATRIX_CAPITAL(environmentName = "Vsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
     VSMALLMATRIX_CAPITAL_STAR(environmentName = "Vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
 
-    // gauss
+    // other
+    ALGORITHM("algorithm"),
+    ALGORITHMIC("algorithmic", dependency = ALGORITHMICX),
     GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
-
-    // comment
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = LatexPackage.COMMENT),
-
-    // lualatex
-    LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
-
-    // listings
     LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),
-
-    // tikz
+    LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
+    LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
+    TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
-
-    // xcolor
-    TESTCOLORS(environmentName = "testcolors", arguments = arrayOf(OptionalArgument("num models")), dependency = XCOLOR);
+    ;
 
     companion object {
 

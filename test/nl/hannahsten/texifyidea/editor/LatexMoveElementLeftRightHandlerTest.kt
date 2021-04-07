@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
 class LatexMoveElementLeftRightHandlerTest : BasePlatformTestCase() {
+
     fun `test command with single required argument`() {
         commandWithSubElements("""\fbox{text}""", "{text}")
     }

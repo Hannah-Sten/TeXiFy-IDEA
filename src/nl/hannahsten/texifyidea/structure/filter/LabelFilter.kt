@@ -5,18 +5,19 @@ import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.getLabelDefinitionCommands
 import javax.swing.Icon
 
 /**
  * @author Hannah Schellekens
  */
 class LabelFilter : Filter {
+
     override fun isVisible(treeElement: TreeElement): Boolean {
         if (treeElement !is LatexStructureViewCommandElement) {
             return true
         }
-        return !Magic.Command.getLabelDefinitionCommands().contains(treeElement.commandName)
+        return !getLabelDefinitionCommands().contains(treeElement.commandName)
     }
 
     override fun isReverted(): Boolean = true
@@ -29,6 +30,7 @@ class LabelFilter : Filter {
      * @author Hannah Schellekens
      */
     private class LatexLabelFilterPresentation : ActionPresentation {
+
         override fun getText(): String = "Show Labels"
 
         override fun getDescription(): String = "Show Labels"
@@ -36,6 +38,7 @@ class LabelFilter : Filter {
         override fun getIcon(): Icon = TexifyIcons.DOT_LABEL
 
         companion object {
+
             val INSTANCE = LatexLabelFilterPresentation()
         }
     }

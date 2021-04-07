@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMissingLabelInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missinglabel"
     }
@@ -113,6 +115,20 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """.trimIndent()
         )
 
+    fun `test exam parts`() = testHighlighting(
+            """
+            \documentclass{exam}
+            \begin{document}
+                \begin{questions}
+                    \question
+                    \begin{parts}
+                        \part a
+                    \end{parts}
+                \end{questions}
+            \end{document}
+            """.trimIndent()
+        )
+
     fun `test quick fix in listings with no other parameters`() = testQuickFix(
         before = """
         \begin{document}
@@ -122,7 +138,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[label={lst:lstlisting}<caret>]
+            \begin{lstlisting}[label={lst:lstlisting}]
             \end{lstlisting}
         \end{document}
         """.trimIndent()
@@ -139,7 +155,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         after = """
         \begin{document}
             \label{lst:lstlisting}
-            \begin{lstlisting}[label={lst:lstlisting2}<caret>]
+            \begin{lstlisting}[label={lst:lstlisting2}]
             \end{lstlisting}
         \end{document}
         """.trimIndent()
@@ -154,7 +170,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}<caret>]
+            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
             \end{lstlisting}
         \end{document}
         """.trimIndent()
@@ -173,5 +189,55 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """.trimIndent(),
             quickFixName = "Add label for this command",
             numberOfFixes = 4
+    )
+
+    fun `test missing lstinputlistings label warnings`() = testHighlighting(
+        """
+            \usepackage{listings}
+            \begin{document}
+                <weak_warning descr="Missing label">\lstinputlisting{some/file}</weak_warning>
+                
+                \lstinputlisting[label={lst:inputlisting}]{some/file}
+                
+                \lstinputlisting[label={lst:inputlisting with spaces}]{some/file}
+            \end{document}
+            """.trimIndent()
+    )
+
+    fun `test lstinputlistings label no warnings`() = testHighlighting(
+        """
+            \usepackage{listings}
+            \begin{document}
+                \lstinputlisting[label={lst:inputlisting}]{some/file}
+                
+                \lstinputlisting[label={lst:inputlisting with spaces}]{some/file}
+            \end{document}
+            """.trimIndent()
+    )
+
+    fun `test quick fix in lstinputlistings with other parameters`() = testQuickFix(
+        before = """
+        \begin{document}
+                \lstinputlisting[someoption,otheroption={with value}]{some/file}
+        \end{document}
+        """.trimIndent(),
+        after = """
+        \begin{document}
+                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+        \end{document}
+        """.trimIndent()
+    )
+
+    fun `test quick fix in lstinputlistings creates optional parameters at correct position`() = testQuickFix(
+        before = """
+        \begin{document}
+                \lstinputlisting{some/file}
+        \end{document}
+        """.trimIndent(),
+        after = """
+        \begin{document}
+                \lstinputlisting[label={lst:lstinputlisting}]{some/file}
+        \end{document}
+        """.trimIndent()
     )
 }

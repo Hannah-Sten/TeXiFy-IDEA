@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexFigureNotReferencedInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNotReferencedInspection()) {
@@ -13,7 +14,7 @@ class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFig
             \usepackage{listings}
             \begin{document}
                 \begin{figure}
-                    <weak_warning descr="Figure is not referenced">\label{fig:some-figure}</weak_warning>
+                    \label{<weak_warning descr="Figure is not referenced">fig:some-figure</weak_warning>}
                 \end{figure}
             \end{document}
             """.trimIndent()

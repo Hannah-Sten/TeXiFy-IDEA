@@ -10,7 +10,4 @@ public interface BibtexPreamble extends PsiElement {
   @NotNull
   List<BibtexQuotedString> getQuotedStringList();
 
-  @Nullable
-  PsiElement getIdentifier();
-
 }

@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexCiteBeforePeriodInspection
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexCiteBeforePeriodInspectionTest : TexifyInspectionTestBase(LatexCiteBeforePeriodInspection()) {
+
     fun testWarning() {
         myFixture.configureByText(
             LatexFileType,

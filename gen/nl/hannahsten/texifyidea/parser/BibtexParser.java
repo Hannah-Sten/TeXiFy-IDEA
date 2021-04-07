@@ -202,7 +202,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?
+  // type (OPEN_BRACE | OPEN_PARENTHESIS) ((id SEPARATOR)? entry_content | preamble) comment* endtry comment* SEPARATOR?
   public static boolean entry(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry")) return false;
     if (!nextTokenIs(b, TYPE_TOKEN)) return false;
@@ -228,7 +228,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // id? entry_content | preamble
+  // (id SEPARATOR)? entry_content | preamble
   private static boolean entry_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_2")) return false;
     boolean r;
@@ -239,7 +239,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // id? entry_content
+  // (id SEPARATOR)? entry_content
   private static boolean entry_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_2_0")) return false;
     boolean r;
@@ -250,11 +250,22 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // id?
+  // (id SEPARATOR)?
   private static boolean entry_2_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_2_0_0")) return false;
-    id(b, l + 1);
+    entry_2_0_0_0(b, l + 1);
     return true;
+  }
+
+  // id SEPARATOR
+  private static boolean entry_2_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_2_0_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = id(b, l + 1);
+    r = r && consumeToken(b, SEPARATOR);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   // comment*
@@ -331,7 +342,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment* IDENTIFIER comment* SEPARATOR
+  // comment* IDENTIFIER comment*
   public static boolean id(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "id")) return false;
     if (!nextTokenIs(b, "<id>", COMMENT_TOKEN, IDENTIFIER)) return false;
@@ -340,7 +351,6 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     r = id_0(b, l + 1);
     r = r && consumeToken(b, IDENTIFIER);
     r = r && id_2(b, l + 1);
-    r = r && consumeToken(b, SEPARATOR);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

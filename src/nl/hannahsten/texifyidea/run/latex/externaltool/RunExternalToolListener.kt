@@ -10,10 +10,10 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.LatexPackage
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 
@@ -26,6 +26,7 @@ class RunExternalToolListener(
 ) : ProcessListener {
 
     companion object {
+
         /**
          * Check the contents of the LaTeX fileset to find out if any external tools are needed.
          */
@@ -36,7 +37,7 @@ class RunExternalToolListener(
 
             val externalTools = mutableSetOf<ExternalTool>()
 
-            if (LatexPackage.PYTHONTEX.name in usedPackages) {
+            if (LatexPackage.PYTHONTEX in usedPackages) {
                 externalTools.add(ExternalTool.PYTHONTEX)
             }
 

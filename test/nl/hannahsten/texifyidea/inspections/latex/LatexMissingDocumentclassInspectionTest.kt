@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMissingDocumentclassInspection
 
 class LatexMissingDocumentclassInspectionTest : TexifyInspectionTestBase(LatexMissingDocumentclassInspection()) {
+
     fun `test no warning`() = testHighlighting("""\documentclass{article}""")
 
     fun `test no warning in sty file`() {

@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class NonAsciiCharactersInspectionTest : TexifyInspectionTestBase(NonAsciiCharactersInspection()) {
+
     fun testWarning() {
         myFixture.configureByText(
             LatexFileType,

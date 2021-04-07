@@ -29,6 +29,7 @@ class LatexOutputListener(
 
     // This should probably be located somewhere else
     companion object {
+
         /**
          * Returns true if firstLine is most likely the last line of the message.
          */

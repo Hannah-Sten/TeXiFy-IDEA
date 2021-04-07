@@ -24,7 +24,9 @@ data class LatexErrorTreeViewConfiguration(
     var expanded: Boolean = true // Unfortunately we cannot use this, because expandAll() apparently only works in Actions
 ) :
     PersistentStateComponent<LatexErrorTreeViewConfiguration> {
+
     companion object {
+
         @JvmStatic
         fun getInstance(project: Project): LatexErrorTreeViewConfiguration =
             ServiceManager.getService(

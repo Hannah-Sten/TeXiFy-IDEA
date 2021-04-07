@@ -8,7 +8,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  * @author Hannah Schellekens
  */
 interface LatexCommandsStub : StubElement<LatexCommands?>, NamedStub<LatexCommands?> {
+
     val commandToken: String
     val requiredParams: List<String>
-    val optionalParams: List<String>
+    val optionalParams: Map<String, String>
 }

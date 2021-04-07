@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.editor
 import com.intellij.codeInsight.editorActions.AutoHardWrapHandler
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
-import com.intellij.ide.impl.DataManagerImpl
+import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexOptionalParam
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /**
  * @author Hannah Schellekens
@@ -32,8 +33,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         }
 
         // Don't insert \item when the enter was triggered by the word wrap
-        // Unfortunately the only way to get to the userData in the DataContext seems to be the deprecated MyDataContext
-        if ((context as? DataManagerImpl.MyDataContext)?.getUserData(AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true) {
+        if (DataManager.getInstance().loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true) {
             return Result.Continue
         }
 
@@ -135,7 +135,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         }
 
         val isGluedToTheBeginCommand = element.hasParent(LatexBeginCommand::class)
-        val isInsideAnEnumeration = element.inDirectEnvironment(Magic.Environment.listingEnvironments)
+        val isInsideAnEnumeration = element.inDirectEnvironment(EnvironmentMagic.listingEnvironments)
         return isInsideAnEnumeration && !isGluedToTheBeginCommand
     }
 }

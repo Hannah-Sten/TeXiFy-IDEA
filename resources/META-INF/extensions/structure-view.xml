@@ -1,0 +1,6 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.structure.latex.LatexStructureViewFactory"/>
+        <lang.psiStructureViewFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewFactory"/>
+    </extensions>
+</idea-plugin>

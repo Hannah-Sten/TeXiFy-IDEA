@@ -22,15 +22,10 @@ public class BibtexDefinedStringImpl extends ASTWrapperPsiElement implements Bib
     visitor.visitDefinedString(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getIdentifier() {
-    return notNullChild(findChildByType(IDENTIFIER));
   }
 
   @Override

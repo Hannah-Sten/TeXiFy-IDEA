@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexDiacriticIJInspection
 
 class LatexDiacriticIJInspectionTest : TexifyInspectionTestBase(LatexDiacriticIJInspection()) {
+
     fun `test warning`() = testHighlighting("""<warning>\^i</warning>""")
 
     fun `test no warning`() = testHighlighting("""\^{\i}""")

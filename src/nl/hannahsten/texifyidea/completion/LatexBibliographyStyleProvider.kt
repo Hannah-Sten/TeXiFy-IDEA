@@ -7,7 +7,6 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 
 /**
  * @author Hannah Schellekens
@@ -26,7 +25,6 @@ object LatexBibliographyStyleProvider : CompletionProvider<CompletionParameters>
                     .withPresentableText(name)
                     .bold()
                     .withIcon(TexifyIcons.MISCELLANEOUS_ITEM)
-                    .withInsertHandler(MoveToEndOfCommandHandler)
             }
         )
     }

@@ -13,6 +13,7 @@ import java.io.File
  * Autocompletion roots based on graphicspaths.
  */
 class LatexGraphicsPathProvider : LatexPathProviderBase() {
+
     override fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile> {
         val paths = getProjectRoots()
 

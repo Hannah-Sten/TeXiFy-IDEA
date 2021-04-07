@@ -5,6 +5,7 @@ import com.intellij.util.ui.MessageCategory
 import nl.hannahsten.texifyidea.util.capitalizeFirst
 
 data class LatexLogMessage(val message: String, val fileName: String? = null, val line: Int = -1, val type: LatexLogMessageType = LatexLogMessageType.ERROR, val file: VirtualFile? = null) {
+
     fun toTreeViewString(): String {
         val typeString = type.toString().toLowerCase().capitalizeFirst()
         val lineString = if (line >= 0) "line ($line)" else ""
@@ -13,6 +14,7 @@ data class LatexLogMessage(val message: String, val fileName: String? = null, va
 }
 
 enum class LatexLogMessageType(val category: Int) {
+
     ERROR(MessageCategory.ERROR),
     WARNING(MessageCategory.WARNING),
 }

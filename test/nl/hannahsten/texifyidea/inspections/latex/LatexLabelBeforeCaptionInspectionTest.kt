@@ -1,10 +1,13 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexMissingLabelInspection
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexLabelBeforeCaptionInspection
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
 class LatexLabelBeforeCaptionInspectionTest : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/labelaftercaption"
     }

@@ -10,6 +10,7 @@ import java.io.File
  * Try to find a latexmkrc file (see the latexmk man page).
  */
 object LatexmkRcFileFinder {
+
     private val isSystemLatexmkRcFilePresent: Boolean by lazy {
         // 1
         if (SystemInfo.isLinux) {

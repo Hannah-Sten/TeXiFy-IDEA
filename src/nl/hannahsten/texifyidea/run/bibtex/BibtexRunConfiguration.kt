@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.bibtex
 
 import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.Executor
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -40,6 +41,7 @@ class BibtexRunConfiguration(
             field = value?.trim()
             field = if (field?.isEmpty() == true) null else field
         }
+    var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
     var bibWorkingDir: VirtualFile? = null
@@ -89,6 +91,7 @@ class BibtexRunConfiguration(
         }
 
         compilerArguments = parent.getChildText(COMPILER_ARGUMENTS)
+        environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
         val mainFilePath = parent.getChildText(MAIN_FILE)
         mainFile = if (mainFilePath != null) {
@@ -116,6 +119,7 @@ class BibtexRunConfiguration(
         parent.addContent(Element(COMPILER).apply { text = compiler?.name ?: "" })
         parent.addContent(Element(COMPILER_PATH).apply { text = compilerPath ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).apply { text = compilerArguments ?: "" })
+        this.environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
         parent.addContent(Element(AUX_DIR).apply { text = bibWorkingDir?.path ?: "" })
     }

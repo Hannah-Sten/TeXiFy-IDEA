@@ -4,11 +4,11 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.6.4"
-    kotlin("jvm") version("1.4.20")
+    id("org.jetbrains.intellij") version "0.6.5"
+    kotlin("jvm") version("1.4.30")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.35.0"
+    id("com.github.ben-manes.versions") version "0.36.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.15"
@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2-alpha.5"
+version = "0.7.5"
 
 repositories {
     mavenCentral()
@@ -54,6 +54,7 @@ tasks.compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
+        useIR = true // https://blog.jetbrains.com/kotlin/2021/02/the-jvm-backend-is-in-beta-let-s-make-it-stable-together
     }
 }
 
@@ -74,12 +75,20 @@ dependencies {
     implementation(files("lib/JavaDDE.dll"))
     implementation(files("lib/JavaDDEx64.dll"))
 
-    // From Kotlin documentation
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
-
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java:3.2.3")
+    implementation("com.github.hypfvieh:dbus-java:3.2.4")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
+
+    // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
+    implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
+    implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.2.3")
+
+    // Parsing json
+    implementation("com.beust:klaxon:5.4")
+
+    // Comparing versions
+    implementation("org.apache.maven:maven-artifact:3.6.3")
 
     // Test dependencies
 
@@ -99,10 +108,10 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.10.2")
+    testImplementation("io.mockk:mockk:1.10.5")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
-    ktlintRuleset(files("lib/ktlint-ruleset-0.1.jar"))
+    ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
 }
 
 // Special resource dependencies
@@ -117,7 +126,8 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java")
+    // indices plugin doesn't work in tests
+    setPlugins("tanvd.grazi", "java") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -127,8 +137,8 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "203.5600.34-EAP-SNAPSHOT"
-//    version = "PY-203.5419.8-EAP-SNAPSHOT"
+    version = "2020.3.1"
+//    version = "PY-2020.3.3"
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE

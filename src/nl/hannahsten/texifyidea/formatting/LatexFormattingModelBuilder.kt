@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile
  * @author Sten Wessel
  */
 class LatexFormattingModelBuilder : FormattingModelBuilder {
+
     override fun createModel(context: FormattingContext): FormattingModel {
         return FormattingModelProvider.createFormattingModelForPsiFile(
             context.containingFile,

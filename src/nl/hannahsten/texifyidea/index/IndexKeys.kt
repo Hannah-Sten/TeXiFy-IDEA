@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexMagicComment
  * @author Hannah Schellekens
  */
 object IndexKeys {
+
     val COMMANDS_KEY =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.commands")
     val INCLUDES_KEY =
@@ -21,4 +22,6 @@ object IndexKeys {
         StubIndexKey.createIndexKey<String, LatexMagicComment>("nl.hannahsten.texifyidea.magiccomment")
     val LABELED_ENVIRONMENTS_KEY =
         StubIndexKey.createIndexKey<String, LatexEnvironment>("nl.hannahsten.texifyidea.parameterlabeledenvironments")
+    val LABELED_COMMANDS_KEY =
+        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.parameterlabeledcommands")
 }

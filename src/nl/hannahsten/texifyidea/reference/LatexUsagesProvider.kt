@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.LatexLexerAdapter
 import nl.hannahsten.texifyidea.psi.LatexTypes
 
 class LatexUsagesProvider : FindUsagesProvider {
+
     override fun getWordsScanner(): WordsScanner? {
         return DefaultWordsScanner(
             LatexLexerAdapter(),

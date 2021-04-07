@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.requiredParameters
 import org.junit.Test
 
 class LatexPsiImplUtilTest : BasePlatformTestCase() {
+
     private val url = "https://github.com/Hannah-Sten/TeXiFy-IDEA"
 
     override fun getTestDataPath(): String {
@@ -48,7 +49,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
-        val optionalParameters = element.optionalParameters
+        val optionalParameters = element.optionalParameterMap.toStringMap()
 
         // then
         assertEquals("biber", optionalParameters["backend"])
@@ -64,7 +65,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
-        val optionalParameters = element.optionalParameters.keys.toList()
+        val optionalParameters = element.optionalParameterMap.toStringMap().keys.toList()
 
         // then
         assertEquals("backend", optionalParameters[0])
@@ -80,7 +81,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
-        val optionalParameters = element.optionalParameters
+        val optionalParameters = element.optionalParameterMap.toStringMap()
 
         // then
         assertEmpty(optionalParameters.toList())
@@ -113,7 +114,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.children.first().firstChildOfType(LatexBeginCommand::class)!!
-        val optionalParameters = element.optionalParameters
+        val optionalParameters = element.optionalParameterMap.toStringMap()
 
         assertEquals("Python", optionalParameters["language"])
         assertEquals("lst:listing", optionalParameters["label"])
@@ -152,7 +153,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.firstChildOfType(LatexCommands::class)!!
-        assertTrue("2" in element.optionalParameters)
-        assertTrue("n" in element.optionalParameters)
+        assertTrue("2" in element.optionalParameterMap.toStringMap())
+        assertTrue("n" in element.optionalParameterMap.toStringMap())
     }
 }

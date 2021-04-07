@@ -11,22 +11,24 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
+import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
-import nl.hannahsten.texifyidea.util.Magic.Package
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
 
 /**
@@ -49,7 +51,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         firstRunSetup(compiler)
-        runConfig.outputPath.updateOutputSubDirs()
+        if (!runConfig.getLatexDistributionType().isMiktex()) {
+            runConfig.outputPath.updateOutputSubDirs()
+        }
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
@@ -123,7 +127,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandsInFileSet = mainFile.psiFile(environment.project)?.commandsInFileSet()?.mapNotNull { it.name } ?: emptyList()
 
             // Option 1 in http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf
-            val usesTexForGlossaries = "\\" + LatexRegularCommand.MAKENOIDXGLOSSARIES.command in commandsInFileSet
+            val usesTexForGlossaries = "\\" + LatexGenericRegularCommand.MAKENOIDXGLOSSARIES.commandWithSlash in commandsInFileSet
 
             if (usesTexForGlossaries) {
                 runConfig.compileTwice = true
@@ -135,11 +139,11 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 ?.includedPackages()
                 ?: setOf()
 
-            isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
+            isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 
             // Some packages do handle makeindex themselves
             // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
-            if (includedPackages.contains("imakeidx") && !runConfig.usesAuxilOrOutDirectory()) {
+            if (includedPackages.contains(LatexPackage.IMAKEIDX) && !runConfig.usesAuxilOrOutDirectory()) {
                 isMakeindexNeeded = false
             }
         }
@@ -232,13 +236,15 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
         }
         // Do nothing if the user selected that they do not want a viewer to open.
-        else if (runConfig.pdfViewer == PdfViewer.NONE) return
-        else if (runConfig.sumatraPath != null || isSumatraAvailable) {
+        else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
+        // Sumatra does not support DVI
+        else if (runConfig.pdfViewer == InternalPdfViewer.SUMATRA && (runConfig.sumatraPath != null || isSumatraAvailable) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }
-        else if (runConfig.pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR, PdfViewer.ZATHURA, PdfViewer.SKIM)) {
-            ViewerForwardSearch(runConfig.pdfViewer ?: PdfViewer.NONE).execute(handler, runConfig, environment, focusAllowed)
+        else if (runConfig.pdfViewer is ExternalPdfViewer ||
+                 runConfig.pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)) {
+            ViewerForwardSearch(runConfig.pdfViewer ?: InternalPdfViewer.NONE).execute(handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

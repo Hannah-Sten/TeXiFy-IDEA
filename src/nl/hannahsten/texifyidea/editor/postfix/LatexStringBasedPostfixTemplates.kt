@@ -40,6 +40,7 @@ internal object LatexWrapWithTextPostfixTemplate : ConstantStringBasedPostfixTem
     mathOnly = true,
     pack = LatexPackage.AMSMATH
 ) {
+
     override fun setVariables(template: Template, element: PsiElement) {
         template.addVariable("more", "", "", true)
     }
@@ -78,6 +79,7 @@ internal abstract class ConstantStringBasedPostfixTemplate(
     pack: LatexPackage? = null,
     provider: PostfixTemplateProvider = LatexPostfixTemplateFromPackageProvider.getProvider(pack)
 ) : StringBasedPostfixTemplate(name, desc, LatexPostfixExpressionSelector(mathOnly, textOnly), provider) {
+
     override fun getTemplateString(element: PsiElement) = template
 
     override fun getElementToRemove(expr: PsiElement?) = expr

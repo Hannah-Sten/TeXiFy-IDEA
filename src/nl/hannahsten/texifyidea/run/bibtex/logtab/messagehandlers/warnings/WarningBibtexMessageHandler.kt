@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * Since --line may still appear on the next line, we catch this message in the middle of the buffer.
  */
 object WarningBibtexMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         if (window.size < 3) return null
         // Index of the middle element of the buffer (might not be fully filled)

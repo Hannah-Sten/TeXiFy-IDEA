@@ -1,7 +1,9 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.TextRange
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
+import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
@@ -33,7 +35,7 @@ fun String.camelCase(): String {
  */
 fun String.repeat(count: Int) = buildString(count * this.length) {
     for (i in 0 until count) {
-        append(this)
+        append(this@repeat)
     }
 }
 
@@ -64,7 +66,7 @@ fun String.trimRange(startTrim: Int, endTrim: Int): String {
  * Returns the leading whitespace of a string.
  */
 fun String.getIndent(): String {
-    val matcher = Magic.Pattern.leadingWhitespace.matcher(this)
+    val matcher = PatternMagic.leadingWhitespace.matcher(this)
     return if (matcher.find()) matcher.group(0) else ""
 }
 
@@ -131,7 +133,7 @@ fun List<String>.removeIndents(): List<String> {
  *
  * @return All lines with shared indents removed.
  */
-fun String.removeIndents() = Magic.Pattern.newline.split(this)
+fun String.removeIndents() = PatternMagic.newline.split(this)
     .toList()
     .removeIndents()
     .joinToString("\n")
@@ -188,14 +190,14 @@ fun String.splitWhitespace() = split(Regex("\\s+"))
  *
  * @see [Magic.Pattern.htmlTag]
  */
-fun String.removeHtmlTags() = this.replace(Magic.Pattern.htmlTag.toRegex(), "")
+fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 
 /**
  * Run a command in the terminal.
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun String.runCommand() = runCommand(*(this.split("\\s".toRegex())).toTypedArray())
+fun String.runCommand(workingDirectory: File? = null) = runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 /**
  * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.
@@ -211,5 +213,28 @@ fun String.firstIndexOfAny(vararg chars: Char): Int {
 /** If this contains any of the given set. */
 fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
 
+/** If this starts with any of the given set. */
+fun String.startsWithAny(vararg prefix: String) = prefix.any { this.startsWith(it) }
+
 /** Shrink textrange with the given amount at both sides. */
 fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))
+
+/**
+ * Appends a line separator.
+ */
+fun StringBuilder.newline() = append("\n")!!
+
+/**
+ * Encloses the string with the given prefix and suffix when the given predicate yields true.
+ * Otherwise just returns this string.
+ */
+inline fun String.encloseWhen(prefix: String = "", suffix: String = "", predicate: () -> Boolean) = buildString {
+    val predicateResult = predicate()
+    if (predicateResult) {
+        append(prefix)
+    }
+    append(this@encloseWhen)
+    if (predicateResult) {
+        append(suffix)
+    }
+}

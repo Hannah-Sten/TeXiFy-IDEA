@@ -5,6 +5,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 
 class LatexPathCompletionWithCommandExpansion : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/completion/path/commandexpansion"
     }

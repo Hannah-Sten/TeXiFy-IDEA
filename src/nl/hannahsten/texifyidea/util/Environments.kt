@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Finds all environment definition commands within the project.
@@ -11,6 +12,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 fun Project.findEnvironmentDefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this).filter {
-        it.name in Magic.Command.environmentDefinitions
+        it.name in CommandMagic.environmentDefinitions
     }
 }

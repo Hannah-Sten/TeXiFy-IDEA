@@ -35,8 +35,8 @@ public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements Latex
   }
 
   @Override
-  public LinkedHashMap<String, String> getOptionalParameters() {
-    return LatexPsiImplUtil.getOptionalParameters(this);
+  public LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap() {
+    return LatexPsiImplUtil.getOptionalParameterMap(this);
   }
 
   @Override

@@ -13,6 +13,7 @@ import java.util.function.Function
  */
 @Suppress("unused")
 class CommandManagerTest {
+
     private var manager: CommandManager? = null
 
     @Before

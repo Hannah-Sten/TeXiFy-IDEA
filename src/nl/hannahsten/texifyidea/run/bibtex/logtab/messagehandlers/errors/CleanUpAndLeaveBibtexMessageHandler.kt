@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * and for which we assume the message is on the previous line.
  */
 object CleanUpAndLeaveBibtexMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         BibtexLogMagicRegex.cleanUpAndLeave.find(window.lastOrNull() ?: "")?.apply {
             if (window.size < 2) return null

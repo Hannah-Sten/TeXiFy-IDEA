@@ -53,7 +53,8 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  public @NotNull PsiReference[] getReferences() {
+  @NotNull
+  public PsiReference[] getReferences() {
     return LatexPsiImplUtil.getReferences(this);
   }
 
@@ -63,8 +64,8 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  public LinkedHashMap<String, String> getOptionalParameters() {
-    return LatexPsiImplUtil.getOptionalParameters(this);
+  public LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap() {
+    return LatexPsiImplUtil.getOptionalParameterMap(this);
   }
 
   @Override
@@ -80,6 +81,11 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   @Override
   public String getName() {
     return LatexPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String name) {
+    return LatexPsiImplUtil.setName(this, name);
   }
 
 }

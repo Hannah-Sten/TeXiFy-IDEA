@@ -13,6 +13,7 @@ object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
     """^$FILE_LINE_REGEX (?<message>Undefined control sequence.)(\s*l.\d+[\s\S]*(?<command>\\\w+)$)?""".toRegex(),
     """^$LATEX_ERROR_REGEX (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)$""".toRegex()
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {

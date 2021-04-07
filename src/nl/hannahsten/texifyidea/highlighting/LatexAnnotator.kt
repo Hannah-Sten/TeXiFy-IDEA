@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * @author Hannah Schellekens
@@ -111,7 +112,7 @@ open class LatexAnnotator : Annotator {
             .create()
 
         annotateMathCommands(
-            LatexPsiUtil.getAllChildren(inlineMathElement), annotationHolder,
+            inlineMathElement.childrenOfType(LatexCommands::class), annotationHolder,
             LatexSyntaxHighlighter.COMMAND_MATH_INLINE
         )
     }
@@ -203,19 +204,19 @@ open class LatexAnnotator : Annotator {
 
         // Label references.
         val style = when (command.name) {
-            in Magic.Command.labelReferenceWithoutCustomCommands -> {
+            in CommandMagic.labelReferenceWithoutCustomCommands -> {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
-            in Magic.Command.getLabelDefinitionCommands() -> {
+            in getLabelDefinitionCommands() -> {
                 LatexSyntaxHighlighter.LABEL_DEFINITION
             }
             // Bibliography references (citations).
-            in Magic.Command.bibliographyReference -> {
+            in CommandMagic.bibliographyReference -> {
                 LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
             }
             // Label definitions.
-            in Magic.Command.bibliographyItems -> {
+            in CommandMagic.bibliographyItems -> {
                 LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
             }
             else -> return

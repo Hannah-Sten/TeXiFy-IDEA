@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
 
     companion object {
+
         private const val factoryName = "LaTeX configuration factory"
     }
 

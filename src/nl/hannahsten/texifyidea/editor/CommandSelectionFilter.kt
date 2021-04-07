@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
  * Disable WordSelectioner (on by default) for LatexCommands, because we handle those in [LatexCommandSelectioner].
  */
 class CommandSelectionFilter : Condition<PsiElement> {
+
     override fun value(t: PsiElement?) = !(
         TexifySettings.getInstance().includeBackslashInSelection && (
             t?.firstParentOfType(LatexCommands::class)?.text == t?.text ||

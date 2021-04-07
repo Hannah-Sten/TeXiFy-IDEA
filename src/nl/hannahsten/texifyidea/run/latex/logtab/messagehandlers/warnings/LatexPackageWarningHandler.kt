@@ -11,6 +11,7 @@ object LatexPackageWarningHandler : LatexMessageHandler(
     """^Package $PACKAGE_REGEX Warning: (?<message>.+) $LINE_REGEX$""".toRegex(),
     """^Package $PACKAGE_REGEX Warning: (?<message>.+)$""".toRegex()
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {

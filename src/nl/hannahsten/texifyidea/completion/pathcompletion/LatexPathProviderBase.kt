@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -27,12 +27,14 @@ import java.util.regex.Pattern
  * @author Lukas Heiligenbrunner
  */
 abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>() {
+
     private var parameters: CompletionParameters? = null
     private var resultSet: CompletionResultSet? = null
     private var validExtensions: Set<String>? = null
     private var absolutePathSupport = true
 
     companion object {
+
         private val TRIM_SLASH = Pattern.compile("/[^/]*$")
     }
 

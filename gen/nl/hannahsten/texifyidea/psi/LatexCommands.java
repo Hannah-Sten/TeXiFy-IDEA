@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import com.intellij.psi.PsiReference;
 import java.util.LinkedHashMap;
 
-public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiElement<LatexCommandsStub> {
+public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithParams, StubBasedPsiElement<LatexCommandsStub> {
 
   @NotNull
   List<LatexParameter> getParameterList();
@@ -18,11 +18,12 @@ public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiEleme
   @NotNull
   PsiElement getCommandToken();
 
-  @NotNull PsiReference[] getReferences();
+  @NotNull
+  PsiReference[] getReferences();
 
   PsiReference getReference();
 
-  LinkedHashMap<String, String> getOptionalParameters();
+  LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap();
 
   List<String> getRequiredParameters();
 
@@ -31,5 +32,7 @@ public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiEleme
   int getTextOffset();
 
   String getName();
+
+  PsiElement setName(String name);
 
 }

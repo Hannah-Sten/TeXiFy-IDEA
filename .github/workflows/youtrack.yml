@@ -1,0 +1,34 @@
+name: "Youtrack Issue Linker"
+on:
+  issues:
+    types:
+      - opened
+      - edited
+  issue_comment:
+    types:
+      - created
+      - edited
+  pull_request:
+    types:
+      - opened
+      - edited
+  pull_request_review:
+    types:
+      - submitted
+      - edited
+  pull_request_review_comment:
+    types:
+      - created
+      - edited
+
+jobs:
+  add-youtrack-issue-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - id: replace
+        uses: ./.github/actions/insert-youtrack-link
+        with:
+          issue-prefix: 'TEX'
+          youtrack-base-url: 'https://texify-idea.myjetbrains.com/youtrack'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

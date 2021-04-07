@@ -21,6 +21,7 @@ public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
     visitor.visitId(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);
@@ -30,12 +31,6 @@ public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
   @NotNull
   public List<BibtexComment> getCommentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexComment.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getIdentifier() {
-    return notNullChild(findChildByType(IDENTIFIER));
   }
 
   @Override
@@ -51,6 +46,11 @@ public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
   @Override
   public PsiElement setName(String name) {
     return BibtexPsiImplUtil.setName(this, name);
+  }
+
+  @Override
+  public void delete() {
+    BibtexPsiImplUtil.delete(this);
   }
 
 }

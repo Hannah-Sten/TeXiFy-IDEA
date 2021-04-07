@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 
 /**
  * Get the file search scope for this psi file.
@@ -59,12 +60,16 @@ fun PsiFile.isClassFile() = virtualFile.extension == "cls"
  * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
  * Note this explicitly does not find files elsewhere on the system.
  */
-fun PsiFile.documentClassFileInProject(): PsiFile? {
-    val command = commandsInFile().asSequence()
+fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls")
+
+/**
+ * If the file has a \documentclass command, return the class name, null otherwise.
+ */
+fun PsiFile.documentClass(): String? {
+    return commandsInFile().asSequence()
         .filter { it.name == "\\documentclass" }
-        .firstOrNull() ?: return null
-    val argument = command.requiredParameter(0) ?: return null
-    return findFile("$argument.cls")
+        .firstOrNull()
+        ?.requiredParameter(0)
 }
 
 /**
@@ -74,7 +79,7 @@ fun PsiFile.documentClassFileInProject(): PsiFile? {
  *          The name of the package to check for.
  * @return `true` when there is a package with name `packageName` in the file set, `false` otherwise.
  */
-fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this).contains(packageName)
+fun PsiFile.isUsed(packageName: String) = this.includedPackages().map { it.name }.contains(packageName)
 
 /**
  * Checks if the given package is included into the file set.
@@ -104,7 +109,7 @@ internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
     LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
         command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile) }
+            .mapNotNull { it.resolve(false, rootFile, false) }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
@@ -127,7 +132,7 @@ fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val file = directory?.findFile(
         path,
         extensions
-            ?: Magic.File.includeExtensions
+            ?: FileMagic.includeExtensions
     )
         ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
@@ -152,7 +157,7 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
     val arguments = command.getAllRequiredArguments() ?: return emptySet()
 
     return arguments.filter { it.isNotEmpty() }.mapNotNull {
-        val extension = Magic.File.automaticExtensions[command.name]
+        val extension = FileMagic.automaticExtensions[command.name]
         if (extension != null) {
             findFile(it, setOf(extension))
         }
@@ -175,7 +180,7 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
         val file = root.findFile(
             path,
             extensions
-                ?: Magic.File.includeExtensions
+                ?: FileMagic.includeExtensions
         )
         if (file != null) {
             return file.psiFile(project)
@@ -191,9 +196,17 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
+ * @param name
+ *          The name of the command including a backslash, or `null` for all commands.
+ *
  * @see [LatexCommandsIndex.getItems]
  */
-fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
+@JvmOverloads
+fun PsiFile.commandsInFile(name: String? = null): Collection<LatexCommands> {
+    return name?.let {
+        LatexCommandsIndex.getCommandsByName(it, this)
+    } ?: LatexCommandsIndex.getItems(this)
+}
 
 /**
  * @see [LatexEnvironmentsIndex.getItems]

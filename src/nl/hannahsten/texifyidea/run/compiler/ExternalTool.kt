@@ -6,5 +6,6 @@ package nl.hannahsten.texifyidea.run.compiler
  * @author Thomas Schouten
  */
 enum class ExternalTool(val executableName: String) {
+
     PYTHONTEX("pythontex")
 }

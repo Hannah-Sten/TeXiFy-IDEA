@@ -18,21 +18,13 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.asSequence
-import kotlin.collections.contains
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.isNotEmpty
-import kotlin.collections.mapNotNull
-import kotlin.collections.toTypedArray
 
 /**
  * @author Hannah Schellekens
@@ -52,12 +44,13 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase() ?: if (element is PsiNameIdentifierOwner) {
-            element.name!!.toLowerCase()
-        }
-        else {
-            element.text.toLowerCase()
-        }
+        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase()
+            ?: if (element is PsiNameIdentifierOwner) {
+                element.name!!.toLowerCase()
+            }
+            else {
+                element.text.toLowerCase()
+            }
     }
 
     override fun getPresentation(): ItemPresentation {
@@ -103,7 +96,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
 
             // Only consider section markers.
-            if (!Magic.Command.sectionMarkers.contains(token)) {
+            if (!CommandMagic.sectionMarkers.contains(token)) {
                 continue
             }
 
@@ -133,7 +126,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add command definitions.
-        Magic.Command.commandDefinitions.forEach {
+        CommandMagic.commandDefinitions.forEach {
             addFromCommand(treeElements, commands, it)
         }
 
@@ -177,7 +170,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
+        val labelingCommands = getLabelDefinitionCommands()
         commands.filter { labelingCommands.contains(it.commandToken.text) }
             .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
             .forEach {
@@ -285,7 +278,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         return sections.stream()
             .map { this.order(it) }
             .min { obj, anotherInteger -> obj.compareTo(anotherInteger) }
-            .map { Magic.Command.sectionMarkers[it] }
+            .map { CommandMagic.sectionMarkers[it] }
             .orElse("\\section")
     }
 
@@ -306,5 +299,5 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun order(commands: LatexCommands) = order(commands.commandToken.text)
 
-    private fun order(commandName: String) = Magic.Command.sectionMarkers.indexOf(commandName)
+    private fun order(commandName: String) = CommandMagic.sectionMarkers.indexOf(commandName)
 }

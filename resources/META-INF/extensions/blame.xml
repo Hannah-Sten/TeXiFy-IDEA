@@ -1,0 +1,6 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <errorHandler implementation="nl.hannahsten.texifyidea.LatexErrorReportSubmitter"/>
+
+    </extensions>
+</idea-plugin>

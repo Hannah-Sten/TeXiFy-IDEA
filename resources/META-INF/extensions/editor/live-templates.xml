@@ -1,0 +1,17 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <defaultLiveTemplates file="liveTemplates/LaTeX" hidden="false"/>
+        <defaultLiveTemplates file="liveTemplates/Surround" hidden="false"/>
+
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic"/>
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
+
+        <liveTemplateMacro implementation="nl.hannahsten.texifyidea.templates.macros.LatexFormatAsLabelMacro"/>
+
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostFixTemplateProvider"/>
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostfixTemplateFromAmsMathProvider"/>
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostfixTemplateFromAmsFontsProvider"/>
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostfixTemplateFromBmProvider"/>
+    </extensions>
+</idea-plugin>

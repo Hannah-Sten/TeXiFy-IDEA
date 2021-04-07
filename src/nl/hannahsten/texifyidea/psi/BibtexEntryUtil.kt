@@ -4,14 +4,14 @@ import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.evaluate
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Get all the references from a BibTeX entry.
  */
 fun getReferences(element: BibtexEntry): Array<PsiReference> {
-    val urls = Magic.Command.bibUrls
+    val urls = CommandMagic.bibUrls
         .map { element.getTagContent(it) }
         .filter { it.isNotBlank() }
 

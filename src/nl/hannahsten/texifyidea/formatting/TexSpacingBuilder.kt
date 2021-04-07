@@ -21,6 +21,7 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
      * Generic spacing builder.
      */
     private interface Builder {
+
         fun getSpacing(parent: ASTBlock, left: ASTBlock, right: ASTBlock): Spacing?
     }
 
@@ -29,6 +30,7 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
      */
     @Suppress("RedundantOverride") // Abstract method has to be overridden
     inner class BasicSpacingBuilder : SpacingBuilder(commonSettings), Builder {
+
         override fun getSpacing(parent: ASTBlock, left: ASTBlock, right: ASTBlock): Spacing? {
             return super.getSpacing(parent, left, right)
         }
@@ -73,6 +75,7 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
      * Build more advanced rules with [Rule] and [Condition] above.
      */
     inner class CustomSpacingBuilder : Builder {
+
         private val rules = ArrayList<Rule>()
         private var conditions = ArrayList<Condition>()
 

@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
  * On every added (or deleted, see [AutoCompileBackspacehandler]) character, make sure the document is compiled.
@@ -29,14 +30,15 @@ class AutocompileHandler : TypedHandlerDelegate() {
 }
 
 class AutoCompileBackspacehandler : BackspaceHandlerDelegate() {
+
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {
         val project = editor.project
-        if (project != null && TexifySettings.getInstance().autoCompile) {
+        if (file.isLatexFile() && project != null && TexifySettings.getInstance().autoCompile) {
             AutoCompileState.documentChanged(project)
         }
     }
 
     override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {
-        return true
+        return false
     }
 }

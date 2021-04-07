@@ -1,0 +1,47 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+    <extensions defaultExtensionNs="com.intellij">
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEscapedSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.folding.BibtexEntryFoldingBuilder"/>
+        <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
+        <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
+        <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
+        <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.LatexCompletionContributor"/>
+        <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.BibtexCompletionContributor"/>
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
+        <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
+        <moveLeftRightHandler language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexMoveElementLeftRightHandler"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterBetweenBracesHandler"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInCommentHandler"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
+        <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexParameterInfoHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
+        <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InsertEnumerationItem"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.UpDownAutoBracket"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.BibtexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.InlineMathBackspaceHandler" />
+        <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
+        <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
+        <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.TablePasteProvider"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
+
+    </extensions>
+
+    <xi:include href="/META-INF/extensions/editor/colors.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/editor/line-markers.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/editor/navigation.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/editor/live-templates.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/extensions/editor/surrounders.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+</idea-plugin>

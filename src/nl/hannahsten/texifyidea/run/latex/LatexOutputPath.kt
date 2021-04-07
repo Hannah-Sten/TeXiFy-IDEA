@@ -10,7 +10,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -30,6 +30,7 @@ import java.io.File
 class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?, var mainFile: VirtualFile?, private val project: Project) {
 
     companion object {
+
         const val projectDirString = "{projectDir}"
         const val mainFileString = "{mainFileParent}"
     }
@@ -75,11 +76,11 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         else {
             val pathString = if (pathString.contains(projectDirString)) {
                 if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
-                pathString.replace(projectDirString, contentRoot?.path ?: "")
+                pathString.replace(projectDirString, contentRoot?.path ?: return null)
             }
             else {
                 if (mainFile == null) return null
-                pathString.replace(mainFileString, mainFile?.parent?.path ?: "")
+                pathString.replace(mainFileString, mainFile?.parent?.path ?: return null)
             }
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
             if (path != null && path.isDirectory) {
@@ -111,7 +112,9 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         var defaultOutputPath: VirtualFile? = null
         runReadAction {
             val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-            defaultOutputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/" + variant)
+            if (moduleRoot?.path != null) {
+                defaultOutputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot.path + "/" + variant)
+            }
         }
         return defaultOutputPath
     }
@@ -126,6 +129,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
      */
     private fun createOutputPath(outPath: String): VirtualFile? {
         val mainFile = mainFile ?: return null
+        if (outPath.isBlank()) return null
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)

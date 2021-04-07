@@ -1,53 +1,93 @@
 package nl.hannahsten.texifyidea.lang
 
+import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.util.files.removeFileExtension
+
 /**
  * @author Hannah Schellekens
  */
 open class LatexPackage @JvmOverloads constructor(
     val name: String,
-    vararg val parameters: String = emptyArray()
+    vararg val parameters: String = emptyArray(),
+    /**
+     * Source (dtx) filename without extension.
+     * Since a package can consist of multiple source/doc files, we do want
+     * to track in which source file a command is defined, for example to find
+     * the matching pdf file.
+     */
+    val fileName: String = name,
 ) {
 
     companion object {
 
         // Predefined packages.
-        @JvmField val DEFAULT = LatexPackage("")
-        @JvmField val ALGORITHM2E = LatexPackage("algorithm2e")
-        @JvmField val ALGPSEUDOCODE = LatexPackage("algpseudocode")
-        @JvmField val AMSFONTS = LatexPackage("amsfonts")
-        @JvmField val AMSMATH = LatexPackage("amsmath")
-        @JvmField val AMSSYMB = LatexPackage("amssymb")
-        @JvmField val BIBLATEX = LatexPackage("biblatex")
-        @JvmField val BM = LatexPackage("bm")
-        @JvmField val BOOKTABS = LatexPackage("booktabs")
-        @JvmField val COLOR = LatexPackage("color")
-        @JvmField val COMMENT = LatexPackage("comment")
-        @JvmField val CLEVEREF = LatexPackage("cleveref")
-        @JvmField val CSQUOTES = LatexPackage("csquotes")
-        @JvmField val FONTENC = LatexPackage("fontenc")
-        @JvmField val GAUSS = LatexPackage("gauss")
-        @JvmField val GLOSSARIES = LatexPackage("glossaries")
-        @JvmField val GLOSSARIESEXTRA = LatexPackage("glossaries-extra")
-        @JvmField val GRAPHICS = LatexPackage("graphics")
-        @JvmField val GRAPHICX = LatexPackage("graphicx")
-        @JvmField val HYPERREF = LatexPackage("hyperref")
-        @JvmField val IMAKEIDX = LatexPackage("imakeidx")
-        @JvmField val IMPORT = LatexPackage("import")
-        @JvmField val INPUTENC = LatexPackage("inputenc")
-        @JvmField val LATEXSYMB = LatexPackage("latexsymb")
-        @JvmField val LISTINGS = LatexPackage("listings")
-        @JvmField val LUACODE = LatexPackage("luacode")
-        @JvmField val MATHABX = LatexPackage("mathabx")
-        @JvmField val MATHTOOLS = LatexPackage("mathtools")
-        @JvmField val NATBIB = LatexPackage("natbib")
-        @JvmField val PDFCOMMENT = LatexPackage("pdfcomment")
-        @JvmField val PYTHONTEX = LatexPackage("pythontex")
-        @JvmField val SIUNITX = LatexPackage("siunitx")
-        @JvmField val SUBFILES = LatexPackage("subfiles")
-        @JvmField val TIKZ = LatexPackage("tikz")
-        @JvmField val ULEM = LatexPackage("ulem")
-        @JvmField val XCOLOR = LatexPackage("xcolor")
-        @JvmField val XPARSE = LatexPackage("xparse")
+        val DEFAULT = LatexPackage("")
+
+        val ALGORITHM2E = LatexPackage("algorithm2e")
+        val ALGORITHMICX = LatexPackage("algorithmicx")
+        val ALGPSEUDOCODE = LatexPackage("algpseudocode")
+        val AMSFONTS = LatexPackage("amsfonts")
+        val AMSMATH = LatexPackage("amsmath")
+        val AMSSYMB = LatexPackage("amssymb")
+        val BIBLATEX = LatexPackage("biblatex")
+        val BLINDTEXT = LatexPackage("blindtext")
+        val BM = LatexPackage("bm")
+        val BOOKTABS = LatexPackage("booktabs")
+        val CHAPTERBIB = LatexPackage("chapterbib")
+        val CLEVEREF = LatexPackage("cleveref")
+        val COLOR = LatexPackage("color")
+        val COMMENT = LatexPackage("comment")
+        val CSQUOTES = LatexPackage("csquotes")
+        val EUROSYM = LatexPackage("eurosym")
+        val FLOAT = LatexPackage("float")
+        val FONTENC = LatexPackage("fontenc")
+        val GAUSS = LatexPackage("gauss")
+        val GLOSSARIES = LatexPackage("glossaries")
+        val GLOSSARIESEXTRA = LatexPackage("glossaries-extra")
+        val GRAPHICS = LatexPackage("graphics")
+        val GRAPHICX = LatexPackage("graphicx")
+        val HVINDEX = LatexPackage("hvindex")
+        val HYPERREF = LatexPackage("hyperref")
+        val IDXLAYOUT = LatexPackage("idxlayout")
+        val IMAKEIDX = LatexPackage("imakeidx")
+        val IMPORT = LatexPackage("import")
+        val INDEX = LatexPackage("index")
+        val INDEXTOOLS = LatexPackage("indextools")
+        val INPUTENC = LatexPackage("inputenc")
+        val LATEXSYMB = LatexPackage("latexsymb")
+        val LIPSUM = LatexPackage("lipsum")
+        val LISTINGS = LatexPackage("listings")
+        val LUACODE = LatexPackage("luacode")
+        val MAKEIDX = LatexPackage("makeidx")
+        val MARVOSYM = LatexPackage("marvosym")
+        val MATHABX = LatexPackage("mathabx")
+        val MATHTOOLS = LatexPackage("mathtools")
+        val MULTIND = LatexPackage("multind")
+        val NATBIB = LatexPackage("natbib")
+        val PDFCOMMENT = LatexPackage("pdfcomment")
+        val PYTHONTEX = LatexPackage("pythontex")
+        val REPEATINDEX = LatexPackage("repeatindex")
+        val SIUNITX = LatexPackage("siunitx")
+        val SPLITIDX = LatexPackage("splitidx")
+        val SPLITINDEX = LatexPackage("splitindex")
+        val STMARYRD = LatexPackage("stmaryrd")
+        val SUBFILES = LatexPackage("subfiles")
+        val TEXTCOMP = LatexPackage("textcomp")
+        val TIKZ = LatexPackage("tikz")
+        val ULEM = LatexPackage("ulem")
+        val WASYSYM = LatexPackage("wasysym")
+        val XCOLOR = LatexPackage("xcolor")
+        val XPARSE = LatexPackage("xparse")
+
+        /**
+         * Create package based on the source (dtx) file.
+         */
+        fun create(sourceFileName: VirtualFile): LatexPackage {
+            val isLatexBase = sourceFileName.parent.name == "base"
+            val dependencyText = sourceFileName.parent.name
+            val fileName = sourceFileName.name.removeFileExtension()
+            return if (isLatexBase) LatexPackage("", fileName = fileName) else LatexPackage(dependencyText, fileName = fileName)
+        }
     }
 
     /**
@@ -57,6 +97,11 @@ open class LatexPackage @JvmOverloads constructor(
      */
     val isDefault: Boolean
         get() = equals(DEFAULT)
+
+    /**
+     * The name of the package, or the empty string when this is the default package.
+     */
+    val displayString = if (isDefault) "" else name
 
     /**
      * Creates a new package object with the same name and with the given parameters.

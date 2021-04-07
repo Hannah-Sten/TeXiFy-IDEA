@@ -125,9 +125,9 @@ fun PsiElement.magicCommentLookup(
 
     // Stop searching when an element is found that is not a magic comment or that is null
     // (the scan ends at the first element that is not a magic comment).
-    while (current.isMagicComment()) {
+    while (current.containsMagicComment()) {
 
-        // Only consider magic comments.
+        // Only consider magic comments
         val commentText = current?.text ?: continue
         current = current.next()
 
@@ -171,14 +171,15 @@ fun PsiElement.backwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?)
  * Get the magic comment that directly targets this psi file.
  */
 fun PsiFile.magicComment(): MagicComment<String, String> {
-    return forwardMagicCommentLookup { firstChildIgnoringWhitespaceOrNull() }
+    // Find first real element (so the one under LatexContent), which, if it is a magic comment, will be under a LatexNoMathContent
+    return forwardMagicCommentLookup { firstChildOfType(LatexNoMathContent::class)?.firstChildIgnoringWhitespaceOrNull() }
 }
 
 /**
  * Get the magic comment that directly precedes the environment.
  */
 fun LatexEnvironment.magicComment(): MagicComment<String, String> {
-    val outerContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    val outerContent = parentOfType(LatexNoMathContent::class) ?: return MagicComment.empty()
     return outerContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
 }
 
@@ -215,7 +216,7 @@ fun LatexMathEnvironment.magicComment(): MagicComment<String, String> {
     }
 
     // Case 2.
-    val outerContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    val outerContent = parentOfType(LatexNoMathContent::class) ?: return MagicComment.empty()
     return outerContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
 }
 
@@ -238,10 +239,10 @@ fun LatexMathEnvironment.allMagicComments(): MagicComment<String, String> {
  * Get the magic comment that directly targets this command.
  */
 fun LatexCommands.magicComment(): MagicComment<String, String> {
-    val directParentContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    val directParentContent = parentOfType(LatexNoMathContent::class) ?: return MagicComment.empty()
     val parentContentPreviousSibling = directParentContent.previousSiblingIgnoreWhitespace()
 
-    if (parentContentPreviousSibling.isMagicComment()) {
+    if (parentContentPreviousSibling.containsMagicComment()) {
         return backwardMagicCommentLookup { parentContentPreviousSibling }
     }
 

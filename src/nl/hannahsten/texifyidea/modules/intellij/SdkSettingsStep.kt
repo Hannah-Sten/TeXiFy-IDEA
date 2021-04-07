@@ -36,6 +36,7 @@ class SdkSettingsStep(
     sdkTypeIdFilter: Condition<in SdkTypeId?>,
     sdkFilter: Condition<in Sdk?>?
 ) : ModuleWizardStep() {
+
     private val myJdkComboBox: JdkComboBox
     private val myWizardContext: WizardContext
     private val myModel: ProjectSdksModel
@@ -201,7 +202,7 @@ class SdkSettingsStep(
                 1,
                 1.0,
                 1.0,
-                GridBagConstraints.CENTER,
+                GridBagConstraints.NORTH,
                 GridBagConstraints.HORIZONTAL,
                 JBUI.emptyInsets(),
                 0,

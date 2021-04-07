@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * The actual message will probably be directly before the ---line but may be on the same or previous line.
  */
 object AuxErrPrintBibtexMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         BibtexLogMagicRegex.auxErrPrint.find(window.lastOrNull() ?: "")?.apply {
             if (window.size < 2) return null

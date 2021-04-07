@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexRequiredExtensionInspection
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequiredExtensionInspection()) {
+
     fun testWarning() {
         myFixture.configureByText(
             LatexFileType,

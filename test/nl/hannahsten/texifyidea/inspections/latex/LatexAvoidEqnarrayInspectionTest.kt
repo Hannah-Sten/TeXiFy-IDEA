@@ -1,15 +1,17 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexAvoidEqnarrayInspection
 
 class LatexAvoidEqnarrayInspectionTest : TexifyInspectionTestBase(LatexAvoidEqnarrayInspection()) {
+
     fun `test eqnarray warning`() = testHighlighting("""
         \begin{<warning descr="Avoid using the 'eqnarray' environment">eqnarray</warning>}
             x
         \end{eqnarray}
     """.trimIndent())
 
-    fun `test eqnarray* warning`() = testHighlighting("""
+    fun `test eqnarray star warning`() = testHighlighting("""
         \begin{<warning descr="Avoid using the 'eqnarray*' environment">eqnarray*</warning>}
             x
         \end{eqnarray*}

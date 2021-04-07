@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.settings.LatexSdk
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 /**
  * Options for the run configuration.
@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.settings.LatexSdkUtil
  * when for example a different project SDK needs to be selected for a different language to work.
  */
 enum class LatexDistributionType(val displayName: String) {
+
     TEXLIVE("TeX Live"),
     MIKTEX("MiKTeX"),
     WSL_TEXLIVE("TeX Live using WSL"),
@@ -26,6 +27,7 @@ enum class LatexDistributionType(val displayName: String) {
     override fun toString() = displayName
 
     companion object {
+
         fun valueOfIgnoreCase(value: String?): LatexDistributionType {
             return values().firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
         }

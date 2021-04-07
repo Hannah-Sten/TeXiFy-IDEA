@@ -14,8 +14,8 @@ import com.intellij.platform.DirectoryProjectGenerator
 import com.intellij.platform.DirectoryProjectGeneratorBase
 import com.intellij.platform.ProjectGeneratorPeer
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.io.File
 
 /**
@@ -36,7 +36,7 @@ class LatexProjectGenerator :
     override fun createStep(
         projectGenerator: DirectoryProjectGenerator<TexifySettings>,
         callback: AbstractNewProjectStep.AbstractCallback<TexifySettings>
-    ) = ProjectSettingsStepBase(projectGenerator, AbstractNewProjectStep.AbstractCallback<TexifySettings>())
+    ) = ProjectSettingsStepBase(projectGenerator, AbstractNewProjectStep.AbstractCallback())
 
     override fun getName() = "LaTeX"
 

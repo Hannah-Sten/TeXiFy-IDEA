@@ -8,6 +8,7 @@ import com.intellij.codeInsight.lookup.LookupElement
  * @author Sten Wessel
  */
 class LatexReferenceInsertHandler : InsertHandler<LookupElement> {
+
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         val model = context.editor.caretModel
         model.moveToOffset(model.offset + 1)

@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.BibtexLexerAdapter
 import nl.hannahsten.texifyidea.psi.BibtexTypes
 
 class BibtexUsagesProvider : FindUsagesProvider {
+
     override fun getWordsScanner(): WordsScanner? {
         return DefaultWordsScanner(
             BibtexLexerAdapter(),

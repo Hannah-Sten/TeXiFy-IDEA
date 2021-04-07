@@ -1,0 +1,75 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Unsupported Unicode character"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNoExtensionInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="File argument should not include the extension"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexRequiredExtensionInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="File argument should include the extension"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMissingDocumentclassInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Missing documentclass"
+                         enabledByDefault="false"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMissingDocumentEnvironmentInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Missing document environment"
+                         enabledByDefault="false"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnresolvedReferenceInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Unresolved references"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNonMatchingEnvironmentInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Non matching environment commands"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNonMatchingIfInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Open if-then-else control sequence"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexFileNotFoundInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="File not found"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexAbsolutePathInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="No absolute path allowed here"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexInclusionLoopInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Inclusion loops"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNestedIncludesInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Nested includes"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexLabelBeforeCaptionInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Label before caption"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexEscapeUnderscoreInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Unescaped _ character"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexEscapeAmpersandInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Unescaped &amp; character"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexEscapeHashOutsideCommandInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Unescaped # outside of command definition"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMultipleGraphicsPathInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Multiple \graphicspath definitions"
+                         enabledByDefault="true"
+                         level="ERROR" />
+    </extensions>
+
+    <xi:include href="/META-INF/extensions/inspections/latex/probablebugs/packages.xml" xpointer="xpointer(/idea-plugin/*)"/>
+</idea-plugin>

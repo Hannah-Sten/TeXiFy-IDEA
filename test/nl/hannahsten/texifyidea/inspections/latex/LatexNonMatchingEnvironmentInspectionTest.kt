@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNonMatchingEnvironmentInspection
 
 class LatexNonMatchingEnvironmentInspectionTest : TexifyInspectionTestBase(LatexNonMatchingEnvironmentInspection()) {
+
     fun `test no warning`() = testHighlighting("""
         \begin{center}
             bla

@@ -21,7 +21,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         // then
-        assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString == "appendix" })
+        assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString.startsWith("appendix") })
     }
 
     @Test
@@ -67,7 +67,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
 
         val result = myFixture.complete(CompletionType.BASIC)
 
-        assertTrue(result.any { it.lookupString == "textbf" })
+        assertTrue(result.any { it.lookupString.startsWith("textbf") })
     }
 
     // fun testCustomCommandAliasCompletion() {

@@ -1,0 +1,32 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexRedundantEscapeInspection"
+                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Redundant escape when Unicode is enabled"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexRedundantParInspection"
+                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Redundant use of \par"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexTrimWhitespaceInspection"
+                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Unnecessary whitespace in section commands"
+                         enabledByDefault="true"
+                         level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexCommandAlreadyDefinedInspection"
+                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Command is already defined"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexDuplicateLabelInspection"
+                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Duplicate labels"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexMultipleIncludesInspection"
+                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Package has been imported multiple times"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexDuplicateDefinitionInspection"
+                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Duplicate command definitions"
+                         enabledByDefault="true"
+                         level="ERROR" />
+    </extensions>
+</idea-plugin>

@@ -13,7 +13,7 @@ class LatexCommandsStubImpl(
     elementType: IStubElementType<*, *>,
     override val commandToken: String,
     override val requiredParams: List<String>,
-    override val optionalParams: List<String>
+    override val optionalParams: Map<String, String>
 ) : NamedStubBase<LatexCommands>(parent, elementType, commandToken), LatexCommandsStub {
 
     override fun getName() = commandToken

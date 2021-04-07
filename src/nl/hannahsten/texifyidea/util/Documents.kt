@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
@@ -78,6 +79,7 @@ fun Document.deleteElement(element: PsiElement) {
 
 /**
  * Inserts a string into the document and moves the caret to the end of the inserted string.
+ * Executes the insertion as a runWriteAction.
  *
  * @param offset
  *              Where to insert the string.
@@ -86,8 +88,19 @@ fun Document.deleteElement(element: PsiElement) {
  */
 fun Editor.insertAndMove(offset: Int, string: String) {
     val document = this.document
-    runWriteAction { document.insertString(offset, string) }
+    WriteCommandAction.runWriteCommandAction(project) {
+        document.insertString(offset, string)
+    }
     caretModel.moveToOffset(caretModel.offset + string.length)
+}
+
+/**
+ * Inserts the given string at the current caret offset, and moves to the end of the inserted string.
+ *
+ * @see insertAndMove
+ */
+fun Editor.insertAtCaretAndMove(string: String) {
+    insertAndMove(caretOffset(), string)
 }
 
 /**

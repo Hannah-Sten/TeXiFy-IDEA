@@ -1,7 +1,13 @@
+/*
+ * IMPORTANT NOTE
+ *
+ * - When changing the parser, you probably need to increase the getStubVersion() in LatexParserDefinition
+ * - When adding elements, they need to be added to LatexPsiUtil#getChildren as well.
+ */
 {
     parserClass="nl.hannahsten.texifyidea.parser.LatexParser"
-    parserUtilClass="nl.hannahsten.texifyidea.parser.LatexParserUtil"
-
+    parserUtilClass="nl.hannahsten.texifyidea.psi.LatexParserUtil"
+    parserImports=["static com.intellij.lang.WhitespacesBinders.*"]
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
     psiClassPrefix="Latex"
@@ -15,15 +21,18 @@
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
 
     extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
-    implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
+    implements("commands")= ["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
     implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
+
+    implements("begin_command") = "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"
 
     extends("magic_comment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub>"
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
     implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
+    implements("parameter")="com.intellij.psi.PsiLanguageInjectionHost"
     // See the lexer
     tokens=[
         WHITE_SPACE='regexp:\s+'
@@ -51,16 +60,15 @@
 
 
 
-latexFile ::= content*
+latexFile ::= content
 
-// Together with using pseudocode_block_content, this makes sure to exclude the end_pseudocode_block in pseudocode_block_content,
-// thus ensuring a single end_pseudocode_block token is not a parse error (if it should have been a commands token)
-content ::= no_math_content | END_PSEUDOCODE_BLOCK
+// Make sure that there is a root element with multiple children, for example for Grazie to allow ignoring certain types of no_math_content
+content ::= no_math_content*
 
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA )+
 
 environment ::= begin_command environment_content? end_command {
     pin=1
@@ -69,9 +77,11 @@ environment ::= begin_command environment_content? end_command {
     methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
  }
 
-environment_content ::= <<injection_env_content raw_text>> | content+
+// There cannot be empty content in an environment, because it will break formatting related things
+// because there would be an empty content just before \end{env}
+environment_content ::= <<injection_env_content raw_text>> | no_math_content+
 
-pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)? (END_PSEUDOCODE_BLOCK parameter*) { pin=5 }
+pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)* (END_PSEUDOCODE_BLOCK parameter*) { pin=5 }
 
 pseudocode_block_content ::= no_math_content*
 
@@ -80,44 +90,67 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName]
+    methods=[getReferences getReference getOptionalParameterMap getRequiredParameters hasLabel getTextOffset getName setName]
 }
 
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
-    methods=[getOptionalParameters getRequiredParameters]
+    methods=[getOptionalParameterMap getRequiredParameters]
 }
 
 end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 
-parameter ::= optional_param | required_param
+parameter ::= optional_param | required_param | picture_param {
+    methods=[isValidHost updateText createLiteralTextEscaper]
+}
 
 // pin=3 makes sure that an optional parameter is only matched successfully when
 // it also encounters a close bracket. So '[' at the beginning of a (math) environment
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
 required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
+
+picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 
 // These are like content, but no brackets and with parameter_text instead of normal_text
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
-optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH
+picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
+
+keyval_pair ::= keyval_key (EQUALS keyval_value?)?
+keyval_key ::= keyval_content+ {
+    methods=[toString]
+}
+keyval_value ::= keyval_content+ {
+    methods=[toString]
+}
+keyval_content ::= parameter_text | parameter_group
+
 
 // The lowest level of a parameter must have the getReferences etc. implemented
 // We don't do this on normal_text because then every normal_text in the document would be a reference
 // So, the following is like normal_text
 // This assumes that parameter text which is a reference, appears directly under param_content
 // Commands is here instead of in required_param_content because it can be part of reference text for example to a file
-parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
-   methods=[getReferences getReference getNameIdentifier getName setName]
+parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
+   methods=[getReferences getReference getNameIdentifier getName setName delete]
 }
 
-group ::= OPEN_BRACE content* CLOSE_BRACE { pin=1 }
+group ::= OPEN_BRACE content CLOSE_BRACE { pin=1 }
+
+// Use a separate element for inside parameters, because it has to contain parameter_text as leaf element
+parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }
+
+// Be sure to capture the whitespace before and after the actual content as groups are meant to capture
+// *everything* inside them.
+// This element is needed instead of parameter_text in order to avoid parse errors for various other tokens that do not appear in parameter_text because they are not usually part of the reference
+parameter_group_text ::= (parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
 
 comment ::= COMMENT_TOKEN
 
@@ -132,6 +165,8 @@ inline_math ::= INLINE_MATH_START math_content? INLINE_MATH_END { pin=1 }
 
 display_math ::= DISPLAY_MATH_START math_content? DISPLAY_MATH_END { pin=1 }
 
+// Since the content in a math environment is of the same type as not in a math environment, just reuse the psi
+// element (having a math_content element allows for easily finding all contents in a math environment for example)
 math_content ::= no_math_content+
 
 raw_text ::= RAW_TEXT_TOKEN+

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.Function
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
-import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.isEntryPoint
 import nl.hannahsten.texifyidea.util.parentOfType
 
@@ -19,14 +19,14 @@ import nl.hannahsten.texifyidea.util.parentOfType
 class LatexCompileGutter : RunLineMarkerContributor() {
 
     override fun getInfo(element: PsiElement): Info? {
-        if (element.firstChild != null || element.parent !is LatexParameterText) return null
+        // Only show the icon on lines with `\begin` => show only one icon.
+        if (element.node.elementType != LatexTypes.BEGIN_TOKEN) return null
 
+        // Find the total enclosed begin command: required to easily find the first command.
         val beginCommand = element.parentOfType(LatexBeginCommand::class) ?: return null
 
         // Break when not a valid command: don't show icon.
-        if (!beginCommand.isEntryPoint()) {
-            return null
-        }
+        if (beginCommand.isEntryPoint().not()) return null
 
         // Lookup actions.
         val actionManager = ActionManager.getInstance()

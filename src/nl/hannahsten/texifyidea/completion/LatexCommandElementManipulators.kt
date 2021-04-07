@@ -5,6 +5,7 @@ import com.intellij.psi.ElementManipulator
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 class LatexCommandElementManipulators : ElementManipulator<LatexCommands> {
+
     /**
      * Return the text range of the command token, without the text range of the
      * required parameters. When this range also includes the range of the required

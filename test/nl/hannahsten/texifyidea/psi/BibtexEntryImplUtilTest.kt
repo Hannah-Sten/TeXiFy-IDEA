@@ -11,6 +11,7 @@ import org.intellij.lang.annotations.Language
 import org.junit.Test
 
 class BibtexEntryImplUtilTest : BasePlatformTestCase() {
+
     private val url = "https://github.com/hannah-sten/TeXiFy-IDEA"
 
     @Language("Bibtex")

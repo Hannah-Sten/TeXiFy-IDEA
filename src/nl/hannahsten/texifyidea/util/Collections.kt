@@ -148,3 +148,8 @@ fun <T> Stream<T>.set(): Set<T> = this.mutableSet()
  * Collects stream to [MutableSet]
  */
 fun <T> Stream<T>.mutableSet(): MutableSet<T> = this.collect(Collectors.toSet())
+
+/**
+ * Converts the collection to a vector.
+ */
+fun <T> Collection<T>.toVector() = Vector(this)

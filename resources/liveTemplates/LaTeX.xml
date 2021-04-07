@@ -33,6 +33,68 @@
         </context>
     </template>
 
+    <template name="\partl" value="\part{$TITLE$}\label{$LABEL$}$END$" description="Part with label" toReformat="false" toShortenFQNames="true">
+        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true" />
+            <option name="LATEX_MATH" value="false" />
+        </context>
+    </template>
+
+    <template name="\chapl" value="\chapter{$TITLE$}\label{ch:$LABEL$}$END$" description="Chapter with label" toReformat="false" toShortenFQNames="true">
+        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true" />
+            <option name="LATEX_MATH" value="false" />
+        </context>
+    </template>
+
+    <template name="\secl" value="\section{$TITLE$}\label{sec:$LABEL$}$END$" description="Section with label" toReformat="false" toShortenFQNames="true">
+        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true" />
+            <option name="LATEX_MATH" value="false" />
+        </context>
+    </template>
+
+    <template name="\subsecl" value="\subsection{$TITLE$}\label{subsec:$LABEL$}$END$" description="Subsection with label" toReformat="false" toShortenFQNames="true">
+        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true" />
+            <option name="LATEX_MATH" value="false" />
+        </context>
+    </template>
+
+    <template name="\subsubsecl" value="\subsubsection{$TITLE$}\label{subsubsec:$LABEL$}$END$" description="Subsubsection with label" toReformat="false" toShortenFQNames="true">
+        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true" />
+            <option name="LATEX_MATH" value="false" />
+        </context>
+    </template>
+
+    <template name="enq" value="\enquote{$QUOTE$} $END$" description="Enquote" toReformat="false" toShortenFQNames="true">
+        <variable name="QUOTE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+
+    <template name="fc" value="\footcite[$PAGE$]{$SOURCE$}$END$" description="footcite" toReformat="false" toShortenFQNames="true">
+        <variable name="PAGE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="SOURCE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+
     <!--  Mathematics  -->
     <template name="sum" value="\sum_{$FROM$}^{$TO$} $END$" description="Sum with sub- and superscript" toReformat="false" toShortenFQNames="true">
         <variable name="FROM" expression="" defaultValue="" alwaysStopAt="true"/>

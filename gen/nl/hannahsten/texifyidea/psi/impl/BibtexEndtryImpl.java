@@ -21,6 +21,7 @@ public class BibtexEndtryImpl extends ASTWrapperPsiElement implements BibtexEndt
     visitor.visitEndtry(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);

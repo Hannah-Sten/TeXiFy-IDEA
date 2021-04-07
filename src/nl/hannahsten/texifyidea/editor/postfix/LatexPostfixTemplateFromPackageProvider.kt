@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.insertUsepackage
 
 abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexPackage) : PostfixTemplateProvider {
+
     abstract override fun getTemplates(): MutableSet<PostfixTemplate>
 
     override fun isTerminalSymbol(currentChar: Char): Boolean = (currentChar == '.' || currentChar == ',')
@@ -22,6 +23,7 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexPa
     override fun preExpand(file: PsiFile, editor: Editor) {}
 
     companion object {
+
         fun getProvider(pack: LatexPackage?): PostfixTemplateProvider {
             return when (pack) {
                 LatexPackage.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider
@@ -34,18 +36,21 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexPa
 }
 
 object LatexPostfixTemplateFromAmsMathProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.AMSMATH) {
+
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithTextPostfixTemplate
     )
 }
 
 object LatexPostfixTemplateFromAmsFontsProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.AMSFONTS) {
+
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithMathbbPostfixTemplate
     )
 }
 
 object LatexPostfixTemplateFromBmProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.BM) {
+
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithBmPostfixTemplate
     )

@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexRedundantEscapeInspection
 import nl.hannahsten.texifyidea.testutils.setUnicodeSupport
 
 class LatexRedundantEscapeInspectionTest : TexifyInspectionTestBase(LatexRedundantEscapeInspection()) {
+
     fun `test no warning when no unicode support`() {
         setUnicodeSupport(myFixture.project, false)
 

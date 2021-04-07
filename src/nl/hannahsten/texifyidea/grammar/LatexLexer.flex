@@ -5,7 +5,7 @@ import java.util.*;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import nl.hannahsten.texifyidea.util.Magic;
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
@@ -64,10 +64,20 @@ CLOSE_PAREN=")"
 
 SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
 WHITE_SPACE={SINGLE_WHITE_SPACE}+
+
+// Commands
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z@_:]+|.|\r) // _ and : are technically only LaTeX3 syntax
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
+COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
+COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:]+|.|\r) // _ and : are only LaTeX3 syntax
+LATEX3_ON=\\ExplSyntaxOn
+LATEX3_OFF=\\ExplSyntaxOff
+NEWENVIRONMENT=\\(re)?newenvironment
+NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
+VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline
+ // These can contain unescaped % for example
+ | \\url | \\path | \\href
 
 // Comments
 MAGIC_COMMENT_PREFIX=("!"|" !"[tT][eE][xX])
@@ -78,9 +88,8 @@ MAGIC_COMMENT_LEXER_SWITCH="%"{MAGIC_COMMENT_PREFIX} {WHITE_SPACE}? "parser" {WH
 LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
-NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&<>]+
+NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,]+
 // Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
-NORMAL_TEXT_CHAR=[|!\"=&<>]
 ANY_CHAR=[^]
 
 // Algorithmicx
@@ -90,7 +99,11 @@ MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
-%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END
+%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC
+
+// latex3 has some special syntax
+%states LATEX3
+
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %xstates INLINE_VERBATIM_START INLINE_VERBATIM
@@ -111,9 +124,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
  */
 
 // Use a separate state to start verbatim, to be able to return a command token for \verb
-\\verb                  |
-\\verb\*                |
-\\lstinline             { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
+{VERBATIM_COMMAND}        { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
 
 <INLINE_VERBATIM_START> {
     // Experimental syntax of \lstinline: \lstinline{verbatim}
@@ -136,16 +147,16 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     // Assumes the close brace is the last one of the \begin{...}, and that if a verbatim environment was detected, that this state has been left
     {CLOSE_BRACE}       { yypopState(); return CLOSE_BRACE; }
     {NORMAL_TEXT_WORD}  {
-        yypopState();
-        // toString to fix comparisons of charsequence subsequences with string
-        if (Magic.Environment.verbatim.contains(yytext().toString())) {
-            yypushState(VERBATIM_START);
+            yypopState();
+            // toString to fix comparisons of charsequence subsequences with string
+            if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+                yypushState(VERBATIM_START);
+            }
+            else if (yytext().toString().equals("algorithmic")) {
+                yypushState(PSEUDOCODE);
+            }
+            return NORMAL_TEXT_WORD;
         }
-        else if (yytext().toString().equals("algorithmic")) {
-            yypushState(PSEUDOCODE);
-        }
-        return NORMAL_TEXT_WORD;
-    }
 }
 
 // Jump over the closing } of the \begin{verbatim} before starting verbatim state
@@ -190,7 +201,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {NORMAL_TEXT_WORD}  {
         // Pop current state
         yypopState();
-        if (Magic.Environment.verbatim.contains(yytext().toString())) {
+        if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
             // Pop verbatim state
             yypopState();
             return NORMAL_TEXT_WORD;
@@ -238,24 +249,51 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
  */
 
 // For new environment definitions, we need to switch to new states because the \begin..\end will interleave with groups
-\\newenvironment        { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
-\\renewenvironment      { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+// \newenvironment{name}{begin}{end}
+// Extra required argument with args spec, so we need an extra state for that
+// \NewDocumentEnvironment{name}{args spec}{start}{end}
+{NEWENVIRONMENT}        { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+{NEWDOCUMENTENVIRONMENT} { yypushState(NEW_DOCUMENT_ENV_DEFINITION_NAME); return COMMAND_TOKEN; }
 
 // A separate state is used to track when we start with the second parameter of \newenvironment, this state denotes the first one
 <NEW_ENVIRONMENT_DEFINITION_NAME> {
-    {CLOSE_BRACE}       { yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION); return CLOSE_BRACE; }
+    {CLOSE_BRACE}       {
+          yypopState();
+          newEnvironmentBracesNesting = 0;
+          yypushState(NEW_ENVIRONMENT_DEFINITION);
+          return CLOSE_BRACE;
+    }
+}
+
+<NEW_DOCUMENT_ENV_DEFINITION_NAME> {
+    {CLOSE_BRACE}       { yypopState(); yypushState(NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC); newEnvironmentBracesNesting = 0; return CLOSE_BRACE; }
+}
+
+// Unfortunately, the args spec can contain braces as well, so we need to keep track when we leave the required argument
+<NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC> {
+    {OPEN_BRACE}        { newEnvironmentBracesNesting++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       {
+        newEnvironmentBracesNesting--;
+        if (newEnvironmentBracesNesting <= 0) {
+            yypopState();
+            yypushState(NEW_ENVIRONMENT_DEFINITION);
+        }
+        return CLOSE_BRACE;
+    }
 }
 
 // We are visiting a second parameter of a \newenvironment definition, so we need to keep track of braces
 // The idea is that we will skip the }{ separating the second and third parameter, so that the \begin and \end of the
 // environment to be defined will not appear in a separate group
-<NEW_ENVIRONMENT_DEFINITION> {
+// Include possible verbatim begin state, because after a \begin we are in that state (and we cannot leave it because we might be needing to start a verbatim environment)
+// but we still need to count braces (specifically, the open brace after \begin)
+<NEW_ENVIRONMENT_DEFINITION,POSSIBLE_VERBATIM_BEGIN> {
     {OPEN_BRACE}       { newEnvironmentBracesNesting++; return OPEN_BRACE; }
     {CLOSE_BRACE}      {
         newEnvironmentBracesNesting--;
         if(newEnvironmentBracesNesting == 0) {
             yypopState(); yypushState(NEW_ENVIRONMENT_SKIP_BRACE);
-            // We could have return normal text, but in this way the braces still match
+            // We could have returned normal text, but in this way the braces still match
             return OPEN_BRACE;
         } else {
             return CLOSE_BRACE;
@@ -331,6 +369,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     "\\]"               { yypopState(); return DISPLAY_MATH_END; }
 }
 
+{LATEX3_ON}                 { yypushState(LATEX3); return COMMAND_TOKEN; }
+<LATEX3> {
+    {LATEX3_OFF}            { yypopState(); return COMMAND_TOKEN; }
+    {COMMAND_TOKEN_LATEX3}  { return COMMAND_TOKEN; }
+}
+
 /*
  * Other elements
  */
@@ -342,11 +386,21 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line
-\\                    { return NORMAL_TEXT_CHAR; }
+\\                    { return BACKSLASH; }
 
 "*"                     { return STAR; }
 // A separate token, used for example for aligning & in tables
 "&"                     { return AMPERSAND; }
+
+// Tokens for special characters of which certain grammar elements might support only a few
+"="                     { return EQUALS; }
+","                     { return COMMA; }
+"\""                    { return QUOTATION_MARK; }
+"<"                     { return OPEN_ANGLE_BRACKET; }
+">"                     { return CLOSE_ANGLE_BRACKET; }
+"|"                     { return PIPE;}
+"!"                     { return EXCLAMATION_MARK; }
+
 {OPEN_BRACKET}          { return OPEN_BRACKET; }
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }
 {OPEN_BRACE}            { return OPEN_BRACE; }
@@ -362,6 +416,5 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {MAGIC_COMMENT_TOKEN}   { return MAGIC_COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
-{NORMAL_TEXT_CHAR}      { return NORMAL_TEXT_CHAR; }
 
 [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }

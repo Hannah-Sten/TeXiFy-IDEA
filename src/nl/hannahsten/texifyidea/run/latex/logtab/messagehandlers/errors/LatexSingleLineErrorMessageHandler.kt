@@ -12,6 +12,7 @@ object LatexSingleLineErrorMessageHandler : LatexMessageHandler(
     LatexLogMessageType.ERROR,
     """^$FILE_LINE_REGEX (?<message>.+)\s*l\.\d+""".toRegex()
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {

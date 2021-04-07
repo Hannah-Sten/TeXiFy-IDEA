@@ -6,10 +6,10 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy
 import com.intellij.spellchecker.tokenizer.Tokenizer
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.lang.Argument
-import nl.hannahsten.texifyidea.lang.Argument.Type
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.Argument.Type
+import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.hasParent
 

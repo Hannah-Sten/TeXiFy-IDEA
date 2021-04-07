@@ -22,6 +22,7 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
     visitor.visitTag(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);

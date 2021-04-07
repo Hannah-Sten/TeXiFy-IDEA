@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
  * @author Abby Berkers
  */
 object OkularConversation : ViewerConversation() {
+
     private var pdfFilePath: String? = null
 
     /**

@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
  * @author Sten Wessel
  */
 class LatexTypedHandler : TypedHandlerDelegate() {
+
     /**
      * When pressing $ when text is selected, surround with $ signs.
      */
@@ -49,7 +50,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
                 val element = file.findElementAt(caret.offset)
                 val parent = PsiTreeUtil.getParentOfType(element, LatexInlineMath::class.java) ?: return Result.CONTINUE
                 val endOffset = parent.textRange.endOffset
-                if (caret.offset == endOffset - 1) {
+                if (caret.offset == endOffset - 1 && parent.text.last() == c) {
                     // Caret is at the end of the environment, so run over the closing $
                     caret.moveCaretRelatively(1, 0, false, false, true)
                     return Result.STOP

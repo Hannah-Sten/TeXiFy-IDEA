@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.editor.ShiftTracker
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceInverseSearchListener
 
 class LoadUnloadListener : DynamicPluginListener {
+
     override fun beforePluginUnload(pluginDescriptor: IdeaPluginDescriptor, isUpdate: Boolean) {
         super.beforePluginUnload(pluginDescriptor, isUpdate)
         AnalyzeMenuRegistration().unload()

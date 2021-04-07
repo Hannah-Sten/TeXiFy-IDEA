@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <projectStructureDetector implementation="nl.hannahsten.texifyidea.modules.LatexProjectStructureDetector" />
+    </extensions>
+</idea-plugin>

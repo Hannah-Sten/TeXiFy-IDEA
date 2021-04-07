@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 class MathEnvironmentEditor(
     private val oldEnvironmentName: String,
@@ -14,6 +15,7 @@ class MathEnvironmentEditor(
     val editor: Editor,
     val environment: PsiElement
 ) {
+
     /**
      * Apply the conversion of a math environment.
      */
@@ -34,7 +36,7 @@ class MathEnvironmentEditor(
             val previousLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset) - 1), environment.textOffset))
             when {
                 indentOfPreviousLine.length < indent.length -> "\n$indent"
-                Magic.Pattern.sentenceSeparatorAtLineEnd.matcher(previousLine).find() -> "\n$indent"
+                PatternMagic.sentenceSeparatorAtLineEnd.matcher(previousLine).find() -> "\n$indent"
                 else -> " "
             }
         }
@@ -103,7 +105,7 @@ class MathEnvironmentEditor(
             )
             val file = environment.containingFile
                 ?: return@runUndoTransparentWriteAction
-            if (isAmsMathEnvironment(newEnvironmentName) && LatexPackage.AMSMATH.name !in file.includedPackages()) {
+            if (isAmsMathEnvironment(newEnvironmentName) && LatexPackage.AMSMATH !in file.includedPackages()) {
                 file.insertUsepackage(LatexPackage.AMSMATH)
             }
         }

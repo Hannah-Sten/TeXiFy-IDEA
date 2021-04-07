@@ -6,7 +6,6 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntry
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -18,7 +17,7 @@ object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         result.addAllElements(
-            ContainerUtil.map2List(BibtexDefaultEntry.values()) {
+            BibtexDefaultEntry.values().map {
                 LookupElementBuilder.create(it, it.token)
                     .withPresentableText(it.token)
                     .bold()

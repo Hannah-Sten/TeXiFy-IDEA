@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
 import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 
 class LatexQuickRunLogParserTest : BasePlatformTestCase() {
+
     /**
      * Useful regex for matching braces: \(([^(^)]+)\)
      */

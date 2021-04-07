@@ -20,6 +20,8 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
@@ -29,9 +31,11 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -39,6 +43,7 @@ import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePa
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
@@ -53,6 +58,7 @@ class LatexRunConfiguration constructor(
 ) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
+
         private const val TEXIFY_PARENT = "texify"
         private const val COMPILER = "compiler"
         private const val COMPILER_PATH = "compiler-path"
@@ -237,7 +243,8 @@ class LatexRunConfiguration constructor(
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
         try {
-            this.pdfViewer = PdfViewer.valueOf(viewerName ?: "")
+            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
+                ?: InternalPdfViewer.valueOf(viewerName ?: "")
         }
         catch (e: IllegalArgumentException) {
             // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
@@ -380,6 +387,14 @@ class LatexRunConfiguration constructor(
         bibtexRunConfiguration.mainFile = mainFile
         bibtexRunConfiguration.setSuggestedName()
 
+        // On non-MiKTeX systems, add bibinputs for bibtex to work
+        if (!latexDistribution.isMiktex()) {
+            // Only if default, because the user could have changed it after creating the run config but before running
+            if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + ":"))
+            }
+        }
+
         runManager.addConfiguration(bibSettings)
 
         bibRunConfigs = bibRunConfigs + setOf(bibSettings)
@@ -411,28 +426,20 @@ class LatexRunConfiguration constructor(
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
-        // On non-MiKTeX systems, override outputPath to disable the out/ directory by default for bibtex to work
-        if (!latexDistribution.isMiktex()) {
-            // Only if default, because the user could have changed it after creating the run config but before running
-            if (outputPath.isDefault() && mainFile != null) {
-                outputPath.virtualFile = mainFile!!.parent
-            }
-        }
-
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
+        val usesChapterbib = psiFile?.includedPackages()?.contains(LatexPackage.CHAPTERBIB) == true
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
         }
         else if (psiFile != null) {
-            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == "\\bibliography" }
+            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd }
 
             // We know that there can only be one bibliography per top-level \include,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
             psiFile!!.allCommands()
-                .filter { it.name == "\\include" }
+                .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
                 .flatMap { command -> command.requiredParameters }
                 .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
@@ -488,7 +495,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = PdfViewer.firstAvailable()
+        pdfViewer = InternalPdfViewer.firstAvailable()
     }
 
     fun setDefaultOutputFormat() {
@@ -606,5 +613,14 @@ class LatexRunConfiguration constructor(
             ", mainFile=" + mainFile +
             ", outputFormat=" + outputFormat +
             '}'.toString()
+    }
+
+    // Explicitly deep clone references, otherwise a copied run config has references to the original objects
+    override fun clone(): RunConfiguration {
+        return super.clone().also {
+            val runConfiguration = it as? LatexRunConfiguration ?: return@also
+            runConfiguration.outputPath = this.outputPath.clone()
+            runConfiguration.auxilPath = this.auxilPath.clone()
+        }
     }
 }

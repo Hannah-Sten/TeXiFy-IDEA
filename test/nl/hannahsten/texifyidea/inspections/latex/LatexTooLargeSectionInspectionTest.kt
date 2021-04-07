@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection
 
 class LatexTooLargeSectionInspectionTest : TexifyInspectionTestBase(LatexTooLargeSectionInspection()) {
+
     override fun getTestDataPath(): String = "test/resources/inspections/latex/toolargesection"
 
     fun `test too large section`() {

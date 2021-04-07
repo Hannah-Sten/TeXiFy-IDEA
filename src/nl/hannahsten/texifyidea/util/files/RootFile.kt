@@ -1,14 +1,12 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.execution.RunManager
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.childrenOfType
 
 /**
@@ -82,8 +80,7 @@ fun PsiFile.isRoot(): Boolean {
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
-    val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
-    val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
+    val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.mainFile == this.virtualFile }
 
     return (isMainFileInAnyConfiguration || documentEnvironment()) && !usesSubFiles()
 }

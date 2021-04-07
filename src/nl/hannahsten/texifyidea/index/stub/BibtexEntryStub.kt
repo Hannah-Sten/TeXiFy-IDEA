@@ -5,6 +5,7 @@ import com.intellij.psi.stubs.StubElement
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 
 interface BibtexEntryStub : StubElement<BibtexEntry?>, NamedStub<BibtexEntry?> {
+
     val title: String
     val authors: List<String?>
     val year: String

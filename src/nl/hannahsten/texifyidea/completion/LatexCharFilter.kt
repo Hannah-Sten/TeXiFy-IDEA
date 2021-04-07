@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.file.LatexFile
  * @author Sten Wessel
  */
 class LatexCharFilter : CharFilter() {
+
     override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup): Result? {
         return if (!isInLatexContext(lookup)) {
             null
@@ -20,6 +21,7 @@ class LatexCharFilter : CharFilter() {
     }
 
     companion object {
+
         private fun isInLatexContext(lookup: Lookup): Boolean {
             if (!lookup.isCompletion) {
                 return false

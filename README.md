@@ -9,6 +9,8 @@
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/Hannah-Sten/TeXiFy-IDEA.svg)](http://isitmaintained.com/project/Hannah-Sten/TeXiFy-IDEA "Percentage of issues still open")
 
 # TeXiFy-IDEA
+<sup><sub>(Pronounced as `/ˈtɛxɪfaɪ aɪˈdɪə/` with a greek letter Chi (χ), just as in LaTeX)</sub></sup>
+
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
 No idea where to start? Have a look at the [installation instructions](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation). Otherwise, take a look at the [tips](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation) instead, or browse through the documentation in the [Wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features)
@@ -18,8 +20,9 @@ This plugin adds the tools to make creating LaTeX documents a breeze. We are cur
 
 ## Feedback and support
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
-1. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account). Gitter also has a nice app, we use it to get notified of new activity.
-2. [Issues](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, user support, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advise to use the gitter.
+1. For questions, ideas or general comments use the [Discussions tab](https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions/categories/q-a) to start a new discussion.
+2. [Issues](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advise to use GitHub Discussions.
+3. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account).
 
 Please bear in mind that this is just a side project for us. It might take a while to fully process your feedback. We try our best :3
 
@@ -38,6 +41,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * [Formatter for LaTeX and BibTeX](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-formatting)
 * [Structure view for LaTeX and BibTeX with filters](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Structure%20view)
 * [Code folding for imports, sections, and environments](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-folding)
+* [Built-in pdf viewer via the PDF Viewer plugin, including forward and backward search](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Built-in-pdf-viewer-support)
 * [SumatraPDF (Windows)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/SumatraPDF-support), [Evince (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Evince-support), [Okular (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Okular-support), [Zathura (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Zathura-support) and [Skim (MacOS)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Skim-support) support with forward and backward search
 * [Smart Quotes](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Smart-quotes)
 * [Unicode math preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Unicode-math-preview)

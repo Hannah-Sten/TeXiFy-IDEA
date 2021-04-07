@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface LatexContent extends PsiElement {
 
-  @Nullable
-  LatexNoMathContent getNoMathContent();
+  @NotNull
+  List<LatexNoMathContent> getNoMathContentList();
 
 }

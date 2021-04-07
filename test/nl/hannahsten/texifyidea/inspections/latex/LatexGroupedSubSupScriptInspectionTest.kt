@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexGroupedSubSupScriptInspection
+
 /**
  * @author Hannah Schellekens
  */

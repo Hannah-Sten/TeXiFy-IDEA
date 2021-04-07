@@ -39,19 +39,22 @@ public class LatexPsiImplUtil {
         }
     }
 
-    /**
-     * Generates a list of all optional parameter names and values.
-     */
-    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexCommands element) {
-        return LatexCommandsImplUtilKt.getOptionalParameters(element.getParameterList());
+    public static String toString(@NotNull LatexKeyvalKey element) {
+        return LatexCommandsImplUtilKt.keyValContentToString(element);
     }
 
-    /**
-     * Generates a list of all optional parameter names and values.
-     */
-    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexBeginCommand element) {
-        return LatexCommandsImplUtilKt.getOptionalParameters(element.getParameterList());
+    public static String toString(@NotNull LatexKeyvalValue element) {
+        return LatexCommandsImplUtilKt.keyValContentToString(element);
     }
+
+    public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexCommands element) {
+        return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
+    }
+
+    public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexBeginCommand element) {
+        return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
+    }
+
 
     /**
      * Generates a list of all names of all required parameters in the command.
@@ -73,6 +76,10 @@ public class LatexPsiImplUtil {
         return element.getCommandToken().getText();
     }
 
+    public static PsiElement setName(@NotNull LatexCommands element, String name) {
+        return LatexCommandsImplUtilKt.setName(element, name);
+    }
+
     /**
      * Checks if the command is followed by a label.
      */
@@ -90,6 +97,19 @@ public class LatexPsiImplUtil {
 
     public static String getEnvironmentName(@NotNull LatexEnvironment element) {
         return LatexEnvironmentUtilKt.getEnvironmentName(element);
+    }
+
+    public static boolean isValidHost(@NotNull LatexEnvironment element) {
+        return true;
+    }
+
+    public static PsiLanguageInjectionHost updateText(@NotNull LatexEnvironment element, @NotNull String text) {
+        return ElementManipulators.handleContentChange(element, text);
+    }
+
+    @NotNull
+    public static LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper(@NotNull LatexEnvironment element) {
+        return LiteralTextEscaper.createSimple(element);
     }
 
     /*
@@ -116,19 +136,25 @@ public class LatexPsiImplUtil {
         return LatexParameterTextUtilKt.getName(element);
     }
 
+
+    public static void delete(@NotNull LatexParameterText element) {
+        LatexParameterTextUtilKt.delete(element);
+    }
     /*
-     * LatexEnvironment
+     * LatexParameter
      */
-    public static boolean isValidHost(@NotNull LatexEnvironment element) {
+
+    public static boolean isValidHost(@NotNull LatexParameter element) {
         return true;
     }
 
-    public static PsiLanguageInjectionHost updateText(@NotNull LatexEnvironment element, @NotNull String text) {
+    public static PsiLanguageInjectionHost updateText(@NotNull LatexParameter element, @NotNull String text) {
         return ElementManipulators.handleContentChange(element, text);
     }
 
     @NotNull
-    public static LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper(@NotNull LatexEnvironment element) {
+    public static LiteralTextEscaper<LatexParameter> createLiteralTextEscaper(@NotNull LatexParameter element) {
         return LiteralTextEscaper.createSimple(element);
     }
+
 }

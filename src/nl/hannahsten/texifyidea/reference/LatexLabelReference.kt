@@ -8,10 +8,11 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.findBibtexItems
 import nl.hannahsten.texifyidea.util.findLabelsInFileSetAsCollection
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
 /**
@@ -20,6 +21,7 @@ import java.util.*
  * @author Hannah Schellekens, Sten Wessel
  */
 class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiReferenceBase<LatexCommands?>(element) {
+
     override fun resolve(): PsiElement? {
         return null
     }
@@ -29,7 +31,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
         val command = myElement.commandToken.text
 
         // add bibreferences to autocompletion for \cite-style commands
-        if (Magic.Command.bibliographyReference.contains(command)) {
+        if (CommandMagic.bibliographyReference.contains(command)) {
             return file.findBibtexItems().stream()
                 .map { bibtexEntry: PsiElement? ->
                     if (bibtexEntry != null) {
@@ -41,7 +43,10 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                                 .withInsertHandler(LatexReferenceInsertHandler())
                                 .withTypeText(
                                     containing.name + ": " +
-                                        (1 + StringUtil.offsetToLineNumber(containing.text, bibtexEntry.getTextOffset())),
+                                            (1 + StringUtil.offsetToLineNumber(
+                                                containing.text,
+                                                bibtexEntry.getTextOffset()
+                                            )),
                                     true
                                 )
                                 .withIcon(TexifyIcons.DOT_BIB)
@@ -53,7 +58,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                     null
                 }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
         }
-        else if (Magic.Command.getLabelReferenceCommands(element.project).contains(command)) {
+        else if (element.project.getLabelReferenceCommands().contains(command)) {
             return file.findLabelsInFileSetAsCollection()
                 .stream()
                 .filter { it.extractLabelName().isNotBlank() }
@@ -64,12 +69,12 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                         .withInsertHandler(LatexReferenceInsertHandler())
                         .withTypeText(
                             labelingCommand.containingFile.name + ":" +
-                                (
-                                    1 + StringUtil.offsetToLineNumber(
-                                        labelingCommand.containingFile.text,
-                                        labelingCommand.textOffset
-                                    )
-                                    ),
+                                    (
+                                            1 + StringUtil.offsetToLineNumber(
+                                                labelingCommand.containingFile.text,
+                                                labelingCommand.textOffset
+                                            )
+                                            ),
                             true
                         )
                         .withIcon(TexifyIcons.DOT_LABEL)

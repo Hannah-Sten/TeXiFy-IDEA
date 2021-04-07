@@ -75,8 +75,23 @@ class LatexParserTest : BasePlatformTestCase() {
             \newenvironment{test}{\begin{center}}{\end{center}}
             \newenvironment{test2}{ \[ }{ \] }
             \newenvironment{test2}{ $ x$ and $ }{ $ }
-            
+            \newenvironment{test}[1]{\begin{test*}{#1}}{\end{test*}}
             $\xi$
+            
+            \begin{document}
+                \newenvironment{test}{\begin{center}}{\end{center}}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNewDocumentEnvironmentDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \usepackage{xparse}
+            \NewDocumentEnvironment{name}{args spec}{\begin{center}{arg}}{\end{center}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -161,7 +176,6 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            \documentclass[11pt]{article}
             \usepackage{algorithm2e}
             \begin{document}
                 \begin{algorithm*}
@@ -175,6 +189,25 @@ class LatexParserTest : BasePlatformTestCase() {
                     }
                 \end{algorithm*}
             \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testAlgorithmIfElseIf() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{algorithm}
+                \begin{algorithmic}
+                    \Procedure{Euclid}{a,b}
+                    \If{a<0 or b < 0}
+                    \ElsIf{a,b<0}
+                    \Else
+                    \EndIf
+                    \EndProcedure
+                \end{algorithmic}
+            \end{algorithm}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

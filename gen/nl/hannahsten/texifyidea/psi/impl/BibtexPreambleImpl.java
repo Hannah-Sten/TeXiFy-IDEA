@@ -21,6 +21,7 @@ public class BibtexPreambleImpl extends ASTWrapperPsiElement implements BibtexPr
     visitor.visitPreamble(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);
@@ -30,12 +31,6 @@ public class BibtexPreambleImpl extends ASTWrapperPsiElement implements BibtexPr
   @NotNull
   public List<BibtexQuotedString> getQuotedStringList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexQuotedString.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdentifier() {
-    return findChildByType(IDENTIFIER);
   }
 
 }

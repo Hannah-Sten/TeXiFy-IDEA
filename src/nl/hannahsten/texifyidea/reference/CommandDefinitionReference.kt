@@ -4,8 +4,8 @@ import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentsOfType
 import nl.hannahsten.texifyidea.util.projectSearchScope
 
@@ -15,13 +15,14 @@ import nl.hannahsten.texifyidea.util.projectSearchScope
  * @author Abby Berkers
  */
 class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<LatexCommands>(element), PsiPolyVariantReference {
+
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
     // Find all command definitions and redefinitions which define the current element
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val definitionsAndRedefinitions = Magic.Command.commandDefinitions + Magic.Command.redefinitions
+        val definitionsAndRedefinitions = CommandMagic.commandDefinitions + CommandMagic.redefinitions
 
         // Don't resolve to a definition when you are in a \newcommand
         if (element.parentsOfType<LatexCommands>().any { it.name in definitionsAndRedefinitions }) {
@@ -54,5 +55,10 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
     // Check if this reference resolves to the given element
     override fun isReferenceTo(element: PsiElement): Boolean {
         return multiResolve(false).any { it.element == element }
+    }
+
+    override fun handleElementRename(newElementName: String): PsiElement {
+        myElement.setName(newElementName)
+        return myElement
     }
 }

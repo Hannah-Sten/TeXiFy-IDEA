@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexGroup
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.util.getParentOfType
 import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
@@ -30,7 +30,7 @@ class LatexToggleStarAction : EditorAction("Toggle Star", TexifyIcons.TOGGLE_STA
             println(it.magicComment())
         }
 
-        val commands = LatexPsiUtil.getParentOfType(element, LatexCommands::class.java) ?: return
+        val commands = getParentOfType(element, LatexCommands::class.java) ?: return
 
         runWriteAction(project) { toggleStar(editor, psiFile, commands) }
     }
@@ -95,7 +95,7 @@ class LatexToggleStarAction : EditorAction("Toggle Star", TexifyIcons.TOGGLE_STA
         while (position > 0) {
             val text = document.getText(TextRange(position, position + 1))
             val elt = file!!.findElementAt(position)
-            val parent = LatexPsiUtil.getParentOfType(elt, LatexCommands::class.java)
+            val parent = getParentOfType(elt, LatexCommands::class.java)
 
             if (text.equals("\\", ignoreCase = true) && (elt == null || parent === commands)) {
                 document.insertString(position + commands.commandToken.text.length, "*")

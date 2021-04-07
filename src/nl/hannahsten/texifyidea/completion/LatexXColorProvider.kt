@@ -9,17 +9,18 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import com.intellij.util.ui.ColorIcon
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.insight.LatexElementColorProvider
+import nl.hannahsten.texifyidea.gutter.LatexElementColorProvider
 import nl.hannahsten.texifyidea.util.Kindness
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.isColorDefinition
+import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import java.awt.Color
 import java.util.*
 import java.util.stream.Collectors
 
 object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
+
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         addDefaultColors(result)
         addCustomColors(parameters, result)
@@ -27,7 +28,7 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
 
     private fun addDefaultColors(result: CompletionResultSet) {
         result.addAllElements(
-            Magic.Colors.defaultXcolors.map {
+            ColorMagic.defaultXcolors.map {
                 LookupElementBuilder.create(it.key)
                     .withIcon(ColorIcon(12, Color(it.value)))
             }

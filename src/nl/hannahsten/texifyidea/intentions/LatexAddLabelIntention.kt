@@ -1,76 +1,75 @@
 package nl.hannahsten.texifyidea.intentions
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.SmartPsiElementPointer
-import nl.hannahsten.texifyidea.psi.LatexCommands
+import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.util.parentOfType
+import com.intellij.refactoring.rename.RenameProcessor
+import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
+import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
 import kotlin.math.max
 
-/**
- * @author Hannah Schellekens
- */
-open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexCommands>? = null) : TexifyIntentionBase("Add label") {
+abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
 
-    private fun findCommand(editor: Editor?, file: PsiFile?): LatexCommands? {
+    /**
+     * This class handles the rename of a label parameter after insertion
+     */
+    private class LabelInplaceRenamer(
+        elementToRename: PsiNamedElement,
+        editor: Editor,
+        private val prefix: String,
+        initialName: String,
+        private val endMarker: RangeMarker
+    ) : MemberInplaceRenamer(elementToRename, null, editor, initialName, initialName) {
+
+        override fun getRangeToRename(element: PsiElement): TextRange {
+            // The label prefix is given by convention and not renamed
+            return TextRange(prefix.length, element.textLength)
+        }
+
+        override fun createRenameProcessor(element: PsiElement?, newName: String?): RenameProcessor {
+            // Automatically prepend the prefix
+            return super.createRenameProcessor(element, "$prefix$newName")
+        }
+
+        override fun moveOffsetAfter(success: Boolean) {
+            super.moveOffsetAfter(success)
+            myEditor.caretModel.moveToOffset(endMarker.endOffset)
+        }
+
+        override fun restoreCaretOffsetAfterRename() {
+            // Dispose the marker like the parent method does, but do not move the caret. We already moved it in
+            // moveOffsetAfter
+            if (myBeforeRevert != null) {
+                myBeforeRevert.dispose()
+            }
+        }
+    }
+
+    protected inline fun <reified T : PsiElement> findTarget(editor: Editor?, file: PsiFile?): T? {
         val offset = editor?.caretModel?.offset ?: return null
         val element = file?.findElementAt(offset) ?: return null
         // Also check one position back, because we want it to trigger in \section{a}<caret>
-        return element as? LatexCommands ?: element.parentOfType(LatexCommands::class)
-            ?: file.findElementAt(max(0, offset - 1)) as? LatexCommands
-            ?: file.findElementAt(max(0, offset - 1))?.parentOfType(LatexCommands::class)
+        return element as? T ?: element.parentOfType<T>()
+        ?: file.findElementAt(max(0, offset - 1)) as? T
+        ?: file.findElementAt(max(0, offset - 1))?.parentOfType<T>()
     }
 
-    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
-        if (file?.isLatexFile() == false) {
-            return false
-        }
-
-        return findCommand(editor, file)?.name in Magic.Command.labeledPrefixes
-    }
-
-    override fun startInWriteAction() = true
-
-    override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
-        if (editor == null || file == null) {
-            return
-        }
-
-        // When no this.command is provided, use the command at the caret as the best guess.
-        val command: LatexCommands = this.command?.element
-                ?: findCommand(editor, file)
-                ?: return
-
-        // Determine label name.
-        val required = command.requiredParameters
-        if (required.isEmpty()) {
-            return
-        }
-
-        val createdLabel = getUniqueLabelName(
-            required[0].formatAsLabel(),
-            Magic.Command.labeledPrefixes[command.name!!], command.containingFile
-        )
-
-        val factory = LatexPsiHelper(project)
-
-        // Insert label
-        // command -> NoMathContent -> Content -> Container containing the command
-        val commandContent = command.parent.parent
-        val labelCommand = commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
-
-        // Adjust caret offset.
-        val caret = editor.caretModel
-        caret.moveToOffset(labelCommand.endOffset())
-    }
-
-    private fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
+    protected fun getUniqueLabelName(base: String, prefix: String, file: PsiFile): LabelWithPrefix {
         val labelBase = "$prefix:$base"
         val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
-        return appendCounter(labelBase, allLabels)
+        val fullLabel = appendCounter(labelBase, allLabels)
+        return LabelWithPrefix(prefix, fullLabel.substring(prefix.length + 1))
     }
 
     /**
@@ -86,4 +85,33 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
 
         return candidate
     }
+
+    data class LabelWithPrefix(val prefix: String, val base: String) {
+
+        val prefixText = "$prefix:"
+        val labelText = "$prefix:$base"
+    }
+
+    protected fun createLabelAndStartRename(
+        editor: Editor,
+        project: Project,
+        command: LatexCommandWithParams,
+        label: LabelWithPrefix,
+        moveCaretTo: RangeMarker
+    ) {
+        val helper = LatexPsiHelper(project)
+        val parameter = helper.setOptionalParameter(command, "label", "{${label.labelText}}")
+        PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
+
+        // setOptionalParameter should create an appropriate optionaArgument node with label={text} in it
+        val parameterText =
+            parameter.keyvalValue?.keyvalContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
+                ?: throw AssertionError("parameter created by setOptionalParameter does not have the right structure")
+        // Move the caret onto the label
+        editor.caretModel.moveToOffset(parameterText.textOffset + label.prefix.length + 1)
+        val renamer = LabelInplaceRenamer(parameterText, editor, label.prefixText, label.base, moveCaretTo)
+        renamer.performInplaceRefactoring(LinkedHashSet())
+    }
+
+    override fun startInWriteAction() = true
 }

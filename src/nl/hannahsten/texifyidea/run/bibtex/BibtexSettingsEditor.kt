@@ -1,15 +1,12 @@
 package nl.hannahsten.texifyidea.run.bibtex
 
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.ui.LabeledComponent
-import com.intellij.openapi.ui.TextBrowseFolderListener
-import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.ui.VerticalFlowLayout
+import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
@@ -29,6 +26,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var enableCompilerPath: JCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
+    private lateinit var environmentVariables: EnvironmentVariablesComponent
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
     /** Keep track of the the working directory for bibtex, i.e., where bibtex should find the files it needs.
      * Is automatically set based on the LaTeX run config when created. */
@@ -43,6 +41,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         compiler.component.selectedItem = runConfig.compiler
         compilerPath.text = runConfig.compilerPath ?: ""
         compilerArguments.component.text = runConfig.compilerArguments ?: ""
+        environmentVariables.envData = runConfig.environmentVariables
         enableCompilerPath.isSelected = runConfig.compilerPath != null
         mainFile.component.text = runConfig.mainFile?.path ?: ""
         bibWorkingDir.component.text = runConfig.bibWorkingDir?.path ?: ""
@@ -52,6 +51,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         runConfig.compiler = compiler.component.selectedItem as BibliographyCompiler?
         runConfig.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
         runConfig.compilerArguments = compilerArguments.component.text
+        runConfig.environmentVariables = environmentVariables.envData
         runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
         runConfig.bibWorkingDir = LocalFileSystem.getInstance().findFileByPath(bibWorkingDir.component.text)
     }
@@ -97,6 +97,9 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             val argumentsField = RawCommandLineEditor()
             compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
             add(compilerArguments)
+
+            environmentVariables = EnvironmentVariablesComponent()
+            add(environmentVariables)
 
             add(SeparatorComponent())
 

@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexCollapseCiteInspection
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCiteInspection()) {
+
     fun testWarning() {
         myFixture.configureByText(
             LatexFileType,
@@ -13,6 +15,35 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
             """.trimIndent()
         )
         myFixture.checkHighlighting()
+    }
+
+    fun testNoWarning() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\citet}[1]{\citeauthor{#1} \shortcite{#1}}
+            \begin{document}
+                \citet{X}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun `test warning non breaking space`() {
+        testHighlighting("<warning>\\cite{a}</warning>~<warning>\\cite{b}</warning>")
+    }
+
+    fun `test no warning when both arguments are optional`() {
+        testHighlighting("\\cite[p. 1]{book1}\\cite[aardappel]{Groente}")
+    }
+
+    fun `test no warning when one argument is optional`() {
+        testHighlighting("\\cite{book1}\\cite[aardappel]{Groente}")
+    }
+
+    fun `test warning for all cites without optional arguments`() {
+        testHighlighting("<warning>\\cite{book1}</warning>\\cite[aardappel]{Groente}<warning>\\cite{Doei}</warning>")
     }
 
     fun testQuickfix() {
@@ -33,6 +64,22 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
             """
             \cite{knuth1990,goossens1993}
             """.trimIndent()
+        )
+    }
+
+    fun `test quick fix with some optional parameters, replace first`() {
+        testQuickFix(
+            """\ci<caret>te{a}\cite[b]{c}\cite{d}\cite[e]{f}""",
+            """\cite{a,d}\cite[b]{c}\cite[e]{f}""",
+            2
+        )
+    }
+
+    fun `test quick fix with some optional parameters, replace second`() {
+        testQuickFix(
+            """\cite{a}\cite[b]{c}\cit<caret>e{d}\cite[e]{f}""",
+            """\cite[b]{c}\cite{a,d}\cite[e]{f}""",
+            2
         )
     }
 }

@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.action.preview.ShowEquationPreview
 import nl.hannahsten.texifyidea.action.preview.ShowTikzPreview
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
 
 /**
@@ -48,10 +49,17 @@ class ContinuousPreviewHandler : TypedHandlerDelegate() {
 }
 
 class ContinuousPreviewBackspacehandler : BackspaceHandlerDelegate() {
+
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {}
 
     override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {
-        ContinuousPreviewHandler().charTyped(c, file.project, editor, file)
-        return true
+        return if (file.isLatexFile()) {
+            ContinuousPreviewHandler().charTyped(c, file.project, editor, file)
+            true
+        }
+        else {
+            // Returning true would block functionality of other plugins (e.g. removing second brace of pair in [<cursor>])
+            false
+        }
     }
 }

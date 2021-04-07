@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * Even though it shows a line and file, this is from the bst file and most likely not the problem.
  */
 object BstExWarnPrintBibtexMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         BibtexLogMagicRegex.bstExWarnPrint.find(window.lastOrNull() ?: "")?.apply {
             if (window.size < 2) return null

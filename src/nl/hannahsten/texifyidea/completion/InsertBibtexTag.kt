@@ -14,18 +14,9 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.editor.ShiftTracker
 import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.psi.BibtexEndtry
-import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.psi.BibtexId
-import nl.hannahsten.texifyidea.psi.BibtexTag
-import nl.hannahsten.texifyidea.psi.BibtexTypes
+import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.lineIndentation
-import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.repeat
-import nl.hannahsten.texifyidea.util.tokenName
 
 /**
  * @author Hannah Schellekens

@@ -10,6 +10,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
+
     private lateinit var absoluteWorkingPath: String
 
     @Throws(Exception::class)

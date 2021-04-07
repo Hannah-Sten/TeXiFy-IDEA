@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
  * @author Hannah Schellekens, Sten Wessel
  */
 class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
+
     override fun getHighlightingLexer(): Lexer {
         return LatexLexerAdapter()
     }
@@ -48,6 +49,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
     }
 
     companion object {
+
         /*
          * TextAttributesKeys
          */

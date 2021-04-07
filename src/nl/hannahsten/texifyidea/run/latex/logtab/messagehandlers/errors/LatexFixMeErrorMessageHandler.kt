@@ -12,6 +12,7 @@ object LatexFixMeErrorMessageHandler : LatexMessageHandler(
     LatexLogMessageType.ERROR,
     fixMeError
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {

@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * Note that warnings have '--' before 'line', and errors '---' (see bib_err_print vs bib_warn_print).
  */
 object BibLnNumPrintBibtexMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         if (window.size < 3) return null
         // This case is handled by WarningBibtexMessageHandler

@@ -4,12 +4,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.RequiredArgument
+import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.ColorMagic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import kotlin.math.min
 
 /**
@@ -20,7 +22,7 @@ import kotlin.math.min
  * @return `true` if the command is an environment definition or a command definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinition() = this != null && this.name in Magic.Command.definitions
+fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
 
 /**
  * Checks whether the given LaTeX commands is a color definition or not.
@@ -28,9 +30,9 @@ fun LatexCommands?.isDefinition() = this != null && this.name in Magic.Command.d
  * @return `true` if the command defines a color, `false` when the command command
  *          is `null` or otherwise.
  */
-fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in Magic.Colors.colorDefinitions.map { it.command }
+fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in ColorMagic.colorDefinitions.map { it.command }
 
-fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Magic.Colors.colorCommands
+fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in ColorMagic.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.
@@ -41,7 +43,7 @@ fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Magi
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
-    (this.name in Magic.Command.redefinitions || this.name in Magic.Command.redefinitions)
+        (this.name in CommandMagic.redefinitions || this.name in CommandMagic.redefinitions)
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
@@ -49,7 +51,7 @@ fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
  * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
  */
 fun LatexCommands?.isCommandDefinition(): Boolean =
-    this != null && (name in Magic.Command.regularCommandDefinitions || name in Magic.Command.mathCommandDefinitions)
+    this != null && (name in CommandMagic.regularCommandDefinitions || name in CommandMagic.mathCommandDefinitions)
 
 /**
  * Checks whether the given LaTeX commands is an environment definition or not.
@@ -81,8 +83,8 @@ fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
  * @return The next command in the file, or `null` when there is no such command.
  */
 fun LatexCommands.nextCommand(): LatexCommands? {
-    val content = parentOfType(LatexContent::class) ?: return null
-    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent
+    val content = parentOfType(LatexNoMathContent::class) ?: return null
+    val next = content.nextSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
     return next.firstChildOfType(LatexCommands::class)
 }
@@ -93,8 +95,8 @@ fun LatexCommands.nextCommand(): LatexCommands? {
  * @return The previous command in the file, or `null` when there is no such command.
  */
 fun LatexCommands.previousCommand(): LatexCommands? {
-    val content = parentOfType(LatexContent::class) ?: return null
-    val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent
+    val content = parentOfType(LatexNoMathContent::class) ?: return null
+    val previous = content.previousSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
     return previous.firstChildOfType(LatexCommands::class)
 }
@@ -103,7 +105,7 @@ fun LatexCommands.previousCommand(): LatexCommands? {
  * Get the name of the command that is defined by `this` command.
  */
 fun LatexCommands.definedCommandName() = when (name) {
-    in Magic.Command.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
+    in CommandMagic.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
     else -> definitionCommand()?.name
 }
 
@@ -198,8 +200,8 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
         return if (found.size == 1) found.first() else null
     }
 
-    val parent = PsiTreeUtil.getParentOfType(this, LatexContent::class.java)
-    val sibling = PsiTreeUtil.getNextSiblingOfType(parent, LatexContent::class.java)
+    val parent = PsiTreeUtil.getParentOfType(this, LatexNoMathContent::class.java)
+    val sibling = PsiTreeUtil.getNextSiblingOfType(parent, LatexNoMathContent::class.java)
     return PsiTreeUtil.findChildOfType(sibling, LatexCommands::class.java)
 }
 

@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.editor
 
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 class MultiLineMathContentToOneLine(private val equation: String) {
 
@@ -14,7 +14,7 @@ class MultiLineMathContentToOneLine(private val equation: String) {
      */
     private fun reduce(): String {
         // Split the string at every begin/end command for the cases/split environments.
-        val splitByBeginEnd: MutableList<String> = equation.split(Magic.Pattern.casesOrSplitCommands).toMutableList()
+        val splitByBeginEnd: MutableList<String> = equation.split(PatternMagic.casesOrSplitCommands).toMutableList()
 
         fun isBeginCommand(text: String): Boolean = text.contains("\\begin")
 

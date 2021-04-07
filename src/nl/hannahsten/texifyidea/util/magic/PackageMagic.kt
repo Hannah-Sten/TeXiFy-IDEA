@@ -1,0 +1,77 @@
+package nl.hannahsten.texifyidea.util.magic
+
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.HVINDEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.IDXLAYOUT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.IMAKEIDX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEXTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MAKEIDX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MULTIND
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.REPEATINDEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITIDX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITINDEX
+
+object PackageMagic {
+
+    /**
+     * All unicode enabling packages.
+     */
+    val unicode = hashSetOf(
+            LatexPackage.INPUTENC.with("utf8"),
+            LatexPackage.FONTENC.with("T1")
+    )
+
+    /**
+     * All known packages which provide an index.
+     */
+    val index = hashSetOf(
+            MAKEIDX, MULTIND, INDEX, SPLITIDX, SPLITINDEX, IMAKEIDX, HVINDEX, IDXLAYOUT, REPEATINDEX, INDEXTOOLS
+    )
+
+    /**
+     * Packages which provide a glossary.
+     */
+    val glossary = hashSetOf(LatexPackage.GLOSSARIES, LatexPackage.GLOSSARIESEXTRA)
+
+    /**
+     * Known conflicting packages.
+     */
+    val conflictingPackages = listOf(
+            setOf(LatexPackage.BIBLATEX, LatexPackage.NATBIB)
+    )
+
+    /**
+     * Maps packages to the packages it loads.
+     * Note that when a LaTeX SDK is available, then the relative inclusions are handled for all installed packages by [nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache].
+     * This list is just there as a sort of default for those users who do not have LaTeX packages installed for example.
+     */
+    val packagesLoadingOtherPackages: Map<LatexPackage, Set<LatexPackage>> = mapOf(
+            LatexPackage.AMSSYMB to setOf(LatexPackage.AMSFONTS),
+            LatexPackage.MATHTOOLS to setOf(LatexPackage.AMSMATH),
+            LatexPackage.GRAPHICX to setOf(LatexPackage.GRAPHICS),
+            LatexPackage.XCOLOR to setOf(LatexPackage.COLOR),
+            LatexPackage.PDFCOMMENT to setOf(LatexPackage.HYPERREF),
+            LatexPackage.ALGORITHM2E to setOf(LatexPackage.ALGPSEUDOCODE), // This is not true, but loading any of these two (incompatible) packages is sufficient as they provide the same commands (roughly)
+    )
+
+    /**
+     * Maps argument specifiers to whether they are required (true) or
+     * optional (false).
+     */
+    val xparseParamSpecifiers = mapOf(
+            'm' to true,
+            'r' to true,
+            'R' to true,
+            'v' to true,
+            'b' to true,
+            'o' to false,
+            'd' to false,
+            'O' to false,
+            'D' to false,
+            's' to false,
+            't' to false,
+            'e' to false,
+            'E' to false
+    )
+}

@@ -4,8 +4,9 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.awt.Component
 import java.awt.FlowLayout
 import javax.swing.*
@@ -18,22 +19,22 @@ class TexifyConfigurable : SearchableConfigurable {
 
     private val settings: TexifySettings = TexifySettings.getInstance()
 
-    private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
-    private lateinit var automaticUpDownBracket: JBCheckBox
-    private lateinit var automaticItemInItemize: JBCheckBox
-    private lateinit var automaticDependencyCheck: JBCheckBox
-    private lateinit var autoCompile: JBCheckBox
-    private lateinit var continuousPreview: JBCheckBox
-    private lateinit var includeBackslashInSelection: JBCheckBox
-    private lateinit var showPackagesInStructureView: JBCheckBox
-    private lateinit var automaticQuoteReplacement: ComboBox<String>
-    private lateinit var missingLabelMinimumLevel: ComboBox<LatexRegularCommand>
+    private var automaticSecondInlineMathSymbol: JBCheckBox? = null
+    private var automaticUpDownBracket: JBCheckBox? = null
+    private var automaticItemInItemize: JBCheckBox? = null
+    private var automaticDependencyCheck: JBCheckBox? = null
+    private var autoCompile: JBCheckBox? = null
+    private var continuousPreview: JBCheckBox? = null
+    private var includeBackslashInSelection: JBCheckBox? = null
+    private var showPackagesInStructureView: JBCheckBox? = null
+    private var automaticQuoteReplacement: ComboBox<String>? = null
+    private var missingLabelMinimumLevel: ComboBox<LatexCommand>? = null
 
     override fun getId() = "TexifyConfigurable"
 
     override fun getDisplayName() = "TeXiFy"
 
-    override fun createComponent(): JComponent? {
+    override fun createComponent(): JComponent {
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(
                 JPanel().apply {
@@ -69,8 +70,8 @@ class TexifyConfigurable : SearchableConfigurable {
         return list
     }
 
-    private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexRegularCommand> {
-        val list = ComboBox(Magic.Command.labeledLevels.keys.toTypedArray())
+    private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexCommand> {
+        val list = ComboBox(CommandMagic.labeledLevels.keys.toTypedArray())
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
                 add(JBLabel("Minimum sectioning level which should trigger the missing label inspection: "))
@@ -79,7 +80,7 @@ class TexifyConfigurable : SearchableConfigurable {
         )
         list.renderer = object : DefaultListCellRenderer() {
             override fun getListCellRendererComponent(list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, celHasFocus: Boolean): Component {
-                val item = (value as? LatexRegularCommand)?.command ?: value
+                val item = (value as? LatexCommand)?.command ?: value
                 return super.getListCellRendererComponent(list, item, index, isSelected, celHasFocus)
             }
         }
@@ -106,41 +107,41 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     override fun isModified(): Boolean {
-        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol ||
-            automaticUpDownBracket.isSelected != settings.automaticUpDownBracket ||
-            automaticItemInItemize.isSelected != settings.automaticItemInItemize ||
-            automaticDependencyCheck.isSelected != settings.automaticDependencyCheck ||
-            autoCompile.isSelected != settings.autoCompile ||
-            continuousPreview.isSelected != settings.continuousPreview ||
-            includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
-            showPackagesInStructureView.isSelected != settings.showPackagesInStructureView ||
-            automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-            missingLabelMinimumLevel.selectedItem != settings.missingLabelMinimumLevel
+        return automaticSecondInlineMathSymbol?.isSelected != settings.automaticSecondInlineMathSymbol ||
+            automaticUpDownBracket?.isSelected != settings.automaticUpDownBracket ||
+            automaticItemInItemize?.isSelected != settings.automaticItemInItemize ||
+            automaticDependencyCheck?.isSelected != settings.automaticDependencyCheck ||
+            autoCompile?.isSelected != settings.autoCompile ||
+            continuousPreview?.isSelected != settings.continuousPreview ||
+            includeBackslashInSelection?.isSelected != settings.includeBackslashInSelection ||
+            showPackagesInStructureView?.isSelected != settings.showPackagesInStructureView ||
+            automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+            missingLabelMinimumLevel?.selectedItem != settings.missingLabelMinimumLevel
     }
 
     override fun apply() {
-        settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
-        settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
-        settings.automaticItemInItemize = automaticItemInItemize.isSelected
-        settings.automaticDependencyCheck = automaticDependencyCheck.isSelected
-        settings.autoCompile = autoCompile.isSelected
-        settings.continuousPreview = continuousPreview.isSelected
-        settings.includeBackslashInSelection = includeBackslashInSelection.isSelected
-        settings.showPackagesInStructureView = showPackagesInStructureView.isSelected
-        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
-        settings.missingLabelMinimumLevel = missingLabelMinimumLevel.selectedItem as LatexRegularCommand
+        settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol?.isSelected == true
+        settings.automaticUpDownBracket = automaticUpDownBracket?.isSelected == true
+        settings.automaticItemInItemize = automaticItemInItemize?.isSelected == true
+        settings.automaticDependencyCheck = automaticDependencyCheck?.isSelected == true
+        settings.autoCompile = autoCompile?.isSelected == true
+        settings.continuousPreview = continuousPreview?.isSelected == true
+        settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
+        settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
+        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
+        settings.missingLabelMinimumLevel = missingLabelMinimumLevel?.selectedItem as? LatexCommand ?: LatexGenericRegularCommand.SUBSECTION
     }
 
     override fun reset() {
-        automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
-        automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
-        automaticItemInItemize.isSelected = settings.automaticItemInItemize
-        automaticDependencyCheck.isSelected = settings.automaticDependencyCheck
-        autoCompile.isSelected = settings.autoCompile
-        continuousPreview.isSelected = settings.continuousPreview
-        includeBackslashInSelection.isSelected = settings.includeBackslashInSelection
-        showPackagesInStructureView.isSelected = settings.showPackagesInStructureView
-        automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
-        missingLabelMinimumLevel.selectedItem = settings.missingLabelMinimumLevel
+        automaticSecondInlineMathSymbol?.isSelected = settings.automaticSecondInlineMathSymbol
+        automaticUpDownBracket?.isSelected = settings.automaticUpDownBracket
+        automaticItemInItemize?.isSelected = settings.automaticItemInItemize
+        automaticDependencyCheck?.isSelected = settings.automaticDependencyCheck
+        autoCompile?.isSelected = settings.autoCompile
+        continuousPreview?.isSelected = settings.continuousPreview
+        includeBackslashInSelection?.isSelected = settings.includeBackslashInSelection
+        showPackagesInStructureView?.isSelected = settings.showPackagesInStructureView
+        automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
+        missingLabelMinimumLevel?.selectedItem = settings.missingLabelMinimumLevel
     }
 }

@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 object ZathuraConversation : ViewerConversation() {
+
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
         val pdfPathGuess = pdfPath ?: guessPdfPath(project, sourceFilePath)
 

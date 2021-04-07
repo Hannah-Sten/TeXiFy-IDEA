@@ -14,9 +14,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.file.LatexFile
-
-import javax.swing.*
-import java.util.Arrays
+import java.util.*
+import javax.swing.Icon
 
 /**
  * Action that fetches the required information beforehand.

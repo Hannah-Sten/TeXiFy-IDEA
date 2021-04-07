@@ -12,6 +12,7 @@ object LatexPdftexWarningMessageHandler : LatexMessageHandler(
     LatexLogMessageType.WARNING,
     pdfTeXWarning
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {

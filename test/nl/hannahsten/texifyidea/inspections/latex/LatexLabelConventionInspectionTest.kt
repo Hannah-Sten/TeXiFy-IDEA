@@ -2,8 +2,10 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection
 
 class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConventionInspection()) {
+
     fun testSectionLabelConventionWarning() {
         myFixture.configureByText(
             LatexFileType,
@@ -55,6 +57,18 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             \begin{document}
                 <weak_warning descr="Unconventional label prefix">\begin{lstlisting}[label={some label}]
                 \end{lstlisting}</weak_warning>
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    fun testInputListingLabelConventionWarning() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                <weak_warning descr="Unconventional label prefix">\lstinputlisting[label={input listing}]{some/file}</weak_warning>
             \end{document}
             """.trimIndent()
         )
@@ -142,6 +156,25 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
                 \label{sec:some-label}
                 \ref{sec:some-label}
                 \cref{sec:some-label}
+            \end{document}
+            """.trimIndent()
+        )
+    }
+
+    fun testInputListingLabelConventionQuickFix() {
+        testQuickFix(
+            """
+            \begin{document}
+                \lstinputlisting[label={input listing}]{some/file}
+                \ref{input listing}
+                \cref{input listing}
+            \end{document}
+            """.trimIndent(),
+            """
+            \begin{document}
+                \lstinputlisting[label={lst:input-listing}]{some/file}
+                \ref{lst:input-listing}
+                \cref{lst:input-listing}
             \end{document}
             """.trimIndent()
         )

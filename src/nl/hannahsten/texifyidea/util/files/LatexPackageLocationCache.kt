@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -23,8 +23,14 @@ object LatexPackageLocationCache {
      *
      * @param name Package name with extension.
      */
-    fun getPackageLocation(name: String, project: Project) = cache.getOrPut(name) {
-        runKpsewhich(name, project)
+    fun getPackageLocation(name: String, project: Project): String? {
+        if (cache.containsKey(name).not()) {
+            val path = runKpsewhich(name, project)
+            cache[name] = path
+            return path
+        }
+
+        return cache[name]
     }
 
     private fun runKpsewhich(arg: String, project: Project): String? = try {
@@ -36,7 +42,7 @@ object LatexPackageLocationCache {
             "${LatexSdkUtil.getExecutableName("kpsewhich", project)} $arg"
         }
         BufferedReader(
-            InputStreamReader(Runtime.getRuntime().exec(command).inputStream)
+                InputStreamReader(Runtime.getRuntime().exec(command).inputStream)
         ).readLine() // Returns null if no line read.
     }
     catch (e: IOException) {

@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexTrimWhitespaceInspection
 
 class LatexTrimWhiteSpaceInspectionTest : TexifyInspectionTestBase(LatexTrimWhitespaceInspection()) {
+
     fun `test no warning in section command`() = testHighlighting("""\section{test}""")
 
     fun `test no warning in non-section command`() = testHighlighting("""\box{ test}""")
