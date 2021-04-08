@@ -97,6 +97,18 @@ Also see the link:Installation[installation guide].
 * Gutter icons for quick compilation
 * link:Run-configurations[Customizable run configurations to compile LaTeX files]
 * link:Compilers[Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, Tectonic, bibtex, and biber]
+* link:Log-messages[A clean overview of LaTeX, BibTeX and Biber warnings and errors]
+* link:Automatic-compilation[Support for automatic compilation]
+* The pdf will appear in a separate out/ directory to avoid cluttering the source directory
+* Auxiliary files will be put in a separate auxil/ directory on Windows
+* Custom compiler path
+* Option to choose different output formats like PDF and DVI
+* link:Run-configurations#environment-variables[Support for TEXINPUTS and environment variables in general]
+* link:Dockerized-MiKTeX[Support for Dockerized MiKTeX]
+* link:WSL-support[Support for TeX Live from WSL]
+
+
+=== PDF viewers
 * link:Built-in-pdf-viewer-support[Built-in PDF viewer]
 * link:SumatraPDF-support[SumatraPDF (Windows) support with forward and backward search]
 * link:Evince-support[Evince (Linux) support with forward and backward search]
@@ -105,18 +117,13 @@ Also see the link:Installation[installation guide].
 * link:Skim-support[Skim (MacOS) support with forward and backward search]
 * link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
 * Opens system default pdf viewer when no custom or supported pdf viewer is known
-* link:Log-messages[A clean overview of LaTeX, BibTeX and Biber warnings and errors]
-* link:Automatic-compilation[Support for automatic compilation]
-* The pdf will appear in a separate out/ directory to avoid cluttering the source directory
-* Auxiliary files will be put in a separate auxil/ directory on Windows
-* link:Makeindex[Support for run configurations to create an index/glossary, also when auxil/ or out/ is used]
-* Custom compiler path
-* Option to choose different output formats like PDF and DVI
-* link:Run-configurations#environment-variables[Support for TEXINPUTS and environment variables in general]
-* link:Dockerized-MiKTeX[Support for Dockerized MiKTeX]
-* link:WSL-support[Support for TeX Live from WSL]
 
-== BibTeX
+== External tools
+* link:Makeindex[Support for run configurations to create an index/glossary, also when auxil/ or out/ is used]
+* link:External-tools#Jinja2-support[Jinja2 support]
+* link:Run-configurations#before-run-tasks[Run any external tool before compiling]
+
+=== BibTeX
 
 If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 
@@ -137,7 +144,6 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 == Tools
 * VCS integration including Git
 * Terminal window
-* Running external tools before compiling
 * link:Tools[Detexify]
 
 == UI
