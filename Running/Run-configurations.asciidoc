@@ -120,6 +120,7 @@ Note that you can also change this in the link:Run-configurations#template[run c
 You can add link:BibTeX[BibTeX], link:Makeindex[Makeindex] or link:External-tools[other external tool] run configurations to your main LaTeX run configuration.
 They will be run appropriately inbetween LaTeX runs.
 
+[#before-run-tasks]
 === Other tasks to run before the run configuration, including other run configurations or external tools
 
 Use this to run anything before the run configuration.
