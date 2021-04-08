@@ -42,7 +42,7 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         ).filter { isValidSdkHome(it) }.toMutableList()
     }
 
-    override fun isValidSdkHome(path: String?): Boolean {
+    override fun isValidSdkHome(path: String): Boolean {
         // We just want a path where pdflatex is present
         return "$path${File.separator}pdflatex --version".runCommand()?.contains("pdfTeX") == true
     }
