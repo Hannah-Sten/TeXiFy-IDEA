@@ -42,9 +42,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return results
     }
 
-    override fun isValidSdkHome(path: String?): Boolean {
-        if (path == null) return false
-
+    override fun isValidSdkHome(path: String): Boolean {
         // We expect the location of the executables, wherever that is.
         // This is different from a TexliveSdk installation, where we have the parent directory of the TeX Live installation and find everything there.
 
