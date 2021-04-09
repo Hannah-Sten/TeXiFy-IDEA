@@ -206,7 +206,7 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val file = myFixture.configureByText("amsopn.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
-        assertEquals("The command \\DeclareMathOperator defines the first argument to<br> be an operator name whose text is the second argument. The star<br> form means that the operator name should take limits (like \\max<br> or \\lim).", map["\\DeclareMathOperator"])
+        assertEquals("The command <tt>\\DeclareMathOperator</tt> defines the first argument to<br> be an operator name whose text is the second argument. The star<br> form means that the operator name should take limits (like <tt>\\max</tt><br> or \\lim).", map["\\DeclareMathOperator"])
     }
 
     fun testDeclareTextSymbol() {
