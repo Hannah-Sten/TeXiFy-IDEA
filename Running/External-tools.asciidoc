@@ -53,7 +53,7 @@ Then you can write for example a LaTeX file containing
 
 \begin{document}
 
-    {{ text }}
+    \section{ {{- text -}} }
 
     \begin{tabular}{lllll}
         Sepal length           & Sepal width           & Petal length           & Petal width           & Species           \\ \hline
@@ -89,9 +89,8 @@ with open('jinja2-test.tex', 'w') as f:
 which will produce a rendered LaTeX file.
 Now you can run the Python file to check that it works, run the produced LaTeX file using TeXiFy, and when it works you can edit the LaTeX run configuration to add under `Before launch` the Python run configuration.
 
-However, there is a problem: Jinja2 will get confused by LaTeX syntax, for example `\section{{{my_variable}}}` will not work.
-To circumvent this, you can specify your own delimiters but this will lose the Jinja2 support by PyCharm.
 
+If at any time you encounter problems because Jinja is not interpreting the LaTeX correctly, you can use different Jinja delimiters.
 For example, as given by https://web.archive.org/web/20121024021221/http://e6h.de/post/11/[this blog post] you can use
 
 [source,python]
