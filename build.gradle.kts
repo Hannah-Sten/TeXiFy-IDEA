@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "0.7.2"
-    kotlin("jvm") version("1.4.30-M1")
+    kotlin("jvm") version("1.5.0-M2")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.38.0"
@@ -43,15 +43,15 @@ sourceSets {
 }
 
 // Java target version
-java.sourceCompatibility = JavaVersion.VERSION_15
+java.sourceCompatibility = JavaVersion.VERSION_11
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    sourceCompatibility = JavaVersion.VERSION_15.toString()
-    targetCompatibility = JavaVersion.VERSION_15.toString()
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
 
     kotlinOptions {
-        jvmTarget = "15"
+        jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
         useIR = true // https://blog.jetbrains.com/kotlin/2021/02/the-jvm-backend-is-in-beta-let-s-make-it-stable-together
     }
@@ -59,11 +59,11 @@ tasks.compileKotlin {
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    sourceCompatibility = JavaVersion.VERSION_15.toString()
-    targetCompatibility = JavaVersion.VERSION_15.toString()
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
 
     kotlinOptions {
-        jvmTarget = "15"
+        jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
         useIR = true
     }
