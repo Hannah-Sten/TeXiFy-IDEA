@@ -107,7 +107,7 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(2, map.size)
-        assertEquals("Older releases of this environment omit the \\endgroup token,<br> when being nested. This was done to avoid unnecessary stack usage.<br> However it does not work if macro and<br> environment environments are mixed, therefore we now<br> use a simpler approach.", map["\\endenvironment"])
+        assertEquals("Older releases of this environment omit the \\endgroup token,<br> when being nested. This was done to avoid unnecessary stack usage.<br> However it does not work if <tt>macro</tt> and<br> <tt>environment</tt> environments are mixed, therefore we now<br> use a simpler approach.", map["\\endenvironment"])
         assertEquals(map["\\endenvironment"], map["\\endmacro"])
     }
 
@@ -148,7 +148,7 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(4, map.size)
-        assertEquals("The `module'<br> directives of the docstrip system are<br> normally recognised and invoke special formatting.", map["\\DontCheckModules"])
+        assertEquals("The `module'<br> directives of the <tt>docstrip</tt> system are<br> normally recognised and invoke special formatting.", map["\\DontCheckModules"])
         assertEquals(map["\\CheckModules"], map["\\DontCheckModules"])
         assertEquals(map["\\Module"], map["\\DontCheckModules"])
         assertEquals(map["\\AltMacroFont"], map["\\DontCheckModules"])
@@ -206,7 +206,7 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val file = myFixture.configureByText("amsopn.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
-        assertEquals("The command <tt>\\DeclareMathOperator</tt> defines the first argument to<br> be an operator name whose text is the second argument. The star<br> form means that the operator name should take limits (like <tt>\\max</tt><br> or \\lim).", map["\\DeclareMathOperator"])
+        assertEquals("The command <tt>\\DeclareMathOperator</tt> defines the first argument to<br> be an operator name whose text is the second argument. The star<br> form means that the operator name should take limits (like <tt>\\max</tt><br> or <tt>\\lim</tt>).", map["\\DeclareMathOperator"])
     }
 
     fun testDeclareTextSymbol() {
