@@ -11,18 +11,17 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.util.*
 
 /**
@@ -227,11 +226,7 @@ open class LatexCompletionContributor : CompletionContributor() {
      */
     private fun registerMagicCommentLatexCompilerCompletion() {
         val compilerRegex = Regex("""compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues(
-            "compiler",
-            compilerRegex,
-            LatexMagicCommentValueProvider(compilerRegex, LatexCompiler.values().map { it.executableName }.toHashSet())
-        )
+        extendMagicCommentValues("compiler", compilerRegex, LatexMagicCommentValueProvider(compilerRegex, CompilerMagic.latexCompilerByExecutableName.keys))
     }
 
     /**
@@ -239,14 +234,7 @@ open class LatexCompletionContributor : CompletionContributor() {
      */
     private fun registerMagicCommentBibtexCompilerCompletion() {
         val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues(
-            "bibtex compiler",
-            bibtexCompilerRegex,
-            LatexMagicCommentValueProvider(
-                bibtexCompilerRegex,
-                BibliographyCompiler.values().map { it.executableName }.toHashSet()
-            )
-        )
+        extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(bibtexCompilerRegex, CompilerMagic.bibliographyCompilerByExecutableName.keys))
     }
 
     /**
