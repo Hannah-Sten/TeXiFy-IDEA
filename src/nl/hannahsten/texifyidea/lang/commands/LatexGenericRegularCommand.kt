@@ -391,6 +391,6 @@ enum class LatexGenericRegularCommand(
     XGLOBAL("xglobal", dependency = XCOLOR),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

@@ -202,6 +202,6 @@ enum class LatexGenericMathCommand(
     ABOVE_RIGHT_ARROW("xrightarrow", "text".asRequired(), dependency = AMSMATH),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

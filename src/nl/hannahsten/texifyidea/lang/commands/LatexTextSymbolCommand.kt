@@ -142,6 +142,6 @@ enum class LatexTextSymbolCommand(
     WASYTHEREFORE("wasytherefore", dependency = WASYSYM, display = "∴"),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

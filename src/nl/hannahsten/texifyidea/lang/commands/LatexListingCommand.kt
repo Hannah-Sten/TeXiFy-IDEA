@@ -18,6 +18,6 @@ enum class LatexListingCommand(
     LSTINPUTLISTING("lstinputlisting", "options".asOptional(), RequiredFileArgument("filename", false, commaSeparatesArguments = false), dependency = LISTINGS)
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

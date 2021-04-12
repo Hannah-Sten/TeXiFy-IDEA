@@ -98,6 +98,6 @@ enum class LatexTextcompCommand(
     TEXT_DIVIDE("textdiv", dependency = TEXTCOMP, display = "÷"),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

@@ -67,6 +67,6 @@ enum class LatexBiblatexCommand(
     BRACKETTEXT("brackettext", "text".asRequired(Argument.Type.TEXT), dependency = BIBLATEX),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

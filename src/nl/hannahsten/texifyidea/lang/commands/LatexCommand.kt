@@ -170,14 +170,14 @@ interface LatexCommand : Described, Dependend {
     }
 
     /**
-     * Uniquely identifies the command, when two commands are the same, but from different packages, the identifyer
+     * Uniquely identifies the command, when two commands are the same, but from different packages, the identifier
      * should be different.
      */
-    val identifyer: String
+    val identifier: String
         get() = commandWithSlash
 
     override val description: String
-        get() = identifyer
+        get() = identifier
 
     /**
      * Get the name of the command without the first backslash.

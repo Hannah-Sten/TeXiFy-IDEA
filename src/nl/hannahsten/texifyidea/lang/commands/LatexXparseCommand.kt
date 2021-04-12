@@ -25,6 +25,6 @@ enum class LatexXparseCommand(
     DECLAREDOCUMENTENVIRONMENT("DeclareDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = XPARSE),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }
