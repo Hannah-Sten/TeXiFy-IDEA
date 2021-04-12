@@ -44,25 +44,25 @@ class LatexBlock(
         // Extra indent to do because of sectioning
         var extraSectionIndent = max(sectionIndent - 1, 0)
 
-
         // If a block does not start on a new line the indent won't do anything and we need to do something else to get the text in the block indented
         val blockToIndentDoesNotStartOnNewLine = myNode.psi is LatexNoMathContent && sectionIndent > 0 && myNode.psi.prevLeaf(false)?.text?.contains("\n") == false
 
         // Sorry, it's magic
-        val newFakeSectionIndent = if (blockToIndentDoesNotStartOnNewLine) 2 else max(fakeSectionIndent - 1, 0)
+        val newFakeSectionIndent = if (blockToIndentDoesNotStartOnNewLine) sectionIndent + 1 else max(fakeSectionIndent - 1, 0)
         // (I think what it does is that it propagates the section indent to normal text words, and since it only does
         // something for things that come right after a new line the next normal text word on a new line will actually
-        // be indented (and probably not so for other structures, but we have to choose a finite number >= 2 herez)
+        // be indented (and probably not so for other structures, but we have to choose a finite number >= 2 here))
 
         // For section indenting only: add fake blocks at the end because we can only add one indent per block but we may need multiple if inside e.g. subsubsection
-        if (child == null && sectionIndent > 0) {
+        if (child == null && (sectionIndent > 0 || fakeSectionIndent > 0)) {
             val block = LatexBlock(
                 myNode,
                 wrappingStrategy.getWrap(),
                 null,
                 spacingBuilder,
                 wrappingStrategy,
-                extraSectionIndent
+                extraSectionIndent,
+                newFakeSectionIndent
             )
             blocks.add(block)
         }
@@ -113,6 +113,7 @@ class LatexBlock(
         // Set flag for next blocks until section end to get indent+1
         // We need to do it this way because we cannot create blocks which span a section content: blocks
         // need to correspond to only one psi element.
+        // Changing the parser to view section content as one element is problematic because then we need to hardcode the sectioning structure in the parser
         val command = LatexCommand.lookup(child.psi.firstChildOfType(LatexCommands::class)?.name)?.firstOrNull()
         val level = CommandMagic.labeledLevels[command]
         if (level != null && level > sectionLevel) {
