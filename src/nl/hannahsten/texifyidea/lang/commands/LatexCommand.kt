@@ -50,12 +50,13 @@ interface LatexCommand : Described, Dependend {
                 // Basically this means we add the indexed docs to the known command
                 val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
                 val cmd = if (defaultcmds.isNotEmpty()) {
-                    val defaultCommand = defaultcmds.first()
+                    // TODO Fix for starred commands
+                    val defaultCommand = defaultcmds.firstOrNull { it.description != it.identifier } ?: defaultcmds.first()
                     object : LatexCommand {
                         override val command = cmdWithoutSlash
                         override val display = defaultCommand.display
                         override val arguments = defaultCommand.arguments
-                        override val description = format(value)
+                        override val description = if(defaultCommand.description != defaultCommand.identifier) defaultCommand.description else format(value)
                         override val dependency = dependency
                         override val isMathMode = defaultCommand.isMathMode
                     }

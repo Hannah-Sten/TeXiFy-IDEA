@@ -6,6 +6,7 @@ package nl.hannahsten.texifyidea.lang.commands
 object LatexRegularCommand {
 
     val GENERIC: Set<LatexCommand> = LatexGenericRegularCommand.values().toSet()
+    val CORE: Set<LatexCommand> = LatexInfoCommandFinder.commands
     val TEXTCOMP: Set<LatexCommand> = LatexTextcompCommand.values().toSet()
     val EURO: Set<LatexCommand> = LatexEuroCommand.values().toSet()
     val TEXT_SYMBOLS: Set<LatexCommand> = LatexTextSymbolCommand.values().toSet()
@@ -21,7 +22,7 @@ object LatexRegularCommand {
     val LISTINGS: Set<LatexCommand> = LatexListingCommand.values().toSet()
     val LOREM_IPSUM: Set<LatexCommand> = LatexLoremIpsumCommand.values().toSet()
 
-    val ALL: Set<LatexCommand> = GENERIC + TEXTCOMP + EURO + TEXT_SYMBOLS + NEW_DEFINITIONS + MATHTOOLS +
+    val ALL: Set<LatexCommand> = GENERIC + CORE + TEXTCOMP + EURO + TEXT_SYMBOLS + NEW_DEFINITIONS + MATHTOOLS +
             XCOLOR + XPARSE + NATBIB + BIBLATEX + SIUNITX + ALGORITHMICX + IFS + LISTINGS + LOREM_IPSUM
 
     private val lookup = HashMap<String, MutableSet<LatexCommand>>()
