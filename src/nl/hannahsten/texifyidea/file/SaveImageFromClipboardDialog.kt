@@ -253,8 +253,9 @@ open class SaveImageFromClipboardDialog(
 
         // Parse clipboard data.
         val clipboardData = transferable.getTransferData(DataFlavor.fragmentHtmlFlavor) as String
-        val htmlFragment = Clipboard.extractHtmlFragmentFromClipboard(clipboardData)
-        val html = Jsoup.parse(htmlFragment)
+        val html = Clipboard.extractHtmlFragmentFromClipboard(clipboardData).let {
+            Jsoup.parse(it)
+        }
         val image = html.select("img").firstOrNull() ?: return
 
         // Handle data.
