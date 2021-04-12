@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.reference.InputFileReference
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 
@@ -79,7 +80,7 @@ fun PsiFile.documentClass(): String? {
  *          The name of the package to check for.
  * @return `true` when there is a package with name `packageName` in the file set, `false` otherwise.
  */
-fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this).contains(packageName)
+fun PsiFile.isUsed(packageName: String) = this.includedPackages().map { it.name }.contains(packageName)
 
 /**
  * Checks if the given package is included into the file set.
@@ -109,7 +110,7 @@ internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
     LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
         command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile, false) }
+            .mapNotNull { it.resolve(false, rootFile, true) }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
@@ -233,3 +234,13 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this)
 }
+
+/**
+ * Get all bibtex run configurations that are probably used to compile this file.
+ */
+fun PsiFile.getBibtexRunConfigurations() = project
+    .getLatexRunConfigurations()
+    .filter { it.mainFile == findRootFile().virtualFile }
+    .flatMap { it.bibRunConfigs }
+    .map { it.configuration }
+    .filterIsInstance<BibtexRunConfiguration>()

@@ -2,12 +2,16 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.allRunConfigurations
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.magic.cmd
 
 /**
  * Uses the fileset cache to find all root files in the fileset.
@@ -26,19 +30,7 @@ fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
         roots.add(this)
     }
 
-    // Go through the fileset of this file to find out the root files
-    for (file in fileset) {
-        // Function to avoid unnecessary evaluation
-        fun usesSubFiles() = file.commandsInFile()
-            .find { it.name == "\\documentclass" }
-            ?.requiredParameters
-            ?.contains("subfiles") == true
-
-        // Theoretically, we might now add a root file which is included by [this], but in that case we got the root file incorrect anyway
-        if (file.isRoot() && !usesSubFiles()) {
-            roots.add(file)
-        }
-    }
+    roots.addAll(fileset.filter { it.isRoot() })
 
     return if (roots.isEmpty()) setOf(this) else roots
 }
@@ -71,18 +63,19 @@ fun PsiFile.isRoot(): Boolean {
     }
 
     // Function to avoid unnecessary evaluation
-    fun documentClass() = this.commandsInFile().find { it.commandToken.text == "\\documentclass" }
+    fun documentClass() = this.commandsInFile().find { it.commandToken.text == LatexGenericRegularCommand.DOCUMENTCLASS.cmd }
 
-    fun documentEnvironment() = this.childrenOfType(LatexEnvironment::class).any { it.environmentName == "document" }
+    fun documentEnvironment() = this.childrenOfType(LatexEnvironment::class).any { it.environmentName == DefaultEnvironment.DOCUMENT.environmentName }
 
-    // Whether the document makes use of the subfiles class, in which case it is not a root file
-    fun usesSubFiles() = documentClass()?.requiredParameters?.contains("subfiles") == true
+    // If the file uses the subfiles documentclass, then it is a root file in the sense that all file inclusions
+    // will be relative to this file. Note that it may include the preamble of a different file (using optional parameter of \documentclass)
+    fun usesSubFiles() = documentClass()?.requiredParameters?.contains(SUBFILES.name) == true
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
-    val isMainFileInAnyConfiguration = project.allRunConfigurations().any { it.mainFile == this.virtualFile }
+    val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.mainFile == this.virtualFile }
 
-    return (isMainFileInAnyConfiguration || documentEnvironment()) && !usesSubFiles()
+    return isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles()
 }
 
 /**

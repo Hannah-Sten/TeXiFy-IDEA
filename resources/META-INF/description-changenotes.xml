@@ -1,0 +1,99 @@
+<idea-plugin>
+    <description><![CDATA[
+        <p>
+            Plugin for LaTeX and BibTeX support in IntelliJ.
+        </p>
+        <ul>
+            <li>Syntax highlighting</li>
+            <li>Autocompletion of labels, (custom defined and package defined) commands and environments</li>
+            <li>Writer ergonomics - writing LaTeX made less cumbersome</li>
+            <li>Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber</li>
+            <li>Inspections. Intentions. And heaps more inspections</li>
+            <li>Full BibTeX support</li>
+            <li>Formatter for LaTeX and BibTeX</li>
+            <li>Structure view for LaTeX and BibTeX with filters</li>
+            <li>Code folding for imports, sections, and environments</li>
+            <li>Built-in pdf viewer via the PDF Viewer plugin, including forward and backward search</li>
+            <li>SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search</li>
+            <li>Smart quotes</li>
+            <li>Unicode math preview</li>
+            <li>Equation and TikZ picture preview</li>
+            <li>Gutter icons for quick compilation and file includes</li>
+            <li>Fancy icons that fit in with the IntelliJ style</li>
+            <li>Brace matching</li>
+            <li>Word counting tool</li>
+            <li>File templates for <code>.tex</code>, <code>.sty</code>, <code>.cls</code>, <code>.bib</code>, and <code>.tikz</code> files</li>
+            <li>Automagically import packages of common commands</li>
+            <li>Go to declaration of labels</li>
+            <li>Shortcuts for styling text</li>
+            <li>Line commenter</li>
+            <li>Support for user-created document classes and packages</li>
+            <li>Toggle star action</li>
+            <li>Words of encouragement</li>
+            <li>A complete feature list can be found at our <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features">wiki</a> (work in progress).</li>
+        </ul>
+        <p>
+            All critique, questions, suggestions, requests, bug reports, kudos, and (non-)creative ideas are
+            welcome on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA">plugin's GitHub page</a>.
+            If you want to directly chat with us, take a peek at the project's
+            <a href="https://gitter.im/TeXiFy-IDEA">gitter</a>.
+        </p>
+    ]]></description>
+
+    <!-- Changelog -->
+    <change-notes><![CDATA[
+        <p><strong>Beta 0.7.5</strong></p>
+        <p>
+            Welcome to TeXiFy IDEA 0.7.5! This release, together with the PDF Viewer plugin 0.11.0, adds forward and backward search support to the internal pdf viewer. It also contains many small usability enhancements and bug fixes, like performance improvements and 'create project from existing sources' support.
+        <p>
+        <p>
+            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+            Your input is valuable and well appreciated.
+        </p>
+        <br>
+        <p>
+            <em>Additions</em>
+        </p>
+        <ul>
+            <li> Add quick fix for normal space insertion to line break inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
+            <li> Add .cbx and biblatex-dm.cfg to recognised file extensions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1805">#1805</a>)</li>
+            <li> Add documentation popup for environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
+            <li> Add warning when trying to use documentation while texdoc is not installed. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
+            <li> Index which LaTeX packages include which other LaTeX packages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1799">#1799</a>)</li>
+            <li> Improve autocompletion performance. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
+            <li> Add support for 'create project from existing sources'. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1807">#1807</a>)</li>
+        </ul>
+        <br>
+        <p>
+            <em>Changes</em>
+        </p>
+        <ul>
+            <li> Show a warning when trying to submit a crash report when not using the latest version of TeXiFy. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1778">#1778</a>)</li>
+            <li> Make inspection levels configurable by user. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1781">#1781</a>)</li>
+            <li> Look in run configurations for possible paths to latex executables when using PyCharm on a Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
+            <li> Underscore is now a valid bibtex type character. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
+            <li> \url and \href are now verbatim commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1784">#1784</a>)</li>
+            <li> Use safe delete quickfixes for some 'unused element' inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1787">#1787</a>)</li>
+            <li> Prepare for PDF Viewer plugin support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1822">#1822</a>)</li>
+        </ul>
+        <br>
+        <p>
+            <em>Bug fixes</em>
+        </p>
+        <ul>
+            <li> Fix line breaking of comments during formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1776">#1776</a>)</li>
+            <li> Fix go to command definition when it is a custom label referencing command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1784">#1784</a>)</li>
+            <li> Fix parse error on \newenvironment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
+            <li> Fix exception when MiKTeX is not installed on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
+            <li> Fix executable path for native TeX Live SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
+        </ul>
+        <br>
+        <p>
+            Thanks to <a href="https://github.com/solonovamax">@solonovamax</a> for contributing to this release.
+        </p>
+        <br>
+        <p>
+            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+        </p>
+    ]]></change-notes>
+</idea-plugin>

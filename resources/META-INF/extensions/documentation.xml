@@ -1,0 +1,6 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
+        <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
+    </extensions>
+</idea-plugin>

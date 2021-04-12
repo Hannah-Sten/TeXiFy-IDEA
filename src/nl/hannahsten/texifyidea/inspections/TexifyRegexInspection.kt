@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.psi.LatexRawText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -56,9 +55,9 @@ abstract class TexifyRegexInspection(
     val replacementRange: (Matcher) -> IntRange = { it.start()..it.end() },
 
     /**
-     * The highlight level of the problem, WEAK_WARNING by default.
+     * The highlight level of the problem, GENERIC_ERROR_OR_WARNING by default.
      */
-    val highlight: ProblemHighlightType = ProblemHighlightType.WEAK_WARNING,
+    val highlight: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
 
     /**
      * Name of the quick fix.

@@ -33,7 +33,6 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         }
 
         // Don't insert \item when the enter was triggered by the word wrap
-        // Unfortunately the only way to get to the userData in the DataContext seems to be the deprecated MyDataContext
         if (DataManager.getInstance().loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true) {
             return Result.Continue
         }

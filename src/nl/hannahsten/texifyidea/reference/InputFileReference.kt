@@ -48,8 +48,10 @@ class InputFileReference(
      *              Whether to look for packages installed elsewhere on the filesystem.
      *              Set to false when it would make the operation too expensive, for example when trying to
      *              calculate the fileset of many files.
-     * @param includeGraphicsFiles
-     *              True if we also need to resolve to graphics files. Doing so is really expensive at
+     * @param givenRootFile Used to avoid unnecessarily recalculating the root file.
+     * @param isBuildingFileset
+     *              True if we are building the fileset.
+     *              If false we also need to resolve to graphics files. Doing so is really expensive at
      *              the moment (at least until the implementation in LatexGraphicsPathProvider is improved):
      *              for projects with 500 include commands in hundreds of files this can take 10 seconds in total if
      *              you call this function for every include command.
@@ -57,7 +59,7 @@ class InputFileReference(
      *              (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve
      *              (if requested by the user).
      */
-    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, includeGraphicsFiles: Boolean = true): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set,
         // because this function is used to find the file set so that would cause an infinite loop
 
@@ -66,8 +68,8 @@ class InputFileReference(
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
-        val rootDirectory = rootFile.parent ?: return null
+        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles().mapNotNull { it.virtualFile }
+        val rootDirectories = rootFiles.mapNotNull { it.parent }
 
         var targetFile: VirtualFile? = null
 
@@ -75,7 +77,7 @@ class InputFileReference(
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
         val texInputPath = runManager.allConfigurationsList
                 .filterIsInstance<LatexRunConfiguration>()
-                .firstOrNull { it.mainFile == rootFile }
+                .firstOrNull { it.mainFile in rootFiles }
                 ?.environmentVariables
                 ?.envs
                 ?.getOrDefault("TEXINPUTS", null)
@@ -94,11 +96,25 @@ class InputFileReference(
             }
         }
 
-        val processedKey = expandCommandsOnce(key, element.project, file = rootFile.psiFile(element.project)) ?: key
+        // BIBINPUTS
+        // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
+        if (!isBuildingFileset && (element.name in CommandMagic.bibliographyIncludeCommands || extensions.contains("bib"))) {
+            val bibRunConfigs = element.containingFile.getBibtexRunConfigurations()
+            if (bibRunConfigs.any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }) {
+                // When using BIBINPUTS, the file will only be sought relative to BIBINPUTS
+                searchPaths.clear()
+                searchPaths.addAll(bibRunConfigs.mapNotNull { it.environmentVariables.envs["BIBINPUTS"] })
+            }
+        }
+
+        val processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
 
         // Try to find the target file directly from the given path
         if (targetFile == null) {
-            targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+            for (rootDirectory in rootDirectories) {
+                targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+                if (targetFile != null) break
+            }
         }
 
         // Try content roots
@@ -111,13 +127,16 @@ class InputFileReference(
 
         // Try search paths
         if (targetFile == null) {
-            if (includeGraphicsFiles) {
+            if (!isBuildingFileset) {
                 // Add the graphics paths to the search paths
                 searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
             }
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
-                targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                for (rootDirectory in rootDirectories) {
+                    targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                    if (targetFile != null) break
+                }
                 if (targetFile != null) break
             }
         }
@@ -181,6 +200,14 @@ class InputFileReference(
 
     override fun handleElementRename(newElementName: String): PsiElement {
         return handleElementRename(newElementName, true)
+    }
+
+    // Required for moving referenced files
+    override fun bindToElement(element: PsiElement): PsiElement {
+        val newFile = element as? PsiFile ?: return this.element
+        // Assume LaTeX will accept paths relative to the root file
+        val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
+        return handleElementRename(newFileName, false)
     }
 
     /**

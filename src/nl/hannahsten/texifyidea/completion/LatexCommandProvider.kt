@@ -38,6 +38,12 @@ import java.util.stream.Collectors
 class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     CompletionProvider<CompletionParameters>() {
 
+    companion object {
+
+        /** Cache for commands which are indexed and which should be added to the autocompletion. */
+        val indexedCommands = mutableSetOf<LookupElementBuilder>()
+    }
+
     override fun addCompletions(
         parameters: CompletionParameters,
         context: ProcessingContext,
@@ -77,16 +83,38 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         }
     }
 
+    /**
+     * Add all indexed commands to the autocompletion.
+     */
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
-        result.addAllElements(
-            FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
-                .flatMap { cmdWithSlash ->
-                    val cmdWithoutSlash = cmdWithSlash.substring(1)
-                    LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).flatMap { cmd ->
-                        createCommandLookupElements(cmd)
-                    }
+        // Use cache if available
+        if (indexedCommands.isNotEmpty()) {
+            result.addAllElements(indexedCommands)
+            return
+        }
+
+        val commands = mutableSetOf<LookupElementBuilder>()
+        FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
+            .forEach { cmdWithSlash ->
+                val cmdWithoutSlash = cmdWithSlash.substring(1)
+                LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).forEach { cmd ->
+                    createCommandLookupElements(cmd)
+                        // Avoid duplicates of commands defined in LaTeX base, because they are often very similar commands defined in different document classes so it makes not
+                        // much sense at the moment to have them separately in the autocompletion.
+                        // Effectively this results in just taking the first one we found
+                        .filter { newBuilder ->
+                            if (cmd.dependency.isDefault) {
+                                commands.none { it.lookupString == newBuilder.lookupString }
+                            }
+                            else {
+                                true
+                            }
+                        }
+                        .forEach { commands.add(it) }
                 }
-        )
+            }
+        indexedCommands.addAll(commands)
+        result.addAllElements(commands)
     }
 
     private fun addNormalCommands(result: CompletionResultSet, project: Project) {
@@ -95,7 +123,9 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
                 /** True if there is a package for which we already have the [cmd] command indexed.  */
-                fun alreadyIndexed() = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project)).map { LatexPackage.create(it) }.contains(cmd.dependency)
+                fun alreadyIndexed() =
+                    FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project))
+                        .map { LatexPackage.create(it) }.contains(cmd.dependency)
 
                 // Avoid adding duplicates
                 // Prefer the indexed command (if it really is the same one), as that one has documentation

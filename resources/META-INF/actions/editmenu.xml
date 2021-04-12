@@ -1,0 +1,104 @@
+<idea-plugin>
+    <actions>
+        <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex edit actions" popup="true"
+               class="nl.hannahsten.texifyidea.action.group.LatexEditMenuGroup">
+            <!-- MPS doesn't have the EditSmartGroup group, so we register directly in the Edit menu. -->
+            <add-to-group group-id="EditMenu" anchor="last"/>
+
+            <!-- Toggle Star -->
+            <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
+                    description="Adds/removes a star from a LaTeX command.">
+                <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default"/>
+            </action>
+
+            <separator/>
+
+            <!-- Table Creation Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableCreationWizard"
+                    text="Insert _Table..."
+                    description="Shows a popup to create and insert a table."/>
+
+            <!-- Graphic Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction" id="texify.GraphicInsertWizard"
+                    text="Insert _Graphic..."
+                    description="Shows a popup to insert a graphic."/>
+
+            <!-- Dummy text -->
+            <action class="nl.hannahsten.texifyidea.action.wizard.ipsum.InsertDummyTextAction" id="texify.DummyTextWizard"
+                    text="Insert _Dummy Text..."
+                    description="Shows a popup to insert dummy text."/>
+        </group>
+
+        <!-- Insert: Sectioning -->
+        <group id="texify.LatexMenu.Insert.Sectioning" class="nl.hannahsten.texifyidea.action.group.InsertSectioningActionGroup"
+               text="_Sectioning" description="Insert sectioning." popup="true">
+            <add-to-group group-id="texify.LatexMenuEdit" anchor="first"/>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
+                    text="_Part" description="Insert the part command."/>
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertChapterAction" id="texify.insert.sectioning.Chapter"
+                    text="_Chapter" description="Insert the chapter command."/>
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSectionAction" id="texify.insert.sectioning.Section"
+                    text="_Section" description="Insert the section command."/>
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSubSectionAction" id="texify.insert.sectioning.Subsection"
+                    text="S_ubsection" description="Insert the subsection command."/>
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSubSubSectionAction" id="texify.insert.sectioning.Subsubsection"
+                    text="Su_bsubsection" description="Insert the subsubsection command."/>
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertParagraphAction" id="texify.insert.sectioning.Paragraph"
+                    text="_Paragraph" description="Insert the paragraph command."/>
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
+                    text="Subp_aragraph" description="Insert the subparagraph command."/>
+        </group>
+
+        <!-- Insert: Font Style -->
+        <group id="texify.LatexMenu.Insert.FontStyle" class="nl.hannahsten.texifyidea.action.group.InsertFontStyleActionGroup"
+               text="_Font Style" description="Insert font style commands." popup="true">
+            <add-to-group group-id="texify.LatexMenuEdit" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning"/>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
+                    text="_Bold" description="Insert the command to make text appear bold.">
+                <keyboard-shortcut first-keystroke="control alt shift B" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertItalicsAction" id="texify.insert.fontstyle.Italics"
+                    text="_Italics" description="Insert the command to make text appear in italics.">
+                <keyboard-shortcut first-keystroke="control alt shift I" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertUnderlineAction" id="texify.insert.fontstyle.Underline"
+                    text="_Underline" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift U" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertOverlineAction" id="texify.insert.fontstyle.Overline"
+                    text="_Overline" description="Insert the command to overline text.">
+                <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSmallCapsAction" id="texify.insert.fontstyle.SmallCaps"
+                    text="Small _Capitals" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift C" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertTypewriterAction" id="texify.insert.fontstyle.Typewriter"
+                    text="_Typewriter (Monospace)" description="Insert the command to make text monospace.">
+                <keyboard-shortcut first-keystroke="control alt shift T" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertStrikethroughAction" id="texify.insert.fontstyle.Strikethrough"
+                    text="_Strikethrough (Ulem Package)"
+                    description="Insert the command to strikethrough text (inclusion of ulem package required).">
+                <keyboard-shortcut first-keystroke="control alt shift S" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSlantedAction" id="texify.insert.fontstyle.Slanted"
+                    text="S_lanted" description="Insert the command to make text appear slanted.">
+                <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertEmphasisAction" id="texify.insert.fontstyle.Emphasis"
+                    text="_Emphasis" description="Insert the command to emphasise text.">
+            </action>
+        </group>
+    </actions>
+</idea-plugin>

@@ -23,6 +23,8 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import com.intellij.util.PathUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
@@ -52,6 +54,7 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
@@ -433,7 +436,7 @@ class LatexRunConfiguration constructor(
         if (!latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path))
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + ":"))
             }
         }
 
@@ -469,19 +472,19 @@ class LatexRunConfiguration constructor(
         }
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
+        val usesChapterbib = psiFile?.includedPackages()?.contains(LatexPackage.CHAPTERBIB) == true
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
         }
         else if (psiFile != null) {
-            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == "\\bibliography" }
+            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd }
 
             // We know that there can only be one bibliography per top-level \include,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
             psiFile!!.allCommands()
-                .filter { it.name == "\\include" }
+                .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
                 .flatMap { command -> command.requiredParameters }
                 .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter

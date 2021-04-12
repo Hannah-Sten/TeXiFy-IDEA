@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
+import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
@@ -196,7 +197,7 @@ fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun String.runCommand() = runCommand(*(this.split("\\s".toRegex())).toTypedArray())
+fun String.runCommand(workingDirectory: File? = null) = runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 /**
  * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.

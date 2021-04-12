@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <lang.surroundDescriptor language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.surroundwith.LatexSurroundDescriptor"/>
+    </extensions>
+</idea-plugin>

@@ -48,4 +48,9 @@ public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
     return BibtexPsiImplUtil.setName(this, name);
   }
 
+  @Override
+  public void delete() {
+    BibtexPsiImplUtil.delete(this);
+  }
+
 }

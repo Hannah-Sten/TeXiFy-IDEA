@@ -18,7 +18,7 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val lookupItems = parameters.originalFile.findBibtexItems()
-            .map { bibtexEntry ->
+            .mapNotNull { bibtexEntry ->
                 when (bibtexEntry) {
                     is BibtexEntry -> {
                         val lookupStrings = LinkedList(bibtexEntry.authors)
@@ -36,7 +36,7 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
                             .withIcon(TexifyIcons.DOT_BIB)
                     }
                     is LatexCommands -> {
-                        if (bibtexEntry.requiredParameters.size == 0) return@map null
+                        if (bibtexEntry.requiredParameters.isEmpty()) return@mapNotNull null
                         LookupElementBuilder.create(bibtexEntry.requiredParameters[0])
                             .bold()
                             .withInsertHandler(LatexReferenceInsertHandler())

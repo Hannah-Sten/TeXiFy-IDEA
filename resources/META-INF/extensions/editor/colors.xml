@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <colorProvider implementation="nl.hannahsten.texifyidea.gutter.LatexElementColorProvider"/>
+    </extensions>
+</idea-plugin>

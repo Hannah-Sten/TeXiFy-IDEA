@@ -24,6 +24,7 @@ import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
+        removeWhiteSpaces(context)
         val command = item.`object` as LatexCommand
 
         when (command.command) {
@@ -92,6 +93,20 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
     }
 
     /**
+     * Remove whitespaces and everything after that that was inserted by the lookup text.
+     */
+    private fun removeWhiteSpaces(context: InsertionContext) {
+        val editor = context.editor
+        val document = editor.document
+        val offset = editor.caretModel.offset
+        // context.startOffset is the offset of the start of the just inserted text.
+        val insertedText = document.text.substring(context.startOffset, offset)
+        val indexFirstSpace = insertedText.indexOfFirst { it == ' ' }
+        if (indexFirstSpace == -1) return
+        document.deleteString(context.startOffset + indexFirstSpace, offset)
+    }
+
+    /**
      * Makes sure environments get imported if required.
      *
      * @author Hannah Schellekens
@@ -114,7 +129,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
                 .toSet()
 
             // Include packages.
-            if (!file.includedPackages().contains(pack.name) && envName !in envDefinitions) {
+            if (!file.includedPackages().contains(pack) && envName !in envDefinitions) {
                 file.insertUsepackage(pack)
             }
 

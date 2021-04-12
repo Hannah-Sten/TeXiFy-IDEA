@@ -78,6 +78,23 @@
         </context>
     </template>
 
+    <template name="enq" value="\enquote{$QUOTE$} $END$" description="Enquote" toReformat="false" toShortenFQNames="true">
+        <variable name="QUOTE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+
+    <template name="fc" value="\footcite[$PAGE$]{$SOURCE$}$END$" description="footcite" toReformat="false" toShortenFQNames="true">
+        <variable name="PAGE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="SOURCE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+
     <!--  Mathematics  -->
     <template name="sum" value="\sum_{$FROM$}^{$TO$} $END$" description="Sum with sub- and superscript" toReformat="false" toShortenFQNames="true">
         <variable name="FROM" expression="" defaultValue="" alwaysStopAt="true"/>
@@ -92,23 +109,6 @@
         <variable name="TO" expression="" defaultValue="" alwaysStopAt="true"/>
         <context>
             <option name="LATEX_MATH" value="true"/>
-        </context>
-    </template>
-    
-    <template name="enq" value="\enquote{$QUOTE$} $END$" description="Enquote" toReformat="false" toShortenFQNames="true">
-        <variable name="QUOTE" expression="" defaultValue="" alwaysStopAt="true" />
-        <context>
-            <option name="LATEX" value="true"/>
-            <option name="LATEX_MATH" value="false"/>
-        </context>
-    </template>
-    
-    <template name="fc" value="\footcite[$PAGE$]{$SOURCE$}$END$" description="footcite" toReformat="false" toShortenFQNames="true">
-        <variable name="PAGE" expression="" defaultValue="" alwaysStopAt="true" />
-        <variable name="SOURCE" expression="" defaultValue="" alwaysStopAt="true" />
-        <context>
-            <option name="LATEX" value="true"/>
-            <option name="LATEX_MATH" value="false"/>
         </context>
     </template>
 </templateSet>

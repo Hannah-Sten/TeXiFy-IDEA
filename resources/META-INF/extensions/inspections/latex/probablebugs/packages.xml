@@ -1,0 +1,24 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageCouldNotBeFound"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package could not be found"
+                         enabledByDefault="false"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageNotInstalledInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package is not installed"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageNameDoesNotMatchFileNameInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package name does not match file name"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageSubdirectoryInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package name does not have the correct directory"
+                         enabledByDefault="true"
+                         level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexMissingImportInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Missing imports"
+                         enabledByDefault="true"
+                         level="ERROR" />
+    </extensions>
+</idea-plugin>

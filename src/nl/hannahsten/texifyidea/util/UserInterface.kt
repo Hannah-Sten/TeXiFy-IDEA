@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.panels.HorizontalLayout
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.KeyAdapter
@@ -174,4 +175,11 @@ fun JPanel.addLabeledComponent(
     }
     add(pane)
     return pane
+}
+
+/**
+ * Creates a jpanel with horizontally aligned elements.
+ */
+fun hbox(spacing: Int = 8, vararg components: JComponent) = JPanel(HorizontalLayout(spacing)).apply {
+    components.forEach { add(it) }
 }

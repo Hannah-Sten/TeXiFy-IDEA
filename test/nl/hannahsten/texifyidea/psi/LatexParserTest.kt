@@ -77,6 +77,10 @@ class LatexParserTest : BasePlatformTestCase() {
             \newenvironment{test2}{ $ x$ and $ }{ $ }
             \newenvironment{test}[1]{\begin{test*}{#1}}{\end{test*}}
             $\xi$
+            
+            \begin{document}
+                \newenvironment{test}{\begin{center}}{\end{center}}
+            \end{document}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

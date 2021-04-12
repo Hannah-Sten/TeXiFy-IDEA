@@ -111,7 +111,10 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Stores the long caption for the figure environment.
      */
-    private val txtLongCaption = ExpandableTextField()
+    private val txtLongCaption = ExpandableTextField(
+        { it.split("\n") },
+        { it.joinToString("\n") }
+    )
 
     /**
      * Contains the label for the figure.

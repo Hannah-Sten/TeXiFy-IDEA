@@ -33,16 +33,16 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         // Note that suggested paths appear under "Detected SDK's" when adding an SDK
         val results = mutableSetOf<String>()
         val path = "which pdflatex".runCommand()
-        if (!path.isNullOrEmpty()) {
+
+        // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
+        if (!path.isNullOrEmpty() && !path.contains("x86_64-linux")) {
             results.add(path.substringBefore("/pdflatex"))
         }
         results.add(suggestHomePath())
         return results
     }
 
-    override fun isValidSdkHome(path: String?): Boolean {
-        if (path == null) return false
-
+    override fun isValidSdkHome(path: String): Boolean {
         // We expect the location of the executables, wherever that is.
         // This is different from a TexliveSdk installation, where we have the parent directory of the TeX Live installation and find everything there.
 
@@ -56,14 +56,11 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return """TeX Live (\d\d\d\d\/.+)""".toRegex().find(LatexSdkUtil.pdflatexVersionText)?.value ?: "Unknown version"
     }
 
-    override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
+    override fun getDefaultDocumentationUrl(sdk: Sdk): String {
         return "$texmfDistPath/doc"
     }
 
     override fun getExecutableName(executable: String, homePath: String): String {
-        // Even though pdflatex is in path, it may be not the pdflatex we want, so we prefix the path to be sure.
-        // Get base path of LaTeX distribution
-        val basePath = "/usr/bin"
-        return "$basePath/$executable"
+        return "$homePath/$executable"
     }
 }

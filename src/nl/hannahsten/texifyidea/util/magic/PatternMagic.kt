@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLineBreakInspection
 import java.util.regex.Pattern
 
 typealias RegexPattern = Pattern
@@ -27,7 +27,8 @@ object PatternMagic {
      *
      * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
      */
-    val sentenceEnd = RegexPattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%\\s])|(^\\. )")!!
+    const val sentenceEndPrefix = "[^.A-Z][^.A-Z]"
+    val sentenceEnd = RegexPattern.compile("($sentenceEndPrefix[.?!;;] +[^%\\s])|(^\\. )")!!
 
     /**
      * Matches all interpunction that marks the end of a sentence.

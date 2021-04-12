@@ -37,7 +37,7 @@ class RunExternalToolListener(
 
             val externalTools = mutableSetOf<ExternalTool>()
 
-            if (LatexPackage.PYTHONTEX.name in usedPackages) {
+            if (LatexPackage.PYTHONTEX in usedPackages) {
                 externalTools.add(ExternalTool.PYTHONTEX)
             }
 

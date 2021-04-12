@@ -1,6 +1,16 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.HVINDEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.IDXLAYOUT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.IMAKEIDX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEXTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MAKEIDX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MULTIND
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.REPEATINDEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITIDX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITINDEX
 
 object PackageMagic {
 
@@ -16,13 +26,13 @@ object PackageMagic {
      * All known packages which provide an index.
      */
     val index = hashSetOf(
-            "makeidx", "multind", "index", "splitidx", "splitindex", "imakeidx", "hvindex", "idxlayout", "repeatindex", "indextools"
+            MAKEIDX, MULTIND, INDEX, SPLITIDX, SPLITINDEX, IMAKEIDX, HVINDEX, IDXLAYOUT, REPEATINDEX, INDEXTOOLS
     )
 
     /**
      * Packages which provide a glossary.
      */
-    val glossary = hashSetOf(LatexPackage.GLOSSARIES, LatexPackage.GLOSSARIESEXTRA).map { it.name }
+    val glossary = hashSetOf(LatexPackage.GLOSSARIES, LatexPackage.GLOSSARIESEXTRA)
 
     /**
      * Known conflicting packages.
@@ -33,6 +43,8 @@ object PackageMagic {
 
     /**
      * Maps packages to the packages it loads.
+     * Note that when a LaTeX SDK is available, then the relative inclusions are handled for all installed packages by [nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache].
+     * This list is just there as a sort of default for those users who do not have LaTeX packages installed for example.
      */
     val packagesLoadingOtherPackages: Map<LatexPackage, Set<LatexPackage>> = mapOf(
             LatexPackage.AMSSYMB to setOf(LatexPackage.AMSFONTS),

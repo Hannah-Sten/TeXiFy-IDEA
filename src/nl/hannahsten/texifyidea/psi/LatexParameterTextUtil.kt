@@ -5,12 +5,9 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -20,7 +17,7 @@ fun getReferences(element: LatexParameterText): Array<PsiReference> {
     // If the command is a label reference
     // NOTE When adding options here, also update getNameIdentifier below
     return when {
-        CommandMagic.labelReferenceWithoutCustomCommands.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
+        element.project.getLabelReferenceCommands().contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(LatexLabelParameterReference(element))
         }
         // If the command is a bibliography reference
@@ -124,4 +121,20 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
 
 fun getName(element: LatexParameterText): String {
     return element.text ?: ""
+}
+
+val LatexParameterText.command: PsiElement?
+    get() {
+        return this.firstParentOfType(LatexCommands::class)?.firstChild
+    }
+
+fun delete(element: LatexParameterText) {
+    val cmd = element.parentOfType(LatexCommands::class) ?: return
+    if (cmd.isFigureLabel()) {
+        // Look for the NoMathContent that is around the environment, because that is the PsiElement that has the
+        // whitespace and other normal text as siblings.
+        cmd.parentOfType(LatexEnvironment::class)
+            ?.parentOfType(LatexNoMathContent::class)
+            ?.remove()
+    }
 }

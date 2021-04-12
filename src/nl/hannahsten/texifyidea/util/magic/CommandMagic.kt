@@ -143,7 +143,7 @@ object CommandMagic {
      *
      * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
      */
-    fun getLabelDefinitionCommands(project: Project): Set<String> {
+    fun getLabelDefinitionCommands(project: Project): Set<String>? {
         // Check if updates are needed
         CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
         return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
@@ -195,7 +195,8 @@ object CommandMagic {
             DECLAREDOCUMENTCOMMAND,
             DEF,
             LET,
-            RENEWENVIRONMENT
+            RENEWENVIRONMENT,
+            CATCODE, // Not really redefining commands, but characters
     ).map { it.cmd }
 
     /**
@@ -275,6 +276,17 @@ object CommandMagic {
     )
 
     /**
+     * Commands which can include packages in optional or required arguments.
+     */
+    val packageInclusionCommands = setOf(
+        USEPACKAGE, REQUIREPACKAGE, DOCUMENTCLASS, LOADCLASS
+    ).map { it.cmd }.toSet()
+
+    val tikzLibraryInclusionCommands = setOf(USETIKZLIBRARY.cmd)
+
+    val pgfplotsLibraryInclusionCommands = setOf(USEPGFPLOTSLIBRARY.cmd)
+
+    /**
      * Commands that should have the given file extensions.
      */
     val requiredExtensions = mapOf(
@@ -294,8 +306,14 @@ object CommandMagic {
             REQUIREPACKAGE.cmd to hashSetOf("sty"),
             USEPACKAGE.cmd to hashSetOf("sty"),
             DOCUMENTCLASS.cmd to hashSetOf("cls"),
+            LOADCLASS.cmd to hashSetOf("cls"),
             EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels
     )
+
+    /**
+     * Commands that include bib files.
+     */
+    val bibliographyIncludeCommands = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }
 
     @Suppress("unused")
     val startIfs = hashSetOf(

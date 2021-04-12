@@ -8,6 +8,11 @@ import org.jdom.Element
 /**
  * Represents the location of the LaTeX installation.
  *
+ * NOTES for subclasses:
+ * - suggestHomePath() will be the starting point when someone opens the file explorer dialog to select an SDK of this type
+ * - suggestHomePaths() appear under "Detected SDK's" when adding an SDK
+ * - HOWEVER they only do so, when getVersionString(sdkHome: String?) is implemented (implementing getVersionString(sdk: SDK?) is NOT enough)
+ *
  * @author Thomas
  */
 abstract class LatexSdk(name: String) : SdkType(name) {
@@ -18,7 +23,7 @@ abstract class LatexSdk(name: String) : SdkType(name) {
         return null
     }
 
-    override fun suggestSdkName(currentSdkName: String?, sdkHome: String?) = name
+    override fun suggestSdkName(currentSdkName: String?, sdkHome: String) = name
 
     override fun getPresentableName() = name
 
@@ -45,4 +50,10 @@ abstract class LatexSdk(name: String) : SdkType(name) {
      * where the sources path is, we implement a default on the SDK type (which will be invisible for the user unfortunately).
      */
     open fun getDefaultSourcesPath(homePath: String): VirtualFile? = null
+
+    /**
+     * Default path to the location of package style (.sty) files.
+     * Example: texlive/2020/texmf-dist/tex/latex
+     */
+    open fun getDefaultStyleFilesPath(homePath: String): VirtualFile? = null
 }

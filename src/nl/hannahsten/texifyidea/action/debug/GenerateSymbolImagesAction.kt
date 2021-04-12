@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import nl.hannahsten.texifyidea.tools.generateSymbolImages
+import nl.hannahsten.texifyidea.ui.symbols.tools.generateSymbolImages
 import nl.hannahsten.texifyidea.util.toastInfo
 
 /**

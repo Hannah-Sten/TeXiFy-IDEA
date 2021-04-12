@@ -1,0 +1,7 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.StartEvinceInverseSearchListener"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.AnalyzeMenuRegistration"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.TexLivePackageListInitializer"/>
+    </extensions>
+</idea-plugin>
