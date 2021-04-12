@@ -3,8 +3,10 @@ package nl.hannahsten.texifyidea.formatting
 import com.intellij.application.options.CodeStyle
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
+import com.intellij.psi.util.prevLeaf
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
@@ -27,6 +29,8 @@ class LatexBlock(
     private val spacingBuilder: TexSpacingBuilder,
     private val wrappingStrategy: LatexWrappingStrategy,
     val sectionIndent: Int = 0,
+    /** Extra section indent that's not real but is used in case blocks do not start on a new line, so that it is ignored for the enter handler. */
+    private val fakeSectionIndent: Int = 0,
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {
@@ -39,6 +43,16 @@ class LatexBlock(
         var sectionLevel = -2
         // Extra indent to do because of sectioning
         var extraSectionIndent = max(sectionIndent - 1, 0)
+
+
+        // If a block does not start on a new line the indent won't do anything and we need to do something else to get the text in the block indented
+        val blockToIndentDoesNotStartOnNewLine = myNode.psi is LatexNoMathContent && sectionIndent > 0 && myNode.psi.prevLeaf(false)?.text?.contains("\n") == false
+
+        // Sorry, it's magic
+        val newFakeSectionIndent = if (blockToIndentDoesNotStartOnNewLine) 2 else max(fakeSectionIndent - 1, 0)
+        // (I think what it does is that it propagates the section indent to normal text words, and since it only does
+        // something for things that come right after a new line the next normal text word on a new line will actually
+        // be indented (and probably not so for other structures, but we have to choose a finite number >= 2 herez)
 
         // For section indenting only: add fake blocks at the end because we can only add one indent per block but we may need multiple if inside e.g. subsubsection
         if (child == null && sectionIndent > 0) {
@@ -68,14 +82,15 @@ class LatexBlock(
             }
 
             // Normal addition of blocks
-            if (child.elementType !== TokenType.WHITE_SPACE) {
+            if (child.elementType !== TokenType.WHITE_SPACE && child !is PsiWhiteSpace) {
                 val block = LatexBlock(
                     child,
                     wrappingStrategy.getWrap(),
                     null,
                     spacingBuilder,
                     wrappingStrategy,
-                    targetIndent
+                    targetIndent,
+                    newFakeSectionIndent
                 )
                 blocks.add(block)
             }
@@ -138,7 +153,7 @@ class LatexBlock(
         // Indentation of sections
         val indentSections = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_SECTIONS
         if (indentSections) {
-            if (sectionIndent > 0) {
+            if (sectionIndent > 0 || fakeSectionIndent > 0) {
                 return Indent.getNormalIndent(false)
             }
         }
