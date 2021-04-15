@@ -11,7 +11,7 @@ class LatexDocsRegexerTest : BasePlatformTestCase() {
             The behaviour of the \pkg{siunitx} package is controlled by a number of key--value options. These can be given globally using the \cs{sisetup} function or locally as the optional argument to the user macros.
             \LaTeX{}
         """.trimIndent()
-        val expected = """The macro \bblastx will print the example number before last.<br>This is like \intertext but uses shorter skips between the math. <br>The behaviour of the siunitx package is controlled by a number of key--value options. These can be given globally using the \sisetup function or locally as the optional argument to the user macros.<br>\LaTeX{}"""
+        val expected = """The macro <tt>\bblastx</tt> will print the example number before last.<br>This is like <tt>\intertext</tt> but uses shorter skips between the math. <br>The behaviour of the <tt>siunitx</tt> package is controlled by a number of key--value options. These can be given globally using the <tt>\sisetup</tt> function or locally as the optional argument to the user macros.<br>\LaTeX{}"""
         assertEquals(expected, LatexDocsRegexer.format(input))
     }
 
@@ -32,6 +32,17 @@ class LatexDocsRegexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val expected = """
             \circlearc\oarg{N}\marg{X}\marg{Y}\marg{RAD}\marg{ANGLE1}\marg{ANGLE2}\\
+        """.trimIndent()
+        assertEquals(expected, LatexDocsRegexer.format(input))
+    }
+
+    fun testMarkup() {
+        val input = """
+            Do \textbf{not} eat a banana before bedtime.
+            Bananas are \textit{evil}.
+        """.trimIndent()
+        val expected = """
+            Do <b>not</b> eat a banana before bedtime.<br>Bananas are <i>evil</i>.
         """.trimIndent()
         assertEquals(expected, LatexDocsRegexer.format(input))
     }

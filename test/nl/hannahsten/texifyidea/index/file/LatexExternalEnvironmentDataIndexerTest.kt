@@ -26,7 +26,7 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalEnvironmentDataIndexer().map(MockContent(file))
-        assertEquals("It is often a good idea to include examples of the usage of new macros<br> in the text. Because of the % sign in the first column of every<br> row, the verbatim environment is slightly altered to suppress<br> those<br> characters.", map["verbatim"])
+        assertEquals("It is often a good idea to include examples of the usage of new macros<br> in the text. Because of the % sign in the first column of every<br> row, the <tt>verbatim</tt> environment is slightly altered to suppress<br> those<br> characters.", map["verbatim"])
     }
 
     fun testNewEnvironment() {
@@ -52,7 +52,7 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalEnvironmentDataIndexer().map(MockContent(file))
-        assertEquals("Parts of the macro definition will be surrounded by the<br> environment macrocode.  Put more precisely, they will be<br> enclosed by a macro whose argument (the text to be set<br> `verbatim') is terminated by the string<br> \\verb*+%    \\end{macrocode}+.  Carefully note the number of spaces.", map["macrocode"])
+        assertEquals("Parts of the macro definition will be surrounded by the<br> environment <tt>macrocode</tt>.  Put more precisely, they will be<br> enclosed by a macro whose argument (the text to be set<br> `verbatim') is terminated by the string<br> \\verb*+%    \\end{macrocode}+.  Carefully note the number of spaces.", map["macrocode"])
     }
 
     class MockContent(val file: PsiFile) : FileContent {

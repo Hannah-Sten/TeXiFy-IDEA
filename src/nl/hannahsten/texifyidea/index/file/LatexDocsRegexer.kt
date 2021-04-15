@@ -14,20 +14,25 @@ object LatexDocsRegexer {
     /**
      * Regexes and replacements which clean up the documentation.
      *
+     * **test**
      * Arguments \[mop\]arg should be left in, because they are needed when adding to the autocomplete
      */
     private val formattingReplacers = listOf(
         // Commands to remove entirely,, making sure to capture in the argument nested braces
-        Pair("""\\(cite|footnote)\{(\{[^}]*}|[^}])+?}\s*""".toRegex(), { "" }),
+        Pair("""\\(cite|footnote)\{(\{[^}]*}|[^}])+?}\s*""".toRegex()) { "" },
         // \cs command from the doctools package
-        Pair("""(?<pre>[^|]|^)\\c[sn]\{(?<command>[^}]+?)}""".toRegex(), { result -> result.groups["pre"]?.value + "\\" + result.groups["command"]?.value }),
+        Pair("""(?<pre>[^|]|^)\\c[sn]\{(?<command>[^}]+?)}""".toRegex()) { result -> result.groups["pre"]?.value + "<tt>\\" + result.groups["command"]?.value + "</tt>" },
         // Other commands, except when in short verbatim
-        Pair<Regex, (MatchResult) -> String>("""(?<pre>[^|]|^)\\(?:textbf|emph|textsf|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex(), { result -> result.groups["pre"]?.value + result.groups["argument"]?.value }),
+        Pair("""(?<pre>[^|]|^)\\(?:textsf|textsc|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> result.groups["pre"]?.value + "<tt>" + result.groups["argument"]?.value + "</tt>" },
+        // Replace \textbf with <b> tags
+        Pair("""\\textbf\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> "<b>${result.groups["argument"]?.value}</b>" },
+        // Replace \emph and \textit with <i> tags
+        Pair<Regex, (MatchResult) -> String>("""\\(textit|emph)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> "<i>${result.groups["argument"]?.value}</i>" },
         // Short verbatim, provided by ltxdoc
-        Pair("""\|""".toRegex(), { "" }),
+        Pair("""\|""".toRegex()) { "" },
         // While it is true that text reflows in the documentation popup, so we don't need linebreaks, often package authors include an environment or something else
         // which does depend on linebreaks to be readable, and therefore we keep linebreaks by default.
-        Pair("""\n""".toRegex(), { "<br>" }),
+        Pair("""\n""".toRegex()) { "<br>" },
     )
 
     /**
