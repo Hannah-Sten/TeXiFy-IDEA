@@ -12,6 +12,8 @@ import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.usesColor
 import java.awt.Color
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Provides colors in the gutter.
@@ -149,17 +151,21 @@ object LatexElementColorProvider : ElementColorProvider {
     private fun fromRgbString(rgbText: String): Color {
         val rgb = rgbText.split(",").map { it.trim() }
         return try {
-            rgb.map { it.toInt() }.let { Color(it[0], it[1], it[2]) }
+            rgb.map { it.toInt().projectOnto(0..255) }.let { Color(it[0], it[1], it[2]) }
         }
         catch (e: NumberFormatException) {
-            rgb.map { it.toFloat() }.let { Color(it[0], it[1], it[2]) }
+            rgb.map { it.toFloat().projectOnto(0..255) }.let { Color(it[0], it[1], it[2]) }
         }
     }
 
     private fun fromHsbString(hsbText: String): Color {
         val hsb = hsbText.split(",").map { it.trim() }
         return hsb.map { it.toFloat() }
-            .let { Color.getHSBColor(it[0], it[1], it[2]) }
+            .let { Color.getHSBColor(
+                it[0].projectOnto(0..360),
+                it[1].projectOnto(0..100),
+                it[2].projectOnto(0..100)
+            ) }
     }
 
     private fun fromCmykString(cmykText: String): Color {
@@ -167,6 +173,7 @@ object LatexElementColorProvider : ElementColorProvider {
             .map { it.toFloat() }
         return cmyk.take(3)
             .map { (255 * (1 - cmyk.last()) * (1 - it)).toInt() }
+            .map { it.projectOnto(0..255) }
             .let { Color(it[0], it[1], it[2]) }
     }
 
@@ -177,11 +184,20 @@ object LatexElementColorProvider : ElementColorProvider {
 
     private fun fromGrayString(grayText: String): Color {
         fun Float.toRgb() = (this * 255).toInt()
-        val gray = grayText.toFloat()
+        val gray = grayText.toFloat().projectOnto(0..255)
         return Color(gray.toRgb(), gray.toRgb(), gray.toRgb())
     }
 
     private fun fromHtmlString(htmlText: String): Color {
         return Color.decode("#$htmlText")
     }
+
+    /**
+     * Project [this] onto [range] by taking
+     * - the minimum of the [range] if [this] is smaller than every element in the [range],
+     * - [this] if it is within the range, and
+     * - the maximum of the [range] if [this] is larger than every element in the [range].
+     */
+    private fun Int.projectOnto(range: IntRange) = max(range.first, min(range.last, this))
+    private fun Float.projectOnto(range: IntRange) = max(range.first.toFloat(), min(range.last.toFloat(), this))
 }
