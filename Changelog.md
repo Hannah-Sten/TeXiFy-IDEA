@@ -5,8 +5,11 @@
 * Group inspections in settings. (#1830)
 * Support nested subfiles. (#1835)
 * Add inspection to warn against relative path bug in BIBINPUTS. (#1837)
+* Add optional code style setting to indent text in sections. (#1843)
+* Enable the tool windows also in non-IntelliJ IDEs. (#1843)
 
 # Changes
+* Use html formatting in documentation popup. (#1846)
 
 # Bug fixes
 * Take BIBINPUTS variable into account when resolving bib files. (#1837)
