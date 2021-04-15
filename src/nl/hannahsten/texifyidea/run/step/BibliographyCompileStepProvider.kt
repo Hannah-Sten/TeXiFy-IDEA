@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.run.step
 
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
-object BibliographyCompileStepProvider : LatexCompileStepProvider {
+object BibliographyCompileStepProvider : CompileStepProvider {
 
     override val name = "Bibliography"
 

@@ -1,11 +1,9 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.latex.compiler.LatexmkCompiler
+import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexmkCompiler
+import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
 import org.jdom.Element
 import org.jdom.Namespace
 

@@ -1,17 +1,17 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import nl.hannahsten.texifyidea.run.bibtex.compiler.BiberCompiler
-import nl.hannahsten.texifyidea.run.bibtex.compiler.BibtexCompiler
-import nl.hannahsten.texifyidea.run.bibtex.compiler.SupportedBibliographyCompiler
-import nl.hannahsten.texifyidea.run.latex.compiler.*
+import nl.hannahsten.texifyidea.run.compiler.latex.*
+import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
+import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
+import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.step.BibliographyCompileStepProvider
-import nl.hannahsten.texifyidea.run.step.CompileLatexCompileStepProvider
 import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
+import nl.hannahsten.texifyidea.run.step.CompileStepProvider
 
 object CompilerMagic {
 
-    val compileStepProviders: LinkedHashMap<String, LatexCompileStepProvider> = linkedMapOf(
-        CompileLatexCompileStepProvider.id to CompileLatexCompileStepProvider,
+    val compileStepProviders: LinkedHashMap<String, CompileStepProvider> = linkedMapOf(
+        LatexCompileStepProvider.id to LatexCompileStepProvider,
         BibliographyCompileStepProvider.id to BibliographyCompileStepProvider,
     )
 

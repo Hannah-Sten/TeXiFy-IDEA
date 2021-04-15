@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import org.jdom.Element
 
 /**

@@ -2,8 +2,8 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import java.io.File
 
 /**

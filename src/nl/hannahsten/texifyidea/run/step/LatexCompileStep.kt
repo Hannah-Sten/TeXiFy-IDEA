@@ -1,21 +1,18 @@
 package nl.hannahsten.texifyidea.run.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
-/**
- * A step in the compilation process of compiling a LaTeX document.
- *
- * @author Sten Wessel
- */
-interface LatexCompileStep {
 
-    val provider: LatexCompileStepProvider
+class LatexCompileStep(
+    override val provider: CompileStepProvider,
+    override val configuration: LatexRunConfiguration
+) : CompileStep {
 
-    val configuration: LatexRunConfiguration
+    override fun configure() {
 
-    fun configure()
+    }
 
-    fun getCommand(): List<String>?
+    override fun getCommand() = configuration.compiler?.getCommand(this)
 
-    fun getWorkingDirectory(): String?
+    override fun getWorkingDirectory() = configuration.workingDirectory ?: configuration.mainFile?.parent?.path
 }

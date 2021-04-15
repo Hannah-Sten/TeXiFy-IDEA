@@ -5,9 +5,9 @@ import com.intellij.openapi.project.Project
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.compiler.LualatexCompiler
-import nl.hannahsten.texifyidea.run.latex.compiler.PdflatexCompiler
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.latex.LualatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 

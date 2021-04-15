@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.action.group
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
 
 /**
  * @author Hannah Schellekens, Sten Wessel

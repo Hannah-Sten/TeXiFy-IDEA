@@ -1,10 +1,10 @@
 package nl.hannahsten.texifyidea.run.logtab
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageExtractor
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageExtractor
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType.ERROR
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.util.removeAll
 
 /**

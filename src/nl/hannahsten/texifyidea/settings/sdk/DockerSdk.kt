@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 
 class DockerSdk : LatexSdk("LaTeX Docker SDK") {

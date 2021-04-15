@@ -1,18 +1,15 @@
 package nl.hannahsten.texifyidea.run.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import javax.swing.Icon
+import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
-/**
- * When implementing a new compile step, be sure to register it in [nl.hannahsten.texifyidea.util.magic.CompilerMagic.compileStepProviders].
- */
-interface LatexCompileStepProvider {
+object LatexCompileStepProvider : CompileStepProvider {
 
-    val name: String
+    override val name = "Compile LaTeX"
 
-    val icon: Icon
+    override val icon = TexifyIcons.BUILD
 
-    val id: String
+    override val id = "compile-latex"
 
-    fun createStep(configuration: LatexRunConfiguration): LatexCompileStep
+    override fun createStep(configuration: LatexRunConfiguration) = LatexCompileStep(this, configuration)
 }

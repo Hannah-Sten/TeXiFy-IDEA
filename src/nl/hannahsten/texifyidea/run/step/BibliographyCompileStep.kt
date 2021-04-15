@@ -14,15 +14,15 @@ import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.xmlb.annotations.Attribute
-import nl.hannahsten.texifyidea.run.bibtex.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.ui.compiler.CompilerEditor
+import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
 
 class BibliographyCompileStep(
-    override val provider: LatexCompileStepProvider, override val configuration: LatexRunConfiguration
-) : LatexCompileStep, PersistentStateComponent<BibliographyCompileStep.State> {
+    override val provider: CompileStepProvider, override val configuration: LatexRunConfiguration
+) : CompileStep, PersistentStateComponent<BibliographyCompileStep.State> {
 
     class State : BaseState() {
 

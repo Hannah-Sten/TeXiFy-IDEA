@@ -1,9 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
+import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
 
 class LatexOutputPathTest : BasePlatformTestCase() {
 

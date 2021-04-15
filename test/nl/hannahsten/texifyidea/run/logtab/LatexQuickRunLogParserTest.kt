@@ -1,10 +1,10 @@
 package nl.hannahsten.texifyidea.run.logtab
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
-import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessage
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
+import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 
 class LatexQuickRunLogParserTest : BasePlatformTestCase() {
 

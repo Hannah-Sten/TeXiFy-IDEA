@@ -1,13 +1,13 @@
 package nl.hannahsten.texifyidea.run.compiler
 
-import nl.hannahsten.texifyidea.run.step.LatexCompileStep
+import nl.hannahsten.texifyidea.run.step.CompileStep
 
 /**
- * Represents a compiler of a step in a LaTeX run configuration.
+ * Represents a LaTeX or BibTeX compiler of a step in a LaTeX run configuration.
  *
  * @author Sten Wessel
  */
-interface Compiler<in S : LatexCompileStep> {
+interface Compiler<in S : CompileStep> {
 
     /**
      * The command to execute to compile [step].

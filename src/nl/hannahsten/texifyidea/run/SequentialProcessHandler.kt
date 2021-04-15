@@ -7,6 +7,11 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import java.io.OutputStream
 
+/**
+ * Execute the given list of processes sequentially.
+ *
+ * @author Sten Wessel
+ */
 class SequentialProcessHandler(private val processes: List<KillableProcessHandler>) : ProcessHandler(), KillableProcess {
 
     private var currentProcess: KillableProcessHandler? = null

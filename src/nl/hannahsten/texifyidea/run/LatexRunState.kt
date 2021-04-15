@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.build.events.MessageEvent
-import com.intellij.build.events.impl.*
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
@@ -13,11 +12,16 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.Key
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
-import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
+import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 
+/**
+ * State of the [LatexRunConfiguration], previously called LatexCommandLineState.
+ *
+ * @author Sten Wessel
+ */
 class LatexRunState(private val runConfig: LatexRunConfiguration, private val env: ExecutionEnvironment) : RunProfileState {
 
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
