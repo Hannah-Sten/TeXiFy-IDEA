@@ -26,6 +26,23 @@ class LatexSectionIndentTest : BasePlatformTestCase() {
         myFixture.checkResult(expected)
     }
 
+    fun testSectionIndent2() {
+        val text = """
+            \section{test}
+            This $\xi$ block does not
+            start on a newline.
+        """.trimIndent()
+        val file = myFixture.configureByText(LatexFileType, text)
+        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_SECTIONS = true
+        val expected = """
+            \section{test}
+                This ${'$'}\xi${'$'} block does not
+                start on a newline.
+        """.trimIndent()
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+        myFixture.checkResult(expected)
+    }
+
     fun testNoSectionIndent() {
         val text = """
             \section{test}
