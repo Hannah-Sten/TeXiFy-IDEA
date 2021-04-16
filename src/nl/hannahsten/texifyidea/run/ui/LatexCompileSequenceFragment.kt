@@ -34,11 +34,13 @@ class LatexCompileSequenceFragment(private val component: LatexCompileSequenceCo
         actionHint = "Specify steps needed for compiling the document"
     }
 
+    // Confirm the changes, i.e. copy current UI state into the target settings object.
     override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-        component.apply(s.configuration as LatexRunConfiguration)
+        component.applyEditorTo(s.configuration as LatexRunConfiguration)
     }
 
+    // Discard all non-confirmed user changes made via the UI
     override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-        component.reset(s.configuration as LatexRunConfiguration)
+        component.resetEditorFrom(s.configuration as LatexRunConfiguration)
     }
 }

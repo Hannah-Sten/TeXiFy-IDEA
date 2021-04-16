@@ -116,7 +116,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         changeListener()
     }
 
-    fun reset(c: LatexRunConfiguration) {
+    fun resetEditorFrom(c: LatexRunConfiguration) {
         configuration = c
         steps.forEach { remove(it) }
         steps.clear()
@@ -129,7 +129,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         buildPanel()
     }
 
-    fun apply(c: LatexRunConfiguration) {
+    fun applyEditorTo(c: LatexRunConfiguration) {
         c.compileSteps.apply {
             clear()
             addAll(steps.map { it.step })

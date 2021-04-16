@@ -1,8 +1,11 @@
 package nl.hannahsten.texifyidea.run.ui
 
+import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.RunConfigurationBase
+import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.FragmentedSettingsUtil
+import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
@@ -27,13 +30,15 @@ typealias LatexCompileEditor = CompilerEditor<LatexCompileStep, SupportedLatexCo
  */
 object CommonLatexFragments {
 
-    fun <S : RunConfigurationBase<*>> programArguments(id: String,
-                                                       message: String,
-                                                       commandLinePosition: Int,
-                                                       settingsProperty: (S) -> KMutableProperty0<String?>,
-                                                       editorVisible: (S) -> Boolean = { true },
-                                                       name: String? = null,
-                                                       group: String? = null): SettingsEditorFragment<S, RawCommandLineEditor> {
+    fun programArguments(
+        id: String,
+        message: String,
+        commandLinePosition: Int,
+        settingsProperty: (RunnerAndConfigurationSettings) -> KMutableProperty0<String?>,
+        editorVisible: (RunnerAndConfigurationSettings) -> Boolean = { true },
+        name: String? = null,
+        group: String? = null
+    ): SettingsEditorFragment<LatexRunConfiguration, RawCommandLineEditor> {
         val editor = RawCommandLineEditor().apply {
             minimumSize = JBDimension(400, 30)
 
@@ -46,12 +51,21 @@ object CommonLatexFragments {
             CommonParameterFragments.setMonospaced(textField)
         }
 
-        val fragment = SettingsEditorFragment(
-            id, name, group, editor, commandLinePosition,
-            { settings, component -> component.text = settingsProperty(settings).get() },
-            { settings, component -> settingsProperty(settings).set(component.text) },
-            editorVisible
-        )
+        // Cannot be SettingsEditorFragment, but has to be RunConfigurationEditorFragment, bcause in RunConfigurationFragmentedEditor#getRunFragments
+        // it filters on RunConfigurationEditorFragments in order to get the fragments in the run config, which are used to create a snapshot in SettingsEditor#getSnapShot()
+        // which is used to check if the run configuration was modified (compared to the saved xml), so if something is missing in the snapshot
+        // it will think it's modified compared to the xml but it isn't.
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, RawCommandLineEditor>(
+            id, name, group, editor, commandLinePosition, editorVisible
+        ) {
+            override fun doReset(settings: RunnerAndConfigurationSettingsImpl) {
+                (component as? RawCommandLineEditor)?.text = settingsProperty(settings).get()
+            }
+
+            override fun applyEditorTo(settings: RunnerAndConfigurationSettingsImpl) {
+                settingsProperty(settings).set((component as? RawCommandLineEditor)?.text)
+            }
+        }
 
         fragment.isRemovable = false
         fragment.setEditorGetter { e -> e.editorField }
@@ -59,7 +73,10 @@ object CommonLatexFragments {
         return fragment
     }
 
-    fun latexCompiler(commandLinePosition: Int, settingsProperty: (LatexRunConfiguration) -> KMutableProperty0<LatexCompiler?>): SettingsEditorFragment<LatexRunConfiguration, LatexCompileEditor> {
+    fun latexCompiler(
+        commandLinePosition: Int,
+        settingsProperty: (LatexRunConfiguration) -> KMutableProperty0<LatexCompiler?>
+    ): SettingsEditorFragment<LatexRunConfiguration, LatexCompileEditor> {
         val editor = CompilerEditor("&LaTeX compiler:", CompilerMagic.latexCompilerByExecutableName.values)
         val combobox = editor.component
 
@@ -82,14 +99,16 @@ object CommonLatexFragments {
         return fragment
     }
 
-    fun <S : RunConfigurationBase<*>> file(id: String,
-                                           message: String,
-                                           commandLinePosition: Int,
-                                           project: Project,
-                                           settingsProperty: (S) -> KMutableProperty0<VirtualFile?>,
-                                           editorVisible: (S) -> Boolean = { true },
-                                           name: String? = null,
-                                           group: String? = null): SettingsEditorFragment<S, VirtualFileEditorWithBrowse> {
+    fun <S : RunConfigurationBase<*>> file(
+        id: String,
+        message: String,
+        commandLinePosition: Int,
+        project: Project,
+        settingsProperty: (S) -> KMutableProperty0<VirtualFile?>,
+        editorVisible: (S) -> Boolean = { true },
+        name: String? = null,
+        group: String? = null
+    ): SettingsEditorFragment<S, VirtualFileEditorWithBrowse> {
 
         val editor = VirtualFileEditorWithBrowse(id, message, project).apply {
             addBrowseFolderListener(
