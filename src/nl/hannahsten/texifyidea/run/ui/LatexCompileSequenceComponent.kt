@@ -8,7 +8,9 @@ import com.intellij.ide.dnd.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.ui.popup.IconButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.Conditions
 import com.intellij.openapi.util.Disposer
@@ -25,8 +27,8 @@ import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
 import java.awt.Rectangle
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
+import java.awt.event.*
+import java.util.function.Consumer
 import javax.swing.Box
 import javax.swing.JLabel
 import javax.swing.JLayeredPane
@@ -130,6 +132,9 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
     }
 
     fun applyEditorTo(c: LatexRunConfiguration) {
+        // Actually delete deleted steps (we cannot hook into the private remove() method of TagButton)
+        steps.removeAll { !it.isVisible }
+
         c.compileSteps.apply {
             clear()
             addAll(steps.map { it.step })

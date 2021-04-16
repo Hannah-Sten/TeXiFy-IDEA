@@ -12,7 +12,7 @@ import javax.swing.JLabel
  */
 class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(settings, LatexRunConfigurationExtensionsManager.instance) {
 
-
+    // The fragments that are returned here are checked for modifications (i.e. compared with xml after creating a snapshot)
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
 
@@ -53,7 +53,7 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
 //        // Main file
 //        val mainFile = CommonLatexFragments.file<LatexRunConfiguration>(
 //            "mainFile", "Main file", 300, mySettings.project, { s -> s::mainFile },
-//            name = "Main &file"
+//            name = "Main file"
 //        )
 //        mainFile.setHint("Root file of the document to compile")
 //        fragments.add(mainFile)

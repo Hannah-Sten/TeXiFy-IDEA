@@ -51,9 +51,9 @@ object CommonLatexFragments {
             CommonParameterFragments.setMonospaced(textField)
         }
 
-        // Cannot be SettingsEditorFragment, but has to be RunConfigurationEditorFragment, bcause in RunConfigurationFragmentedEditor#getRunFragments
+        // Cannot be SettingsEditorFragment, but has to be RunConfigurationEditorFragment, because in RunConfigurationFragmentedEditor#getRunFragments
         // it filters on RunConfigurationEditorFragments in order to get the fragments in the run config, which are used to create a snapshot in SettingsEditor#getSnapShot()
-        // which is used to check if the run configuration was modified (compared to the saved xml), so if something is missing in the snapshot
+        // which is used to check if the run configuration was RunConfigurable#isModified() (compared to the saved xml, see BaseRCSettingsConfigurable), so if something is missing in the snapshot
         // it will think it's modified compared to the xml but it isn't.
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, RawCommandLineEditor>(
             id, name, group, editor, commandLinePosition, editorVisible
