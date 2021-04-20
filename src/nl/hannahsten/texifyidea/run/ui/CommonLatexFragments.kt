@@ -55,6 +55,7 @@ object CommonLatexFragments {
         // it filters on RunConfigurationEditorFragments in order to get the fragments in the run config, which are used to create a snapshot in SettingsEditor#getSnapShot()
         // which is used to check if the run configuration was RunConfigurable#isModified() (compared to the saved xml, see BaseRCSettingsConfigurable), so if something is missing in the snapshot
         // it will think it's modified compared to the xml but it isn't.
+        // This will lead to LatexCompileSequenceFragment#applyEditorTo to be called continuously, which is very inconvenient when debugging.
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, RawCommandLineEditor>(
             id, name, group, editor, commandLinePosition, editorVisible
         ) {
@@ -76,7 +77,7 @@ object CommonLatexFragments {
     fun latexCompiler(
         commandLinePosition: Int,
         settingsProperty: (LatexRunConfiguration) -> KMutableProperty0<LatexCompiler?>
-    ): SettingsEditorFragment<LatexRunConfiguration, LatexCompileEditor> {
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor> {
         val editor = CompilerEditor("&LaTeX compiler:", CompilerMagic.latexCompilerByExecutableName.values)
         val combobox = editor.component
 
@@ -86,12 +87,15 @@ object CommonLatexFragments {
 
         combobox.accessibleContext.accessibleName = editor.label.text
 
-        val fragment = SettingsEditorFragment<LatexRunConfiguration, LatexCompileEditor>(
-            "latexCompiler", "&LaTeX compiler", null, editor, commandLinePosition,
-            { settings, component -> component.setSelectedCompiler(settingsProperty(settings).get()) },
-            { settings, component -> settingsProperty(settings).set(component.getSelectedCompiler() as LatexCompiler) },
-            { true }
-        )
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor>("latexCompiler", "LaTeX compiler", null, editor, commandLinePosition, { true }) {
+            override fun doReset(settings: RunnerAndConfigurationSettingsImpl) {
+                (component as LatexCompileEditor).setSelectedCompiler(settingsProperty(settings.configuration as LatexRunConfiguration).get())
+            }
+
+            override fun applyEditorTo(settings: RunnerAndConfigurationSettingsImpl) {
+                settingsProperty(settings.configuration as LatexRunConfiguration).set((component as? LatexCompileEditor)?.getSelectedCompiler() as? LatexCompiler)
+            }
+        }
 
         fragment.isRemovable = false
         fragment.setHint("LaTeX compiler or path to executable")
@@ -105,10 +109,10 @@ object CommonLatexFragments {
         commandLinePosition: Int,
         project: Project,
         settingsProperty: (S) -> KMutableProperty0<VirtualFile?>,
-        editorVisible: (S) -> Boolean = { true },
+        editorVisible: (RunnerAndConfigurationSettings) -> Boolean = { true },
         name: String? = null,
         group: String? = null
-    ): SettingsEditorFragment<S, VirtualFileEditorWithBrowse> {
+    ): RunConfigurationEditorFragment<S, VirtualFileEditorWithBrowse> {
 
         val editor = VirtualFileEditorWithBrowse(id, message, project).apply {
             addBrowseFolderListener(
@@ -121,12 +125,15 @@ object CommonLatexFragments {
         CommonParameterFragments.setMonospaced(editor.editor)
         editor.minimumSize = JBDimension(300, 30)
 
-        val fragment = SettingsEditorFragment(
-            id, name, group, editor, commandLinePosition,
-            { settings, component -> component.selected = settingsProperty(settings).get() },
-            { settings, component -> settingsProperty(settings).set(component.selected) },
-            editorVisible
-        )
+        val fragment = object : RunConfigurationEditorFragment<S, VirtualFileEditorWithBrowse>(id, name, group, editor, commandLinePosition, editorVisible) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                (component as VirtualFileEditorWithBrowse).selected = settingsProperty(s.configuration as S).get()
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                settingsProperty(s.configuration as S).set((component as VirtualFileEditorWithBrowse).selected)
+            }
+        }
 
         fragment.isRemovable = false
         fragment.setEditorGetter { e -> e.editor }

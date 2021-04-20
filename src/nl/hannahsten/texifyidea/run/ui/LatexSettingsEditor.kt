@@ -16,31 +16,20 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
 
-        // Compile sequence
-        val compileSequenceComponent = LatexCompileSequenceComponent(this)
-        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent)
-        fragments.add(compileSequenceFragment)
-
+        // Before run
         val beforeRunComponent = BeforeRunComponent(this)
         fragments.add(BeforeRunFragment.createBeforeRun(beforeRunComponent, null))
         fragments.addAll(BeforeRunFragment.createGroup())
 
-        fragments.add(CommonTags.parallelRun())
-
-        // todo move to inside step
-//        // Working directory and environment variables
-//        val commonParameterFragments = CommonParameterFragments<LatexRunConfiguration>(mySettings.project) { false }
-//        fragments.addAll(commonParameterFragments.fragments)
-
-        // Label compile LaTeX
+        // Label
         val compileLabel = JLabel("Compile LaTeX").apply {
             font = JBUI.Fonts.label().deriveFont(Font.BOLD)
         }
         val compileLabelFragment = SettingsEditorFragment<LatexRunConfiguration, JLabel>("compileLabel", null, null, compileLabel, -1, { _, _ -> }, { _, _ -> }) { true }
         fragments.add(compileLabelFragment)
 
-//        // LaTeX compiler
-//        fragments.add(CommonLatexFragments.latexCompiler(100) { s -> s::compiler })
+        // LaTeX compiler
+        fragments.add(CommonLatexFragments.latexCompiler(100) { s -> s::compiler })
 
         // LaTeX compiler arguments
         val compilerArguments = CommonLatexFragments.programArguments(
@@ -50,13 +39,25 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         compilerArguments.setHint("CLI arguments for the LaTeX compiler")
         fragments.add(compilerArguments)
 
-//        // Main file
-//        val mainFile = CommonLatexFragments.file<LatexRunConfiguration>(
-//            "mainFile", "Main file", 300, mySettings.project, { s -> s::mainFile },
-//            name = "Main file"
-//        )
-//        mainFile.setHint("Root file of the document to compile")
-//        fragments.add(mainFile)
+        // Main file
+        val mainFile = CommonLatexFragments.file<LatexRunConfiguration>(
+            "mainFile", "Main file", 300, mySettings.project, { s -> s::mainFile },
+            name = "Main file"
+        )
+        mainFile.setHint("Root file of the document to compile")
+        fragments.add(mainFile)
+
+        // Compile sequence
+        val compileSequenceComponent = LatexCompileSequenceComponent(this)
+        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent)
+        fragments.add(compileSequenceFragment)
+
+        // Working directory and environment variables
+        val commonParameterFragments = CommonParameterFragments<LatexRunConfiguration>(mySettings.project) { false }
+        fragments.addAll(commonParameterFragments.fragments)
+
+        // Allow parallel run
+        fragments.add(CommonTags.parallelRun())
 
         return fragments
     }
