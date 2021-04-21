@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.run.ui
 
+import com.intellij.execution.ExecutionBundle
+import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.ui.*
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
@@ -11,6 +13,9 @@ import javax.swing.JLabel
  * UI for the [LatexRunConfiguration].
  */
 class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(settings, LatexRunConfigurationExtensionsManager.instance) {
+
+    /** Name of the group in 'Modify options' menu which contains some LaTeX settings. */
+    val latexGroupName = "Compile LaTeX"
 
     // The fragments that are returned here are checked for modifications (i.e. compared with xml after creating a snapshot)
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
@@ -29,32 +34,34 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(compileLabelFragment)
 
         // LaTeX compiler
-        fragments.add(CommonLatexFragments.latexCompiler(100) { s -> s::compiler })
+        fragments.add(CommonLatexFragments.latexCompiler(1) { s -> s::compiler })
 
         // LaTeX compiler arguments
         val compilerArguments = CommonLatexFragments.programArguments(
-            "compilerArguments", "Compiler arguments", 200, { s -> (s.configuration as LatexRunConfiguration)::compilerArguments },
-            name = "Compiler arguments"
+            "compilerArguments", "Compiler arguments", 2, { s -> (s.configuration as LatexRunConfiguration)::compilerArguments }, { s -> (s.configuration as? LatexRunConfiguration)?.compilerArguments?.isNotEmpty() == true },
+            name = "Add compiler arguments", latexGroupName
         )
         compilerArguments.setHint("CLI arguments for the LaTeX compiler")
         fragments.add(compilerArguments)
 
         // Main file
         val mainFile = CommonLatexFragments.file<LatexRunConfiguration>(
-            "mainFile", "Main file", 300, mySettings.project, { s -> s::mainFile },
+            "mainFile", "Main file", 3, mySettings.project, { s -> s::mainFile },
             name = "Main file"
         )
         mainFile.setHint("Root file of the document to compile")
         fragments.add(mainFile)
 
+        // Environment variables
+        fragments.add(CommonLatexFragments.createEnvParameters(latexGroupName, 4))
+
+        // Working directory
+        fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 5, project))
+
         // Compile sequence
         val compileSequenceComponent = LatexCompileSequenceComponent(this)
         val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent)
         fragments.add(compileSequenceFragment)
-
-        // Working directory and environment variables
-        val commonParameterFragments = CommonParameterFragments<LatexRunConfiguration>(mySettings.project) { false }
-        fragments.addAll(commonParameterFragments.fragments)
 
         // Allow parallel run
         fragments.add(CommonTags.parallelRun())

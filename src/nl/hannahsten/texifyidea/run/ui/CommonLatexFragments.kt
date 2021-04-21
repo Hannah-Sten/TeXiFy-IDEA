@@ -1,17 +1,22 @@
 package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.execution.RunnerAndConfigurationSettings
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
-import com.intellij.execution.ui.CommonParameterFragments
-import com.intellij.execution.ui.FragmentedSettingsUtil
-import com.intellij.execution.ui.RunConfigurationEditorFragment
-import com.intellij.execution.ui.SettingsEditorFragment
+import com.intellij.execution.ui.*
+import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.LabeledComponent
+import com.intellij.openapi.ui.TextComponentAccessor
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.RawCommandLineEditor
+import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.util.ui.JBDimension
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
@@ -19,12 +24,15 @@ import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
+import org.jetbrains.annotations.NotNull
+import java.awt.BorderLayout
 import kotlin.reflect.KMutableProperty0
 
 typealias LatexCompileEditor = CompilerEditor<LatexCompileStep, SupportedLatexCompiler>
 
 /**
  * Collection of fragment builders for the run configuration settings UI.
+ * Some of these are based on CommonParameterFragments.
  *
  * @author Sten Wessel
  */
@@ -68,7 +76,7 @@ object CommonLatexFragments {
             }
         }
 
-        fragment.isRemovable = false
+        fragment.isRemovable = true
         fragment.setEditorGetter { e -> e.editorField }
 
         return fragment
@@ -138,6 +146,56 @@ object CommonLatexFragments {
         fragment.isRemovable = false
         fragment.setEditorGetter { e -> e.editor }
 
+        return fragment
+    }
+
+    // Adapted from CommonParameterFragments#createEnvParameters
+    fun createEnvParameters(group: String, commandLinePosition: Int): RunConfigurationEditorFragment<LatexRunConfiguration, EnvironmentVariablesComponent> {
+        val env = EnvironmentVariablesComponent()
+        env.labelLocation = BorderLayout.WEST
+        setMonospaced(env.component.textField)
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, EnvironmentVariablesComponent>("environmentVariables", "Add environment variables", group, env, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.environmentVariables?.envs?.isNotEmpty() == true }) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                env.reset(s.configuration as? LatexRunConfiguration)
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                if (!env.isVisible) {
+                    (s.configuration as? LatexRunConfiguration)?.apply {
+                        envs = mutableMapOf()
+                        isPassParentEnvs = true
+                    }
+                }
+                else {
+                    env.apply(s.configuration as? LatexRunConfiguration)
+                }
+            }
+        }
+
+        fragment.isRemovable = true
+        fragment.setHint("Separate variables with semicolon: VAR=value; VAR1=value1")
+        fragment.actionHint = "Set custom environment variables for compiling LaTeX"
+        return fragment
+    }
+
+    // Based on CommonParameterFragments
+    fun createWorkingDirectoryFragment(group: String, commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+        val workingDirectoryField = TextFieldWithBrowseButton()
+        workingDirectoryField.addBrowseFolderListener("Select Working Directory", null, project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
+        MacrosDialog.addMacroSupport(workingDirectoryField.textField as @NotNull ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
+        val field = LabeledComponent.create(workingDirectoryField, "&Working directory:")
+        field.labelLocation = BorderLayout.WEST
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>("workingDirectory", "Change default working directory", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultWorkingDirectory() == true }) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                (component as LabeledComponent<TextFieldWithBrowseButton>).component.text = (s.configuration as? LatexRunConfiguration)?.workingDirectory ?: "Something went wrong with resetting this fragment"
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                (s.configuration as LatexRunConfiguration).workingDirectory = (component as LabeledComponent<TextFieldWithBrowseButton>).text
+            }
+        }
+
+        fragment.isRemovable = true
         return fragment
     }
 }

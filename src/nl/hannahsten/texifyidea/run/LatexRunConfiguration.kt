@@ -60,6 +60,8 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.pathString
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -682,6 +684,10 @@ class LatexRunConfiguration constructor(
     override fun setWorkingDirectory(value: String?) {
         val normalized = PathUtil.toSystemIndependentName(value?.ifBlank { null }?.trim())
         options.workingDirectory = if (normalized != project.basePath) normalized else null
+    }
+
+    fun hasDefaultWorkingDirectory(): Boolean {
+        return Path.of(workingDirectory).toAbsolutePath() == Path.of(mainFile?.path).parent.toAbsolutePath()
     }
 
     override fun getEnvs() = options.env

@@ -12,7 +12,7 @@ import javax.swing.JPanel
 
 class LatexCompileSequenceFragment(private val component: LatexCompileSequenceComponent)
     : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
-        "compileSequence", null, null, wrap(component), 0, { true }
+        "compileSequence", null, null, wrap(component), -1, { true }
     ) {
 
     companion object {
