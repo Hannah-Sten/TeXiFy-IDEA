@@ -11,7 +11,7 @@ object TectonicCompiler : SupportedLatexCompiler("Tectonic", "tectonic") {
 
     override val handlesNumberOfCompiles = true
 
-    override val outputFormats = arrayOf(Format.PDF, Format.HTML, Format.XDV, Format.AUX)
+    override val outputFormats = arrayOf(OutputFormat.PDF, OutputFormat.HTML, OutputFormat.XDV, OutputFormat.AUX)
 
     override fun createCommand(
         runConfig: LatexRunConfiguration,

@@ -10,9 +10,9 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class LatexCompileSequenceFragment(private val component: LatexCompileSequenceComponent)
+class LatexCompileSequenceFragment(private val component: LatexCompileSequenceComponent, commandLinePosition: Int)
     : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
-        "compileSequence", null, null, wrap(component), -1, { true }
+        "compileSequence", null, null, wrap(component), commandLinePosition, { true }
     ) {
 
     companion object {

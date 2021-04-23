@@ -7,10 +7,10 @@ import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.*
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.macro.MacrosDialog
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -24,8 +24,8 @@ import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
-import org.jetbrains.annotations.NotNull
 import java.awt.BorderLayout
+import java.awt.Label
 import kotlin.reflect.KMutableProperty0
 
 typealias LatexCompileEditor = CompilerEditor<LatexCompileStep, SupportedLatexCompiler>
@@ -38,7 +38,7 @@ typealias LatexCompileEditor = CompilerEditor<LatexCompileStep, SupportedLatexCo
  */
 object CommonLatexFragments {
 
-    fun programArguments(
+    fun createProgramArgumentsFragment(
         id: String,
         message: String,
         commandLinePosition: Int,
@@ -56,7 +56,7 @@ object CommonLatexFragments {
             // TODO: make these actually work
             MacrosDialog.addMacroSupport(editorField, MacrosDialog.Filters.ALL) { false }
 
-            CommonParameterFragments.setMonospaced(textField)
+            setMonospaced(textField)
         }
 
         // Cannot be SettingsEditorFragment, but has to be RunConfigurationEditorFragment, because in RunConfigurationFragmentedEditor#getRunFragments
@@ -82,14 +82,14 @@ object CommonLatexFragments {
         return fragment
     }
 
-    fun latexCompiler(
+    fun createLatexCompilerFragment(
         commandLinePosition: Int,
         settingsProperty: (LatexRunConfiguration) -> KMutableProperty0<LatexCompiler?>
     ): RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor> {
         val editor = CompilerEditor("&LaTeX compiler:", CompilerMagic.latexCompilerByExecutableName.values)
         val combobox = editor.component
 
-        CommonParameterFragments.setMonospaced(combobox)
+        setMonospaced(combobox)
         editor.minimumSize = JBDimension(200, 30)
         editor.label.isVisible = false
 
@@ -111,17 +111,12 @@ object CommonLatexFragments {
         return fragment
     }
 
-    fun <S : RunConfigurationBase<*>> file(
-        id: String,
-        message: String,
-        commandLinePosition: Int,
-        project: Project,
-        settingsProperty: (S) -> KMutableProperty0<VirtualFile?>,
-        editorVisible: (RunnerAndConfigurationSettings) -> Boolean = { true },
-        name: String? = null,
-        group: String? = null
-    ): RunConfigurationEditorFragment<S, VirtualFileEditorWithBrowse> {
-
+    /**
+     * Create fragment to choose main file to compile.
+     */
+    fun createMainFileFragment(commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, VirtualFileEditorWithBrowse> {
+        val id = "mainFile"
+        val message = "Main file"
         val editor = VirtualFileEditorWithBrowse(id, message, project).apply {
             addBrowseFolderListener(
                 "Choose a File to Compile",
@@ -130,7 +125,24 @@ object CommonLatexFragments {
             )
         }
         editor.label.isVisible = false
-        CommonParameterFragments.setMonospaced(editor.editor)
+        val mainFile = createFileFragment<LatexRunConfiguration>(
+            id, commandLinePosition, { s -> s::mainFile }, name = "Main file", editor = editor
+        )
+        mainFile.setHint("Root file of the document to compile")
+        return mainFile
+    }
+
+    private fun <S : RunConfigurationBase<*>> createFileFragment(
+        id: String,
+        commandLinePosition: Int,
+        settingsProperty: (S) -> KMutableProperty0<VirtualFile?>,
+        editorVisible: (RunnerAndConfigurationSettings) -> Boolean = { true },
+        name: String? = null,
+        group: String? = null,
+        editor: VirtualFileEditorWithBrowse
+    ): RunConfigurationEditorFragment<S, VirtualFileEditorWithBrowse> {
+
+        setMonospaced(editor.editor)
         editor.minimumSize = JBDimension(300, 30)
 
         val fragment = object : RunConfigurationEditorFragment<S, VirtualFileEditorWithBrowse>(id, name, group, editor, commandLinePosition, editorVisible) {
@@ -150,11 +162,13 @@ object CommonLatexFragments {
     }
 
     // Adapted from CommonParameterFragments#createEnvParameters
-    fun createEnvParameters(group: String, commandLinePosition: Int): RunConfigurationEditorFragment<LatexRunConfiguration, EnvironmentVariablesComponent> {
+    fun createEnvParametersFragment(group: String, commandLinePosition: Int): RunConfigurationEditorFragment<LatexRunConfiguration, EnvironmentVariablesComponent> {
         val env = EnvironmentVariablesComponent()
         env.labelLocation = BorderLayout.WEST
         setMonospaced(env.component.textField)
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, EnvironmentVariablesComponent>("environmentVariables", "Add environment variables", group, env, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.environmentVariables?.envs?.isNotEmpty() == true }) {
+        env.minimumSize = JBDimension(300, 30)
+
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, EnvironmentVariablesComponent>("environmentVariables", "Add environment variables", group, env, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.envs?.isNotEmpty() == true }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 env.reset(s.configuration as? LatexRunConfiguration)
             }
@@ -181,17 +195,65 @@ object CommonLatexFragments {
     // Based on CommonParameterFragments
     fun createWorkingDirectoryFragment(group: String, commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
         val workingDirectoryField = TextFieldWithBrowseButton()
+        workingDirectoryField.minimumSize = JBDimension(300, 30)
         workingDirectoryField.addBrowseFolderListener("Select Working Directory", null, project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
-        MacrosDialog.addMacroSupport(workingDirectoryField.textField as @NotNull ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
+
+        MacrosDialog.addMacroSupport(workingDirectoryField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
+
         val field = LabeledComponent.create(workingDirectoryField, "&Working directory:")
         field.labelLocation = BorderLayout.WEST
+
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>("workingDirectory", "Change default working directory", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultWorkingDirectory() == true }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                (component as LabeledComponent<TextFieldWithBrowseButton>).component.text = (s.configuration as? LatexRunConfiguration)?.workingDirectory ?: "Something went wrong with resetting this fragment"
+                ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text = (s.configuration as LatexRunConfiguration).workingDirectory!!
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).workingDirectory = (component as LabeledComponent<TextFieldWithBrowseButton>).text
+                (s.configuration as LatexRunConfiguration).workingDirectory = ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text
+            }
+        }
+
+        fragment.isRemovable = true
+        return fragment
+    }
+
+    fun createOutputPathFragment(group: String, commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+        val outputDirectoryField = TextFieldWithBrowseButton()
+        outputDirectoryField.minimumSize = JBDimension(300, 30)
+        outputDirectoryField.addBrowseFolderListener("Select Output Directory", "Select directory to store generated files", project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
+
+        MacrosDialog.addMacroSupport(outputDirectoryField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
+
+        val field = LabeledComponent.create(outputDirectoryField, "&Output directory:")
+        field.labelLocation = BorderLayout.WEST
+
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>("outputDirectory", "Change default output directory", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.outputPath?.isDefault() == false }) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text = (s.configuration as LatexRunConfiguration).outputPath.pathString
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                (s.configuration as LatexRunConfiguration).setFileOutputPath(((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text)
+            }
+        }
+
+        fragment.isRemovable = true
+        return fragment
+    }
+
+    fun createOutputFormatFragment(group: String, commandLinePosition: Int, project: Project, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>> {
+        val formats = settings.compiler?.outputFormats ?: emptyArray()
+        val field = LabeledComponent.create(ComboBox(formats), "Output format")
+        field.labelLocation = BorderLayout.WEST
+        field.size = JBDimension(128, field.height)
+
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>>("outputFormat", "Change default output format", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultOutputFormat() == false }) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem = (s.configuration as LatexRunConfiguration).outputFormat
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                (s.configuration as LatexRunConfiguration).outputFormat = ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem as LatexCompiler.OutputFormat
             }
         }
 

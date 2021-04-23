@@ -8,7 +8,7 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
 
     override val supportsUnicode = true
 
-    override val outputFormats = arrayOf(Format.PDF, Format.XDV)
+    override val outputFormats = arrayOf(OutputFormat.PDF, OutputFormat.XDV)
 
         override fun createCommand(
             runConfig: LatexRunConfiguration,
@@ -29,7 +29,7 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
         command.add("-interaction=nonstopmode")
         command.add("-synctex=1")
 
-        if (runConfig.outputFormat == Format.XDV) {
+        if (runConfig.outputFormat == OutputFormat.XDV) {
             command.add("-no-pdf")
         }
 

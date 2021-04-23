@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 object TexliveonflyCompiler : SupportedLatexCompiler("Texliveonfly", "texliveonfly") {
 
-    override val outputFormats = arrayOf(Format.PDF)
+    override val outputFormats = arrayOf(OutputFormat.PDF)
 
         override fun createCommand(
             runConfig: LatexRunConfiguration,

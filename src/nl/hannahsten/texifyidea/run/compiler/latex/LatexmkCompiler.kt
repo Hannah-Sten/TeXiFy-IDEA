@@ -13,7 +13,7 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
 
     override val handlesNumberOfCompiles = true
 
-    override val outputFormats = arrayOf(Format.DEFAULT, Format.PDF, Format.DVI)
+    override val outputFormats = arrayOf(OutputFormat.DEFAULT, OutputFormat.PDF, OutputFormat.DVI)
 
     override fun createCommand(
         runConfig: LatexRunConfiguration,
@@ -39,7 +39,7 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
             command.add("-synctex=1")
         }
 
-        if (runConfig.outputFormat != Format.DEFAULT) {
+        if (runConfig.outputFormat != OutputFormat.DEFAULT) {
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
         }
 

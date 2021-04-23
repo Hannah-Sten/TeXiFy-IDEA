@@ -1,11 +1,9 @@
 package nl.hannahsten.texifyidea.run.ui
 
-import com.intellij.execution.ExecutionBundle
-import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.ui.*
+import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.LatexRunConfigurationProducer
 import java.awt.Font
 import javax.swing.JLabel
 
@@ -26,42 +24,52 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(BeforeRunFragment.createBeforeRun(beforeRunComponent, null))
         fragments.addAll(BeforeRunFragment.createGroup())
 
+        // Compile sequence
+        val compileSequenceComponent = LatexCompileSequenceComponent(this)
+        // todo Avoid next fragments being placed next to this one? (it reflows, but we want a hardcoded linebreak here)
+        compileSequenceComponent.minimumSize = JBDimension(300, 30)
+        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent, 1)
+        fragments.add(compileSequenceFragment)
+
         // Label
         val compileLabel = JLabel("Compile LaTeX").apply {
             font = JBUI.Fonts.label().deriveFont(Font.BOLD)
         }
-        val compileLabelFragment = SettingsEditorFragment<LatexRunConfiguration, JLabel>("compileLabel", null, null, compileLabel, -1, { _, _ -> }, { _, _ -> }) { true }
+        val compileLabelFragment = SettingsEditorFragment<LatexRunConfiguration, JLabel>("compileLabel", null, null, compileLabel, 2, { _, _ -> }, { _, _ -> }) { true }
         fragments.add(compileLabelFragment)
 
         // LaTeX compiler
-        fragments.add(CommonLatexFragments.latexCompiler(1) { s -> s::compiler })
+        fragments.add(CommonLatexFragments.createLatexCompilerFragment(3) { s -> s::compiler })
 
         // LaTeX compiler arguments
-        val compilerArguments = CommonLatexFragments.programArguments(
-            "compilerArguments", "Compiler arguments", 2, { s -> (s.configuration as LatexRunConfiguration)::compilerArguments }, { s -> (s.configuration as? LatexRunConfiguration)?.compilerArguments?.isNotEmpty() == true },
+        val compilerArguments = CommonLatexFragments.createProgramArgumentsFragment(
+            "compilerArguments", "Compiler arguments", 4, { s -> (s.configuration as LatexRunConfiguration)::compilerArguments }, { s -> (s.configuration as? LatexRunConfiguration)?.compilerArguments?.isNotEmpty() == true },
             name = "Add compiler arguments", latexGroupName
         )
         compilerArguments.setHint("CLI arguments for the LaTeX compiler")
         fragments.add(compilerArguments)
 
         // Main file
-        val mainFile = CommonLatexFragments.file<LatexRunConfiguration>(
-            "mainFile", "Main file", 3, mySettings.project, { s -> s::mainFile },
-            name = "Main file"
-        )
-        mainFile.setHint("Root file of the document to compile")
+        val mainFile = CommonLatexFragments.createMainFileFragment(5, project)
         fragments.add(mainFile)
 
         // Environment variables
-        fragments.add(CommonLatexFragments.createEnvParameters(latexGroupName, 4))
+        fragments.add(CommonLatexFragments.createEnvParametersFragment(latexGroupName, 6))
 
         // Working directory
-        fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 5, project))
+        fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 7, project))
 
-        // Compile sequence
-        val compileSequenceComponent = LatexCompileSequenceComponent(this)
-        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent)
-        fragments.add(compileSequenceFragment)
+        // Output path
+        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project))
+
+        // Path for auxiliary output files
+
+
+        // Output format
+        fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, project, mySettings))
+
+        // LaTeX distribution
+
 
         // Allow parallel run
         fragments.add(CommonTags.parallelRun())

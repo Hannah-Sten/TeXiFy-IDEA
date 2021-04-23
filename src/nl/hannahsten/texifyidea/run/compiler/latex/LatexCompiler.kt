@@ -38,7 +38,7 @@ sealed class LatexCompiler : Compiler<LatexCompileStep> {
     /**
      * List of output formats supported by this compiler.
      */
-    open val outputFormats: Array<Format> = arrayOf(Format.PDF, Format.DVI)
+    open val outputFormats: Array<OutputFormat> = arrayOf(OutputFormat.PDF, OutputFormat.DVI)
 
     class Converter : com.intellij.util.xmlb.Converter<LatexCompiler>() {
 
@@ -55,7 +55,7 @@ sealed class LatexCompiler : Compiler<LatexCompileStep> {
     /**
      * @author Hannah Schellekens
      */
-    enum class Format {
+    enum class OutputFormat {
 
         DEFAULT, // Means: don't overwite the default, e.g. a default from the latexmkrc, i.e. don't add any command line parameters
         PDF,
@@ -66,7 +66,7 @@ sealed class LatexCompiler : Compiler<LatexCompileStep> {
 
         companion object {
 
-            fun byNameIgnoreCase(name: String?): Format {
+            fun byNameIgnoreCase(name: String?): OutputFormat {
                 return values().firstOrNull {
                     it.name.equals(name, ignoreCase = true)
                 } ?: PDF

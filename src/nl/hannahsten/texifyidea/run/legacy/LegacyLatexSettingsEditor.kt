@@ -27,7 +27,7 @@ import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType
@@ -59,7 +59,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
     private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
 
     private var compileTwice: JBCheckBox? = null
-    private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
+    private lateinit var outputFormat: LabeledComponent<ComboBox<OutputFormat>>
     private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionType>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var externalToolsPanel: RunConfigurationPanel
@@ -147,7 +147,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
                 outputFormat.component.selectedItem = runConfiguration.outputFormat
             }
             else {
-                outputFormat.component.selectedItem = Format.PDF
+                outputFormat.component.selectedItem = OutputFormat.PDF
             }
         }
 
@@ -239,8 +239,8 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
         }
 
         // Apply output format.
-        val format = outputFormat.component.selectedItem as Format?
-        runConfiguration.outputFormat = format ?: Format.PDF
+        val format = outputFormat.component.selectedItem as OutputFormat?
+        runConfiguration.outputFormat = format ?: OutputFormat.PDF
 
         // Apply LaTeX distribution
         runConfiguration.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
@@ -276,12 +276,11 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
         panel = JPanel()
         panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
-        // todo work in progress
         val actionGroup = DefaultActionGroup()
         actionGroup.add(Separator())
         actionGroup.add(ToggleThing("Toggle1"))
         actionGroup.add(ToggleThing("Toggle2"))
-        val callback = {  } // todo focus lastSelected. FragmentedSettingsBuilder:190
+        val callback = {  }
         var modifyOptions: DropDownLink<String>? = null
         val popup: ListPopup = JBPopupFactory.getInstance().createActionGroupPopup("Title", actionGroup, DataManager.getInstance().getDataContext(modifyOptions), JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true, callback, -1)
         modifyOptions = DropDownLink<String>("Modify options") { popup }

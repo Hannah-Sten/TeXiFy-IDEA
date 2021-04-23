@@ -34,7 +34,7 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogTabComponent
@@ -61,7 +61,6 @@ import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.pathString
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -106,6 +105,7 @@ class LatexRunConfiguration constructor(
 
     var compilerArguments: String? by transformed(options::compilerArguments) { it?.trim() }
 
+    // todo this isn't used anymore? replaced by get/setEnvs()
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
@@ -126,7 +126,7 @@ class LatexRunConfiguration constructor(
     var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
 
     var compileTwice = false
-    var outputFormat: Format = Format.PDF
+    var outputFormat: OutputFormat = OutputFormat.PDF
 
     /**
      * Use [getLatexDistributionType] to take the Project SDK into account.
@@ -339,7 +339,7 @@ class LatexRunConfiguration constructor(
         }
 
         // Read output format.
-        this.outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
+        this.outputFormat = OutputFormat.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
 
         // Read LatexDistribution
         this.latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
@@ -548,7 +548,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun setDefaultOutputFormat() {
-        outputFormat = Format.PDF
+        outputFormat = OutputFormat.PDF
     }
 
     fun setDefaultDistribution(project: Project) {
@@ -598,7 +598,7 @@ class LatexRunConfiguration constructor(
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath()
         return "${outputDir?.path}/" + mainFile!!
-            .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf" else outputFormat.toString()
+            .nameWithoutExtension + "." + if (outputFormat == OutputFormat.DEFAULT) "pdf" else outputFormat.toString()
             .toLowerCase()
     }
 
@@ -689,6 +689,8 @@ class LatexRunConfiguration constructor(
     fun hasDefaultWorkingDirectory(): Boolean {
         return Path.of(workingDirectory).toAbsolutePath() == Path.of(mainFile?.path).parent.toAbsolutePath()
     }
+
+    fun hasDefaultOutputFormat() = outputFormat == OutputFormat.PDF
 
     override fun getEnvs() = options.env
 

@@ -17,6 +17,7 @@ import java.awt.BorderLayout
 import javax.swing.JTextField
 
 /**
+ * todo why use this instead of a plain TextfieldWithBrowserButton?
  * Text field that contains a [VirtualFile].
  *
  * The text field has a browse button to select the [VirtualFile].
