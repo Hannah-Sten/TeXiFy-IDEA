@@ -217,23 +217,29 @@ object CommonLatexFragments {
         return fragment
     }
 
-    fun createOutputPathFragment(group: String, commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+    /**
+     * @param type: Output or auxiliary directory.
+     * @param reset: String to use to reset the UI.
+     * @param apply: Function to apply the text to the run config.
+     * @param isDefault: Whether the value as in the given run config is default.
+     */
+    fun createOutputPathFragment(group: String, commandLinePosition: Int, project: Project, type: String, reset: (LatexRunConfiguration) -> String, apply: (LatexRunConfiguration, String) -> Unit, isDefault: (LatexRunConfiguration?) -> Boolean?): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
         val outputDirectoryField = TextFieldWithBrowseButton()
         outputDirectoryField.minimumSize = JBDimension(300, 30)
-        outputDirectoryField.addBrowseFolderListener("Select Output Directory", "Select directory to store generated files", project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
+        outputDirectoryField.addBrowseFolderListener("Select ${type.capitalize()} Directory", "Select directory to store $type files", project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
 
         MacrosDialog.addMacroSupport(outputDirectoryField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
 
-        val field = LabeledComponent.create(outputDirectoryField, "&Output directory:")
+        val field = LabeledComponent.create(outputDirectoryField, "&${type.capitalize()} directory:")
         field.labelLocation = BorderLayout.WEST
 
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>("outputDirectory", "Change default output directory", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.outputPath?.isDefault() == false }) {
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>("${type}Directory", "Change default $type directory", group, field, commandLinePosition, { s -> isDefault((s.configuration as? LatexRunConfiguration)) == false }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text = (s.configuration as LatexRunConfiguration).outputPath.pathString
+                ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text = reset((s.configuration as LatexRunConfiguration))
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).setFileOutputPath(((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text)
+                apply((s.configuration as LatexRunConfiguration), ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text)
             }
         }
 
@@ -241,7 +247,7 @@ object CommonLatexFragments {
         return fragment
     }
 
-    fun createOutputFormatFragment(group: String, commandLinePosition: Int, project: Project, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>> {
+    fun createOutputFormatFragment(group: String, commandLinePosition: Int, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>> {
         val formats = settings.compiler?.outputFormats ?: emptyArray()
         val field = LabeledComponent.create(ComboBox(formats), "Output format")
         field.labelLocation = BorderLayout.WEST
@@ -253,7 +259,26 @@ object CommonLatexFragments {
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).outputFormat = ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem as LatexCompiler.OutputFormat
+                (s.configuration as LatexRunConfiguration).outputFormat = ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexCompiler.OutputFormat ?: LatexCompiler.OutputFormat.PDF
+            }
+        }
+
+        fragment.isRemovable = true
+        return fragment
+    }
+
+    fun createLatexDistributionFragment(group: String, commandLinePosition: Int, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexDistributionType>>> {
+        val field = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isAvailable(settings.project) }.toTypedArray()), "LaTeX distribution")
+        field.labelLocation = BorderLayout.WEST
+        field.size = JBDimension(128, field.height)
+
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexDistributionType>>>("latexDistribution", "Change default LaTeX distribution", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultLatexDistribution() == false }) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem = (s.configuration as LatexRunConfiguration).latexDistribution
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                (s.configuration as LatexRunConfiguration).latexDistribution = ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexDistributionType ?: LatexDistributionType.PROJECT_SDK
             }
         }
 

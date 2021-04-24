@@ -692,6 +692,8 @@ class LatexRunConfiguration constructor(
 
     fun hasDefaultOutputFormat() = outputFormat == OutputFormat.PDF
 
+    fun hasDefaultLatexDistribution() = latexDistribution == LatexDistributionType.PROJECT_SDK
+
     override fun getEnvs() = options.env
 
     override fun setEnvs(envs: MutableMap<String, String>) {

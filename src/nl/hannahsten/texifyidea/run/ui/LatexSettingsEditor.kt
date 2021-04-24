@@ -60,16 +60,16 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 7, project))
 
         // Output path
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "output", { s -> s.outputPath.pathString }, { s, text -> s.setFileOutputPath(text) }, { s -> s?.outputPath?.isDefault() }))
 
         // Path for auxiliary output files
-
+        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "auxiliary", { s -> s.auxilPath.pathString }, { s, text -> s.setFileAuxilPath(text) }, { s -> s?.auxilPath?.isDefault() == true && !mySettings.getLatexDistributionType().isMiktex() }))
 
         // Output format
-        fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, project, mySettings))
+        fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, mySettings))
 
         // LaTeX distribution
-
+        fragments.add(CommonLatexFragments.createLatexDistributionFragment(latexGroupName, 11, mySettings))
 
         // Allow parallel run
         fragments.add(CommonTags.parallelRun())
