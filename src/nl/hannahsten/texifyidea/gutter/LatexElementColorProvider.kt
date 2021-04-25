@@ -196,7 +196,7 @@ object LatexElementColorProvider : ElementColorProvider {
             rgb.map { it.toInt().projectOnto(0..255) }.let { Color(it[0], it[1], it[2]) }
         }
         catch (e: NumberFormatException) {
-            rgb.map { it.toFloat() }.let { Color(it[0], it[1], it[2]) }
+            rgb.map { it.toFloat().projectOnto(0..1) }.let { Color(it[0], it[1], it[2]) }
         }
     }
 
@@ -213,8 +213,9 @@ object LatexElementColorProvider : ElementColorProvider {
      */
     private fun fromHsbString(hsbText: String): Color {
         val hsb = hsbText.split(",").map { it.trim() }
-        return hsb.map { it.toFloat() }
-            .let { Color.getHSBColor(it[0], it[1], it[2]) }
+        return hsb.map { it.toFloat().projectOnto(0..1) }
+            .let { Color.getHSBColor(
+                it[0], it[1], it[2]) }
     }
 
     /**
@@ -248,7 +249,9 @@ object LatexElementColorProvider : ElementColorProvider {
      * Get a [Color] from a cmy string.
      */
     private fun fromCmyString(cmyText: String): Color {
-        val cmy = cmyText.split(",").map { it.trim() }.map { it.toFloat() }
+        val cmy = cmyText.split(",")
+            .map { it.trim() }
+            .map { it.toFloat().projectOnto(0..1) }
         return Color(1 - cmy[0], 1 - cmy[1], 1 - cmy[2])
     }
 
@@ -298,6 +301,10 @@ object LatexElementColorProvider : ElementColorProvider {
      * - the maximum of the [range] if [this] is larger than every element in the [range].
      */
     private fun Int.projectOnto(range: IntRange) = max(range.first, min(range.last, this))
+
+    /**
+     * @see [projectOnto]
+     */
     private fun Float.projectOnto(range: IntRange) = max(range.first.toFloat(), min(range.last.toFloat(), this))
 
     private fun Double.format(digits: Int = 3) = String.format("%.${digits}f", this)
