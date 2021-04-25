@@ -206,7 +206,7 @@ object LatexElementColorProvider : ElementColorProvider {
      */
     private fun Color.toRgbString(integer: Boolean = true): String =
         if (integer) "$red, $green, $blue"
-        else listOf(red, green, blue).map { it / 255.0 }.joinToString(", ")
+        else listOf(red, green, blue).map { it / 255.0 }.joinToString(", ") { it.format() }
 
     /**
      * Get the [Color] from an HSB string, assuming that the values are in the range [0, 1].
@@ -220,7 +220,8 @@ object LatexElementColorProvider : ElementColorProvider {
     /**
      * Convert a color to an HSB string "hue, saturation, brightness" where each value is a float in the range [0, 1].
      */
-    private fun Color.toHsbString(): String = Color.RGBtoHSB(red, green, blue, null).joinToString(", ")
+    private fun Color.toHsbString(): String = Color.RGBtoHSB(red, green, blue, null)
+        .joinToString(", ") { it.toDouble().format() }
 
     /**
      * Get a [Color] object from a cmyk (cyan, magenta, blue, black) string.
@@ -240,7 +241,7 @@ object LatexElementColorProvider : ElementColorProvider {
     private fun Color.toCmykString(): String? {
         val rgb = listOf(red, green, blue).map { it / 255.0 }
         val k: Double = 1.0 - (rgb.maxOrNull() ?: return null)
-        return rgb.map { (1.0 - it - k) / (1.0 - k) }.joinToString(", ") + ", $k"
+        return rgb.map { (1.0 - it - k) / (1.0 - k) }.joinToString(", ") { it.format() } + ", $k"
     }
 
     /**
@@ -255,8 +256,7 @@ object LatexElementColorProvider : ElementColorProvider {
      * Convert a [Color] to a cmy string.
      */
     private fun Color.toCmyString() = listOf(red, green, blue)
-        .map { 1.0 - (it / 255.0) }
-        .joinToString(", ")
+        .map { 1.0 - (it / 255.0) }.joinToString(", ") { it.format() }
 
     /**
      * Convert a gray string (i.e., one number taken from the interval [0, 1]) to a [Color].
@@ -277,7 +277,7 @@ object LatexElementColorProvider : ElementColorProvider {
     private fun Color.toGrayString() = listOf(0.2126, 0.7152, 0.0722)
         .zip(listOf(red, green, blue))
         .sumByDouble { (weight, rgb) -> weight * (rgb / 255.0) }
-        .toString()
+        .format()
 
     /**
      * Get a [Color] from a hex color string.
@@ -299,4 +299,6 @@ object LatexElementColorProvider : ElementColorProvider {
      */
     private fun Int.projectOnto(range: IntRange) = max(range.first, min(range.last, this))
     private fun Float.projectOnto(range: IntRange) = max(range.first.toFloat(), min(range.last.toFloat(), this))
+
+    private fun Double.format(digits: Int = 3) = String.format("%.${digits}f", this)
 }
