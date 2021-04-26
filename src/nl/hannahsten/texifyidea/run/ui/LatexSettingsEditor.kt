@@ -60,10 +60,10 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 7, project))
 
         // Output path
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "output", { s -> s.outputPath.pathString }, { s, text -> s.setFileOutputPath(text) }, { s -> s?.outputPath?.isDefault() }))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "output", { s -> s.outputPath.pathString }, { s, text -> s.setFileOutputPath(text) }, { s -> s?.outputPath?.isDefault() }, mySettings))
 
         // Path for auxiliary output files
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "auxiliary", { s -> s.auxilPath.pathString }, { s, text -> s.setFileAuxilPath(text) }, { s -> s?.auxilPath?.isDefault() == true && !mySettings.getLatexDistributionType().isMiktex() }))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "auxiliary", { s -> s.auxilPath.pathString }, { s, text -> s.setFileAuxilPath(text) }, { s -> s?.auxilPath?.isDefault() == true }, mySettings))
 
         // Output format
         fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, mySettings))

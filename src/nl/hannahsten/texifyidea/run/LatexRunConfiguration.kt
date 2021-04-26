@@ -98,7 +98,7 @@ class LatexRunConfiguration constructor(
     }
 
     var compiler: LatexCompiler? by options::compiler
-    var compilerPath: String? = null
+    var compilerPath: String? = null // todo replaced by custom compiler?
     var sumatraPath: String? = null
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
@@ -196,8 +196,6 @@ class LatexRunConfiguration constructor(
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(this)
-
-//        return LatexSettingsEditor(project)
     }
 
     override fun createAdditionalTabComponents(
@@ -225,6 +223,7 @@ class LatexRunConfiguration constructor(
 
     @Throws(ExecutionException::class)
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
+        // todo
 //        val filter = RegexpFilter(
 //            environment.project,
 //            "^\$FILE_PATH$:\$LINE$"
@@ -360,7 +359,7 @@ class LatexRunConfiguration constructor(
 
         // Read compile steps
         // This should be the last option that is read, as it may depend on other options.
-        for (compileStepElement in element.getChildren(COMPILE_STEP)) {
+        for (compileStepElement in parent.getChildren(COMPILE_STEP)) {
             val key = compileStepElement.getAttributeValue(COMPILE_STEP_NAME_ATTR)
             val provider = CompilerMagic.compileStepProviders[key] ?: continue
 
@@ -630,10 +629,8 @@ class LatexRunConfiguration constructor(
     fun setFileAuxilPath(fileAuxilPath: String) {
         if (fileAuxilPath.isBlank()) return
         this.auxilPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
-        // If not possible to resolve directly, we might resolve it later
-        if (this.auxilPath.virtualFile == null) {
-            this.auxilPath.pathString = fileAuxilPath
-        }
+        // Update backing string (will be used as path in the UI, to enable macro support)
+        this.auxilPath.pathString = fileAuxilPath
     }
 
     /**

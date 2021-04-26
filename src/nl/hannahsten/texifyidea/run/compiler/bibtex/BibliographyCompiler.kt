@@ -32,11 +32,7 @@ class CustomBibliographyCompiler(override val executablePath: String) : Bibliogr
 
 abstract class SupportedBibliographyCompiler(override val displayName: String, override val executableName: String) : BibliographyCompiler(), SupportedCompiler<BibliographyCompileStep> {
 
-    override fun getCommand(step: BibliographyCompileStep): List<String>? {
-        TODO("Not yet implemented")
-    }
-
-    abstract fun createCommand(runConfig: BibtexRunConfiguration): List<String>?
+    abstract override fun getCommand(step: BibliographyCompileStep): List<String>?
 
     override fun toString() = this.displayName
 

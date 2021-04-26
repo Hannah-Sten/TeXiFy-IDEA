@@ -98,7 +98,7 @@ class BibliographyCompileStep(
     }
 
     override fun getCommand(): List<String>? {
-        TODO("Not yet implemented")
+        return state.compiler?.getCommand(this)
     }
 
     override fun getWorkingDirectory() = state.workingDirectory ?: configuration.getAuxilDirectory()?.path ?: configuration.mainFile?.parent?.path

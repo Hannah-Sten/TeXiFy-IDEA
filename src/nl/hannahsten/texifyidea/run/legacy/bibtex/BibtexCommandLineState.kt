@@ -19,7 +19,9 @@ open class BibtexCommandLineState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
-        val command: List<String> = compiler.createCommand(runConfig) ?: throw ExecutionException("Compile command could not be created.")
+//        val command: List<String> = compiler.createCommand(runConfig) ?: throw ExecutionException("Compile command could not be created.")
+        TODO("To be removed?")
+        val command = emptyList<String>()
 
         // The working directory is as specified by the user in the working directory.
         // The fallback (if null or empty) directory is the directory of the main file.

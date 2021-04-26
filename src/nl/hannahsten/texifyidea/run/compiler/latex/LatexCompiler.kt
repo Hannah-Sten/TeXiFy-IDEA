@@ -104,11 +104,6 @@ abstract class SupportedLatexCompiler(
 
     /**
      * Get the execution command for the latex compiler.
-     *
-     * @param runConfig
-     *          The run configuration object to get the command for.
-     * @param project
-     *          The current project.
      */
     override fun getCommand(step: LatexCompileStep): List<String>? {
         val runConfig = step.configuration

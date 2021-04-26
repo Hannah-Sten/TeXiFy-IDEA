@@ -35,7 +35,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
 
             val commandLine = GeneralCommandLine(command)
                 .withWorkDirectory(workingDirectory)
-                .withEnvironment(runConfig.envs)
+                .withEnvironment(runConfig.envs) // todo should be envs of the step right? these are just for latex
 
             val handler = KillableProcessHandler(commandLine)
             handler.addProcessListener(object : ProcessAdapter() {
@@ -48,6 +48,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
                 }
 
                 override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+                    // todo
 //                    if (outputType !is ProcessOutputType) return
 //                    buildView.onEvent(id, OutputBuildEventImpl(id, "latex", event.text, outputType.isStdout))
                 }
