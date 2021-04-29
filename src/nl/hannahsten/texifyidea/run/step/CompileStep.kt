@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.step
 
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
 /**
@@ -19,4 +20,6 @@ interface CompileStep {
     fun getCommand(): List<String>?
 
     fun getWorkingDirectory(): String?
+
+    fun getEnvironmentVariables(): EnvironmentVariablesData
 }

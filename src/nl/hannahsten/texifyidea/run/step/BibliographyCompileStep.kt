@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.run.step
 
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.components.BaseState
@@ -24,16 +26,27 @@ class BibliographyCompileStep(
     override val provider: CompileStepProvider, override val configuration: LatexRunConfiguration
 ) : CompileStep, PersistentStateComponent<BibliographyCompileStep.State> {
 
+    // See https://plugins.jetbrains.com/docs/intellij/persisting-state-of-components.html#implementing-the-state-class
+    // Note you can view the result in practice in workspace.xml
+    // We are using attributes instead of optiontags for brevity in the xml (it seems to make more sense, as attributes of a compile step)
+    // Attributes: <compile-step myattribute="value" />
+    // OptionTags (as in LatexRunConfigurationOptions): <option value="optionValue" />
     class State : BaseState() {
 
         @get:Attribute("compiler", converter = BibliographyCompiler.Converter::class)
         var compiler by property<BibliographyCompiler?>(null) { it == null }
 
-        @get:Attribute()
+        @get:Attribute
         var compilerArguments by string()
 
-        @get:Attribute()
+        @get:Attribute
         var workingDirectory by string()
+
+        @get:Attribute
+        var envs by map<String, String>()
+
+        @get:Attribute
+        var isPassParentEnvs by property(EnvironmentVariablesData.DEFAULT.isPassParentEnvs)
     }
 
     private var state = State()
@@ -70,6 +83,12 @@ class BibliographyCompileStep(
             text = state.workingDirectory ?: ""
         }
 
+        val environmentVariables = EnvironmentVariablesComponent().apply {
+            label.isVisible = false
+            envs = state.envs
+            isPassParentEnvs = state.isPassParentEnvs
+        }
+
         val panel = panel {
             row("Compiler:") {
                 cell {
@@ -80,6 +99,10 @@ class BibliographyCompileStep(
             row("Working directory:") {
                 component(workingDirectory)
                     .comment("Working directory should typically be the directory where the .aux file can be found.")
+            }
+            row("Environment variables:") {
+                component(environmentVariables)
+                    .comment("For this step only. Separate variables with semicolon: VAR=value; VAR1=value1")
             }
         }
 
@@ -94,6 +117,8 @@ class BibliographyCompileStep(
             state.compiler = compilerEditor.getSelectedCompiler() as BibliographyCompiler?
             state.compilerArguments = compilerArguments.text.trim().ifEmpty { null }
             state.workingDirectory = workingDirectory.text.trim().ifEmpty { null }
+            state.envs = environmentVariables.envData.envs
+            state.isPassParentEnvs = environmentVariables.isPassParentEnvs
         }
     }
 
@@ -102,6 +127,8 @@ class BibliographyCompileStep(
     }
 
     override fun getWorkingDirectory() = state.workingDirectory ?: configuration.getAuxilDirectory()?.path ?: configuration.mainFile?.parent?.path
+
+    override fun getEnvironmentVariables() = EnvironmentVariablesData.create(state.envs, state.isPassParentEnvs)
 
     override fun getState() = state
 

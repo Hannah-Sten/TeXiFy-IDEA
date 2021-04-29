@@ -4,6 +4,7 @@ import com.intellij.build.events.MessageEvent
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.process.*
@@ -35,7 +36,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
 
             val commandLine = GeneralCommandLine(command)
                 .withWorkDirectory(workingDirectory)
-                .withEnvironment(runConfig.envs) // todo should be envs of the step right? these are just for latex
+            step.getEnvironmentVariables().configureCommandLine(commandLine, true)
 
             val handler = KillableProcessHandler(commandLine)
             handler.addProcessListener(object : ProcessAdapter() {

@@ -4,6 +4,7 @@ import com.intellij.execution.ui.*
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import org.cef.misc.CefPrintSettings
 import java.awt.Font
 import javax.swing.JLabel
 

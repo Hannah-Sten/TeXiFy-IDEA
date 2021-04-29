@@ -5,7 +5,9 @@ import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.Font
+import java.awt.image.ColorModel
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -22,8 +24,13 @@ class LatexCompileSequenceFragment(private val component: LatexCompileSequenceCo
             val label = JLabel("Compile sequence").apply {
                 font = JBUI.Fonts.label().deriveFont(Font.BOLD)
             }
+            val hintLabel = JLabel("Double-click a step to edit").apply {
+                font = JBUI.Fonts.label().deriveFont(Font.ITALIC)
+                foreground = Color.LIGHT_GRAY
+            }
             panel.add(label, BorderLayout.NORTH)
             panel.add(component, BorderLayout.CENTER)
+            panel.add(hintLabel, BorderLayout.SOUTH)
 
             return panel
         }
