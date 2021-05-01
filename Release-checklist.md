@@ -6,7 +6,7 @@
 - [ ] Does it work in PyCharm?
 - [ ] Run ctan.py
 
-- [ ] Copy changelog to plugin.xml, replace using regexes below and update welcome text
+- [ ] Copy changelog to description-changelog.xml, replace using regexes below and update welcome text
 - [ ] Update version in plugin.xml and build.gradle
 - [ ] runIDE and check the changelog is formatted correctly
 - [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
