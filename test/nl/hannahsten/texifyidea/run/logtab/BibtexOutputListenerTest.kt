@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.run.logtab
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType.ERROR
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType.WARNING
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexOutputListener
-import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessage
+import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessageType.ERROR
+import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessageType.WARNING
+import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexOutputListener
+import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 
 class BibtexOutputListenerTest : BasePlatformTestCase() {
 

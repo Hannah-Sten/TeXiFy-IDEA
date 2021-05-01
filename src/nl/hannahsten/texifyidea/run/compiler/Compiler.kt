@@ -1,15 +1,19 @@
 package nl.hannahsten.texifyidea.run.compiler
 
-import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.run.step.CompileStep
 
 /**
+ * Represents a LaTeX or BibTeX compiler of a step in a LaTeX run configuration.
+ *
  * @author Sten Wessel
  */
-interface Compiler<in R : RunConfiguration> {
+interface Compiler<in S : CompileStep> {
 
-    val displayName: String
-    val executableName: String
-
-    fun getCommand(runConfig: R, project: Project): List<String>?
+    /**
+     * The command to execute to compile [step].
+     *
+     * Returns `null` if no command should be executed.
+     */
+    fun getCommand(step: S): List<String>?
 }
+

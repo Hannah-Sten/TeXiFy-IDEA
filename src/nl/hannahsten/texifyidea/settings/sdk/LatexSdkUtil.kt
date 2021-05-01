@@ -7,13 +7,13 @@ import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
 
 /**
- * Utility functions which are not specific to a [LatexSdk] or a [nl.hannahsten.texifyidea.run.compiler.LatexCompiler].
+ * Utility functions which are not specific to a [LatexSdk] or a [nl.hannahsten.texifyidea.run.compiler.SupportedLatexCompiler].
  */
 object LatexSdkUtil {
 
@@ -120,7 +120,7 @@ object LatexSdkUtil {
     }
 
     /**
-     * Get executable name of pdflatex, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
+     * Get executable name of a LaTeX executable binary, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
      */
     fun getExecutableName(executableName: String, project: Project): String {
         // Give preference to the project SDK if a valid LaTeX SDK is selected
@@ -129,7 +129,7 @@ object LatexSdkUtil {
                 (sdk.sdkType as? LatexSdk)?.getExecutableName(executableName, sdk.homePath!!)?.let { return it }
             }
         }
-        // If not, if it's in path then that also works
+        // If not, if pdflatex is in path then the executableName probably also is
         if (isPdflatexInPath) {
             return executableName
         }

@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.lang.magic
 
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
 /**
  * @author Hannah Schellekens
@@ -20,7 +19,7 @@ enum class DefaultMagicKeys(
         """
         The name of the typesetting engine to use for the current file.
         The following programs are supported:
-        ${LatexCompiler.values().joinToString(", ") { it.executableName }}
+        ${CompilerMagic.latexCompilerByExecutableName.keys.joinToString(", ")}
         """.trimIndent().trim(),
         MagicCommentScope.FILE.singleScope()
     ),
@@ -31,7 +30,7 @@ enum class DefaultMagicKeys(
         """
         The name of the typesetting engine to use for the current file.
         The following programs are supported:
-        ${LatexCompiler.values().joinToString(", ") { it.executableName }}
+        ${CompilerMagic.latexCompilerByExecutableName.keys.joinToString(", ")}
         """.trimIndent().trim(),
         MagicCommentScope.FILE.singleScope()
     ),
@@ -42,8 +41,7 @@ enum class DefaultMagicKeys(
         """
         The name of the typesetting engine to use for the current file.
         The following programs are supported:
-        ${BibliographyCompiler.values()
-            .joinToString(", ") { it.executableName }}
+        ${CompilerMagic.bibliographyCompilerByExecutableName.keys.joinToString(", ")}
         """.trimIndent().trim(),
         MagicCommentScope.FILE.singleScope()
     ),

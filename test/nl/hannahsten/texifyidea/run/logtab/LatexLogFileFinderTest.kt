@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.logtab
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexFileStack
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexFileStack
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMagicRegex.LINE_WIDTH
 
 class LatexLogFileFinderTest : BasePlatformTestCase() {
 

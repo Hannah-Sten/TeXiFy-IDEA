@@ -5,8 +5,9 @@ import com.intellij.openapi.project.Project
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.latex.LualatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
@@ -32,11 +33,11 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     if (enabled) {
         mockkStatic(LatexRunConfiguration::class)
         // Unicode is always supported in lualatex.
-        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.LUALATEX
+        every { project.selectedRunConfig()?.compiler } returns LualatexCompiler
     }
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
-        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.PDFLATEX
+        every { project.selectedRunConfig()?.compiler } returns PdflatexCompiler
         mockkObject(TexliveSdk)
         every { TexliveSdk.version } returns 2017
     }

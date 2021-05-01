@@ -1,9 +1,10 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
-        <configurationType implementation="nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType"/>
-        <configurationType implementation="nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType"/>
-        <configurationType implementation="nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType"/>
-        <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.LatexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType"/>
+        <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.LatexRunConfigurationProducer"/>
+        <projectService serviceImplementation="nl.hannahsten.texifyidea.service.LatexRunConfigurationViewManagerService"/>
     </extensions>
 </idea-plugin>

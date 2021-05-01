@@ -7,7 +7,7 @@ import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
 /**
  * State of autocompilation.

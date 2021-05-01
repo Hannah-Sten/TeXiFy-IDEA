@@ -1,13 +1,13 @@
 package nl.hannahsten.texifyidea.run.logtab
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
-import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessage
+import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessageType
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType.ERROR
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType.WARNING
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
+import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 
 /**
  * Tests for log messages spanning multiple lines.
