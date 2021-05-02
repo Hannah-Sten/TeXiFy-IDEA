@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.5</strong></p>
+        <p><strong>Beta 0.7.6</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.5! This release, together with the PDF Viewer plugin 0.11.0, adds forward and backward search support to the internal pdf viewer. It also contains many small usability enhancements and bug fixes, like performance improvements and 'create project from existing sources' support.
+            Welcome to TeXiFy IDEA 0.7.6! We bring to you some nice improvements like automatically updating references when moving a file, and the option to indent text in sections. In the meantime, we are working on a complete rework of the LaTeX run configuration.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,42 +55,34 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add quick fix for normal space insertion to line break inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
-            <li> Add .cbx and biblatex-dm.cfg to recognised file extensions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1805">#1805</a>)</li>
-            <li> Add documentation popup for environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
-            <li> Add warning when trying to use documentation while texdoc is not installed. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
-            <li> Index which LaTeX packages include which other LaTeX packages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1799">#1799</a>)</li>
-            <li> Improve autocompletion performance. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
-            <li> Add support for 'create project from existing sources'. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1807">#1807</a>)</li>
+            <li> Update file references when moving an included file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
+            <li> Group inspections in settings. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1830">#1830</a>)</li>
+            <li> Support nested subfiles. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1835">#1835</a>)</li>
+            <li> Add inspection to warn against relative path bug in BIBINPUTS. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1837">#1837</a>)</li>
+            <li> Add optional code style setting to indent text in sections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1843">#1843</a>)</li>
+            <li> Enable the tool windows also in non-IntelliJ IDEs. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1843">#1843</a>)</li>
+            <li> Auto-fill crash report. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1852">#1852</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li> Show a warning when trying to submit a crash report when not using the latest version of TeXiFy. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1778">#1778</a>)</li>
-            <li> Make inspection levels configurable by user. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1781">#1781</a>)</li>
-            <li> Look in run configurations for possible paths to latex executables when using PyCharm on a Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
-            <li> Underscore is now a valid bibtex type character. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
-            <li> \url and \href are now verbatim commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1784">#1784</a>)</li>
-            <li> Use safe delete quickfixes for some 'unused element' inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1787">#1787</a>)</li>
-            <li> Prepare for PDF Viewer plugin support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1822">#1822</a>)</li>
+            <li> Use html formatting in documentation popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1846">#1846</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix line breaking of comments during formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1776">#1776</a>)</li>
-            <li> Fix go to command definition when it is a custom label referencing command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1784">#1784</a>)</li>
-            <li> Fix parse error on \newenvironment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
-            <li> Fix exception when MiKTeX is not installed on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
-            <li> Fix executable path for native TeX Live SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
+            <li> Take BIBINPUTS variable into account when resolving bib files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1837">#1837</a>)</li>
+            <li> Fix bug in reading a file magic comment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
+            <li> Fix tool window icon size. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
         </ul>
-        <br>
-        <p>
-            Thanks to <a href="https://github.com/solonovamax">@solonovamax</a> for contributing to this release.
-        </p>
+<!--        <br>-->
+<!--        <p>-->
+<!--            Thanks to <a href="https://github.com/solonovamax">@solonovamax</a> for contributing to this release.-->
+<!--        </p>-->
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.

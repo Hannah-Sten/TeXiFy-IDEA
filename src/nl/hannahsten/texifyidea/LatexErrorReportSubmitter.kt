@@ -5,6 +5,7 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
 import com.intellij.openapi.diagnostic.SubmittedReportInfo
@@ -12,6 +13,7 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.showOkCancelDialog
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.awt.Component
@@ -50,6 +52,10 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
                 return latestVersionCached
             }
         }
+
+        val currentVersion by lazy {
+            PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
+        }
     }
 
     @Suppress("DialogTitleCapitalization")
@@ -57,7 +63,6 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
     override fun submit(events: Array<out IdeaLoggingEvent>?, additionalInfo: String?, parentComponent: Component, consumer: Consumer<in SubmittedReportInfo>): Boolean {
 
-        val currentVersion = PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
         // Don't do the check when there's no internet connection
         val latestVersion = try {
             getLatestVersion()
@@ -97,15 +102,11 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             builder.append(URLEncoder.encode(title, ENCODING))
             builder.append("&body=")
 
-            builder.append(URLEncoder.encode("### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version\n\n", ENCODING))
-            builder.append(
-                URLEncoder.encode(
-                    "### Operating System \n" +
-                            "<!-- Windows, Ubuntu, Arch Linux, MacOS, etc. -->\n\n",
-                    ENCODING
-                )
-            )
-            builder.append(URLEncoder.encode("### TeXiFy IDEA version\n\n", ENCODING))
+            val applicationInfo = ApplicationInfo.getInstance().let { "${it.fullApplicationName} (build ${it.build})" }
+            builder.append(URLEncoder.encode("### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version\n${applicationInfo}\n\n", ENCODING))
+            val systemInfo = "${SystemInfo.OS_NAME} ${SystemInfo.OS_VERSION} (${SystemInfo.OS_ARCH})"
+            builder.append(URLEncoder.encode("### Operating System \n$systemInfo\n\n", ENCODING))
+            builder.append(URLEncoder.encode("### TeXiFy IDEA version\n$currentVersion\n\n", ENCODING))
             builder.append(URLEncoder.encode("### Description\n", ENCODING))
             builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
             builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(7000)}\n```", ENCODING))
@@ -121,7 +122,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             return false
         }
 
-        BrowserUtil.browse(builder.toString())
+        BrowserUtil.browse(builder.toString().take(7000))
         consumer.consume(
             SubmittedReportInfo(
                 null,

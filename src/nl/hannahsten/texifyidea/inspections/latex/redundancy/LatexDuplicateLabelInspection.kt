@@ -121,39 +121,20 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     private fun getProblemDescriptors(
         commands: Sequence<PsiElement>, isOntheFly: Boolean, manager: InspectionManager, file: PsiFile,
         getLabelDescriptor: PsiElement.() -> LabelDescriptor?
-    ): List<ProblemDescriptor> {
-
-        // Map labels to commands defining the label
-        val labelDescriptors = mutableListOf<LabelDescriptor>()
-
-        val result = mutableListOf<ProblemDescriptor>()
-
-        // Treat LaTeX and BibTeX separately because only the first parameter of \bibitem commands counts
-        // First find all duplicate labels
-        commands.forEach { command ->
+    ): List<ProblemDescriptor> = commands
+        .mapNotNull { command ->
             // When the label is defined in \newcommand ignore it, because there could be more than one with #1 as parameter
-            val parent = command.parentOfType(LatexCommands::class)
-            if (parent != null && parent.name == "\\newcommand") {
-                return@forEach
-            }
-
-            val labelDescriptor = command.getLabelDescriptor() ?: return@forEach
-            labelDescriptors.add(labelDescriptor)
+            if (command.parentOfType(LatexCommands::class)?.name == "\\newcommand") return@mapNotNull null
+            command.getLabelDescriptor()
         }
-
-        val duplicates = labelDescriptors.groupBy { d -> d.label }.filter { g -> g.value.size > 1 }
-
-        for (group in duplicates) {
-            // We can only mark labels in the current file
-            val currentFileDuplicates = group.value.filter { descriptor -> descriptor.element.containingFile == file }
-
-            for (labelDescriptor in currentFileDuplicates) {
-                result.add(createProblemDescriptor(labelDescriptor, isOntheFly, manager))
-            }
+        .groupBy { it.label }
+        .values
+        .filter { it.size > 1 }
+        .flatMap { descriptors ->
+            // We can only mark labels in the current file.
+            descriptors.filter { it.element.containingFile == file }
+                .map { createProblemDescriptor(it, isOntheFly, manager) }
         }
-
-        return result
-    }
 
     /**
      * make the mapping from command etc. to ProblemDescriptor
