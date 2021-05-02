@@ -122,7 +122,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             return false
         }
 
-        BrowserUtil.browse(builder.toString())
+        BrowserUtil.browse(builder.toString().take(7000))
         consumer.consume(
             SubmittedReportInfo(
                 null,
