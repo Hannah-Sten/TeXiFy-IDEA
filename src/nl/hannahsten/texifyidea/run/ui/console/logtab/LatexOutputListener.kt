@@ -222,7 +222,7 @@ class LatexOutputListener(
             val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
             val message = LatexLogMessage(logMessage.message.trim(), logMessage.fileName, logMessage.line, logMessage.type, file)
             messageList.add(message)
-            treeView.applyFilters(message)
+//            treeView.applyFilters(message) // todo should be replaced by invoke below?
             newMessageListener?.invoke(logMessage, file)
         }
 

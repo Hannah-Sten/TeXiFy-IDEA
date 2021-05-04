@@ -16,6 +16,9 @@ import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
 
+/**
+ * todo replace by LatexExecutionConsole
+ */
 class LatexCompileMessageTreeView(
     val project: Project,
     val latexMessageList: MutableList<LatexLogMessage>,

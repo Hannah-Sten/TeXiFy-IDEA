@@ -1,9 +1,11 @@
 package nl.hannahsten.texifyidea.run.ui.console
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.errorTreeView.NavigatableErrorTreeElement
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.PresentableNodeDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.pom.Navigatable
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.EmptyIcon
@@ -14,7 +16,7 @@ import javax.swing.Icon
  *
  * @author Sten Wessel
  */
-class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = null) : PresentableNodeDescriptor<LatexExecutionNode>(project, parent) {
+class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = null) : PresentableNodeDescriptor<LatexExecutionNode>(project, parent), NavigatableErrorTreeElement {
 
     companion object {
 
@@ -45,6 +47,8 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         if (!description.isNullOrEmpty()) {
             presentation.addText(description, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         }
+        presentation.locationString = "location " // todo file?
+        // todo how would we implement double-click to open file?
     }
 
     enum class State(val icon: Icon) {
@@ -54,5 +58,9 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         SUCCEEDED(ICON_SUCCESS),
         SKIPPED(ICON_SKIPPED),
         FAILED(ICON_ERROR);
+    }
+
+    override fun getNavigatable(): Navigatable {
+        TODO("Not yet implemented")
     }
 }

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.ui.console
 
 import com.intellij.build.Filterable
+import com.intellij.build.events.impl.MessageEventImpl
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.filters.TextConsoleBuilderFactory
@@ -8,6 +9,7 @@ import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.OccurenceNavigator
 import com.intellij.ide.util.treeView.AbstractTreeStructure
@@ -22,8 +24,10 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.EditSourceOnDoubleClickHandler
 import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.ui.tree.TreeUtil
+import groovyjarjarantlr.debug.MessageEvent
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.CompileStep
+import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import java.util.function.Predicate
@@ -32,10 +36,11 @@ import javax.swing.JPanel
 
 /**
  * The tool window which shows the log messages and output log.
+ * Partially re-implements NewErrorTreeViewPanel.
  *
  * @author Sten Wessel
  */
-class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, OccurenceNavigator, Filterable<Any> {
+class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, OccurenceNavigator, Filterable<Any>, ExecutionConsole {
 
     companion object {
         private const val SPLITTER_PROPORTION_PROPERTY = "TeXiFy.ExecutionConsole.Splitter.Proportion"
@@ -83,6 +88,18 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
             }
             add(splitter, BorderLayout.CENTER)
         }
+
+        val autoScrollToSourceHandler = object : AutoScrollToSourceHandler() {
+            override fun isAutoScrollMode(): Boolean {
+                return false // todo
+            }
+
+            override fun setAutoScrollMode(state: Boolean) {
+                // todo
+            }
+
+        }
+        autoScrollToSourceHandler.install(tree)
     }
 
     fun start() {
@@ -99,6 +116,17 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
             description = if (failed) "Failed" else "Successful"
             scheduleUpdate(this)
         }
+    }
+
+    // todo relocate
+    /**
+     * Add log message to tree.
+     */
+    fun onEvent(event: MessageEventImpl) {
+        val id = (event.id as? String) ?: return
+        val (step, node, console) = steps[id] ?: return
+        // todo add nodes for log message
+//        node.children.add()
     }
 
     fun startStep(id: String, step: CompileStep, handler: OSProcessHandler) {
