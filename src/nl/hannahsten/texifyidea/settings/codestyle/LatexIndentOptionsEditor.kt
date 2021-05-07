@@ -9,8 +9,6 @@ import javax.swing.JCheckBox
 /**
  * Customizing the 'Tabs and Indents' settings cannot be done via [LatexLanguageCodeStyleSettingsProvider.customizeSettings] using INDENT_SETTINGS but has to be done here.
  *
- * todo should be unselected by default
- *
  * See e.g. the YAML plugin "YAMLLanguageCodeStyleSettingsProvider"
  */
 class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider) : SmartIndentOptionsEditor(provider) {

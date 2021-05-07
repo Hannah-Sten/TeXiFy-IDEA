@@ -6,9 +6,12 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDocumentManager
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.runWriteAction
+import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import java.util.concurrent.TimeUnit
 
 class ReformatWithLatexindent : AnAction("Reformat File with Latexindent.pl") {
@@ -39,7 +42,7 @@ class ReformatWithLatexindent : AnAction("Reformat File with Latexindent.pl") {
         val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return
         val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document) ?: return
         if (!file.isLatexFile()) return
-        val process = GeneralCommandLine("latexindent.pl", "-w", file.name)
+        val process = GeneralCommandLine("latexindent.pl", file.name)
             .withWorkDirectory(file.containingDirectory.virtualFile.path)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .createProcess()
@@ -54,7 +57,13 @@ class ReformatWithLatexindent : AnAction("Reformat File with Latexindent.pl") {
         if (process.exitValue() != 0) {
             Notification("LaTeX", "Latexindent failed", output ?: "Exit value ${process.exitValue()}", NotificationType.ERROR).notify(project)
         }
+        else if (output?.isNotBlank() == true) {
+            // Assumes first child is LatexContent
+            val newFile = LatexPsiHelper(project).createFromText(output)
+            runWriteCommandAction(project) {
+                file.node.replaceChild(file.node.firstChildNode, newFile.node.firstChildNode)
+            }
+        }
 
-//        runCommand("latexindent.pl", "-w", file.name, file.containingDirectory.virtualFile.path)
     }
 }
