@@ -6,11 +6,9 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDocumentManager
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.runWriteAction
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import java.util.concurrent.TimeUnit
 
@@ -64,6 +62,5 @@ class ReformatWithLatexindent : AnAction("Reformat File with Latexindent.pl") {
                 file.node.replaceChild(file.node.firstChildNode, newFile.node.firstChildNode)
             }
         }
-
     }
 }
