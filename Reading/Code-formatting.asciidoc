@@ -54,6 +54,8 @@ When formatting the contents of a table, it ignores all table lines that
 * are split over multiple lines, or
 * contain less `&` than required (for example when using the `\multicolumn` command).
 
+If you have 'Wrap on typing' set to 'yes', then long lines may be split.
+
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/table-formatter-multiline.gif[table-formatter-multiline]
 
 == Algorithm pseudocode

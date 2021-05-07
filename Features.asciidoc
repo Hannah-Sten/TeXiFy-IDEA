@@ -249,6 +249,8 @@ menu:Edit[LaTeX > link:Menu-entries#insert-graphic-wizard[Insert Graphic...]]:: 
 // todo link to description pages for the next entries
 menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
 
+menu:Code[Reformat File with Latexindent]:: Run Latexindent.pl on the file the caret is in.
+
 menu:Analyze[LaTeX > Word Count]:: Word counting tool.
 
 menu:Tools[LaTeX > Equation Preview]:: Preview equations.
