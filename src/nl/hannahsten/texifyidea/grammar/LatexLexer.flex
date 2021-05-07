@@ -41,6 +41,13 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
   private int verbatimOptionalArgumentBracketsCount = 0;
 
   /**
+   * Keep track of braces in the PREAMBLE_OPTION state.
+   * We need to count braces in order to avoid exiting the state too early, especially in case of entering this state incorrectly
+   * (for example because someone has >{ in their text for whatever reason).
+   */
+  private int preambleOptionBracesCount = 0;
+
+  /**
    * Remember the delimiter that inline verbatim started with, to check when to end it.
    */
   private String verbatim_delimiter = "";
@@ -362,7 +369,16 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 <PREAMBLE_OPTION> {
     "$"                 { return NORMAL_TEXT_WORD; }
-    {CLOSE_BRACE}       { yypopState(); return CLOSE_BRACE; }
+    {OPEN_BRACE}        { preambleOptionBracesCount++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       {
+        if (preambleOptionBracesCount == 0) {
+          yypopState();
+        }
+        else {
+            preambleOptionBracesCount--;
+        }
+        return CLOSE_BRACE;
+    }
 }
 
 <DISPLAY_MATH> {
@@ -381,8 +397,8 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // The array package provides <{...} and >{...} preamble options for tables
 // which are often used with $, in which case the $ is not an inline_math_start (because there's only one $ in the group, which would be a parse errror)
-\<\{                   { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
->\{                    { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
+\<\{                   { yypushState(PREAMBLE_OPTION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
+>\{                    { yypushState(PREAMBLE_OPTION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
 
 // In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line
