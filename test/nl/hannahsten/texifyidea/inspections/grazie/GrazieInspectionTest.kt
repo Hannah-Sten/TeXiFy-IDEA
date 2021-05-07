@@ -39,7 +39,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting(true, false, false, true)
     }
 
-
     fun testInlineMath() {
         myFixture.configureByText(
             LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?
