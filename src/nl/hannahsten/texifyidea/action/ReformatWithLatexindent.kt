@@ -12,7 +12,13 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import java.util.concurrent.TimeUnit
 
-class ReformatWithLatexindent : AnAction("Reformat File with Latexindent.pl") {
+/**
+ * Run external tool 'latexindent.pl' to reformat the file.
+ * This action is placed next to the standard Reformat action in the Code menu.
+ *
+ * @author Thomas
+ */
+class ReformatWithLatexindent : AnAction("Reformat File with Latexindent") {
 
     override fun update(event: AnActionEvent) {
         // Possible improvement: make visible anyway in LaTeX project (but only enabled if cursor in file)
