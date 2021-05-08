@@ -5,11 +5,6 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMagicRegex.biberNumberOfErrors
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMagicRegex.biberNumberOfWarnings
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMagicRegex.bibtexNumberOfErrors
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMagicRegex.bibtexNumberOfWarnings
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.*
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.*
 import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
@@ -33,7 +28,7 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer
 class BibtexOutputListener(
     val project: Project,
     val mainFile: VirtualFile?,
-    val messageList: MutableList<BibtexLogMessage>,
+    private val messageList: MutableList<BibtexLogMessage>,
     val treeView: LatexCompileMessageTreeView
 ) : ProcessListener {
 
@@ -52,12 +47,6 @@ class BibtexOutputListener(
 
         updateCurrentFile(newText)
 
-        // Check for summary in the middle of the window, otherwise we might
-        // be checking the summary before we processed all the messages
-        if (window.size > 2) {
-            compareNumberOfMessages(window.toList()[window.size - 3] as String)
-        }
-
         val windowList: List<String> = window.mapNotNull { it as? String }
         val logMessage = extractMessage(windowList) ?: return
 
@@ -69,35 +58,6 @@ class BibtexOutputListener(
         }
     }
 
-    /**
-     * Compare the summary of the number of warnings as given by bibtex/biber
-     * with our own message list.
-     */
-    private fun compareNumberOfMessages(newText: String) {
-        val warningRegexes = listOf(bibtexNumberOfWarnings, biberNumberOfWarnings)
-        val errorRegexes = listOf(bibtexNumberOfErrors, biberNumberOfErrors)
-        if ((warningRegexes + errorRegexes).any { it.containsMatchIn(newText) }) {
-            checkMessageNumber(warningRegexes, newText, BibtexLogMessageType.WARNING)
-            checkMessageNumber(errorRegexes, newText, BibtexLogMessageType.ERROR)
-        }
-    }
-
-    private fun checkMessageNumber(regexes: List<Regex>, newText: String, type: BibtexLogMessageType) {
-        for (regex in regexes) {
-            regex.find(newText)?.apply {
-                val number = try {
-                    groups["number"]?.value?.toInt() ?: 1
-                }
-                catch (e: IllegalArgumentException) {
-                    1
-                }
-                if (number != messageList.filter { it.type == type }.size) {
-                    throw TeXception("Incorrect number of ${type}s parsed. Please report the bibtex/biber log to the issue tracker.")
-                }
-            }
-        }
-    }
-
     fun addBibMessageToTree(logMessage: BibtexLogMessage) {
         treeView.applyFilters(logMessage)
     }
@@ -105,7 +65,7 @@ class BibtexOutputListener(
     /**
      * Let all message handlers try to find a message based on the window.
      */
-    fun extractMessage(windowList: List<String>): BibtexLogMessage? {
+    private fun extractMessage(windowList: List<String>): BibtexLogMessage? {
         val bibtexErrorHandlers = listOf(
             BstExWarnPrintBibtexMessageHandler, // Should be before AuxErrPrintBibtexMessageHandler
             AuxErrPrintBibtexMessageHandler,
