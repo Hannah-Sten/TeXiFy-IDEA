@@ -7,3 +7,11 @@
 
 # Bug fixes
 * Fix index out of bounds exception in color values. (#1864)
+* Fix grammar mistakes not being checked at the beginning of environments. (#1892)
+* Fix parse error when >{ is not used to define table columns. (#1894)
+* Add some missing table environments. (#1894)
+* Ignore permission problems when extracting package zips on Windows. (#1894)
+* Revert loading SafeDeleteFix class from the optional Java plugin. (#1894)
+* Fixed other crashes. (#1881, #1879)
+
+Thanks to Felix Berlakovich for contributing to this release.
