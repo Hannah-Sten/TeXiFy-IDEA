@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.execution.configurations.GeneralCommandLine
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -40,10 +39,12 @@ class SystemEnvironment {
  */
 fun runCommand(vararg commands: String, workingDirectory: File? = null): String? {
     return try {
-        val proc = GeneralCommandLine(*commands)
-            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .withWorkDirectory(workingDirectory)
-            .createProcess()
+        val command = arrayListOf(*commands)
+        val proc = ProcessBuilder(command)
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .directory(workingDirectory)
+            .start()
 
         if (proc.waitFor(3, TimeUnit.SECONDS)) {
             proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()

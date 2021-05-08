@@ -7,7 +7,6 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
@@ -68,12 +67,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         internal fun unicodeEnabled(file: PsiFile): Boolean {
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
             val compilerCompat = file.project.selectedRunConfig()?.compiler ?: return false
-            if (compilerCompat == LatexCompiler.LUALATEX ||
-                compilerCompat == LatexCompiler.XELATEX ||
-                TexliveSdk.version >= 2018 ||
-                // On Mac we cannot find the TeX Live version
-                SystemInfo.isMac
-            ) {
+            if (compilerCompat == LatexCompiler.LUALATEX || compilerCompat == LatexCompiler.XELATEX || TexliveSdk.version >= 2018) {
                 return true
             }
 
