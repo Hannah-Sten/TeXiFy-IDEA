@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.compiler.bibtex
 
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.step.BibliographyCompileStep
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
@@ -16,7 +17,7 @@ object BiberCompiler : SupportedBibliographyCompiler("Biber", "biber") {
         // The extra directory added is the directory from which the path to the .bib resource file is searched as specified in the .bcf file.
         add("--input-directory=${step.configuration.mainFile?.parent?.path ?: ""}")
 
-        step.state.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
+        step.state.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
         add(step.configuration.mainFile?.nameWithoutExtension ?: return null)
     }
