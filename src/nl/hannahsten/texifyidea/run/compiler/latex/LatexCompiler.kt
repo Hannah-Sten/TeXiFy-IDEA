@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.compiler.latex
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.Compiler
 import nl.hannahsten.texifyidea.run.compiler.CustomCompiler
 import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
@@ -157,8 +158,7 @@ abstract class SupportedLatexCompiler(
 
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->
-            arguments.splitWhitespace()
-                .dropLastWhile { it.isEmpty() }
+            ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }
 
