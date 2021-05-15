@@ -7,7 +7,6 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.messagehandlers.errors.*
 import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.messagehandlers.warnings.*
-import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils
@@ -29,7 +28,6 @@ class BibtexOutputListener(
     val project: Project,
     val mainFile: VirtualFile?,
     private val messageList: MutableList<BibtexLogMessage>,
-    val treeView: LatexCompileMessageTreeView
 ) : ProcessListener {
 
     // Assume the window size is large enough to hold any message at once
@@ -59,7 +57,7 @@ class BibtexOutputListener(
     }
 
     fun addBibMessageToTree(logMessage: BibtexLogMessage) {
-        treeView.applyFilters(logMessage)
+        // todo treeView.applyFilters(logMessage)
     }
 
     /**
@@ -108,15 +106,10 @@ class BibtexOutputListener(
     }
 
     override fun processTerminated(event: ProcessEvent) {
-        if (event.exitCode == 0) {
-            treeView.setProgressText("Compilation was successful.")
-        }
-        else {
-            treeView.setProgressText("Compilation failed.")
-        }
+        // todo update LatexExecutionConsole
     }
 
     override fun startNotified(event: ProcessEvent) {
-        treeView.setProgressText("Compilation in progress...")
+//        treeView.setProgressText("Compilation in progress...")
     }
 }

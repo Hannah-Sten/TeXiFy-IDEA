@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run
 
 import com.intellij.configurationStore.deserializeAndLoadState
 import com.intellij.configurationStore.serializeStateInto
-import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.CommonProgramRunConfigurationParameters
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
@@ -10,9 +9,7 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.options.SettingsEditor
@@ -37,7 +34,6 @@ import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
-import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.legacy.LatexCommandLineState
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
@@ -196,17 +192,6 @@ class LatexRunConfiguration constructor(
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(this)
-    }
-
-    override fun createAdditionalTabComponents(
-        manager: AdditionalTabComponentManager,
-        startedProcess: ProcessHandler?
-    ) {
-        super.createAdditionalTabComponents(manager, startedProcess)
-
-        if (manager is LogConsoleManagerBase && startedProcess != null) {
-            manager.addAdditionalTabComponent(LatexLogTabComponent(project, mainFile, startedProcess), "LaTeX-Log", AllIcons.Vcs.Changelist, false)
-        }
     }
 
     @Throws(RuntimeConfigurationException::class)

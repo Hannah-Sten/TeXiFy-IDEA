@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run.ui.console
 
 import com.intellij.build.Filterable
+import com.intellij.build.events.MessageEvent
+import com.intellij.build.events.impl.FileMessageEventImpl
 import com.intellij.build.events.impl.MessageEventImpl
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.HyperlinkInfo
@@ -33,6 +35,7 @@ import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.ui.tree.TreeUtil
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.CompileStep
+import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import java.util.function.Predicate
@@ -60,16 +63,12 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
             override fun getData(dataId: String): Any? {
                 // Used by the EditSourceOnDoubleClickHandler
                 if (CommonDataKeys.NAVIGATABLE.`is`(dataId)) {
-                    return getSelectedNavigatableElement()?.navigatable
+                    return getSelectedNode()?.navigatable
                 }
                 return null
             }
 
             //region Copy from NewErrorTreeViewPanel
-            private fun getSelectedNavigatableElement(): NavigatableErrorTreeElement? {
-                val selectedElement = getSelectedNode()
-                return if (selectedElement is NavigatableErrorTreeElement) selectedElement else null
-            }
 
             private fun getSelectedNode(): LatexExecutionNode? {
                 val nodes = getSelectedNodes()
@@ -82,7 +81,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
                 for (path in paths) {
                     val lastPathNode = path.lastPathComponent as DefaultMutableTreeNode
                     val userObject = lastPathNode.userObject
-                    if (userObject is LatexExecutionNode) {
+                    if (userObject is LatexExecutionNode && userObject.file != null && userObject.project != null) {
                         result.add(userObject)
                     }
                 }
@@ -172,16 +171,30 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
      * Add log message to tree.
      */
     fun onEvent(event: MessageEventImpl) {
-        val id = (event.id as? String) ?: return
+        val id = (event.parentId as? String) ?: return
         val (step, node, console) = steps[id] ?: return
-        // todo add nodes for log message
-//        node.children.add()
+        // todo should we really reuse the 'step' node for messages?
+        LatexExecutionNode(project, rootNode).apply {
+            description = event.message
+            state = when (event.kind) {
+                MessageEvent.Kind.WARNING -> LatexExecutionNode.State.WARNING
+                MessageEvent.Kind.ERROR -> LatexExecutionNode.State.FAILED
+                else -> LatexExecutionNode.State.UNKNOWN
+            }
+            if (event is FileMessageEventImpl && project != null) {
+                file = findVirtualFileByAbsoluteOrRelativePath(event.filePosition.file.path, project!!)
+                line = event.filePosition.startLine
+            }
+            node.children.add(this)
+        }
+        scheduleUpdate(node, true)
     }
 
     fun startStep(id: String, step: CompileStep, handler: OSProcessHandler) {
         val node = LatexExecutionNode(project, rootNode).apply {
             description = step.provider.name
             state = LatexExecutionNode.State.RUNNING
+            file = step.configuration.mainFile
             rootNode.children.add(this)
         }
 
@@ -201,7 +214,20 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
 
     fun finishStep(id: String, exitCode: Int) {
         val (_, node, console) = steps[id] ?: return
-        node.state = if (exitCode != 0) LatexExecutionNode.State.FAILED else LatexExecutionNode.State.SUCCEEDED
+        node.state = when {
+            exitCode != 0 -> {
+                LatexExecutionNode.State.FAILED
+            }
+            node.children.any { it.state == LatexExecutionNode.State.FAILED } -> {
+                LatexExecutionNode.State.FAILED
+            }
+            node.children.any { it.state == LatexExecutionNode.State.WARNING } -> {
+                LatexExecutionNode.State.WARNING
+            }
+            else -> {
+                LatexExecutionNode.State.SUCCEEDED
+            }
+        }
         console.print(IdeBundle.message("run.anything.console.process.finished", exitCode), ConsoleViewContentType.SYSTEM_OUTPUT)
         scheduleUpdate(node)
     }

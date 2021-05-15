@@ -38,7 +38,8 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
     var state = State.UNKNOWN
     var title: String? = null
     var description: String? = null
-    var file: VirtualFile? = findVirtualFileByAbsoluteOrRelativePath("src/main.tex", project) // todo
+    var file: VirtualFile? = null
+    var line: Int? = null
 
     override fun getElement() = this
 
@@ -52,8 +53,9 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         if (!description.isNullOrEmpty()) {
             presentation.addText(description, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         }
-        presentation.locationString = file?.path // todo file?
-        // todo how would we implement double-click to open file?
+        presentation.locationString = file?.presentableName ?: "" + if (line != null) ":$line" else ""
+
+        myName = "$title $description"
     }
 
     enum class State(val icon: Icon) {
@@ -62,10 +64,17 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         RUNNING(ICON_RUNNING),
         SUCCEEDED(ICON_SUCCESS),
         SKIPPED(ICON_SKIPPED),
+        WARNING(ICON_WARNING),
         FAILED(ICON_ERROR);
     }
 
     override fun getNavigatable(): Navigatable {
-        return OpenFileDescriptor(project!!, file!!)
+        return if (line != null) {
+            OpenFileDescriptor(project!!, file!!, line!!)
+        }
+        else {
+            OpenFileDescriptor(project!!, file!!)
+
+        }
     }
 }

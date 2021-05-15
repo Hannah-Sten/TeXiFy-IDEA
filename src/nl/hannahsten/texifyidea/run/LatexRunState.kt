@@ -1,25 +1,25 @@
 package nl.hannahsten.texifyidea.run
 
-import com.intellij.build.*
+import com.intellij.build.FilePosition
 import com.intellij.build.events.MessageEvent
 import com.intellij.build.events.impl.FileMessageEventImpl
 import com.intellij.build.events.impl.MessageEventImpl
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.process.*
+import com.intellij.execution.process.KillableProcessHandler
+import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.Key
+import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
-import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
-import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import java.io.File
 
 /**
@@ -61,38 +61,12 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
                 }
             })
 
-//            val buildDescriptor = object : BuildDescriptor {
-//                override fun getId(): Any {
-//                    return 1
-//                }
-//
-//                override fun getTitle() = "title here"
-//
-//                override fun getWorkingDir(): String {
-//                    TODO("Not yet implemented")
-//                }
-//
-//                override fun getStartTime(): Long {
-//                    TODO("Not yet implemented")
-//                }
-//
-//            }
-//
-//            val viewManager = object : ViewManager {
-//                override fun isConsoleEnabledByDefault() = true
-//
-//                override fun isBuildContentView() = false
-//
-//            }
-//
-//            val buildView = BuildView(runConfig.project, console, buildDescriptor, "todo", viewManager)
 
             val latexOutputListener = LatexOutputListener(
                 runConfig.project,
                 runConfig.mainFile,
                 mutableListOf(),
                 mutableListOf(),
-                LatexCompileMessageTreeView(runConfig.project, mutableListOf(), mutableListOf())
             )
             latexOutputListener.newMessageListener = { message, file ->
                 val type = when (message.type) {
