@@ -12,10 +12,17 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.OccurenceNavigator
+import com.intellij.ide.errorTreeView.ErrorTreeElement
+import com.intellij.ide.errorTreeView.ErrorTreeNodeDescriptor
+import com.intellij.ide.errorTreeView.GroupingElement
+import com.intellij.ide.errorTreeView.NavigatableErrorTreeElement
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.*
 import com.intellij.ui.render.RenderingHelper
 import com.intellij.ui.tree.AsyncTreeModel
@@ -24,19 +31,21 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.EditSourceOnDoubleClickHandler
 import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.ui.tree.TreeUtil
-import groovyjarjarantlr.debug.MessageEvent
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.CompileStep
-import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import java.util.function.Predicate
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreePath
 
 /**
  * The tool window which shows the log messages and output log.
  * Partially re-implements NewErrorTreeViewPanel.
+ *
+ * todo copy more functionality from NewErrorTreeViewPanel
  *
  * @author Sten Wessel
  */
@@ -45,12 +54,52 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
     companion object {
         private const val SPLITTER_PROPORTION_PROPERTY = "TeXiFy.ExecutionConsole.Splitter.Proportion"
 
-        private fun initTree(model: AsyncTreeModel) = Tree(model).apply {
+        // todo clean up
+        private fun initTree(model: AsyncTreeModel) = object : Tree(model), DataProvider {
+            // getData needs to be implemented on a component, we choose the Tree in this case (see DataProvider)
+            override fun getData(dataId: String): Any? {
+                // Used by the EditSourceOnDoubleClickHandler
+                if (CommonDataKeys.NAVIGATABLE.`is`(dataId)) {
+                    return getSelectedNavigatableElement()?.navigatable
+                }
+                return null
+            }
+
+            //region Copy from NewErrorTreeViewPanel
+            private fun getSelectedNavigatableElement(): NavigatableErrorTreeElement? {
+                val selectedElement = getSelectedNode()
+                return if (selectedElement is NavigatableErrorTreeElement) selectedElement else null
+            }
+
+            private fun getSelectedNode(): LatexExecutionNode? {
+                val nodes = getSelectedNodes()
+                return if (nodes.size == 1) nodes[0] else null
+            }
+
+            private fun getSelectedNodes(): List<LatexExecutionNode> {
+                val paths: Array<TreePath> = this.selectionPaths ?: return emptyList()
+                val result: MutableList<LatexExecutionNode> = ArrayList()
+                for (path in paths) {
+                    val lastPathNode = path.lastPathComponent as DefaultMutableTreeNode
+                    val userObject = lastPathNode.userObject
+                    if (userObject is LatexExecutionNode) {
+                        result.add(userObject)
+                    }
+                }
+                return result
+            }
+            //endregion
+        }.apply {
             isLargeModel = true
             ComponentUtil.putClientProperty(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
             isRootVisible = true
             EditSourceOnDoubleClickHandler.install(this)
             EditSourceOnEnterKeyHandler.install(this)
+            // Does not seem to do anything
+            TreeUtil.setNavigatableProvider(this) { path ->
+                val lastPathNode = path.lastPathComponent as DefaultMutableTreeNode
+                ((lastPathNode.userObject as? ErrorTreeNodeDescriptor)?.element as? NavigatableErrorTreeElement)?.navigatable
+            }
             TreeSpeedSearch(this).comparator = SpeedSearchComparator(false)
             TreeUtil.installActions(this)
             putClientProperty(RenderingHelper.SHRINK_LONG_RENDERER, true)
@@ -91,7 +140,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
 
         val autoScrollToSourceHandler = object : AutoScrollToSourceHandler() {
             override fun isAutoScrollMode(): Boolean {
-                return false // todo
+                return true // todo
             }
 
             override fun setAutoScrollMode(state: Boolean) {
@@ -258,6 +307,8 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
     override fun contains(filter: Predicate<in Any>): Boolean {
         TODO("Not yet implemented")
     }
+
+
 
     private inner class TreeStructure : AbstractTreeStructure() {
 

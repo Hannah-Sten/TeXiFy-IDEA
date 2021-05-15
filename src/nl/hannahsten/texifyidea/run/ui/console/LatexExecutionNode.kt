@@ -4,11 +4,15 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.errorTreeView.NavigatableErrorTreeElement
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.PresentableNodeDescriptor
+import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.EmptyIcon
+import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import javax.swing.Icon
 
 /**
@@ -34,6 +38,7 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
     var state = State.UNKNOWN
     var title: String? = null
     var description: String? = null
+    var file: VirtualFile? = findVirtualFileByAbsoluteOrRelativePath("src/main.tex", project) // todo
 
     override fun getElement() = this
 
@@ -47,7 +52,7 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         if (!description.isNullOrEmpty()) {
             presentation.addText(description, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         }
-        presentation.locationString = "location " // todo file?
+        presentation.locationString = file?.path // todo file?
         // todo how would we implement double-click to open file?
     }
 
@@ -61,6 +66,6 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
     }
 
     override fun getNavigatable(): Navigatable {
-        TODO("Not yet implemented")
+        return OpenFileDescriptor(project!!, file!!)
     }
 }
