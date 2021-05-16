@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "0.7.2"
-    kotlin("jvm") version("1.4.30-M1")
+    kotlin("jvm") version("1.5.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.38.0"
@@ -145,7 +145,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "2021.1"
+    version = "2021.1.1"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 

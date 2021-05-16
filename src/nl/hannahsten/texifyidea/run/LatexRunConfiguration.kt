@@ -204,6 +204,9 @@ class LatexRunConfiguration constructor(
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
+        if (compileSteps.isEmpty()) {
+            throw RuntimeConfigurationError("At least one compile step needs to be present")
+        }
     }
 
     @Throws(ExecutionException::class)
@@ -592,10 +595,7 @@ class LatexRunConfiguration constructor(
     override fun setFileOutputPath(fileOutputPath: String) {
         if (fileOutputPath.isBlank()) return
         this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
-        // If not possible to resolve directly, we might resolve it later
-        if (this.outputPath.virtualFile == null) {
-            this.outputPath.pathString = fileOutputPath
-        }
+        this.outputPath.pathString = fileOutputPath
     }
 
     /**
