@@ -4,9 +4,6 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 
 abstract class TexifyConventionsScheme() : com.intellij.openapi.options.Scheme {
     companion object {
-        /**
-         * The name of the default scheme.
-         */
         const val DEFAULT_SCHEME_NAME = "Default"
         const val PROJECT_SCHEME_NAME = "Project"
     }

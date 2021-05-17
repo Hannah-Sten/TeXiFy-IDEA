@@ -3,103 +3,30 @@ package nl.hannahsten.texifyidea.settings.conventions
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.ui.layout.panel
+import com.intellij.util.ui.CollectionItemEditor
+import com.intellij.util.ui.table.IconTableCellRenderer
+import com.intellij.util.ui.table.TableModelEditor
+import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.settings.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.settings.TexifyConventionsSchemesPanel
 import nl.hannahsten.texifyidea.settings.TexifyConventionsSettings
-import java.awt.*
-import java.text.DecimalFormatSymbols
-import java.util.*
-import javax.swing.*
+import java.awt.BorderLayout
+import java.awt.Component
+import javax.swing.Icon
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JTable
+import javax.swing.table.TableCellRenderer
 
-abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T, description: String? = null) :
-    JSpinner(SpinnerNumberModel(value, minValue, maxValue, stepSize)) where T : Number, T : Comparable<T> {
-    /**
-     * Transforms a [Number] into a [T].
-     */
-    abstract val numberToT: (Number) -> T
-
-    /**
-     * The description to use in error messages.
-     */
-    private val description = description ?: DEFAULT_DESCRIPTION
-
-    /**
-     * A helper function to return the super class's model as an instance of [SpinnerNumberModel].
-     */
-    private val numberModel: SpinnerNumberModel
-        get() = super.getModel() as SpinnerNumberModel
-
-    /**
-     * The minimal allowed value.
-     */
-    var minValue: T
-        get() = numberToT(numberModel.minimum as Number)
-        set(value) {
-            numberModel.minimum = value
-        }
-
-    /**
-     * The maximal allowed value.
-     */
-    var maxValue: T
-        get() = numberToT(numberModel.maximum as Number)
-        set(value) {
-            numberModel.maximum = value
-        }
-
-
-    /**
-     * Returns the current value of the spinner.
-     *
-     * @return the current value of the spinner
-     */
-    override fun getValue(): T = numberToT(numberModel.number)
-
-    /**
-     * Sets the value of the spinner.
-     *
-     * @param value the new value of the spinner
-     */
-    override fun setValue(value: Any) {
-        numberModel.value = value
-    }
-
-    companion object {
-        /**
-         * The default description to use in error messages.
-         */
-        const val DEFAULT_DESCRIPTION = "value"
-
-        /**
-         * The default width of a number spinner.
-         */
-        const val DEFAULT_WIDTH = 52
-
-        /**
-         * The default number format used to display numbers.
-         */
-        val DEFAULT_FORMAT = DecimalFormatSymbols(Locale.US)
-    }
+enum class LabelConventionType {
+    ENVIRONMENT,
+    COMMAND
 }
 
-class JLongSpinner(
-    value: Long = 0L,
-    minValue: Long = Long.MIN_VALUE,
-    maxValue: Long = Long.MAX_VALUE,
-    stepSize: Long = 1L,
-    description: String? = null
-) : JNumberSpinner<Long>(value, minValue, maxValue, stepSize, description) {
-    override val numberToT: (Number) -> Long
-        get() = { it.toLong() }
+data class LabelConvention(var enabled: Boolean, var type: LabelConventionType, var name: String, var prefix: String) {
 
-
-    init {
-        this.editor = NumberEditor(this).also { it.format.decimalFormatSymbols = DEFAULT_FORMAT }
-        this.minimumSize = Dimension(DEFAULT_WIDTH, minimumSize.height)
-        this.preferredSize = Dimension(DEFAULT_WIDTH, preferredSize.height)
-    }
 }
-
 
 class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, Configurable.VariableProjectAppLevel {
     private val settings: TexifyConventionsSettings = TexifyConventionsSettings.getInstance(project)
@@ -123,31 +50,105 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         })
 
-        val centerPanel = JPanel(FlowLayout()).apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
-            maxSectionSize = JLongSpinner(minValue = 0, stepSize = 10)
-            maxSectionSize.alignmentX = JSpinner.CENTER_ALIGNMENT
-            add(JPanel(GridBagLayout()).apply {
-                add(JLabel("Maximum section size (characters)"), GridBagConstraints().apply {
-                    gridx = 0;
-                    gridy = 0
-                    gridwidth = 1;
-                    gridheight = 1
-                })
-                add(
-                    maxSectionSize,
-                    GridBagConstraints().apply {
-                        gridx = 1;
-                        gridy = 0;
-                        fill = GridBagConstraints.HORIZONTAL;
-                        gridwidth = 2;
-                        gridheight = 1
-                        weightx = 100.0;
-                        weighty = 100.0;
-                    })
-            })
+        val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
+            override fun valueOf(item: LabelConvention): String = item.prefix
+            override fun setValue(item: LabelConvention, value: String?) {
+                item.prefix = value ?: ""
+            }
         }
+
+        val typeColumnInfo =
+            object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConventionType>("Type") {
+                override fun valueOf(item: LabelConvention): LabelConventionType = item.type
+                override fun isCellEditable(item: LabelConvention?): Boolean = false
+                override fun getColumnClass(): Class<*> = LabelConventionType::class.java
+                override fun getRenderer(item: LabelConvention?): TableCellRenderer {
+                    return object : IconTableCellRenderer<LabelConventionType>() {
+                        override fun getTableCellRendererComponent(
+                            table: JTable?,
+                            value: Any?,
+                            selected: Boolean,
+                            focus: Boolean,
+                            row: Int,
+                            column: Int
+                        ): Component {
+                            super.getTableCellRendererComponent(table, null, selected, focus, row, column)
+                            //noinspection unchecked
+                            icon = if (value != null) {
+                                getIcon(value as LabelConventionType, table, row)
+                            }
+                            else {
+                                null
+                            }
+
+                            if (isCenterAlignment) {
+                                horizontalAlignment = CENTER
+                                verticalAlignment = CENTER
+                            }
+                            return this
+                        }
+
+                        override fun isCenterAlignment(): Boolean = true
+
+                        override fun getIcon(value: LabelConventionType, table: JTable?, row: Int): Icon {
+                            return when (value) {
+                                LabelConventionType.ENVIRONMENT -> TexifyIcons.DOT_ENVIRONMENT
+                                LabelConventionType.COMMAND -> TexifyIcons.DOT_COMMAND
+                            }
+                        }
+                    }
+                }
+            }
+
+
+        val nameColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Name") {
+            override fun valueOf(item: LabelConvention): String = item.name
+            override fun isCellEditable(item: LabelConvention?): Boolean = false
+        }
+
+        val enabledColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("") {
+            override fun getColumnClass(): Class<*> = Boolean::class.java
+
+            override fun valueOf(item: LabelConvention): Boolean = item.enabled
+            override fun setValue(item: LabelConvention, value: Boolean) {
+                item.enabled = value
+            }
+        }
+
+        val itemEditor = object : CollectionItemEditor<LabelConvention> {
+            override fun getItemClass(): Class<out LabelConvention> = LabelConvention::class.java
+
+            override fun clone(item: LabelConvention, forInPlaceEditing: Boolean): LabelConvention {
+                TODO("Not yet implemented")
+            }
+
+            override fun isRemovable(item: LabelConvention): Boolean = false
+        }
+
+        val browsersEditor = object : TableModelEditor<LabelConvention>(
+            listOf(enabledColumnInfo, typeColumnInfo, nameColumnInfo, prefixColumnInfo).toTypedArray(),
+            itemEditor,
+            "Label Conventions"
+        ) {
+            override fun canCreateElement(): Boolean = false
+        }
+        browsersEditor.disableUpDownActions()
+
+        maxSectionSize = JLongSpinner(minValue = 0, stepSize = 10)
+        val centerPanel = panel {
+            row {
+                label("Maximum section size (characters)")
+                maxSectionSize(grow)
+            }
+
+            titledRow("Labels") {
+                row {
+                    browsersEditor.createComponent()(grow)
+                }
+            }
+        }
+        browsersEditor.model.addRow(LabelConvention(false, LabelConventionType.ENVIRONMENT, "lstlisting", "lst"))
+        browsersEditor.model.addRow(LabelConvention(true, LabelConventionType.COMMAND, "section", "sec"))
 
         mainPanel = JPanel(BorderLayout())
         mainPanel.add(schemesPanel, BorderLayout.NORTH)

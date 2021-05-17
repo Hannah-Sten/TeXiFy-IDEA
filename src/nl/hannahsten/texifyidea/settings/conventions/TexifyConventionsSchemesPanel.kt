@@ -58,80 +58,22 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
      */
     override fun createSchemeActions() = SchemeActions()
 
-    /**
-     * Returns this panel, because this panel also functions as the model.
-     *
-     * @return this panel, because this panel also functions as the model
-     */
     override fun getModel() = this
 
-    /**
-     * Returns false because project-specific schemes are not supported.
-     *
-     * @return false because project-specific schemes are not supported
-     */
     override fun supportsProjectSchemes() = true
 
-    /**
-     * Returns true so that non-default schemes are highlighted.
-     *
-     * @return true so that non-default schemes are highlighted
-     */
     override fun highlightNonDefaultSchemes() = true
 
-    /**
-     * Returns true so that non-removable schemes are highlighted.
-     *
-     * Since only the default scheme is non-removable, only the default scheme will be bold.
-     *
-     * @return true so that non-removable schemes are highlighted
-     */
     override fun useBoldForNonRemovableSchemes() = true
 
-    /**
-     * Returns false because project-specific schemes are not supported.
-     *
-     * @param scheme ignored
-     * @return false because project-specific schemes are not supported
-     */
     override fun isProjectScheme(scheme: TexifyConventionsScheme) = scheme.isProjectScheme()
 
-    /**
-     * Returns true if the given scheme can be deleted.
-     *
-     * Because only the default scheme cannot be deleted, this method is equivalent to [differsFromDefault].
-     *
-     * @param scheme the scheme to check for deletability
-     * @return true if the given scheme can be deleted
-     */
     override fun canDeleteScheme(scheme: TexifyConventionsScheme) = false
 
-    /**
-     * Returns true because all schemes can be duplicated.
-     *
-     * @param scheme ignored
-     * @return true because all schemes can be duplicated
-     */
     override fun canDuplicateScheme(scheme: TexifyConventionsScheme) = false
 
-    /**
-     * Returns true if the given scheme can be renamed.
-     *
-     * Because only the default scheme cannot be renamed, this method is equivalent to [differsFromDefault].
-     *
-     * @param scheme the scheme to check for renamability
-     * @return true if the given scheme can be renamed
-     */
     override fun canRenameScheme(scheme: TexifyConventionsScheme) = false
 
-    /**
-     * Returns true if the given scheme can be reset.
-     *
-     * Because only the default scheme cannot be reset, this method is equivalent to [differsFromDefault].
-     *
-     * @param scheme the scheme to check for resetability
-     * @return true if the given scheme can be reset
-     */
     override fun canResetScheme(scheme: TexifyConventionsScheme) = false
     override fun differsFromDefault(scheme: TexifyConventionsScheme): Boolean {
         throw OperationNotSupportedException()
@@ -172,11 +114,6 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
             projectScheme.copySettingsFrom(scheme)
         }
 
-        /**
-         * Returns the type of scheme actions apply to.
-         *
-         * @return the type of scheme actions apply to
-         */
         override fun getSchemeType() = type
         override fun resetScheme(scheme: TexifyConventionsScheme) {
             throw OperationNotSupportedException()
