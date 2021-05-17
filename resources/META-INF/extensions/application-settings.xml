@@ -1,9 +1,17 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
-        <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
+        <applicationService
+                serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsGlobalSettings"/>
+        <projectService
+                serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsProjectSettings"/>
+        <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language"
+                                 id="TexifyConfigurable"/>
+        <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions"
+                             instance="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable"/>
+
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
-        <notificationGroup displayType="BALLOON" id="LaTeX" />
+        <notificationGroup displayType="BALLOON" id="LaTeX"/>
     </extensions>
 </idea-plugin>
