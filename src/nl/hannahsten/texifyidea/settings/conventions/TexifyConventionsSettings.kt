@@ -9,6 +9,7 @@ data class TexifyConventionsSettings(
     var projectSettings: TexifyConventionsProjectSettings,
     var globalSettings: TexifyConventionsGlobalSettings
 ) {
+
     fun loadState(state: TexifyConventionsSettings) {
         projectSettings.loadState(state.projectSettings.scheme)
         globalSettings.loadState(state.globalSettings)
@@ -33,11 +34,11 @@ data class TexifyConventionsSettings(
             globalSettings.currentSchemeName = scheme.name
         }
 
-
     val schemes: List<TexifyConventionsScheme>
         get() = listOfNotNull(*globalSettings.schemes.toTypedArray(), projectSettings.scheme)
 
     companion object {
+
         fun getInstance(project: Project) =
             TexifyConventionsSettings(project.getService(TexifyConventionsProjectSettings::class.java), service())
     }

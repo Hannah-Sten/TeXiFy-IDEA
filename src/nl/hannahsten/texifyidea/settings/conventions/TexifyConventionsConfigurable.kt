@@ -20,21 +20,20 @@ import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.TableCellRenderer
 
 enum class LabelConventionType {
+
     ENVIRONMENT,
     COMMAND
 }
 
-data class LabelConvention(var enabled: Boolean, var type: LabelConventionType, var name: String, var prefix: String) {
-
-}
+data class LabelConvention(var enabled: Boolean, var type: LabelConventionType, var name: String, var prefix: String)
 
 class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, Configurable.VariableProjectAppLevel {
+
     private val settings: TexifyConventionsSettings = TexifyConventionsSettings.getInstance(project)
     private val unsavedSettings: TexifyConventionsSettings = TexifyConventionsSettings.getInstance(project).deepCopy()
     private lateinit var schemesPanel: TexifyConventionsSchemesPanel
     private lateinit var mainPanel: JPanel
     private lateinit var maxSectionSize: JLongSpinner
-
 
     override fun createComponent(): JComponent? {
 
@@ -47,7 +46,6 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             override fun onCurrentSchemeHasChanged(scheme: TexifyConventionsScheme) {
                 loadScheme(scheme)
             }
-
         })
 
         val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
@@ -179,5 +177,4 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
     override fun isProjectLevel(): Boolean =
         ::schemesPanel.isInitialized && schemesPanel.model.settings.currentScheme.isProjectScheme()
-
 }

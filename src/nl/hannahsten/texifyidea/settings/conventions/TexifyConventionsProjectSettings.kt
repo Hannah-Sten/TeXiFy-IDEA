@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.settings.TexifyConventionsProjectScheme
 @State(name = "Conventions", storages = [Storage("texifySettings.xml")])
 data class TexifyConventionsProjectSettings(var project: Project? = null) :
     PersistentStateComponent<TexifyConventionsProjectScheme> {
+
     var scheme: TexifyConventionsProjectScheme = TexifyConventionsProjectScheme()
 
     override fun getState(): TexifyConventionsProjectScheme = scheme

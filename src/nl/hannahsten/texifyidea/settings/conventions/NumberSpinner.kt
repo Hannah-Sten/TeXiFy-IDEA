@@ -8,6 +8,7 @@ import javax.swing.SpinnerNumberModel
 
 abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T, description: String? = null) :
     JSpinner(SpinnerNumberModel(value, minValue, maxValue, stepSize)) where T : Number, T : Comparable<T> {
+
     /**
      * Transforms a [Number] into a [T].
      */
@@ -42,7 +43,6 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
             numberModel.maximum = value
         }
 
-
     /**
      * Returns the current value of the spinner.
      *
@@ -60,6 +60,7 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
     }
 
     companion object {
+
         /**
          * The default description to use in error messages.
          */
@@ -84,9 +85,9 @@ class JLongSpinner(
     stepSize: Long = 1L,
     description: String? = null
 ) : JNumberSpinner<Long>(value, minValue, maxValue, stepSize, description) {
+
     override val numberToT: (Number) -> Long
         get() = { it.toLong() }
-
 
     init {
         this.editor = NumberEditor(this).also { it.format.decimalFormatSymbols = DEFAULT_FORMAT }

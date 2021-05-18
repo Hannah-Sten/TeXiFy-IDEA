@@ -87,6 +87,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
      * The actions that can be performed with this panel.
      */
     inner class SchemeActions : AbstractSchemeActions<TexifyConventionsScheme>(this) {
+
         /**
          * Called when the user changes the scheme using the combo box.
          *
@@ -134,6 +135,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
      * @param T the type of scheme about which events are generated
      */
     interface Listener<T : TexifyConventionsScheme> {
+
         /**
          * Invoked when the currently-selected scheme is about to change.
          *

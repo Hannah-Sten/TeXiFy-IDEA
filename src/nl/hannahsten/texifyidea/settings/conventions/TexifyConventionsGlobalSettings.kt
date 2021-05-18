@@ -18,5 +18,4 @@ data class TexifyConventionsGlobalSettings(
     override fun getState(): TexifyConventionsGlobalSettings = this
 
     override fun loadState(state: TexifyConventionsGlobalSettings) = XmlSerializerUtil.copyBean(state, this)
-
 }
