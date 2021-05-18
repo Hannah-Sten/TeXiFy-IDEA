@@ -373,7 +373,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
                     )
             )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files")
         panel.add(outputPath)
     }
 

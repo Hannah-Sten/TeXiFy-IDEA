@@ -1,8 +1,11 @@
 package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.execution.ExecutionException
+import com.intellij.ide.macro.MacroManager
+import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
@@ -16,14 +19,13 @@ import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.io.File
+import java.nio.file.Path
 
 /**
  * Output file as a virtual file, or a promise to provide a path that can be constructed when the run configuration is actually created.
  * This allows for custom output paths in the run configuration template.
  *
- * Supported placeholders:
- * - $contentRoot
- * - $mainFile
+ * Supports macros (see MacroManager).
  *
  * @param variant: out or auxil
  */
@@ -31,18 +33,29 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
 
     companion object {
 
-        const val projectDirString = "{projectDir}"
+        // todo add main file macro
         const val mainFileString = "{mainFileParent}"
     }
 
     fun clone(): LatexOutputPath {
-        return LatexOutputPath(variant, contentRoot, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
+        return LatexOutputPath(variant, contentRoot, mainFile, project).apply {
+            if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString
+            this.context = this@LatexOutputPath.context
+        }
     }
 
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
 
-    var pathString: String = "$projectDirString/$variant"
+    /** Used for resolving macros in [pathString] */
+    var context: DataContext = DataContext.EMPTY_CONTEXT
+
+    var pathString: String = "\$${ProjectFileDirMacro().name}\$/$variant"
+        set(value) {
+            if (value.isNotBlank()) {
+                field = value
+            }
+        }
 
     /**
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
@@ -53,18 +66,13 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             return null
         }
 
-        // Just to be sure, avoid using jetbrains /bin path as output
-        if (pathString.isBlank()) {
-            pathString = "$projectDirString/$variant"
-        }
-
         // Caching of the result
-        return getPath().also {
+        return getPath(context).also {
             virtualFile = it
         }
     }
 
-    private fun getPath(): VirtualFile? {
+    private fun getPath(context: DataContext): VirtualFile? {
         // When we previously made the mistake of calling findRelativePath with an empty string, the output path will be set to thee /bin folder of IntelliJ. Fix that here, to be sure
         if (virtualFile?.path?.endsWith("/bin") == true) {
             virtualFile = null
@@ -74,14 +82,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             return virtualFile!!
         }
         else {
-            val pathString = if (pathString.contains(projectDirString)) {
-                if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
-                pathString.replace(projectDirString, contentRoot?.path ?: return null)
-            }
-            else {
-                if (mainFile == null) return null
-                pathString.replace(mainFileString, mainFile?.parent?.path ?: return null)
-            }
+            val pathString = MacroManager.getInstance().expandMacrosInString(pathString, true, context) ?: return null
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
             if (path != null && path.isDirectory) {
                 return path
@@ -129,7 +130,8 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
      */
     private fun createOutputPath(outPath: String): VirtualFile? {
         val mainFile = mainFile ?: return null
-        if (outPath.isBlank()) return null
+        // Can be improved by assuming a relative path to the project, using given context
+        if (outPath.isBlank() || !Path.of(outPath).isAbsolute) return null
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)

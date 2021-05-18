@@ -10,6 +10,8 @@ import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.ide.macro.MacroManager
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.options.SettingsEditor
@@ -104,8 +106,13 @@ class LatexRunConfiguration constructor(
     // todo this isn't used anymore? replaced by get/setEnvs()
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
+    /** Resolves to [mainFile], if resolvable. Can contain macros. */
+    var mainFileString: String? = null
+
+    // Cached resolved value of mainFileString
     var mainFile: VirtualFile? = null
-        set(value) {
+        // Private to keep mainFileString up to date
+        private set(value) {
             field = value
             this.outputPath.mainFile = value
             this.outputPath.contentRoot = getMainFileContentRoot()
@@ -383,7 +390,7 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
-        parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
+        parent.addContent(Element(MAIN_FILE).also { it.text = mainFileString ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
@@ -504,21 +511,28 @@ class LatexRunConfiguration constructor(
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
      */
-    fun setMainFile(mainFilePath: String) {
-        val fileSystem = LocalFileSystem.getInstance()
+    fun setMainFile(mainFilePathWithMacro: String, context: DataContext = DataContext.EMPTY_CONTEXT) {
+        // Save the original string, for UI representation
+        mainFileString = mainFilePathWithMacro
+
+        // todo does it work if running a file directly after opening project? since context is only given when saving a run config?
+        val mainFilePath = MacroManager.getInstance().expandMacrosInString(mainFilePathWithMacro, true, context) ?: return
         // Check if the file is valid and exists
-        val mainFile = fileSystem.findFileByPath(mainFilePath)
+        val mainFile = LocalFileSystem.getInstance().findFileByPath(mainFilePath)
         if (mainFile?.extension == "tex") {
             this.mainFile = mainFile
             return
         }
         else {
             // Maybe it is a relative path
-            ProjectRootManager.getInstance(project).contentRoots.forEach {
-                val file = it.findFileByRelativePath(mainFilePath)
-                if (file?.extension == "tex") {
-                    this.mainFile = file
-                    return
+            // Possibly we could use more information from the given context
+            if (!Path.of(mainFilePath).isAbsolute) {
+                ProjectRootManager.getInstance(project).contentRoots.forEach {
+                    val file = it.findFileByRelativePath(mainFilePath)
+                    if (file?.extension == "tex") {
+                        this.mainFile = file
+                        return
+                    }
                 }
             }
         }
@@ -669,6 +683,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun hasDefaultWorkingDirectory(): Boolean {
+        if (workingDirectory == null || mainFile == null) return false
         return Path.of(workingDirectory).toAbsolutePath() == Path.of(mainFile?.path).parent.toAbsolutePath()
     }
 

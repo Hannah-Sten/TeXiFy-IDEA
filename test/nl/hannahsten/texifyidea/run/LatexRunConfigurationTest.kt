@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.run
 
+import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexmkCompiler
-import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
+import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import org.jdom.Element
 import org.jdom.Namespace
 
@@ -13,12 +13,12 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         val element = Element("configuration", Namespace.getNamespace("", ""))
         runConfig.compiler = LatexmkCompiler
-        runConfig.outputPath.pathString = LatexOutputPath.projectDirString + "otherout"
+        runConfig.outputPath.pathString = "\$${ProjectFileDirMacro().name}\$/otherout"
         runConfig.writeExternal(element)
         runConfig.readExternal(element)
         // Not sure if this actually tests anything
         assertEquals(runConfig.compiler, LatexmkCompiler)
-        assertEquals(runConfig.outputPath.pathString, LatexOutputPath.projectDirString + "otherout")
+        assertEquals(runConfig.outputPath.pathString, "\$${ProjectFileDirMacro().name}\$/otherout")
     }
 
     fun testBibRunConfig() {

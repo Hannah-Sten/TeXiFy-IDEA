@@ -139,11 +139,10 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
 
         val autoScrollToSourceHandler = object : AutoScrollToSourceHandler() {
             override fun isAutoScrollMode(): Boolean {
-                return true // todo
+                return true // todo auto scroll to source
             }
 
             override fun setAutoScrollMode(state: Boolean) {
-                // todo
             }
 
         }

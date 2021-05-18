@@ -55,7 +55,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
                 }
 
                 override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-                    // todo
+                    // todo onTextAvailable - nothing to be done here?
 //                    if (outputType !is ProcessOutputType) return
 //                    buildView.onEvent(id, OutputBuildEventImpl(id, "latex", event.text, outputType.isStdout))
                 }
