@@ -5,7 +5,6 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.layout.panel
 import com.intellij.util.ui.CollectionItemEditor
-import com.intellij.util.ui.table.IconTableCellRenderer
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.settings.TexifyConventionsScheme
@@ -17,6 +16,7 @@ import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTable
+import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.TableCellRenderer
 
 enum class LabelConventionType {
@@ -57,13 +57,13 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             }
         }
 
-        val typeColumnInfo =
-            object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConventionType>("Type") {
-                override fun valueOf(item: LabelConvention): LabelConventionType = item.type
+        val nameColumnInfo =
+            object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Element") {
+                override fun valueOf(item: LabelConvention): LabelConvention = item
                 override fun isCellEditable(item: LabelConvention?): Boolean = false
-                override fun getColumnClass(): Class<*> = LabelConventionType::class.java
+                override fun getColumnClass(): Class<*> = LabelConvention::class.java
                 override fun getRenderer(item: LabelConvention?): TableCellRenderer {
-                    return object : IconTableCellRenderer<LabelConventionType>() {
+                    return object : DefaultTableCellRenderer() {
                         override fun getTableCellRendererComponent(
                             table: JTable?,
                             value: Any?,
@@ -72,26 +72,21 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                             row: Int,
                             column: Int
                         ): Component {
-                            super.getTableCellRendererComponent(table, null, selected, focus, row, column)
+                            val convention = value as LabelConvention?
+                            super.getTableCellRendererComponent(table, convention?.name, selected, focus, row, column)
                             //noinspection unchecked
                             icon = if (value != null) {
-                                getIcon(value as LabelConventionType, table, row)
+                                getIcon(value, table, row)
                             }
                             else {
                                 null
                             }
 
-                            if (isCenterAlignment) {
-                                horizontalAlignment = CENTER
-                                verticalAlignment = CENTER
-                            }
                             return this
                         }
 
-                        override fun isCenterAlignment(): Boolean = true
-
-                        override fun getIcon(value: LabelConventionType, table: JTable?, row: Int): Icon {
-                            return when (value) {
+                        private fun getIcon(value: LabelConvention, table: JTable?, row: Int): Icon {
+                            return when (value.type) {
                                 LabelConventionType.ENVIRONMENT -> TexifyIcons.DOT_ENVIRONMENT
                                 LabelConventionType.COMMAND -> TexifyIcons.DOT_COMMAND
                             }
@@ -99,12 +94,6 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                     }
                 }
             }
-
-
-        val nameColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Name") {
-            override fun valueOf(item: LabelConvention): String = item.name
-            override fun isCellEditable(item: LabelConvention?): Boolean = false
-        }
 
         val enabledColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("") {
             override fun getColumnClass(): Class<*> = Boolean::class.java
@@ -126,7 +115,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         }
 
         val browsersEditor = object : TableModelEditor<LabelConvention>(
-            listOf(enabledColumnInfo, typeColumnInfo, nameColumnInfo, prefixColumnInfo).toTypedArray(),
+            listOf(enabledColumnInfo, nameColumnInfo, prefixColumnInfo).toTypedArray(),
             itemEditor,
             "Label Conventions"
         ) {
