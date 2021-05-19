@@ -40,7 +40,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         }
 
         // Change the main file as given by the template run configuration to the current file
-        runConfiguration.mainFile = mainFile
+        runConfiguration.setMainFile(mainFile.path)
         runConfiguration.psiFile = container
         runConfiguration.setSuggestedName()
         // Avoid changing the outputPath of the template run config (which is a shallow clone)

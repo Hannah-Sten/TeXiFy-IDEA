@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexOutputListener
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMagicRegex.PACKAGE_WARNING_CONTINUATION
-import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.remove
 import nl.hannahsten.texifyidea.util.removeAll
@@ -19,12 +18,14 @@ import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils
 import org.apache.commons.collections.buffer.CircularFifoBuffer
 
+/**
+ * Listen to the compile process output and parse it into log messages to pass to the [newMessageListener].
+ */
 class LatexOutputListener(
     val project: Project,
     val mainFile: VirtualFile?,
     val messageList: MutableList<LatexLogMessage>,
     val bibMessageList: MutableList<BibtexLogMessage>,
-    val treeView: LatexCompileMessageTreeView,
 ) : ProcessListener {
 
     // This should probably be located somewhere else
@@ -52,7 +53,7 @@ class LatexOutputListener(
     // For latexmk, collect the bibtex/biber messages in a separate list, so
     // we don't lose them when resetting on each new (pdfla)tex run.
     private var isCollectingBib = false
-    private val bibtexOutputListener = BibtexOutputListener(project, mainFile, bibMessageList, treeView)
+    private val bibtexOutputListener = BibtexOutputListener(project, mainFile, bibMessageList)
 
     var isCollectingMessage = false
     var currentLogMessage: LatexLogMessage? = null
@@ -143,7 +144,8 @@ class LatexOutputListener(
             }
             else {
                 isCollectingBib = false
-                treeView.errorViewStructure.clear()
+                // todo split latexmk run in separate steps instead
+//                treeView.errorViewStructure.clear()
                 messageList.clear()
                 // Re-add the bib messages to the tree.
                 bibMessageList.forEach { bibtexOutputListener.addBibMessageToTree(it) }
@@ -222,26 +224,20 @@ class LatexOutputListener(
             val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
             val message = LatexLogMessage(logMessage.message.trim(), logMessage.fileName, logMessage.line, logMessage.type, file)
             messageList.add(message)
-            treeView.applyFilters(message)
+//            treeView.applyFilters(message) // todo should be replaced by invoke below?
             newMessageListener?.invoke(logMessage, file)
         }
 
 
     }
 
+    override fun startNotified(event: ProcessEvent) {
+    }
+
     override fun processTerminated(event: ProcessEvent) {
-        if (event.exitCode == 0) {
-            treeView.setProgressText("Compilation was successful.")
-        }
-        else {
-            treeView.setProgressText("Compilation failed.")
-        }
     }
 
     override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
     }
 
-    override fun startNotified(event: ProcessEvent) {
-        treeView.setProgressText("Compilation in progress...")
-    }
 }

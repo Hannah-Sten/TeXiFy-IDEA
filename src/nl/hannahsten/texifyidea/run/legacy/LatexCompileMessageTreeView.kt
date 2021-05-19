@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.ui.console.logtab.ui
+package nl.hannahsten.texifyidea.run.legacy
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
@@ -13,9 +13,14 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
+import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexErrorTreeViewConfiguration
+import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexKeywordFilter
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
 
+/**
+ * todo remove
+ */
 class LatexCompileMessageTreeView(
     val project: Project,
     val latexMessageList: MutableList<LatexLogMessage>,
@@ -47,7 +52,7 @@ class LatexCompileMessageTreeView(
      * Therefore, we only have to look one level deep to get all the messages.
      */
     private fun getAllElements(): List<ErrorTreeElement> {
-        this@LatexCompileMessageTreeView.errorViewStructure.let { tree ->
+        this.errorViewStructure.let { tree ->
             return tree.getChildElements(tree.rootElement).flatMap {
                 tree.getChildElements(it).toList()
             }

@@ -63,6 +63,11 @@ class LatexParserTest : BasePlatformTestCase() {
                 some text & y = x (or any math) \\
                 more text & z = 2 (or any math) \\
             \end{tabular}
+            Fake preamble option:
+            \begin{tikzpicture}
+            \visible<+->{\node (a) at (0, 0) {$ \{A\}_{j}$ };}
+            \node (b) at (1, 1) { $ B $ };
+            \end{tikzpicture}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

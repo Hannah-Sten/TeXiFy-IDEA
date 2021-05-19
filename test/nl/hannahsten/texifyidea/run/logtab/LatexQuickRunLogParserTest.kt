@@ -4,7 +4,6 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
-import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 
 class LatexQuickRunLogParserTest : BasePlatformTestCase() {
 
@@ -37,8 +36,7 @@ Underfull \vbox (badness 3449) has occurred while \output is active []
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
         val latexMessageList = mutableListOf<LatexLogMessage>()
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView = LatexCompileMessageTreeView(project, latexMessageList, bibtexMessageList)
-        val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
+        val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList)
 
         val input = inputText.split('\n')
         input.forEach { listener.processNewText(it) }

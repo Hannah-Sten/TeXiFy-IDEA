@@ -68,7 +68,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
             val replacement = PATTERNS[matcher.group(0).replace(WHITESPACE, "")]!!.command
 
             // If the next character would be a letter, it would mess up the command that is inserted: append a space as well
-            if (file.document()?.get(matcher.end())?.get(0)?.isLetter() == true) {
+            if (file.document()?.get(matcher.end())?.getOrNull(0)?.isLetter() == true) {
                 return "$replacement "
             }
 

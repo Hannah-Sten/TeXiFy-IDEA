@@ -5,21 +5,21 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 import java.awt.BorderLayout
 import javax.swing.JComponent
 
 /**
+ * todo remove
  * Similar to [nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent].
  */
 class BibtexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
     private val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-    private val treeView = LatexCompileMessageTreeView(project, mutableListOf(), bibtexMessageList)
+//    private val treeView = LatexCompileMessageTreeView(project, mutableListOf(), bibtexMessageList)
 
     init {
-        add(treeView, BorderLayout.CENTER)
-        startedProcess.addProcessListener(BibtexOutputListener(project, mainFile, bibtexMessageList, treeView), this)
+//        add(treeView, BorderLayout.CENTER)
+//        startedProcess.addProcessListener(BibtexOutputListener(project, mainFile, bibtexMessageList, treeView), this)
     }
 
     override fun getTabTitle() = "Log messages"

@@ -33,9 +33,17 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting(true, false, false, true)
     }
 
+    fun testMultilineCheckGrammar() {
+        val testName = getTestName(false)
+        myFixture.configureByFile("$testName.tex")
+        myFixture.checkHighlighting(true, false, false, true)
+    }
+
     fun testInlineMath() {
-        myFixture.configureByText(LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?
-""")
+        myFixture.configureByText(
+            LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?
+"""
+        )
         myFixture.checkHighlighting()
     }
 }

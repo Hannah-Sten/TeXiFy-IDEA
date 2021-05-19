@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.run.ui.console
 
 import com.intellij.build.Filterable
+import com.intellij.build.events.MessageEvent
+import com.intellij.build.events.impl.FileMessageEventImpl
+import com.intellij.build.events.impl.MessageEventImpl
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.execution.filters.TextConsoleBuilderFactory
@@ -8,12 +11,20 @@ import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.OccurenceNavigator
+import com.intellij.ide.errorTreeView.ErrorTreeElement
+import com.intellij.ide.errorTreeView.ErrorTreeNodeDescriptor
+import com.intellij.ide.errorTreeView.GroupingElement
+import com.intellij.ide.errorTreeView.NavigatableErrorTreeElement
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.*
 import com.intellij.ui.render.RenderingHelper
 import com.intellij.ui.tree.AsyncTreeModel
@@ -24,28 +35,70 @@ import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.ui.tree.TreeUtil
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.CompileStep
+import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import java.util.function.Predicate
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreePath
 
 /**
  * The tool window which shows the log messages and output log.
+ * Partially re-implements NewErrorTreeViewPanel.
+ *
+ * todo copy more functionality from NewErrorTreeViewPanel
  *
  * @author Sten Wessel
  */
-class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, OccurenceNavigator, Filterable<Any> {
+class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, OccurenceNavigator, Filterable<Any>, ExecutionConsole {
 
     companion object {
         private const val SPLITTER_PROPORTION_PROPERTY = "TeXiFy.ExecutionConsole.Splitter.Proportion"
 
-        private fun initTree(model: AsyncTreeModel) = Tree(model).apply {
+        // todo clean up
+        private fun initTree(model: AsyncTreeModel) = object : Tree(model), DataProvider {
+            // getData needs to be implemented on a component, we choose the Tree in this case (see DataProvider)
+            override fun getData(dataId: String): Any? {
+                // Used by the EditSourceOnDoubleClickHandler
+                if (CommonDataKeys.NAVIGATABLE.`is`(dataId)) {
+                    return getSelectedNode()?.navigatable
+                }
+                return null
+            }
+
+            //region Copy from NewErrorTreeViewPanel
+
+            private fun getSelectedNode(): LatexExecutionNode? {
+                val nodes = getSelectedNodes()
+                return if (nodes.size == 1) nodes[0] else null
+            }
+
+            private fun getSelectedNodes(): List<LatexExecutionNode> {
+                val paths: Array<TreePath> = this.selectionPaths ?: return emptyList()
+                val result: MutableList<LatexExecutionNode> = ArrayList()
+                for (path in paths) {
+                    val lastPathNode = path.lastPathComponent as DefaultMutableTreeNode
+                    val userObject = lastPathNode.userObject
+                    if (userObject is LatexExecutionNode && userObject.file != null && userObject.project != null) {
+                        result.add(userObject)
+                    }
+                }
+                return result
+            }
+            //endregion
+        }.apply {
             isLargeModel = true
             ComponentUtil.putClientProperty(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
             isRootVisible = true
             EditSourceOnDoubleClickHandler.install(this)
             EditSourceOnEnterKeyHandler.install(this)
+            // Does not seem to do anything
+            TreeUtil.setNavigatableProvider(this) { path ->
+                val lastPathNode = path.lastPathComponent as DefaultMutableTreeNode
+                ((lastPathNode.userObject as? ErrorTreeNodeDescriptor)?.element as? NavigatableErrorTreeElement)?.navigatable
+            }
             TreeSpeedSearch(this).comparator = SpeedSearchComparator(false)
             TreeUtil.installActions(this)
             putClientProperty(RenderingHelper.SHRINK_LONG_RENDERER, true)
@@ -83,6 +136,17 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
             }
             add(splitter, BorderLayout.CENTER)
         }
+
+        val autoScrollToSourceHandler = object : AutoScrollToSourceHandler() {
+            override fun isAutoScrollMode(): Boolean {
+                return true // todo auto scroll to source
+            }
+
+            override fun setAutoScrollMode(state: Boolean) {
+            }
+
+        }
+        autoScrollToSourceHandler.install(tree)
     }
 
     fun start() {
@@ -101,10 +165,35 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         }
     }
 
+    // todo relocate
+    /**
+     * Add log message to tree.
+     */
+    fun onEvent(event: MessageEventImpl) {
+        val id = (event.parentId as? String) ?: return
+        val (step, node, console) = steps[id] ?: return
+        // todo should we really reuse the 'step' node for messages?
+        LatexExecutionNode(project, rootNode).apply {
+            description = event.message
+            state = when (event.kind) {
+                MessageEvent.Kind.WARNING -> LatexExecutionNode.State.WARNING
+                MessageEvent.Kind.ERROR -> LatexExecutionNode.State.FAILED
+                else -> LatexExecutionNode.State.UNKNOWN
+            }
+            if (event is FileMessageEventImpl && project != null) {
+                file = findVirtualFileByAbsoluteOrRelativePath(event.filePosition.file.path, project!!)
+                line = event.filePosition.startLine
+            }
+            node.children.add(this)
+        }
+        scheduleUpdate(node, true)
+    }
+
     fun startStep(id: String, step: CompileStep, handler: OSProcessHandler) {
         val node = LatexExecutionNode(project, rootNode).apply {
             description = step.provider.name
             state = LatexExecutionNode.State.RUNNING
+            file = step.configuration.mainFile
             rootNode.children.add(this)
         }
 
@@ -124,7 +213,20 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
 
     fun finishStep(id: String, exitCode: Int) {
         val (_, node, console) = steps[id] ?: return
-        node.state = if (exitCode != 0) LatexExecutionNode.State.FAILED else LatexExecutionNode.State.SUCCEEDED
+        node.state = when {
+            exitCode != 0 -> {
+                LatexExecutionNode.State.FAILED
+            }
+            node.children.any { it.state == LatexExecutionNode.State.FAILED } -> {
+                LatexExecutionNode.State.FAILED
+            }
+            node.children.any { it.state == LatexExecutionNode.State.WARNING } -> {
+                LatexExecutionNode.State.WARNING
+            }
+            else -> {
+                LatexExecutionNode.State.SUCCEEDED
+            }
+        }
         console.print(IdeBundle.message("run.anything.console.process.finished", exitCode), ConsoleViewContentType.SYSTEM_OUTPUT)
         scheduleUpdate(node)
     }
@@ -230,6 +332,8 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
     override fun contains(filter: Predicate<in Any>): Boolean {
         TODO("Not yet implemented")
     }
+
+
 
     private inner class TreeStructure : AbstractTreeStructure() {
 

@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
-import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
 
 /**
  * Tests for log messages spanning multiple lines.
@@ -222,8 +221,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val project = myFixture.project
         val latexMessageList = mutableListOf<LatexLogMessage>()
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView = LatexCompileMessageTreeView(project, latexMessageList, bibtexMessageList)
-        val listener = LatexOutputListener(project, null, latexMessageList, bibtexMessageList, treeView)
+        val listener = LatexOutputListener(project, null, latexMessageList, bibtexMessageList)
 
         val input = log.split('\n')
         input.forEach { line ->

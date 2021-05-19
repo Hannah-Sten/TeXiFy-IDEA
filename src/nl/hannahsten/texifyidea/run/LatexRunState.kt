@@ -1,22 +1,26 @@
 package nl.hannahsten.texifyidea.run
 
+import com.intellij.build.FilePosition
 import com.intellij.build.events.MessageEvent
+import com.intellij.build.events.impl.FileMessageEventImpl
+import com.intellij.build.events.impl.MessageEventImpl
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.process.*
+import com.intellij.execution.process.KillableProcessHandler
+import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.Key
+import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
-import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexCompileMessageTreeView
-import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
+import java.io.File
 
 /**
  * State of the [LatexRunConfiguration], previously called LatexCommandLineState.
@@ -25,12 +29,14 @@ import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
  */
 class LatexRunState(private val runConfig: LatexRunConfiguration, private val env: ExecutionEnvironment) : RunProfileState {
 
+
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
         FileDocumentManager.getInstance().saveAllDocuments()
 
         val console = LatexExecutionConsole(runConfig)
 
         val handlers = runConfig.compileSteps.withIndex().mapNotNull { (i, step) ->
+            val id = i.toString()
             val command = step.getCommand() ?: return@mapNotNull null
             val workingDirectory = step.getWorkingDirectory() ?: ProjectUtil.getBaseDir()
 
@@ -41,26 +47,26 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
             val handler = KillableProcessHandler(commandLine)
             handler.addProcessListener(object : ProcessAdapter() {
                 override fun startNotified(event: ProcessEvent) {
-                    console.startStep(i.toString(), step, handler)
+                    console.startStep(id, step, handler)
                 }
 
                 override fun processTerminated(event: ProcessEvent) {
-                    console.finishStep(i.toString(), event.exitCode)
+                    console.finishStep(id, event.exitCode)
                 }
 
                 override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-                    // todo
+                    // todo onTextAvailable - nothing to be done here?
 //                    if (outputType !is ProcessOutputType) return
 //                    buildView.onEvent(id, OutputBuildEventImpl(id, "latex", event.text, outputType.isStdout))
                 }
             })
+
 
             val latexOutputListener = LatexOutputListener(
                 runConfig.project,
                 runConfig.mainFile,
                 mutableListOf(),
                 mutableListOf(),
-                LatexCompileMessageTreeView(runConfig.project, mutableListOf(), mutableListOf())
             )
             latexOutputListener.newMessageListener = { message, file ->
                 val type = when (message.type) {
@@ -68,12 +74,16 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
                     LatexLogMessageType.ERROR -> MessageEvent.Kind.ERROR
                 }
 
-//                val event = if (file != null) {
-//                    FileMessageEventImpl(id, type, id, message.message, null, FilePosition(File(file.path), message.line, 0))
-//                }
-//                else {
-//                    MessageEventImpl(id, type, id, message.message, null)
-//                }
+                val group = "LaTeX " + type.name
+
+                val event = if (file != null) {
+                    FileMessageEventImpl(id, type, group, message.message, null, FilePosition(File(file.path), message.line, 0))
+                }
+                else {
+                    MessageEventImpl(id, type, group, message.message, null)
+                }
+
+                console.onEvent(event)
 //                buildView.onEvent(id, event)
             }
             handler.addProcessListener(latexOutputListener)

@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.*
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
+import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
@@ -120,16 +121,16 @@ object CommonLatexFragments {
         mainFileField.addBrowseFolderListener("Choose a File to Compile", "Select the main LaTeX file passed to the compiler", project,
             FileTypeDescriptor("LaTeX File", ".tex"))
 
-        MacrosDialog.addMacroSupport(mainFileField.textField as ExtendableTextField, MacrosDialog.Filters.FILE_PATH) { false }
+        MacrosDialog.addMacroSupport(mainFileField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
         setMonospaced(mainFileField.textField)
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, TextFieldWithBrowseButton>("mainFile", "Main file", null, mainFileField, commandLinePosition, { true }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                (component as TextFieldWithBrowseButton).text = (s.configuration as LatexRunConfiguration).mainFile?.path ?: ""
+                (component as TextFieldWithBrowseButton).text = (s.configuration as LatexRunConfiguration).mainFileString ?: ""
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).setMainFile((component as TextFieldWithBrowseButton).text)
+                (s.configuration as LatexRunConfiguration).setMainFile((component as TextFieldWithBrowseButton).text, DataManager.getInstance().getDataContext(this.component))
             }
         }
 

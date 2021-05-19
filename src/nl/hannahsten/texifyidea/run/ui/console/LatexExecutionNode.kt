@@ -1,12 +1,18 @@
 package nl.hannahsten.texifyidea.run.ui.console
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.errorTreeView.NavigatableErrorTreeElement
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.PresentableNodeDescriptor
+import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.pom.Navigatable
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.EmptyIcon
+import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import javax.swing.Icon
 
 /**
@@ -14,7 +20,7 @@ import javax.swing.Icon
  *
  * @author Sten Wessel
  */
-class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = null) : PresentableNodeDescriptor<LatexExecutionNode>(project, parent) {
+class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = null) : PresentableNodeDescriptor<LatexExecutionNode>(project, parent), NavigatableErrorTreeElement {
 
     companion object {
 
@@ -32,6 +38,8 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
     var state = State.UNKNOWN
     var title: String? = null
     var description: String? = null
+    var file: VirtualFile? = null
+    var line: Int? = null
 
     override fun getElement() = this
 
@@ -45,6 +53,9 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         if (!description.isNullOrEmpty()) {
             presentation.addText(description, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         }
+        presentation.locationString = file?.presentableName ?: "" + if (line != null) ":$line" else ""
+
+        myName = "$title $description"
     }
 
     enum class State(val icon: Icon) {
@@ -53,6 +64,17 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         RUNNING(ICON_RUNNING),
         SUCCEEDED(ICON_SUCCESS),
         SKIPPED(ICON_SKIPPED),
+        WARNING(ICON_WARNING),
         FAILED(ICON_ERROR);
+    }
+
+    override fun getNavigatable(): Navigatable {
+        return if (line != null) {
+            OpenFileDescriptor(project!!, file!!, line!!)
+        }
+        else {
+            OpenFileDescriptor(project!!, file!!)
+
+        }
     }
 }
