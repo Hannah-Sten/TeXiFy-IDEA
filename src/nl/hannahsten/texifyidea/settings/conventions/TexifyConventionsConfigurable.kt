@@ -3,11 +3,11 @@ package nl.hannahsten.texifyidea.settings.conventions
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.layout.panel
 import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.settings.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.settings.TexifyConventionsSchemesPanel
 import nl.hannahsten.texifyidea.settings.TexifyConventionsSettings
 import java.awt.BorderLayout
@@ -33,12 +33,12 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     private val unsavedSettings: TexifyConventionsSettings = TexifyConventionsSettings.getInstance(project).deepCopy()
     private lateinit var schemesPanel: TexifyConventionsSchemesPanel
     private lateinit var mainPanel: JPanel
-    private lateinit var maxSectionSize: JLongSpinner
+    private lateinit var maxSectionSize: JBIntSpinner
 
     override fun createComponent(): JComponent? {
 
         schemesPanel = TexifyConventionsSchemesPanel(unsavedSettings)
-        schemesPanel.addListener(object : TexifyConventionsSchemesPanel.Listener<TexifyConventionsScheme> {
+        schemesPanel.addListener(object : TexifyConventionsSchemesPanel.Listener {
             override fun onCurrentSchemeWillChange(scheme: TexifyConventionsScheme) {
                 saveScheme(scheme)
             }
@@ -121,7 +121,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         }
         browsersEditor.disableUpDownActions()
 
-        maxSectionSize = JLongSpinner(minValue = 0, stepSize = 10)
+        maxSectionSize = JBIntSpinner(4000, 100, Integer.MAX_VALUE)
         val centerPanel = panel {
             row {
                 label("Maximum section size (characters)")
@@ -149,7 +149,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     }
 
     fun saveScheme(scheme: TexifyConventionsScheme) {
-        scheme.maxSectionSize = maxSectionSize.value
+        scheme.maxSectionSize = maxSectionSize.number
     }
 
     fun loadSettings(settings: TexifyConventionsSettings) {
@@ -176,5 +176,5 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     override fun getId() = "TexifyConventionsConfigurable"
 
     override fun isProjectLevel(): Boolean =
-        ::schemesPanel.isInitialized && schemesPanel.model.settings.currentScheme.isProjectScheme()
+        ::schemesPanel.isInitialized && schemesPanel.model.settings.currentScheme.isProjectScheme
 }

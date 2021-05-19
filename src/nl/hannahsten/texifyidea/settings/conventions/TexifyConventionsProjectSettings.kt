@@ -4,19 +4,22 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.settings.TexifyConventionsProjectScheme
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme.Companion.PROJECT_SCHEME_NAME
 
 @State(name = "Conventions", storages = [Storage("texifySettings.xml")])
-data class TexifyConventionsProjectSettings(var project: Project? = null) :
-    PersistentStateComponent<TexifyConventionsProjectScheme> {
+class TexifyConventionsProjectSettings(var project: Project? = null) :
+    PersistentStateComponent<TexifyConventionsScheme> {
 
-    var scheme: TexifyConventionsProjectScheme = TexifyConventionsProjectScheme()
+    var scheme: TexifyConventionsScheme = TexifyConventionsScheme(myName = PROJECT_SCHEME_NAME, isProjectScheme = true)
+        set(value) {
+            field = value.copy(myName = PROJECT_SCHEME_NAME, isProjectScheme = true)
+        }
 
-    override fun getState(): TexifyConventionsProjectScheme = scheme
+    override fun getState(): TexifyConventionsScheme = scheme
 
-    override fun loadState(state: TexifyConventionsProjectScheme) {
+    override fun loadState(state: TexifyConventionsScheme) {
         scheme = state
     }
 
-    fun deepCopy() = TexifyConventionsProjectSettings(project).also { it.scheme = scheme }
+    fun deepCopy() = TexifyConventionsProjectSettings(project).also { it.scheme = scheme.copy() }
 }

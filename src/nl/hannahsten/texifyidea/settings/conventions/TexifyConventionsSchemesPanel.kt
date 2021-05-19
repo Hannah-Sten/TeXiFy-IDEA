@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.settings
 import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
 import com.intellij.application.options.schemes.SimpleSchemesPanel
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
 import javax.naming.OperationNotSupportedException
 
 class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
@@ -15,7 +16,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
     /**
      * Listeners for changes in the scheme selection.
      */
-    private val listeners = mutableListOf<Listener<TexifyConventionsScheme>>()
+    private val listeners = mutableListOf<Listener>()
 
     /**
      * Actions that can be performed with this panel.
@@ -27,7 +28,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
      *
      * @param listener the listener that listens to scheme-change events
      */
-    fun addListener(listener: Listener<TexifyConventionsScheme>) = listeners.add(listener)
+    fun addListener(listener: Listener) = listeners.add(listener)
 
     /**
      * Forcefully updates the combo box so that its entries and the current selection reflect the `settings` instance.
@@ -66,7 +67,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
 
     override fun useBoldForNonRemovableSchemes() = true
 
-    override fun isProjectScheme(scheme: TexifyConventionsScheme) = scheme.isProjectScheme()
+    override fun isProjectScheme(scheme: TexifyConventionsScheme) = scheme.isProjectScheme
 
     override fun canDeleteScheme(scheme: TexifyConventionsScheme) = false
 
@@ -110,7 +111,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
         }
 
         override fun copyToProject(scheme: TexifyConventionsScheme) {
-            val projectScheme = settings.schemes.firstOrNull() { it.isProjectScheme() }
+            val projectScheme = settings.schemes.firstOrNull() { it.isProjectScheme }
                 ?: throw IllegalStateException("IDE scheme does not exist.")
             projectScheme.copySettingsFrom(scheme)
         }
@@ -134,7 +135,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
      *
      * @param T the type of scheme about which events are generated
      */
-    interface Listener<T : TexifyConventionsScheme> {
+    interface Listener {
 
         /**
          * Invoked when the currently-selected scheme is about to change.
