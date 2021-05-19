@@ -8,18 +8,19 @@ object TexliveonflyCompiler : SupportedLatexCompiler("Texliveonfly", "texliveonf
 
     override val outputFormats = arrayOf(OutputFormat.PDF)
 
-        override fun createCommand(
-            runConfig: LatexRunConfiguration,
-            auxilPath: String?,
-            outputPath: String?,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
-        ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+    override fun createCommand(
+        runConfig: LatexRunConfiguration,
+        auxilPath: String?,
+        outputPath: String?,
+        moduleRoot: VirtualFile?,
+        moduleRoots: Array<VirtualFile>
+    ): MutableList<String> {
+        val command = mutableListOf(
+            runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
                 executableName,
                 runConfig.project
             )
-            )
+        )
 
         // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
         // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.

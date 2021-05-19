@@ -22,6 +22,7 @@ object CompilerMagic {
         "xelatex" to XelatexCompiler,
         "texliveonfly" to TexliveonflyCompiler,
         "tectonic" to TectonicCompiler,
+        "arara" to AraraCompiler
     )
 
     val bibliographyCompilerByExecutableName: Map<String, SupportedBibliographyCompiler> = mapOf(
