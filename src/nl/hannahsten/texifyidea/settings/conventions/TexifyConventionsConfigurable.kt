@@ -9,10 +9,8 @@ import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.settings.TexifyConventionsSchemesPanel
-import nl.hannahsten.texifyidea.settings.TexifyConventionsSettings
 import java.awt.BorderLayout
 import java.awt.Component
-import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTable
@@ -25,17 +23,27 @@ enum class LabelConventionType {
     COMMAND
 }
 
-data class LabelConvention(var enabled: Boolean, var type: LabelConventionType, var name: String, var prefix: String)
+/**
+ * The parameters need default values for XML serialization
+ */
+data class LabelConvention(
+    var enabled: Boolean = false,
+    var type: LabelConventionType? = null,
+    var name: String? = null,
+    var prefix: String? = null
+)
 
 class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, Configurable.VariableProjectAppLevel {
 
-    private val settings: TexifyConventionsSettings = TexifyConventionsSettings.getInstance(project)
-    private val unsavedSettings: TexifyConventionsSettings = TexifyConventionsSettings.getInstance(project).deepCopy()
+    private val settingsManager: TexifyConventionsSettingsManager =
+        TexifyConventionsSettingsManager.getInstance(project)
+    private val unsavedSettings: TexifyConventionsSettings = TexifyConventionsSettings()
     private lateinit var schemesPanel: TexifyConventionsSchemesPanel
     private lateinit var mainPanel: JPanel
     private lateinit var maxSectionSize: JBIntSpinner
+    private lateinit var labelConventionsTable: TableModelEditor<LabelConvention>
 
-    override fun createComponent(): JComponent? {
+    override fun createComponent(): JComponent {
 
         schemesPanel = TexifyConventionsSchemesPanel(unsavedSettings)
         schemesPanel.addListener(object : TexifyConventionsSchemesPanel.Listener {
@@ -49,7 +57,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         })
 
         val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
-            override fun valueOf(item: LabelConvention): String = item.prefix
+            override fun valueOf(item: LabelConvention): String = item.prefix!!
             override fun setValue(item: LabelConvention, value: String?) {
                 item.prefix = value ?: ""
             }
@@ -74,7 +82,10 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                             super.getTableCellRendererComponent(table, convention?.name, selected, focus, row, column)
                             //noinspection unchecked
                             icon = if (value != null) {
-                                getIcon(value, table, row)
+                                when (value.type!!) {
+                                    LabelConventionType.ENVIRONMENT -> TexifyIcons.DOT_ENVIRONMENT
+                                    LabelConventionType.COMMAND -> TexifyIcons.DOT_COMMAND
+                                }
                             }
                             else {
                                 null
@@ -83,12 +94,6 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                             return this
                         }
 
-                        private fun getIcon(value: LabelConvention, table: JTable?, row: Int): Icon {
-                            return when (value.type) {
-                                LabelConventionType.ENVIRONMENT -> TexifyIcons.DOT_ENVIRONMENT
-                                LabelConventionType.COMMAND -> TexifyIcons.DOT_COMMAND
-                            }
-                        }
                     }
                 }
             }
@@ -112,14 +117,14 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             override fun isRemovable(item: LabelConvention): Boolean = false
         }
 
-        val browsersEditor = object : TableModelEditor<LabelConvention>(
+        labelConventionsTable = object : TableModelEditor<LabelConvention>(
             listOf(enabledColumnInfo, nameColumnInfo, prefixColumnInfo).toTypedArray(),
             itemEditor,
             "Label Conventions"
         ) {
             override fun canCreateElement(): Boolean = false
         }
-        browsersEditor.disableUpDownActions()
+        labelConventionsTable.disableUpDownActions()
 
         maxSectionSize = JBIntSpinner(4000, 100, Integer.MAX_VALUE)
         val centerPanel = panel {
@@ -130,45 +135,44 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
             titledRow("Labels") {
                 row {
-                    browsersEditor.createComponent()(grow)
+                    labelConventionsTable.createComponent()(grow)
                 }
             }
         }
-        browsersEditor.model.addRow(LabelConvention(false, LabelConventionType.ENVIRONMENT, "lstlisting", "lst"))
-        browsersEditor.model.addRow(LabelConvention(true, LabelConventionType.COMMAND, "section", "sec"))
 
         mainPanel = JPanel(BorderLayout())
         mainPanel.add(schemesPanel, BorderLayout.NORTH)
         mainPanel.add(centerPanel, BorderLayout.CENTER)
-        loadSettings(settings)
+        loadSettings(settingsManager.getSettings())
         return mainPanel
     }
 
     fun loadScheme(scheme: TexifyConventionsScheme) {
         maxSectionSize.value = scheme.maxSectionSize
+        labelConventionsTable.model.items = scheme.labelConventions
     }
 
     fun saveScheme(scheme: TexifyConventionsScheme) {
         scheme.maxSectionSize = maxSectionSize.number
+        scheme.labelConventions = labelConventionsTable.model.items
     }
 
     fun loadSettings(settings: TexifyConventionsSettings) {
-        unsavedSettings.loadState(settings.deepCopy())
+        unsavedSettings.copyFrom(settings)
         loadScheme(unsavedSettings.currentScheme)
         schemesPanel.updateComboBoxList()
     }
 
-    private fun saveSettings(settings: TexifyConventionsSettings) {
+    override fun isModified(): Boolean {
         saveScheme(unsavedSettings.currentScheme)
-        settings.loadState(unsavedSettings.deepCopy())
+        return settingsManager.getSettings() != unsavedSettings
     }
 
-    override fun isModified(): Boolean = settings.deepCopy().also { saveSettings(it) } != settings
-
-    override fun reset() = loadSettings(settings)
+    override fun reset() = loadSettings(settingsManager.getSettings())
 
     override fun apply() {
-        saveSettings(settings)
+        saveScheme(unsavedSettings.currentScheme)
+        settingsManager.saveSettings(unsavedSettings)
     }
 
     override fun getDisplayName() = "Conventions"

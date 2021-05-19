@@ -4,6 +4,7 @@ import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
 import com.intellij.application.options.schemes.SimpleSchemesPanel
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
 import javax.naming.OperationNotSupportedException
 
 class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
@@ -104,16 +105,11 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
         }
 
         override fun copyToIDE(scheme: TexifyConventionsScheme) {
-            val defaultScheme =
-                settings.schemes.firstOrNull() { it.name == TexifyConventionsScheme.DEFAULT_SCHEME_NAME }
-                    ?: throw IllegalStateException("IDE scheme does not exist.")
-            defaultScheme.copySettingsFrom(scheme)
+            settings.copyToDefaultScheme(scheme)
         }
 
         override fun copyToProject(scheme: TexifyConventionsScheme) {
-            val projectScheme = settings.schemes.firstOrNull() { it.isProjectScheme }
-                ?: throw IllegalStateException("IDE scheme does not exist.")
-            projectScheme.copySettingsFrom(scheme)
+            settings.copyToProjectScheme(scheme)
         }
 
         override fun getSchemeType() = type

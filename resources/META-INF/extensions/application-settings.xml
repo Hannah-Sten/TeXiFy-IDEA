@@ -2,9 +2,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
         <applicationService
-                serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsGlobalSettings"/>
+                serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsGlobalSettingsManager"/>
         <projectService
-                serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsProjectSettings"/>
+                serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsProjectSettingsManager"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language"
                                  id="TexifyConfigurable"/>
         <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions"
