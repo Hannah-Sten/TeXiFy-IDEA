@@ -78,7 +78,7 @@ class InputFileReference(
         val texInputPath = runManager.allConfigurationsList
                 .filterIsInstance<LatexRunConfiguration>()
                 .firstOrNull { it.mainFile in rootFiles }
-                ?.environmentVariables
+                ?.getConfigOptions()?.environmentVariables
                 ?.envs
                 ?.getOrDefault("TEXINPUTS", null)
         if (texInputPath != null) {

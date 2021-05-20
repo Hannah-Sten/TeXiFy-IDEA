@@ -91,12 +91,9 @@ class LatexRunConfiguration constructor(
     }
 
     var compilerPath: String? = null // todo replaced by custom compiler?
-    var sumatraPath: String? = null
+    var sumatraPath: String? = null // todo merge with CustomPdfViewer
     var pdfViewer: PdfViewer? = null
-    var viewerCommand: String? = null
-
-    // todo this isn't used anymore? replaced by get/setEnvs()
-    var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
+    var viewerCommand: String? = null // todo similar to CustomCompiler -> CustomPdfViewer
 
     /** Resolves to [mainFile], if resolvable. Can contain macros. */
     var mainFileString: String? = null
@@ -120,7 +117,6 @@ class LatexRunConfiguration constructor(
     /** Path to the directory containing the auxiliary files. */
     var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
 
-    var compileTwice = false
     var outputFormat: OutputFormat = OutputFormat.PDF
 
     /**
@@ -259,7 +255,7 @@ class LatexRunConfiguration constructor(
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
 
         // Read environment variables
-        environmentVariables = EnvironmentVariablesData.readExternal(parent)
+        getConfigOptions().environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
         // Read main file.
         val filePath = parent.getChildText(MAIN_FILE)
@@ -302,15 +298,6 @@ class LatexRunConfiguration constructor(
                 val path = if (usesOutDir) moduleRoot?.path + "/out" else this.mainFile!!.parent.path
                 this.outputPath.virtualFile = LocalFileSystem.getInstance().findFileByPath(path)
             }
-        }
-
-        // Read whether to compile twice
-        val compileTwiceBoolean = parent.getChildText(COMPILE_TWICE)
-        if (compileTwiceBoolean == null) {
-            this.compileTwice = false
-        }
-        else {
-            this.compileTwice = compileTwiceBoolean.toBoolean()
         }
 
         // Read output format.
@@ -368,11 +355,10 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
-        this.environmentVariables.writeExternal(parent)
+        this.getConfigOptions().environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFileString ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
-        parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
         parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })

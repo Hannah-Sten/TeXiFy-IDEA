@@ -42,6 +42,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
 
             val commandLine = GeneralCommandLine(command)
                 .withWorkDirectory(workingDirectory)
+            // Using Console parent environment should fix environment issues on Mac
             step.getEnvironmentVariables().configureCommandLine(commandLine, true)
 
             val handler = KillableProcessHandler(commandLine)

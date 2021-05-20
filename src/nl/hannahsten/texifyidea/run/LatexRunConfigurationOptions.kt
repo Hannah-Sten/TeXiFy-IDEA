@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.configurationStore.Property
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.LocatableRunConfigurationOptions
 import com.intellij.openapi.components.StoredPropertyBase
 import com.intellij.util.xmlb.annotations.OptionTag
@@ -31,6 +32,14 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
     @get:OptionTag("passParentEnvs")
     var isPassParentEnv by property(true)
+
+    // Derived property, so not saved
+    var environmentVariables: EnvironmentVariablesData
+        get() = EnvironmentVariablesData.create(env, isPassParentEnv)
+        set(value) {
+            env
+            isPassParentEnv = value.isPassParentEnvs
+        }
 }
 
 

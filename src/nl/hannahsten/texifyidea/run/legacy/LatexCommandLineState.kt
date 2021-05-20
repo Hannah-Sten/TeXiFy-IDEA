@@ -76,7 +76,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             ?: throw ExecutionException("Compile command could not be created.")
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
-            .withEnvironment(runConfig.environmentVariables.envs)
+            .withEnvironment(runConfig.getConfigOptions().environmentVariables.envs)
         val handler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated
@@ -132,7 +132,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val usesTexForGlossaries = "\\" + LatexGenericRegularCommand.MAKENOIDXGLOSSARIES.commandWithSlash in commandsInFileSet
 
             if (usesTexForGlossaries) {
-                runConfig.compileTwice = true
+                // todo ensure that there are at least two LaTeX steps
+//                runConfig.compileTwice = true
             }
 
             // If no index package is used, we assume we won't have to run makeindex
@@ -162,12 +163,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     private fun isLastCompile(isMakeindexNeeded: Boolean, isAnyExternalToolNeeded: Boolean, handler: KillableProcessHandler): Boolean {
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
         if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && !isAnyExternalToolNeeded) {
-            if (!runConfig.compileTwice) {
-                runConfig.isLastRunConfig = true
-            }
+//            if (!runConfig.compileTwice) {
+//                runConfig.isLastRunConfig = true
+//            }
 
             // Schedule the second compile only if this is the first compile
-            if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
+            if (!runConfig.isLastRunConfig) { // && runConfig.compileTwice) {
                 handler.addProcessListener(RunLatexListener(runConfig, environment))
                 return false
             }
