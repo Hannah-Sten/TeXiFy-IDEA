@@ -1,17 +1,21 @@
 package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.execution.ExecutionException
+import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacroManager
 import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.wm.WindowManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.FileUtil
@@ -72,7 +76,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         }
     }
 
-    private fun getPath(context: DataContext): VirtualFile? {
+    private fun getPath(context: DataContext?): VirtualFile? {
         // When we previously made the mistake of calling findRelativePath with an empty string, the output path will be set to thee /bin folder of IntelliJ. Fix that here, to be sure
         if (virtualFile?.path?.endsWith("/bin") == true) {
             virtualFile = null
@@ -91,11 +95,11 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
                 // Try to create the path
                 createOutputPath(pathString)?.let { return it }
             }
-            // Path is invalid (perhaps the user provided an invalid path)
-            Notification("LaTeX", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
 
+            // Path is invalid (perhaps the user provided an invalid path)
             // Create and return default path
             if (contentRoot != null) {
+                Notification("LaTeX", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
                 val defaultPathString = contentRoot!!.path + "/" + variant
                 createOutputPath(defaultPathString)?.let { return it }
             }

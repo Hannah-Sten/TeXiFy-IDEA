@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.configurationStore.deserializeAndLoadState
+import com.intellij.configurationStore.serializeObjectInto
 import com.intellij.configurationStore.serializeStateInto
 import com.intellij.execution.CommonProgramRunConfigurationParameters
 import com.intellij.execution.ExecutionException
@@ -22,13 +23,12 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.util.PathUtil
+import com.intellij.util.xmlb.XmlSerializer
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import com.intellij.util.PathUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
@@ -36,14 +36,16 @@ import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
-import nl.hannahsten.texifyidea.run.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.legacy.LatexCommandLineState
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.step.CompileStep
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
+import nl.hannahsten.texifyidea.run.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.allCommands
@@ -95,7 +97,9 @@ class LatexRunConfiguration constructor(
         private const val OUT_DIR = "out-dir"
     }
 
-    var compiler: LatexCompiler? by options::compiler
+    val immutableOptions = LatexRunConfigurationOptions()
+
+    var compiler: LatexCompiler? by immutableOptions::compiler
     var compilerPath: String? = null // todo replaced by custom compiler?
     var sumatraPath: String? = null
     var pdfViewer: PdfViewer? = null
@@ -194,7 +198,7 @@ class LatexRunConfiguration constructor(
     }
 
     override fun getOptions(): LatexRunConfigurationOptions {
-        return super.getOptions() as LatexRunConfigurationOptions
+        return immutableOptions
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
@@ -237,18 +241,15 @@ class LatexRunConfiguration constructor(
 
     @Throws(InvalidDataException::class)
     override fun readExternal(element: Element) {
-        super<RunConfigurationBase>.readExternal(element)
+        val isAllowRunningInParallel = immutableOptions.isAllowRunningInParallel
+        // load state sets myOptions but we need to preserve transient isAllowRunningInParallel
+        immutableOptions.isAllowRunningInParallel = isAllowRunningInParallel
 
         val parent = element.getChild(TEXIFY_PARENT) ?: return
 
         // Read compiler.
-        val compilerName = parent.getChildText(COMPILER)
-        try {
-            this.compiler = SupportedLatexCompiler.byExecutableName(compilerName.toLowerCase())
-        }
-        catch (e: IllegalArgumentException) {
-            this.compiler = null
-        }
+        val newOptions = XmlSerializer.deserialize(element, optionsClass)
+        this.compiler = (newOptions as? LatexRunConfigurationOptions)?.compiler
 
         // Read compiler custom path.
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
@@ -369,7 +370,7 @@ class LatexRunConfiguration constructor(
 
     @Throws(WriteExternalException::class)
     override fun writeExternal(element: Element) {
-        super<RunConfigurationBase>.writeExternal(element)
+        serializeObjectInto(immutableOptions, element)
 
         var parent: Element? = element.getChild(TEXIFY_PARENT)
 
@@ -383,7 +384,7 @@ class LatexRunConfiguration constructor(
             parent.removeContent()
         }
 
-        parent.addContent(Element(COMPILER).also { it.text = (compiler as? SupportedLatexCompiler)?.executableName ?: "" })
+//        parent.addContent(Element(COMPILER).also { it.text = (compiler as? SupportedLatexCompiler)?.executableName ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
