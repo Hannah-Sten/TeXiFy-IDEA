@@ -12,12 +12,12 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
     fun testWriteRead() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         val element = Element("configuration", Namespace.getNamespace("", ""))
-        runConfig.compiler = LatexmkCompiler
+        runConfig.getConfigOptions().compiler = LatexmkCompiler
         runConfig.outputPath.pathString = "\$${ProjectFileDirMacro().name}\$/otherout"
         runConfig.writeExternal(element)
         runConfig.readExternal(element)
         // Not sure if this actually tests anything
-        assertEquals(runConfig.compiler, LatexmkCompiler)
+        assertEquals(runConfig.getConfigOptions().compiler, LatexmkCompiler)
         assertEquals(runConfig.outputPath.pathString, "\$${ProjectFileDirMacro().name}\$/otherout")
     }
 

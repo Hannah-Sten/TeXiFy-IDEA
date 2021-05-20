@@ -81,7 +81,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
     // Discard all non-confirmed user changes made via the UI
     override fun resetEditorFrom(runConfiguration: LatexRunConfiguration) {
         // Reset the selected compiler.
-        compiler.component.selectedItem = runConfiguration.compiler
+        compiler.component.selectedItem = runConfiguration.getConfigOptions().compiler
 
         // Reset the custom compiler path
         compilerPath.text = runConfiguration.compilerPath ?: ""
@@ -100,7 +100,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
         enableViewerCommand.isSelected = runConfiguration.viewerCommand != null
 
         // Reset compiler arguments
-        val args = runConfiguration.compilerArguments
+        val args = runConfiguration.getConfigOptions().compilerArguments
         compilerArguments.component.text = args ?: ""
 
         // Reset environment variables
@@ -121,7 +121,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
 
         // Reset whether to compile twice
         if (compileTwice != null) {
-            if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
+            if (runConfiguration.getConfigOptions().compiler?.handlesNumberOfCompiles == true) {
                 compileTwice!!.isVisible = false
                 runConfiguration.compileTwice = false
             }
@@ -138,12 +138,12 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
 
         // Reset output format.
         // Make sure to use the output formats relevant for the chosen compiler
-        if (runConfiguration.compiler != null) {
+        if (runConfiguration.getConfigOptions().compiler != null) {
             outputFormat.component.removeAllItems()
-            for (item in runConfiguration.compiler!!.outputFormats) {
+            for (item in runConfiguration.getConfigOptions().compiler!!.outputFormats) {
                 outputFormat.component.addItem(item)
             }
-            if (runConfiguration.compiler!!.outputFormats.contains(runConfiguration.outputFormat)) {
+            if (runConfiguration.getConfigOptions().compiler!!.outputFormats.contains(runConfiguration.outputFormat)) {
                 outputFormat.component.selectedItem = runConfiguration.outputFormat
             }
             else {
@@ -166,11 +166,11 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
     override fun applyEditorTo(runConfiguration: LatexRunConfiguration) {
         // Apply chosen compiler.
         val chosenCompiler = compiler.component.selectedItem as? SupportedLatexCompiler ?: PdflatexCompiler
-        runConfiguration.compiler = chosenCompiler
+        runConfiguration.getConfigOptions().compiler = chosenCompiler
 
         // Remove bibtex run config when switching to a compiler which includes running bibtex
-        val includesBibtex = runConfiguration.compiler?.includesBibtex == true
-        val includesMakeindex = runConfiguration.compiler?.includesMakeindex == true
+        val includesBibtex = runConfiguration.getConfigOptions().compiler?.includesBibtex == true
+        val includesMakeindex = runConfiguration.getConfigOptions().compiler?.includesMakeindex == true
         if (includesBibtex || includesMakeindex) {
             if (includesBibtex) {
                 runConfiguration.bibRunConfigs = setOf()
@@ -183,8 +183,10 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
         else {
             // Update run config based on UI
             runConfiguration.bibRunConfigs = externalToolsPanel.configurations.filter { it.type is BibtexRunConfigurationType }.toSet()
-            runConfiguration.makeindexRunConfigs = externalToolsPanel.configurations.filter { it.type is MakeindexRunConfigurationType }.toSet()
-            runConfiguration.externalToolRunConfigs = externalToolsPanel.configurations.filter { it.type is ExternalToolRunConfigurationType }.toSet()
+            runConfiguration.makeindexRunConfigs =
+                externalToolsPanel.configurations.filter { it.type is MakeindexRunConfigurationType }.toSet()
+            runConfiguration.externalToolRunConfigs =
+                externalToolsPanel.configurations.filter { it.type is ExternalToolRunConfigurationType }.toSet()
         }
 
         // Apply custom compiler path if applicable
@@ -201,7 +203,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
 
         // Apply custom compiler arguments
-        runConfiguration.compilerArguments = compilerArguments.component.text
+        runConfiguration.getConfigOptions().compilerArguments = compilerArguments.component.text
 
         // Apply environment variables
         runConfiguration.environmentVariables = environmentVariables.envData
@@ -223,7 +225,7 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
 
         if (compileTwice != null) {
             // Only show option to configure number of compiles when applicable
-            if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
+            if (runConfiguration.getConfigOptions().compiler?.handlesNumberOfCompiles == true) {
                 compileTwice!!.isVisible = false
                 runConfiguration.compileTwice = false
             }
@@ -243,7 +245,8 @@ class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<
         runConfiguration.outputFormat = format ?: OutputFormat.PDF
 
         // Apply LaTeX distribution
-        runConfiguration.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
+        runConfiguration.latexDistribution =
+            latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
     }
 
     override fun createEditor(): JComponent {

@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.configurationStore.deserializeAndLoadState
-import com.intellij.configurationStore.serializeObjectInto
 import com.intellij.configurationStore.serializeStateInto
 import com.intellij.execution.CommonProgramRunConfigurationParameters
 import com.intellij.execution.ExecutionException
@@ -24,7 +23,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.util.PathUtil
-import com.intellij.util.xmlb.XmlSerializer
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
@@ -32,10 +30,7 @@ import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
-import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
-import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.legacy.LatexCommandLineState
 import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
@@ -74,12 +69,10 @@ class LatexRunConfiguration constructor(
     companion object {
 
         private const val TEXIFY_PARENT = "texify"
-        private const val COMPILER = "compiler"
         private const val COMPILER_PATH = "compiler-path"
         private const val SUMATRA_PATH = "sumatra-path"
         private const val PDF_VIEWER = "pdf-viewer"
         private const val VIEWER_COMMAND = "viewer-command"
-        private const val COMPILER_ARGUMENTS = "compiler-arguments"
         private const val MAIN_FILE = "main-file"
         private const val OUTPUT_PATH = "output-path"
         private const val AUXIL_PATH = "auxil-path"
@@ -97,15 +90,10 @@ class LatexRunConfiguration constructor(
         private const val OUT_DIR = "out-dir"
     }
 
-    val immutableOptions = LatexRunConfigurationOptions()
-
-    var compiler: LatexCompiler? by immutableOptions::compiler
     var compilerPath: String? = null // todo replaced by custom compiler?
     var sumatraPath: String? = null
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
-
-    var compilerArguments: String? by transformed(options::compilerArguments) { it?.trim() }
 
     // todo this isn't used anymore? replaced by get/setEnvs()
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
@@ -198,8 +186,10 @@ class LatexRunConfiguration constructor(
     }
 
     override fun getOptions(): LatexRunConfigurationOptions {
-        return immutableOptions
+        return super.getOptions() as LatexRunConfigurationOptions
     }
+
+    fun getConfigOptions() = options
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(this)
@@ -207,7 +197,7 @@ class LatexRunConfiguration constructor(
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
-        if (compiler == null) {
+        if (getConfigOptions().compiler == null) {
             throw RuntimeConfigurationError(
                 "Run configuration is invalid: no compiler selected"
             )
@@ -241,15 +231,9 @@ class LatexRunConfiguration constructor(
 
     @Throws(InvalidDataException::class)
     override fun readExternal(element: Element) {
-        val isAllowRunningInParallel = immutableOptions.isAllowRunningInParallel
-        // load state sets myOptions but we need to preserve transient isAllowRunningInParallel
-        immutableOptions.isAllowRunningInParallel = isAllowRunningInParallel
+        super<RunConfigurationBase>.readExternal(element)
 
         val parent = element.getChild(TEXIFY_PARENT) ?: return
-
-        // Read compiler.
-        val newOptions = XmlSerializer.deserialize(element, optionsClass)
-        this.compiler = (newOptions as? LatexRunConfigurationOptions)?.compiler
 
         // Read compiler custom path.
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
@@ -273,10 +257,6 @@ class LatexRunConfiguration constructor(
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
-
-        // Read compiler arguments.
-        val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
-        compilerArguments = if (compilerArgumentsRead.isNullOrEmpty()) null else compilerArgumentsRead
 
         // Read environment variables
         environmentVariables = EnvironmentVariablesData.readExternal(parent)
@@ -370,7 +350,7 @@ class LatexRunConfiguration constructor(
 
     @Throws(WriteExternalException::class)
     override fun writeExternal(element: Element) {
-        serializeObjectInto(immutableOptions, element)
+        super<RunConfigurationBase>.writeExternal(element)
 
         var parent: Element? = element.getChild(TEXIFY_PARENT)
 
@@ -384,12 +364,10 @@ class LatexRunConfiguration constructor(
             parent.removeContent()
         }
 
-//        parent.addContent(Element(COMPILER).also { it.text = (compiler as? SupportedLatexCompiler)?.executableName ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
-        parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFileString ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
@@ -541,10 +519,6 @@ class LatexRunConfiguration constructor(
         this.mainFile = null
     }
 
-    fun setDefaultCompiler() {
-        compiler = PdflatexCompiler
-    }
-
     fun setDefaultPdfViewer() {
         pdfViewer = InternalPdfViewer.firstAvailable()
     }
@@ -653,8 +627,8 @@ class LatexRunConfiguration constructor(
     }
 
     override fun toString(): String {
-        return "LatexRunConfiguration{" + "compiler=" + compiler +
-            ", compilerPath=" + compilerPath +
+        return "LatexRunConfiguration{" + "compiler=" + getConfigOptions().compiler +
+                ", compilerPath=" + compilerPath +
             ", sumatraPath=" + sumatraPath +
             ", mainFile=" + mainFile +
             ", outputFormat=" + outputFormat +

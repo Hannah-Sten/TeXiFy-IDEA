@@ -42,7 +42,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
-        val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
+        val compiler = runConfig.getConfigOptions().compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
         // If the outdirs do not exist, we assume this is because either something went wrong and an incorrect output path was filled in,
@@ -141,7 +141,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 ?.includedPackages()
                 ?: setOf()
 
-            isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
+            isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary)
+                .isNotEmpty() && runConfig.getConfigOptions().compiler?.includesMakeindex == false && !usesTexForGlossaries
 
             // Some packages do handle makeindex themselves
             // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that

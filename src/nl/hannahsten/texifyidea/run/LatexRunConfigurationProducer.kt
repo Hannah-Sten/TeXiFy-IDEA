@@ -54,8 +54,8 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             command.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
         }
         else command
-        runConfiguration.compiler = SupportedLatexCompiler.byExecutableName(compiler) ?: PdflatexCompiler
-        runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
+        runConfiguration.getConfigOptions().compiler = SupportedLatexCompiler.byExecutableName(compiler) ?: PdflatexCompiler
+        runConfiguration.getConfigOptions().compilerArguments = command.removePrefix(compiler).trim()
         return true
     }
 

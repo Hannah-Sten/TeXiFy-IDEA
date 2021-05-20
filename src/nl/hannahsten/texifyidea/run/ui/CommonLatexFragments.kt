@@ -230,7 +230,7 @@ object CommonLatexFragments {
     }
 
     fun createOutputFormatFragment(group: String, commandLinePosition: Int, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>> {
-        val formats = settings.compiler?.outputFormats ?: emptyArray()
+        val formats = settings.getConfigOptions().compiler?.outputFormats ?: emptyArray()
         val field = LabeledComponent.create(ComboBox(formats), "Output format")
         field.labelLocation = BorderLayout.WEST
         field.size = JBDimension(128, field.height)

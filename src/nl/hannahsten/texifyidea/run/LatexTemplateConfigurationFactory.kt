@@ -24,7 +24,6 @@ class LatexTemplateConfigurationFactory(type: ConfigurationType) : Configuration
 
     override fun createTemplateConfiguration(project: Project) = when (type) {
         is LatexRunConfigurationType -> LatexRunConfiguration(project, this, "LaTeX").apply {
-            setDefaultCompiler()
             setDefaultPdfViewer()
             setDefaultOutputFormat()
             setSuggestedName()

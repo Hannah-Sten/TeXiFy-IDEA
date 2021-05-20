@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.run
 
 import com.intellij.configurationStore.Property
 import com.intellij.execution.configurations.LocatableRunConfigurationOptions
+import com.intellij.openapi.components.StoredPropertyBase
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.XMap
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
@@ -15,12 +17,12 @@ import kotlin.reflect.KProperty
 class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
     @get:OptionTag("compiler", converter = LatexCompiler.Converter::class)
-    var compiler by property<LatexCompiler?>(null) { it == null }
+    var compiler by property<LatexCompiler?>(PdflatexCompiler) { it is PdflatexCompiler }
 
-    @get:OptionTag("compiler_arguments")
-    var compilerArguments by string()
+    @get:OptionTag("compilerArguments")
+    var compilerArguments by string() // todo transformed(string()) { it.trim() }
 
-    @get:OptionTag("working_directory")
+    @get:OptionTag("workingDirectory")
     var workingDirectory by string()
 
     @Property(description = "Environment variables")

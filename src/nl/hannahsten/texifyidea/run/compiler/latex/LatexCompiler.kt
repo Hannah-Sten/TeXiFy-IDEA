@@ -157,7 +157,7 @@ abstract class SupportedLatexCompiler(
         }
 
         // Custom compiler arguments specified by the user
-        runConfig.compilerArguments?.let { arguments ->
+        runConfig.getConfigOptions().compilerArguments?.let { arguments ->
             ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }
