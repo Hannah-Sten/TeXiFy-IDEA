@@ -35,9 +35,9 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
         val commandsWithRelativePath = file.commandsInFile(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd).filter { it.requiredParameter(0)?.startsWith("../") == true }
         if (commandsWithRelativePath.isEmpty()) return emptyList()
 
-        // If not using BIBINPUTS, all is fine and it will work.
-        val usesBibinputs = file.getBibtexRunConfigurations()
-            .any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }
+        // todo If not using BIBINPUTS, all is fine and it will work.
+        val usesBibinputs = false // = file.getBibtexRunConfigurations()
+//            .any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }
 
         if (!usesBibinputs) return emptyList()
 
@@ -67,20 +67,20 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
             val newNode = LatexPsiHelper(project).createFromText(newText).firstChild.node ?: return
             descriptor.psiElement.parent.node.replaceChild(oldNode, newNode)
 
-            // Fix BIBINPUTS
-            project
-                .getLatexRunConfigurations()
-                .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile().virtualFile }
-                .flatMap { it.bibRunConfigs }
-                .map { it.configuration }
-                .filterIsInstance<BibtexRunConfiguration>()
-                .forEach { config ->
-                    val envs = config.environmentVariables.envs.toMutableMap()
-                    val oldPath = envs["BIBINPUTS"] ?: return@forEach
-                    val newPath = oldPath.substring(0, oldPath.lastIndexOf('/'))
-                    envs["BIBINPUTS"] = newPath
-                    config.environmentVariables = EnvironmentVariablesData.create(envs, config.environmentVariables.isPassParentEnvs)
-                }
+            // todo Fix BIBINPUTS
+//            project
+//                .getLatexRunConfigurations()
+//                .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile().virtualFile }
+//                .flatMap { it.bibRunConfigs }
+//                .map { it.configuration }
+//                .filterIsInstance<BibtexRunConfiguration>()
+//                .forEach { config ->
+//                    val envs = config.environmentVariables.envs.toMutableMap()
+//                    val oldPath = envs["BIBINPUTS"] ?: return@forEach
+//                    val newPath = oldPath.substring(0, oldPath.lastIndexOf('/'))
+//                    envs["BIBINPUTS"] = newPath
+//                    config.environmentVariables = EnvironmentVariablesData.create(envs, config.environmentVariables.isPassParentEnvs)
+//                }
         }
     }
 }

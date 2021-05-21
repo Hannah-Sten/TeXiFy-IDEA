@@ -8,6 +8,7 @@ import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.XMap
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
@@ -40,6 +41,19 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
             env
             isPassParentEnv = value.isPassParentEnvs
         }
+
+    @get:OptionTag("outputFormat")
+    var outputFormat by enum(LatexCompiler.OutputFormat.PDF)
+
+    /**
+     * Use [LatexRunConfiguration.getLatexDistributionType] to take the Project SDK into account.
+     */
+    @get:OptionTag("latexDistribution")
+    internal var latexDistribution by enum(LatexDistributionType.PROJECT_SDK)
+
+    /** Whether the run configuration has already been run or not, since it has been created */
+    @get:OptionTag("hasBeenRun")
+    var hasBeenRun by property(false)
 }
 
 

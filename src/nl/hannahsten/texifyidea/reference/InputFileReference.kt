@@ -99,12 +99,13 @@ class InputFileReference(
         // BIBINPUTS
         // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
         if (!isBuildingFileset && (element.name in CommandMagic.bibliographyIncludeCommands || extensions.contains("bib"))) {
-            val bibRunConfigs = element.containingFile.getBibtexRunConfigurations()
-            if (bibRunConfigs.any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }) {
-                // When using BIBINPUTS, the file will only be sought relative to BIBINPUTS
-                searchPaths.clear()
-                searchPaths.addAll(bibRunConfigs.mapNotNull { it.environmentVariables.envs["BIBINPUTS"] })
-            }
+            // todo check bibtex steps
+//            val bibRunConfigs = element.containingFile.getBibtexRunConfigurations()
+//            if (bibRunConfigs.any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }) {
+//                // When using BIBINPUTS, the file will only be sought relative to BIBINPUTS
+//                searchPaths.clear()
+//                searchPaths.addAll(bibRunConfigs.mapNotNull { it.environmentVariables.envs["BIBINPUTS"] })
+//            }
         }
 
         val processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key

@@ -79,8 +79,8 @@ object LatexmkRcFileFinder {
         )
 
         // The first time, by default don't override what's in the latexmkrc (but avoid resetting the user chosen output format)
-        if (isPresent && !runConfig.hasBeenRun) {
-            runConfig.outputFormat = LatexCompiler.OutputFormat.DEFAULT
+        if (isPresent && !runConfig.getConfigOptions().hasBeenRun) {
+            runConfig.getConfigOptions().outputFormat = LatexCompiler.OutputFormat.DEFAULT
         }
         return isPresent
     }

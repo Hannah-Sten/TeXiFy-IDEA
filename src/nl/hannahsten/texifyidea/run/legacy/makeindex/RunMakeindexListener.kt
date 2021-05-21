@@ -32,13 +32,13 @@ class RunMakeindexListener(
         try {
 
             // Only create new one if there is none yet
-            val runConfigSettingsList =
-                if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
-                    generateIndexConfigs()
-                }
-                else {
-                    latexRunConfig.makeindexRunConfigs
-                }
+            val runConfigSettingsList = emptyList<RunnerAndConfigurationSettings>()
+//                if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
+//                    generateIndexConfigs()
+//                }
+//                else {
+//                    latexRunConfig.makeindexRunConfigs
+//                }
 
             // Run all run configurations
             for (runConfigSettings in runConfigSettingsList) {
@@ -64,8 +64,8 @@ class RunMakeindexListener(
             scheduleLatexRuns()
         }
         finally {
-            latexRunConfig.isLastRunConfig = false
-            latexRunConfig.isFirstRunConfig = true
+//            latexRunConfig.isLastRunConfig = false
+//            latexRunConfig.isFirstRunConfig = true
         }
     }
 
@@ -88,17 +88,17 @@ class RunMakeindexListener(
     }
 
     private fun scheduleLatexRuns() {
-        // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
-        if (latexRunConfig.bibRunConfigs.isEmpty()) {
-            // LaTeX twice
-            latexRunConfig.isFirstRunConfig = false
-            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
-                ?: return
-            latexRunConfig.isLastRunConfig = false
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-            latexRunConfig.isLastRunConfig = true
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-        }
+//        // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
+//        if (latexRunConfig.bibRunConfigs.isEmpty()) {
+////             LaTeX twice
+//            latexRunConfig.isFirstRunConfig = false
+//            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
+//                ?: return
+//            latexRunConfig.isLastRunConfig = false
+//            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+//            latexRunConfig.isLastRunConfig = true
+//            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+//        }
     }
 
     private fun generateIndexConfigs(): Set<RunnerAndConfigurationSettings> {
@@ -126,7 +126,7 @@ class RunMakeindexListener(
             runConfigs.add(makeindexRunConfigSettings)
         }
 
-        latexRunConfig.makeindexRunConfigs = runConfigs
+//        latexRunConfig.makeindexRunConfigs = runConfigs
         return runConfigs
     }
 

@@ -25,9 +25,6 @@ class OpenCustomPdfViewerListener(val command: Array<String>, val failSilently: 
                 }
             }
         }
-
-        // Reset to default
-        runConfig.allowFocusChange = true
     }
 
     override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {

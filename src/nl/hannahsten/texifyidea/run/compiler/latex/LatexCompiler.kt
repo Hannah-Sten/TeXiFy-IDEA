@@ -4,15 +4,14 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.Compiler
 import nl.hannahsten.texifyidea.run.compiler.CustomCompiler
 import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
-import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
-import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.runCommand
-import nl.hannahsten.texifyidea.util.splitWhitespace
 
 sealed class LatexCompiler : Compiler<LatexCompileStep> {
 

@@ -26,7 +26,7 @@ object TectonicCompiler : SupportedLatexCompiler("Tectonic", "tectonic") {
 
         command.add("--synctex")
 
-        command.add("--outfmt=${runConfig.outputFormat.name.toLowerCase()}")
+        command.add("--outfmt=${runConfig.getConfigOptions().outputFormat.name.toLowerCase()}")
 
         if (outputPath != null) {
             command.add("--outdir=$outputPath")

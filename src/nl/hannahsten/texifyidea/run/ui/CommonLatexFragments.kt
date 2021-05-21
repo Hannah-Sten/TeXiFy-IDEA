@@ -237,11 +237,14 @@ object CommonLatexFragments {
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>>("outputFormat", "Change default output format", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultOutputFormat() == false }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem = (s.configuration as LatexRunConfiguration).outputFormat
+                ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem =
+                    (s.configuration as LatexRunConfiguration).getConfigOptions().outputFormat
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).outputFormat = ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexCompiler.OutputFormat ?: LatexCompiler.OutputFormat.PDF
+                (s.configuration as LatexRunConfiguration).getConfigOptions().outputFormat =
+                    ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexCompiler.OutputFormat
+                        ?: LatexCompiler.OutputFormat.PDF
             }
         }
 
@@ -256,11 +259,14 @@ object CommonLatexFragments {
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexDistributionType>>>("latexDistribution", "Change default LaTeX distribution", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultLatexDistribution() == false }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem = (s.configuration as LatexRunConfiguration).latexDistribution
+                ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem =
+                    (s.configuration as LatexRunConfiguration).getConfigOptions().latexDistribution
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).latexDistribution = ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexDistributionType ?: LatexDistributionType.PROJECT_SDK
+                (s.configuration as LatexRunConfiguration).getConfigOptions().latexDistribution =
+                    ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexDistributionType
+                        ?: LatexDistributionType.PROJECT_SDK
             }
         }
 

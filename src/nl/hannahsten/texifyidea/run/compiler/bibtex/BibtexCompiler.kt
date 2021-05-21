@@ -21,7 +21,7 @@ object BibtexCompiler : SupportedBibliographyCompiler("BibTeX", "bibtex") {
             step.state.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
             // Include files from auxiliary directory on MiKTeX
-            if (step.configuration.latexDistribution.isMiktex()) {
+            if (step.configuration.getConfigOptions().latexDistribution.isMiktex()) {
                 add("-include-directory=${step.configuration.mainFile?.parent?.path ?: ""}")
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }

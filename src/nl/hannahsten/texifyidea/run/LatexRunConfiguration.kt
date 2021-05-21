@@ -31,7 +31,6 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
-import nl.hannahsten.texifyidea.run.legacy.LatexCommandLineState
 import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
@@ -64,7 +63,7 @@ class LatexRunConfiguration constructor(
     project: Project,
     factory: ConfigurationFactory,
     name: String
-) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration, CommonProgramRunConfigurationParameters {
+) : RunConfigurationBase<LatexRunState>(project, factory, name), LocatableConfiguration, CommonProgramRunConfigurationParameters {
 
     companion object {
 
@@ -76,10 +75,6 @@ class LatexRunConfiguration constructor(
         private const val MAIN_FILE = "main-file"
         private const val OUTPUT_PATH = "output-path"
         private const val AUXIL_PATH = "auxil-path"
-        private const val COMPILE_TWICE = "compile-twice"
-        private const val OUTPUT_FORMAT = "output-format"
-        private const val LATEX_DISTRIBUTION = "latex-distribution"
-        private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
         private const val COMPILE_STEP = "compile-step"
@@ -117,63 +112,11 @@ class LatexRunConfiguration constructor(
     /** Path to the directory containing the auxiliary files. */
     var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
 
-    var outputFormat: OutputFormat = OutputFormat.PDF
-
-    /**
-     * Use [getLatexDistributionType] to take the Project SDK into account.
-     */
-    internal var latexDistribution = LatexDistributionType.PROJECT_SDK
-
-    /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
-    var isLastRunConfig = false
-    var isFirstRunConfig = true
-
-    // Whether the run configuration has already been run or not, since it has been created
-    var hasBeenRun = false
-
-    /** Whether the pdf viewer is allowed to claim focus after compilation. */
-    var allowFocusChange = true
-
-    private var bibRunConfigIds = mutableSetOf<String>()
-    var bibRunConfigs: Set<RunnerAndConfigurationSettings>
-        get() = bibRunConfigIds.mapNotNull {
-            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
-        }.toSet()
-        set(bibRunConfigs) {
-            bibRunConfigIds = mutableSetOf()
-            bibRunConfigs.forEach {
-                bibRunConfigIds.add(it.uniqueID)
-            }
-        }
-
-    private var makeindexRunConfigIds = mutableSetOf<String>()
-    var makeindexRunConfigs: Set<RunnerAndConfigurationSettings>
-        get() = makeindexRunConfigIds.mapNotNull {
-            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
-        }.toSet()
-        set(makeindexRunConfigs) {
-            makeindexRunConfigIds = mutableSetOf()
-            makeindexRunConfigs.forEach {
-                makeindexRunConfigIds.add(it.uniqueID)
-            }
-        }
-
-    private var externalToolRunConfigIds = mutableSetOf<String>()
-    var externalToolRunConfigs: Set<RunnerAndConfigurationSettings>
-        get() = externalToolRunConfigIds.mapNotNull {
-            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
-        }.toSet()
-        set(externalToolRunConfigs) {
-            externalToolRunConfigIds = mutableSetOf()
-            externalToolRunConfigs.forEach {
-                externalToolRunConfigIds.add(it.uniqueID)
-            }
-        }
-
-    // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
-    // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
+    // In order to propagate information about which files need to be cleaned up at the end between one step
+    // (for example makeindex) and the last step, we save this information temporarily here while the run configuration is running. todo check this
     val filesToCleanUp = mutableListOf<File>()
 
+    /** A run configuration consists of one or more steps to execute. */
     val compileSteps: MutableList<CompileStep> = mutableListOf()
 
     override fun getDefaultOptionsClass(): Class<out LatexRunConfigurationOptions> {
@@ -185,6 +128,7 @@ class LatexRunConfiguration constructor(
         return super.getOptions() as LatexRunConfigurationOptions
     }
 
+    // getOptions is protected
     fun getConfigOptions() = options
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
@@ -300,24 +244,17 @@ class LatexRunConfiguration constructor(
             }
         }
 
-        // Read output format.
-        this.outputFormat = OutputFormat.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-
-        // Read LatexDistribution
-        this.latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
-
-        // Read whether the run config has been run
-        this.hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
-
         // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
         // Assume the list is of the form [id 1,id 2]
-        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
+        // todo create bibsteps
+//        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
 
         // Read makeindex run configurations
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
         if (makeindexRunConfigElt != null) {
-            this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
+            // todo create makeindex steps
+//            this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
         }
 
         // Read compile steps
@@ -359,11 +296,6 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFileString ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
-        parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
-        parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
-        parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
-        parent.addContent(Element(BIB_RUN_CONFIG).also { it.text = bibRunConfigIds.toString() })
-        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).also { it.text = makeindexRunConfigIds.toString() })
 
         for (step in compileSteps) {
             val stepElement = Element(COMPILE_STEP)
@@ -396,16 +328,21 @@ class LatexRunConfiguration constructor(
         bibtexRunConfiguration.setSuggestedName()
 
         // On non-MiKTeX systems, add bibinputs for bibtex to work
-        if (!latexDistribution.isMiktex()) {
+        if (!getConfigOptions().latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + ":"))
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(
+                    mapOf(
+                        "BIBINPUTS" to mainFile.parent.path,
+                        "BSTINPUTS" to mainFile.parent.path + ":"
+                    )
+                )
             }
         }
 
         runManager.addConfiguration(bibSettings)
 
-        bibRunConfigs = bibRunConfigs + setOf(bibSettings)
+//        bibRunConfigs = bibRunConfigs + setOf(bibSettings)
     }
 
     /**
@@ -470,7 +407,8 @@ class LatexRunConfiguration constructor(
      * All run configs in the chain except the LaTeX ones.
      */
     fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> {
-        return bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
+//        return bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
+        return emptySet()
     }
 
     /**
@@ -509,20 +447,16 @@ class LatexRunConfiguration constructor(
         pdfViewer = InternalPdfViewer.firstAvailable()
     }
 
-    fun setDefaultOutputFormat() {
-        outputFormat = OutputFormat.PDF
-    }
-
     fun setDefaultDistribution(project: Project) {
-        latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
+        getConfigOptions().latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
     }
 
     /**
      * Get LaTeX distribution type, when 'Use project SDK' is selected map it to a [LatexDistributionType].
      */
     fun getLatexDistributionType(): LatexDistributionType {
-        return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
-            latexDistribution
+        return if (getConfigOptions().latexDistribution != LatexDistributionType.PROJECT_SDK) {
+            getConfigOptions().latexDistribution
         }
         else {
             LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType() ?: LatexDistributionType.TEXLIVE
@@ -535,7 +469,7 @@ class LatexRunConfiguration constructor(
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return if (latexDistribution.isMiktex()) {
+        return if (getConfigOptions().latexDistribution.isMiktex()) {
             auxilPath.getAndCreatePath()
         }
         else {
@@ -560,7 +494,8 @@ class LatexRunConfiguration constructor(
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath()
         return "${outputDir?.path}/" + mainFile!!
-            .nameWithoutExtension + "." + if (outputFormat == OutputFormat.DEFAULT) "pdf" else outputFormat.toString()
+            .nameWithoutExtension + "." + if (getConfigOptions().outputFormat == OutputFormat.DEFAULT) "pdf"
+        else getConfigOptions().outputFormat.toString()
             .toLowerCase()
     }
 
@@ -615,10 +550,10 @@ class LatexRunConfiguration constructor(
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + getConfigOptions().compiler +
                 ", compilerPath=" + compilerPath +
-            ", sumatraPath=" + sumatraPath +
-            ", mainFile=" + mainFile +
-            ", outputFormat=" + outputFormat +
-            '}'.toString()
+                ", sumatraPath=" + sumatraPath +
+                ", mainFile=" + mainFile +
+                ", outputFormat=" + getConfigOptions().outputFormat +
+                '}'.toString()
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
@@ -648,9 +583,9 @@ class LatexRunConfiguration constructor(
         return Path.of(workingDirectory).toAbsolutePath() == Path.of(mainFile?.path).parent.toAbsolutePath()
     }
 
-    fun hasDefaultOutputFormat() = outputFormat == OutputFormat.PDF
+    fun hasDefaultOutputFormat() = getConfigOptions().outputFormat == OutputFormat.PDF
 
-    fun hasDefaultLatexDistribution() = latexDistribution == LatexDistributionType.PROJECT_SDK
+    fun hasDefaultLatexDistribution() = getConfigOptions().latexDistribution == LatexDistributionType.PROJECT_SDK
 
     override fun getEnvs() = options.env
 
