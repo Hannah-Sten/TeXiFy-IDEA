@@ -21,7 +21,7 @@ object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
         command.add("-file-line-error")
         command.add("-interaction=nonstopmode")
         command.add("-synctex=1")
-        command.add("-output-format=${runConfig.getConfigOptions().outputFormat.name.toLowerCase()}")
+        command.add("-output-format=${runConfig.options.outputFormat.name.toLowerCase()}")
 
         command.add("-output-directory=$outputPath")
 

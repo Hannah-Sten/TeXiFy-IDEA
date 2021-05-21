@@ -126,7 +126,8 @@ class BibliographyCompileStep(
         return state.compiler?.getCommand(this)
     }
 
-    override fun getWorkingDirectory() = state.workingDirectory ?: configuration.getAuxilDirectory()?.path ?: configuration.mainFile?.parent?.path
+    override fun getWorkingDirectory() =
+        state.workingDirectory ?: configuration.getAuxilDirectory()?.path ?: configuration.options.mainFile.resolve()?.parent?.path
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(state.envs, state.isPassParentEnvs)
 

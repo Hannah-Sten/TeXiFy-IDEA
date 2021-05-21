@@ -26,7 +26,7 @@ class LatexTemplateConfigurationFactory(type: ConfigurationType) : Configuration
         is LatexRunConfigurationType -> LatexRunConfiguration(project, this, "LaTeX").apply {
             setDefaultPdfViewer()
             setSuggestedName()
-            setDefaultDistribution(project)
+            options.setDefaultDistribution(project)
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")

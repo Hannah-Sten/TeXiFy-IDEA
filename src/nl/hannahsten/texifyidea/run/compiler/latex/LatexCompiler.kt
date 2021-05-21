@@ -111,7 +111,7 @@ abstract class SupportedLatexCompiler(
 
         val rootManager = ProjectRootManager.getInstance(project)
         val fileIndex = rootManager.fileIndex
-        val mainFile = runConfig.mainFile ?: return null
+        val mainFile = runConfig.options.mainFile.resolve() ?: return null
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
@@ -156,7 +156,7 @@ abstract class SupportedLatexCompiler(
         }
 
         // Custom compiler arguments specified by the user
-        runConfig.getConfigOptions().compilerArguments?.let { arguments ->
+        runConfig.options.compilerArguments?.let { arguments ->
             ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }

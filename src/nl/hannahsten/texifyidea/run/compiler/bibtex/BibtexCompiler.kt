@@ -21,12 +21,12 @@ object BibtexCompiler : SupportedBibliographyCompiler("BibTeX", "bibtex") {
             step.state.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
             // Include files from auxiliary directory on MiKTeX
-            if (step.configuration.getConfigOptions().latexDistribution.isMiktex()) {
-                add("-include-directory=${step.configuration.mainFile?.parent?.path ?: ""}")
+            if (step.configuration.options.latexDistribution.isMiktex()) {
+                add("-include-directory=${step.configuration.options.mainFile.resolve()?.parent?.path ?: ""}")
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }
 
-            add(step.configuration.mainFile?.nameWithoutExtension ?: return null)
+            add(step.configuration.options.mainFile.resolve()?.nameWithoutExtension ?: return null)
         }
 
         return command.toList()

@@ -193,7 +193,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         val node = LatexExecutionNode(project, rootNode).apply {
             description = step.provider.name
             state = LatexExecutionNode.State.RUNNING
-            file = step.configuration.mainFile
+            file = step.configuration.options.mainFile.resolve()
             rootNode.children.add(this)
         }
 

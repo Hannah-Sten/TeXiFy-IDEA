@@ -13,9 +13,9 @@ class LatexCompileStep(
 
     }
 
-    override fun getCommand() = configuration.getConfigOptions().compiler?.getCommand(this)
+    override fun getCommand() = configuration.options.compiler?.getCommand(this)
 
-    override fun getWorkingDirectory() = configuration.workingDirectory ?: configuration.mainFile?.parent?.path
+    override fun getWorkingDirectory() = configuration.workingDirectory ?: configuration.options.mainFile.resolve()?.parent?.path
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(configuration.envs, configuration.isPassParentEnvs)
 }

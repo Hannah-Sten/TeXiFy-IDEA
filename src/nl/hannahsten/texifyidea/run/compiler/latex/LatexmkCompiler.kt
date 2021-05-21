@@ -39,8 +39,8 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
             command.add("-synctex=1")
         }
 
-        if (runConfig.getConfigOptions().outputFormat != OutputFormat.DEFAULT) {
-            command.add("-output-format=${runConfig.getConfigOptions().outputFormat.name.toLowerCase()}")
+        if (runConfig.options.outputFormat != OutputFormat.DEFAULT) {
+            command.add("-output-format=${runConfig.options.outputFormat.name.toLowerCase()}")
         }
 
         command.add("-output-directory=$outputPath")

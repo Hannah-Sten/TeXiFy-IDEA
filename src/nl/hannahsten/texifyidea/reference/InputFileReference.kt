@@ -76,11 +76,11 @@ class InputFileReference(
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
         val texInputPath = runManager.allConfigurationsList
-                .filterIsInstance<LatexRunConfiguration>()
-                .firstOrNull { it.mainFile in rootFiles }
-                ?.getConfigOptions()?.environmentVariables
-                ?.envs
-                ?.getOrDefault("TEXINPUTS", null)
+            .filterIsInstance<LatexRunConfiguration>()
+            .firstOrNull { it.options.mainFile.resolve() in rootFiles }
+            ?.options?.environmentVariables
+            ?.envs
+            ?.getOrDefault("TEXINPUTS", null)
         if (texInputPath != null) {
             val path = texInputPath.trimEnd(':')
             searchPaths.add(path.trimEnd('/'))

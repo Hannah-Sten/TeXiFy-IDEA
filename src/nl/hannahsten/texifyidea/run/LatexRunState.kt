@@ -65,7 +65,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
 
             val latexOutputListener = LatexOutputListener(
                 runConfig.project,
-                runConfig.mainFile,
+                runConfig.options.mainFile.resolve(),
                 mutableListOf(),
                 mutableListOf(),
             )

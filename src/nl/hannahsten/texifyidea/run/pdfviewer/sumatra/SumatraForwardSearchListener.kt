@@ -37,7 +37,7 @@ class SumatraForwardSearchListener(
 
         // Forward search.
         invokeLater {
-            val psiFile = runConfig.mainFile?.psiFile(executionEnvironment.project) ?: return@invokeLater
+            val psiFile = runConfig.options.mainFile.resolve()?.psiFile(executionEnvironment.project) ?: return@invokeLater
             val document = psiFile.document() ?: return@invokeLater
 
             val editor = psiFile.openedEditor() ?: return@invokeLater

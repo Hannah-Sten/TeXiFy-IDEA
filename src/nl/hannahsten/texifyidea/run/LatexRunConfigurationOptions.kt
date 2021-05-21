@@ -3,12 +3,13 @@ package nl.hannahsten.texifyidea.run
 import com.intellij.configurationStore.Property
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.LocatableRunConfigurationOptions
-import com.intellij.openapi.components.StoredPropertyBase
+import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.XMap
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
@@ -51,9 +52,16 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     @get:OptionTag("latexDistribution")
     internal var latexDistribution by enum(LatexDistributionType.PROJECT_SDK)
 
+    fun setDefaultDistribution(project: Project) {
+        latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
+    }
+
     /** Whether the run configuration has already been run or not, since it has been created */
     @get:OptionTag("hasBeenRun")
     var hasBeenRun by property(false)
+
+    @get:OptionTag("mainFile", converter = LatexRunConfigurationDirectoryOption.Converter::class)
+    var mainFile by property(LatexRunConfigurationDirectoryOption()) { it.isDefault() }
 }
 
 

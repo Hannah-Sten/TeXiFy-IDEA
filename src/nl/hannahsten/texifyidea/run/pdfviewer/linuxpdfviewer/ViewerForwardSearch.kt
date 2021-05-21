@@ -18,7 +18,7 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
      */
     fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment, focusAllowed: Boolean = true) {
         // We have to find the file and line number before scheduling the forward search
-        val mainPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
+        val mainPsiFile = runConfig.options.mainFile.resolve()?.psiFile(environment.project) ?: return
         val editor = mainPsiFile.openedEditor() ?: return
 
         // Get the line number in the currently open file

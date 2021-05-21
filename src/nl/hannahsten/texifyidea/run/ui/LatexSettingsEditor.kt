@@ -41,12 +41,12 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(compileLabelFragment)
 
         // LaTeX compiler
-        fragments.add(CommonLatexFragments.createLatexCompilerFragment(3) { s ->  s.getConfigOptions()::compiler })
+        fragments.add(CommonLatexFragments.createLatexCompilerFragment(3) { s -> s.options::compiler })
 
         // LaTeX compiler arguments
         val compilerArguments = CommonLatexFragments.createProgramArgumentsFragment(
-            "compilerArguments", "Compiler arguments", 4, { s -> (s.configuration as LatexRunConfiguration).getConfigOptions()::compilerArguments }, { s ->
-                (s.configuration as? LatexRunConfiguration)?.getConfigOptions()?.compilerArguments?.isNotEmpty() == true },
+            "compilerArguments", "Compiler arguments", 4, { s -> (s.configuration as LatexRunConfiguration).options::compilerArguments }, { s ->
+                (s.configuration as? LatexRunConfiguration)?.options?.compilerArguments?.isNotEmpty() == true },
             name = "Add compiler arguments", latexGroupName
         )
         compilerArguments.setHint("CLI arguments for the LaTeX compiler")

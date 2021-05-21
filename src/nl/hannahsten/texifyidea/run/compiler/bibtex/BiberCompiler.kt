@@ -15,10 +15,10 @@ object BiberCompiler : SupportedBibliographyCompiler("Biber", "biber") {
         // Biber can find auxiliary files, but the flag is different from bibtex.
         // The following flag assumes the command is executed in the directory where the .bcf control file is.
         // The extra directory added is the directory from which the path to the .bib resource file is searched as specified in the .bcf file.
-        add("--input-directory=${step.configuration.mainFile?.parent?.path ?: ""}")
+        add("--input-directory=${step.configuration.options.mainFile.resolve()?.parent?.path ?: ""}")
 
         step.state.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
-        add(step.configuration.mainFile?.nameWithoutExtension ?: return null)
+        add(step.configuration.options.mainFile.resolve()?.nameWithoutExtension ?: return null)
     }
 }

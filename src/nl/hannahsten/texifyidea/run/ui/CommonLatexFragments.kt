@@ -7,6 +7,7 @@ import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.*
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.DataManager
+import com.intellij.ide.macro.MacroManager
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
@@ -126,11 +127,12 @@ object CommonLatexFragments {
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, TextFieldWithBrowseButton>("mainFile", "Main file", null, mainFileField, commandLinePosition, { true }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                (component as TextFieldWithBrowseButton).text = (s.configuration as LatexRunConfiguration).mainFileString ?: ""
+                (component as TextFieldWithBrowseButton).text = (s.configuration as LatexRunConfiguration).options.mainFile.pathWithMacro ?: ""
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).setMainFile((component as TextFieldWithBrowseButton).text, DataManager.getInstance().getDataContext(this.component))
+                val pathWithMacro = (component as TextFieldWithBrowseButton).text
+                (s.configuration as LatexRunConfiguration).options.mainFile.resolveAndSetPath(pathWithMacro, this.component)
             }
         }
 
@@ -174,6 +176,7 @@ object CommonLatexFragments {
         val workingDirectoryField = TextFieldWithBrowseButton()
         workingDirectoryField.minimumSize = standardDimension
         workingDirectoryField.addBrowseFolderListener("Select Working Directory", null, project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
+        setMonospaced(workingDirectoryField.textField)
 
         MacrosDialog.addMacroSupport(workingDirectoryField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
 
@@ -203,6 +206,7 @@ object CommonLatexFragments {
     fun createOutputPathFragment(group: String, commandLinePosition: Int, project: Project, type: String, reset: (LatexRunConfiguration) -> String, apply: (LatexRunConfiguration, String) -> Unit, isDefault: (LatexRunConfiguration?) -> Boolean?, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
         val outputDirectoryField = TextFieldWithBrowseButton()
         outputDirectoryField.minimumSize = standardDimension
+        setMonospaced(outputDirectoryField.textField)
         outputDirectoryField.addBrowseFolderListener("Select ${type.capitalize()} Directory", "Select directory to store $type files", project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
 
         MacrosDialog.addMacroSupport(outputDirectoryField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
@@ -230,7 +234,7 @@ object CommonLatexFragments {
     }
 
     fun createOutputFormatFragment(group: String, commandLinePosition: Int, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>> {
-        val formats = settings.getConfigOptions().compiler?.outputFormats ?: emptyArray()
+        val formats = settings.options.compiler?.outputFormats ?: emptyArray()
         val field = LabeledComponent.create(ComboBox(formats), "Output format")
         field.labelLocation = BorderLayout.WEST
         field.size = JBDimension(128, field.height)
@@ -238,11 +242,11 @@ object CommonLatexFragments {
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler.OutputFormat>>>("outputFormat", "Change default output format", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultOutputFormat() == false }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem =
-                    (s.configuration as LatexRunConfiguration).getConfigOptions().outputFormat
+                    (s.configuration as LatexRunConfiguration).options.outputFormat
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).getConfigOptions().outputFormat =
+                (s.configuration as LatexRunConfiguration).options.outputFormat =
                     ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexCompiler.OutputFormat
                         ?: LatexCompiler.OutputFormat.PDF
             }
@@ -260,11 +264,11 @@ object CommonLatexFragments {
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexDistributionType>>>("latexDistribution", "Change default LaTeX distribution", group, field, commandLinePosition, { s -> (s.configuration as? LatexRunConfiguration)?.hasDefaultLatexDistribution() == false }) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 ((component as LabeledComponent<*>).component as ComboBox<*>).selectedItem =
-                    (s.configuration as LatexRunConfiguration).getConfigOptions().latexDistribution
+                    (s.configuration as LatexRunConfiguration).options.latexDistribution
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                (s.configuration as LatexRunConfiguration).getConfigOptions().latexDistribution =
+                (s.configuration as LatexRunConfiguration).options.latexDistribution =
                     ((component as? LabeledComponent<*>)?.component as? ComboBox<*>)?.selectedItem as? LatexDistributionType
                         ?: LatexDistributionType.PROJECT_SDK
             }
