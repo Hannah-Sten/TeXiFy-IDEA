@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.step
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
-object LatexCompileStepProvider : CompileStepProvider {
+object LatexCompileStepProvider : StepProvider {
 
     override val name = "Compile LaTeX"
 

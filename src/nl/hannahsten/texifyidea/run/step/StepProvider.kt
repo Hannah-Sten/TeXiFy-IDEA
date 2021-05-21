@@ -6,7 +6,7 @@ import javax.swing.Icon
 /**
  * When implementing a new compile step, be sure to register it in [nl.hannahsten.texifyidea.util.magic.CompilerMagic.compileStepProviders].
  */
-interface CompileStepProvider {
+interface StepProvider {
 
     val name: String
 

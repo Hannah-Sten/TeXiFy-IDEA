@@ -6,11 +6,11 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.step.BibliographyCompileStepProvider
 import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
-import nl.hannahsten.texifyidea.run.step.CompileStepProvider
+import nl.hannahsten.texifyidea.run.step.StepProvider
 
 object CompilerMagic {
 
-    val compileStepProviders: LinkedHashMap<String, CompileStepProvider> = linkedMapOf(
+    val compileStepProviders: LinkedHashMap<String, StepProvider> = linkedMapOf(
         LatexCompileStepProvider.id to LatexCompileStepProvider,
         BibliographyCompileStepProvider.id to BibliographyCompileStepProvider,
     )

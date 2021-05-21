@@ -8,9 +8,7 @@ import com.intellij.ide.dnd.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.ui.popup.IconButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.Conditions
 import com.intellij.openapi.util.Disposer
@@ -21,14 +19,13 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.CompileStep
-import nl.hannahsten.texifyidea.run.step.CompileStepProvider
+import nl.hannahsten.texifyidea.run.step.StepProvider
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.*
-import java.util.function.Consumer
 import javax.swing.Box
 import javax.swing.JLabel
 import javax.swing.JLayeredPane
@@ -110,7 +107,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         popup.showUnderneathOf(addButton)
     }
 
-    private fun createStep(provider: CompileStepProvider) {
+    private fun createStep(provider: StepProvider) {
         val step = provider.createStep(configuration)
         val tag = StepButton(step)
         steps.add(tag)
@@ -258,7 +255,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         }
     }
 
-    private inner class TagAction(private val provider: CompileStepProvider) : AnAction(provider.name, null, provider.icon) {
+    private inner class TagAction(private val provider: StepProvider) : AnAction(provider.name, null, provider.icon) {
 
         override fun actionPerformed(e: AnActionEvent) {
             createStep(provider)
