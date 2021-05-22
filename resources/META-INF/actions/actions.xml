@@ -8,6 +8,11 @@
         <!-- LaTeX Edit menu -->
         <xi:include href="/META-INF/actions/editmenu.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
 
+        <!-- LaTeX Code menu -->
+        <action id="texify.ReformatLatexindent" class="nl.hannahsten.texifyidea.action.ReformatWithLatexindent" description="Run latexindent.pl" >
+            <add-to-group group-id="CodeFormatGroup" anchor="after" relative-to-action="ShowReformatFileDialog" />
+        </action>
+
         <!-- LaTeX Analyze menu -->
         <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex analysis actions" popup="true"
                class="nl.hannahsten.texifyidea.action.group.LatexAnalyzeMenuGroup">

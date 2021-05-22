@@ -74,6 +74,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             ?: throw ExecutionException("Compile command could not be created.")
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
+            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withEnvironment(runConfig.environmentVariables.envs)
         val handler = KillableProcessHandler(commandLine)
 

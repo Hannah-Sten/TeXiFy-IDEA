@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.7-alpha-cl445-2"
+version = "0.7.7-alpha.2"
 
 repositories {
     mavenCentral()
@@ -145,7 +145,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "2021.1"
+    version = "2021.1.1"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
