@@ -20,7 +20,7 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
     /**
      * Execute forward search when the process is done.
      */
-    fun execute(runConfig: LatexRunConfiguration, focusAllowed: Boolean = true) {
+    fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, focusAllowed: Boolean = true) {
         // We have to find the file and line number before scheduling the forward search
         val mainPsiFile = runConfig.mainFile?.psiFile(runConfig.project) ?: return
         val editor = mainPsiFile.openedEditor() ?: return
@@ -31,17 +31,7 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
         // Get the currently open file to use for forward search.
         val currentPsiFile = editor.document.psiFile(runConfig.project) ?: return
 
-        // Set the OpenViewerListener to execute when the compilation is done.
-        val sourceFilePath = currentPsiFile.virtualFile.path
-        val project = runConfig.project
+        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, runConfig.project, focusAllowed))
 
-        when (viewer) {
-            is InternalPdfViewer -> viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-            is ExternalPdfViewer -> viewer.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-            else -> {}
-        }
-        // Set this viewer as viewer to forward search to in the future.
-        (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
     }
-//        OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, runConfig.project, focusAllowed)
 }

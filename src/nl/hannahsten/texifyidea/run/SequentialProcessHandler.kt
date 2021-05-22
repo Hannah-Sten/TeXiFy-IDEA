@@ -68,18 +68,3 @@ class SequentialProcessHandler(private val processes: List<ProcessHandler>) : Pr
         (currentProcess as? KillableProcess)?.killProcess()
     }
 }
-
-interface StepExecutionHandler {
-
-    fun startNotify()
-
-    fun killProcess()
-
-    fun canKillProcess(): Boolean
-
-    fun destroyProcess()
-
-    fun detachProcess()
-
-    fun addProcessListener(listener: ProcessListener)
-}

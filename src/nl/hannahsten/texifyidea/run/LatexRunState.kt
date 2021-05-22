@@ -41,7 +41,6 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
         }
 
         val overallProcessHandler = SequentialProcessHandler(handlers)
-//        val overallProcessHandler = SequentialProcessHandler(runConfig.compileSteps)
 
         overallProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {

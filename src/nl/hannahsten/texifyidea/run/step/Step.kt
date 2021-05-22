@@ -1,9 +1,7 @@
 package nl.hannahsten.texifyidea.run.step
 
-import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.StepExecutionHandler
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 
 /**
