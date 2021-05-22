@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.psi.codeStyle.CodeStyleManager
+import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
@@ -393,6 +394,7 @@ class TableAlignTest : BasePlatformTestCase() {
 \end{document}
         """.trimIndent()
         myFixture.configureByText(LatexFileType, start)
+        CodeStyleSettings.getLocalCodeStyleSettings(myFixture.editor, 0).WRAP_ON_TYPING = 1
         writeCommand(project) {
             // That's a bug.
             CodeStyleManager.getInstance(project).reformat(myFixture.file)

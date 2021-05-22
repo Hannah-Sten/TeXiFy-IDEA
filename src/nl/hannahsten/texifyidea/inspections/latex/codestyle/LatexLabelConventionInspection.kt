@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * Check for label conventions, e.g. sec: in \section{A section}\label{sec:a-section}
@@ -81,7 +80,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Label conventions"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = mutableListOf<ProblemDescriptor>()
         checkLabels(file, manager, isOntheFly, descriptors)
         return descriptors
     }
