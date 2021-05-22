@@ -26,24 +26,6 @@ class OpenViewerListener(
     ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        if (event.exitCode == 0) {
-            runAsync {
-                try {
-                    when (viewer) {
-                        is InternalPdfViewer -> viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-                        is ExternalPdfViewer -> viewer.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-                        else -> {}
-                    }
-                    // Set this viewer as viewer to forward search to in the future.
-                    (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
-                }
-                catch (ignored: TeXception) {
-                }
-            }
-        }
-
-        // Reset to default
-        runConfig.allowFocusChange = true
     }
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
@@ -55,6 +37,21 @@ class OpenViewerListener(
     }
 
     override fun startNotified(event: ProcessEvent) {
-        // Do nothing.
+        runAsync {
+            try {
+                when (viewer) {
+                    is InternalPdfViewer -> viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
+                    is ExternalPdfViewer -> viewer.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
+                    else -> {}
+                }
+                // Set this viewer as viewer to forward search to in the future.
+                (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
+            }
+            catch (ignored: TeXception) {
+            }
+        }
+
+        // Reset to default
+        runConfig.allowFocusChange = true
     }
 }

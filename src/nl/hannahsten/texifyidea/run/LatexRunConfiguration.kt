@@ -42,6 +42,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.step.CompileStep
+import nl.hannahsten.texifyidea.run.step.Step
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -186,7 +187,7 @@ class LatexRunConfiguration constructor(
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
 
-    val compileSteps: MutableList<CompileStep> = mutableListOf()
+    val compileSteps: MutableList<Step> = mutableListOf()
 
     override fun getDefaultOptionsClass(): Class<out LatexRunConfigurationOptions> {
         // Data holder for the options

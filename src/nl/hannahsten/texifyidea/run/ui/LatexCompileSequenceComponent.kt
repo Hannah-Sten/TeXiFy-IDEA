@@ -19,6 +19,7 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.CompileStep
+import nl.hannahsten.texifyidea.run.step.Step
 import nl.hannahsten.texifyidea.run.step.StepProvider
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.Dimension
@@ -210,7 +211,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
         dropFirst?.isVisible = false
     }
 
-    private inner class StepButton(val step: CompileStep) : TagButton(step.provider.name, { changeListener() }), DnDSource {
+    private inner class StepButton(val step: Step) : TagButton(step.provider.name, { changeListener() }), DnDSource {
 
         private val dropPlace = JLabel(AllIcons.General.DropPlace)
 

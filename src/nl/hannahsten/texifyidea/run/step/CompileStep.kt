@@ -9,9 +9,11 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.StepExecutionHandler
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
@@ -24,8 +26,6 @@ import java.io.File
  * @author Sten Wessel
  */
 abstract class CompileStep : Step {
-
-    abstract val configuration: LatexRunConfiguration
 
     override fun execute(id: String, console: LatexExecutionConsole): KillableProcessHandler? {
         val command = getCommand() ?: return null

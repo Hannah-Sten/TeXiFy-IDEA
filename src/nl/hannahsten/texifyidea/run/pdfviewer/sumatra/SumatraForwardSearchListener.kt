@@ -21,8 +21,7 @@ import org.jetbrains.concurrency.runAsync
  * @author Sten Wessel
  */
 class SumatraForwardSearchListener(
-    val runConfig: LatexRunConfiguration,
-    private val executionEnvironment: ExecutionEnvironment
+    val runConfig: LatexRunConfiguration
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -37,7 +36,7 @@ class SumatraForwardSearchListener(
 
         // Forward search.
         invokeLater {
-            val psiFile = runConfig.mainFile?.psiFile(executionEnvironment.project) ?: return@invokeLater
+            val psiFile = runConfig.mainFile?.psiFile(runConfig.project) ?: return@invokeLater
             val document = psiFile.document() ?: return@invokeLater
 
             val editor = psiFile.openedEditor() ?: return@invokeLater

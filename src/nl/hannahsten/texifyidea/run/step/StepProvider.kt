@@ -14,5 +14,5 @@ interface StepProvider {
 
     val id: String
 
-    fun createStep(configuration: LatexRunConfiguration): CompileStep
+    fun createStep(configuration: LatexRunConfiguration): Step
 }

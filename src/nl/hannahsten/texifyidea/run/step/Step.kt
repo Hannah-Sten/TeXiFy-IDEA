@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.process.KillableProcessHandler
+import com.intellij.execution.process.ProcessHandler
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.StepExecutionHandler
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 
 /**
@@ -11,7 +14,9 @@ import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 interface Step {
     val provider: StepProvider
 
+    val configuration: LatexRunConfiguration
+
     fun configure()
 
-    fun execute(id: String, console: LatexExecutionConsole) : KillableProcessHandler?
+    fun execute(id: String, console: LatexExecutionConsole) : ProcessHandler?
 }

@@ -1,10 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.KillableProcess
-import com.intellij.execution.process.KillableProcessHandler
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.*
 import java.io.OutputStream
 
 /**
@@ -12,9 +9,9 @@ import java.io.OutputStream
  *
  * @author Sten Wessel
  */
-class SequentialProcessHandler(private val processes: List<KillableProcessHandler>) : ProcessHandler(), KillableProcess {
+class SequentialProcessHandler(private val processes: List<ProcessHandler>) : ProcessHandler(), KillableProcess {
 
-    private var currentProcess: KillableProcessHandler? = null
+    private var currentProcess: ProcessHandler? = null
     private var killed = false
 
     init {
@@ -64,10 +61,25 @@ class SequentialProcessHandler(private val processes: List<KillableProcessHandle
         return null
     }
 
-    override fun canKillProcess() = currentProcess?.canKillProcess() ?: true
+    override fun canKillProcess() = (currentProcess as? KillableProcess?)?.canKillProcess() ?: false
 
     override fun killProcess() {
         killed = true
-        currentProcess?.killProcess()
+        (currentProcess as? KillableProcess)?.killProcess()
     }
+}
+
+interface StepExecutionHandler {
+
+    fun startNotify()
+
+    fun killProcess()
+
+    fun canKillProcess(): Boolean
+
+    fun destroyProcess()
+
+    fun detachProcess()
+
+    fun addProcessListener(listener: ProcessListener)
 }
