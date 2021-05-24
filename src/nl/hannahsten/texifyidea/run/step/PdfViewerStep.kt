@@ -2,24 +2,54 @@ package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.components.BaseState
+import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.ui.components.dialog
+import com.intellij.ui.layout.panel
+import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.toVector
 import java.io.OutputStream
+import javax.swing.DefaultComboBoxModel
 
-class PdfViewerStep(override val provider: StepProvider, override val configuration: LatexRunConfiguration) : Step {
+class PdfViewerStep(
+    override val provider: StepProvider, override val configuration: LatexRunConfiguration
+) : Step, PersistentStateComponent<PdfViewerStep.State> {
 
-    val pdfViewer: PdfViewer = InternalPdfViewer.EVINCE
+    class State : BaseState() {
+
+        @get:Attribute("pdf-viewer", converter = PdfViewer.Converter::class)
+        var pdfViewer by property(availablePdfViewers().firstOrNull()) { it == availablePdfViewers().firstOrNull() }
+    }
+
+    private var state = State()
 
     override fun configure() {
-        TODO("Not yet implemented")
+        val panel = panel {
+            row("PDF viewer:") {
+                comboBox(
+                    DefaultComboBoxModel(availablePdfViewers().toVector()),
+                    getter = { state.pdfViewer ?: availablePdfViewers().firstOrNull() },
+                    setter = { state.pdfViewer = it }
+                )
+            }
+        }
+
+        dialog(
+            "Configure PDF Viewer Step",
+            panel = panel,
+            resizable = true,
+        ).showAndGet()
     }
 
     override fun execute(id: String, console: LatexExecutionConsole): ProcessHandler {
@@ -46,6 +76,7 @@ class PdfViewerStep(override val provider: StepProvider, override val configurat
     private fun openViewer(texFile: VirtualFile?) {
         val project = configuration.project
         val currentEditor = configuration.project.currentTextEditor()
+        val pdfViewer = state.pdfViewer
 
         // Sumatra is the only viewer that has a separate function for opening a file in the viewer.
         if (pdfViewer == InternalPdfViewer.SUMATRA) {
@@ -53,12 +84,24 @@ class PdfViewerStep(override val provider: StepProvider, override val configurat
         }
 
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.
-        if (texFile != null && texFile.psiFile(project) in ReferencedFileSetCache().fileSetFor(configuration.mainFile?.psiFile(project)!!) && currentEditor != null) {
+        if (texFile != null && texFile.psiFile(project) in ReferencedFileSetCache().fileSetFor(
+                configuration.mainFile?.psiFile(
+                    project
+                )!!
+            ) && currentEditor != null
+        ) {
             ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, currentEditor)
         }
         // If the file does not belong to the compiled file set, forward search to the first line of the main file.
         else {
             ForwardSearchAction(pdfViewer).forwardSearch(configuration.mainFile!!, project, null)
         }
+    }
+
+    override fun getState() = state
+
+    override fun loadState(state: State) {
+        state.resetModificationCount()
+        this.state = state
     }
 }

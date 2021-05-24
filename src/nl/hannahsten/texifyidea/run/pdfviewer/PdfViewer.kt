@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 
 /**
  * Allow other plugins to define their own pdf viewers.
@@ -20,6 +21,15 @@ interface PdfViewer {
     val displayName: String?
 
     fun isAvailable(): Boolean
+
+    class Converter : com.intellij.util.xmlb.Converter<PdfViewer>() {
+
+        override fun toString(value: PdfViewer) = value.name
+
+        override fun fromString(value: String): PdfViewer =
+            ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == value }
+                ?: InternalPdfViewer.valueOf(value ?: "")
+    }
 }
 
 /**
@@ -40,3 +50,5 @@ object ExternalPdfViewers {
 
     fun getExternalPdfViewers(): List<ExternalPdfViewer> = EP_NAME.extensionList
 }
+
+fun availablePdfViewers() = ExternalPdfViewers.getExternalPdfViewers() + InternalPdfViewer.availableSubset()
