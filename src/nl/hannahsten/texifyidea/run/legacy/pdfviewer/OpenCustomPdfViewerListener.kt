@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.pdfviewer
+package nl.hannahsten.texifyidea.run.legacy.pdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener

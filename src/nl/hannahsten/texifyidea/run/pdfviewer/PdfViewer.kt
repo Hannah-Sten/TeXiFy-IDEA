@@ -27,6 +27,9 @@ interface PdfViewer {
  */
 interface ExternalPdfViewer : PdfViewer {
 
+    /**
+     * Open the pdf in the pdf file if it is not open yet, and forward search to it.
+     */
     fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 }
 

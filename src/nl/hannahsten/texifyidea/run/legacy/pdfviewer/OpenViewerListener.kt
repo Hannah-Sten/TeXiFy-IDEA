@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer
+package nl.hannahsten.texifyidea.run.legacy.pdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 import org.jetbrains.concurrency.runAsync
 
 /**

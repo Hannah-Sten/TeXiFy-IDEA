@@ -21,21 +21,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        if (viewer == null) return
-
-        if (!viewer!!.isAvailable()) {
-            return
-        }
-
-        val document = textEditor.editor.document
-        val pdf = guessPdfFile(file, project)
-        val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
-
-        when (viewer) {
-            is ExternalPdfViewer -> (viewer as ExternalPdfViewer).forwardSearch(pdf, file.path, line, project, focusAllowed = true)
-            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation!!.forwardSearch(pdf, file.path, line, project, focusAllowed = true)
-            else -> return
-        }
+        forwardSearch(file, project, textEditor)
     }
 
     override fun update(e: AnActionEvent) {
@@ -60,5 +46,22 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
             .filter { it.mainFile?.psiFile(project) in fileSet }
 
         return mainFileCandidates.firstOrNull()?.outputFilePath
+    }
+
+    fun forwardSearch(file: VirtualFile, project: Project, textEditor: TextEditor?) {
+        if (viewer == null) return
+
+        if (!viewer!!.isAvailable()) {
+            return
+        }
+
+        val pdf = guessPdfFile(file, project)
+        val line = textEditor?.editor?.document?.getLineNumber(textEditor.editor.caretModel.offset)?.plus(1) ?: 1
+
+        when (viewer) {
+            is ExternalPdfViewer -> (viewer as ExternalPdfViewer).forwardSearch(pdf, file.path, line, project, focusAllowed = true)
+            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation!!.forwardSearch(pdf, file.path, line, project, focusAllowed = true)
+            else -> return
+        }
     }
 }

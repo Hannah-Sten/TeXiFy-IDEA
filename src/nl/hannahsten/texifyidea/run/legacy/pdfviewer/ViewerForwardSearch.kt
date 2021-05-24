@@ -1,12 +1,7 @@
-package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer
+package nl.hannahsten.texifyidea.run.legacy.pdfviewer
 
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.application.runInEdt
-import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.openedEditor

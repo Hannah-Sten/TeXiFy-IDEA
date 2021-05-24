@@ -1,13 +1,14 @@
-package nl.hannahsten.texifyidea.run.pdfviewer.sumatra
+package nl.hannahsten.texifyidea.run.legacy.pdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
-import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
+import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isRoot
@@ -62,7 +63,11 @@ class SumatraForwardSearchListener(
                     // Otherwise the person is out of luck ¯\_(ツ)_/¯
                     Thread.sleep(1250)
                     // Never focus, because forward search will work fine without focus, and the user might want to continue typing after doing forward search/compiling
-                    SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = false)
+                    SumatraConversation.forwardSearch(
+                        sourceFilePath = psiFile.virtualFile.path,
+                        line = line,
+                        focus = false
+                    )
                 }
                 catch (ignored: TeXception) {
                 }
