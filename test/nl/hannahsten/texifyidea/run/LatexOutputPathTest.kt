@@ -20,6 +20,6 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         runConfig.options.mainFile.setPath("main.tex")
         val outPath = LatexOutputPath("out", runConfig.getMainFileContentRoot(), runConfig.options.mainFile.resolve(), project)
         // Cannot mkdirs in test, so will default to src
-        assertEquals("/src", outPath.getAndCreatePath()?.path)
+        assertEquals("/src", outPath.getOrCreateOutputPath()?.path)
     }
 }

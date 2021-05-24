@@ -62,6 +62,9 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
     @get:OptionTag("mainFile", converter = LatexRunConfigurationDirectoryOption.Converter::class)
     var mainFile by property(LatexRunConfigurationDirectoryOption()) { it.isDefault() }
+
+    @get:OptionTag("outputPath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
+    var outputPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault() }
 }
 
 

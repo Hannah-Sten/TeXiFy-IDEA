@@ -10,8 +10,6 @@ import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.ide.macro.MacroManager
-import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.options.SettingsEditor
@@ -86,28 +84,17 @@ class LatexRunConfiguration constructor(
     }
 
     var compilerPath: String? = null // todo replaced by custom compiler?
+
     var sumatraPath: String? = null // todo merge with CustomPdfViewer
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null // todo similar to CustomCompiler -> CustomPdfViewer
-
-    /** Resolves to [mainFile], if resolvable. Can contain macros. */
-    var mainFileString: String? = null
-
-    // Cached resolved value of mainFileString
-    @Deprecated("", ReplaceWith("options.mainFile.resolve()"))
-    var mainFile: VirtualFile? = null
-        // Private to keep mainFileString up to date
-        private set(value) {
-            field = value
-            this.outputPath.mainFile = value
-            this.outputPath.contentRoot = getMainFileContentRoot()
-        }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
 
     /** Path to the directory containing the output files. */
+    @Deprecated("", ReplaceWith("options.outputPath"))
     var outputPath = LatexOutputPath("out", getMainFileContentRoot(), options.mainFile.resolve(), project)
 
     /** Path to the directory containing the auxiliary files. */
@@ -199,43 +186,11 @@ class LatexRunConfiguration constructor(
         // Read environment variables
         options.environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
-        // Read output path
-        val outputPathString = parent.getChildText(OUTPUT_PATH)
-        if (outputPathString != null) {
-            if (outputPathString.endsWith("/bin")) {
-                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), options.mainFile.resolve(), project)
-            }
-            else {
-                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), options.mainFile.resolve(), project)
-                this.outputPath.pathString = outputPathString
-            }
-        }
-
         // Read auxil path
         val auxilPathString = parent.getChildText(AUXIL_PATH)
         if (auxilPathString != null) {
             this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), options.mainFile.resolve(), project)
             this.auxilPath.pathString = auxilPathString
-        }
-
-        // Backwards compatibility
-        runReadAction {
-            val auxDirBoolean = parent.getChildText(AUX_DIR)
-            if (auxDirBoolean != null && this.auxilPath.virtualFile == null && this.options.mainFile.resolve() != null) {
-                // If there is no auxil path yet but this option still exists,
-                // guess the output path in the same way as it was previously done
-                val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
-                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.options.mainFile.resolve()!!)
-                val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else this.options.mainFile.resolve()!!.parent.path
-                this.auxilPath.virtualFile = LocalFileSystem.getInstance().findFileByPath(path)
-            }
-            val outDirBoolean = parent.getChildText(OUT_DIR)
-            if (outDirBoolean != null && this.outputPath.virtualFile == null && this.options.mainFile.resolve() != null) {
-                val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
-                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.options.mainFile.resolve()!!)
-                val path = if (usesOutDir) moduleRoot?.path + "/out" else this.options.mainFile.resolve()!!.parent.path
-                this.outputPath.virtualFile = LocalFileSystem.getInstance().findFileByPath(path)
-            }
         }
 
         // Read bibliography run configurations, which is a list of ids
@@ -287,7 +242,6 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         this.options.environmentVariables.writeExternal(parent)
-        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
 
         for (step in compileSteps) {
@@ -323,7 +277,7 @@ class LatexRunConfiguration constructor(
         // On non-MiKTeX systems, add bibinputs for bibtex to work
         if (!options.latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
-            if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
+            if (mainFile != null && options.outputPath.getOrCreateOutputPath(mainFile, project) != mainFile.parent) {
                 bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(
                     mapOf(
                         "BIBINPUTS" to mainFile.parent.path,
@@ -421,16 +375,18 @@ class LatexRunConfiguration constructor(
     }
 
     /**
+     * todo relocate to auxilPath
+     *
      * Find the directory where auxiliary files will be placed, depending on the run config settings.
      *
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
         return if (options.latexDistribution.isMiktex()) {
-            auxilPath.getAndCreatePath()
+            auxilPath.getOrCreateOutputPath()
         }
         else {
-            outputPath.getAndCreatePath()
+            outputPath.getOrCreateOutputPath()
         }
     }
 
@@ -448,21 +404,13 @@ class LatexRunConfiguration constructor(
     }
 
     // Path to output file (e.g. pdf)
-    override fun getOutputFilePath(): String {
-        val outputDir = outputPath.getAndCreatePath()
-        return "${outputDir?.path}/" + options.mainFile.resolve()!!
-            .nameWithoutExtension + "." + if (options.outputFormat == OutputFormat.DEFAULT) "pdf"
-        else options.outputFormat.toString()
-            .toLowerCase()
-    }
+    override fun getOutputFilePath() = options.outputPath.getOutputFilePath(options, project)
 
     /**
-     * Set [outputPath]
+     * Set output path (should be a directory)
      */
     override fun setFileOutputPath(fileOutputPath: String) {
-        if (fileOutputPath.isBlank()) return
-        this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
-        this.outputPath.pathString = fileOutputPath
+        options.outputPath.setPath(fileOutputPath)
     }
 
     /**
@@ -489,10 +437,10 @@ class LatexRunConfiguration constructor(
      * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
      */
     fun usesAuxilOrOutDirectory(): Boolean {
-        val usesAuxilDir = auxilPath.getAndCreatePath() != options.mainFile.resolve()?.parent
-        val usesOutDir = outputPath.getAndCreatePath() != options.mainFile.resolve()?.parent
+        val usesAuxilDir = auxilPath.getOrCreateOutputPath() != options.mainFile.resolve()?.parent
 
-        return usesAuxilDir || usesOutDir
+        val mainFile = options.mainFile.resolve()
+        return usesAuxilDir || options.outputPath.isMainFileParent(mainFile, project)
     }
 
     override fun suggestedName(): String? {

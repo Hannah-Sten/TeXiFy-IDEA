@@ -126,14 +126,14 @@ abstract class SupportedLatexCompiler(
         val dockerOutputDir = "/miktex/out"
         val dockerAuxilDir = "/miktex/auxil"
         val outputPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.outputPath.getAndCreatePath()?.path?.toPath(runConfig)
+            runConfig.outputPath.getOrCreateOutputPath()?.path?.toPath(runConfig)
         }
         else {
             dockerOutputDir
         }
 
         val auxilPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.auxilPath.getAndCreatePath()?.path?.toPath(runConfig)
+            runConfig.auxilPath.getOrCreateOutputPath()?.path?.toPath(runConfig)
         }
         else {
             dockerAuxilDir
@@ -188,12 +188,12 @@ abstract class SupportedLatexCompiler(
 
         // Avoid mounting the mainfile parent also to /miktex/work/out,
         // because there may be a good reason to make the output directory the same as the source directory
-        if (runConfig.outputPath.getAndCreatePath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.outputPath.getAndCreatePath()?.path}:$dockerOutputDir"))
+        if (runConfig.outputPath.getOrCreateOutputPath() != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${runConfig.outputPath.getOrCreateOutputPath()?.path}:$dockerOutputDir"))
         }
 
-        if (runConfig.auxilPath.getAndCreatePath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()}:$dockerAuxilDir"))
+        if (runConfig.auxilPath.getOrCreateOutputPath() != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getOrCreateOutputPath()}:$dockerAuxilDir"))
         }
 
         parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")

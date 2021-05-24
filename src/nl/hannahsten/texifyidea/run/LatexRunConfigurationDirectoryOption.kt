@@ -1,15 +1,28 @@
 package nl.hannahsten.texifyidea.run
 
+import com.intellij.execution.ExecutionException
 import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacroManager
+import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.project.IndexNotReadyException
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
+import com.intellij.util.io.isDirectory
+import nl.hannahsten.texifyidea.util.files.FileUtil
+import nl.hannahsten.texifyidea.util.files.createExcludedDir
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.awt.Component
+import java.io.File
+import java.nio.file.Path
 
 /**
  * Option for the LaTeX run configuration which is directory-based and thus also macro-based.
  */
-class LatexRunConfigurationDirectoryOption {
+open class LatexRunConfigurationDirectoryOption {
     var pathWithMacro: String? = null
         // Can only be set together with resolvedPath
         private set
@@ -21,6 +34,7 @@ class LatexRunConfigurationDirectoryOption {
      * Attempt to resolve the known path (this is not guaranteed to work, e.g. the file may not exist anymore).
      */
     fun resolve(): VirtualFile? {
+        if (resolvedPath?.isBlank() == true) return null
         return LocalFileSystem.getInstance().findFileByPath(resolvedPath ?: return null)
     }
 
@@ -31,6 +45,8 @@ class LatexRunConfigurationDirectoryOption {
      * @param resolvedPath Absolute path to a file.
      */
     fun setPath(resolvedPath: String?, pathWithMacro: String? = resolvedPath) {
+        // Avoid setting blank paths, as they may resolve to something unwanted (being interpreted as relative path to .../bin)
+        if (resolvedPath?.isBlank() == true || pathWithMacro?.isBlank() == true) return
         this.pathWithMacro = pathWithMacro
         this.resolvedPath = resolvedPath?.replace("//", "/") // See below
     }
