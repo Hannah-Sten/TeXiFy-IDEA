@@ -176,7 +176,7 @@ https://www.jetbrains.com/toolbox/app/[Jetbrains toolbox] instead, so
 you can manage projects and editors easily (Jetbrains has editors for
 more programming languages as well).
 * Download and install https://miktex.org/howto/install-miktex-mac[LaTeX
-for Mac]. During installation, choose the option
+for Mac]. It's less error-prone if you install MiKTeX `system-wide`. During installation, choose the option
 `Install missing packages on the fly: yes`.
 * Open IntelliJ, in the welcome menu choose menu:Configure[Plugins] (or when
 you already have a project open, use menu:File[Settings > Plugins]).
