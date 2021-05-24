@@ -244,8 +244,10 @@ there exist other tools as well.
 
 Note that you can work with git and LaTeX even if you cannot use IntelliJ, for example because you are at
 school. For those cases, you can use Overleaf, which is a minimalistic but web-based editor, but in that case you have to host your LaTeX at the Overleaf site instead of GitHub.
+
 * If you are on the IntelliJ welcome screen and want to clone a project with git, IntelliJ will suggest to install git automatically. Otherwise, go to https://git-scm.com/downloads[git], during installation just
 click `next` everywhere.
+
 * Restart your computer.
 * Make sure you have a GitHub account, and create a new repository.
 * Go to IntelliJ and click menu:File[New > Project from VCS > GitHub] and select the repository you created.
@@ -266,8 +268,8 @@ just click `no` when you do not recognize the file, and `yes` when you recognise
 
 === I want to know more about git
 
-* That’s great! Because git and similar tools are used everywhere by
-programmers to collaborate, it’s not just for LaTeX and doesn’t work
+* That’s great! Actually, git and similar tools are used everywhere by
+programmers to collaborate; it’s not just for LaTeX and doesn’t work
 just with GitHub.
 * If you want to know more, a great git tutorial is at
 http://learngitbranching.js.org/[learngitbranching.js.org].
