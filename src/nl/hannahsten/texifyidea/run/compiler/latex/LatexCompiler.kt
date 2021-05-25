@@ -126,7 +126,7 @@ abstract class SupportedLatexCompiler(
         val dockerOutputDir = "/miktex/out"
         val dockerAuxilDir = "/miktex/auxil"
         val outputPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.outputPath.getOrCreateOutputPath()?.path?.toPath(runConfig)
+            runConfig.options.outputPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), project)?.path?.toPath(runConfig)
         }
         else {
             dockerOutputDir
@@ -188,8 +188,9 @@ abstract class SupportedLatexCompiler(
 
         // Avoid mounting the mainfile parent also to /miktex/work/out,
         // because there may be a good reason to make the output directory the same as the source directory
-        if (runConfig.outputPath.getOrCreateOutputPath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.outputPath.getOrCreateOutputPath()?.path}:$dockerOutputDir"))
+        if (!runConfig.options.outputPath.isMainFileParent(runConfig.options.mainFile.resolve(), runConfig.project)) {
+            val outputPath = runConfig.options.outputPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), runConfig.project)
+            parameterList.addAll(listOf("-v", "${outputPath?.path}:$dockerOutputDir"))
         }
 
         if (runConfig.auxilPath.getOrCreateOutputPath() != mainFile.parent) {

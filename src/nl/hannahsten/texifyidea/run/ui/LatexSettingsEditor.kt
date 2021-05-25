@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.execution.ui.*
 import com.intellij.ide.DataManager
+import com.intellij.ide.macro.MacroManager
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
@@ -63,10 +64,19 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 7, project))
 
         // Output path
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "output", { s -> s.outputPath.pathString }, { s, text -> s.setFileOutputPath(text); s.outputPath.context = DataManager.getInstance().getDataContext(this.component) }, { s -> s?.outputPath?.isDefault() }, mySettings))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(
+            latexGroupName,
+            8,
+            project,
+            "output",
+            { s -> s.options.outputPath.pathWithMacro ?: s.options.outputPath.getDefault("out") },
+            { s, text -> s.options.outputPath.resolveAndSetPath(text, this.component) },
+            { s -> s?.options?.outputPath?.isDefault() },
+            mySettings
+        ))
 
         // Path for auxiliary output files
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "auxiliary", { s -> s.auxilPath.pathString }, { s, text -> s.setFileAuxilPath(text); s.outputPath.context = DataManager.getInstance().getDataContext(this.component) }, { s -> s?.auxilPath?.isDefault() == true }, mySettings))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "auxiliary", { s -> s.auxilPath.pathString }, { s, text -> s.setFileAuxilPath(text); }, { s -> s?.auxilPath?.isDefault() == true }, mySettings))
 
         // Output format
         fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, mySettings))

@@ -93,10 +93,6 @@ class LatexRunConfiguration constructor(
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
 
-    /** Path to the directory containing the output files. */
-    @Deprecated("", ReplaceWith("options.outputPath"))
-    var outputPath = LatexOutputPath("out", getMainFileContentRoot(), options.mainFile.resolve(), project)
-
     /** Path to the directory containing the auxiliary files. */
     var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), options.mainFile.resolve(), project)
 
@@ -382,12 +378,12 @@ class LatexRunConfiguration constructor(
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return if (options.latexDistribution.isMiktex()) {
-            auxilPath.getOrCreateOutputPath()
-        }
-        else {
-            outputPath.getOrCreateOutputPath()
-        }
+//        if (options.latexDistribution.isMiktex()) {
+            return auxilPath.getOrCreateOutputPath()
+//        }
+//        else {
+//            return outputPath.getOrCreateOutputPath()
+//        }
     }
 
     fun setSuggestedName() {
@@ -407,7 +403,7 @@ class LatexRunConfiguration constructor(
     override fun getOutputFilePath() = options.outputPath.getOutputFilePath(options, project)
 
     /**
-     * Set output path (should be a directory)
+     * Set output path (should be a directory). Should NOT contain macros (use [LatexRunConfigurationDirectoryOption.resolveAndSetPath] for that).
      */
     override fun setFileOutputPath(fileOutputPath: String) {
         options.outputPath.setPath(fileOutputPath)
@@ -462,13 +458,14 @@ class LatexRunConfiguration constructor(
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
-    override fun clone(): RunConfiguration {
-        return super.clone().also {
-            val runConfiguration = it as? LatexRunConfiguration ?: return@also
-            runConfiguration.outputPath = this.outputPath.clone()
-            runConfiguration.auxilPath = this.auxilPath.clone()
-        }
-    }
+    // todo check if still needed, I don't think so
+//    override fun clone(): RunConfiguration {
+//        return super.clone().also {
+//            val runConfiguration = it as? LatexRunConfiguration ?: return@also
+//            runConfiguration.outputPath = this.outputPath.clone()
+//            runConfiguration.auxilPath = this.auxilPath.clone()
+//        }
+//    }
 
     override fun getProgramParameters() = options.compilerArguments
 

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.ExecutionException
+import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -20,6 +21,13 @@ import java.nio.file.Path
  * Output or auxiliary path of the run configuration.
  */
 class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOption() {
+
+    /**
+     * Get default output path based on variant (out or auxil), includes macro.
+     */
+    fun getDefault(variant: String): String {
+        return "\$${ProjectFileDirMacro().name}\$/$variant"
+    }
 
     /**
      * Get path to output file (e.g. pdf)
