@@ -40,7 +40,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         }
 
         // Change the main file as given by the template run configuration to the current file
-        runConfiguration.setMainFile(mainFile.path)
+        runConfiguration.options.mainFile.setPath(mainFile.path)
         runConfiguration.psiFile = container
         runConfiguration.setSuggestedName()
         // Avoid changing the outputPath of the template run config (which is a shallow clone)
@@ -54,8 +54,8 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             command.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
         }
         else command
-        runConfiguration.compiler = SupportedLatexCompiler.byExecutableName(compiler) ?: PdflatexCompiler
-        runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
+        runConfiguration.options.compiler = SupportedLatexCompiler.byExecutableName(compiler) ?: PdflatexCompiler
+        runConfiguration.options.compilerArguments = command.removePrefix(compiler).trim()
         return true
     }
 
@@ -63,7 +63,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration: LatexRunConfiguration,
         context: ConfigurationContext
     ): Boolean {
-        val mainFile = runConfiguration.mainFile
+        val mainFile = runConfiguration.options.mainFile.resolve()
         val psiFile = context.dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
         val currentFile = psiFile.virtualFile ?: return false
         return mainFile?.path == currentFile.path

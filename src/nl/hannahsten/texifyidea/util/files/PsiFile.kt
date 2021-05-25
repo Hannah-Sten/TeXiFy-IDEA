@@ -237,10 +237,11 @@ fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
 
 /**
  * Get all bibtex run configurations that are probably used to compile this file.
+ * todo bibtex steps
  */
 fun PsiFile.getBibtexRunConfigurations() = project
     .getLatexRunConfigurations()
-    .filter { it.mainFile == findRootFile().virtualFile }
-    .flatMap { it.bibRunConfigs }
-    .map { it.configuration }
-    .filterIsInstance<BibtexRunConfiguration>()
+//    .filter { it.mainFile == findRootFile().virtualFile }
+//    .flatMap { it.bibRunConfigs }
+//    .map { it.configuration }
+//    .filterIsInstance<BibtexRunConfiguration>()

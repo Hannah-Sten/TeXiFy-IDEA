@@ -37,7 +37,7 @@ class SumatraForwardSearchListener(
 
         // Forward search.
         invokeLater {
-            val psiFile = runConfig.mainFile?.psiFile(runConfig.project) ?: return@invokeLater
+            val psiFile = runConfig.options.mainFile.resolve()?.psiFile(runConfig.project) ?: return@invokeLater
             val document = psiFile.document() ?: return@invokeLater
 
             val editor = psiFile.openedEditor() ?: return@invokeLater
@@ -73,9 +73,6 @@ class SumatraForwardSearchListener(
                 }
             }
         }
-
-        // Reset to default
-        runConfig.allowFocusChange = true
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {

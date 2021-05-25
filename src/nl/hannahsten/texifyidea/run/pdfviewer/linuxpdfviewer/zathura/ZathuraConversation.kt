@@ -44,7 +44,7 @@ object ZathuraConversation : ViewerConversation() {
         // First check if the file in the editor (sourceFilePath) is in the file set of the main file of the latest run run configuration.
         // If so, guess the main file (pdf) of that run config as the pdf.
         val runConfig = project.selectedRunConfig() ?: return null
-        return if (runConfig.mainFile?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
+        return if (runConfig.options.mainFile.resolve()?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
             // outputFilePath contains the file name and pdf extension (already). We don't have to add it.
             runConfig.outputFilePath
         }
@@ -63,5 +63,5 @@ object ZathuraConversation : ViewerConversation() {
         (RunManagerImpl.getInstanceImpl(project) as RunManager)
             .allConfigurationsList
             .filterIsInstance<LatexRunConfiguration>()
-            .firstOrNull { it.mainFile == virtualFile }
+            .firstOrNull { it.options.mainFile.resolve() == virtualFile }
 }

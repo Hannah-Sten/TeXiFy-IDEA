@@ -32,13 +32,13 @@ class RunMakeindexListener(
         try {
 
             // Only create new one if there is none yet
-            val runConfigSettingsList =
-                if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
-                    generateIndexConfigs()
-                }
-                else {
-                    latexRunConfig.makeindexRunConfigs
-                }
+            val runConfigSettingsList = emptyList<RunnerAndConfigurationSettings>()
+//                if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
+//                    generateIndexConfigs()
+//                }
+//                else {
+//                    latexRunConfig.makeindexRunConfigs
+//                }
 
             // Run all run configurations
             for (runConfigSettings in runConfigSettingsList) {
@@ -64,8 +64,8 @@ class RunMakeindexListener(
             scheduleLatexRuns()
         }
         finally {
-            latexRunConfig.isLastRunConfig = false
-            latexRunConfig.isFirstRunConfig = true
+//            latexRunConfig.isLastRunConfig = false
+//            latexRunConfig.isFirstRunConfig = true
         }
     }
 
@@ -75,35 +75,39 @@ class RunMakeindexListener(
     private fun copyBib2glsOutput(makeindexRunConfig: MakeindexRunConfiguration, baseFileName: String) {
         if (makeindexRunConfig.makeindexProgram == MakeindexProgram.BIB2GLS) {
             try {
-                val mainFile = latexRunConfig.mainFile
+                val mainFile = latexRunConfig.options.mainFile.resolve()
                 val auxilDir = latexRunConfig.getAuxilDirectory()
                 if (mainFile != null && auxilDir != null && mainFile.path != auxilDir.path) {
                     for (extension in setOf("glstex", "glg")) {
-                        FileUtil.rename(File(mainFile.parent.path + '/' + baseFileName.appendExtension(extension)), File(auxilDir.path + '/' + baseFileName.appendExtension(extension)))
+                        FileUtil.rename(
+                            File(mainFile.parent.path + '/' + baseFileName.appendExtension(extension)),
+                            File(auxilDir.path + '/' + baseFileName.appendExtension(extension))
+                        )
                     }
                 }
             }
-            catch (ignored: IOException) {}
+            catch (ignored: IOException) {
+            }
         }
     }
 
     private fun scheduleLatexRuns() {
-        // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
-        if (latexRunConfig.bibRunConfigs.isEmpty()) {
-            // LaTeX twice
-            latexRunConfig.isFirstRunConfig = false
-            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
-                ?: return
-            latexRunConfig.isLastRunConfig = false
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-            latexRunConfig.isLastRunConfig = true
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-        }
+//        // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
+//        if (latexRunConfig.bibRunConfigs.isEmpty()) {
+////             LaTeX twice
+//            latexRunConfig.isFirstRunConfig = false
+//            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
+//                ?: return
+//            latexRunConfig.isLastRunConfig = false
+//            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+//            latexRunConfig.isLastRunConfig = true
+//            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+//        }
     }
 
     private fun generateIndexConfigs(): Set<RunnerAndConfigurationSettings> {
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
-        val indexPrograms = getDefaultMakeindexPrograms(latexRunConfig.mainFile, environment.project)
+        val indexPrograms = getDefaultMakeindexPrograms(latexRunConfig.options.mainFile.resolve(), environment.project)
 
         val runConfigs = mutableSetOf<RunnerAndConfigurationSettings>()
 
@@ -115,18 +119,19 @@ class RunMakeindexListener(
 
             val runConfig = makeindexRunConfigSettings.configuration as MakeindexRunConfiguration
 
-            runConfig.mainFile = latexRunConfig.mainFile
+            runConfig.mainFile = latexRunConfig.options.mainFile.resolve()
             runConfig.makeindexProgram = indexProgram
             runConfig.setSuggestedName()
 
             // bib2gls we handle separately, because it needs the bib file, so instead of running it in the auxil dir we run it next to the main file
-            runConfig.workingDirectory = if (runConfig.makeindexProgram != MakeindexProgram.BIB2GLS) latexRunConfig.getAuxilDirectory() else runConfig.mainFile?.parent
+            runConfig.workingDirectory =
+                if (runConfig.makeindexProgram != MakeindexProgram.BIB2GLS) latexRunConfig.getAuxilDirectory() else runConfig.mainFile?.parent
 
             runManager.addConfiguration(makeindexRunConfigSettings)
             runConfigs.add(makeindexRunConfigSettings)
         }
 
-        latexRunConfig.makeindexRunConfigs = runConfigs
+//        latexRunConfig.makeindexRunConfigs = runConfigs
         return runConfigs
     }
 
@@ -139,7 +144,7 @@ class RunMakeindexListener(
      */
     private fun copyIndexOutputFiles(baseFileName: String, indexFileExtensions: Set<String>) {
 
-        val mainFile = latexRunConfig.mainFile ?: return
+        val mainFile = latexRunConfig.options.mainFile.resolve() ?: return
         val auxilDir = latexRunConfig.getAuxilDirectory() ?: return
         val sourceDir = auxilDir.path + '/'
         val destinationDir = File(mainFile.path).parent + '/'

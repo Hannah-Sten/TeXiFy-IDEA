@@ -29,9 +29,9 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
         command.add("-interaction=nonstopmode")
         command.add("-synctex=1")
 
-        if (runConfig.outputFormat == OutputFormat.XDV) {
-            command.add("-no-pdf")
-        }
+            if (runConfig.options.outputFormat == OutputFormat.XDV) {
+                command.add("-no-pdf")
+            }
 
         command.add("-output-directory=$outputPath")
 

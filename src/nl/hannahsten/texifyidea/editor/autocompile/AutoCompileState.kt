@@ -77,7 +77,8 @@ object AutoCompileState {
         }
 
         // Changing focus would interrupt the user during typing
-        (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
+        // todo avoid changing focus
+//        (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
 
         ExecutionManager.getInstance(project!!).restartRunProfile(
             project!!,

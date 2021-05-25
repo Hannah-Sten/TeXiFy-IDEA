@@ -25,7 +25,7 @@ object LualatexCompiler : SupportedLatexCompiler("LuaLaTeX", "lualatex") {
         command.add("-file-line-error")
         command.add("-interaction=nonstopmode")
         command.add("-synctex=1")
-        command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+        command.add("-output-format=${runConfig.options.outputFormat.name.toLowerCase()}")
 
         command.add("-output-directory=$outputPath")
 

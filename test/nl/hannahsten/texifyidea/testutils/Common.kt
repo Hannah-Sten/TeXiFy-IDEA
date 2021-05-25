@@ -33,11 +33,11 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     if (enabled) {
         mockkStatic(LatexRunConfiguration::class)
         // Unicode is always supported in lualatex.
-        every { project.selectedRunConfig()?.compiler } returns LualatexCompiler
+        every { project.selectedRunConfig()?.let { it.options.compiler } } returns LualatexCompiler
     }
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
-        every { project.selectedRunConfig()?.compiler } returns PdflatexCompiler
+        every { project.selectedRunConfig()?.let { it.options.compiler } } returns PdflatexCompiler
         mockkObject(TexliveSdk)
         every { TexliveSdk.version } returns 2017
     }

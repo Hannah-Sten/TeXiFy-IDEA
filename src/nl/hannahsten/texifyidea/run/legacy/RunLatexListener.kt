@@ -25,9 +25,9 @@ class RunLatexListener(
 
         val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(runConfig)
             ?: return
-        runConfig.isLastRunConfig = true
+//        runConfig.isLastRunConfig = true
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-        runConfig.isLastRunConfig = false
+//        runConfig.isLastRunConfig = false
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {

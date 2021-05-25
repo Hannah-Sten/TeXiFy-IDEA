@@ -73,7 +73,7 @@ fun PsiFile.isRoot(): Boolean {
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
-    val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.mainFile == this.virtualFile }
+    val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.options.mainFile.resolve() == this.virtualFile }
 
     return isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles()
 }

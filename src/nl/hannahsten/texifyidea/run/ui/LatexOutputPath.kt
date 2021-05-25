@@ -1,23 +1,17 @@
 package nl.hannahsten.texifyidea.run.ui
 
-import com.intellij.execution.ExecutionException
 import com.intellij.ide.macro.MacroManager
 import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.io.File
 import java.nio.file.Path
 
@@ -60,7 +54,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     /**
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
      */
-    fun getAndCreatePath(): VirtualFile? {
+    fun getOrCreateOutputPath(): VirtualFile? {
         // No auxil directory should be present/created when there's no MiKTeX around, assuming that TeX Live does not support this
         if (!LatexSdkUtil.isMiktexAvailable && variant == "auxil") {
             return null
@@ -72,7 +66,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         }
     }
 
-    private fun getPath(context: DataContext): VirtualFile? {
+    private fun getPath(context: DataContext?): VirtualFile? {
         // When we previously made the mistake of calling findRelativePath with an empty string, the output path will be set to thee /bin folder of IntelliJ. Fix that here, to be sure
         if (virtualFile?.path?.endsWith("/bin") == true) {
             virtualFile = null
@@ -91,11 +85,11 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
                 // Try to create the path
                 createOutputPath(pathString)?.let { return it }
             }
-            // Path is invalid (perhaps the user provided an invalid path)
-            Notification("LaTeX", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
 
+            // Path is invalid (perhaps the user provided an invalid path)
             // Create and return default path
             if (contentRoot != null) {
+                Notification("LaTeX", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
                 val defaultPathString = contentRoot!!.path + "/" + variant
                 createOutputPath(defaultPathString)?.let { return it }
             }
@@ -143,25 +137,5 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         return null
     }
 
-    /**
-     * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems
-     */
-    @Throws(ExecutionException::class)
-    fun updateOutputSubDirs() {
-        val includeRoot = mainFile?.parent
-        val outPath = virtualFile?.path ?: return
 
-        val files: Set<PsiFile>
-        try {
-            files = mainFile?.psiFile(project)?.referencedFileSet() ?: emptySet()
-        }
-        catch (e: IndexNotReadyException) {
-            throw ExecutionException("Please wait until the indices are built.", e)
-        }
-
-        // Create output paths (see issue #70 on GitHub)
-        files.asSequence()
-            .mapNotNull { FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.virtualFile.parent.path) }
-            .forEach { File(outPath + it).mkdirs() }
-    }
 }

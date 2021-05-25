@@ -51,8 +51,5 @@ class OpenViewerListener(
             catch (ignored: TeXception) {
             }
         }
-
-        // Reset to default
-        runConfig.allowFocusChange = true
     }
 }
