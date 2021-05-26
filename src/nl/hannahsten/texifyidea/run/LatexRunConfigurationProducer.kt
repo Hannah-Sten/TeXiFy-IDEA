@@ -43,7 +43,6 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.options.mainFile.setPath(mainFile.path)
         runConfiguration.psiFile = container
         runConfiguration.setSuggestedName()
-        runConfiguration.auxilPath = runConfiguration.auxilPath.clone()
 
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
         val runProgram = container.allParentMagicComments().value(DefaultMagicKeys.PROGRAM)

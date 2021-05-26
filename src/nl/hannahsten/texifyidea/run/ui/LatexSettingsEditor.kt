@@ -76,7 +76,16 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         ))
 
         // Path for auxiliary output files
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "auxiliary", { s -> s.auxilPath.pathString }, { s, text -> s.setFileAuxilPath(text); }, { s -> s?.auxilPath?.isDefault() == true }, mySettings))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(
+            latexGroupName,
+            8,
+            project,
+            "auxiliary",
+            { s -> s.options.auxilPath.pathWithMacro ?: s.options.outputPath.getDefault("auxil") },
+            { s, text -> s.options.auxilPath.resolveAndSetPath(text, this.component); },
+            { s -> s?.options?.auxilPath?.isDefault() == true },
+            mySettings
+        ))
 
         // Output format
         fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, mySettings))

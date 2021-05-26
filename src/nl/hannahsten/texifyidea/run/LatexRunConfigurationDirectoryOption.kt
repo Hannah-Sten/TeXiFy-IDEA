@@ -1,23 +1,10 @@
 package nl.hannahsten.texifyidea.run
 
-import com.intellij.execution.ExecutionException
 import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacroManager
-import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.project.IndexNotReadyException
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
-import com.intellij.util.io.isDirectory
-import nl.hannahsten.texifyidea.util.files.FileUtil
-import nl.hannahsten.texifyidea.util.files.createExcludedDir
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.awt.Component
-import java.io.File
-import java.nio.file.Path
 
 /**
  * Option for the LaTeX run configuration which is directory-based and thus also macro-based.

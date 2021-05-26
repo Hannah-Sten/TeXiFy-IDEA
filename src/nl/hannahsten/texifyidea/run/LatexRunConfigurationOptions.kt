@@ -65,6 +65,9 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
     @get:OptionTag("outputPath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
     var outputPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault() }
+
+    @get:OptionTag("auxilPath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
+    var auxilPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault() }
 }
 
 

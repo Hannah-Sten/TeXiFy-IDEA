@@ -133,7 +133,7 @@ abstract class SupportedLatexCompiler(
         }
 
         val auxilPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.auxilPath.getOrCreateOutputPath()?.path?.toPath(runConfig)
+            runConfig.options.auxilPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), project)?.path?.toPath(runConfig)
         }
         else {
             dockerAuxilDir
@@ -193,8 +193,9 @@ abstract class SupportedLatexCompiler(
             parameterList.addAll(listOf("-v", "${outputPath?.path}:$dockerOutputDir"))
         }
 
-        if (runConfig.auxilPath.getOrCreateOutputPath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getOrCreateOutputPath()}:$dockerAuxilDir"))
+        val auxilPath = runConfig.options.auxilPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), runConfig.project)
+        if (auxilPath != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${auxilPath?.path}:$dockerAuxilDir"))
         }
 
         parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")

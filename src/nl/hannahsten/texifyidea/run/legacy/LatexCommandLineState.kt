@@ -147,7 +147,8 @@
 //
 //            // Some packages do handle makeindex themselves
 //            // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
-//            if (includedPackages.contains(LatexPackage.IMAKEIDX) && !runConfig.usesAuxilOrOutDirectory()) {
+//            val usesAuxilOrOutDir = !options.outputPath.isMainFileParent(mainFile, project) || !options.auxilPath.isMainFileParent(mainFile, project)
+//            if (includedPackages.contains(LatexPackage.IMAKEIDX) && !usesAuxilOrOutDir {
 //                isMakeindexNeeded = false
 //            }
 //        }

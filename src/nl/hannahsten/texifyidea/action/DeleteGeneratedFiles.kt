@@ -21,7 +21,7 @@ class DeleteGeneratedFiles : AnAction() {
 
         // Custom output folders
         val customOutput = project.getLatexRunConfigurations()
-            .flatMap { listOf(it.options.outputPath.getOrCreateOutputPath(it.options.mainFile.resolve(), project), it.auxilPath.getOrCreateOutputPath()) }
+            .flatMap { listOf(it.options.outputPath.getOrCreateOutputPath(it.options.mainFile.resolve(), project), it.options.auxilPath.getOrCreateOutputPath(it.options.mainFile.resolve(), project)) }
             // There's no reason to delete files outside the project
             .filter { it?.path?.contains(project.basePath!!) == true }
 

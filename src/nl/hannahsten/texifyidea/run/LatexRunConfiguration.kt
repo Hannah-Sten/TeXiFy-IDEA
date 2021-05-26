@@ -70,17 +70,8 @@ class LatexRunConfiguration constructor(
         private const val SUMATRA_PATH = "sumatra-path"
         private const val PDF_VIEWER = "pdf-viewer"
         private const val VIEWER_COMMAND = "viewer-command"
-        private const val MAIN_FILE = "main-file"
-        private const val OUTPUT_PATH = "output-path"
-        private const val AUXIL_PATH = "auxil-path"
-        private const val BIB_RUN_CONFIG = "bib-run-config"
-        private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
         private const val COMPILE_STEP = "compile-step"
         private const val COMPILE_STEP_NAME_ATTR = "name"
-
-        // For backwards compatibility
-        private const val AUX_DIR = "aux-dir"
-        private const val OUT_DIR = "out-dir"
     }
 
     var compilerPath: String? = null // todo replaced by custom compiler?
@@ -92,9 +83,6 @@ class LatexRunConfiguration constructor(
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
-
-    /** Path to the directory containing the auxiliary files. */
-    var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), options.mainFile.resolve(), project)
 
     // In order to propagate information about which files need to be cleaned up at the end between one step
     // (for example makeindex) and the last step, we save this information temporarily here while the run configuration is running. todo check this
@@ -182,25 +170,18 @@ class LatexRunConfiguration constructor(
         // Read environment variables
         options.environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
-        // Read auxil path
-        val auxilPathString = parent.getChildText(AUXIL_PATH)
-        if (auxilPathString != null) {
-            this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), options.mainFile.resolve(), project)
-            this.auxilPath.pathString = auxilPathString
-        }
-
         // Read bibliography run configurations, which is a list of ids
-        val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
+//        val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
         // Assume the list is of the form [id 1,id 2]
         // todo create bibsteps
 //        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
 
         // Read makeindex run configurations
-        val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
-        if (makeindexRunConfigElt != null) {
+//        val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
+//        if (makeindexRunConfigElt != null) {
             // todo create makeindex steps
 //            this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
-        }
+//        }
 
         // Read compile steps
         // This should be the last option that is read, as it may depend on other options.
@@ -238,7 +219,6 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         this.options.environmentVariables.writeExternal(parent)
-        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
 
         for (step in compileSteps) {
             val stepElement = Element(COMPILE_STEP)
@@ -371,19 +351,17 @@ class LatexRunConfiguration constructor(
     }
 
     /**
-     * todo relocate to auxilPath
-     *
      * Find the directory where auxiliary files will be placed, depending on the run config settings.
      *
-     * @return The auxil folder when MiKTeX used, or else the out folder when used.
+     * @return The auxil folder when MiKTeX used, or else the out folder.
      */
     fun getAuxilDirectory(): VirtualFile? {
-//        if (options.latexDistribution.isMiktex()) {
-            return auxilPath.getOrCreateOutputPath()
-//        }
-//        else {
-//            return outputPath.getOrCreateOutputPath()
-//        }
+        return if (options.latexDistribution.isMiktex()) {
+            options.auxilPath.getOrCreateOutputPath(options.mainFile.resolve(), project)
+        }
+        else {
+            options.outputPath.getOrCreateOutputPath(options.mainFile.resolve(), project)
+        }
     }
 
     fun setSuggestedName() {
@@ -417,26 +395,6 @@ class LatexRunConfiguration constructor(
         return runReadAction {
             return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(options.mainFile.resolve()!!)
         }
-    }
-
-    /**
-     * Set [auxilPath]
-     */
-    fun setFileAuxilPath(fileAuxilPath: String) {
-        if (fileAuxilPath.isBlank()) return
-        this.auxilPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
-        // Update backing string (will be used as path in the UI, to enable macro support)
-        this.auxilPath.pathString = fileAuxilPath
-    }
-
-    /**
-     * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
-     */
-    fun usesAuxilOrOutDirectory(): Boolean {
-        val usesAuxilDir = auxilPath.getOrCreateOutputPath() != options.mainFile.resolve()?.parent
-
-        val mainFile = options.mainFile.resolve()
-        return usesAuxilDir || options.outputPath.isMainFileParent(mainFile, project)
     }
 
     override fun suggestedName(): String? {
