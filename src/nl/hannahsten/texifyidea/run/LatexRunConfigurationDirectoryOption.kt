@@ -25,7 +25,7 @@ open class LatexRunConfigurationDirectoryOption {
         return LocalFileSystem.getInstance().findFileByPath(resolvedPath ?: return null)
     }
 
-    fun isDefault() = pathWithMacro == null && resolvedPath == null
+    open fun isDefault() = pathWithMacro == null && resolvedPath == null
 
     /**
      * @param pathWithMacro String which may contain a Macro.

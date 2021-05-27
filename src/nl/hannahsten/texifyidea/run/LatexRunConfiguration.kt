@@ -17,7 +17,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.util.PathUtil
@@ -36,14 +35,12 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.step.CompileStep
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
-import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
 import nl.hannahsten.texifyidea.run.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
@@ -431,11 +428,10 @@ class LatexRunConfiguration constructor(
         options.compilerArguments = value
     }
 
-    override fun getWorkingDirectory(): String? = options.workingDirectory ?: PathUtil.toSystemDependentName(project.basePath)
+    override fun getWorkingDirectory(): String? = options.workingDirectory.resolvedPath ?: PathUtil.toSystemDependentName(project.basePath)
 
-    override fun setWorkingDirectory(value: String?) {
-        val normalized = PathUtil.toSystemIndependentName(value?.ifBlank { null }?.trim())
-        options.workingDirectory = if (normalized != project.basePath) normalized else null
+    override fun setWorkingDirectory(resolvedPath: String?) {
+        options.workingDirectory.setPath(resolvedPath)
     }
 
     fun hasDefaultWorkingDirectory(): Boolean {

@@ -29,6 +29,14 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
         return "\$${ProjectFileDirMacro().name}\$/$variant"
     }
 
+    override fun isDefault(): Boolean {
+        throw NotImplementedError("Use isDefault(variant: String) for now")
+    }
+
+    fun isDefault(variant: String): Boolean {
+        return pathWithMacro == getDefault(variant)
+    }
+
     /**
      * Get path to output file (e.g. pdf)
      */
@@ -41,7 +49,7 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
     }
 
     /**
-     * Tries to resolve the [resolvedPath], and if it doesn't exist, tries to create it (if it's a directory).
+     * Tries to resolve the [resolvedPath], and if it doesn't exist, tries to create it.
      */
     fun getOrCreateOutputPath(mainFile: VirtualFile?, project: Project): VirtualFile? {
         val outPath = resolvedPath ?: return null
@@ -49,7 +57,7 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
         if (resolved != null) return resolved
 
         // Can be improved by assuming a relative path to the project, using given context
-        if (outPath.isBlank() || !Path.of(outPath).isAbsolute || !Path.of(outPath).isDirectory() || mainFile == null) return null
+        if (outPath.isBlank() || !Path.of(outPath).isAbsolute || mainFile == null) return null
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
@@ -88,5 +96,20 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
         files.asSequence()
             .mapNotNull { FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.virtualFile.parent.path) }
             .forEach { File(outPath + it).mkdirs() }
+    }
+
+    class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationOutputPathOption>() {
+        override fun toString(value: LatexRunConfigurationOutputPathOption): String {
+            // Assumes that resolvedPath does not contain //
+            return "${value.resolvedPath}//${value.pathWithMacro}"
+        }
+
+        override fun fromString(value: String): LatexRunConfigurationOutputPathOption {
+            val splitted = value.split("//", limit = 2)
+            return LatexRunConfigurationOutputPathOption().apply {
+                setPath(resolvedPath = splitted.getOrNull(0), pathWithMacro = splitted.getOrNull(1))
+            }
+        }
+
     }
 }

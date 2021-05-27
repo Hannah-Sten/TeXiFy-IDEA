@@ -25,9 +25,6 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     @get:OptionTag("compilerArguments")
     var compilerArguments by string() // todo transformed(string()) { it.trim() }
 
-    @get:OptionTag("workingDirectory")
-    var workingDirectory by string()
-
     @Property(description = "Environment variables")
     @get:XMap(propertyElementName = "envs", entryTagName = "env", keyAttributeName = "name")
     var env by linkedMap<String, String>()
@@ -63,11 +60,14 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     @get:OptionTag("mainFile", converter = LatexRunConfigurationDirectoryOption.Converter::class)
     var mainFile by property(LatexRunConfigurationDirectoryOption()) { it.isDefault() }
 
-    @get:OptionTag("outputPath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
-    var outputPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault() }
+    @get:OptionTag("workingDirectory", converter = LatexRunConfigurationDirectoryOption.Converter::class)
+    var workingDirectory by property(LatexRunConfigurationDirectoryOption()) { it.isDefault() }
 
-    @get:OptionTag("auxilPath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
-    var auxilPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault() }
+    @get:OptionTag("outputPath", converter = LatexRunConfigurationOutputPathOption.Converter::class)
+    var outputPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("out") }
+
+    @get:OptionTag("auxilPath", converter = LatexRunConfigurationOutputPathOption.Converter::class)
+    var auxilPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("auxil") }
 }
 
 

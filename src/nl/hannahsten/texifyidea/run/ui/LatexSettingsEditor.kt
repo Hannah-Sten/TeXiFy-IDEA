@@ -71,7 +71,7 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
             "output",
             { s -> s.options.outputPath.pathWithMacro ?: s.options.outputPath.getDefault("out") },
             { s, text -> s.options.outputPath.resolveAndSetPath(text, this.component) },
-            { s -> s?.options?.outputPath?.isDefault() },
+            { s -> s?.options?.outputPath?.isDefault("out") },
             mySettings
         ))
 
@@ -83,7 +83,7 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
             "auxiliary",
             { s -> s.options.auxilPath.pathWithMacro ?: s.options.outputPath.getDefault("auxil") },
             { s, text -> s.options.auxilPath.resolveAndSetPath(text, this.component); },
-            { s -> s?.options?.auxilPath?.isDefault() == true },
+            { s -> s?.options?.auxilPath?.isDefault("auxil") },
             mySettings
         ))
 
