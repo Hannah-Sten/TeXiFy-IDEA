@@ -25,10 +25,12 @@ data class TexifyConventionsScheme(
         LabelConvention(true, LabelConventionType.ENVIRONMENT, VERBATIM_CAPITAL.env, "verb"),
     )
 ) : com.intellij.openapi.options.Scheme {
+
     val isProjectScheme: Boolean
         get() = name == PROJECT_SCHEME_NAME
 
     companion object {
+
         const val DEFAULT_SCHEME_NAME = "Default"
         const val PROJECT_SCHEME_NAME = "Project"
     }
@@ -40,5 +42,4 @@ data class TexifyConventionsScheme(
      * Same as [myName].
      */
     override fun getName() = myName
-
 }

@@ -93,7 +93,6 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
                             return this
                         }
-
                     }
                 }
             }

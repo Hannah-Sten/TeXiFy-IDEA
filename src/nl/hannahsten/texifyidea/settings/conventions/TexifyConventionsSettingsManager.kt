@@ -9,6 +9,7 @@ data class TexifyConventionsSettings(
     ),
     private var globalState: TexifyConventionsGlobalState = TexifyConventionsGlobalState()
 ) {
+
     fun copyToDefaultScheme(scheme: TexifyConventionsScheme) {
         globalState.schemes =
             globalState.schemes.map { if (it.name == TexifyConventionsScheme.DEFAULT_SCHEME_NAME) scheme.deepCopy() else it }
@@ -47,7 +48,6 @@ data class TexifyConventionsSettings(
 
     val schemes: List<TexifyConventionsScheme>
         get() = listOfNotNull(*globalState.schemes.toTypedArray(), projectState.scheme)
-
 }
 
 class TexifyConventionsSettingsManager(
@@ -64,6 +64,7 @@ class TexifyConventionsSettingsManager(
     }
 
     companion object {
+
         fun getInstance(project: Project) =
             TexifyConventionsSettingsManager(
                 project.getService(TexifyConventionsProjectSettingsManager::class.java),

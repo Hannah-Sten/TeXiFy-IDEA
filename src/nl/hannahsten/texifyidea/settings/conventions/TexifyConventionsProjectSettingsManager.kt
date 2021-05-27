@@ -12,6 +12,7 @@ data class TexifyConventionsProjectState(
     ),
     var useProjectScheme: Boolean = false
 ) {
+
     fun deepCopy() = copy(scheme = scheme.deepCopy())
 }
 

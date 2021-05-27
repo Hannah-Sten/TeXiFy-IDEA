@@ -8,11 +8,13 @@ data class TexifyConventionsGlobalState(
     var selectedScheme: String = TexifyConventionsScheme.DEFAULT_SCHEME_NAME,
     var schemes: List<TexifyConventionsScheme> = listOf(TexifyConventionsScheme())
 ) {
+
     fun deepCopy() = copy(schemes = schemes.map { it.copy() })
 }
 
 @State(name = "Conventions", storages = [Storage("texifySettings.xml")])
 class TexifyConventionsGlobalSettingsManager : PersistentStateComponent<TexifyConventionsGlobalState> {
+
     private var globalState: TexifyConventionsGlobalState = TexifyConventionsGlobalState()
 
     override fun getState(): TexifyConventionsGlobalState = globalState
