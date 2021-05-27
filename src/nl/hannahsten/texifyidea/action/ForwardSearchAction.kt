@@ -43,7 +43,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
             .getConfigurationsList(LatexRunConfigurationType.instance)
             .asSequence()
             .mapNotNull { it as LatexRunConfiguration }
-            .filter { it.mainFile?.psiFile(project) in fileSet }
+            .filter { it.options.mainFile.resolve()?.psiFile(project) in fileSet }
 
         return mainFileCandidates.firstOrNull()?.outputFilePath
     }

@@ -52,7 +52,7 @@ abstract class CompileStep : Step {
 
         val latexOutputListener = LatexOutputListener(
             configuration.project,
-            configuration.mainFile,
+            configuration.options.mainFile.resolve(),
             mutableListOf(),
             mutableListOf(),
         )

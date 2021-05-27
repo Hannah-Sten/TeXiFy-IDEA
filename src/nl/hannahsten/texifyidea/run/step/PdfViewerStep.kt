@@ -5,11 +5,14 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.serialization.defaultReadConfiguration
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.LatexRunConfigurationDirectoryOption
+import nl.hannahsten.texifyidea.run.LatexRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
@@ -26,21 +29,34 @@ class PdfViewerStep(
     override val provider: StepProvider, override val configuration: LatexRunConfiguration
 ) : Step, PersistentStateComponent<PdfViewerStep.State> {
 
-    class State : BaseState() {
+    inner class State : BaseState() {
 
-        @get:Attribute("pdf-viewer", converter = PdfViewer.Converter::class)
-        var pdfViewer by property(availablePdfViewers().firstOrNull()) { it == availablePdfViewers().firstOrNull() }
+        @get:Attribute("pdfViewer", converter = PdfViewer.Converter::class)
+        var pdfViewer by property(defaultPdfViewer) { it == defaultPdfViewer }
+
+        @get:Attribute("pdfFilePath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
+        var pdfFilePath by property(LatexRunConfigurationDirectoryOption()) { it.resolvedPath == defaultPdfFilePath }
     }
 
     private var state = State()
+    val defaultPdfViewer = availablePdfViewers().firstOrNull()
+    val defaultPdfFilePath = configuration.outputFilePath
+
 
     override fun configure() {
         val panel = panel {
             row("PDF viewer:") {
                 comboBox(
                     DefaultComboBoxModel(availablePdfViewers().toVector()),
-                    getter = { state.pdfViewer ?: availablePdfViewers().firstOrNull() },
+                    getter = { state.pdfViewer ?: defaultPdfViewer },
                     setter = { state.pdfViewer = it }
+                ).focused()
+            }
+
+            row("PDF file:") {
+                textFieldWithBrowseButton(
+                    getter = { state.pdfFilePath.resolvedPath ?: defaultPdfFilePath },
+                    setter = { state.pdfFilePath.setPath(it) }
                 )
             }
         }
@@ -85,7 +101,7 @@ class PdfViewerStep(
 
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.
         if (texFile != null && texFile.psiFile(project) in ReferencedFileSetCache().fileSetFor(
-                configuration.mainFile?.psiFile(
+                configuration.options.mainFile.resolve()?.psiFile(
                     project
                 )!!
             ) && currentEditor != null
@@ -94,7 +110,7 @@ class PdfViewerStep(
         }
         // If the file does not belong to the compiled file set, forward search to the first line of the main file.
         else {
-            ForwardSearchAction(pdfViewer).forwardSearch(configuration.mainFile!!, project, null)
+            ForwardSearchAction(pdfViewer).forwardSearch(configuration.options.mainFile.resolve()!!, project, null)
         }
     }
 
