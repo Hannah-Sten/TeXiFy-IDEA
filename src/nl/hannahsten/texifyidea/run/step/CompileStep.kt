@@ -13,7 +13,7 @@ interface CompileStep {
 
     val provider: CompileStepProvider
 
-    val configuration: LatexRunConfiguration
+    var configuration: LatexRunConfiguration
 
     fun configure()
 

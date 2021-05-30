@@ -30,6 +30,9 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompile
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
 import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOptions
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
@@ -79,6 +82,7 @@ class LatexRunConfiguration constructor(
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
+    // todo if this is the main file, it should be updated when main file is set?
     var psiFile: PsiFile? = null
 
     // In order to propagate information about which files need to be cleaned up at the end between one step
@@ -378,10 +382,10 @@ class LatexRunConfiguration constructor(
     override fun getOutputFilePath() = options.outputPath.getOutputFilePath(options, project)
 
     /**
-     * Set output path (should be a directory). Should NOT contain macros (use [LatexRunConfigurationDirectoryOption.resolveAndSetPath] for that).
+     * Set output path (should be a directory). Should NOT contain macros (use [LatexRunConfigurationPathOption.resolveAndGetPath] for that).
      */
     override fun setFileOutputPath(fileOutputPath: String) {
-        options.outputPath.setPath(fileOutputPath)
+        options.outputPath = LatexRunConfigurationOutputPathOption(fileOutputPath)
     }
 
     /**
@@ -413,12 +417,11 @@ class LatexRunConfiguration constructor(
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
-    // todo check if still needed, I don't think so
+    // todo check if still needed
 //    override fun clone(): RunConfiguration {
 //        return super.clone().also {
 //            val runConfiguration = it as? LatexRunConfiguration ?: return@also
-//            runConfiguration.outputPath = this.outputPath.clone()
-//            runConfiguration.auxilPath = this.auxilPath.clone()
+//            runConfiguration.options = LatexRunConfigurationOptions()
 //        }
 //    }
 
@@ -431,7 +434,7 @@ class LatexRunConfiguration constructor(
     override fun getWorkingDirectory(): String? = options.workingDirectory.resolvedPath ?: PathUtil.toSystemDependentName(project.basePath)
 
     override fun setWorkingDirectory(resolvedPath: String?) {
-        options.workingDirectory.setPath(resolvedPath)
+        options.workingDirectory = LatexRunConfigurationPathOption(resolvedPath)
     }
 
     fun hasDefaultWorkingDirectory(): Boolean {

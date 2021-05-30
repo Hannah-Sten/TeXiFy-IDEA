@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigura
 import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfigurationType
+import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 
 /**
  * Create template run configurations.
@@ -27,6 +28,8 @@ class LatexTemplateConfigurationFactory(type: ConfigurationType) : Configuration
             setDefaultPdfViewer()
             setSuggestedName()
             options.setDefaultDistribution(project)
+            compileSteps.clear()
+            compileSteps.add(LatexCompileStepProvider.createStep(this))
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")

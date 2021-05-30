@@ -1,12 +1,12 @@
 package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.execution.ui.*
-import com.intellij.ide.DataManager
-import com.intellij.ide.macro.MacroManager
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import org.cef.misc.CefPrintSettings
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import java.awt.Font
 import javax.swing.JLabel
 
@@ -69,8 +69,8 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
             8,
             project,
             "output",
-            { s -> s.options.outputPath.pathWithMacro ?: s.options.outputPath.getDefault("out") },
-            { s, text -> s.options.outputPath.resolveAndSetPath(text, this.component) },
+            { s -> s.options.outputPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
+            { s, text -> s.options.outputPath = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(text, this.component) { resolvedPath, pathWithMacro -> LatexRunConfigurationOutputPathOption(resolvedPath, pathWithMacro) } },
             { s -> s?.options?.outputPath?.isDefault("out") },
             mySettings
         ))
@@ -81,8 +81,8 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
             8,
             project,
             "auxiliary",
-            { s -> s.options.auxilPath.pathWithMacro ?: s.options.outputPath.getDefault("auxil") },
-            { s, text -> s.options.auxilPath.resolveAndSetPath(text, this.component); },
+            { s -> s.options.auxilPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", project).pathWithMacro!! },
+            { s, text -> s.options.auxilPath = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(text, this.component) { resolvedPath, pathWithMacro -> LatexRunConfigurationOutputPathOption(resolvedPath, pathWithMacro) }  },
             { s -> s?.options?.auxilPath?.isDefault("auxil") },
             mySettings
         ))

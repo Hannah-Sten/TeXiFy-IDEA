@@ -1,14 +1,15 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.options
 
 import com.intellij.execution.ExecutionException
 import com.intellij.ide.macro.ProjectFileDirMacro
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import com.intellij.util.io.isDirectory
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
@@ -20,13 +21,21 @@ import java.nio.file.Path
 /**
  * Output or auxiliary path of the run configuration.
  */
-class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOption() {
+abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWithMacro: String?, override val resolvedPath: String?) : LatexRunConfigurationAbstractPathOption(pathWithMacro, resolvedPath) {
 
-    /**
-     * Get default output path based on variant (out or auxil), includes macro.
-     */
-    fun getDefault(variant: String): String {
-        return "\$${ProjectFileDirMacro().name}\$/$variant"
+    companion object {
+        /**
+         * Get default output path based on variant (out or auxil), includes macro.
+         *
+         * @param project If null, then the resolvedPath will be null.
+         */
+        fun getDefault(variant: String, project: Project?): LatexRunConfigurationOutputPathOption {
+            val projectFileDirectory = project?.projectFile?.parent
+            val context = DataContext { dataId -> if(dataId == PlatformDataKeys.PROJECT_FILE_DIRECTORY.name) projectFileDirectory else null }
+            val defaultWithMacro = "\$${ProjectFileDirMacro().name}\$/$variant"
+            val resolved = ProjectFileDirMacro().expand(context)
+            return LatexRunConfigurationOutputPathOption(resolved, defaultWithMacro)
+        }
     }
 
     override fun isDefault(): Boolean {
@@ -34,7 +43,7 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
     }
 
     fun isDefault(variant: String): Boolean {
-        return pathWithMacro == getDefault(variant)
+        return pathWithMacro == getDefault(variant, null).pathWithMacro
     }
 
     /**
@@ -98,17 +107,15 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
             .forEach { File(outPath + it).mkdirs() }
     }
 
-    class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationOutputPathOption>() {
-        override fun toString(value: LatexRunConfigurationOutputPathOption): String {
+    class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractOutputPathOption>() {
+        override fun toString(value: LatexRunConfigurationAbstractOutputPathOption): String {
             // Assumes that resolvedPath does not contain //
             return "${value.resolvedPath}//${value.pathWithMacro}"
         }
 
-        override fun fromString(value: String): LatexRunConfigurationOutputPathOption {
+        override fun fromString(value: String): LatexRunConfigurationAbstractOutputPathOption {
             val splitted = value.split("//", limit = 2)
-            return LatexRunConfigurationOutputPathOption().apply {
-                setPath(resolvedPath = splitted.getOrNull(0), pathWithMacro = splitted.getOrNull(1))
-            }
+            return LatexRunConfigurationOutputPathOption(resolvedPath = splitted.getOrNull(0), pathWithMacro = splitted.getOrNull(1))
         }
 
     }

@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run
 import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexmkCompiler
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import org.jdom.Element
 import org.jdom.Namespace
 
@@ -35,7 +35,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile
-        runConfig.options.mainFile.setPath("main.tex")
+        runConfig.options.mainFile = LatexRunConfigurationPathOption("main.tex", "main.tex")
         runConfig.generateBibRunConfig()
 //        assertTrue(runConfig.bibRunConfigs.isNotEmpty()) // todo
 //        assertEquals(mainFile.virtualFile, (runConfig.bibRunConfigs.first().configuration as BibtexRunConfiguration).mainFile)

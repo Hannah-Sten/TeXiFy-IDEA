@@ -5,6 +5,7 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import nl.hannahsten.texifyidea.TeXception
 import java.io.OutputStream
 
 /**
@@ -18,7 +19,7 @@ class SequentialProcessHandler(private val processes: List<KillableProcessHandle
     private var killed = false
 
     init {
-        require(processes.isNotEmpty())
+        if (processes.isEmpty()) throw TeXception("Cannot create a SequentialProcessHandler without processes")
 
         processes.dropLast(1).withIndex().forEach { (i, p) ->
             p.addProcessListener(object : ProcessAdapter() {

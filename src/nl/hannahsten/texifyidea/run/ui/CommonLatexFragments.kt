@@ -19,6 +19,8 @@ import com.intellij.util.ui.JBDimension
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
@@ -127,7 +129,8 @@ object CommonLatexFragments {
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
                 val pathWithMacro = (component as TextFieldWithBrowseButton).text
-                (s.configuration as LatexRunConfiguration).options.mainFile.resolveAndSetPath(pathWithMacro, this.component)
+                val options = (s.configuration as LatexRunConfiguration).options
+                options.mainFile = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(pathWithMacro, this.component) { resolved, withMacro -> LatexRunConfigurationPathOption(resolved, withMacro) }
             }
         }
 
@@ -189,7 +192,7 @@ object CommonLatexFragments {
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
                 val pathWithMacro = ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text
-                (s.configuration as LatexRunConfiguration).options.workingDirectory.resolveAndSetPath(pathWithMacro, this.component)
+                (s.configuration as LatexRunConfiguration).options.workingDirectory = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(pathWithMacro, this.component) { resolved, withMacro -> LatexRunConfigurationPathOption(resolved, withMacro) }
             }
         }
 

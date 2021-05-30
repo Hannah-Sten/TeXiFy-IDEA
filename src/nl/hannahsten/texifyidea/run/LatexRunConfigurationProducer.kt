@@ -11,6 +11,9 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 
 /**
  * Create run configurations from context (from inside a LaTeX file).
@@ -40,10 +43,15 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         }
 
         // Change the main file as given by the template run configuration to the current file
-        runConfiguration.options.mainFile.setPath(mainFile.path)
+        runConfiguration.options.mainFile = LatexRunConfigurationPathOption(mainFile.path)
+        runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption(mainFile.parent.path)
+        runConfiguration.options.outputPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("out", runConfiguration.project)
+        runConfiguration.options.auxilPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", runConfiguration.project)
         runConfiguration.psiFile = container
         runConfiguration.setSuggestedName()
+        runConfiguration.compileSteps.forEach { it.configuration = runConfiguration }
 
+        // Check for magic comments
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
         val runProgram = container.allParentMagicComments().value(DefaultMagicKeys.PROGRAM)
         val command = runCommand ?: runProgram ?: return true

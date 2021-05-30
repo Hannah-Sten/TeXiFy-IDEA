@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.options
 
 import com.intellij.configurationStore.Property
 import com.intellij.execution.configuration.EnvironmentVariablesData
@@ -16,6 +16,8 @@ import kotlin.reflect.KProperty
 
 /**
  * Options which are global to the run configuration (i.e. not specific to a certain step).
+ *
+ * Note: if adding an option here, consider whether it needs to be set in [nl.hannahsten.texifyidea.run.LatexRunConfigurationProducer].
  */
 class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
@@ -44,7 +46,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var outputFormat by enum(LatexCompiler.OutputFormat.PDF)
 
     /**
-     * Use [LatexRunConfiguration.getLatexDistributionType] to take the Project SDK into account.
+     * Use [nl.hannahsten.texifyidea.run.LatexRunConfiguration.getLatexDistributionType] to take the Project SDK into account.
      */
     @get:OptionTag("latexDistribution")
     internal var latexDistribution by enum(LatexDistributionType.PROJECT_SDK)
@@ -57,16 +59,16 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     @get:OptionTag("hasBeenRun")
     var hasBeenRun by property(false)
 
-    @get:OptionTag("mainFile", converter = LatexRunConfigurationDirectoryOption.Converter::class)
-    var mainFile by property(LatexRunConfigurationDirectoryOption()) { it.isDefault() }
+    @get:OptionTag("mainFile", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
+    var mainFile by property(LatexRunConfigurationPathOption()) { it.isDefault() }
 
-    @get:OptionTag("workingDirectory", converter = LatexRunConfigurationDirectoryOption.Converter::class)
-    var workingDirectory by property(LatexRunConfigurationDirectoryOption()) { it.isDefault() }
+    @get:OptionTag("workingDirectory", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
+    var workingDirectory by property(LatexRunConfigurationPathOption()) { it.isDefault() }
 
-    @get:OptionTag("outputPath", converter = LatexRunConfigurationOutputPathOption.Converter::class)
+    @get:OptionTag("outputPath", converter = LatexRunConfigurationAbstractOutputPathOption.Converter::class)
     var outputPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("out") }
 
-    @get:OptionTag("auxilPath", converter = LatexRunConfigurationOutputPathOption.Converter::class)
+    @get:OptionTag("auxilPath", converter = LatexRunConfigurationAbstractOutputPathOption.Converter::class)
     var auxilPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("auxil") }
 }
 
