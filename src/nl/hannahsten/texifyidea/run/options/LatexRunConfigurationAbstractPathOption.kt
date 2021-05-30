@@ -46,9 +46,7 @@ abstract class LatexRunConfigurationAbstractPathOption(open val pathWithMacro: S
 
         override fun fromString(value: String): LatexRunConfigurationAbstractPathOption {
             val splitted = value.split("//", limit = 2)
-            return LatexRunConfigurationPathOption().apply {
-                LatexRunConfigurationPathOption(resolvedPath = splitted.getOrNull(0), pathWithMacro = splitted.getOrNull(1))
-            }
+            return LatexRunConfigurationPathOption(resolvedPath = splitted.getOrNull(0), pathWithMacro = splitted.getOrNull(1))
         }
 
     }
