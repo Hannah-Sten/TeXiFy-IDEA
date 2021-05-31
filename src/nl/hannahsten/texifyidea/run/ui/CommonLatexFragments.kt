@@ -5,7 +5,10 @@ import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.*
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
+import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.ide.macro.ProjectFileDirMacro
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.project.Project
@@ -25,6 +28,7 @@ import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.BorderLayout
+import java.awt.Component
 import kotlin.reflect.KMutableProperty0
 
 typealias LatexCompileEditor = CompilerEditor<LatexCompileStep, SupportedLatexCompiler>
@@ -112,6 +116,19 @@ object CommonLatexFragments {
         return fragment
     }
 
+    /**
+     * Consider the given path, and replace an absolute part of it by the ProjectFileDirMacro if possible.
+     */
+    fun insertMacro(path: String, component: Component): String {
+        // For better readability for the user, replace absolute path with project path when known
+        val baseDir = PlatformDataKeys.PROJECT_FILE_DIRECTORY.getData(DataManager.getInstance().getDataContext(component))
+        return if (baseDir != null && baseDir.path in path) {
+            path.replace(baseDir.path, "\$${ProjectFileDirMacro().name}\$")
+        }
+        else {
+            path
+        }
+    }
 
     fun createMainFileFragment(commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, TextFieldWithBrowseButton> {
         val mainFileField = TextFieldWithBrowseButton()
@@ -128,7 +145,9 @@ object CommonLatexFragments {
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                val pathWithMacro = (component as TextFieldWithBrowseButton).text
+                val text = (component as TextFieldWithBrowseButton).text
+                val pathWithMacro = insertMacro(text, component)
+
                 val options = (s.configuration as LatexRunConfiguration).options
                 options.mainFile = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(pathWithMacro, this.component) { resolved, withMacro -> LatexRunConfigurationPathOption(resolved, withMacro) }
             }
@@ -191,7 +210,8 @@ object CommonLatexFragments {
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                val pathWithMacro = ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text
+                val text = ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text
+                val pathWithMacro = insertMacro(text, component)
                 (s.configuration as LatexRunConfiguration).options.workingDirectory = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(pathWithMacro, this.component) { resolved, withMacro -> LatexRunConfigurationPathOption(resolved, withMacro) }
             }
         }
