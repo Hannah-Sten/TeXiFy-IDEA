@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.6</strong></p>
+        <p><strong>Beta 0.7.7</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.6! We bring to you some nice improvements like automatically updating references when moving a file, and the option to indent text in sections. In the meantime, we are working on a complete rework of the LaTeX run configuration.
+            Welcome to TeXiFy IDEA 0.7.7! This release contains some minor bug fixes, and enhanced command execution on Mac.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,34 +55,33 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Update file references when moving an included file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
-            <li> Group inspections in settings. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1830">#1830</a>)</li>
-            <li> Support nested subfiles. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1835">#1835</a>)</li>
-            <li> Add inspection to warn against relative path bug in BIBINPUTS. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1837">#1837</a>)</li>
-            <li> Add optional code style setting to indent text in sections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1843">#1843</a>)</li>
-            <li> Enable the tool windows also in non-IntelliJ IDEs. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1843">#1843</a>)</li>
-            <li> Auto-fill crash report. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1852">#1852</a>)</li>
+            <li> Update color definition when using color picker. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1864">#1864</a>)</li>
+            <li> Improve system command execution on Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1901">#1901</a>)</li>
+            <li> Handle quoted custom compiler arguments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1902">#1902</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li> Use html formatting in documentation popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1846">#1846</a>)</li>
+            <li> Ignore permission problems when extracting package zips on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Take BIBINPUTS variable into account when resolving bib files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1837">#1837</a>)</li>
-            <li> Fix bug in reading a file magic comment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
-            <li> Fix tool window icon size. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
+            <li> Fix index out of bounds exception in color values. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1864">#1864</a>)</li>
+            <li> Fix grammar mistakes not being checked at the beginning of environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1892">#1892</a>)</li>
+            <li> Fix parse error when >{ is not used to define table columns. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
+            <li> Add some missing table environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
+            <li> Revert loading SafeDeleteFix class from the optional Java plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
+            <li> Fixed other crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1881">#1881</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1879">#1879</a>)</li>
         </ul>
-<!--        <br>-->
-<!--        <p>-->
-<!--            Thanks to <a href="https://github.com/solonovamax">@solonovamax</a> for contributing to this release.-->
-<!--        </p>-->
+        <br>
+        <p>
+            Thanks to Felix Berlakovich for contributing to this release.
+        </p>
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
