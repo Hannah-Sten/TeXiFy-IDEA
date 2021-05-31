@@ -55,7 +55,8 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
         latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
     }
 
-    /** Whether the run configuration has already been run or not, since it has been created */
+    /** Whether the run configuration has already been run or not, since it has been created
+     * todo change to lastRunTime and make sure it's updated */
     @get:OptionTag("hasBeenRun")
     var hasBeenRun by property(false)
 

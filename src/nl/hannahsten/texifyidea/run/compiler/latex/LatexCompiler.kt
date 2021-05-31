@@ -132,6 +132,11 @@ abstract class SupportedLatexCompiler(
             dockerOutputDir
         }
 
+        // Make sure the output path is valid
+        if (!runConfig.getLatexDistributionType().isMiktex()) {
+            runConfig.options.outputPath.updateOutputSubDirs(mainFile, project)
+        }
+
         val auxilPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
             runConfig.options.auxilPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), project)?.path?.toPath(runConfig)
         }

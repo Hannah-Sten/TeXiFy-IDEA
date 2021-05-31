@@ -37,6 +37,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
 
         val handlers = runConfig.compileSteps.withIndex().mapNotNull { (i, step) ->
             val id = i.toString()
+            // todo at this point, make sure all steps are generated, e.g. generating a bibtex step may change the output path of latex steps
             val command = step.getCommand() ?: return@mapNotNull null
             val workingDirectory = step.getWorkingDirectory() ?: ProjectUtil.getBaseDir()
 
