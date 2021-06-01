@@ -1,11 +1,9 @@
 package nl.hannahsten.texifyidea.settings
 
 import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.DefaultProjectFactory
-import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
