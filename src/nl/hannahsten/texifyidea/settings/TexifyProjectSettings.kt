@@ -14,7 +14,7 @@ class TexifyProjectSettings : PersistentStateComponent<TexifyProjectSettings> {
     companion object {
 
         @JvmStatic
-        fun getInstance(project: Project): TexifyProjectSettings = ServiceManager.getService(project, TexifyProjectSettings::class.java)
+        fun getInstance(project: Project): TexifyProjectSettings = project.getService(TexifyProjectSettings::class.java)
     }
 
     override fun getState() = this
