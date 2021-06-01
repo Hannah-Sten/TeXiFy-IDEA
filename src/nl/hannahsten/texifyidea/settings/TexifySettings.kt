@@ -4,6 +4,8 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.project.DefaultProjectFactory
+import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
@@ -17,7 +19,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     companion object {
 
         @JvmStatic
-        fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
+        fun getInstance(): TexifySettings = DefaultProjectFactory.getInstance().defaultProject.getService(TexifySettings::class.java)
     }
 
     // Options for smart quote replacement, in the order as they appear in the combobox

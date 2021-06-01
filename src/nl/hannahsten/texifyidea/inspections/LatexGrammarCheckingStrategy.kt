@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.grazie.grammar.strategy.GrammarCheckingStrategy
 import com.intellij.grazie.grammar.strategy.StrategyUtils
-import com.intellij.grazie.grammar.strategy.impl.RuleGroup
 import com.intellij.grazie.utils.LinkedSet
 import com.intellij.grazie.utils.parents
 import com.intellij.grazie.utils.toLinkedSet
@@ -73,9 +72,5 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
             is LatexParameter -> GrammarCheckingStrategy.TextDomain.LITERALS
             else -> GrammarCheckingStrategy.TextDomain.NON_TEXT
         }
-    }
-
-    override fun getIgnoredRuleGroup(root: PsiElement, child: PsiElement): RuleGroup {
-        return RuleGroup.PUNCTUATION
     }
 }
