@@ -46,7 +46,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var outputFormat by enum(LatexCompiler.OutputFormat.PDF)
 
     /**
-     * Use [nl.hannahsten.texifyidea.run.LatexRunConfiguration.getLatexDistributionType] to take the Project SDK into account.
+     * Use [getLatexDistribution] to take the Project SDK into account.
      */
     @get:OptionTag("latexDistribution")
     internal var latexDistribution by enum(LatexDistributionType.PROJECT_SDK)
@@ -54,6 +54,8 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     fun setDefaultDistribution(project: Project) {
         latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
     }
+
+    fun getLatexDistribution(project: Project) = LatexSdkUtil.getLatexDistributionType(latexDistribution, project)
 
     /** Whether the run configuration has already been run or not, since it has been created
      * todo change to lastRunTime and make sure it's updated */

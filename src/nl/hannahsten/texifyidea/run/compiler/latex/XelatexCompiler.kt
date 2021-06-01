@@ -17,7 +17,7 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+            val command = mutableListOf(LatexSdkUtil.getExecutableName(
                 executableName,
                 runConfig.project
             )
@@ -35,16 +35,16 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
 
         command.add("-output-directory=$outputPath")
 
-        if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
+        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
             command.add("-aux-directory=$auxilPath")
         }
 
         // Prepend root paths to the input search path
-        if (runConfig.getLatexDistributionType().isMiktex()) {
-            moduleRoots.forEach {
-                command.add("-include-directory=${it.path}")
+            if (runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
+                moduleRoots.forEach {
+                    command.add("-include-directory=${it.path}")
+                }
             }
-        }
 
         return command
     }

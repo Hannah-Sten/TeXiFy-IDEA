@@ -16,7 +16,7 @@ object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
         // For now only support custom executable for TeX Live
         // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
         val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project)
-        val command = mutableListOf(runConfig.compilerPath ?: executable)
+        val command = mutableListOf(executable)
 
         command.add("-file-line-error")
         command.add("-interaction=nonstopmode")
@@ -26,12 +26,12 @@ object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
         command.add("-output-directory=$outputPath")
 
         // -aux-directory only exists on MiKTeX
-        if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
+        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
             command.add("-aux-directory=$auxilPath")
         }
 
         // Prepend root paths to the input search path
-        if (runConfig.getLatexDistributionType().isMiktex()) {
+        if (runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
             moduleRoots.forEach {
                 command.add("-include-directory=${it.path}")
             }

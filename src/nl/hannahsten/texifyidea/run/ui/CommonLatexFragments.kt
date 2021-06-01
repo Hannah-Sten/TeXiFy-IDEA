@@ -239,7 +239,8 @@ object CommonLatexFragments {
 
         // Don't show when not applicable (non-MiKTeX)
         val initialVisibility = { s: RunnerAndConfigurationSettingsImpl ->
-            if (type == "auxiliary" && (s.configuration as? LatexRunConfiguration)?.getLatexDistributionType()?.isMiktex() == false) {
+            val runConfig = s.configuration as? LatexRunConfiguration
+            if (type == "auxiliary" && runConfig?.options?.getLatexDistribution(runConfig.project)?.isMiktex() == false) {
                 false
             }
             else {

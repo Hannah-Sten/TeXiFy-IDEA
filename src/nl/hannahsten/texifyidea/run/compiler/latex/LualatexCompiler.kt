@@ -15,10 +15,11 @@ object LualatexCompiler : SupportedLatexCompiler("LuaLaTeX", "lualatex") {
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
-                executableName,
-                runConfig.project
-            )
+            val command = mutableListOf(
+                LatexSdkUtil.getExecutableName(
+                    executableName,
+                    runConfig.project
+                )
             )
 
         // Some commands are the same as for pdflatex

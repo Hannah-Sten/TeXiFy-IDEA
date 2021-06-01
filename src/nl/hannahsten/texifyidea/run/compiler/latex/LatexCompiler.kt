@@ -79,7 +79,21 @@ sealed class LatexCompiler : Compiler<LatexCompileStep> {
 class CustomLatexCompiler(override val executablePath: String) : LatexCompiler(),
                                                                  CustomCompiler<LatexCompileStep> {
 
-    override fun getCommand(step: LatexCompileStep) = listOf(executablePath)
+    override fun getCommand(step: LatexCompileStep): List<String> {
+        val runConfig = step.configuration
+        val command = mutableListOf(executablePath)
+
+        // Custom compiler arguments specified by the user
+        runConfig.options.compilerArguments?.let { arguments ->
+            ParametersListUtil.parse(arguments)
+                .forEach { command.add(it) }
+        }
+
+        val mainFile = runConfig.options.mainFile.resolve() ?: return mutableListOf()
+        command.add(mainFile.name)
+
+        return command
+    }
 }
 
 
@@ -97,7 +111,7 @@ abstract class SupportedLatexCompiler(
      * Convert Windows paths to WSL paths.
      */
     private fun String.toPath(runConfig: LatexRunConfiguration): String =
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.options.getLatexDistribution(runConfig.project) == LatexDistributionType.WSL_TEXLIVE) {
             "wsl wslpath -a '$this'".runCommand() ?: this
         }
         else this
@@ -115,7 +129,7 @@ abstract class SupportedLatexCompiler(
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
-        val moduleRoots = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
+        val moduleRoots = if (runConfig.options.getLatexDistribution(runConfig.project) != LatexDistributionType.DOCKER_MIKTEX) {
             rootManager.contentSourceRoots
         }
         else {
@@ -125,7 +139,7 @@ abstract class SupportedLatexCompiler(
         // If we used /miktex/work/out, an out directory would appear in the src folder on the host system
         val dockerOutputDir = "/miktex/out"
         val dockerAuxilDir = "/miktex/auxil"
-        val outputPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
+        val outputPath = if (runConfig.options.getLatexDistribution(runConfig.project) != LatexDistributionType.DOCKER_MIKTEX) {
             runConfig.options.outputPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), project)?.path?.toPath(runConfig)
         }
         else {
@@ -133,11 +147,11 @@ abstract class SupportedLatexCompiler(
         }
 
         // Make sure the output path is valid
-        if (!runConfig.getLatexDistributionType().isMiktex()) {
+        if (!runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
             runConfig.options.outputPath.updateOutputSubDirs(mainFile, project)
         }
 
-        val auxilPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
+        val auxilPath = if (runConfig.options.getLatexDistribution(runConfig.project) != LatexDistributionType.DOCKER_MIKTEX) {
             runConfig.options.auxilPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), project)?.path?.toPath(runConfig)
         }
         else {
@@ -152,11 +166,11 @@ abstract class SupportedLatexCompiler(
             moduleRoots
         )
 
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.options.getLatexDistribution(runConfig.project) == LatexDistributionType.WSL_TEXLIVE) {
             command = mutableListOf("bash", "-ic", GeneralCommandLine(command).commandLineString)
         }
 
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
+        if (runConfig.options.getLatexDistribution(runConfig.project) == LatexDistributionType.DOCKER_MIKTEX) {
             createDockerCommand(runConfig, dockerAuxilDir, dockerOutputDir, mainFile, command)
         }
 
@@ -166,7 +180,7 @@ abstract class SupportedLatexCompiler(
                 .forEach { command.add(it) }
         }
 
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.options.getLatexDistribution(runConfig.project) == LatexDistributionType.WSL_TEXLIVE) {
             command[command.size - 1] = command.last() + " ${mainFile.path.toPath(runConfig)}"
         }
         else {

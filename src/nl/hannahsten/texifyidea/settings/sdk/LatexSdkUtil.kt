@@ -7,6 +7,7 @@ import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.compiler.latex.CustomLatexCompiler
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
@@ -120,6 +121,18 @@ object LatexSdkUtil {
     }
 
     /**
+     * Get LaTeX distribution type, when 'Use project SDK' is selected map it to a [LatexDistributionType].
+     */
+    fun getLatexDistributionType(latexDistribution: LatexDistributionType, project: Project): LatexDistributionType {
+        return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
+            latexDistribution
+        }
+        else {
+            LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType() ?: LatexDistributionType.TEXLIVE
+        }
+    }
+
+    /**
      * Get executable name of a LaTeX executable binary, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
      */
     fun getExecutableName(executableName: String, project: Project): String {
@@ -135,7 +148,7 @@ object LatexSdkUtil {
         }
 
         // Maybe we're on a Mac but in a non-IntelliJ IDE, in which case the user provided the path to pdflatex in the run config (as it's not possible to configure an SDK)
-        project.getLatexRunConfigurations().mapNotNull { it.compilerPath?.substringBefore("/pdflatex") }.forEach {
+        project.getLatexRunConfigurations().mapNotNull { (it.options?.compiler as? CustomLatexCompiler)?.executablePath?.substringBefore("/pdflatex") }.forEach {
             val file = File(it, executableName)
             if (file.isFile) return file.path
         }

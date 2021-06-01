@@ -162,6 +162,7 @@ class RunMakeindexListener(
 
             // Only clean up file if not copied there by user
             if (indexFileSource.exists() && !indexFileDestination.exists()) {
+                // todo instead of modifying run config instance variable, modify the file cleanup step at the end directly
                 filesToCleanUp.add(indexFileDestination)
             }
 
