@@ -28,8 +28,6 @@ class LatexTemplateConfigurationFactory(type: ConfigurationType) : Configuration
             setDefaultPdfViewer()
             setSuggestedName()
             options.setDefaultDistribution(project)
-            compileSteps.clear()
-            compileSteps.add(LatexCompileStepProvider.createStep(this))
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")

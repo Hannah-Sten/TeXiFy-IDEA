@@ -109,13 +109,12 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractOutputPathOption>() {
         override fun toString(value: LatexRunConfigurationAbstractOutputPathOption): String {
-            // Assumes that resolvedPath does not contain //
-            return "${value.resolvedPath}//${value.pathWithMacro}"
+            return LatexPathConverterUtil.toString(value)
         }
 
         override fun fromString(value: String): LatexRunConfigurationAbstractOutputPathOption {
-            val splitted = value.split("//", limit = 2)
-            return LatexRunConfigurationOutputPathOption(resolvedPath = splitted.getOrNull(0), pathWithMacro = splitted.getOrNull(1))
+            val (resolvedPath, pathWithMacro) = LatexPathConverterUtil.fromString(value)
+            return LatexRunConfigurationOutputPathOption(resolvedPath, pathWithMacro)
         }
 
     }

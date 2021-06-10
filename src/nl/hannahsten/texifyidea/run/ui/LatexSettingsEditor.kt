@@ -70,9 +70,9 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
             8,
             project,
             "output",
-            { s -> s.options.outputPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
-            { s, text -> s.options.outputPath = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(text, this.component) { resolvedPath, pathWithMacro -> LatexRunConfigurationOutputPathOption(resolvedPath, pathWithMacro) } },
-            { s -> s?.options?.outputPath?.isDefault("out") },
+            reset = { s -> s.options.outputPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
+            apply = { s, option -> s.options.outputPath = option },
+            isDefault = { s -> s?.options?.outputPath?.isDefault("out") },
             mySettings
         ))
 
@@ -82,9 +82,9 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
             8,
             project,
             "auxiliary",
-            { s -> s.options.auxilPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", project).pathWithMacro!! },
-            { s, text -> s.options.auxilPath = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(text, this.component) { resolvedPath, pathWithMacro -> LatexRunConfigurationOutputPathOption(resolvedPath, pathWithMacro) }  },
-            { s -> s?.options?.auxilPath?.isDefault("auxil") },
+            reset = { s -> s.options.auxilPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", project).pathWithMacro!! },
+            apply = { s, option -> s.options.auxilPath = option },
+            isDefault = { s -> s?.options?.auxilPath?.isDefault("auxil") },
             mySettings
         ))
 

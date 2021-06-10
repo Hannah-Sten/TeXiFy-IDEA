@@ -40,14 +40,12 @@ abstract class LatexRunConfigurationAbstractPathOption(open val pathWithMacro: S
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractPathOption>() {
         override fun toString(value: LatexRunConfigurationAbstractPathOption): String {
-            // Remove // to use as separator for the two paths
-            return "${value.resolvedPath?.replace("//", "/")}//${value.pathWithMacro}"
+            return LatexPathConverterUtil.toString(value)
         }
 
         override fun fromString(value: String): LatexRunConfigurationAbstractPathOption {
-            val splitted = value.split("//", limit = 2)
-            return LatexRunConfigurationPathOption(resolvedPath = splitted.getOrNull(0), pathWithMacro = splitted.getOrNull(1))
+            val (resolvedPath, pathWithMacro) = LatexPathConverterUtil.fromString(value)
+            return LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
         }
-
     }
 }

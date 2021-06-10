@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
+import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 
 /**
  * Create run configurations from context (from inside a LaTeX file).
@@ -49,6 +50,11 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.options.auxilPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", runConfiguration.project)
         runConfiguration.psiFile = container
         runConfiguration.setSuggestedName()
+
+        // Make sure the run configuration is at least valid
+        if (runConfiguration.compileSteps.isEmpty()) {
+            runConfiguration.compileSteps.add(LatexCompileStepProvider.createStep(runConfiguration))
+        }
         runConfiguration.compileSteps.forEach { it.configuration = runConfiguration }
 
         // Check for magic comments

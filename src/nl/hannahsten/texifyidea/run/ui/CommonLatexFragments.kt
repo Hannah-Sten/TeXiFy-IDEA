@@ -6,9 +6,13 @@ import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.*
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.DataManager
+import com.intellij.ide.macro.MacroManager
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.ide.macro.ProjectFileDirMacro
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.application.PathMacros
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.project.Project
@@ -22,7 +26,10 @@ import com.intellij.util.ui.JBDimension
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
+import nl.hannahsten.texifyidea.run.macro.insertMacro
+import nl.hannahsten.texifyidea.run.macro.sortOutMacros
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
@@ -116,20 +123,6 @@ object CommonLatexFragments {
         return fragment
     }
 
-    /**
-     * Consider the given path, and replace an absolute part of it by the ProjectFileDirMacro if possible.
-     */
-    fun insertMacro(path: String, component: Component): String {
-        // For better readability for the user, replace absolute path with project path when known
-        val baseDir = PlatformDataKeys.PROJECT_FILE_DIRECTORY.getData(DataManager.getInstance().getDataContext(component))
-        return if (baseDir != null && baseDir.path in path) {
-            path.replace(baseDir.path, "\$${ProjectFileDirMacro().name}\$")
-        }
-        else {
-            path
-        }
-    }
-
     fun createMainFileFragment(commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, TextFieldWithBrowseButton> {
         val mainFileField = TextFieldWithBrowseButton()
         mainFileField.minimumSize = standardDimension
@@ -210,9 +203,9 @@ object CommonLatexFragments {
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                val text = ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text
-                val pathWithMacro = insertMacro(text, component)
-                (s.configuration as LatexRunConfiguration).options.workingDirectory = LatexRunConfigurationAbstractPathOption.resolveAndGetPath(pathWithMacro, this.component) { resolved, withMacro -> LatexRunConfigurationPathOption(resolved, withMacro) }
+                val runConfig = s.configuration as LatexRunConfiguration
+                val (expandedPath, pathWithMacro) = sortOutMacros(component, runConfig)
+                runConfig.options.workingDirectory = LatexRunConfigurationPathOption(expandedPath, pathWithMacro)
             }
         }
 
@@ -226,7 +219,7 @@ object CommonLatexFragments {
      * @param apply: Function to apply the text to the run config.
      * @param isDefault: Whether the value as in the given run config is default.
      */
-    fun createOutputPathFragment(group: String, commandLinePosition: Int, project: Project, type: String, reset: (LatexRunConfiguration) -> String, apply: (LatexRunConfiguration, String) -> Unit, isDefault: (LatexRunConfiguration?) -> Boolean?, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+    fun createOutputPathFragment(group: String, commandLinePosition: Int, project: Project, type: String, reset: (LatexRunConfiguration) -> String, apply: (LatexRunConfiguration, LatexRunConfigurationOutputPathOption) -> Unit, isDefault: (LatexRunConfiguration?) -> Boolean?, settings: LatexRunConfiguration): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
         val outputDirectoryField = TextFieldWithBrowseButton()
         outputDirectoryField.minimumSize = standardDimension
         setMonospaced(outputDirectoryField.textField)
@@ -254,7 +247,9 @@ object CommonLatexFragments {
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                apply((s.configuration as LatexRunConfiguration), ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text)
+                val runConfig = s.configuration as LatexRunConfiguration
+                val (expandedPath, pathWithMacro) = sortOutMacros(component, runConfig)
+                apply(runConfig, LatexRunConfigurationOutputPathOption(expandedPath, pathWithMacro))
             }
         }
 
