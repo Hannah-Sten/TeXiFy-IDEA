@@ -11,3 +11,7 @@ In the link:Run-configurations#_choose_latex_distribution[Run configuration sett
 Currently, TeXiFy will use bash to run LaTeX compilers.
 Test your installation with `bash -ic "pdflatex --version"`.
 
+== Troubleshooting
+
+If pdflatex is not found, double check if the default wsl distribution is the one in which you installed LaTeX with `wsl -l`
+
