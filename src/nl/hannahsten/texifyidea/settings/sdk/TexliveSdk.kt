@@ -60,7 +60,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
             for (path in paths.split("\\s+".toRegex())) {
                 // We don't know for sure whether this path contains 'texlive':
                 // e.g. C:\texnolive\2021\bin\pdflatex.exe can be perfectly valid
-                if (path.contains("miktex", ignoreCase=true)) {
+                if (path.contains("miktex", ignoreCase = true)) {
                     continue
                 }
                 // Let's just assume that there is only one /bin/ in this path
