@@ -4,6 +4,8 @@
 
 See https://www.jetbrains.com/help/idea/creating-and-editing-run-debug-configurations.html
 
+To run all run configurations in the project, you can use the `Build Project` button next to the run configurations dropdown.
+
 [#template]
 == Template run configurations
 
