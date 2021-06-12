@@ -1,13 +1,15 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import java.io.File
 
 /**
- * TeX Live, as installed in the recommended way by https://www.tug.org/texlive/quickinstall.html
+ * TeX Live, as installed in the recommended way by https://www.tug.org/texlive/quickinstall.html (Windows or Linux).
  */
 open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
@@ -53,15 +55,23 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
     override fun suggestHomePaths(): MutableCollection<String> {
         // Note that suggested paths appear under "Detected SDK's" when adding an SDK
         val results = mutableSetOf<String>()
-        val path = "which pdflatex".runCommand()
-        if (!path.isNullOrEmpty()) {
-            // Let's just assume that there is only one /bin/ in this path
-            val index = path.findLastAnyOf(setOf("/bin/"))?.first ?: path.length - 1
-            results.add(path.substring(0, index))
+        val paths = if (SystemInfo.isWindows) "where pdflatex".runCommand() else "which pdflatex".runCommand()
+        if (!paths.isNullOrEmpty()) {
+            for (path in paths.split("\\s+".toRegex())) {
+                // We don't know for sure whether this path contains 'texlive':
+                // e.g. C:\texnolive\2021\bin\pdflatex.exe can be perfectly valid
+                if (path.contains("miktex", ignoreCase=true)) {
+                    continue
+                }
+                // Let's just assume that there is only one /bin/ in this path
+                val index = path.findLastAnyOf(setOf(File.separator + "bin" + File.separator))?.first ?: (path.length - 1)
+                results.add(path.substring(0, index))
+            }
         }
         else {
             results.add(suggestHomePath())
         }
+
         return results
     }
 
