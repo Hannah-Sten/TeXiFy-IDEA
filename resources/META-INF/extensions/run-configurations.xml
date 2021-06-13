@@ -6,5 +6,7 @@
         <configurationType implementation="nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.LatexRunConfigurationProducer"/>
         <projectService serviceImplementation="nl.hannahsten.texifyidea.service.LatexRunConfigurationViewManagerService"/>
+        <pathMacroContributor implementation="nl.hannahsten.texifyidea.run.macro.LatexPathMacroContributor" />
+        <macro implementation="nl.hannahsten.texifyidea.run.macro.MainFileDirMacro" />
     </extensions>
 </idea-plugin>

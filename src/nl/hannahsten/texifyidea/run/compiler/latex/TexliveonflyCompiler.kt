@@ -16,7 +16,7 @@ object TexliveonflyCompiler : SupportedLatexCompiler("Texliveonfly", "texliveonf
         moduleRoots: Array<VirtualFile>
     ): MutableList<String> {
         val command = mutableListOf(
-            runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+            LatexSdkUtil.getExecutableName(
                 executableName,
                 runConfig.project
             )

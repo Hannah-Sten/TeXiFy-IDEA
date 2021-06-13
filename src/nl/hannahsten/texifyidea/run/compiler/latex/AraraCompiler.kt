@@ -17,7 +17,7 @@ object AraraCompiler : SupportedLatexCompiler("Arara", "arara") {
     ): MutableList<String> {
         // Everything handled by arara, except possibly the path to the arara executable
         return mutableListOf(
-            runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+            LatexSdkUtil.getExecutableName(
                 executableName,
                 runConfig.project
             )

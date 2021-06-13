@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
 class LatexCompileStep(
     override val provider: StepProvider,
-    override val configuration: LatexRunConfiguration
+    override var configuration: LatexRunConfiguration
 ) : CompileStep() {
 
     override fun configure() {

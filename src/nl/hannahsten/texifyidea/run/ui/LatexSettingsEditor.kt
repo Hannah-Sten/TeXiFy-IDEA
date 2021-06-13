@@ -1,11 +1,12 @@
 package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.execution.ui.*
-import com.intellij.ide.DataManager
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import org.cef.misc.CefPrintSettings
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import java.awt.Font
 import javax.swing.JLabel
 
@@ -45,8 +46,9 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
 
         // LaTeX compiler arguments
         val compilerArguments = CommonLatexFragments.createProgramArgumentsFragment(
-            "compilerArguments", "Compiler arguments", 4, { s -> (s.configuration as LatexRunConfiguration).options::compilerArguments }, { s ->
-                (s.configuration as? LatexRunConfiguration)?.options?.compilerArguments?.isNotEmpty() == true },
+            "compilerArguments", "Compiler arguments", 4,
+            { s -> (s.configuration as LatexRunConfiguration).options::compilerArguments },
+            { s -> (s.configuration as? LatexRunConfiguration)?.options?.compilerArguments?.isNotEmpty() == true },
             name = "Add compiler arguments", latexGroupName
         )
         compilerArguments.setHint("CLI arguments for the LaTeX compiler")
@@ -63,10 +65,28 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 7, project))
 
         // Output path
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "output", { s -> s.outputPath.pathString }, { s, text -> s.setFileOutputPath(text); s.outputPath.context = DataManager.getInstance().getDataContext(this.component) }, { s -> s?.outputPath?.isDefault() }, mySettings))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(
+            latexGroupName,
+            8,
+            project,
+            "output",
+            reset = { s -> s.options.outputPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
+            apply = { s, option -> s.options.outputPath = option },
+            isDefault = { s -> s?.options?.outputPath?.isDefault("out") },
+            mySettings
+        ))
 
         // Path for auxiliary output files
-        fragments.add(CommonLatexFragments.createOutputPathFragment(latexGroupName, 8, project, "auxiliary", { s -> s.auxilPath.pathString }, { s, text -> s.setFileAuxilPath(text); s.outputPath.context = DataManager.getInstance().getDataContext(this.component) }, { s -> s?.auxilPath?.isDefault() == true }, mySettings))
+        fragments.add(CommonLatexFragments.createOutputPathFragment(
+            latexGroupName,
+            8,
+            project,
+            "auxiliary",
+            reset = { s -> s.options.auxilPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", project).pathWithMacro!! },
+            apply = { s, option -> s.options.auxilPath = option },
+            isDefault = { s -> s?.options?.auxilPath?.isDefault("auxil") },
+            mySettings
+        ))
 
         // Output format
         fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, mySettings))

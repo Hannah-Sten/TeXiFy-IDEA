@@ -1,13 +1,15 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.options
 
 import com.intellij.execution.ExecutionException
+import com.intellij.ide.macro.ProjectFileDirMacro
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import com.intellij.util.io.isDirectory
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
@@ -19,7 +21,30 @@ import java.nio.file.Path
 /**
  * Output or auxiliary path of the run configuration.
  */
-class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOption() {
+abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWithMacro: String?, override val resolvedPath: String?) : LatexRunConfigurationAbstractPathOption(pathWithMacro, resolvedPath) {
+
+    companion object {
+        /**
+         * Get default output path based on variant (out or auxil), includes macro.
+         *
+         * @param project If null, then the resolvedPath will be null.
+         */
+        fun getDefault(variant: String, project: Project?): LatexRunConfigurationOutputPathOption {
+            val projectFileDirectory = project?.projectFile?.parent
+            val context = DataContext { dataId -> if(dataId == PlatformDataKeys.PROJECT_FILE_DIRECTORY.name) projectFileDirectory else null }
+            val defaultWithMacro = "\$${ProjectFileDirMacro().name}\$/$variant"
+            val resolved = ProjectFileDirMacro().expand(context)
+            return LatexRunConfigurationOutputPathOption(resolved, defaultWithMacro)
+        }
+    }
+
+    override fun isDefault(): Boolean {
+        throw NotImplementedError("Use isDefault(variant: String) for now")
+    }
+
+    fun isDefault(variant: String): Boolean {
+        return pathWithMacro == getDefault(variant, null).pathWithMacro
+    }
 
     /**
      * Get path to output file (e.g. pdf)
@@ -33,7 +58,7 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
     }
 
     /**
-     * Tries to resolve the [resolvedPath], and if it doesn't exist, tries to create it (if it's a directory).
+     * Tries to resolve the [resolvedPath], and if it doesn't exist, tries to create it.
      */
     fun getOrCreateOutputPath(mainFile: VirtualFile?, project: Project): VirtualFile? {
         val outPath = resolvedPath ?: return null
@@ -41,7 +66,7 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
         if (resolved != null) return resolved
 
         // Can be improved by assuming a relative path to the project, using given context
-        if (outPath.isBlank() || !Path.of(outPath).isAbsolute || !Path.of(outPath).isDirectory() || mainFile == null) return null
+        if (outPath.isBlank() || !Path.of(outPath).isAbsolute || mainFile == null) return null
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
@@ -80,5 +105,17 @@ class LatexRunConfigurationOutputPathOption : LatexRunConfigurationDirectoryOpti
         files.asSequence()
             .mapNotNull { FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.virtualFile.parent.path) }
             .forEach { File(outPath + it).mkdirs() }
+    }
+
+    class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractOutputPathOption>() {
+        override fun toString(value: LatexRunConfigurationAbstractOutputPathOption): String {
+            return LatexPathConverterUtil.toString(value)
+        }
+
+        override fun fromString(value: String): LatexRunConfigurationAbstractOutputPathOption {
+            val (resolvedPath, pathWithMacro) = LatexPathConverterUtil.fromString(value)
+            return LatexRunConfigurationOutputPathOption(resolvedPath, pathWithMacro)
+        }
+
     }
 }

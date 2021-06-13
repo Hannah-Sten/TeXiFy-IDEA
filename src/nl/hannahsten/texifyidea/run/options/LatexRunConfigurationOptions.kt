@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.options
 
 import com.intellij.configurationStore.Property
 import com.intellij.execution.configuration.EnvironmentVariablesData
@@ -16,6 +16,8 @@ import kotlin.reflect.KProperty
 
 /**
  * Options which are global to the run configuration (i.e. not specific to a certain step).
+ *
+ * Note: if adding an option here, consider whether it needs to be set in [nl.hannahsten.texifyidea.run.LatexRunConfigurationProducer].
  */
 class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
@@ -24,9 +26,6 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
     @get:OptionTag("compilerArguments")
     var compilerArguments by string() // todo transformed(string()) { it.trim() }
-
-    @get:OptionTag("workingDirectory")
-    var workingDirectory by string()
 
     @Property(description = "Environment variables")
     @get:XMap(propertyElementName = "envs", entryTagName = "env", keyAttributeName = "name")
@@ -47,7 +46,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var outputFormat by enum(LatexCompiler.OutputFormat.PDF)
 
     /**
-     * Use [LatexRunConfiguration.getLatexDistributionType] to take the Project SDK into account.
+     * Use [getLatexDistribution] to take the Project SDK into account.
      */
     @get:OptionTag("latexDistribution")
     internal var latexDistribution by enum(LatexDistributionType.PROJECT_SDK)
@@ -56,15 +55,24 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
         latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
     }
 
-    /** Whether the run configuration has already been run or not, since it has been created */
+    fun getLatexDistribution(project: Project) = LatexSdkUtil.getLatexDistributionType(latexDistribution, project)
+
+    /** Whether the run configuration has already been run or not, since it has been created
+     * todo change to lastRunTime and make sure it's updated */
     @get:OptionTag("hasBeenRun")
     var hasBeenRun by property(false)
 
-    @get:OptionTag("mainFile", converter = LatexRunConfigurationDirectoryOption.Converter::class)
-    var mainFile by property(LatexRunConfigurationDirectoryOption()) { it.isDefault() }
+    @get:OptionTag("mainFile", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
+    var mainFile by property(LatexRunConfigurationPathOption()) { it.isDefault() }
 
-    @get:OptionTag("outputPath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
-    var outputPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault() }
+    @get:OptionTag("workingDirectory", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
+    var workingDirectory by property(LatexRunConfigurationPathOption()) { it.isDefault() }
+
+    @get:OptionTag("outputPath", converter = LatexRunConfigurationAbstractOutputPathOption.Converter::class)
+    var outputPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("out") }
+
+    @get:OptionTag("auxilPath", converter = LatexRunConfigurationAbstractOutputPathOption.Converter::class)
+    var auxilPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("auxil") }
 }
 
 
