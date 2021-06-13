@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 interface Step {
     val provider: StepProvider
 
-    val configuration: LatexRunConfiguration
+    var configuration: LatexRunConfiguration
 
     fun configure()
 

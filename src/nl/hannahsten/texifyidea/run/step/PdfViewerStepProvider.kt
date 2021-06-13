@@ -6,7 +6,7 @@ import javax.swing.Icon
 
 object PdfViewerStepProvider : StepProvider {
 
-    override val name: String = "PDF viewer"
+    override val name: String = "Open PDF"
 
     override val icon: Icon = TexifyIcons.PDF_FILE
 

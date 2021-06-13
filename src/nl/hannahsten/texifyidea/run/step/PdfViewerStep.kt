@@ -4,15 +4,15 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.serialization.defaultReadConfiguration
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.LatexRunConfigurationDirectoryOption
-import nl.hannahsten.texifyidea.run.LatexRunConfigurationOptions
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
@@ -26,7 +26,7 @@ import java.io.OutputStream
 import javax.swing.DefaultComboBoxModel
 
 class PdfViewerStep(
-    override val provider: StepProvider, override val configuration: LatexRunConfiguration
+    override val provider: StepProvider, override var configuration: LatexRunConfiguration
 ) : Step, PersistentStateComponent<PdfViewerStep.State> {
 
     inner class State : BaseState() {
@@ -34,8 +34,8 @@ class PdfViewerStep(
         @get:Attribute("pdfViewer", converter = PdfViewer.Converter::class)
         var pdfViewer by property(defaultPdfViewer) { it == defaultPdfViewer }
 
-        @get:Attribute("pdfFilePath", converter = LatexRunConfigurationDirectoryOption.Converter::class)
-        var pdfFilePath by property(LatexRunConfigurationDirectoryOption()) { it.resolvedPath == defaultPdfFilePath }
+        @get:Attribute("pdfFilePath", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
+        var pdfFilePath by property(LatexRunConfigurationPathOption(defaultPdfFilePath)) { it.resolvedPath == defaultPdfFilePath }
     }
 
     private var state = State()
@@ -56,7 +56,8 @@ class PdfViewerStep(
             row("PDF file:") {
                 textFieldWithBrowseButton(
                     getter = { state.pdfFilePath.resolvedPath ?: defaultPdfFilePath },
-                    setter = { state.pdfFilePath.setPath(it) }
+                    setter = { state.pdfFilePath = LatexRunConfigurationPathOption(it) },
+                    fileChooserDescriptor = FileTypeDescriptor("PDF File", ".pdf", ".dvi")
                 )
             }
         }

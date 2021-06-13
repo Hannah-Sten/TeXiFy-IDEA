@@ -27,6 +27,7 @@ fun insertMacro(path: String, component: Component): String {
 
 /**
  * Insert macros into the pathWithMacro, and resolved macros in expandedPath.
+ * We need to do some extra work here to make available the macro which resolves to the directory of the main file.
  *
  * @return expandedPath, pathWithMacro
  */

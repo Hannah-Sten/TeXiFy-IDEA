@@ -1,24 +1,13 @@
 package nl.hannahsten.texifyidea.run.legacy
 
-import com.intellij.execution.ExecutionException
-import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.pdfviewer.OpenCustomPdfViewerListener
-import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.ViewerForwardSearch
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
-import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
-import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraForwardSearchListener
+import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
-import java.io.File
 
 
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) {
@@ -53,7 +42,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 commandList += runConfig.outputFilePath
             }
 
-            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
+//            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
         }
         // Do nothing if the user selected that they do not want a viewer to open.
         else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
@@ -70,12 +59,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Open default system viewer, source: https://ss64.com/osx/open.html
             val commandList = arrayListOf("open", runConfig.outputFilePath)
             // Fail silently, otherwise users who have set up something themselves get an exception every time when this command fails
-            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
+//            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
         }
         else if (SystemInfo.isLinux) {
             // Open default system viewer using xdg-open, since this is available in almost all desktop environments
             val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
-            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
+//            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
         }
     }
 }
