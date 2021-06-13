@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.LatexLanguage
@@ -10,6 +11,11 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.findFirstChild
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
+/**
+ * As the IntelliJ SDK docs say, to replace or insert text it is easiest to create a dummy file,
+ * fill it with the desired text, extract the psi elements and put them in the actual psi tree.
+ * Don't use document.insertString because that will lead to various things (like inspections) working with an obsolete psi tree.
+ */
 class LatexPsiHelper(private val project: Project) {
 
     private fun createEnvironmentContent(): LatexEnvironmentContent {
@@ -43,7 +49,10 @@ class LatexPsiHelper(private val project: Project) {
         return optionalParam.keyvalPairList[0]
     }
 
-    fun createFromText(text: String): PsiElement =
+    /**
+     * Create a PsiFile containing the given text.
+     */
+    fun createFromText(text: String): PsiFile =
         PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
 
     /**
@@ -130,7 +139,8 @@ class LatexPsiHelper(private val project: Project) {
                 existing
             }
             else {
-                optionalParam.addBefore(createFromText(","), closeBracket)
+                val comma = createFromText(",").firstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
+                optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
                 closeBracket.prevSibling as LatexKeyvalPair
             }
