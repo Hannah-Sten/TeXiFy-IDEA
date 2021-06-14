@@ -61,7 +61,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
         when (viewer) {
             is ExternalPdfViewer -> (viewer as ExternalPdfViewer).forwardSearch(pdf, file.path, line, project, focusAllowed = true)
-            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation!!.forwardSearch(pdf, file.path, line, project, focusAllowed = true)
+            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(pdf, file.path, line, project, focusAllowed = true)
             else -> return
         }
     }

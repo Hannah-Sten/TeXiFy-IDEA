@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.run.pdfviewer.sumatra
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
 import java.io.IOException
 
@@ -65,10 +67,10 @@ private fun isSumatraInstalled(): Boolean {
  * @author Sten Wessel
  * @since b0.4
  */
-object SumatraConversation {
+class SumatraConversation : ViewerConversation() {
 
-    private const val server = "SUMATRA"
-    private const val topic = "control"
+    private val server = "SUMATRA"
+    private val topic = "control"
     private val conversation: DDEClientConversation?
 
     init {
@@ -95,6 +97,10 @@ object SumatraConversation {
             }
             processBuilder.start()
         }
+    }
+
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        forwardSearch(pdfPath, sourceFilePath, line, focus = focusAllowed)
     }
 
     /**

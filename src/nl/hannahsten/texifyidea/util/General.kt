@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import java.util.regex.Pattern
 
@@ -40,6 +42,10 @@ infix fun Any.debugln(message: Any) = println("$message: $this")
  */
 fun runWriteAction(writeAction: () -> Unit) {
     ApplicationManager.getApplication().runWriteAction(writeAction)
+}
+
+fun runWriteCommandAction(project: Project, writeCommandAction: () -> Unit) {
+    WriteCommandAction.runWriteCommandAction(project, writeCommandAction)
 }
 
 /**

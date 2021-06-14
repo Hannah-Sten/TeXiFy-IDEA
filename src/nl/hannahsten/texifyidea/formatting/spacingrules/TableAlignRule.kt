@@ -67,7 +67,8 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
 
     // Convert a -1 return value to a line feed.
     var lineFeeds = 0
-    if (spaces < 0) {
+    // I think checking for 'ensure right margin is not exceeded' makes more sense, but don't know which option that is
+    if (spaces < 0 && latexCommonSettings.WRAP_ON_TYPING > 0) {
         spaces = 0
         lineFeeds = 1
     }
