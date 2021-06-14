@@ -17,7 +17,7 @@ object LatexPathConverterUtil {
         var pathWithMacro = splitted.getOrNull(1)
         // It's a magic bug
         if (pathWithMacro == MainFileDirMacro().description) {
-            pathWithMacro = "$${MainFileDirMacro().name}$"
+            pathWithMacro = MainFileDirMacro().macro
         }
         return Pair(splitted.getOrNull(0), pathWithMacro)
     }

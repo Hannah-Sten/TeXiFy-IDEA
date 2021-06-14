@@ -51,8 +51,8 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
      */
     fun getOutputFilePath(options: LatexRunConfigurationOptions, project: Project): String {
         val outputDir = getOrCreateOutputPath(options.mainFile.resolve(), project)
-        return "${outputDir?.path}/" + options.mainFile.resolve()!!
-            .nameWithoutExtension + "." + if (options.outputFormat == LatexCompiler.OutputFormat.DEFAULT) "pdf"
+        return "${outputDir?.path}/" + options.mainFile.resolve()
+            ?.nameWithoutExtension + "." + if (options.outputFormat == LatexCompiler.OutputFormat.DEFAULT) "pdf"
         else options.outputFormat.toString()
             .toLowerCase()
     }

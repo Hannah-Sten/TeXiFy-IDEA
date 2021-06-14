@@ -26,8 +26,7 @@ enum class InternalPdfViewer(
     OKULAR("okular", "Okular", OkularConversation),
     ZATHURA("zathura", "Zathura", ZathuraConversation),
     SKIM("skim", "Skim", SkimConversation),
-    SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
-    NONE("", "No PDF viewer", null);
+    SUMATRA("sumatra", "Sumatra", null); // Dummy options to support Windows
 
     override fun isAvailable(): Boolean = availability[this] ?: false
 
@@ -35,11 +34,7 @@ enum class InternalPdfViewer(
      * Check if the viewer is installed and available from the path.
      */
     fun checkAvailability(): Boolean {
-        // Using no PDF viewer should always be an option.
-        return if (this == NONE) {
-            true
-        }
-        else if (SystemInfo.isWindows && this == SUMATRA) {
+        return if (SystemInfo.isWindows && this == SUMATRA) {
             isSumatraAvailable
         }
         // Only support Evince and Okular on Linux, although they can be installed on other systems like Mac.

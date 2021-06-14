@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
+import nl.hannahsten.texifyidea.run.macro.MainFileDirMacro
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
@@ -45,7 +46,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
 
         // Change the main file as given by the template run configuration to the current file
         runConfiguration.options.mainFile = LatexRunConfigurationPathOption(mainFile.path)
-        runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption(mainFile.parent.path)
+        runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption(mainFile.parent.path, MainFileDirMacro().macro)
         runConfiguration.options.outputPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("out", runConfiguration.project)
         runConfiguration.options.auxilPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", runConfiguration.project)
         runConfiguration.psiFile = container

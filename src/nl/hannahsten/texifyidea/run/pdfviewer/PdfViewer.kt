@@ -33,7 +33,7 @@ interface PdfViewer {
 }
 
 /**
- * Define behaviour that external pdf viewers should inherit.
+ * Define behaviour that external (that means, registered from outside TeXiFy) pdf viewers should inherit.
  */
 interface ExternalPdfViewer : PdfViewer {
 

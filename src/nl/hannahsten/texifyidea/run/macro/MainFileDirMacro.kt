@@ -10,6 +10,8 @@ import com.intellij.openapi.actionSystem.DataContext
 class MainFileDirMacro : Macro() {
     override fun getName() = "MainFileDir"
 
+    val macro = "$$name$"
+
     override fun getDescription() = "The directory which contains the main LaTeX file"
 
     override fun expand(dataContext: DataContext): String? {

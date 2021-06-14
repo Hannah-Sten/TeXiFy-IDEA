@@ -69,14 +69,12 @@ class LatexRunConfiguration constructor(
         private const val TEXIFY_PARENT = "texify"
         private const val COMPILER_PATH = "compiler-path"
         private const val SUMATRA_PATH = "sumatra-path"
-        private const val PDF_VIEWER = "pdf-viewer"
         private const val VIEWER_COMMAND = "viewer-command"
         private const val COMPILE_STEP = "compile-step"
         private const val COMPILE_STEP_NAME_ATTR = "name"
     }
 
     var sumatraPath: String? = null // todo merge with CustomPdfViewer
-    var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null // todo similar to CustomCompiler -> CustomPdfViewer
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
@@ -128,17 +126,6 @@ class LatexRunConfiguration constructor(
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
 
-        // Read pdf viewer.
-        val viewerName = parent.getChildText(PDF_VIEWER)
-        try {
-            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
-                ?: InternalPdfViewer.valueOf(viewerName ?: "")
-        }
-        catch (e: IllegalArgumentException) {
-            // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
-            this.pdfViewer = TexifySettings.getInstance().pdfViewer
-        }
-
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
@@ -175,7 +162,6 @@ class LatexRunConfiguration constructor(
         }
 
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
-        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         this.options.environmentVariables.writeExternal(parent)
 
@@ -189,11 +175,6 @@ class LatexRunConfiguration constructor(
 
             parent.addContent(stepElement)
         }
-    }
-
-    // todo move to options
-    fun setDefaultPdfViewer() {
-        pdfViewer = InternalPdfViewer.firstAvailable()
     }
 
     /**
