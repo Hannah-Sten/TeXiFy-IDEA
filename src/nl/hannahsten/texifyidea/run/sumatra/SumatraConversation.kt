@@ -100,7 +100,7 @@ class SumatraConversation : ViewerConversation() {
     }
 
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-        forwardSearch(pdfPath, sourceFilePath, line, focus=focusAllowed)
+        forwardSearch(pdfPath, sourceFilePath, line, focus = focusAllowed)
     }
 
     /**
