@@ -20,6 +20,8 @@ import java.io.File
 import java.util.*
 
 /**
+ * Build the wizard for creating new projects/modules.
+ *
  * @author Hannah Schellekens, Sten Wessel
  */
 class LatexModuleBuilder : ModuleBuilder() {

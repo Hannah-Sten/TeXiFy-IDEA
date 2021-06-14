@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <projectTemplate templatePath="/projectTemplates/biber-template.zip" projectType="LATEX_MODULE_TYPE" category="false" />
+    </extensions>
+</idea-plugin>
