@@ -97,7 +97,7 @@ class PdfViewerStep(
 
         // Sumatra is the only viewer that has a separate function for opening a file in the viewer.
         if (pdfViewer == InternalPdfViewer.SUMATRA) {
-            SumatraConversation.openFile(configuration.outputFilePath)
+            SumatraConversation().openFile(configuration.outputFilePath)
         }
 
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.

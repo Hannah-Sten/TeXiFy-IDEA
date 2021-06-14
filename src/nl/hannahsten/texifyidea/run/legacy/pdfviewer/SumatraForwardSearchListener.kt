@@ -2,16 +2,14 @@ package nl.hannahsten.texifyidea.run.legacy.pdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
-import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.caretOffset

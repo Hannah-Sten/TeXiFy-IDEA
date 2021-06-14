@@ -6,9 +6,8 @@ import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.okular.OkularConver
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.skim.SkimConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.zathura.ZathuraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
-import nl.hannahsten.texifyidea.run.sumatra.SumatraConversation
-import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.runCommand
 
 /**

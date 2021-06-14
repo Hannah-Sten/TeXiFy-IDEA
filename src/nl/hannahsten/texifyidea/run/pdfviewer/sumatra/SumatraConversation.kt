@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
 import java.io.IOException
 
@@ -71,14 +71,19 @@ class SumatraConversation : ViewerConversation() {
 
     private val server = "SUMATRA"
     private val topic = "control"
-    private val conversation: DDEClientConversation?
+    private var conversation: DDEClientConversation? = null
 
     init {
-        try {
-            conversation = DDEClientConversation()
-        }
-        catch (e: NoClassDefFoundError) {
-            throw TeXception("Native library DLLs could not be found.", e)
+        if (SystemInfo.isWindows) {
+            try {
+                conversation = DDEClientConversation()
+            }
+            catch (e: NoClassDefFoundError) {
+                throw TeXception("Native library DLLs could not be found.", e)
+            }
+            catch (e: UnsatisfiedLinkError) {
+                throw TeXception("Native library DLLs could not be found.", e)
+            }
         }
     }
 
@@ -127,7 +132,7 @@ class SumatraConversation : ViewerConversation() {
     private fun execute(vararg commands: String) {
         try {
             conversation!!.connect(server, topic)
-            conversation.execute(commands.joinToString(separator = "") { "[$it]" })
+            conversation!!.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
