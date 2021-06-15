@@ -104,8 +104,9 @@ class SumatraConversation : ViewerConversation() {
         }
     }
 
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean): Int {
         forwardSearch(pdfPath, sourceFilePath, line, focus = focusAllowed)
+        return 0
     }
 
     /**
@@ -131,8 +132,8 @@ class SumatraConversation : ViewerConversation() {
 
     private fun execute(vararg commands: String) {
         try {
-            conversation!!.connect(server, topic)
-            conversation!!.execute(commands.joinToString(separator = "") { "[$it]" })
+            conversation?.connect(server, topic)
+            conversation?.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)

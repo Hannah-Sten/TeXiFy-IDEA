@@ -14,9 +14,7 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.OccurenceNavigator
-import com.intellij.ide.errorTreeView.ErrorTreeElement
 import com.intellij.ide.errorTreeView.ErrorTreeNodeDescriptor
-import com.intellij.ide.errorTreeView.GroupingElement
 import com.intellij.ide.errorTreeView.NavigatableErrorTreeElement
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
@@ -24,7 +22,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.*
 import com.intellij.ui.render.RenderingHelper
 import com.intellij.ui.tree.AsyncTreeModel
@@ -34,7 +31,7 @@ import com.intellij.util.EditSourceOnDoubleClickHandler
 import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.ui.tree.TreeUtil
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.step.CompileStep
+import nl.hannahsten.texifyidea.run.step.Step
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import java.awt.BorderLayout
 import java.awt.CardLayout
@@ -105,7 +102,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         }
     }
 
-    private data class StepUI(val step: CompileStep, val node: LatexExecutionNode, val console: ConsoleView)
+    private data class StepUI(val step: Step, val node: LatexExecutionNode, val console: ConsoleView)
 
     private val project = runConfig.project
 
@@ -189,7 +186,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         scheduleUpdate(node, true)
     }
 
-    fun startStep(id: String, step: CompileStep, handler: OSProcessHandler) {
+    fun startStep(id: String, step: Step, handler: ProcessHandler) {
         val node = LatexExecutionNode(project, rootNode).apply {
             description = step.provider.name
             state = LatexExecutionNode.State.RUNNING
@@ -198,7 +195,9 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         }
 
         val console = TextConsoleBuilderFactory.getInstance().createBuilder(project).console
-        console.print(handler.commandLine, ConsoleViewContentType.SYSTEM_OUTPUT)
+        if (handler is OSProcessHandler) {
+            console.print(handler.commandLine, ConsoleViewContentType.SYSTEM_OUTPUT)
+        }
         console.print("\n\n", ConsoleViewContentType.SYSTEM_OUTPUT)
         console.attachToProcess(handler)
 

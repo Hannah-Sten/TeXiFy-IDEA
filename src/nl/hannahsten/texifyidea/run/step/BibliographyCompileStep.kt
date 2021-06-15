@@ -31,6 +31,10 @@ class BibliographyCompileStep(
     // We are using attributes instead of optiontags for brevity in the xml (it seems to make more sense, as attributes of a compile step)
     // Attributes: <compile-step myattribute="value" />
     // OptionTags (as in LatexRunConfigurationOptions): <option value="optionValue" />
+    // Note that you cannot use an inner class here, because it will require an instance of the
+    // outer class when deserializing, which is at that moment impossible (because we first create
+    // a step and a state separately, and then load the state to the step) and will generate a
+    // IllegalArgumentException: No argument provided for a required parameter of fun State.<init>()
     class State : BaseState() {
 
         @get:Attribute("compiler", converter = BibliographyCompiler.Converter::class)

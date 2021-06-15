@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputP
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
+import nl.hannahsten.texifyidea.run.step.PdfViewerStep
 
 /**
  * Create run configurations from context (from inside a LaTeX file).
@@ -57,6 +58,10 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             runConfiguration.compileSteps.add(LatexCompileStepProvider.createStep(runConfiguration))
         }
         runConfiguration.compileSteps.forEach { it.configuration = runConfiguration }
+
+        // Set default pdf path to the pdf corresponding to the main file
+        // Maybe we shouldn't do this if the user set a path in the template run config though
+        runConfiguration.compileSteps.filterIsInstance<PdfViewerStep>().forEach { it.state.pdfFilePath = LatexRunConfigurationPathOption(it.defaultPdfFilePath) } // todo use macro by default
 
         // Check for magic comments
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)

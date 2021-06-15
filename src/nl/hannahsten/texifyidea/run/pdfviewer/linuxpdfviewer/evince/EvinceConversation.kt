@@ -50,11 +50,11 @@ object EvinceConversation : ViewerConversation() {
      * @param sourceFilePath Full path to the LaTeX source file.
      * @param line Line number in the source file to highlight in the pdf.
      */
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean): Int {
 
         // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Evince
         if (!focusAllowed) {
-            return
+            return 0
         }
 
         if (pdfPath != null) {
@@ -65,12 +65,12 @@ object EvinceConversation : ViewerConversation() {
             // Theoretically we should use the Java D-Bus bindings as well to call SyncView, but that did
             // not succeed with a NoReply exception, so we will execute a command via the shell
             val command = "gdbus call --session --dest $processOwner --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView $sourceFilePath '($line, 1)' 0"
-            Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
+            return Runtime.getRuntime().exec(arrayOf("bash", "-c", command)).exitValue()
         }
         else {
             // If the user used the forward search menu action
             if (pdfPath == null) {
-                Notification("LaTeX", "Could not execute forward search", "Please make sure you have compiled the document first, and that your path does not contain spaces.", NotificationType.ERROR).notify(project)
+                throw TeXception("Please make sure you have compiled the document first, and that your path does not contain spaces.")
             }
             else {
                 throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $pdfPath")

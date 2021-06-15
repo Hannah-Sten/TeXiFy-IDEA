@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -18,7 +19,7 @@ import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 object ZathuraConversation : ViewerConversation() {
 
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean): Int {
         val pdfPathGuess = pdfPath ?: guessPdfPath(project, sourceFilePath)
 
         if (pdfPathGuess != null) {
@@ -26,10 +27,10 @@ object ZathuraConversation : ViewerConversation() {
             val name = ApplicationNamesInfo.getInstance().scriptName
             val command =
                 """zathura --synctex-forward="$line:1:$sourceFilePath" --synctex-editor-command="$path/$name.sh --line %{line} $sourceFilePath" $pdfPathGuess"""
-            Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
+            return Runtime.getRuntime().exec(arrayOf("bash", "-c", command)).exitValue()
         }
         else {
-            Notification("LaTeX", "Could not execute forward search", "Please make sure you have compiled the document first.", NotificationType.ERROR).notify(project)
+            throw TeXception("Could not execute forward search, please make sure you have compiled the document first.")
         }
     }
 
