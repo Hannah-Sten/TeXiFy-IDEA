@@ -71,14 +71,16 @@ class SumatraConversation : ViewerConversation() {
 
     private val server = "SUMATRA"
     private val topic = "control"
-    private val conversation: DDEClientConversation?
+    private var conversation: DDEClientConversation? = null
 
     init {
-        try {
-            conversation = DDEClientConversation()
-        }
-        catch (e: NoClassDefFoundError) {
-            throw TeXception("Native library DLLs could not be found.", e)
+        if (isSumatraAvailable) {
+            try {
+                conversation = DDEClientConversation()
+            }
+            catch (e: NoClassDefFoundError) {
+                throw TeXception("Native library DLLs could not be found.", e)
+            }
         }
     }
 
@@ -127,7 +129,7 @@ class SumatraConversation : ViewerConversation() {
     private fun execute(vararg commands: String) {
         try {
             conversation!!.connect(server, topic)
-            conversation.execute(commands.joinToString(separator = "") { "[$it]" })
+            conversation!!.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
