@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigura
 import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfigurationType
-import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 
 /**
  * Create template run configurations.

@@ -18,7 +18,6 @@ import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.step.CompileStep
 import nl.hannahsten.texifyidea.run.step.Step
 import nl.hannahsten.texifyidea.run.step.StepProvider
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
@@ -39,8 +38,8 @@ import javax.swing.JPanel
  *
  * @author Sten Wessel
  */
-class LatexCompileSequenceComponent(parentDisposable: Disposable)
-    : JPanel(WrapLayout(FlowLayout.LEADING, 0, FragmentedSettingsBuilder.TAG_VGAP)),
+class LatexCompileSequenceComponent(parentDisposable: Disposable) :
+    JPanel(WrapLayout(FlowLayout.LEADING, 0, FragmentedSettingsBuilder.TAG_VGAP)),
       DnDTarget, Disposable {
 
     private val dropFirst = JLabel(AllIcons.General.DropPlace).apply {
@@ -60,7 +59,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
 
     private val steps = mutableListOf<StepButton>()
 
-    var changeListener: () -> Unit = {  }
+    var changeListener: () -> Unit = { }
 
     private lateinit var configuration: LatexRunConfiguration
 
@@ -243,7 +242,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable)
             val bounds = myButton.bounds
             val size = dropPlace.preferredSize
             val gap = JBUI.scale(2)
-            preferredSize = Dimension(bounds.width + size.width + 2*gap, bounds.height)
+            preferredSize = Dimension(bounds.width + size.width + 2 * gap, bounds.height)
             dropPlace.setBounds((bounds.maxX + gap).toInt(), bounds.y + (bounds.height - size.height) / 2, size.width, size.height)
         }
 

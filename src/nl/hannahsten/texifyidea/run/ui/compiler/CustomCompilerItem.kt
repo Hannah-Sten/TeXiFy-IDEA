@@ -16,5 +16,4 @@ class CustomCompilerItem<S : CompileStep>(val compiler: CustomCompiler<S>) : Com
     override val command = PathUtil.getFileName(presentableText)
 
     override val order = 1
-
 }

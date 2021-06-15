@@ -1,51 +1,51 @@
-//package nl.hannahsten.texifyidea.run.legacy
+// package nl.hannahsten.texifyidea.run.legacy
 //
-//import com.intellij.execution.configuration.EnvironmentVariablesComponent
-//import com.intellij.execution.ui.SettingsEditorFragment
-//import com.intellij.ide.DataManager
-//import com.intellij.openapi.actionSystem.AnActionEvent
-//import com.intellij.openapi.actionSystem.DefaultActionGroup
-//import com.intellij.openapi.actionSystem.Separator
-//import com.intellij.openapi.actionSystem.ToggleAction
-//import com.intellij.openapi.fileChooser.FileChooserDescriptor
-//import com.intellij.openapi.fileChooser.FileTypeDescriptor
-//import com.intellij.openapi.options.ConfigurationException
-//import com.intellij.openapi.options.SettingsEditor
-//import com.intellij.openapi.project.Project
-//import com.intellij.openapi.roots.ProjectRootManager
-//import com.intellij.openapi.ui.*
-//import com.intellij.openapi.ui.popup.JBPopupFactory
-//import com.intellij.openapi.ui.popup.ListPopup
-//import com.intellij.openapi.util.SystemInfo
-//import com.intellij.ui.RawCommandLineEditor
-//import com.intellij.ui.SeparatorComponent
-//import com.intellij.ui.TitledSeparator
-//import com.intellij.ui.components.DropDownLink
-//import com.intellij.ui.components.JBCheckBox
-//import com.intellij.ui.components.JBTextField
-//import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
-//import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
-//import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
-//import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-//import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
-//import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
-//import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
-//import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType
-//import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
-//import nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfigurationType
-//import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
-//import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-//import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-//import nl.hannahsten.texifyidea.util.magic.CompilerMagic
-//import java.awt.event.ItemEvent
-//import javax.swing.JComponent
-//import javax.swing.JPanel
+// import com.intellij.execution.configuration.EnvironmentVariablesComponent
+// import com.intellij.execution.ui.SettingsEditorFragment
+// import com.intellij.ide.DataManager
+// import com.intellij.openapi.actionSystem.AnActionEvent
+// import com.intellij.openapi.actionSystem.DefaultActionGroup
+// import com.intellij.openapi.actionSystem.Separator
+// import com.intellij.openapi.actionSystem.ToggleAction
+// import com.intellij.openapi.fileChooser.FileChooserDescriptor
+// import com.intellij.openapi.fileChooser.FileTypeDescriptor
+// import com.intellij.openapi.options.ConfigurationException
+// import com.intellij.openapi.options.SettingsEditor
+// import com.intellij.openapi.project.Project
+// import com.intellij.openapi.roots.ProjectRootManager
+// import com.intellij.openapi.ui.*
+// import com.intellij.openapi.ui.popup.JBPopupFactory
+// import com.intellij.openapi.ui.popup.ListPopup
+// import com.intellij.openapi.util.SystemInfo
+// import com.intellij.ui.RawCommandLineEditor
+// import com.intellij.ui.SeparatorComponent
+// import com.intellij.ui.TitledSeparator
+// import com.intellij.ui.components.DropDownLink
+// import com.intellij.ui.components.JBCheckBox
+// import com.intellij.ui.components.JBTextField
+// import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
+// import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
+// import nl.hannahsten.texifyidea.run.ui.LatexOutputPath
+// import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+// import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
+// import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
+// import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
+// import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType
+// import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
+// import nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfigurationType
+// import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
+// import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+// import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+// import nl.hannahsten.texifyidea.util.magic.CompilerMagic
+// import java.awt.event.ItemEvent
+// import javax.swing.JComponent
+// import javax.swing.JPanel
 //
-///**
+// /**
 // * todo replace by [NewLatexSettingsEditor]
 // * @author Sten Wessel
 // */
-//class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexRunConfiguration>() {
+// class LegacyLatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexRunConfiguration>() {
 //
 //    private lateinit var panel: JPanel
 //    private lateinit var compiler: LabeledComponent<ComboBox<SupportedLatexCompiler>>
@@ -471,4 +471,4 @@
 //
 //        panel.add(viewerCommand)
 //    }
-//}
+// }

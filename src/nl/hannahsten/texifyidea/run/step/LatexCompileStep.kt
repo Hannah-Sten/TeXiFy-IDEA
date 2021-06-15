@@ -3,14 +3,12 @@ package nl.hannahsten.texifyidea.run.step
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
-
 class LatexCompileStep(
     override val provider: StepProvider,
     override var configuration: LatexRunConfiguration
 ) : CompileStep() {
 
     override fun configure() {
-
     }
 
     override fun getCommand() = configuration.options.compiler?.getCommand(this)

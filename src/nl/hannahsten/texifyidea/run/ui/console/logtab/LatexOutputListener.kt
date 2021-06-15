@@ -227,8 +227,6 @@ class LatexOutputListener(
 //            treeView.applyFilters(message) // todo should be replaced by invoke below?
             newMessageListener?.invoke(logMessage, file)
         }
-
-
     }
 
     override fun startNotified(event: ProcessEvent) {
@@ -239,5 +237,4 @@ class LatexOutputListener(
 
     override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
     }
-
 }

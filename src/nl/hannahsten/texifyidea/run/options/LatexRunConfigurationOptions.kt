@@ -75,7 +75,6 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var auxilPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("auxil") }
 }
 
-
 fun <U, T> transformed(stored: KMutableProperty0<T>, transform: (T) -> T): ReadWriteProperty<U, T> {
     return object : ReadWriteProperty<U, T> {
         override fun getValue(thisRef: U, property: KProperty<*>) = stored.getValue(thisRef, property)

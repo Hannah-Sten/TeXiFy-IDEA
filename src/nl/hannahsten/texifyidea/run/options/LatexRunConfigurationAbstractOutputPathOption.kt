@@ -24,6 +24,7 @@ import java.nio.file.Path
 abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWithMacro: String?, override val resolvedPath: String?) : LatexRunConfigurationAbstractPathOption(pathWithMacro, resolvedPath) {
 
     companion object {
+
         /**
          * Get default output path based on variant (out or auxil), includes macro.
          *
@@ -31,7 +32,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
          */
         fun getDefault(variant: String, project: Project?): LatexRunConfigurationOutputPathOption {
             val projectFileDirectory = project?.projectFile?.parent
-            val context = DataContext { dataId -> if(dataId == PlatformDataKeys.PROJECT_FILE_DIRECTORY.name) projectFileDirectory else null }
+            val context = DataContext { dataId -> if (dataId == PlatformDataKeys.PROJECT_FILE_DIRECTORY.name) projectFileDirectory else null }
             val defaultWithMacro = "\$${ProjectFileDirMacro().name}\$/$variant"
             val resolved = ProjectFileDirMacro().expand(context)
             return LatexRunConfigurationOutputPathOption(resolved, defaultWithMacro)
@@ -108,6 +109,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
     }
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractOutputPathOption>() {
+
         override fun toString(value: LatexRunConfigurationAbstractOutputPathOption): String {
             return LatexPathConverterUtil.toString(value)
         }
@@ -116,6 +118,5 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
             val (resolvedPath, pathWithMacro) = LatexPathConverterUtil.fromString(value)
             return LatexRunConfigurationOutputPathOption(resolvedPath, pathWithMacro)
         }
-
     }
 }

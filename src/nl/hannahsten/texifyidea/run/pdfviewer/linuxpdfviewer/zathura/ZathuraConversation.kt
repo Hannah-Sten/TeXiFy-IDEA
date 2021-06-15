@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.zathura
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project

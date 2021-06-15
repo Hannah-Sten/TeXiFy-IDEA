@@ -52,6 +52,7 @@ import javax.swing.tree.TreePath
 class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, OccurenceNavigator, Filterable<Any>, ExecutionConsole {
 
     companion object {
+
         private const val SPLITTER_PROPORTION_PROPERTY = "TeXiFy.ExecutionConsole.Splitter.Proportion"
 
         // todo clean up
@@ -141,7 +142,6 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
 
             override fun setAutoScrollMode(state: Boolean) {
             }
-
         }
         autoScrollToSourceHandler.install(tree)
     }
@@ -240,7 +240,6 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
     override fun getPreferredFocusableComponent() = component
 
     override fun dispose() {
-
     }
 
     override fun print(text: String, contentType: ConsoleViewContentType) {
@@ -332,8 +331,6 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         TODO("Not yet implemented")
     }
 
-
-
     private inner class TreeStructure : AbstractTreeStructure() {
 
         override fun getRootElement() = rootNode
@@ -347,7 +344,6 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         override fun hasSomethingToCommit() = false
 
         override fun commit() {
-
         }
     }
 }

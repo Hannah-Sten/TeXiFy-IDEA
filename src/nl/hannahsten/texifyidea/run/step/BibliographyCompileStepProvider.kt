@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.step
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -57,7 +56,6 @@ object BibliographyCompileStepProvider : StepProvider {
 //            }
 //        }
     }
-
 
     /**
      * Create a new bib run config and add it to the set.

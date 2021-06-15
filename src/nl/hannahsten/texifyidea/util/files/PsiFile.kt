@@ -20,7 +20,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.reference.InputFileReference
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 

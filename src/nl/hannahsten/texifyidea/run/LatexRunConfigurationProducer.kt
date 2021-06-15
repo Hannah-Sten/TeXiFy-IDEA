@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.macro.MainFileDirMacro
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
-import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep

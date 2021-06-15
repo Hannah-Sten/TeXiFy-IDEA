@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.okular
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.ViewerConversation

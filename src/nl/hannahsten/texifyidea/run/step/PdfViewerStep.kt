@@ -42,6 +42,7 @@ class PdfViewerStep(
     val defaultPdfFilePath = configuration.outputFilePath
 
     companion object {
+
         val defaultPdfViewer = availablePdfViewers().firstOrNull()
     }
 

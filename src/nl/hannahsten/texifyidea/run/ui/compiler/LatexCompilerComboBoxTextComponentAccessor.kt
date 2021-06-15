@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.run.compiler.latex.CustomLatexCompiler
 class LatexCompilerComboBoxTextComponentAccessor : TextComponentAccessor<ComboBox<CompilerComboBoxItem>> {
 
     companion object {
+
         val INSTANCE = LatexCompilerComboBoxTextComponentAccessor()
     }
 

@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.KillableProcess
 import com.intellij.execution.process.*
-import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
@@ -29,7 +28,7 @@ class SequentialProcessHandler(private val processes: List<ProcessHandler>) : Pr
                         this@SequentialProcessHandler.notifyProcessTerminated(event.exitCode)
                     }
                     else {
-                        currentProcess = processes[i+1]
+                        currentProcess = processes[i + 1]
                         currentProcess?.startNotify()
                     }
                 }
@@ -41,7 +40,6 @@ class SequentialProcessHandler(private val processes: List<ProcessHandler>) : Pr
                 this@SequentialProcessHandler.notifyProcessTerminated(event.exitCode)
             }
         })
-
     }
 
     override fun startNotify() {

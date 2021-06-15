@@ -27,6 +27,5 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
         val currentPsiFile = editor.document.psiFile(runConfig.project) ?: return
 
         handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, runConfig.project, focusAllowed))
-
     }
 }

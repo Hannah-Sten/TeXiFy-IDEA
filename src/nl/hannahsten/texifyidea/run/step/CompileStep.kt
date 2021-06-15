@@ -49,7 +49,6 @@ abstract class CompileStep : Step {
             }
         })
 
-
         val latexOutputListener = LatexOutputListener(
             configuration.project,
             configuration.options.mainFile.resolve(),

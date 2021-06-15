@@ -4,11 +4,6 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
-
 
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) {
 

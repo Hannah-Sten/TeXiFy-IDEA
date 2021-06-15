@@ -7,13 +7,12 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Font
-import java.awt.image.ColorModel
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class LatexCompileSequenceFragment(private val component: LatexCompileSequenceComponent, commandLinePosition: Int)
-    : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
+class LatexCompileSequenceFragment(private val component: LatexCompileSequenceComponent, commandLinePosition: Int) :
+    RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
         "compileSequence", null, null, wrap(component), commandLinePosition, { true }
     ) {
 

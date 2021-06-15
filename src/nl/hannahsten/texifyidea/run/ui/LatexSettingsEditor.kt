@@ -5,8 +5,6 @@ import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
-import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
-import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import java.awt.Font
 import javax.swing.JLabel
 

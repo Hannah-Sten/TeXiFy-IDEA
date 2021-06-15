@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
-
 class BibliographyCompileStep(
     override val provider: StepProvider, override var configuration: LatexRunConfiguration
 ) : CompileStep(), PersistentStateComponent<BibliographyCompileStep.State> {

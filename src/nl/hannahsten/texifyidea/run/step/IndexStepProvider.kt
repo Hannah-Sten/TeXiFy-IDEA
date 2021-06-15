@@ -1,18 +1,8 @@
 package nl.hannahsten.texifyidea.run.step
 
-import com.intellij.execution.process.KillableProcessHandler
-import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.run.legacy.makeindex.RunMakeindexListener
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.includedPackages
-import nl.hannahsten.texifyidea.util.magic.PackageMagic
-import java.io.File
-
 // todo makeindex
 object IndexStepProvider {
+
 //    private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile, filesToCleanUp: MutableList<File>): Boolean {
 //        var isMakeindexNeeded = false
 //
@@ -26,7 +16,7 @@ object IndexStepProvider {
 //
 //            if (usesTexForGlossaries) {
 //                // todo ensure that there are at least two LaTeX steps
-////                runConfig.compileTwice = true
+// //                runConfig.compileTwice = true
 //            }
 //
 //            // If no index package is used, we assume we won't have to run makeindex

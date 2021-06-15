@@ -94,7 +94,7 @@ class RunMakeindexListener(
     private fun scheduleLatexRuns() {
 //        // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
 //        if (latexRunConfig.bibRunConfigs.isEmpty()) {
-////             LaTeX twice
+// //             LaTeX twice
 //            latexRunConfig.isFirstRunConfig = false
 //            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
 //                ?: return

@@ -75,7 +75,6 @@ sealed class LatexCompiler : Compiler<LatexCompileStep> {
     }
 }
 
-
 class CustomLatexCompiler(override val executablePath: String) : LatexCompiler(),
                                                                  CustomCompiler<LatexCompileStep> {
 
@@ -95,8 +94,6 @@ class CustomLatexCompiler(override val executablePath: String) : LatexCompiler()
         return command
     }
 }
-
-
 
 /**
  *
@@ -244,8 +241,5 @@ abstract class SupportedLatexCompiler(
     companion object {
 
         fun byExecutableName(exe: String) = CompilerMagic.latexCompilerByExecutableName[exe]
-
     }
-
 }
-

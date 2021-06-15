@@ -136,6 +136,4 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         }
         return null
     }
-
-
 }

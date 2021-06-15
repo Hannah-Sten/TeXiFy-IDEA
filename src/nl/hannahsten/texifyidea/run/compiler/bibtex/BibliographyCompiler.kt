@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.run.compiler.bibtex
 
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.Compiler
 import nl.hannahsten.texifyidea.run.compiler.CustomCompiler
 import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
@@ -22,13 +21,11 @@ sealed class BibliographyCompiler : Compiler<BibliographyCompileStep> {
     }
 }
 
-
 class CustomBibliographyCompiler(override val executablePath: String) : BibliographyCompiler(),
                                                                         CustomCompiler<BibliographyCompileStep> {
 
     override fun getCommand(step: BibliographyCompileStep) = listOf(executablePath)
 }
-
 
 abstract class SupportedBibliographyCompiler(override val displayName: String, override val executableName: String) : BibliographyCompiler(), SupportedCompiler<BibliographyCompileStep> {
 

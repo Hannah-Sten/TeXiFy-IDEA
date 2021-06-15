@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.DataContext
  * Macro for in run configuration textfields.
  */
 class MainFileDirMacro : Macro() {
+
     override fun getName() = "MainFileDir"
 
     val macro = "$$name$"

@@ -4,7 +4,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
-
 object TectonicCompiler : SupportedLatexCompiler("Tectonic", "tectonic") {
 
     override val includesBibtex = true

@@ -4,7 +4,6 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
@@ -12,11 +11,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.getBibtexRunConfigurations
-import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.requiredParameter
 

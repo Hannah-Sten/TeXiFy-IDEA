@@ -10,5 +10,4 @@ class AddCompilerItem : CompilerComboBoxItem {
     override val presentableText = "Select alternative compiler..."
     override val command = "latex"
     override val order = Int.MAX_VALUE
-
 }

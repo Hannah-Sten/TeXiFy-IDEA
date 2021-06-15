@@ -12,6 +12,7 @@ import java.awt.Component
 abstract class LatexRunConfigurationAbstractPathOption(open val pathWithMacro: String? = null, open val resolvedPath: String? = null) {
 
     companion object {
+
         /**
          * Expand macros using the data context from the given component and then save it.
          *
@@ -39,6 +40,7 @@ abstract class LatexRunConfigurationAbstractPathOption(open val pathWithMacro: S
     open fun isDefault() = pathWithMacro == null && resolvedPath == null
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractPathOption>() {
+
         override fun toString(value: LatexRunConfigurationAbstractPathOption): String {
             return LatexPathConverterUtil.toString(value)
         }

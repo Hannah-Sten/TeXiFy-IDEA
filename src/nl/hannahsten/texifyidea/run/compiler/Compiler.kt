@@ -16,4 +16,3 @@ interface Compiler<in S : CompileStep> {
      */
     fun getCommand(step: S): List<String>?
 }
-
