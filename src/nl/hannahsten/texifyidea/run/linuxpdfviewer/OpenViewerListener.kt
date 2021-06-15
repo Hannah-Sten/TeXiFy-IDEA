@@ -30,7 +30,7 @@ class OpenViewerListener(
             runAsync {
                 try {
                     when (viewer) {
-                        is InternalPdfViewer -> viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
+                        is InternalPdfViewer -> viewer.conversation?.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
                         is ExternalPdfViewer -> viewer.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
                         else -> {}
                     }
