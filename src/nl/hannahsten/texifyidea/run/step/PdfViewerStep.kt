@@ -2,17 +2,25 @@ package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
+import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
+import com.intellij.ide.DataManager
+import com.intellij.ide.macro.MacrosDialog
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.dialog
+import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.ui.layout.CellBuilder
 import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.macro.sortOutMacros
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -22,6 +30,7 @@ import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.toVector
+import org.jetbrains.annotations.NotNull
 import java.io.OutputStream
 import javax.swing.DefaultComboBoxModel
 
@@ -35,11 +44,12 @@ class PdfViewerStep(
         var pdfViewer by property(defaultPdfViewer) { it == defaultPdfViewer }
 
         @get:Attribute("pdfFilePath", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
-        var pdfFilePath: LatexRunConfigurationPathOption? by property(LatexRunConfigurationPathOption(null)) { it?.resolvedPath == null }
+        var pdfFilePath: LatexRunConfigurationPathOption by property(LatexRunConfigurationPathOption()) { it.isDefault() }
     }
 
     private var state = State()
-    val defaultPdfFilePath = configuration.outputFilePath
+
+    fun getDefaultPdfFilePath() = configuration.outputFilePath
 
     companion object {
 
@@ -47,9 +57,11 @@ class PdfViewerStep(
     }
 
     override fun configure() {
+        // We have to get the data context in the setter, any data component will do
+        var comboBoxBuilder: CellBuilder<ComboBox<PdfViewer>>? = null
         val panel = panel {
             row("PDF viewer:") {
-                comboBox(
+                comboBoxBuilder = comboBox(
                     DefaultComboBoxModel(availablePdfViewers().toVector()),
                     getter = { state.pdfViewer ?: defaultPdfViewer },
                     setter = { state.pdfViewer = it }
@@ -57,11 +69,19 @@ class PdfViewerStep(
             }
 
             row("PDF file:") {
-                textFieldWithBrowseButton(
-                    getter = { state.pdfFilePath?.resolvedPath ?: defaultPdfFilePath },
-                    setter = { state.pdfFilePath = LatexRunConfigurationPathOption(it) },
+                val textFieldBuilder = textFieldWithBrowseButton(
+                    getter = { state.pdfFilePath.pathWithMacro ?: getDefaultPdfFilePath() },
+                    setter = {
+                        val (resolvedPath, pathWithMacro) = sortOutMacros(comboBoxBuilder?.component?.getComponent(0) ?: return@textFieldWithBrowseButton, configuration, it)
+                        state.pdfFilePath = LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
+                    },
                     fileChooserDescriptor = FileTypeDescriptor("PDF File", ".pdf", ".dvi")
                 )
+                MacrosDialog.addMacroSupport(
+                    textFieldBuilder.component.textField as @NotNull ExtendableTextField,
+                    MacrosDialog.Filters.DIRECTORY_PATH
+                ) { false }
+                setMonospaced(textFieldBuilder.component.textField)
             }
         }
 

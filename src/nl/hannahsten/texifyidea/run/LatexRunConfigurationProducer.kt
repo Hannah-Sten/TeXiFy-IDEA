@@ -13,9 +13,11 @@ import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.macro.MainFileDirMacro
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep
+import nl.hannahsten.texifyidea.run.step.PdfViewerStepProvider
 
 /**
  * Create run configurations from context (from inside a LaTeX file).
@@ -46,7 +48,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
 
         // Change the main file as given by the template run configuration to the current file
         runConfiguration.options.mainFile = LatexRunConfigurationPathOption(mainFile.path)
-        runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption(mainFile.parent.path, MainFileDirMacro().macro)
+        runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption(mainFile.parent.path, LatexRunConfigurationAbstractPathOption.defaultWorkingDirectoryWithMacro)
         runConfiguration.options.outputPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("out", runConfiguration.project)
         runConfiguration.options.auxilPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", runConfiguration.project)
         runConfiguration.psiFile = container
@@ -55,12 +57,15 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         // Make sure the run configuration is at least valid
         if (runConfiguration.compileSteps.isEmpty()) {
             runConfiguration.compileSteps.add(LatexCompileStepProvider.createStep(runConfiguration))
+            runConfiguration.compileSteps.add(PdfViewerStepProvider.createStep(runConfiguration))
         }
         runConfiguration.compileSteps.forEach { it.configuration = runConfiguration }
 
         // Set default pdf path to the pdf corresponding to the main file
         // Maybe we shouldn't do this if the user set a path in the template run config though
-        runConfiguration.compileSteps.filterIsInstance<PdfViewerStep>().forEach { it.state.pdfFilePath = LatexRunConfigurationPathOption(it.defaultPdfFilePath) } // todo use macro by default
+        runConfiguration.compileSteps.filterIsInstance<PdfViewerStep>().forEach {
+            it.state.pdfFilePath = LatexRunConfigurationPathOption(it.getDefaultPdfFilePath())
+        } // todo use macro by default
 
         // Check for magic comments
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)

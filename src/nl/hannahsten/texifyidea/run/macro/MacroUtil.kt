@@ -5,7 +5,9 @@ import com.intellij.ide.macro.MacroManager
 import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
@@ -29,23 +31,26 @@ fun insertMacro(path: String, component: Component): String {
  * Insert macros into the pathWithMacro, and resolved macros in expandedPath.
  * We need to do some extra work here to make available the macro which resolves to the directory of the main file.
  *
+ * @param givenText: If not provided, assume component is LabeledComponent<TextFieldWithBrowseButton> and get text from there.
  * @return expandedPath, pathWithMacro
  */
-fun sortOutMacros(component: Component, runConfig: LatexRunConfiguration): Pair<String?, String?> {
-    val text = ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text
+fun sortOutMacros(component: Component, runConfig: LatexRunConfiguration, givenText: String? = null): Pair<String?, String?> {
+    val text = givenText ?: ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text
     val pathWithMacro = insertMacro(text, component)
 
     // Inject data into context
     // This makes available macros such as $FileDir$ which will point to the directory of the main file
     // Unfortunately, the preview will not be correct because it's taking for some reason the open FileEditor (yes, of the open file) component for the context, which is not necessarily the right file. See MacroManager#getCorrectContext
-    val reallyCorrectContext = DataContext { dataId ->
-        if (dataId == CommonDataKeys.VIRTUAL_FILE.name) {
-            runConfig.options.mainFile.resolve()
-        }
-        else {
-            DataManager.getInstance().getDataContext(component).getData(dataId)
-        }
-    }
+    val parentContext = DataManager.getInstance().getDataContext(component)
+    // todo check keys and whether this works
+    val reallyCorrectContext = SimpleDataContext.builder().addAll(parentContext,
+        CommonDataKeys.PROJECT,
+        PlatformDataKeys.PROJECT_FILE_DIRECTORY,
+        CommonDataKeys.EDITOR,
+        LangDataKeys.MODULE,
+        CommonDataKeys.PSI_FILE)
+        .add(CommonDataKeys.VIRTUAL_FILE, runConfig.options.mainFile.resolve())
+        .build()
 
     // Resolve macro using our own context with corrected file
     val expandedPath = MacroManager.getInstance().expandMacrosInString(pathWithMacro, true, reallyCorrectContext)

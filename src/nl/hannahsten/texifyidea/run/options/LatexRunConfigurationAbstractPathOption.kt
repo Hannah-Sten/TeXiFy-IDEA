@@ -4,6 +4,7 @@ import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacroManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.macro.MainFileDirMacro
 import java.awt.Component
 
 /**
@@ -27,6 +28,8 @@ abstract class LatexRunConfigurationAbstractPathOption(open val pathWithMacro: S
             val expandedPath = MacroManager.getInstance().expandMacrosInString(pathWithMacro, true, context)
             return factory(expandedPath, pathWithMacro)
         }
+
+        val defaultWorkingDirectoryWithMacro = MainFileDirMacro().macro
     }
 
     /**
@@ -38,6 +41,8 @@ abstract class LatexRunConfigurationAbstractPathOption(open val pathWithMacro: S
     }
 
     open fun isDefault() = pathWithMacro == null && resolvedPath == null
+
+    fun isDefaultWorkingDirectory() = pathWithMacro == defaultWorkingDirectoryWithMacro
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractPathOption>() {
 

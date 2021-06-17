@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -31,10 +32,13 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
          * @param project If null, then the resolvedPath will be null.
          */
         fun getDefault(variant: String, project: Project?): LatexRunConfigurationOutputPathOption {
-            val projectFileDirectory = project?.projectFile?.parent
-            val context = DataContext { dataId -> if (dataId == PlatformDataKeys.PROJECT_FILE_DIRECTORY.name) projectFileDirectory else null }
+            // See docs of projectFile
+            val projectDir = if (project?.projectFile?.parent?.path?.endsWith(".idea") == true) project.projectFile?.parent?.parent else project?.projectFile?.parent
+
+            // Add project file dir to context and resolve the macro with it (it's unclear why the key is not already in the context)
+            val context = SimpleDataContext.builder().add(PlatformDataKeys.PROJECT_FILE_DIRECTORY, projectDir).build()
             val defaultWithMacro = "\$${ProjectFileDirMacro().name}\$/$variant"
-            val resolved = ProjectFileDirMacro().expand(context)
+            val resolved = ProjectFileDirMacro().expand(context) + "/$variant"
             return LatexRunConfigurationOutputPathOption(resolved, defaultWithMacro)
         }
     }
