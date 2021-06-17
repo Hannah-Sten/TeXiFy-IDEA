@@ -27,6 +27,13 @@ fun insertMacro(path: String, component: Component): String {
     }
 }
 
+val relevantDatakeys = arrayOf(
+    CommonDataKeys.PROJECT,
+    PlatformDataKeys.PROJECT_FILE_DIRECTORY,
+    LangDataKeys.MODULE,
+    CommonDataKeys.PSI_FILE
+)
+
 /**
  * Insert macros into the pathWithMacro, and resolved macros in expandedPath.
  * We need to do some extra work here to make available the macro which resolves to the directory of the main file.
@@ -43,13 +50,9 @@ fun sortOutMacros(component: Component, runConfig: LatexRunConfiguration, givenT
     // Unfortunately, the preview will not be correct because it's taking for some reason the open FileEditor (yes, of the open file) component for the context, which is not necessarily the right file. See MacroManager#getCorrectContext
     val parentContext = DataManager.getInstance().getDataContext(component)
     // todo check keys and whether this works
-    val reallyCorrectContext = SimpleDataContext.builder().addAll(parentContext,
-        CommonDataKeys.PROJECT,
-        PlatformDataKeys.PROJECT_FILE_DIRECTORY,
-        CommonDataKeys.EDITOR,
-        LangDataKeys.MODULE,
-        CommonDataKeys.PSI_FILE)
+    val reallyCorrectContext = SimpleDataContext.builder().addAll(parentContext, *relevantDatakeys)
         .add(CommonDataKeys.VIRTUAL_FILE, runConfig.options.mainFile.resolve())
+        .add(OUTPUT_DIR, runConfig.options.outputPath.resolve())
         .build()
 
     // Resolve macro using our own context with corrected file

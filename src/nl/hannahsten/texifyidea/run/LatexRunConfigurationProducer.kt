@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
-import nl.hannahsten.texifyidea.run.macro.MainFileDirMacro
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
@@ -64,8 +63,8 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         // Set default pdf path to the pdf corresponding to the main file
         // Maybe we shouldn't do this if the user set a path in the template run config though
         runConfiguration.compileSteps.filterIsInstance<PdfViewerStep>().forEach {
-            it.state.pdfFilePath = LatexRunConfigurationPathOption(it.getDefaultPdfFilePath())
-        } // todo use macro by default
+            it.state.pdfFilePath = it.getDefaultPdfFilePathWithMacro()
+        }
 
         // Check for magic comments
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)

@@ -33,6 +33,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
          */
         fun getDefault(variant: String, project: Project?): LatexRunConfigurationOutputPathOption {
             // See docs of projectFile
+            // todo because of this problem, consider using ProjectPathMacro
             val projectDir = if (project?.projectFile?.parent?.path?.endsWith(".idea") == true) project.projectFile?.parent?.parent else project?.projectFile?.parent
 
             // Add project file dir to context and resolve the macro with it (it's unclear why the key is not already in the context)

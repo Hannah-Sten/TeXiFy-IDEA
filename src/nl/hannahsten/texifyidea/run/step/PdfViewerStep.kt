@@ -3,9 +3,7 @@ package nl.hannahsten.texifyidea.run.step
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
-import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacrosDialog
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
@@ -20,6 +18,8 @@ import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
+import nl.hannahsten.texifyidea.run.macro.OutputDirMacro
 import nl.hannahsten.texifyidea.run.macro.sortOutMacros
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
@@ -31,6 +31,7 @@ import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.toVector
 import org.jetbrains.annotations.NotNull
+import java.io.File
 import java.io.OutputStream
 import javax.swing.DefaultComboBoxModel
 
@@ -49,10 +50,24 @@ class PdfViewerStep(
 
     private var state = State()
 
-    fun getDefaultPdfFilePath() = configuration.outputFilePath
+    /**
+     * The default path is given by a macro resolving to the output directory plus the main file name and extension.
+     */
+    fun getDefaultPdfFilePathWithMacro(): LatexRunConfigurationPathOption {
+        val mainFile = configuration.options.mainFile.resolve()
+        val outputFormat = if (configuration.options.outputFormat == LatexCompiler.OutputFormat.DEFAULT) {
+            "pdf"
+        }
+        else {
+            configuration.options.outputFormat.toString()
+        }
+        val pdfFileName = mainFile?.nameWithoutExtension + "." + outputFormat.toLowerCase()
+        val pathWithMacro = File(OutputDirMacro().macro, pdfFileName).path
+        val resolvedPath = File(configuration.options.outputPath.resolvedPath, pdfFileName).path
+        return LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
+    }
 
     companion object {
-
         val defaultPdfViewer = availablePdfViewers().firstOrNull()
     }
 
@@ -70,7 +85,7 @@ class PdfViewerStep(
 
             row("PDF file:") {
                 val textFieldBuilder = textFieldWithBrowseButton(
-                    getter = { state.pdfFilePath.pathWithMacro ?: getDefaultPdfFilePath() },
+                    getter = { state.pdfFilePath.pathWithMacro ?: getDefaultPdfFilePathWithMacro().resolvedPath!! },
                     setter = {
                         val (resolvedPath, pathWithMacro) = sortOutMacros(comboBoxBuilder?.component?.getComponent(0) ?: return@textFieldWithBrowseButton, configuration, it)
                         state.pdfFilePath = LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
