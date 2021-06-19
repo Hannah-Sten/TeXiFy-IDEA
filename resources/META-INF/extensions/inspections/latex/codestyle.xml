@@ -44,6 +44,10 @@
                          groupPath="LaTeX" groupName="Style issues" displayName="Too large sections"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexUsePackageInPackageInspection"
+                         groupPath="LaTeX" groupName="Style issues" displayName="Use \RequirePackage{...} instead of \usepackage{...} inside class- and sty-files"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"/>
     </extensions>
 
     <xi:include href="/META-INF/extensions/inspections/latex/typesetting/spacing.xml" xpointer="xpointer(/idea-plugin/*)"/>
