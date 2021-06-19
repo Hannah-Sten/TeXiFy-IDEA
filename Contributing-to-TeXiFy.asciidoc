@@ -105,6 +105,11 @@ The java plugin is an optional dependency so the plugin can still be used in non
 
 At the moment, it does not seem to be possible to debug in PyCharm because to build the plugin, the java plugin is needed.
 
+== Adding project templates
+
+If you use menu:Tools[Save as project template] then a zip will be created in `build/idea-sandbox/config/projectTemplates`.
+Copy it to `resources/projectTemplates` and add an entry to `resources/META-INF/extensions/project-templatex.xml`.
+
 == Debugging plugin unload fail
 
 See https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html?from=jetbrains.org#troubleshooting
