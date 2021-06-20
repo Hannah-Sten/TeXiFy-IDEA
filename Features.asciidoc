@@ -318,6 +318,7 @@ Issues which do not have influence on the typeset result but improve maintainabi
 * link:Code-style-issues#Label-conventions[Label conventions]
 * link:Code-style-issues#Start-sentences-on-a-new-line[Start sentences on a new line]
 * link:Code-style-issues#ins:eqref[Use `\eqref{...}` instead of `(\ref{...})`]
+* link:Code-style-issues#ins:requirepackage[Use `\RequirePackage{...}` instead of `\usepackage{...}`]
 * link:Code-style-issues#ins:documentclass[File that contains a document environment should contain a `\documentclass` command]
 * link:Code-style-issues#Might-break-TeXiFy-functionality[Might break TeXiFy functionality]
 * link:Code-style-issues#too-large-section[Too large section]
