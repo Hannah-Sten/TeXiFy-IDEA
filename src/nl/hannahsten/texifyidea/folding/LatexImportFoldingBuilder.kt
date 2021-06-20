@@ -30,7 +30,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
 
     override fun isCollapsedByDefault(node: ASTNode) = true
 
-    override fun getPlaceholderText(node: ASTNode) = if(node.text.contains("RequirePackage")) "\\RequirePackage{...}" else "\\usepackage{...}"
+    override fun getPlaceholderText(node: ASTNode) = if (node.text.contains("RequirePackage")) "\\RequirePackage{...}" else "\\usepackage{...}"
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
