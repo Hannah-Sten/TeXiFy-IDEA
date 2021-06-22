@@ -25,6 +25,7 @@ import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOpt
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
+import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
@@ -72,6 +73,10 @@ class PdfViewerStep(
     }
 
     override fun configure() {
+//        val viewerEditor = ExecutableEditor("PDF Viewer", availablePdfViewers()).apply {
+//
+//        }
+
         // We have to get the data context in the setter, any data component will do
         var comboBoxBuilder: CellBuilder<ComboBox<PdfViewer>>? = null
         val panel = panel {

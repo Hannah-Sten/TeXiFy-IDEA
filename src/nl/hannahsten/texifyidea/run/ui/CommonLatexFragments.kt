@@ -17,6 +17,8 @@ import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.util.ui.JBDimension
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.Compiler
+import nl.hannahsten.texifyidea.run.compiler.latex.CustomLatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.macro.insertMacro
@@ -24,13 +26,13 @@ import nl.hannahsten.texifyidea.run.macro.sortOutMacros
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
-import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
+import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.BorderLayout
 import kotlin.reflect.KMutableProperty0
 
-typealias LatexCompileEditor = CompilerEditor<LatexCompileStep, SupportedLatexCompiler>
+typealias LatexCompileEditor = ExecutableEditor<SupportedLatexCompiler, Compiler<LatexCompileStep>>
 
 /**
  * Collection of fragment builders for the run configuration settings UI.
@@ -90,7 +92,7 @@ object CommonLatexFragments {
         commandLinePosition: Int,
         settingsProperty: (LatexRunConfiguration) -> KMutableProperty0<LatexCompiler?>
     ): RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor> {
-        val editor = CompilerEditor("&LaTeX compiler:", CompilerMagic.latexCompilerByExecutableName.values)
+        val editor = ExecutableEditor<SupportedLatexCompiler, Compiler<LatexCompileStep>>("&LaTeX compiler:", CompilerMagic.latexCompilerByExecutableName.values) { CustomLatexCompiler(it) }
         val combobox = editor.component
 
         setMonospaced(combobox)
@@ -101,11 +103,11 @@ object CommonLatexFragments {
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor>("latexCompiler", "LaTeX compiler", null, editor, commandLinePosition, { true }) {
             override fun doReset(settings: RunnerAndConfigurationSettingsImpl) {
-                (component as LatexCompileEditor).setSelectedCompiler(settingsProperty(settings.configuration as LatexRunConfiguration).get())
+                (component as LatexCompileEditor).setSelectedExecutable(settingsProperty(settings.configuration as LatexRunConfiguration).get())
             }
 
             override fun applyEditorTo(settings: RunnerAndConfigurationSettingsImpl) {
-                settingsProperty(settings.configuration as LatexRunConfiguration).set((component as? LatexCompileEditor)?.getSelectedCompiler() as? LatexCompiler)
+                settingsProperty(settings.configuration as LatexRunConfiguration).set((component as? LatexCompileEditor)?.getSelectedExecutable() as? LatexCompiler)
             }
         }
 

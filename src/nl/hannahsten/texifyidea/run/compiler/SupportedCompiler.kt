@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.compiler
 
+import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
 import nl.hannahsten.texifyidea.run.step.CompileStep
 
 /**
@@ -7,8 +8,4 @@ import nl.hannahsten.texifyidea.run.step.CompileStep
  *
  * @author Sten Wessel
  */
-interface SupportedCompiler<in S : CompileStep> : Compiler<S> {
-
-    val displayName: String
-    val executableName: String
-}
+interface SupportedCompiler<in S : CompileStep> : Compiler<S>, SupportedExecutable

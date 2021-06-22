@@ -18,7 +18,10 @@ import com.intellij.util.ui.JBDimension
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.ui.compiler.CompilerEditor
+import nl.hannahsten.texifyidea.run.compiler.Compiler
+import nl.hannahsten.texifyidea.run.compiler.bibtex.CustomBibliographyCompiler
+import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
+import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
 class BibliographyCompileStep(
@@ -55,13 +58,15 @@ class BibliographyCompileStep(
     private var state = State()
 
     override fun configure() {
-        val compilerEditor = CompilerEditor("Compiler", CompilerMagic.bibliographyCompilerByExecutableName.values).apply {
+        val executableEditor = ExecutableEditor<SupportedBibliographyCompiler, BibliographyCompiler>("Compiler", CompilerMagic.bibliographyCompilerByExecutableName.values) {
+            CustomBibliographyCompiler(it)
+        }.apply {
             CommonParameterFragments.setMonospaced(component)
             minimumSize = JBDimension(200, 30)
             label.isVisible = false
             component.setMinimumAndPreferredWidth(150)
 
-            setSelectedCompiler(state.compiler)
+            setSelectedExecutable(state.compiler)
         }
 
         val compilerArguments = ExpandableTextField().apply {
@@ -95,7 +100,7 @@ class BibliographyCompileStep(
         val panel = panel {
             row("Compiler:") {
                 cell {
-                    component(compilerEditor.component)
+                    component(executableEditor.component)
                     compilerArguments(CCFlags.growX, CCFlags.pushX)
                 }
             }
@@ -113,11 +118,11 @@ class BibliographyCompileStep(
             "Configure Bibliography Step",
             panel = panel,
             resizable = true,
-            focusedComponent = compilerEditor.component,
+            focusedComponent = executableEditor.component,
         ).showAndGet()
 
         if (modified) {
-            state.compiler = compilerEditor.getSelectedCompiler() as BibliographyCompiler?
+            state.compiler = executableEditor.getSelectedExecutable()
             state.compilerArguments = compilerArguments.text.trim().ifEmpty { null }
             state.workingDirectory = workingDirectory.text.trim().ifEmpty { null }
             state.envs = environmentVariables.envData.envs

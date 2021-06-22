@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.compiler
 
+import nl.hannahsten.texifyidea.run.executable.CustomExecutable
 import nl.hannahsten.texifyidea.run.step.CompileStep
 
 /**
@@ -7,7 +8,4 @@ import nl.hannahsten.texifyidea.run.step.CompileStep
  *
  * @author Sten Wessel
  */
-interface CustomCompiler<in S : CompileStep> : Compiler<S> {
-
-    val executablePath: String
-}
+interface CustomCompiler<in S : CompileStep> : Compiler<S>, CustomExecutable

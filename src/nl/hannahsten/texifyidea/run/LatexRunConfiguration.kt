@@ -40,7 +40,6 @@ class LatexRunConfiguration constructor(
     companion object {
 
         private const val TEXIFY_PARENT = "texify"
-        private const val COMPILER_PATH = "compiler-path"
         private const val SUMATRA_PATH = "sumatra-path"
         private const val VIEWER_COMMAND = "viewer-command"
         private const val COMPILE_STEP = "compile-step"
