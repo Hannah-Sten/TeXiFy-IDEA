@@ -31,7 +31,7 @@
 // import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 // import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 // import nl.hannahsten.texifyidea.run.legacy.externaltool.ExternalToolRunConfigurationType
-// import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
+// import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 // import nl.hannahsten.texifyidea.run.legacy.makeindex.MakeindexRunConfigurationType
 // import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 // import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer

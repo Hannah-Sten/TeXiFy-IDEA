@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.evince
+package nl.hannahsten.texifyidea.run.pdfviewer.evince
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType

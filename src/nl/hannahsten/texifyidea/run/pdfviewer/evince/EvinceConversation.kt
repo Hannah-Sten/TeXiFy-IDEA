@@ -1,8 +1,8 @@
-package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.evince
+package nl.hannahsten.texifyidea.run.pdfviewer.evince
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.errors.NoReply
 import org.gnome.evince.Daemon

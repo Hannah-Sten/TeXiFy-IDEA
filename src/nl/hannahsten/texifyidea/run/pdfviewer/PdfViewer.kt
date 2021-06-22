@@ -1,8 +1,7 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
 
 /**
  * Allow other plugins to define their own pdf viewers.
@@ -15,10 +14,12 @@ private val EP_NAME = ExtensionPointName<ExternalPdfViewer>("nl.rubensten.texify
 /**
  * Interface that defines a pdf viewer so we can use both [InternalPdfViewer]s and [ExternalPdfViewer]s interchangeably.
  */
-interface PdfViewer {
+interface PdfViewer : SupportedExecutable {
 
-    val name: String?
-    val displayName: String?
+    val name: String
+    override val displayName: String
+    override val displayType: String
+        get() = "PDF Viewer"
 
     fun isAvailable(): Boolean
 
@@ -28,19 +29,10 @@ interface PdfViewer {
 
         override fun fromString(value: String): PdfViewer =
             ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == value }
-                ?: InternalPdfViewer.valueOf(value ?: "")
+                ?: InternalPdfViewer.valueOf(value)
+                ?: availablePdfViewers().firstOrNull()
+                ?: Evince()
     }
-}
-
-/**
- * Define behaviour that external (that means, registered from outside TeXiFy) pdf viewers should inherit.
- */
-interface ExternalPdfViewer : PdfViewer {
-
-    /**
-     * Open the pdf in the pdf file if it is not open yet, and forward search to it.
-     */
-    fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 }
 
 /**

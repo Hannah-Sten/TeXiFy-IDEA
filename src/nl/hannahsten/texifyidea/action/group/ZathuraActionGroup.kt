@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.action.group
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 
 class ZathuraActionGroup : DefaultActionGroup() {
 

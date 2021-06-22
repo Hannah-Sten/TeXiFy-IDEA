@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
 import java.io.IOException
 

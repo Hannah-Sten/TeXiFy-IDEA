@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.project.Project
 

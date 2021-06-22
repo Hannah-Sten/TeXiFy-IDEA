@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.zathura
+package nl.hannahsten.texifyidea.run.pdfviewer.zathura
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
@@ -10,7 +10,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.pdfviewer.linuxpdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig

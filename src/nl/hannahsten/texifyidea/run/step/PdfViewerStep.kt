@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
+import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.application.runInEdt
@@ -11,9 +12,11 @@ import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.dialog
+import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.layout.CellBuilder
 import com.intellij.ui.layout.panel
+import com.intellij.util.ui.JBDimension
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
@@ -23,6 +26,7 @@ import nl.hannahsten.texifyidea.run.macro.OutputDirMacro
 import nl.hannahsten.texifyidea.run.macro.sortOutMacros
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
@@ -47,6 +51,9 @@ class PdfViewerStep(
 
         @get:Attribute("pdfFilePath", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
         var pdfFilePath: LatexRunConfigurationPathOption by property(LatexRunConfigurationPathOption()) { it.isDefault() }
+
+        @get:Attribute
+        var viewerArguments by string()
     }
 
     private var state = State()
@@ -73,9 +80,22 @@ class PdfViewerStep(
     }
 
     override fun configure() {
-//        val viewerEditor = ExecutableEditor("PDF Viewer", availablePdfViewers()).apply {
-//
-//        }
+        // todo reduce code duplication with bibliographycompilestep
+        val viewerEditor = ExecutableEditor<PdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }.apply {
+            setMonospaced(component)
+            minimumSize = JBDimension(200, 30)
+            label.isVisible = false
+            component.setMinimumAndPreferredWidth(150)
+            setSelectedExecutable(state.pdfViewer)
+        }
+
+        val viewerArguments = ExpandableTextField().apply {
+            emptyText.text = "Pdf viewer arguments"
+            MacrosDialog.addMacroSupport(this, MacrosDialog.Filters.ALL) { false }
+            setMonospaced(this)
+
+            text = state.viewerArguments
+        }
 
         // We have to get the data context in the setter, any data component will do
         var comboBoxBuilder: CellBuilder<ComboBox<PdfViewer>>? = null
