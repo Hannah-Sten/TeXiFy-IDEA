@@ -224,7 +224,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      */
     private fun String.toPath(runConfig: LatexRunConfiguration): String =
         if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
-            "wsl wslpath -a '$this'".runCommand() ?: this
+            runCommand("wsl", "wslpath", "-a", this) ?: this
         }
         else this
 
