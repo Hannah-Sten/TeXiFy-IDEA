@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.action
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.Messages
@@ -9,13 +11,24 @@ import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
+import java.io.IOException
+import java.security.PrivilegedActionException
 
 /**
  * Similar to [DeleteAuxFiles].
  */
 class DeleteGeneratedFiles : AnAction() {
 
-    override fun actionPerformed(e: AnActionEvent) {
+    override fun actionPerformed(event: AnActionEvent) {
+        try {
+            deleteFiles(event)
+        }
+        catch (e: PrivilegedActionException) {
+            Notification("LaTeX", "Could not delete some files", e.message ?: "", NotificationType.ERROR).notify(event.project)
+        }
+    }
+
+    private fun deleteFiles(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
 
