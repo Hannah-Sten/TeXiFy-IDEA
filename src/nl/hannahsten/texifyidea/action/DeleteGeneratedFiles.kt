@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
-import java.io.IOException
 import java.security.PrivilegedActionException
 
 /**
