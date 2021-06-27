@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.Sumatra
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.caretOffset
@@ -38,7 +39,7 @@ class SumatraForwardSearchListener(
             }
         }
 
-        (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = InternalPdfViewer.SUMATRA
+        (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = Sumatra()
 
         // Forward search.
         invokeLater {

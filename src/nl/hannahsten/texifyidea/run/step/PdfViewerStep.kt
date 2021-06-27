@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.run.step
 
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
 import com.intellij.execution.ui.CommonParameterFragments
@@ -14,6 +16,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.CellBuilder
 import com.intellij.ui.layout.panel
 import com.intellij.util.ui.JBDimension
@@ -54,6 +57,12 @@ class PdfViewerStep(
 
         @get:Attribute
         var viewerArguments by string()
+
+        @get:Attribute
+        var envs by map<String, String>()
+
+        @get:Attribute
+        var isPassParentEnvs by property(EnvironmentVariablesData.DEFAULT.isPassParentEnvs)
     }
 
     private var state = State()
@@ -81,31 +90,29 @@ class PdfViewerStep(
 
     override fun configure() {
         // todo reduce code duplication with bibliographycompilestep
-        val viewerEditor = ExecutableEditor<PdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }.apply {
-            setMonospaced(component)
-            minimumSize = JBDimension(200, 30)
+        val viewerEditor = ExecutableEditor<PdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
+        setDefaultLayout(viewerEditor, state.pdfViewer)
+
+        val viewerArguments = createParametersTextField("Pdf Viewer", state.viewerArguments)
+
+        val environmentVariables = EnvironmentVariablesComponent().apply {
             label.isVisible = false
-            component.setMinimumAndPreferredWidth(150)
-            setSelectedExecutable(state.pdfViewer)
-        }
-
-        val viewerArguments = ExpandableTextField().apply {
-            emptyText.text = "Pdf viewer arguments"
-            MacrosDialog.addMacroSupport(this, MacrosDialog.Filters.ALL) { false }
-            setMonospaced(this)
-
-            text = state.viewerArguments
+            envs = state.envs
+            isPassParentEnvs = state.isPassParentEnvs
         }
 
         // We have to get the data context in the setter, any data component will do
         var comboBoxBuilder: CellBuilder<ComboBox<PdfViewer>>? = null
         val panel = panel {
             row("PDF viewer:") {
-                comboBoxBuilder = comboBox(
-                    DefaultComboBoxModel(availablePdfViewers().toVector()),
-                    getter = { state.pdfViewer ?: defaultPdfViewer },
-                    setter = { state.pdfViewer = it }
-                ).focused()
+                cell {
+                    comboBoxBuilder = comboBox(
+                        DefaultComboBoxModel(availablePdfViewers().toVector()),
+                        getter = { state.pdfViewer ?: defaultPdfViewer },
+                        setter = { state.pdfViewer = it }
+                    ).focused()
+                    viewerArguments(CCFlags.growX, CCFlags.pushX)
+                }
             }
 
             row("PDF file:") {
@@ -122,6 +129,10 @@ class PdfViewerStep(
                     MacrosDialog.Filters.DIRECTORY_PATH
                 ) { false }
                 setMonospaced(textFieldBuilder.component.textField)
+            }
+            row("Environment variables:") {
+                component(environmentVariables)
+                    .comment("For this step only. Separate variables with semicolon: VAR=value; VAR1=value1")
             }
         }
 

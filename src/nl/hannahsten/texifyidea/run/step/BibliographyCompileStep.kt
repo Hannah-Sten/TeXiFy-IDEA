@@ -60,22 +60,10 @@ class BibliographyCompileStep(
     override fun configure() {
         val executableEditor = ExecutableEditor<SupportedBibliographyCompiler, BibliographyCompiler>("Compiler", CompilerMagic.bibliographyCompilerByExecutableName.values) {
             CustomBibliographyCompiler(it)
-        }.apply {
-            CommonParameterFragments.setMonospaced(component)
-            minimumSize = JBDimension(200, 30)
-            label.isVisible = false
-            component.setMinimumAndPreferredWidth(150)
-
-            setSelectedExecutable(state.compiler)
         }
+        setDefaultLayout(executableEditor, state.compiler)
 
-        val compilerArguments = ExpandableTextField().apply {
-            emptyText.text = "Compiler arguments"
-            MacrosDialog.addMacroSupport(this, MacrosDialog.Filters.ALL) { false }
-            CommonParameterFragments.setMonospaced(this)
-
-            text = state.compilerArguments
-        }
+        val compilerArguments = createParametersTextField("Compiler", state.compilerArguments)
 
         val workingDirectory = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
