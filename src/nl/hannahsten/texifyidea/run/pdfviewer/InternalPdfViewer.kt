@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.zathura.ZathuraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.runCommand
+import kotlin.reflect.full.createInstance
 
 /**
  * List of supported PDF viewers on Linux.
@@ -57,7 +58,7 @@ sealed class InternalPdfViewer(
     companion object {
 
         private val availability: Map<InternalPdfViewer, Boolean> by lazy {
-            InternalPdfViewer::class.sealedSubclasses.mapNotNull { it.objectInstance }.associateWith {
+            InternalPdfViewer::class.sealedSubclasses.map { it.createInstance() }.associateWith {
                 it.checkAvailability()
             }
         }

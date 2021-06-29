@@ -4,7 +4,6 @@ import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
-import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.application.runInEdt
@@ -14,12 +13,10 @@ import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.dialog
-import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.CellBuilder
 import com.intellij.ui.layout.panel
-import com.intellij.util.ui.JBDimension
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction

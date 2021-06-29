@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.errors.NoReply
 import org.gnome.evince.Daemon
+import java.io.File
 
 /**
  * Send commands to Evince.
@@ -63,7 +64,9 @@ object EvinceConversation : ViewerConversation() {
             // Theoretically we should use the Java D-Bus bindings as well to call SyncView, but that did
             // not succeed with a NoReply exception, so we will execute a command via the shell
             val command = "gdbus call --session --dest $processOwner --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView $sourceFilePath '($line, 1)' 0"
-            return Runtime.getRuntime().exec(arrayOf("bash", "-c", command)).exitValue()
+            Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
+            // The above process will only exit when the document is closed
+            return 0
         }
         else {
             // If the user used the forward search menu action
@@ -84,6 +87,8 @@ object EvinceConversation : ViewerConversation() {
      * @param pdfFilePath Full path to the pdf file to find the owner of.
      */
     private fun findProcessOwner(pdfFilePath: String) {
+        if (!File(pdfFilePath).isFile) throw TeXception("PDF File $pdfFilePath not found")
+
         // Initialize a session bus
         val connection = DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION)
 
@@ -93,6 +98,7 @@ object EvinceConversation : ViewerConversation() {
         // Call the method on the D-Bus by using the function we defined in the Daemon interface
         // Catch a NoReply, because it is unknown why Evince cannot start so we don't try to fix that
         try {
+            // If the file does not exist, this command might hang
             processOwner = daemon.FindDocument("file://$pdfFilePath", true)
         }
         catch (ignored: NoReply) {}
