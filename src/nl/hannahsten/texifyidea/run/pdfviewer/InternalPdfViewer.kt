@@ -23,6 +23,9 @@ sealed class InternalPdfViewer(
     val conversation: ViewerConversation?
 ) : PdfViewer, SupportedExecutable {
 
+    override val displayType: String
+        get() = "PDF Viewer"
+
     override fun isAvailable(): Boolean = availability[this] ?: false
 
     /**
@@ -67,7 +70,7 @@ sealed class InternalPdfViewer(
 
         fun availableSubset(): List<InternalPdfViewer> = availability.entries.filter { it.value }.map { it.key }
 
-        fun firstAvailable(): InternalPdfViewer = availableSubset().first()
+        fun firstAvailable(): InternalPdfViewer? = availableSubset().firstOrNull()
     }
 }
 

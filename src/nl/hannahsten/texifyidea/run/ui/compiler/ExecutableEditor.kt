@@ -57,7 +57,7 @@ class ExecutableEditor<in S : SupportedExecutable, E : Executable>(label: String
     private fun populateModel(executables: Iterable<S>) {
         comboBoxModel.apply {
             addAll(executables.map { BuiltinExecutableItem(it) })
-            add(AddExecutableItem(executables.first().displayType))
+            add(AddExecutableItem(executables.firstOrNull()?.displayType ?: "something"))
         }
     }
 

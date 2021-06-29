@@ -25,8 +25,11 @@ import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
 class BibliographyCompileStep(
-    override val provider: StepProvider, override var configuration: LatexRunConfiguration
+    override val provider: StepProvider,
+    override var configuration: LatexRunConfiguration
 ) : CompileStep(), PersistentStateComponent<BibliographyCompileStep.State> {
+
+    override val name = "Bibliography step"
 
     // See https://plugins.jetbrains.com/docs/intellij/persisting-state-of-components.html#implementing-the-state-class
     // Note you can view the result in practice in workspace.xml

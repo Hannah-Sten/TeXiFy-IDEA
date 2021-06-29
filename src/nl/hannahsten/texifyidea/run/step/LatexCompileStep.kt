@@ -8,6 +8,8 @@ class LatexCompileStep(
     override var configuration: LatexRunConfiguration
 ) : CompileStep() {
 
+    override val name = "LaTeX compile step"
+
     override fun configure() {
     }
 

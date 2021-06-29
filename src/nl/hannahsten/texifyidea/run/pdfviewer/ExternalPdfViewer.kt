@@ -8,6 +8,12 @@ import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
  */
 interface ExternalPdfViewer : PdfViewer, SupportedExecutable {
 
+    override val displayType: String
+        get() = "PDF Viewer"
+
+    override val displayName: String
+        get() = name
+
     override val executableName: String
         get() = name
 

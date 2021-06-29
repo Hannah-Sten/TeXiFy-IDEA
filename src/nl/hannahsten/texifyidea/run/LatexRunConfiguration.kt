@@ -81,6 +81,7 @@ class LatexRunConfiguration constructor(
         if (compileSteps.isEmpty()) {
             throw RuntimeConfigurationError("Run configuration is invalid: at least one compile step needs to be present")
         }
+        compileSteps.firstOrNull { !it.isValid() }?.let { throw RuntimeConfigurationError("The ${it.name} is not valid") }
     }
 
     @Throws(ExecutionException::class)

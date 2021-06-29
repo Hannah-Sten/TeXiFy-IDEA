@@ -6,7 +6,6 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 
 /**
  * @author Sten Wessel
@@ -40,14 +39,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION
 
-    /**
-     * Backwards compatibility. This value is never altered, only read from/to memory.
-     *
-     * We keep it here so that when the user migrates from when the pdf viewer was set in TeXiFy settings to when it is
-     * set in the run config, we can recover their old setting.
-     */
-    var pdfViewer = InternalPdfViewer.firstAvailable()
-
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
             automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
@@ -60,7 +51,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             showPackagesInStructureView = showPackagesInStructureView,
             automaticQuoteReplacement = automaticQuoteReplacement,
             missingLabelMinimumLevel = missingLabelMinimumLevel,
-            pdfViewer = pdfViewer
         )
     }
 
@@ -75,6 +65,5 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         showPackagesInStructureView = state.showPackagesInStructureView
         automaticQuoteReplacement = state.automaticQuoteReplacement
         missingLabelMinimumLevel = state.missingLabelMinimumLevel
-        pdfViewer = state.pdfViewer
     }
 }

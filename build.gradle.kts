@@ -132,8 +132,9 @@ tasks.runIde {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
+    // todo support pdf viewer plugin
     // indices plugin doesn't work in tests
-    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.12.0-alpha.4@alpha") // , "com.jetbrains.hackathon.indices.viewer:1.12")
+    setPlugins("tanvd.grazi", "java") // "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.12.0-alpha.4@alpha") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false

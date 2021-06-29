@@ -47,6 +47,8 @@ class PdfViewerStep(
     override val provider: StepProvider, override var configuration: LatexRunConfiguration
 ) : Step, PersistentStateComponent<PdfViewerStep.State> {
 
+    override val name = "PDF Viewer step"
+
     class State : BaseState() {
 
         @get:Attribute("pdfViewer", converter = PdfViewer.Converter::class)
@@ -88,11 +90,15 @@ class PdfViewerStep(
         val defaultPdfViewer = availablePdfViewers().firstOrNull()
     }
 
+    override fun isValid(): Boolean {
+        return state.pdfViewer != null
+    }
+
     override fun configure() {
-        // todo reduce code duplication with bibliographycompilestep
         val viewerEditor = ExecutableEditor<PdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
         setDefaultLayout(viewerEditor, state.pdfViewer)
 
+        // todo whether this makes sense depends on the pdf viewer
         val viewerArguments = createParametersTextField("Pdf Viewer", state.viewerArguments)
 
         val environmentVariables = EnvironmentVariablesComponent().apply {

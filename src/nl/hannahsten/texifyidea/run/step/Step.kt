@@ -15,7 +15,11 @@ interface Step {
 
     var configuration: LatexRunConfiguration
 
+    val name: String
+
     fun configure()
 
     fun execute(id: String, console: LatexExecutionConsole): ProcessHandler?
+
+    fun isValid() = true
 }

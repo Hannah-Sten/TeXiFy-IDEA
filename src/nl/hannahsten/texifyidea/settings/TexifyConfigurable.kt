@@ -50,7 +50,6 @@ class TexifyConfigurable : SearchableConfigurable {
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                     automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                     missingLabelMinimumLevel = addMissingLabelMinimumLevel()
-                    addPdfViewerText()
                 }
             )
         }
@@ -85,15 +84,6 @@ class TexifyConfigurable : SearchableConfigurable {
             }
         }
         return list
-    }
-
-    private fun JPanel.addPdfViewerText() {
-        val oldPdfViewer = TexifySettings.getInstance().pdfViewer
-        add(
-            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JLabel("<html>PDF viewer: This setting has been moved to the run configuration (template). See the wiki for details.<br/>Old PDF viewer: $oldPdfViewer <br/> See for example (IntelliJ) File > New Projects Settings > Run Configuration Templates, or Edit Configurations > Templates > LaTeX for the current project.</html>"))
-            }
-        )
     }
 
     private fun JPanel.addCheckbox(message: String): JBCheckBox {

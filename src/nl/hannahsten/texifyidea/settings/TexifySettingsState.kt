@@ -15,5 +15,4 @@ data class TexifySettingsState(
         var showPackagesInStructureView: Boolean = false,
         var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
         var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
-        var pdfViewer: InternalPdfViewer = InternalPdfViewer.firstAvailable()
 )
