@@ -167,7 +167,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
      * When neither of these steps is successful, the character is too exotic to replace and an
      * appropriate fail message is shown.
      */
-    private class EscapeUnicodeFix internal constructor(private val inMathMode: Boolean) : LocalQuickFix {
+    private class EscapeUnicodeFix(private val inMathMode: Boolean) : LocalQuickFix {
 
         @Nls
         override fun getFamilyName(): String {
@@ -176,8 +176,17 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
+            val editor = FileEditorManager.getInstance(project).selectedTextEditor
 
-            val c = descriptor.textRangeInElement.substring(element.text)
+            val c = try {
+                descriptor.textRangeInElement.substring(element.text)
+            }
+            catch (e: IndexOutOfBoundsException) {
+                if (editor != null) {
+                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                }
+                return
+            }
 
             // Try to find in lookup for special command
             val replacement: String?
@@ -199,7 +208,6 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             // When no replacement is found, show error message
             val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
             if (replacement == null) {
-                val editor = FileEditorManager.getInstance(project).selectedTextEditor
                 if (editor != null) {
                     HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
                 }
