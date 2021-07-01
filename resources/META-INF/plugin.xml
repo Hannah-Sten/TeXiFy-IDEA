@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.7.7</version>
+    <version>0.7.8</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
