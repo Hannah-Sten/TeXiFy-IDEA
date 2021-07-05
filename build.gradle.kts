@@ -4,17 +4,17 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.7.2"
+    id("org.jetbrains.intellij") version "1.1.2"
     kotlin("jvm") version("1.4.30-M1")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.38.0"
+    id("com.github.ben-manes.versions") version "0.39.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
-    id("se.patrikerdes.use-latest-versions") version "0.2.15"
+    id("se.patrikerdes.use-latest-versions") version "0.2.17"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "4.1.1"
+    id("de.undercouch.download") version "4.1.2"
 
     // Test coverage
     jacoco
@@ -77,12 +77,12 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.0")
-    implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
+    implementation("org.slf4j:slf4j-simple:2.0.0-alpha2")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
-    implementation("org.codehaus.plexus:plexus-archiver:4.2.4")
+    implementation("org.codehaus.plexus:plexus-archiver:4.2.5")
 
     // Parsing json
     implementation("com.beust:klaxon:5.5")
@@ -108,7 +108,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.11.0")
+    testImplementation("io.mockk:mockk:1.12.0")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -132,20 +132,20 @@ tasks.runIde {
 }
 
 intellij {
-    pluginName = "TeXiFy-IDEA"
+    pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    setPlugins("tanvd.grazi", "java") // , "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0") // , "com.jetbrains.hackathon.indices.viewer:1.13")
+    plugins.set(listOf("tanvd.grazi", "java")) // , "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0") // , "com.jetbrains.hackathon.indices.viewer:1.13")
 
     // Use the since build number from plugin.xml
-    updateSinceUntilBuild = false
+    updateSinceUntilBuild.set(false)
     // Keep an open until build, to avoid automatic downgrades to very old versions of the plugin
-    sameSinceUntilBuild = true
+    sameSinceUntilBuild.set(true)
 
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "2021.1.1"
+    version.set("2021.1.3")
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
@@ -161,11 +161,11 @@ intellij {
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
 // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 tasks.publishPlugin {
-    token(properties["intellijPublishToken"])
+    token.set(properties["intellijPublishToken"].toString())
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels("alpha")
+    channels.set(listOf("alpha"))
 }
 
 tasks.test {
