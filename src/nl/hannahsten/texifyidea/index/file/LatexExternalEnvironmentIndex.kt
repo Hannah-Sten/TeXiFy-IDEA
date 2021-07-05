@@ -39,9 +39,7 @@ class LatexExternalEnvironmentIndex : FileBasedIndexExtension<String, String>() 
     override fun getVersion() = 0
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return FileBasedIndex.InputFilter {
-            it.fileType is LatexSourceFileType
-        }
+        return DefaultFileTypeSpecificInputFilter(LatexSourceFileType)
     }
 
     override fun dependsOnFileContent() = true

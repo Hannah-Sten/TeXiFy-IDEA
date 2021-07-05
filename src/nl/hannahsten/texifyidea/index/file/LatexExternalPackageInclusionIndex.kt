@@ -4,6 +4,7 @@ import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
+import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 
 /**
@@ -41,12 +42,10 @@ class LatexExternalPackageInclusionIndex : FileBasedIndexExtension<String, Strin
         return EnumeratorStringDescriptor.INSTANCE
     }
 
-    override fun getVersion() = 1
+    override fun getVersion() = 2
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return FileBasedIndex.InputFilter {
-            it.fileType is StyleFileType
-        }
+        return DefaultFileTypeSpecificInputFilter(StyleFileType)
     }
 
     override fun dependsOnFileContent() = true
