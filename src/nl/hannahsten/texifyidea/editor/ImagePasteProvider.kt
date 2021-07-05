@@ -27,7 +27,7 @@ open class ImagePasteProvider : PasteProvider {
         val clipboardTransferable = dataContext.getData(PasteAction.TRANSFERABLE_PROVIDER)?.produce() ?: return
 
         // When pasting some copied image.
-        if (clipboardTransferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+        if (SaveImageFromClipboardDialog.supportsImage(clipboardTransferable)) {
             pasteRawImage(project, file, clipboardTransferable)
         }
         // When pasting an existing image file.
@@ -54,7 +54,7 @@ open class ImagePasteProvider : PasteProvider {
         if (file.isLatexFile().not()) return false
 
         val transferable = dataContext.getData(PasteAction.TRANSFERABLE_PROVIDER)?.produce() ?: return false
-        return transferable.isDataFlavorSupported(DataFlavor.imageFlavor) ||
+        return SaveImageFromClipboardDialog.supportsImage(transferable) ||
                 transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
     }
 
