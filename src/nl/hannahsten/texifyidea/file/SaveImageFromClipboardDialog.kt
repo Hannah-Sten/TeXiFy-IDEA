@@ -29,7 +29,7 @@ import javax.swing.border.EmptyBorder
 /**
  * @author Hannah Schellekens
  */
-open class SaveImageFromClipboardDialog(
+class SaveImageFromClipboardDialog(
 
         /**
          * The current project.
@@ -40,7 +40,7 @@ open class SaveImageFromClipboardDialog(
          * The transferable data from the clipboard.
          * Must support the image data flavor [DataFlavor.imageFlavor].
          */
-        val transferable: Transferable,
+        private val transferable: Transferable,
 
         /**
          * The function to execute when the dialog is succesfully closed.
@@ -49,8 +49,15 @@ open class SaveImageFromClipboardDialog(
         onOkFunction: (SaveImageFromClipboardDialog) -> Unit
 ) : DialogWrapper(true) {
 
+    companion object {
+
+        fun supportsImage(transferable: Transferable): Boolean {
+            return transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && transferable.getTransferData(DataFlavor.imageFlavor) is BufferedImage
+        }
+    }
+
     /**
-     * The image data from the clipboard.
+     * The image data from the clipboard. Only supports BufferedImages currently, see [supportsImage].
      */
     private val image = transferable.getTransferData(DataFlavor.imageFlavor) as BufferedImage
 
@@ -105,7 +112,7 @@ open class SaveImageFromClipboardDialog(
 
         addBrowseFolderListener(TextBrowseFolderListener(
                 FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Select resource folder...")
+                        .withTitle("Select Resource Folder...")
         ))
     }
 
@@ -131,7 +138,7 @@ open class SaveImageFromClipboardDialog(
 
         // Setup dialog.
         super.init()
-        title = "Save image from clipboard"
+        title = "Save Image from Clipboard"
         myPreferredFocusedComponent = txtImageName
 
         if (showAndGet()) {
