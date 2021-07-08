@@ -1,8 +1,9 @@
 package nl.hannahsten.texifyidea
 
-import com.beust.klaxon.JsonArray
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationInfo
@@ -29,34 +30,6 @@ import java.net.UnknownHostException
  * @author Sten Wessel
  */
 class LatexErrorReportSubmitter : ErrorReportSubmitter() {
-
-    companion object {
-
-        private const val URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&title="
-        private const val ENCODING = "UTF-8"
-
-        private var latestVersionCached = ""
-
-        fun getLatestVersion(): String {
-            if (latestVersionCached.isNotBlank()) return latestVersionCached
-
-            val url = URL("https://api.github.com/repos/Hannah-Sten/TeXiFy-IDEA/releases")
-            with(url.openConnection() as HttpURLConnection) {
-                requestMethod = "GET"
-                connectTimeout = 1000
-                readTimeout = 1000
-
-                val response = inputStream.bufferedReader().readLine()
-                val releases = Parser.default().parse(StringBuilder(response)) as? JsonArray<*>
-                latestVersionCached = (releases?.firstOrNull() as? JsonObject)?.string("tag_name") ?: ""
-                return latestVersionCached
-            }
-        }
-
-        val currentVersion by lazy {
-            PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
-        }
-    }
 
     @Suppress("DialogTitleCapitalization")
     override fun getReportActionText() = "Report to TeXiFy-IDEA issue tracker"
@@ -132,4 +105,58 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         )
         return true
     }
+
+    companion object {
+
+        private const val URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&title="
+        private const val API = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
+
+        private const val ENCODING = "UTF-8"
+
+        private var latestVersionCached = ""
+
+        fun getLatestVersion(): String {
+            if (latestVersionCached.isNotBlank()) return latestVersionCached
+
+            // Create xml mapper that doesn't fail on unknown properties. This allows us to only define the properties we need.
+            val mapper = XmlMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+
+            with(URL(API).openConnection() as HttpURLConnection) {
+                requestMethod = "GET"
+                connectTimeout = 1000
+                readTimeout = 1000
+
+                val inputString: String = inputStream.reader().use { it.readText() }
+                latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
+                    .category
+                    ?.firstOrNull()
+                    ?.version
+                    ?: latestVersionCached
+
+                return latestVersionCached
+            }
+        }
+
+        val currentVersion by lazy {
+            PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
+        }
+    }
+
+    /**
+     * Plugin repo data class which is the root of the xml response from the [Marketplace API](https://plugins.jetbrains.com/docs/marketplace/api-reference.html).
+     */
+    data class PluginRepo(
+        /**
+         * Wrapper for multiple idea-plugin objects. Has to be nullable AND have default value to avoid exception.
+         */
+        @JacksonXmlProperty(localName = "idea-plugin")
+        @JacksonXmlElementWrapper(useWrapping = false)
+        val category: List<IdeaPlugin>? = emptyList()
+    )
+
+    /**
+     * Data class specifying all the properties we need from the idea-plugin tag from the xml response.
+     * All properties have to have a default value, because the class needs to have an empty constructor.
+     */
+    data class IdeaPlugin(val version: String = "")
 }
