@@ -129,8 +129,9 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
                 val inputString: String = inputStream.reader().use { it.readText() }
                 latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
                     .category
-                    ?.firstOrNull()
+                    ?.maxByOrNull { it.version }
                     ?.version
+                    ?.toString()
                     ?: latestVersionCached
 
                 return latestVersionCached
@@ -158,5 +159,5 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
      * Data class specifying all the properties we need from the idea-plugin tag from the xml response.
      * All properties have to have a default value, because the class needs to have an empty constructor.
      */
-    data class IdeaPlugin(val version: String = "")
+    data class IdeaPlugin(val version: DefaultArtifactVersion = DefaultArtifactVersion(""))
 }
