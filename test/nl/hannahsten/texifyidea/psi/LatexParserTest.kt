@@ -117,6 +117,7 @@ class LatexParserTest : BasePlatformTestCase() {
             \verb-afdsa$-
             \lstinline|$|
             \lstinline{$}
+            \lstinline[language=Fortran]{$}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
