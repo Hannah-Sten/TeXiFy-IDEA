@@ -53,6 +53,8 @@
     </applicationListeners>
 
     <!-- Hooks for plugin functionality -->
+    <!-- IMPORTANT if including files in a nested way, make sure to include them in the idea-plugin tag (and not in nested tags) -->
+    <!-- java.lang.Throwable: `include` is supported only on a root level ([row,col {unknown-source}]: [9,9]) -->
     <xi:include href="/META-INF/extensions/startup.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/files-and-project.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/file-templates.xml" xpointer="xpointer(/idea-plugin/*)"/>
