@@ -115,7 +115,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %xstates INLINE_VERBATIM_START INLINE_VERBATIM
 
-%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
+%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
 
 // algorithmic environment
@@ -136,8 +136,20 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 <INLINE_VERBATIM_START> {
     // Experimental syntax of \lstinline: \lstinline{verbatim}
     {OPEN_BRACE}        { yypopState(); verbatim_delimiter = "}"; yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
+    // lstinline can have optional arguments, and using [ as verbatim delimiter is not exactly very readable
+    {OPEN_BRACKET}      { yypopState(); yypushState(INLINE_VERBATIM_OPTIONAL_ARG); verbatimOptionalArgumentBracketsCount = 1; return OPEN_BRACKET; }
     {ANY_CHAR}          { yypopState(); verbatim_delimiter = yytext().toString(); yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
     [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+}
+
+<INLINE_VERBATIM_OPTIONAL_ARG> {
+    // Count brackets to know when we exited the optional argument
+    {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET; }
+    {CLOSE_BRACKET}     {
+        verbatimOptionalArgumentBracketsCount--;
+        if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(INLINE_VERBATIM_START); }
+        return CLOSE_BRACKET;
+    }
 }
 
 <INLINE_VERBATIM> {
@@ -174,7 +186,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // Check if an optional argument is coming up
 // If you start a verbatim with an open bracket and don't close it, this won't work
 <POSSIBLE_VERBATIM_OPTIONAL_ARG> {
-    {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; yypopState(); yypushState(VERBATIM_OPTIONAL_ARG); return OPEN_BRACKET; }
+    {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount = 1; yypopState(); yypushState(VERBATIM_OPTIONAL_ARG); return OPEN_BRACKET; }
     {WHITE_SPACE}       { yypopState(); yypushState(VERBATIM); return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN; }
 }

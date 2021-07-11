@@ -5,9 +5,6 @@
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile"/>
         </action>
 
-        <!-- LaTeX Edit menu -->
-        <xi:include href="/META-INF/actions/editmenu.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
-
         <!-- LaTeX Code menu -->
         <action id="texify.ReformatLatexindent" class="nl.hannahsten.texifyidea.action.ReformatWithLatexindent" description="Run latexindent.pl" >
             <add-to-group group-id="CodeFormatGroup" anchor="after" relative-to-action="ShowReformatFileDialog" />
@@ -24,9 +21,6 @@
                 <keyboard-shortcut first-keystroke="control alt W" keymap="$default"/>
             </action>
         </group>
-
-        <!-- LaTeX Tools menu -->
-        <xi:include href="/META-INF/actions/toolsmenu.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
 
         <!-- Generate Latex -->
         <group id="texify.LatexGenerate" text="_LaTeX" description="Latex generation actions" popup="true">
@@ -48,4 +42,10 @@
                     description="Shows a popup to insert dummy text."/>
         </group>
     </actions>
+
+    <!-- LaTeX Edit menu -->
+    <xi:include href="/META-INF/actions/editmenu.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
+
+    <!-- LaTeX Tools menu -->
+    <xi:include href="/META-INF/actions/toolsmenu.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
 </idea-plugin>
