@@ -70,7 +70,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             ?: "Crash Report: <Fill in title>"
         val body = event?.throwableText ?: "Please paste the full stacktrace from the IDEA error popup."
 
-        val builder = StringBuilder(URL)
+        val builder = StringBuilder(ISSUE_URL)
         try {
             builder.append(URLEncoder.encode(title, ENCODING))
             builder.append("&body=")
@@ -108,8 +108,9 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
     companion object {
 
-        private const val URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&title="
-        private const val API = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
+        private const val ISSUE_URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&title="
+
+        private const val JETBRAINS_API_URL = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
 
         private const val ENCODING = "UTF-8"
 
@@ -121,7 +122,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             // Create xml mapper that doesn't fail on unknown properties. This allows us to only define the properties we need.
             val mapper = XmlMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-            with(URL(API).openConnection() as HttpURLConnection) {
+            with(URL(JETBRAINS_API_URL).openConnection() as HttpURLConnection) {
                 requestMethod = "GET"
                 connectTimeout = 1000
                 readTimeout = 1000
