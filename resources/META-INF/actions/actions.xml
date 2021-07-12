@@ -44,8 +44,8 @@
     </actions>
 
     <!-- LaTeX Edit menu -->
-    <xi:include href="/META-INF/actions/editmenu.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
+    <xi:include href="/META-INF/actions/editmenu.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <!-- LaTeX Tools menu -->
-    <xi:include href="/META-INF/actions/toolsmenu.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
+    <xi:include href="/META-INF/actions/toolsmenu.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>
