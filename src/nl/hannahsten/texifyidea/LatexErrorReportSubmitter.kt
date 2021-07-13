@@ -41,19 +41,23 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             getLatestVersion()
         }
         catch (e: UnknownHostException) {
-            currentVersion
+            return true
         }
 
-        if (latestVersion?.isNotBlank() == true && DefaultArtifactVersion(currentVersion) < DefaultArtifactVersion(latestVersion)) {
+        if (latestVersion.version.toString().isNotBlank() && DefaultArtifactVersion(currentVersion) < latestVersion.version) {
+
+            val currentIdeaVersion = DefaultArtifactVersion(ApplicationInfo.getInstance().build.asStringWithoutProductCode())
+            val requiredIdeaVersion = latestVersion.ideaVersion.sinceBuild
 
             JBPopupFactory.getInstance().createMessage("")
                 .showInCenterOf(parentComponent)
             val result = showOkCancelDialog(
                 "Update TeXiFy",
-                "You are not using the latest version of TeXiFy, please update first (may require an IDE update).\n" +
-                        "Go to Settings > Plugins to update. If no update is available, update your IDE first and then update TeXiFy.",
-                "Cancel submit", // Sort of the wrong way around, but it suggests to cancel this way
-                "Submit anyway"
+                "Please update your current version ($currentVersion) of TeXiFy to the latest version (${latestVersion.version}) before submitting,\n" +
+                    "to check if the error is already fixed. Go to Settings > Plugins to update.\n" +
+                    if (currentIdeaVersion < requiredIdeaVersion) "You first need to update your current IDE version ($currentIdeaVersion) to $requiredIdeaVersion or newer.\n" else "",
+                "Cancel Submit", // Sort of the wrong way around, but it suggests to cancel this way
+                "Submit Anyway"
             )
 
             if (result == Messages.OK) return false
@@ -114,10 +118,10 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
         private const val ENCODING = "UTF-8"
 
-        private var latestVersionCached = ""
+        private var latestVersionCached = IdeaPlugin()
 
-        fun getLatestVersion(): String {
-            if (latestVersionCached.isNotBlank()) return latestVersionCached
+        fun getLatestVersion(): IdeaPlugin {
+            if (latestVersionCached.version.toString().isNotBlank()) return latestVersionCached
 
             // Create xml mapper that doesn't fail on unknown properties. This allows us to only define the properties we need.
             val mapper = XmlMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -131,8 +135,6 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
                 latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
                     .category
                     ?.maxByOrNull { it.version }
-                    ?.version
-                    ?.toString()
                     ?: latestVersionCached
 
                 return latestVersionCached
@@ -160,5 +162,15 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
      * Data class specifying all the properties we need from the idea-plugin tag from the xml response.
      * All properties have to have a default value, because the class needs to have an empty constructor.
      */
-    data class IdeaPlugin(val version: DefaultArtifactVersion = DefaultArtifactVersion(""))
+    data class IdeaPlugin(
+        @JacksonXmlProperty(localName = "version")
+        val version: DefaultArtifactVersion = DefaultArtifactVersion(""),
+        @JacksonXmlProperty(localName = "idea-version")
+        val ideaVersion: IdeaVersion = IdeaVersion()
+    )
+
+    data class IdeaVersion(
+        @JacksonXmlProperty(isAttribute = true, localName = "since-build")
+        val sinceBuild: DefaultArtifactVersion = DefaultArtifactVersion("")
+    )
 }
