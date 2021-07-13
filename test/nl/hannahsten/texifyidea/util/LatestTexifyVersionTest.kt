@@ -7,6 +7,6 @@ class LatestTexifyVersionTest : BasePlatformTestCase() {
 
     fun testVersion() {
         val version = LatexErrorReportSubmitter.getLatestVersion()
-        assertTrue(version.isNotBlank())
+        assertTrue(version.version.toString().isNotBlank())
     }
 }
