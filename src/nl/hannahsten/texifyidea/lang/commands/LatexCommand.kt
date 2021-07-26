@@ -165,6 +165,7 @@ interface LatexCommand : Described, Dependend {
                 LatexMathCommand[cmdWithoutSlash]
             }
             else {
+                // Attempt to avoid an error about slow operations on EDT
                 runBlocking {
                     lookupInIndex(cmdWithoutSlash, command.project)
                 }
