@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.lang.Dependend
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
+import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -164,7 +165,9 @@ interface LatexCommand : Described, Dependend {
                 LatexMathCommand[cmdWithoutSlash]
             }
             else {
-                lookupInIndex(cmdWithoutSlash, command.project)
+                runBlocking {
+                    lookupInIndex(cmdWithoutSlash, command.project)
+                }
             }
         }
     }
