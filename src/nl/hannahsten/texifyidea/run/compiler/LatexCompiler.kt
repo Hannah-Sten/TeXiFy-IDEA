@@ -205,7 +205,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(runConfig.compilerPath ?: executableName)
 
             command.add("--synctex")
 
