@@ -16,9 +16,11 @@ import javax.swing.Icon
 /**
  * One step in the [LatexExecutionConsole].
  *
+ * @param stepId If this node is a step or has a step as parent, the step id, null otherwise.
+ *
  * @author Sten Wessel
  */
-class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = null) : PresentableNodeDescriptor<LatexExecutionNode>(project, parent), NavigatableErrorTreeElement {
+class LatexExecutionNode(project: Project, val stepId: String? = null, val parent: LatexExecutionNode? = null) : PresentableNodeDescriptor<LatexExecutionNode>(project, parent), NavigatableErrorTreeElement {
 
     companion object {
 
@@ -51,7 +53,7 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
         if (!description.isNullOrEmpty()) {
             presentation.addText(description, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         }
-        presentation.locationString = file?.presentableName ?: "" + if (line != null) ":$line" else ""
+        presentation.locationString = file?.presentableName ?: ("" + if (line != null) ":$line" else "")
 
         myName = "$title $description"
     }
@@ -74,4 +76,6 @@ class LatexExecutionNode(project: Project, val parent: LatexExecutionNode? = nul
             OpenFileDescriptor(project!!, file!!)
         }
     }
+
+    override fun toString() = (if (stepId != null) "$stepId: " else "") + description
 }

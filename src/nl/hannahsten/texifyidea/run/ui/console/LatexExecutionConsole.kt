@@ -54,53 +54,6 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
     companion object {
 
         private const val SPLITTER_PROPORTION_PROPERTY = "TeXiFy.ExecutionConsole.Splitter.Proportion"
-
-        // todo clean up
-        private fun initTree(model: AsyncTreeModel) = object : Tree(model), DataProvider {
-            // getData needs to be implemented on a component, we choose the Tree in this case (see DataProvider)
-            override fun getData(dataId: String): Any? {
-                // Used by the EditSourceOnDoubleClickHandler
-                if (CommonDataKeys.NAVIGATABLE.`is`(dataId)) {
-                    return getSelectedNode()?.navigatable
-                }
-                return null
-            }
-
-            //region Copy from NewErrorTreeViewPanel
-
-            private fun getSelectedNode(): LatexExecutionNode? {
-                val nodes = getSelectedNodes()
-                return if (nodes.size == 1) nodes[0] else null
-            }
-
-            private fun getSelectedNodes(): List<LatexExecutionNode> {
-                val paths: Array<TreePath> = this.selectionPaths ?: return emptyList()
-                val result: MutableList<LatexExecutionNode> = ArrayList()
-                for (path in paths) {
-                    val lastPathNode = path.lastPathComponent as DefaultMutableTreeNode
-                    val userObject = lastPathNode.userObject
-                    if (userObject is LatexExecutionNode && userObject.file != null && userObject.project != null) {
-                        result.add(userObject)
-                    }
-                }
-                return result
-            }
-            //endregion
-        }.apply {
-            isLargeModel = true
-            ComponentUtil.putClientProperty(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
-            isRootVisible = true
-            EditSourceOnDoubleClickHandler.install(this)
-            EditSourceOnEnterKeyHandler.install(this)
-            // Does not seem to do anything
-            TreeUtil.setNavigatableProvider(this) { path ->
-                val lastPathNode = path.lastPathComponent as DefaultMutableTreeNode
-                ((lastPathNode.userObject as? ErrorTreeNodeDescriptor)?.element as? NavigatableErrorTreeElement)?.navigatable
-            }
-            TreeSpeedSearch(this).comparator = SpeedSearchComparator(false)
-            TreeUtil.installActions(this)
-            putClientProperty(RenderingHelper.SHRINK_LONG_RENDERER, true)
-        }
     }
 
     private data class StepUI(val step: Step, val node: LatexExecutionNode, val console: ConsoleView)
@@ -120,7 +73,9 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         rootNode.title = runConfig.name
 
         treeModel = StructureTreeModel(TreeStructure(), this)
-        tree = initTree(AsyncTreeModel(treeModel, this))
+        tree = LatexExecutionTree(AsyncTreeModel(treeModel, this)).apply {
+            initialize()
+        }
 
         consolePanel = JPanel(CardLayout())
 
@@ -144,6 +99,14 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
             }
         }
         autoScrollToSourceHandler.install(tree)
+
+        // When selecting a step in the tree, the matching console output should show
+        tree.selectionModel.addTreeSelectionListener(LatexExecutionTreeSelectionListener(tree) { node ->
+            node.stepId?.let {
+                // Select the card which should show on top, based on its step id
+                (consolePanel.layout as CardLayout).show(consolePanel, it)
+            }
+        })
     }
 
     fun start() {
@@ -170,7 +133,8 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         val id = (event.parentId as? String) ?: return
         val (step, node, console) = steps[id] ?: return
         // todo should we really reuse the 'step' node for messages?
-        LatexExecutionNode(project, rootNode).apply {
+        // todo shouldn't this be parent=node?
+        LatexExecutionNode(project, node.stepId, parent=rootNode).apply {
             description = event.message
             state = when (event.kind) {
                 MessageEvent.Kind.WARNING -> LatexExecutionNode.State.WARNING
@@ -187,7 +151,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
     }
 
     fun startStep(id: String, step: Step, handler: ProcessHandler) {
-        val node = LatexExecutionNode(project, rootNode).apply {
+        val node = LatexExecutionNode(project, id, rootNode).apply {
             description = step.provider.name
             state = LatexExecutionNode.State.RUNNING
             file = step.configuration.options.mainFile.resolve()
@@ -205,7 +169,8 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
 
         scheduleUpdate(node, true)
         runInEdt {
-            consolePanel.add(console.component, id)
+            consolePanel.add(id, console.component)
+            // This line probably doesn't do match, as by default the last added card is shown at the front of the card layout, but it shows how to select a card.
             (consolePanel.layout as CardLayout).show(consolePanel, id)
         }
     }
@@ -227,6 +192,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
             }
         }
         console.print(IdeBundle.message("run.anything.console.process.finished", exitCode), ConsoleViewContentType.SYSTEM_OUTPUT)
+        console.print("\n", ConsoleViewContentType.SYSTEM_OUTPUT)
         scheduleUpdate(node)
     }
 
