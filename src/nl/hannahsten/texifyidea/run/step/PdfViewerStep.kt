@@ -104,16 +104,15 @@ class PdfViewerStep(
             isPassParentEnvs = state.isPassParentEnvs
         }
 
-        // We have to get the data context in the setter, any data component will do
-        var comboBoxBuilder: CellBuilder<ComboBox<PdfViewer>>? = null
         val panel = panel {
             row("PDF viewer:") {
                 cell {
-                    comboBoxBuilder = comboBox(
-                        DefaultComboBoxModel(availablePdfViewers().toVector()),
-                        getter = { state.pdfViewer ?: defaultPdfViewer },
-                        setter = { state.pdfViewer = it }
-                    ).focused()
+                    component(viewerEditor)
+//                    comboBoxBuilder = comboBox(
+//                        DefaultComboBoxModel(availablePdfViewers().toVector()),
+//                        getter = { state.pdfViewer ?: defaultPdfViewer },
+//                        setter = { state.pdfViewer = it }
+//                    ).focused()
                     viewerArguments(CCFlags.growX, CCFlags.pushX)
                 }
             }
@@ -122,7 +121,9 @@ class PdfViewerStep(
                 val textFieldBuilder = textFieldWithBrowseButton(
                     getter = { state.pdfFilePath.pathWithMacro ?: getDefaultPdfFilePathWithMacro().resolvedPath!! },
                     setter = {
-                        val (resolvedPath, pathWithMacro) = sortOutMacros(comboBoxBuilder?.component?.getComponent(0) ?: return@textFieldWithBrowseButton, configuration, it)
+                        // We have to get the data context in the setter, any data component will do
+                        val anyDataComponent = viewerEditor.component
+                        val (resolvedPath, pathWithMacro) = sortOutMacros(anyDataComponent?.getComponent(0) ?: return@textFieldWithBrowseButton, configuration, it)
                         state.pdfFilePath = LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
                     },
                     fileChooserDescriptor = FileTypeDescriptor("PDF File", ".pdf", ".dvi")
@@ -139,11 +140,15 @@ class PdfViewerStep(
             }
         }
 
-        dialog(
+        val modified = dialog(
             "Configure PDF Viewer Step",
             panel = panel,
             resizable = true,
         ).showAndGet()
+
+        if (modified) {
+            state.pdfViewer = viewerEditor.getSelectedExecutable()
+        }
     }
 
     override fun execute(id: String, console: LatexExecutionConsole): ProcessHandler {

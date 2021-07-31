@@ -1,19 +1,23 @@
 package nl.hannahsten.texifyidea.action
 
 import com.intellij.execution.RunManager
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
@@ -53,10 +57,10 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
      * @return Exit code.
      */
     fun forwardSearch(file: VirtualFile, project: Project, textEditor: TextEditor?): Int {
-        if (viewer == null) return -2
+        if (viewer == null) throw TeXception("No pdf viewer found")
 
         if (!viewer!!.isAvailable()) {
-            return -3
+            throw TeXception("The pdf viewer $viewer is not available.")
         }
 
         val pdf = guessPdfFile(file, project)
@@ -67,8 +71,14 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
                 (viewer as ExternalPdfViewer).forwardSearch(pdf, file.path, line, project, focusAllowed = true)
                 0
             }
-            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(pdf, file.path, line, project, focusAllowed = true) ?: -5
-            else -> -4
+            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(pdf, file.path, line, project, focusAllowed = true) ?: throw TeXception("There was a problem communicating with pdf viewer $viewer")
+            is CustomPdfViewer -> {
+                val executable = (viewer as CustomPdfViewer).executablePath
+                // todo working dir, arguments, env vars
+                // todo pdf should not be guessed, as it is known
+                runCommandWithExitCode(executable, pdf ?: "").second
+            }
+            else -> throw TeXception("Running pdf viewer $viewer is not yet implemented.")
         }
     }
 }
