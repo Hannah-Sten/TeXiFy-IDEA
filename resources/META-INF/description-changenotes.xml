@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.8</strong></p>
+        <p><strong>Beta 0.7.9</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.8! This release will automatically detect the TeX Live SDK on Windows, and fixes some bugs related to Sumatra forward search and WSL2.
+            Welcome to TeXiFy IDEA 0.7.9! This release fixes some crashes that appeared in IDEA 2021.2, and has some minor improvements.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,9 +55,8 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Auto-detect TeX Live SDK on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1912">#1912</a>)</li>
-            <li> Implement the 'build project' button to run all run configurations. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1966">#1966</a>)</li>
-            <li> Add inspection to encourage replacing usepackage by requirepackage in package files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
+            <li> Support optional parameter for \lstinline in parser. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> Improve update warning when submitting a crash report. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1994">#1994</a>)</li>
         </ul>
         <br>
 <!--        <p>-->
@@ -71,10 +70,12 @@
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix incorrect output path when using WSL 2 on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1963">#1963</a>)</li>
-            <li> Fix Sumatra forward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1961">#1961</a>)</li>
-            <li> Fix crash when inserting optional label parameter in environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1959">#1959</a>)</li>
-            <li> Fix requirepackage commands collapsing as usepackage. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
+            <li> Fix exception when pasting unsupported images. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1983">#1983</a>)</li>
+            <li> Fix invalid stealthy ranges for Grazie. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1985">#1985</a>)</li>
+            <li> Remove empty tooltip. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1985">#1985</a>)</li>
+            <li> Fix crash related to plugin descriptor. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> Fix false positive for unicode inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> The tectonic executable should never be prefixed with the SDK directory. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1999">#1999</a>)</li>
         </ul>
         <br>
 <!--        <p>-->
