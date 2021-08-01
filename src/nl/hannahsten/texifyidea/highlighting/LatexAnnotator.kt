@@ -6,61 +6,17 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
+ * Provide syntax highlighting.
+ *
  * @author Hannah Schellekens
  */
 open class LatexAnnotator : Annotator {
-
-    companion object {
-
-        /**
-         * The maximum amount of times the cache may be used before doing another lookup.
-         */
-        private const val MAX_CACHE_COUNT = 40
-    }
-
-    // Cache to prevent many PsiFile#isUsed and PsiFile#definitions() lookups.
-    private var definitionCache: Collection<LatexCommands>? = null
-    private var definitionCacheFile: PsiFile? = null
-    private var definitionCacheCount: Int = 0
-
-    /**
-     * Looks up all the definitions in the file set.
-     *
-     * It does cache all the definitions for [MAX_CACHE_COUNT] lookups.
-     * See also members [definitionCache], [definitionCacheFile], and [definitionCacheCount]
-     */
-    private fun PsiFile.definitionCache(): Collection<LatexCommands> {
-        // Initialise.
-        if (definitionCache == null) {
-            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
-            definitionCacheFile = this
-            definitionCacheCount = 0
-            return definitionCache!!
-        }
-
-        // Check if the file is the same.
-        if (definitionCacheFile != this) {
-            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
-            definitionCacheCount = 0
-            definitionCacheFile = this
-        }
-
-        // Re-evaluate after the count has been reached times.
-        if (++definitionCacheCount > MAX_CACHE_COUNT) {
-            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
-            definitionCacheCount = 0
-        }
-
-        return definitionCache!!
-    }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
         // Math display
@@ -106,7 +62,7 @@ open class LatexAnnotator : Annotator {
         inlineMathElement: LatexInlineMath,
         annotationHolder: AnnotationHolder
     ) {
-        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(inlineMathElement)
             .textAttributes(LatexSyntaxHighlighter.INLINE_MATH)
             .create()
@@ -128,7 +84,7 @@ open class LatexAnnotator : Annotator {
         displayMathElement: PsiElement,
         annotationHolder: AnnotationHolder
     ) {
-        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(displayMathElement)
             .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
             .create()
@@ -159,13 +115,13 @@ open class LatexAnnotator : Annotator {
 
             val token = element.commandToken
 
-            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(token)
                 .textAttributes(highlighter)
                 .create()
 
             if (element.name == "\\text" || element.name == "\\intertext") {
-                annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+                annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                     .range(element.requiredParameters().firstOrNull() ?: continue)
                     .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
                     .create()
@@ -189,7 +145,7 @@ open class LatexAnnotator : Annotator {
 
             val toStyle = element.parameterText ?: continue
 
-            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(toStyle)
                 .textAttributes(LatexSyntaxHighlighter.OPTIONAL_PARAM)
                 .create()
@@ -253,7 +209,7 @@ open class LatexAnnotator : Annotator {
      */
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
         val content = parameter.firstChildOfType(LatexContent::class) ?: return
-        this.newAnnotation(HighlightSeverity.INFORMATION, "")
+        this.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(content)
             .textAttributes(style)
             .create()

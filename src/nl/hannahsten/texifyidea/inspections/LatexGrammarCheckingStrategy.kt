@@ -47,7 +47,7 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
             .also { it.add(root.endOffset) }
             // To get the ranges that we need to ignore
             .chunked(2) { IntRange(it[0], it[1]) }
-            .filter { it.first < it.last && it.first >= 0 && it.last <= text.length }
+            .filter { it.first < it.last && it.first >= 0 && it.last < text.length }
             .toMutableSet()
 
         // There is still a bit of a problem, because when stitching together the NormalTexts, whitespace is lost

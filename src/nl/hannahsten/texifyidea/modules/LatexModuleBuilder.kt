@@ -1,9 +1,6 @@
 package nl.hannahsten.texifyidea.modules
 
-import com.intellij.ide.util.projectWizard.ModuleBuilder
-import com.intellij.ide.util.projectWizard.ModuleWizardStep
-import com.intellij.ide.util.projectWizard.SettingsStep
-import com.intellij.ide.util.projectWizard.WizardContext
+import com.intellij.ide.util.projectWizard.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.projectRoots.SdkTypeId
@@ -13,7 +10,6 @@ import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
-import nl.hannahsten.texifyidea.modules.intellij.SdkSettingsStep
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.io.File
@@ -42,7 +38,8 @@ class LatexModuleBuilder : ModuleBuilder() {
 
     override fun modifyProjectTypeStep(settingsStep: SettingsStep): ModuleWizardStep {
         val filter = Condition { id: SdkTypeId -> id is LatexSdk }
-        // SdkSettingsStep is not available in non-IntelliJ IDEs, so we simply copy those classes to TeXiFy.
+        // Note that SdkSettingsStep is part of the java plugin so not available in non-IntelliJ IDEs
+        // But we trust that this class won't be loaded in non-IJ
         return SdkSettingsStep(settingsStep, this, filter)
     }
 

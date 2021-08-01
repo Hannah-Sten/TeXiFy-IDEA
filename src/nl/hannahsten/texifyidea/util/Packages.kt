@@ -101,7 +101,7 @@ object PackageUtils {
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
 
         // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
-        // Avoid 'Write access is allowed inside write-action only" exception
+        // Avoid 'Write access is allowed inside write-action only' exception
         runWriteAction {
             // Avoid "Attempt to modify PSI for non-committed Document"
             PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)

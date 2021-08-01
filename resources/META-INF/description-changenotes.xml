@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.6</strong></p>
+        <p><strong>Beta 0.7.8</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.6! We bring to you some nice improvements like automatically updating references when moving a file, and the option to indent text in sections. In the meantime, we are working on a complete rework of the LaTeX run configuration.
+            Welcome to TeXiFy IDEA 0.7.8! This release will automatically detect the TeX Live SDK on Windows, and fixes some bugs related to Sumatra forward search and WSL2.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,35 +55,32 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Update file references when moving an included file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
-            <li> Group inspections in settings. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1830">#1830</a>)</li>
-            <li> Support nested subfiles. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1835">#1835</a>)</li>
-            <li> Add inspection to warn against relative path bug in BIBINPUTS. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1837">#1837</a>)</li>
-            <li> Add optional code style setting to indent text in sections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1843">#1843</a>)</li>
-            <li> Enable the tool windows also in non-IntelliJ IDEs. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1843">#1843</a>)</li>
-            <li> Auto-fill crash report. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1852">#1852</a>)</li>
+            <li> Auto-detect TeX Live SDK on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1912">#1912</a>)</li>
+            <li> Implement the 'build project' button to run all run configurations. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1966">#1966</a>)</li>
+            <li> Add inspection to encourage replacing usepackage by requirepackage in package files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
         </ul>
         <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li> Use html formatting in documentation popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1846">#1846</a>)</li>
-        </ul>
-        <br>
+<!--        <p>-->
+<!--            <em>Changes</em>-->
+<!--        </p>-->
+<!--        <ul>-->
+<!--            <li> Ignore permission problems when extracting package zips on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894"><a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a></a>)</li>-->
+<!--        </ul>-->
+<!--        <br>-->
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Take BIBINPUTS variable into account when resolving bib files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1837">#1837</a>)</li>
-            <li> Fix bug in reading a file magic comment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
-            <li> Fix tool window icon size. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1817">#1817</a>)</li>
+            <li> Fix incorrect output path when using WSL 2 on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1963">#1963</a>)</li>
+            <li> Fix Sumatra forward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1961">#1961</a>)</li>
+            <li> Fix crash when inserting optional label parameter in environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1959">#1959</a>)</li>
+            <li> Fix requirepackage commands collapsing as usepackage. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
         </ul>
-<!--        <br>-->
-<!--        <p>-->
-<!--            Thanks to <a href="https://github.com/solonovamax">@solonovamax</a> for contributing to this release.-->
-<!--        </p>-->
         <br>
+<!--        <p>-->
+<!--            Thanks to ... for contributing to this release.-->
+<!--        </p>-->
+<!--        <br>-->
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>
