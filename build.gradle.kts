@@ -95,6 +95,9 @@ dependencies {
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.1")
 
+    // LaTeX rendering for preview
+    implementation("org.scilab.forge:jlatexmath:1.0.7")
+
     // Test dependencies
 
     // Also implementation junit 4, just in case

@@ -22,9 +22,8 @@ class PreviewForm {
         equationArea!!.text = equation
     }
 
-    fun setPreview(image: BufferedImage, latexOutput: String) {
+    fun setPreview(image: BufferedImage) {
         equationPanel!!.setImage(image)
-        outputArea!!.text = latexOutput
         tabbedPane!!.selectedIndex = tabbedPane!!.indexOfComponent(equationTab)
     }
 
