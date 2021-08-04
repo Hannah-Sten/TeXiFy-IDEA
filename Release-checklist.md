@@ -1,3 +1,4 @@
+- [ ] Create branch bx.x.x
 - [ ] Run 'Usage of IntelliJ API not available in older IDEs' and 'Stateful extension' inspection (ctrl+alt+shift+i)
 - [ ] Increase stub version in LatexParserDefinition
 - [ ] Gradle clean, create new empty project and check that document compiles and pdf viewer is opened
@@ -6,8 +7,8 @@
 - [ ] Does it work in PyCharm?
 - [ ] Run ctan.py
 
-- [ ] Copy changelog to description-changelog.xml, replace using regexes below and update welcome text
-- [ ] Update version in plugin.xml and build.gradle
+- [ ] Copy changelog to description-changenotes.xml, replace using regexes below and update welcome text
+- [ ] Update version in plugin.xml and build.gradle.kts
 - [ ] runIDE and check the changelog is formatted correctly
 - [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
 - [ ] Merge PR
