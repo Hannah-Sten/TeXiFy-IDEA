@@ -22,8 +22,6 @@ class LatexTextExtractor : TextExtractor() {
             else -> TextContent.TextDomain.LITERALS // previously NON_TEXT
         }
 
-        if (domain !in allowedDomains) return null
-
         return TextContent.builder().build(element, domain)
     }
 }
