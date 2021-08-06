@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.extensions.ExtensionPointName
+import nl.hannahsten.texifyidea.run.executable.Executable
 import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
 
 /**
@@ -14,10 +15,9 @@ private val EP_NAME = ExtensionPointName<ExternalPdfViewer>("nl.rubensten.texify
 /**
  * Interface that defines a pdf viewer so we can use both [InternalPdfViewer]s and [ExternalPdfViewer]s interchangeably.
  */
-interface PdfViewer : SupportedExecutable {
+interface PdfViewer : Executable {
 
     val name: String
-    override val displayName: String
     override val displayType: String
         get() = "PDF Viewer"
 

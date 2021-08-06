@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.compiler.latex
 import nl.hannahsten.texifyidea.run.compiler.Compiler
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 
-sealed class LatexCompiler : Compiler<LatexCompileStep> {
+abstract class LatexCompiler : Compiler<LatexCompileStep> {
 
     /**
      * Whether the compiler supports input files with Unicode encoding.
@@ -35,6 +35,7 @@ sealed class LatexCompiler : Compiler<LatexCompileStep> {
         override fun toString(value: LatexCompiler) = when (value) {
             is SupportedLatexCompiler -> value.executableName
             is CustomLatexCompiler -> value.executablePath
+            else -> ""
         }
 
         override fun fromString(value: String): LatexCompiler {

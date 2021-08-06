@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
 /**
  * Define behaviour that external (that means, registered from outside TeXiFy) pdf viewers should inherit.
  */
-interface ExternalPdfViewer : PdfViewer, SupportedExecutable {
+interface ExternalPdfViewer : SupportedPdfViewer {
 
     override val displayType: String
         get() = "PDF Viewer"

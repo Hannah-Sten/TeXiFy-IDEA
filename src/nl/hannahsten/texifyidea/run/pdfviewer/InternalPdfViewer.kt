@@ -22,7 +22,7 @@ sealed class InternalPdfViewer(
     override val executableName: String,
     override val displayName: String,
     val conversation: ViewerConversation?
-) : PdfViewer, SupportedExecutable {
+) : SupportedPdfViewer {
 
     override val displayType: String
         get() = "PDF Viewer"

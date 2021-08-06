@@ -10,12 +10,10 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.layout.CCFlags
-import com.intellij.ui.layout.CellBuilder
 import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
@@ -28,17 +26,16 @@ import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOpt
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.SupportedPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.toVector
 import org.jetbrains.annotations.NotNull
 import java.io.File
 import java.io.OutputStream
-import javax.swing.DefaultComboBoxModel
 
 class PdfViewerStep(
     override val provider: StepProvider, override var configuration: LatexRunConfiguration
@@ -49,7 +46,7 @@ class PdfViewerStep(
     class State : BaseState() {
 
         @get:Attribute("pdfViewer", converter = PdfViewer.Converter::class)
-        var pdfViewer by property(defaultPdfViewer) { it == defaultPdfViewer }
+        var pdfViewer: PdfViewer? by property(defaultPdfViewer) { it == defaultPdfViewer }
 
         @get:Attribute("pdfFilePath", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
         var pdfFilePath: LatexRunConfigurationPathOption by property(LatexRunConfigurationPathOption()) { it.isDefault() }
@@ -92,7 +89,7 @@ class PdfViewerStep(
     }
 
     override fun configure() {
-        val viewerEditor = ExecutableEditor<PdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
+        val viewerEditor = ExecutableEditor<SupportedPdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
         setDefaultLayout(viewerEditor, state.pdfViewer)
 
         // todo whether this makes sense depends on the pdf viewer

@@ -22,6 +22,9 @@ import javax.swing.JList
  * @property executables: Executables for in the list.
  * @property createCustomExecutable: Custom executable for in the list (based on the path).
  *
+ * @param S: The type of the default executables in the list (which are not custom executables).
+ * @param E: The type of executables in the list (may be supported or custom).
+ *
  * @author Sten Wessel
  */
 class ExecutableEditor<in S : SupportedExecutable, E : Executable>(label: String, private val executables: Iterable<S>, private val createCustomExecutable: (path: String) -> CustomExecutable) : LabeledComponent<ComboBox<ExecutableComboBoxItem>>(), PanelWithAnchor {
