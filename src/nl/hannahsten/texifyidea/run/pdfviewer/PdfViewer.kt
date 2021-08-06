@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.extensions.ExtensionPointName
 import nl.hannahsten.texifyidea.run.executable.Executable
-import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
+import java.io.File
 
 /**
  * Allow other plugins to define their own pdf viewers.
@@ -25,11 +25,12 @@ interface PdfViewer : Executable {
 
     class Converter : com.intellij.util.xmlb.Converter<PdfViewer>() {
 
-        override fun toString(value: PdfViewer) = value.name
+        override fun toString(value: PdfViewer) = if (value is CustomPdfViewer) value.executablePath else value.name
 
         override fun fromString(value: String): PdfViewer =
             ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == value }
                 ?: InternalPdfViewer.valueOf(value)
+                ?: if (File(value).exists()) CustomPdfViewer(value) else null
                 ?: availablePdfViewers().firstOrNull()
                 ?: Evince()
     }

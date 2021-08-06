@@ -44,10 +44,14 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null): String?
     return runCommandWithExitCode(*commands, workingDirectory = workingDirectory).first
 }
 
+fun Process.getOutput() = inputStream.bufferedReader().readText().trim() + errorStream.bufferedReader().readText().trim()
+
 /**
  * See [runCommand], but also returns exit code.
+ *
+ * @param killAfterTimeout If true, process will be killed after timeout. If false, just return output.
  */
-fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3): Pair<String?, Int> {
+fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, killAfterTimeout: Boolean = true): Pair<String?, Int> {
     return try {
         val proc = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
@@ -55,13 +59,17 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             .createProcess()
 
         if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
-            val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
-            return Pair(output, proc.exitValue())
+            Pair(proc.getOutput(), proc.exitValue())
         }
         else {
-            val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
-            proc.destroy()
-            proc.waitFor()
+            // todo find a way to get output of alive process
+            var output = ""
+            if (killAfterTimeout) {
+                proc.destroy()
+                proc.waitFor()
+                // At this point, the inputStream is finished so we can safely get the output without blocking
+                output = proc.getOutput()
+            }
             Pair(output, proc.exitValue())
         }
     }

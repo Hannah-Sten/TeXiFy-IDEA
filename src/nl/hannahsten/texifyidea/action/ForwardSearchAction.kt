@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.action
 
 import com.intellij.execution.RunManager
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
@@ -12,8 +11,8 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -26,7 +25,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        forwardSearch(file, project, textEditor)
+        forwardSearch(file, project, textEditor = textEditor)
     }
 
     override fun update(e: AnActionEvent) {
@@ -56,27 +55,30 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
     /**
      * @return Exit code.
      */
-    fun forwardSearch(file: VirtualFile, project: Project, textEditor: TextEditor?): Int {
+    fun forwardSearch(texFile: VirtualFile, project: Project, absolutePdfPath: String? = guessPdfFile(texFile, project), textEditor: TextEditor?): Int {
         if (viewer == null) throw TeXception("No pdf viewer found")
+        if (absolutePdfPath == null) throw TeXception("Pdf file for ${texFile.path} was not found.")
 
         if (!viewer!!.isAvailable()) {
             throw TeXception("The pdf viewer $viewer is not available.")
         }
 
-        val pdf = guessPdfFile(file, project)
         val line = textEditor?.editor?.document?.getLineNumber(textEditor.editor.caretModel.offset)?.plus(1) ?: 1
 
         return when (viewer) {
             is ExternalPdfViewer -> {
-                (viewer as ExternalPdfViewer).forwardSearch(pdf, file.path, line, project, focusAllowed = true)
+                (viewer as ExternalPdfViewer).forwardSearch(absolutePdfPath, texFile.path, line, project, focusAllowed = true)
                 0
             }
-            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(pdf, file.path, line, project, focusAllowed = true) ?: throw TeXception("There was a problem communicating with pdf viewer $viewer")
+            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(absolutePdfPath, texFile.path, line, project, focusAllowed = true) ?: throw TeXception("There was a problem communicating with pdf viewer $viewer")
             is CustomPdfViewer -> {
                 val executable = (viewer as CustomPdfViewer).executablePath
                 // todo working dir, arguments, env vars
                 // todo pdf should not be guessed, as it is known
-                runCommandWithExitCode(executable, pdf ?: "").second
+                // Keep process running after timeout, for example the Evince command will not exit
+                // when a pdf is opened, regardless of whether there is an error or not
+                // but we might need to continue with other steps.
+                runCommandWithExitCode(executable, absolutePdfPath, timeout = 1L, killAfterTimeout = false).second
             }
             else -> throw TeXception("Running pdf viewer $viewer is not yet implemented.")
         }

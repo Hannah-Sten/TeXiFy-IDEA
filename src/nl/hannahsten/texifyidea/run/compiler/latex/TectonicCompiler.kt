@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.compiler.latex
 
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 object TectonicCompiler : SupportedLatexCompiler("Tectonic", "tectonic") {
 
@@ -20,8 +19,8 @@ object TectonicCompiler : SupportedLatexCompiler("Tectonic", "tectonic") {
         moduleRoots: Array<VirtualFile>
     ): MutableList<String> {
 
-            // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
-            val command = mutableListOf(LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+        // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
+        val command = mutableListOf(executableName)
 
         command.add("--synctex")
 

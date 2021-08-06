@@ -10,7 +10,6 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.layout.CCFlags
@@ -105,11 +104,6 @@ class PdfViewerStep(
             row("PDF viewer:") {
                 cell {
                     component(viewerEditor)
-//                    comboBoxBuilder = comboBox(
-//                        DefaultComboBoxModel(availablePdfViewers().toVector()),
-//                        getter = { state.pdfViewer ?: defaultPdfViewer },
-//                        setter = { state.pdfViewer = it }
-//                    ).focused()
                     viewerArguments(CCFlags.growX, CCFlags.pushX)
                 }
             }
@@ -163,7 +157,7 @@ class PdfViewerStep(
                 console.startStep(id, this@PdfViewerStep, this)
                 runInEdt {
                     val exit = try {
-                        openViewer(configuration.project.currentTextEditor()?.file)
+                        openViewer()
                     }
                     catch (e: TeXception) {
                         this.notifyTextAvailable(e.message ?: "", STDERR)
@@ -177,10 +171,12 @@ class PdfViewerStep(
         }
     }
 
-    private fun openViewer(texFile: VirtualFile?): Int {
+    private fun openViewer(): Int {
         val project = configuration.project
         val currentEditor = configuration.project.currentTextEditor()
         val pdfViewer = state.pdfViewer
+        val texFile = configuration.project.currentTextEditor()?.file
+        val pdfFile = state.pdfFilePath.resolvedPath ?: throw TeXception("pdf not specified")
 
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.
         return if (texFile != null && texFile.psiFile(project) in ReferencedFileSetCache().fileSetFor(
@@ -189,11 +185,11 @@ class PdfViewerStep(
                 )!!
             ) && currentEditor != null
         ) {
-            ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, currentEditor)
+            ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, pdfFile, currentEditor)
         }
         // If the file does not belong to the compiled file set, forward search to the first line of the main file.
         else {
-            ForwardSearchAction(pdfViewer).forwardSearch(configuration.options.mainFile.resolve()!!, project, null)
+            ForwardSearchAction(pdfViewer).forwardSearch(configuration.options.mainFile.resolve()!!, project, pdfFile, null)
         }
     }
 
