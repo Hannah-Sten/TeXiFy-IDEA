@@ -170,7 +170,7 @@ $previewCode
         val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime)
 
         if (result.second != 0) {
-            previewForm.setLatexErrorMessage("$command exited with ${result.second}\n${result.first}")
+            previewForm.setLatexErrorMessage("$command exited with ${result.second}\n${result.first ?: ""}")
             return null
         }
 

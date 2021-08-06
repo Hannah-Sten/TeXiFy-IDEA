@@ -11,12 +11,14 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
@@ -128,7 +130,8 @@ class InputFileReference(
 
         // Try search paths
         if (targetFile == null) {
-            if (!isBuildingFileset) {
+            // If we are not building the fileset, we can make use of it
+            if (!isBuildingFileset && element.containingFile.includedPackages().contains(LatexGenericRegularCommand.GRAPHICSPATH.dependency)) {
                 // Add the graphics paths to the search paths
                 searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
             }

@@ -59,9 +59,10 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             return Pair(output, proc.exitValue())
         }
         else {
+            val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
             proc.destroy()
             proc.waitFor()
-            Pair(null, proc.exitValue())
+            Pair(output, proc.exitValue())
         }
     }
     catch (e: IOException) {

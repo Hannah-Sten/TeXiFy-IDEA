@@ -4,13 +4,13 @@ import com.intellij.ide.projectWizard.ProjectSettingsStep
 import com.intellij.ide.util.importProject.ModuleDescriptor
 import com.intellij.ide.util.importProject.ProjectDescriptor
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
+import com.intellij.ide.util.projectWizard.SdkSettingsStep
 import com.intellij.ide.util.projectWizard.importSources.DetectedProjectRoot
 import com.intellij.ide.util.projectWizard.importSources.ProjectFromSourcesBuilder
 import com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector
 import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.util.Condition
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.modules.intellij.SdkSettingsStep
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import java.io.File
 import javax.swing.Icon

@@ -74,7 +74,7 @@ class SumatraConversation : ViewerConversation() {
     private var conversation: DDEClientConversation? = null
 
     init {
-        if (SystemInfo.isWindows) {
+        if (isSumatraAvailable) {
             try {
                 conversation = DDEClientConversation()
             }

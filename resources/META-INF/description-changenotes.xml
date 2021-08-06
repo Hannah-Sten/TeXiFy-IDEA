@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.7</strong></p>
+        <p><strong>Beta 0.7.9</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.7! This release contains some minor bug fixes, and enhanced command execution on Mac.
+            Welcome to TeXiFy IDEA 0.7.9! This release fixes some crashes that appeared in IDEA 2021.2, and has some minor improvements.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,34 +55,33 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Update color definition when using color picker. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1864">#1864</a>)</li>
-            <li> Improve system command execution on Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1901">#1901</a>)</li>
-            <li> Handle quoted custom compiler arguments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1902">#1902</a>)</li>
+            <li> Support optional parameter for \lstinline in parser. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> Improve update warning when submitting a crash report. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1994">#1994</a>)</li>
         </ul>
         <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li> Ignore permission problems when extracting package zips on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
-        </ul>
-        <br>
+<!--        <p>-->
+<!--            <em>Changes</em>-->
+<!--        </p>-->
+<!--        <ul>-->
+<!--            <li> Ignore permission problems when extracting package zips on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894"><a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a></a>)</li>-->
+<!--        </ul>-->
+<!--        <br>-->
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix index out of bounds exception in color values. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1864">#1864</a>)</li>
-            <li> Fix grammar mistakes not being checked at the beginning of environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1892">#1892</a>)</li>
-            <li> Fix parse error when >{ is not used to define table columns. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
-            <li> Add some missing table environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
-            <li> Revert loading SafeDeleteFix class from the optional Java plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a>)</li>
-            <li> Fixed other crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1881">#1881</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1879">#1879</a>)</li>
+            <li> Fix exception when pasting unsupported images. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1983">#1983</a>)</li>
+            <li> Fix invalid stealthy ranges for Grazie. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1985">#1985</a>)</li>
+            <li> Remove empty tooltip. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1985">#1985</a>)</li>
+            <li> Fix crash related to plugin descriptor. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> Fix false positive for unicode inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> The tectonic executable should never be prefixed with the SDK directory. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1999">#1999</a>)</li>
         </ul>
         <br>
-        <p>
-            Thanks to Felix Berlakovich for contributing to this release.
-        </p>
-        <br>
+<!--        <p>-->
+<!--            Thanks to ... for contributing to this release.-->
+<!--        </p>-->
+<!--        <br>-->
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>

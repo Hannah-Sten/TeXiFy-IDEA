@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.7.7</version>
+    <version>0.7.8</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
@@ -53,6 +53,8 @@
     </applicationListeners>
 
     <!-- Hooks for plugin functionality -->
+    <!-- IMPORTANT if including files in a nested way, make sure to include them in the idea-plugin tag (and not in nested tags) -->
+    <!-- java.lang.Throwable: `include` is supported only on a root level ([row,col {unknown-source}]: [9,9]) -->
     <xi:include href="/META-INF/extensions/startup.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/files-and-project.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/file-templates.xml" xpointer="xpointer(/idea-plugin/*)"/>

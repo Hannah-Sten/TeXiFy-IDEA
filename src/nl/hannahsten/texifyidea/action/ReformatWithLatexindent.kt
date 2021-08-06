@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.action
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.ProcessNotCreatedException
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
@@ -46,10 +47,16 @@ class ReformatWithLatexindent : AnAction("Reformat File with Latexindent") {
         val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return
         val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document) ?: return
         if (!file.isLatexFile()) return
-        val process = GeneralCommandLine("latexindent.pl", file.name)
-            .withWorkDirectory(file.containingDirectory.virtualFile.path)
-            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .createProcess()
+        val process = try {
+            GeneralCommandLine("latexindent.pl", file.name)
+                .withWorkDirectory(file.containingDirectory.virtualFile.path)
+                .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
+                .createProcess()
+        }
+        catch (e: ProcessNotCreatedException) {
+            Notification("LaTeX", "Could not run latexindent.pl", "Please double check if latexindent.pl is installed correctly: ${e.message}", NotificationType.ERROR).notify(project)
+            return
+        }
         val output = if (process.waitFor(3, TimeUnit.SECONDS)) {
             process.inputStream.bufferedReader().readText().trim() + process.errorStream.bufferedReader().readText().trim()
         }

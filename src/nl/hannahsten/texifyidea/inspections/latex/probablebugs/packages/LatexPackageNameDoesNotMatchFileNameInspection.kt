@@ -30,7 +30,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
             .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
-            val providesName = command.requiredParameters.first().split("/").last()
+            val providesName = command.requiredParameters.firstOrNull()?.split("/")?.last()
             val fileName = file.name.removeSuffix(".sty")
             if (fileName != providesName) {
                 descriptors.add(

@@ -3,10 +3,12 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.cmd
 import java.io.File
 
 /**
@@ -31,7 +33,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     private fun getGraphicsPaths(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = file.commandsInFileSet().filter { it.name == "\\graphicspath" }
+        val graphicsPathCommands = file.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.GRAPHICSPATH.cmd }
 
         // Is a graphicspath defined?
         if (graphicsPathCommands.isNotEmpty()) {
