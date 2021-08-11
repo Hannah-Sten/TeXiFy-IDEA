@@ -148,5 +148,4 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
         svgs.flush()
         svgs.close()
     }
-
 }
