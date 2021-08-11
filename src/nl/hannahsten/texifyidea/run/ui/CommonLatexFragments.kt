@@ -3,8 +3,10 @@ package nl.hannahsten.texifyidea.run.ui
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
-import com.intellij.execution.ui.*
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
+import com.intellij.execution.ui.FragmentedSettingsUtil
+import com.intellij.execution.ui.RunConfigurationEditorFragment
+import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
@@ -26,8 +28,8 @@ import nl.hannahsten.texifyidea.run.macro.sortOutMacros
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
-import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
+import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.BorderLayout
 import kotlin.reflect.KMutableProperty0
@@ -236,10 +238,12 @@ object CommonLatexFragments {
         }
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>("${type}Directory", "Change default $type directory", group, field, commandLinePosition, initialVisibility) {
+            // Apply the run config to the UI
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 ((component as LabeledComponent<*>).component as TextFieldWithBrowseButton).text = reset((s.configuration as LatexRunConfiguration))
             }
 
+            // Apply the UI to the run config
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
                 val (expandedPath, pathWithMacro) = sortOutMacros(component, runConfig)

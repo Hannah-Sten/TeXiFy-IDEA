@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.options
 
 import nl.hannahsten.texifyidea.run.macro.MainFileDirMacro
+import nl.hannahsten.texifyidea.run.macro.OutputDirMacro
 
 object LatexPathConverterUtil {
 
@@ -16,8 +17,10 @@ object LatexPathConverterUtil {
         val splitted = value.split("//", limit = 2)
         var pathWithMacro = splitted.getOrNull(1)
         // It's a magic bug
-        if (pathWithMacro == MainFileDirMacro().description) {
-            pathWithMacro = MainFileDirMacro().macro
+        for (macro in listOf(MainFileDirMacro(), OutputDirMacro())) {
+            if (pathWithMacro?.contains(macro.description) == true) {
+                pathWithMacro = pathWithMacro.replace(macro.description, "$${macro.name}$")
+            }
         }
         return Pair(splitted.getOrNull(0), pathWithMacro)
     }

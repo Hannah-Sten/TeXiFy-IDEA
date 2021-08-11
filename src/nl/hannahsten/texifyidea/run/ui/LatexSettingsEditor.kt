@@ -68,7 +68,7 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
             8,
             project,
             "output",
-            reset = { s -> s.options.outputPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
+            reset = { s -> s.options.outputPath.pathWithMacro ?: "" }, // todo LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
             apply = { s, option -> s.options.outputPath = option },
             isDefault = { s -> s?.options?.outputPath?.isDefault("out") },
             mySettings

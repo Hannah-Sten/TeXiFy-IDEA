@@ -8,6 +8,7 @@
         <projectService serviceImplementation="nl.hannahsten.texifyidea.service.LatexRunConfigurationViewManagerService"/>
         <pathMacroContributor implementation="nl.hannahsten.texifyidea.run.macro.LatexPathMacroContributor" />
         <macro implementation="nl.hannahsten.texifyidea.run.macro.MainFileDirMacro" />
+        <macro implementation="nl.hannahsten.texifyidea.run.macro.OutputDirMacro" />
         <projectTaskRunner implementation="nl.hannahsten.texifyidea.run.LatexProjectTaskRunner" />
     </extensions>
 </idea-plugin>
