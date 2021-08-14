@@ -18,9 +18,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.util.PathUtil
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
-import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.step.Step
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.run.ui.LatexSettingsEditor
@@ -95,10 +95,6 @@ class LatexRunConfiguration constructor(
 
         val parent = element.getChild(TEXIFY_PARENT) ?: return
 
-        // Read SumatraPDF custom path
-        val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
-        this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
-
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
@@ -134,7 +130,6 @@ class LatexRunConfiguration constructor(
             parent.removeContent()
         }
 
-        parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         this.options.environmentVariables.writeExternal(parent)
 

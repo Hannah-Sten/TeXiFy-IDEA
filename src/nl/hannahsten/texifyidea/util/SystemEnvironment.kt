@@ -36,7 +36,6 @@ class SystemEnvironment {
 
 /**
  * Run a command in the terminal.
- * Consider using GeneralCommandLine instead.
  *
  * @return The output of the command or null if an exception was thrown.
  */
@@ -64,13 +63,15 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
         else {
             // todo find a way to get output of alive process
             var output = ""
+            var exitValue = 0
             if (killAfterTimeout) {
                 proc.destroy()
                 proc.waitFor()
                 // At this point, the inputStream is finished so we can safely get the output without blocking
                 output = proc.getOutput()
+                exitValue = proc.exitValue()
             }
-            Pair(output, proc.exitValue())
+            Pair(output, exitValue)
         }
     }
     catch (e: IOException) {

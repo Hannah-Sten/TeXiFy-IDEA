@@ -1,13 +1,12 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.util.SystemInfo
-import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
 import nl.hannahsten.texifyidea.run.pdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.okular.OkularConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.skim.SkimConversation
-import nl.hannahsten.texifyidea.run.pdfviewer.zathura.ZathuraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.run.pdfviewer.zathura.ZathuraConversation
 import nl.hannahsten.texifyidea.util.runCommand
 import kotlin.reflect.full.createInstance
 
@@ -66,7 +65,9 @@ sealed class InternalPdfViewer(
         fun valueOf(value: String?): InternalPdfViewer? {
             return InternalPdfViewer::class.sealedSubclasses
                 .firstOrNull { it.simpleName == value }
-                ?.objectInstance
+                ?.constructors
+                ?.firstOrNull()
+                ?.call(value)
         }
 
         fun availableSubset(): List<InternalPdfViewer> = availability.entries.filter { it.value }.map { it.key }

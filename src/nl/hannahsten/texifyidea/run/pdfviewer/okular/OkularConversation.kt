@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.pdfviewer.okular
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
  * Execute Okular commands.
@@ -29,7 +30,7 @@ object OkularConversation : ViewerConversation() {
         if (pdfFilePath != null) {
             // This okular command opens the pdf file using the destination coming from the line in the tex file.
             val command = "okular --noraise --unique '$pdfFilePath#src:$line $sourceFilePath'"
-            return Runtime.getRuntime().exec(arrayOf("bash", "-c", command)).exitValue()
+            return runCommandWithExitCode("bash", "-c", command, timeout = 1L, killAfterTimeout = false).second
         }
         else {
             throw TeXception("Could not execute forward search, please make sure you have compiled the document first.")

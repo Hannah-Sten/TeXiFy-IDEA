@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 object ZathuraConversation : ViewerConversation() {
@@ -25,7 +26,7 @@ object ZathuraConversation : ViewerConversation() {
             val name = ApplicationNamesInfo.getInstance().scriptName
             val command =
                 """zathura --synctex-forward="$line:1:$sourceFilePath" --synctex-editor-command="$path/$name.sh --line %{line} $sourceFilePath" $pdfPathGuess"""
-            return Runtime.getRuntime().exec(arrayOf("bash", "-c", command)).exitValue()
+            return runCommandWithExitCode("bash", "-c", command, timeout = 1L, killAfterTimeout = false).second
         }
         else {
             throw TeXception("Could not execute forward search, please make sure you have compiled the document first.")
