@@ -249,8 +249,7 @@ menu:Edit[LaTeX > link:Menu-entries#insert-graphic-wizard[Insert Graphic...]]:: 
 // todo link to description pages for the next entries
 menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
 
-menu:Edit[Fill Paragraph]::
-  Fill the paragraph that is currently under the cursor such that each line is filled until the right margin, but does not exceed it.
+menu:Edit[Fill Paragraph]:: Fill the paragraph that is currently under the cursor such that each line is filled until the right margin, but does not exceed it.
 
 menu:Code[Reformat File with Latexindent]:: Run Latexindent.pl on the file the caret is in.
 
