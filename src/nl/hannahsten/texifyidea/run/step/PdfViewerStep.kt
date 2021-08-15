@@ -17,6 +17,7 @@ import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.macro.OutputDirMacro
@@ -29,9 +30,13 @@ import nl.hannahsten.texifyidea.run.pdfviewer.SupportedPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
+import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
+import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.name
+import nl.hannahsten.texifyidea.util.parentsOfType
 import org.jetbrains.annotations.NotNull
 import java.io.File
 import java.io.OutputStream
@@ -178,13 +183,23 @@ class PdfViewerStep(
         val texFile = configuration.project.currentTextEditor()?.file
         val pdfFile = state.pdfFilePath.resolvedPath ?: throw TeXception("pdf not specified")
 
+        val belongsToFileset = texFile?.psiFile(project) in ReferencedFileSetCache().fileSetFor(
+            configuration.options.mainFile.resolve()?.psiFile(
+                project
+            )!!
+        )
+
+        // Do not forward search if we are editing the preamble
+        val isEditingPreamble = true == texFile?.psiFile(project)?.run {
+            // Only applicable for root files (or files included in the preamble, but we don't check that yet)
+            if (!isRoot()) return@run false
+            val offset = currentEditor?.editor?.caretOffset() ?: return@run false
+            // Check if cursor is not in document environment
+            findElementAt(offset)?.parentsOfType<LatexEnvironment>()?.any { it.name()?.text == "document" } == false
+        }
+
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.
-        return if (texFile != null && texFile.psiFile(project) in ReferencedFileSetCache().fileSetFor(
-                configuration.options.mainFile.resolve()?.psiFile(
-                    project
-                )!!
-            ) && currentEditor != null
-        ) {
+        return if (texFile != null && belongsToFileset && currentEditor != null && !isEditingPreamble) {
             ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, pdfFile, currentEditor)
         }
         // If the file does not belong to the compiled file set, forward search to the first line of the main file.

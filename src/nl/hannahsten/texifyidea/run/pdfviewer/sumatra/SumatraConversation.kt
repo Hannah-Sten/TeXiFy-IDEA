@@ -105,7 +105,11 @@ class SumatraConversation : ViewerConversation() {
     }
 
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean): Int {
-        forwardSearch(pdfPath, sourceFilePath, line, focus = focusAllowed)
+//        // Wait for sumatra pdf to start. 1250ms should be plenty.
+//        // Otherwise the person is out of luck ¯\_(ツ)_/¯
+//        Thread.sleep(1250)
+        // Never focus, because forward search will work fine without focus, and the user might want to continue typing after doing forward search/compiling
+        forwardSearch(pdfPath, sourceFilePath, line, focus = false)
         return 0
     }
 

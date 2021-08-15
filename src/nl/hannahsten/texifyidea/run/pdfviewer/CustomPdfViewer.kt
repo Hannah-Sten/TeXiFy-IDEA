@@ -13,4 +13,7 @@ class CustomPdfViewer(
     override val name: String = File(executablePath).name,
 ) : PdfViewer, CustomExecutable {
     override fun isAvailable() = File(executablePath).isFile
+
+    // todo check executables
+    fun isSumatra() = executablePath.endsWith("sumatra.exe")
 }

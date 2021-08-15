@@ -46,9 +46,6 @@ class LatexRunConfiguration constructor(
         private const val COMPILE_STEP_NAME_ATTR = "name"
     }
 
-    var sumatraPath: String? = null // todo merge with CustomPdfViewer
-    var viewerCommand: String? = null // todo similar to CustomCompiler -> CustomPdfViewer
-
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     // todo if this is the main file, it should be updated when main file is set?
@@ -95,10 +92,6 @@ class LatexRunConfiguration constructor(
 
         val parent = element.getChild(TEXIFY_PARENT) ?: return
 
-        // Read custom pdf viewer command
-        val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
-        this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
-
         // Read compile steps
         // This should be the last option that is read, as it may depend on other options.
         for (compileStepElement in parent.getChildren(COMPILE_STEP)) {
@@ -130,7 +123,6 @@ class LatexRunConfiguration constructor(
             parent.removeContent()
         }
 
-        parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         this.options.environmentVariables.writeExternal(parent)
 
         for (step in compileSteps) {

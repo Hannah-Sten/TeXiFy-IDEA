@@ -74,7 +74,6 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
             is CustomPdfViewer -> {
                 val executable = (viewer as CustomPdfViewer).executablePath
                 // todo working dir, arguments, env vars
-                // todo pdf should not be guessed, as it is known
                 // Keep process running after timeout, for example the Evince command will not exit
                 // when a pdf is opened, regardless of whether there is an error or not
                 // but we might need to continue with other steps.
