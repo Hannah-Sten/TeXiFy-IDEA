@@ -15,4 +15,13 @@ interface StepProvider {
     val id: String
 
     fun createStep(configuration: LatexRunConfiguration): Step
+
+    /**
+     * Check whether this step is required for a successful compilation.
+     * If yes, return the created step, otherwise return null.
+     * Implementations should ensure that this method does not duplicate any work (hence the 'if required' and 'create' step are asked for together).
+     *
+     * Whether a step is required may depend on other steps in the run config.
+     */
+    fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step>
 }

@@ -12,4 +12,6 @@ object LatexCompileStepProvider : StepProvider {
     override val id = "compile-latex"
 
     override fun createStep(configuration: LatexRunConfiguration) = LatexCompileStep(this, configuration)
+
+    override fun isRequired(runConfiguration: LatexRunConfiguration) = true
 }

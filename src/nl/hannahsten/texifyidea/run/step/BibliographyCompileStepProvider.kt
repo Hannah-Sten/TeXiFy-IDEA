@@ -1,24 +1,22 @@
 package nl.hannahsten.texifyidea.run.step
 
-import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rd.framework.base.deepClonePolymorphic
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.LatexTemplateConfigurationFactory
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
+import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.run.legacy.bibtex.BibtexRunConfigurationType
-import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOptions
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
@@ -34,69 +32,107 @@ object BibliographyCompileStepProvider : StepProvider {
 
     override val id = "bibliography"
 
-    override fun createStep(configuration: LatexRunConfiguration) = BibliographyCompileStep(this, configuration)
+    override fun createStep(configuration: LatexRunConfiguration): Step {
+        val step = BibliographyCompileStep(this, configuration)
+        val (compiler, arguments) = guessCompiler(configuration)
+        step.state.compiler = compiler
+        step.state.compilerArguments = arguments
+        step.state.workingDirectory = guessWorkingDirectory(configuration)?.path
+        setEnvironmentVariables(configuration, step)
+        return step
+    }
 
-    // todo step creation
-    fun createStepIfNeeded() {
-//        if (!runConfig.getConfigOptions().hasBeenRun) {
-//            // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
-//            // checking for bibliography commands
-//            if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
-//                runConfig.generateBibRunConfig()
-//
-//                runConfig.bibRunConfigs.forEach {
-//                    val bibSettings = it
-//
-//                    // Pass necessary latex run configurations settings to the bibtex run configuration.
-//                    (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
-//                        // Check if the aux, out, or src folder should be used as bib working dir.
-//                        this.bibWorkingDir = runConfig.getAuxilDirectory()
-//                    }
-//                }
-//            }
-//        }
+    override fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step> {
+        // This check is expensive, only check if we need to add steps if this is the first time running the run config
+        if (runConfiguration.options.hasBeenRun) return emptyList()
+
+        // If the user has already added bib steps, we don't second-guess her
+        if (runConfiguration.compileSteps.filterIsInstance<BibliographyCompileStep>().isNotEmpty()) return emptyList()
+
+        if (runConfiguration.options.compiler?.includesBibtex == true) return emptyList()
+
+        val step = createStep(runConfiguration)
+        // If no suitable compiler could be found, assume bibtex is not needed
+        if ((step as BibliographyCompileStep).state.compiler == null) return emptyList()
+
+        var steps = listOf(step)
+
+        // If using chapterbib, use those steps instead
+        steps = createChapterBibStepsIfRequired(runConfiguration, step).let { it.ifEmpty { steps } }
+
+        return listOf(step)
     }
 
     /**
-     * Create a new bib run config and add it to the set.
+     * Check if any environment variables are needed, and add them if so.
      */
-    private fun addBibRunConfig(defaultCompiler: SupportedBibliographyCompiler, mainFile: VirtualFile?, compilerArguments: String? = null, project: Project, options: LatexRunConfigurationOptions) {
-        val runManager = RunManagerImpl.getInstanceImpl(project)
-
-        val bibSettings = runManager.createConfiguration(
-            "",
-            LatexTemplateConfigurationFactory(BibtexRunConfigurationType())
-        )
-
-        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
-
-        bibtexRunConfiguration.compiler = defaultCompiler
-        if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
-        bibtexRunConfiguration.mainFile = mainFile
-        bibtexRunConfiguration.setSuggestedName()
-
-        // On non-MiKTeX systems, add bibinputs for bibtex to work
-        if (!options.latexDistribution.isMiktex()) {
-            // Only if default, because the user could have changed it after creating the run config but before running
-            if (mainFile != null && options.outputPath.getOrCreateOutputPath(mainFile, project) != mainFile.parent) {
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(
-                    mapOf(
-                        "BIBINPUTS" to mainFile.parent.path,
-                        "BSTINPUTS" to mainFile.parent.path + ":"
-                    )
-                )
+    private fun setEnvironmentVariables(runConfig: LatexRunConfiguration, step: BibliographyCompileStep) {
+        with(runConfig) {
+            // On non-MiKTeX systems, add bibinputs for bibtex to work
+            if (!options.latexDistribution.isMiktex()) {
+                val mainFile = options.mainFile.resolve()
+                // Only if default, because the user could have changed it after creating the run config but before running
+                if (mainFile != null && options.outputPath.getOrCreateOutputPath(mainFile, project) != mainFile.parent) {
+                    step.state.envs = step.getEnvironmentVariables().with(
+                        mapOf(
+                            "BIBINPUTS" to mainFile.parent.path,
+                            "BSTINPUTS" to mainFile.parent.path + ":"
+                        )
+                    ).envs
+                }
             }
         }
-
-        runManager.addConfiguration(bibSettings)
-
-//        bibRunConfigs = bibRunConfigs + setOf(bibSettings)
     }
 
     /**
-     * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
+     * Check if chapterbib is used, and if so create the necessary steps, otherwise return an empty list.
+     * This method can take a large amount of time, so it should only be called when the user really wants to run the run config.
+     *
+     * @param defaultStep Default step, will be used as template (for example, the compiler of this step will be used).
      */
-    internal fun generateBibRunConfig(runConfig: LatexRunConfiguration) {
+    private fun createChapterBibStepsIfRequired(runConfig: LatexRunConfiguration, defaultStep: BibliographyCompileStep): List<BibliographyCompileStep> {
+        val psiFile = runConfig.options.mainFile.resolve()?.psiFile(runConfig.project) ?: return emptyList()
+
+        // When chapterbib is used, every chapter has its own bibliography and needs its own run config
+        val usesChapterbib = psiFile.includedPackages().contains(LatexPackage.CHAPTERBIB)
+
+        if (!usesChapterbib) return emptyList()
+
+        val steps = mutableListOf<BibliographyCompileStep>()
+
+        val allBibliographyCommands =
+            psiFile.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd }
+
+        // We know that there can only be one bibliography per top-level \include,
+        // however not all of them may contain a bibliography, and the ones
+        // that do have one can have it in any included file
+        psiFile.allCommands()
+            .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
+            .flatMap { command -> command.requiredParameters }
+            .forEach { filename ->
+                // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
+                val chapterMainFile = psiFile.findFile(filename)
+                    ?: return@forEach
+
+                val chapterFiles = chapterMainFile.referencedFileSet()
+                    .toMutableSet().apply { add(chapterMainFile) }
+
+                val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
+
+                if (chapterHasBibliography) {
+                    // todo give it chapterMainFile.virtualFile as main file
+                    steps.add(defaultStep.deepClonePolymorphic())
+//                    addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second, project, options)
+                }
+            }
+        return steps
+    }
+
+    /**
+     * Guess which compiler is needed.
+     * @return Pair of compiler and extra compiler arguments (not the file itself).
+     */
+    private fun guessCompiler(runConfig: LatexRunConfiguration): Pair<BibliographyCompiler?, String?> {
         with(runConfig) {
             // Get a pair of Bib compiler and compiler arguments.
             val compilerFromMagicComment: Pair<SupportedBibliographyCompiler, String>? by lazy {
@@ -113,44 +149,19 @@ object BibliographyCompileStepProvider : StepProvider {
                 Pair(compiler, compilerArguments)
             }
 
-            val defaultCompiler = when {
-                compilerFromMagicComment != null -> compilerFromMagicComment!!.first
-                psiFile?.hasBibliography() == true -> BibtexCompiler
-                psiFile?.usesBiber() == true -> BiberCompiler
-                else -> return // Do not auto-generate a bib run config when we can't detect bibtex
-            }
-
-            // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-            val usesChapterbib = psiFile?.includedPackages()?.contains(LatexPackage.CHAPTERBIB) == true
-
-            if (!usesChapterbib) {
-                addBibRunConfig(defaultCompiler, options.mainFile.resolve(), compilerFromMagicComment?.second, project, options)
-            }
-            else if (psiFile != null) {
-                val allBibliographyCommands =
-                    psiFile!!.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd }
-
-                // We know that there can only be one bibliography per top-level \include,
-                // however not all of them may contain a bibliography, and the ones
-                // that do have one can have it in any included file
-                psiFile!!.allCommands()
-                    .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
-                    .flatMap { command -> command.requiredParameters }
-                    .forEach { filename ->
-                        // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                        val chapterMainFile = psiFile!!.findFile(filename)
-                            ?: return@forEach
-
-                        val chapterFiles = chapterMainFile.referencedFileSet()
-                            .toMutableSet().apply { add(chapterMainFile) }
-
-                        val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
-
-                        if (chapterHasBibliography) {
-                            addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second, project, options)
-                        }
-                    }
+            return when {
+                compilerFromMagicComment != null -> compilerFromMagicComment!!
+                psiFile?.hasBibliography() == true -> Pair(BibtexCompiler, null)
+                psiFile?.usesBiber() == true -> Pair(BiberCompiler, null)
+                else -> return Pair(null, null)
             }
         }
     }
+
+    private fun guessWorkingDirectory(runConfig: LatexRunConfiguration): VirtualFile? {
+        return runConfig.getAuxilDirectory()
+            ?: runConfig.options.mainFile.resolve()?.parent
+            ?: runConfig.project.guessProjectDir()
+    }
+
 }
