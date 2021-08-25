@@ -26,6 +26,30 @@
         </context>
     </template>
 
+    <template name="frm0" value="\begin{frame}&#10;$END$&#10;\end{frame}" description="Frame without title" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+
+    <template name="frm1" value="\begin{frame}{$TITLE$}&#10;$END$&#10;\end{frame}" description="Frame with title" toReformat="true" toShortenFQNames="true">
+        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+
+    <template name="frm2" value="\begin{frame}{$TITLE$}{$SUBTITLE$}&#10;$END$&#10;\end{frame}" description="Frame with title and subtitle" toReformat="true" toShortenFQNames="true">
+        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="SUBTITLE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+
     <template name="enm" value="\begin{enumerate}&#10;    \item $END$&#10;\end{enumerate}" description="Enumerate environment" toReformat="false" toShortenFQNames="true">
         <context>
             <option name="LATEX" value="true"/>
