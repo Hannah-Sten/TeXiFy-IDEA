@@ -24,7 +24,9 @@ sealed class BibliographyCompiler : Compiler<BibliographyCompileStep> {
 class CustomBibliographyCompiler(override val executablePath: String) : BibliographyCompiler(),
                                                                         CustomCompiler<BibliographyCompileStep> {
 
-    override fun getCommand(step: BibliographyCompileStep) = listOf(executablePath)
+    override fun getCommand(step: BibliographyCompileStep): List<String>? {
+        return listOf(executablePath, step.state.mainFileName ?: return null)
+    }
 }
 
 abstract class SupportedBibliographyCompiler(override val displayName: String, override val executableName: String) : BibliographyCompiler(), SupportedCompiler<BibliographyCompileStep> {

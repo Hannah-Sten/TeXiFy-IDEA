@@ -26,7 +26,7 @@ object BibtexCompiler : SupportedBibliographyCompiler("BibTeX", "bibtex") {
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }
 
-            add(step.configuration.options.mainFile.resolve()?.nameWithoutExtension ?: return null)
+            add(step.state.mainFileName ?: return null)
         }
 
         return command.toList()

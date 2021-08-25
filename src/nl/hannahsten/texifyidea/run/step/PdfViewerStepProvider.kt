@@ -13,4 +13,8 @@ object PdfViewerStepProvider : StepProvider {
     override val id: String = "pdf-viewer"
 
     override fun createStep(configuration: LatexRunConfiguration) = PdfViewerStep(this, configuration)
+
+    override fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step> {
+        return listOf(createStep(runConfiguration))
+    }
 }

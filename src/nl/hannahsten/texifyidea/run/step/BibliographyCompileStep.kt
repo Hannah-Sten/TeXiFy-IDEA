@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
@@ -10,21 +9,18 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.dialog
-import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
-import com.intellij.util.ui.JBDimension
 import com.intellij.util.xmlb.annotations.Attribute
-import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.compiler.Compiler
+import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.CustomBibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
-class BibliographyCompileStep(
+class BibliographyCompileStep internal constructor(
     override val provider: StepProvider,
     override var configuration: LatexRunConfiguration
 ) : CompileStep(), PersistentStateComponent<BibliographyCompileStep.State> {
@@ -40,6 +36,7 @@ class BibliographyCompileStep(
     // outer class when deserializing, which is at that moment impossible (because we first create
     // a step and a state separately, and then load the state to the step) and will generate a
     // IllegalArgumentException: No argument provided for a required parameter of fun State.<init>()
+    // todo it's now slightly too easy to create an instance of this class while forgetting to set one of these state variables
     class State : BaseState() {
 
         @get:Attribute("compiler", converter = BibliographyCompiler.Converter::class)
@@ -50,6 +47,11 @@ class BibliographyCompileStep(
 
         @get:Attribute
         var workingDirectory by string()
+
+        // todo create UI element for this?
+        /** The file name with which to call bibtex, usually the name of the main LaTeX file. */
+        @get:Attribute
+        var mainFileName by string()
 
         @get:Attribute
         var envs by map<String, String>()

@@ -13,5 +13,10 @@ object LatexCompileStepProvider : StepProvider {
 
     override fun createStep(configuration: LatexRunConfiguration) = LatexCompileStep(this, configuration)
 
-    override fun isRequired(runConfiguration: LatexRunConfiguration) = true
+    override fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step> {
+        // LaTeX step is always required
+        // todo whether we need to add even more steps, depends on requirements of other steps?
+        return listOf(createStep(runConfiguration))
+    }
+
 }

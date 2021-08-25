@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.step
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
-class LatexCompileStep(
+class LatexCompileStep internal constructor(
     override val provider: StepProvider,
     override var configuration: LatexRunConfiguration
 ) : CompileStep() {

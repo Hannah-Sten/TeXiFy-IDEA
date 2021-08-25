@@ -41,7 +41,7 @@ import org.jetbrains.annotations.NotNull
 import java.io.File
 import java.io.OutputStream
 
-class PdfViewerStep(
+class PdfViewerStep internal constructor(
     override val provider: StepProvider, override var configuration: LatexRunConfiguration
 ) : Step, PersistentStateComponent<PdfViewerStep.State> {
 

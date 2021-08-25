@@ -19,6 +19,6 @@ object BiberCompiler : SupportedBibliographyCompiler("Biber", "biber") {
 
         step.state.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
-        add(step.configuration.options.mainFile.resolve()?.nameWithoutExtension ?: return null)
+        add(step.state.mainFileName ?: return null)
     }
 }

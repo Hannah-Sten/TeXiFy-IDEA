@@ -39,6 +39,7 @@ object BibliographyCompileStepProvider : StepProvider {
         step.state.compilerArguments = arguments
         step.state.workingDirectory = guessWorkingDirectory(configuration)?.path
         setEnvironmentVariables(configuration, step)
+        step.state.mainFileName = configuration.options.mainFile.resolve()?.nameWithoutExtension
         return step
     }
 
@@ -120,9 +121,8 @@ object BibliographyCompileStepProvider : StepProvider {
                 val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
 
                 if (chapterHasBibliography) {
-                    // todo give it chapterMainFile.virtualFile as main file
-                    steps.add(defaultStep.deepClonePolymorphic())
-//                    addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second, project, options)
+                    // todo does cloning work?
+                    steps.add(defaultStep.deepClonePolymorphic().apply { state.mainFileName = chapterMainFile.virtualFile.nameWithoutExtension })
                 }
             }
         return steps

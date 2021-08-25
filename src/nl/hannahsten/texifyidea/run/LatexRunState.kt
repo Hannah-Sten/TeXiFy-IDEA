@@ -12,6 +12,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
+import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
 /**
  * State of the [LatexRunConfiguration], previously called LatexCommandLineState.
@@ -24,6 +25,10 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
         FileDocumentManager.getInstance().saveAllDocuments()
 
         val console = LatexExecutionConsole(runConfig)
+
+        if (!runConfig.options.hasBeenRun) {
+            firstRunSetup(runConfig)
+        }
 
         val handlers = runConfig.compileSteps.withIndex().mapNotNull { (i, step) ->
             val id = i.toString()
@@ -43,6 +48,18 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
         })
 
         return DefaultExecutionResult(console, overallProcessHandler)
+    }
+
+    /**
+     * Some extra checks only relevant when the run config has never been run.
+     */
+    private fun firstRunSetup(runConfig: LatexRunConfiguration) {
+        // Allow each step provider to check whether such a step (or steps) needs to be added to the run config
+        // The reason we check it here instead of when creating the run config, is that these checks are potentially very expensive, so it would lead to blocked or confusing UI.
+        // However, when the run configuration has started running, the user is expecting it to take time, and there is a progress indicator (better would be to create a progress indicator for this setup though)
+        for (provider in CompilerMagic.compileStepProviders.values) {
+            provider.createIfRequired(runConfig)
+        }
     }
 
     private fun createHandler(command: List<String>, workingDirectory: String): KillableProcessHandler {
