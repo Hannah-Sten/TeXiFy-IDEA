@@ -33,41 +33,33 @@
         </context>
     </template>
 
-    <template name="begin" value="\begin{$NAME$}&#10;    $END$&#10;\end{$NAME$}" description="Environment" toReformat="false" toShortenFQNames="true">
-        <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
-        <context>
-            <option name="LATEX" value="true"/>
-            <option name="LATEX_MATH" value="false"/>
-        </context>
-    </template>
-
-    <template name="begin1" value="\begin{$NAME$}{$ARG1$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 1 parameter" toReformat="false" toShortenFQNames="true">
+    <template name="\begin1" value="\begin{$NAME$}{$ARG1$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 1 parameter" toReformat="false" toShortenFQNames="true">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG1" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
             <option name="LATEX" value="true"/>
-            <option name="LATEX_MATH" value="false"/>
+            <option name="LATEX_MATH" value="true"/>
         </context>
     </template>
 
-    <template name="begin2" value="\begin{$NAME$}{$ARG1$}{$ARG2$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 2 parameters" toReformat="false" toShortenFQNames="true">
+    <template name="\begin2" value="\begin{$NAME$}{$ARG1$}{$ARG2$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 2 parameters" toReformat="false" toShortenFQNames="true">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG1" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG2" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
             <option name="LATEX" value="true"/>
-            <option name="LATEX_MATH" value="false"/>
+            <option name="LATEX_MATH" value="true"/>
         </context>
     </template>
 
-    <template name="begin3" value="\begin{$NAME$}{$ARG1$}{$ARG2$}{$ARG3$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 3 parameters" toReformat="false" toShortenFQNames="true">
+    <template name="\begin3" value="\begin{$NAME$}{$ARG1$}{$ARG2$}{$ARG3$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 3 parameters" toReformat="false" toShortenFQNames="true">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG1" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG2" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG3" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
             <option name="LATEX" value="true"/>
-            <option name="LATEX_MATH" value="false"/>
+            <option name="LATEX_MATH" value="true"/>
         </context>
     </template>
 
