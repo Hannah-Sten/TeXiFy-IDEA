@@ -181,6 +181,7 @@ object CommandMagic {
             NEWCOMMAND_STAR.cmd,
             NEWIF.cmd,
             NEWDOCUMENTCOMMAND.cmd,
+            NEWENVIRONMENT.cmd
     )
 
     /**
