@@ -2,9 +2,8 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import java.io.BufferedReader
+import nl.hannahsten.texifyidea.util.runCommand
 import java.io.IOException
-import java.io.InputStreamReader
 
 /**
  * Cache locations of LaTeX packages in memory, because especially on Windows they can be expensive to retrieve
@@ -41,9 +40,7 @@ object LatexPackageLocationCache {
         else {
             "${LatexSdkUtil.getExecutableName("kpsewhich", project)} $arg"
         }
-        BufferedReader(
-                InputStreamReader(Runtime.getRuntime().exec(command).inputStream)
-        ).readLine() // Returns null if no line read.
+        command.runCommand()
     }
     catch (e: IOException) {
         null

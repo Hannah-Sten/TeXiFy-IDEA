@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.psi.LatexKeyvalPair
+import nl.hannahsten.texifyidea.util.childrenOfType
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
 
@@ -160,20 +162,24 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent()
     )
 
-    fun `test quick fix in listings with other parameters`() = testQuickFix(
-        before = """
-        \begin{document}
-            \begin{lstlisting}[someoption,otheroption={with value}]
-            \end{lstlisting}
-        \end{document}
-        """.trimIndent(),
-        after = """
-        \begin{document}
-            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
-            \end{lstlisting}
-        \end{document}
-        """.trimIndent()
-    )
+    fun `test quick fix in listings with other parameters`() {
+        testQuickFix(
+            before = """
+                \begin{document}
+                    \begin{lstlisting}[someoption,otheroption={with value}]
+                    \end{lstlisting}
+                \end{document}
+            """.trimIndent(),
+            after = """
+                \begin{document}
+                    \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
+                    \end{lstlisting}
+                \end{document}
+            """.trimIndent()
+        )
+        // Sometimes, errors in psi structure only show when initiating a WalkingState
+        myFixture.file.children.first().childrenOfType(LatexKeyvalPair::class)
+    }
 
     fun `test fix all missing label problems in this file`() = testQuickFixAll(
             before = """

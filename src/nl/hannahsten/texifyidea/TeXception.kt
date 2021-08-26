@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea
 
 /**
  * Exception that is thrown by problems within TeXiFy-IDEA.
+ * Consider using PluginException if the exception is not caught within TeXiFy, otherwise the real exception message will be hidden.
  *
  * @author Hannah Schellekens
  */

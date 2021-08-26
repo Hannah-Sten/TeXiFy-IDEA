@@ -7,11 +7,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
 import java.nio.file.Paths
-import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import javax.swing.SwingUtilities.invokeLater
 
@@ -78,7 +78,7 @@ $previewCode
                 writer.println(tmpContent)
                 writer.close()
 
-                val latexStdoutText = runCommand(
+                val latexStdoutText = runPreviewFormCommand(
                     LatexSdkUtil.getExecutableName("pdflatex", project),
                     arrayOf(
                         "-interaction=nonstopmode",
@@ -128,7 +128,7 @@ $previewCode
     private fun runInkscape(tempBasename: String, tempDirectory: File) {
         // If 1.0 or higher
         if (SystemEnvironment.inkscapeMajorVersion >= 1) {
-            runCommand(
+            runPreviewFormCommand(
                 inkscapeExecutable(),
                 arrayOf(
                     "$tempBasename.pdf",
@@ -142,7 +142,7 @@ $previewCode
             ) ?: throw AccessDeniedException(tempDirectory)
         }
         else {
-            runCommand(
+            runPreviewFormCommand(
                 pdf2svgExecutable(),
                 arrayOf(
                     "$tempBasename.pdf",
@@ -151,7 +151,7 @@ $previewCode
                 tempDirectory
             ) ?: return
 
-            runCommand(
+            runPreviewFormCommand(
                 inkscapeExecutable(),
                 arrayOf(
                     "$tempBasename.svg",
@@ -165,28 +165,16 @@ $previewCode
         }
     }
 
-    private fun runCommand(command: String, args: Array<String>, workDirectory: File): String? {
+    private fun runPreviewFormCommand(command: String, args: Array<String>, workDirectory: File): String? {
 
-        val executable = Runtime.getRuntime().exec(
-            arrayOf(command) + args,
-            null,
-            workDirectory
-        )
+        val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime)
 
-        val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->
-            executable.errorStream.bufferedReader().use { stderr ->
-                Pair(stdout.readText(), stderr.readText())
-            }
-        }
-
-        executable.waitFor(waitTime, TimeUnit.SECONDS)
-
-        if (executable.exitValue() != 0) {
-            previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n$stdout\n$stderr")
+        if (result.second != 0) {
+            previewForm.setLatexErrorMessage("$command exited with ${result.second}\n${result.first ?: ""}")
             return null
         }
 
-        return stdout
+        return result.first
     }
 
     private fun inkscapeExecutable(): String {

@@ -6,7 +6,7 @@ object EnvironmentMagic {
 
     val listingEnvironments = hashSetOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }
 
-    val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU).map { it.env }
+    val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU, MATRIX, BMATRIX, PMATRIX, VMATRIX, VMATRIX_CAPITAL).map { it.env }
 
     /**
      * Map that maps all environments that are expected to have a label to the label prefix they have by convention.

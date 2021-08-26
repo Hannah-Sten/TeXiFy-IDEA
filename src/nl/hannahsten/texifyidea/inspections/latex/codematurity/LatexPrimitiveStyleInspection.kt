@@ -17,7 +17,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parentOfType
 import org.jetbrains.annotations.Nls
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Hannah Schellekens
@@ -40,8 +39,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         manager: InspectionManager,
         isOntheFly: Boolean
     ): List<ProblemDescriptor> {
-        val descriptors: MutableList<ProblemDescriptor> =
-            SmartList()
+        val descriptors = mutableListOf<ProblemDescriptor>()
         val commands = LatexCommandsIndex.getItems(file)
         for (command in commands) {
             val index = CommandMagic.stylePrimitives.indexOf(command.name)

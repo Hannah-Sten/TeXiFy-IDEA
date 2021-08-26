@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.5</strong></p>
+        <p><strong>Beta 0.7.9</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.5! This release, together with the PDF Viewer plugin 0.11.0, adds forward and backward search support to the internal pdf viewer. It also contains many small usability enhancements and bug fixes, like performance improvements and 'create project from existing sources' support.
+            Welcome to TeXiFy IDEA 0.7.9! This release fixes some crashes that appeared in IDEA 2021.2, and has some minor improvements.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,43 +55,33 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add quick fix for normal space insertion to line break inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
-            <li> Add .cbx and biblatex-dm.cfg to recognised file extensions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1805">#1805</a>)</li>
-            <li> Add documentation popup for environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
-            <li> Add warning when trying to use documentation while texdoc is not installed. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
-            <li> Index which LaTeX packages include which other LaTeX packages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1799">#1799</a>)</li>
-            <li> Improve autocompletion performance. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
-            <li> Add support for 'create project from existing sources'. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1807">#1807</a>)</li>
+            <li> Support optional parameter for \lstinline in parser. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> Improve update warning when submitting a crash report. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1994">#1994</a>)</li>
         </ul>
         <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li> Show a warning when trying to submit a crash report when not using the latest version of TeXiFy. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1778">#1778</a>)</li>
-            <li> Make inspection levels configurable by user. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1781">#1781</a>)</li>
-            <li> Look in run configurations for possible paths to latex executables when using PyCharm on a Mac. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
-            <li> Underscore is now a valid bibtex type character. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1791">#1791</a>)</li>
-            <li> \url and \href are now verbatim commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1784">#1784</a>)</li>
-            <li> Use safe delete quickfixes for some 'unused element' inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1787">#1787</a>)</li>
-            <li> Prepare for PDF Viewer plugin support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1822">#1822</a>)</li>
-        </ul>
-        <br>
+<!--        <p>-->
+<!--            <em>Changes</em>-->
+<!--        </p>-->
+<!--        <ul>-->
+<!--            <li> Ignore permission problems when extracting package zips on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894"><a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a></a>)</li>-->
+<!--        </ul>-->
+<!--        <br>-->
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix line breaking of comments during formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1776">#1776</a>)</li>
-            <li> Fix go to command definition when it is a custom label referencing command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1784">#1784</a>)</li>
-            <li> Fix parse error on \newenvironment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1802">#1802</a>)</li>
-            <li> Fix exception when MiKTeX is not installed on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
-            <li> Fix executable path for native TeX Live SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1798">#1798</a>)</li>
+            <li> Fix exception when pasting unsupported images. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1983">#1983</a>)</li>
+            <li> Fix invalid stealthy ranges for Grazie. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1985">#1985</a>)</li>
+            <li> Remove empty tooltip. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1985">#1985</a>)</li>
+            <li> Fix crash related to plugin descriptor. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> Fix false positive for unicode inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1989">#1989</a>)</li>
+            <li> The tectonic executable should never be prefixed with the SDK directory. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1999">#1999</a>)</li>
         </ul>
         <br>
-        <p>
-            Thanks to <a href="https://github.com/solonovamax">@solonovamax</a> for contributing to this release.
-        </p>
-        <br>
+<!--        <p>-->
+<!--            Thanks to ... for contributing to this release.-->
+<!--        </p>-->
+<!--        <br>-->
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>
