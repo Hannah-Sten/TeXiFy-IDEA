@@ -39,7 +39,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
         val commands = LatexCommandsIndex.getItems(file)
         for (command in commands) {
             // Error when \newcommand is used on existing command
-            if (CommandMagic.redefinitions.contains(command.name)) {
+            if (CommandMagic.commandRedefinitions.contains(command.name)) {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand()
                 if (CommandMagic.fragile.contains(newCommand?.name) || command.name == LatexNewDefinitionCommand.CATCODE.cmd) {
                     descriptors.add(

@@ -186,7 +186,7 @@ object CommandMagic {
     /**
      * All commands that define or redefine other commands, whether it exists or not.
      */
-    val redefinitions = hashSetOf(
+    val commandRedefinitions = hashSetOf(
             RENEWCOMMAND,
             RENEWCOMMAND_STAR,
             PROVIDECOMMAND, // Does nothing if command exists
@@ -195,14 +195,13 @@ object CommandMagic {
             DECLAREDOCUMENTCOMMAND,
             DEF,
             LET,
-            RENEWENVIRONMENT,
             CATCODE, // Not really redefining commands, but characters
     ).map { it.cmd }
 
     /**
      * All commands that define or redefine regular commands.
      */
-    val regularCommandDefinitions = regularStrictCommandDefinitions + redefinitions
+    val regularCommandDefinitions = regularStrictCommandDefinitions + commandRedefinitions
 
     /**
      * All commands that define commands that should be used exclusively
@@ -240,6 +239,11 @@ object CommandMagic {
             PROVIDEDOCUMENTENVIRONMENT,
             DECLAREDOCUMENTENVIRONMENT
     ).map { it.cmd }
+
+    /**
+     * All commands that define or redefine other environments, whether it exists or not.
+     */
+    val environmentRedefinitions = hashSetOf(RENEWENVIRONMENT.cmd)
 
     /**
      * All commands that define stuff like classes, environments, and definitions.
@@ -354,10 +358,10 @@ object CommandMagic {
      * Set of text styling commands
      */
     val textStyles = setOf(
-            TEXTRM.cmd, TEXTSF.cmd, TEXTTT.cmd, TEXTIT.cmd,
-            TEXTSL.cmd, TEXTSC.cmd, TEXTBF.cmd, EMPH.cmd,
-            TEXTUP.cmd, TEXTMD.cmd
-    )
+            TEXTRM, TEXTSF, TEXTTT, TEXTIT,
+            TEXTSL, TEXTSC, TEXTBF, EMPH,
+            TEXTUP, TEXTMD
+    ).map { it.cmd }
 
     /**
      * All LaTeX commands that contain a url (in their first parameter).
