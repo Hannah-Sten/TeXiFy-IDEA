@@ -53,7 +53,6 @@ tasks.compileKotlin {
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
-        useIR = true // https://blog.jetbrains.com/kotlin/2021/02/the-jvm-backend-is-in-beta-let-s-make-it-stable-together
     }
 }
 
@@ -65,7 +64,6 @@ tasks.compileTestKotlin {
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
-        useIR = true
     }
 }
 
@@ -110,7 +108,6 @@ dependencies {
 
     // just in case
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
     testImplementation("io.mockk:mockk:1.12.0")
