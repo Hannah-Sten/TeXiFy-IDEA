@@ -48,7 +48,7 @@
         STAR='*'
         AMPERSAND='&'
         NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=&]+'
-        NORMAL_TEXT_CHAR='regexp:[|!"=&]'
+        NORMAL_TEXT_CHAR='regexp:[|!"=&-]'
         // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
         COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
         RAW_TEXT_TOKEN='RAW_TEXT'
@@ -68,7 +68,7 @@ content ::= no_math_content*
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA )+
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | DASH)+
 
 environment ::= begin_command environment_content? end_command {
     pin=1

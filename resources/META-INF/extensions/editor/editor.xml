@@ -5,6 +5,7 @@
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEscapedSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.folding.BibtexEntryFoldingBuilder"/>
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
