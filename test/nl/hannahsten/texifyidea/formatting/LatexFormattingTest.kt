@@ -188,6 +188,24 @@ fun Int?.ifPositiveAddTwo(): Int =
         """.trimIndent()
     }
 
+    fun `test section used in command definition`() {
+        """
+            \documentclass{article}
+            \newcommand{\sectionlorem}[2]{\section{#1}\label{#2}}
+
+            \begin{document}
+                \sectionlorem{Title}{sec:label}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{article}
+            \newcommand{\sectionlorem}[2]{\section{#1}\label{#2}}
+
+            \begin{document}
+                \sectionlorem{Title}{sec:label}
+            \end{document}
+        """.trimIndent()
+    }
+
     fun testComments() {
         // Wanted to test line breaking, but not sure how to enable it in test
         val text = """
