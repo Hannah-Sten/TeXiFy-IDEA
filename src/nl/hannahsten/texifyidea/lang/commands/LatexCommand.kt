@@ -1,11 +1,12 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-import nl.hannahsten.texifyidea.lang.Dependend
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
@@ -42,6 +43,9 @@ interface LatexCommand : Described, Dependend {
          * Create a [LatexCommand] for the given command name, or merge with existing one.
          */
         fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
+            // Don't try to access index when in dumb mode
+            if (DumbService.isDumb(project)) return emptySet()
+
             val cmds = mutableSetOf<LatexCommand>()
             val cmdWithSlash = "\\$cmdWithoutSlash"
             // Look up in index
@@ -164,7 +168,7 @@ interface LatexCommand : Described, Dependend {
             return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
                 LatexMathCommand[cmdWithoutSlash]
             }
-            else {
+            else  {
                 // Attempt to avoid an error about slow operations on EDT
                 runBlocking {
                     lookupInIndex(cmdWithoutSlash, command.project)

@@ -32,7 +32,7 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx() {
     }
 
     private fun getPlaceholderText(string: String): String {
-        return when(string) {
+        return when (string) {
             // The following are covered by the DASH token type
             "-" -> "-" // hyphen
             "--" -> "–" // en dash
