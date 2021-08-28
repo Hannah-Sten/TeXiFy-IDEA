@@ -168,7 +168,7 @@ interface LatexCommand : Described, Dependend {
             return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
                 LatexMathCommand[cmdWithoutSlash]
             }
-            else  {
+            else {
                 // Attempt to avoid an error about slow operations on EDT
                 runBlocking {
                     lookupInIndex(cmdWithoutSlash, command.project)
