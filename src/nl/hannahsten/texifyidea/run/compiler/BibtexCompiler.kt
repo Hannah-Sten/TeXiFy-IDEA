@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
@@ -21,7 +22,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
         command.apply {
             add(runConfig.compilerPath ?: executableName)
 
-            runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
+            runConfig.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
             // Include files from auxiliary directory on Windows
             if (LatexSdkUtil.isMiktexAvailable) {

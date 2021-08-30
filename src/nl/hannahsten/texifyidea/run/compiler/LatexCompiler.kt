@@ -4,12 +4,12 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
-import nl.hannahsten.texifyidea.util.splitWhitespace
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -285,8 +285,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->
-            arguments.splitWhitespace()
-                .dropLastWhile { it.isEmpty() }
+            ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }
 
