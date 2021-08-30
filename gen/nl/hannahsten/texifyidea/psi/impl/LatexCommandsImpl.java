@@ -53,8 +53,7 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  @NotNull
-  public PsiReference[] getReferences() {
+  public @NotNull PsiReference[] getReferences() {
     return LatexPsiImplUtil.getReferences(this);
   }
 

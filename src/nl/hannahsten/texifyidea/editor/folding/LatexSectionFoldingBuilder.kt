@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.folding
+package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
@@ -6,10 +6,10 @@ import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexMagicCommentIndex
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
@@ -23,11 +23,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     companion object {
 
-        private val sectionCommandNames = arrayOf(
-            "part", "chapter",
-            "section", "subsection", "subsubsection",
-            "paragraph", "subparagraph"
-        )
+        private val sectionCommandNames = CommandMagic.sectioningCommands.map { it.command }
         private val sectionCommands = sectionCommandNames.map { "\\$it" }.toTypedArray()
     }
 
@@ -37,9 +33,9 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-        val commands = LatexCommandsIndex.getCommandsByNames(root.containingFile, *sectionCommands).toList()
+        val commands = root.childrenOfType<LatexCommands>().filter { it.name in sectionCommands }
             .sortedBy { it.textOffset }
-        val comments = LatexMagicCommentIndex.getItems(root.containingFile).filter { it.key() == DefaultMagicKeys.FAKE }
+        val comments = root.childrenOfType<LatexMagicComment>().filter { it.key() == DefaultMagicKeys.FAKE }
         val sectionElements: List<PsiElement> = (commands + comments).sortedBy { it.textOffset }
 
         if (sectionElements.isEmpty()) {

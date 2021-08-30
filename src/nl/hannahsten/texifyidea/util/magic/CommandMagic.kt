@@ -4,17 +4,17 @@ package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.*
+import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import java.awt.Color
 
@@ -54,6 +54,9 @@ object CommandMagic {
             PARAGRAPH to 4,
             SUBPARAGRAPH to 5
     )
+
+    /** Section commands sorted from large to small. */
+    val sectioningCommands = labeledLevels.entries.sortedBy { it.value }.map { it.key }
 
     /**
      * Commands that define a label via an optional parameter

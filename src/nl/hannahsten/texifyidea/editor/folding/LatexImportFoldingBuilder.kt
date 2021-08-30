@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.folding
+package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
@@ -16,7 +16,8 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
- * Folds multiple \\usepackage or \\RequirePackage statements
+ * Folds multiple \\usepackage or \\RequirePackage statements.
+ * This is not DumbAware.
  *
  * @author Hannah Schellekens
  */
