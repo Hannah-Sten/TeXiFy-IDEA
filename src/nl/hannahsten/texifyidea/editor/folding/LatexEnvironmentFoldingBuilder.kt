@@ -4,12 +4,12 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.endOffset
-import java.util.*
 
 /**
  * Adds folding regions for LaTeX environments.
@@ -18,7 +18,7 @@ import java.util.*
  *
  * @author Sten Wessel
  */
-class LatexEnvironmentFoldingBuilder : FoldingBuilderEx() {
+class LatexEnvironmentFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun isCollapsedByDefault(node: ASTNode) = false
 

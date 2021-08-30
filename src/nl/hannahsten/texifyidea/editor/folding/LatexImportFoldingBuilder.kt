@@ -16,7 +16,8 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
- * Folds multiple \\usepackage or \\RequirePackage statements
+ * Folds multiple \\usepackage or \\RequirePackage statements.
+ * This is not DumbAware.
  *
  * @author Hannah Schellekens
  */
