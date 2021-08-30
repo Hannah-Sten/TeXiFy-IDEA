@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.editor
 
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 /**
@@ -12,7 +13,10 @@ class LatexFoldingTest : BasePlatformTestCase() {
     }
 
     fun testDashFolding() {
-        myFixture.testFoldingWithCollapseStatus("$testDataPath/dash.tex")
+        // Unicode issues on windows
+        if (!SystemInfo.isWindows) {
+            myFixture.testFoldingWithCollapseStatus("$testDataPath/dash.tex")
+        }
     }
 
     fun testEnvironmentFolding() {
@@ -24,7 +28,10 @@ class LatexFoldingTest : BasePlatformTestCase() {
     }
 
     fun testMathSymbolFolding() {
-        myFixture.testFolding("$testDataPath/math-symbols.tex")
+        // Unicode issues on windows
+        if (!SystemInfo.isWindows) {
+            myFixture.testFolding("$testDataPath/math-symbols.tex")
+        }
     }
 
     fun testSectionFolding() {
