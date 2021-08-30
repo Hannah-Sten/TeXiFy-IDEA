@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.folding
+package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx

@@ -613,7 +613,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+
+  // (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+
   public static boolean parameter_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text")) return false;
     boolean r;
@@ -628,7 +628,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK
+  // commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH
   private static boolean parameter_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text_0")) return false;
     boolean r;
@@ -641,6 +641,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, QUOTATION_MARK);
     if (!r) r = consumeToken(b, PIPE);
     if (!r) r = consumeToken(b, EXCLAMATION_MARK);
+    if (!r) r = consumeToken(b, DASH);
     return r;
   }
 
