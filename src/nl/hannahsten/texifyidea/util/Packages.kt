@@ -293,5 +293,4 @@ fun includedPackages(commands: Collection<LatexCommands>, project: Project, only
     val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
         .map { LatexPackage(it) }
     return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
-
 }

@@ -71,7 +71,6 @@ fun LatexCommands.defaultCommand(): LatexCommand? {
 fun LatexCommands.isFigureLabel(): Boolean =
     name in project.getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)
 
-
 fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Collection<LatexCommands> {
     val project = originalFile.project
     val searchFiles = files.stream()
