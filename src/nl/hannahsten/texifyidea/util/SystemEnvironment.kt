@@ -36,7 +36,6 @@ class SystemEnvironment {
 
 /**
  * Run a command in the terminal.
- * Consider using GeneralCommandLine instead.
  *
  * @return The output of the command or null if an exception was thrown.
  */

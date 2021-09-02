@@ -7,9 +7,14 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
+import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import java.util.concurrent.TimeUnit
 
 /**
@@ -17,7 +22,7 @@ import java.util.concurrent.TimeUnit
  *
  * @author Thomas
  */
-abstract class ExternalReformatAction(title: String, val isValidFile: (file: PsiFile) -> Boolean) : AnAction(title) {
+abstract class ExternalReformatAction(title: String, val isValidFile: (file: PsiFile) -> Boolean) : AnAction(title), DumbAware {
 
     override fun update(event: AnActionEvent) {
         // Possible improvement: make visible anyway in LaTeX project (but only enabled if cursor in file)
@@ -42,9 +47,13 @@ abstract class ExternalReformatAction(title: String, val isValidFile: (file: Psi
     /**
      * Command to run the formatter.
      * Working directory will be the file's parent.
-     * @param fileName Name of the file.
+     *
+     * Ideally, you use the file content from the psi tree, because when someone edits the file and directly
+     * reformats afterwards, the file is most probably not yet saved to disk, so we have to do that ourselves.
+     *
+     * @param file File to reformat.
      */
-    abstract fun getCommand(fileName: String): List<String>
+    abstract fun getCommand(file: PsiFile): List<String>
 
     override fun actionPerformed(event: AnActionEvent) {
         val dataContext = event.dataContext
@@ -52,7 +61,7 @@ abstract class ExternalReformatAction(title: String, val isValidFile: (file: Psi
         val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return
         val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document) ?: return
         if (!isValidFile(file)) return
-        val command = getCommand(file.name)
+        val command = getCommand(file)
         val process = try {
             GeneralCommandLine(command)
                 .withWorkDirectory(file.containingDirectory.virtualFile.path)
@@ -83,4 +92,26 @@ abstract class ExternalReformatAction(title: String, val isValidFile: (file: Psi
      * Do whatever you want with the output of the program.
      */
     open fun processOutput(output: String, file: PsiFile, project: Project) {}
+
+    /**
+     * Replace the file content with the given output.
+     * This is the preferred way, because it has immediate user feedback.
+     * If you just modify the file content in the background, only on re-focus will the user be asked if he wants to see the external changes made.
+     */
+    fun replaceLatexFileContent(output: String, file: PsiFile, project: Project) {
+        val newFile = LatexPsiHelper(project).createFromText(output)
+        runWriteCommandAction(project) {
+            file.node.replaceChild(file.node.firstChildNode, newFile.node.firstChildNode)
+        }
+    }
+
+    /**
+     * See [replaceLatexFileContent].
+     */
+    fun replaceBibtexFileContent(output: String, file: PsiFile, project: Project) {
+        val newFile = PsiFileFactory.getInstance(project).createFileFromText("DUMMY.bib", BibtexLanguage, output, false, true)
+        runWriteCommandAction(project) {
+            file.node.replaceAllChildrenToChildrenOf(newFile.node)
+        }
+    }
 }
