@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 /**
  * @author Thomas Schouten
  */
-object TikzFileType : LanguageFileType(LatexLanguage.INSTANCE) {
+object TikzFileType : LanguageFileType(LatexLanguage) {
 
     override fun getName() = "TikZ picture file"
 

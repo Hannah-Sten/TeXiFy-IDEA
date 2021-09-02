@@ -23,7 +23,7 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
         private val demoText = GeneralMagic.latexDemoText.removeHtmlTags()
     }
 
-    override fun getLanguage() = LatexLanguage.INSTANCE
+    override fun getLanguage() = LatexLanguage
 
     override fun getCodeSample(settingsType: SettingsType) = demoText
 

@@ -22,7 +22,7 @@ class LatexEnvironmentManipulator : AbstractElementManipulator<LatexEnvironmentI
         val endOffset = oldText.indexOf("\\end{${element.environmentName}}") - 1 // -1 to exclude \n
         val newText = oldText.substring(0, range.startOffset) + newContent + oldText.substring(endOffset)
         val file = PsiFileFactory.getInstance(element.project)
-            .createFileFromText("temp.tex", LatexLanguage.INSTANCE, newText)
+            .createFileFromText("temp.tex", LatexLanguage, newText)
         val res =
             PsiTreeUtil.findChildOfType(file, LatexEnvironmentImpl::class.java) ?: return null
         element.replace(res)

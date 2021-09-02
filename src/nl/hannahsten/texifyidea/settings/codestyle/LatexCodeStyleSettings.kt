@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.magic.cmd
  * @author Abby Berkers
  */
 @Suppress("PropertyName")
-class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSettings(LatexLanguage.INSTANCE.id, container) {
+class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSettings(LatexLanguage.id, container) {
 
     /**
      * The number of blank lines to use before a sectioning command.
