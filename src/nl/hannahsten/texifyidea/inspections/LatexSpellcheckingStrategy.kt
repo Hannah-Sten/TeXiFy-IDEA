@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.util.hasParent
 class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
 
     override fun isMyContext(psiElement: PsiElement): Boolean {
-        return psiElement.language == LatexLanguage.INSTANCE
+        return psiElement.language == LatexLanguage
     }
 
     override fun getTokenizer(psiElement: PsiElement): Tokenizer<*> {

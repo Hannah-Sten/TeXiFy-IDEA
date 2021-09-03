@@ -53,7 +53,7 @@ class LatexPsiHelper(private val project: Project) {
      * Create a PsiFile containing the given text.
      */
     fun createFromText(text: String): PsiFile =
-        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
+        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
 
     /**
      * Adds the supplied element to the content of the environment.

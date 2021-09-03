@@ -23,7 +23,7 @@ fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBre
 fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
     val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
-    val latexCommonSettings = settings.getCommonSettings(LatexLanguage.INSTANCE)
+    val latexCommonSettings = settings.getCommonSettings(LatexLanguage)
 
     return rules(latexCommonSettings) {
 

@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 /**
  * @author Hannah Schellekens
  */
-object StyleFileType : LanguageFileType(LatexLanguage.INSTANCE) {
+object StyleFileType : LanguageFileType(LatexLanguage) {
 
     override fun getName() = "LaTeX style file"
 

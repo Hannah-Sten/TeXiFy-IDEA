@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
 /**
  * @author Thomas Schouten
  */
-open class TikzFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LatexLanguage.INSTANCE) {
+open class TikzFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LatexLanguage) {
 
     override fun getFileType() = TikzFileType
 

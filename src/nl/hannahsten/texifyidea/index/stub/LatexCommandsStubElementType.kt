@@ -22,7 +22,7 @@ import java.util.stream.Collectors
  * @author Hannah Schellekens
  */
 class LatexCommandsStubElementType(debugName: String) :
-    IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage.INSTANCE) {
+    IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return object : LatexCommandsImpl(latexCommandsStub, this) {

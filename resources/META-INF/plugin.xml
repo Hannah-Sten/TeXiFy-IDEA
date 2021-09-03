@@ -21,7 +21,7 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-<idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA" xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
 
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
