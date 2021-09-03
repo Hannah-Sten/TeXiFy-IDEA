@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
  *
  * @author Thomas
  */
-class ReformatWithLatexindent : ExternalReformatAction("Reformat File with Latexindent", { it.isLatexFile() } ) {
+class ReformatWithLatexindent : ExternalReformatAction("Reformat File with Latexindent", { it.isLatexFile() }) {
 
     override fun getCommand(file: PsiFile): List<String> {
         // Ensure the document is saved, before we run anything on it

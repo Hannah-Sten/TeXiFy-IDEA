@@ -12,9 +12,10 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion
  *
  * @author Thomas
  */
-class ReformatWithBibtexTidy : ExternalReformatAction("Reformat File with bibtex-tidy", { it.fileType == BibtexFileType } ) {
+class ReformatWithBibtexTidy : ExternalReformatAction("Reformat File with bibtex-tidy", { it.fileType == BibtexFileType }) {
 
     companion object {
+
         val bibtexTidyVersion by lazy { DefaultArtifactVersion(runCommand("bibtex-tidy", "-v") ?: "0.0.0") }
     }
 
