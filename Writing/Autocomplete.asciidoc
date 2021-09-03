@@ -35,6 +35,10 @@ Often, the extracted information includes the command parameters and some docume
 However, this relies on package authors respecting the LaTeX conventions (using the doc package).
 If you find something incorrect, please let us know and then we can determine whether something needs to be improved in the LaTeX package or in TeXiFy.
 
+In the case of TeX Live, TeXiFy will currently not suggest commands from _all_ packages you have installed, because a lot of users have TeX Live full installed, so you would get completion for _all_ commands in _any_ LaTeX package ever written!
+This would flood the completion with many commands that are very rarely used.
+Therefore, TeXiFy will only suggest commands from packages that you have already included somewhere in your project, directly or indirectly via other packages.
+
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/command-autocomplete1.png[]
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/command-autocomplete2.png[]
 

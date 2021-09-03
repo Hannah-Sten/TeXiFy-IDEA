@@ -251,7 +251,9 @@ menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
 
 menu:Edit[Fill Paragraph]:: Fill the paragraph that is currently under the cursor such that each line is filled until the right margin, but does not exceed it.
 
-menu:Code[Reformat File with Latexindent]:: Run Latexindent.pl on the file the caret is in.
+menu:Code[Reformat File with Latexindent]:: link:Code-formatting#latexindent[Run Latexindent.pl on the LaTeX file the caret is in.]
+
+menu:Code[Reformat File with bibtex-tidy]:: link:Code-formatting#bibtex-tidy[Run bibtex-tidy on the file the caret is in.]
 
 menu:Analyze[LaTeX > Word Count]:: Word counting tool.
 

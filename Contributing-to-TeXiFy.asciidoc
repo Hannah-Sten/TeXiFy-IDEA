@@ -108,7 +108,7 @@ At the moment, it does not seem to be possible to debug in PyCharm because to bu
 == Adding project templates
 
 If you use menu:Tools[Save as project template] then a zip will be created in `build/idea-sandbox/config/projectTemplates`.
-Copy it to `resources/projectTemplates` and add an entry to `resources/META-INF/extensions/project-templatex.xml`.
+Copy it to `resources/projectTemplates` and add an entry to `resources/META-INF/extensions/project-templates.xml`.
 
 == Debugging plugin unload fail
 

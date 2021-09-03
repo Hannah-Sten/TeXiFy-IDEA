@@ -116,3 +116,25 @@ Commands defined using `\algblock` or `\algloop` are currently not recognized by
 
 
 Formatting for algorithms written with `algorithm2e` instead of `algorithmicx` is also supported.
+
+== External formatters
+
+In some cases, you might have external requirements on your formatting which are incompatible with the default TeXiFy formatter.
+For these cases, there are some built-in actions that run external formatters.
+Most probably you want to bind a shortcut to this action in menu:File[Settings > Keymap].
+
+=== Latexindent
+_Since b0.7.7_
+
+If your caret is in a LaTeX file, you can use menu:Code[Reformat with Latexindent].
+This will run latexindent.pl on the current file, and it will be updated on disk.
+
+=== bibtex-tidy
+_Since b0.7.11_
+
+Installation: `npm install -g bibtex-tidy`
+At the moment of writing, version 1.7.2 is not yet published to npm, but this verion adds a feature which allows TeXiFy to get the output from stdout, which allows for better user feedback because IntelliJ will not have to ask you whether you want to load file changes from disk.
+You can install the new version locally by cloning the repo, optionally change the version number, run the npm `build` task and then run `npm link`.
+
+See https://github.com/FlamingTempura/bibtex-tidy for more information.
+
