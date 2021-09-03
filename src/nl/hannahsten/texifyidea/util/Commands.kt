@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -13,6 +14,7 @@ import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import java.util.stream.Collectors
 
 /**
  * Finds all defined commands within the project.
@@ -68,3 +70,13 @@ fun LatexCommands.defaultCommand(): LatexCommand? {
 
 fun LatexCommands.isFigureLabel(): Boolean =
     name in project.getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)
+
+fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Collection<LatexCommands> {
+    val project = originalFile.project
+    val searchFiles = files.stream()
+        .map { obj: PsiFile -> obj.virtualFile }
+        .collect(Collectors.toSet())
+    searchFiles.add(originalFile.virtualFile)
+    val scope = GlobalSearchScope.filesScope(project, searchFiles)
+    return LatexCommandsIndex.getItems(project, scope)
+}
