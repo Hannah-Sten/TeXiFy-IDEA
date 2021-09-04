@@ -12,16 +12,25 @@ TeXiFy shows these previews automatically when a project is opened.
 == Equation preview
 
 You can use the Equation Preview by making sure your cursor is in a math environment and clicking menu:Tools[LaTeX > Preview Equation], or using kbd:[Ctrl + Shift + X].
-It works by putting your equation in a new temporary (fairly minimal) document and compiling that, so custom commands and packages from your document will not be taken into account, but it ensures the preview is really fast.
+
+Since version 0.7.11, if you don't have a custom preamble we use [jlatexmat](https://github.com/opencollab/jlatexmath) and it should work out of the box.
+
+If you do have a custom preamble, which jlatexmath does not support, TeXiFy creates a preview by putting your equation in a new temporary (fairly minimal) document and compiling that, and then uses Inkscape to convert to an image.
+You may need to have certain fonts installed to make this work.
 
 The current implementation of the Equation Preview was contributed by Sergei Izmailov and requires external dependencies, for which installation instructions follow.
 
 === Instructions for Linux
 
+This is only necessary if you want to use a custom preamble (using magic comments), or if you have a TeXiFy version older than 0.7.11.
+
 * Install Inkscape from https://inkscape.org/release[inkscape.org/release].
 * If not using Inkscape 1.0 or later, you have to install the `pdf2svg` package for your distro, for example on Ubuntu with `sudo apt-get install pdf2svg` or on Arch Linux with `sudo pacman -S pdf2svg`.
 
 === Instructions for Windows
+
+This is only necessary if you want to use a custom preamble (using magic comments), or if you have a TeXiFy version older than 0.7.11.
+
 * Install Inkscape from https://inkscape.org/release[inkscape.org/release], suppose you install it in `C:\Program Files\Inkscape`.
 * If not using Inkscape 1.0 or later, you have to install pdf2svg from https://github.com/textext/pdf2svg/releases[github.com/textext/pdf2svg/releases], suppose you install it in `C:\Program Files\pdf2svg`.
 * Add both `C:\Program Files\Inkscape` and (if you installed it) `C:\Program Files\pdf2svg` to your PATH environment variable, for example by searching for Environment Variables on your computer, clicking 'Edit the system environment variables', clicking 'Environment Variables', and under System variables find the one named Path, edit it and insert the paths here. Make sure the paths are separated by a `;` if using Windows 8 or lower.
