@@ -41,13 +41,17 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
 
             // Add all of the tikz libs included in related packages (via \usetikzlibrary{}) to the produced document.
             val tikzLibs = PackageUtils.getIncludedTikzLibraries(psiFile)
-            preamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
+            if (tikzLibs.isNotEmpty()) {
+                userPreamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
+            }
 
             // Add all of the pgfplots libs included in related packages (via \usepgfplotslibrary{}) to the produced document.
             val pgfLibs = PackageUtils.getIncludedPgfLibraries(psiFile)
-            preamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
+            if (pgfLibs.isNotEmpty()) {
+                userPreamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
+            }
 
-            preamble += findPreamblesFromMagicComments(psiFile, "tikz")
+            userPreamble += findPreamblesFromMagicComments(psiFile, "tikz")
             waitTime = 5L
         }
     }

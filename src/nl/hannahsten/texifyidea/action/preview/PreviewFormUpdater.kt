@@ -1,20 +1,7 @@
 package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.io.FileUtil.createTempDirectory
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.ui.PreviewForm
-import nl.hannahsten.texifyidea.util.SystemEnvironment
-import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-import java.io.File
-import java.io.IOException
-import java.io.PrintWriter
-import java.nio.file.Paths
-import javax.imageio.ImageIO
-import javax.swing.SwingUtilities.invokeLater
 
 /**
  * @author Sergei Izmailov
@@ -32,9 +19,16 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
         """.trimIndent()
 
     /**
-     * Modify this variable to include more packages.
+     * Preamble as specified by TeXiFy.
+     * Only used if userPreamble is not empty.
      */
     var preamble = defaultPreamble
+
+    /**
+     * Preamble as specified by the user.
+     * Modify this variable to include more packages.
+     */
+    var userPreamble = ""
 
     /**
      * Controls how long (in seconds) we will wait for the document compilation. If the time taken exceeds this,
@@ -47,47 +41,7 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
      */
     fun resetPreamble() {
         preamble = defaultPreamble
-    }
-
-    /**
-     * First define the function that actually does stuff in a temp folder. The usual temp directory might not be
-     * accessible by inkscape (e.g., when inkscape is a snap), and using function we can specify an alternative
-     * temp directory in case the usual fails.
-     */
-    private fun setPreviewCodeInTemp(tempDirectory: File, previewCode: String, project: Project) {
-        try {
-            val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
-            val writer = PrintWriter("$tempBasename.tex", "UTF-8")
-
-            val tmpContent =
-                """\documentclass{article}
-$preamble
-\begin{document}
-$previewCode
-\end{document}"""
-            writer.println(tmpContent)
-            writer.close()
-
-            val latexStdoutText = runPreviewFormCommand(
-                LatexSdkUtil.getExecutableName("pdflatex", project),
-                arrayOf(
-                    "-interaction=nonstopmode",
-                    "-halt-on-error",
-                    "$tempBasename.tex"
-                ),
-                tempDirectory
-            ) ?: return
-
-            runInkscape(tempBasename, tempDirectory)
-            val image = ImageIO.read(File("$tempBasename.png"))
-            invokeLater {
-                previewForm.setPreview(image, latexStdoutText)
-            }
-        }
-        finally {
-            // Delete all the created temp files in the default temp directory.
-            tempDirectory.deleteRecursively()
-        }
+        userPreamble = ""
     }
 
     /**
@@ -100,107 +54,16 @@ $previewCode
     fun compilePreview(previewCode: String, project: Project) {
         previewForm.setEquation(previewCode)
 
+        // Combine default and user defined preamble. Cannot be used if we decide to run latexmath.
+        val preamble = preamble + userPreamble
+
         // jlatexmath cannot handle a custom preamble
-        // todo check for custom preamble
-        if (true) {
-            JlatexmathPreviewer().preview(previewCode, previewForm)
+        val previewer = if (userPreamble.isBlank()) {
+            JlatexmathPreviewer()
         }
         else {
-            // todo refactor into previewer
-            GlobalScope.launch {
-                try {
-                    // Snap apps are confined to the users home directory
-                    if (SystemEnvironment.isInkscapeInstalledAsSnap) {
-                        @Suppress("BlockingMethodInNonBlockingContext")
-                        setPreviewCodeInTemp(
-                            createTempDirectory(File(System.getProperty("user.home")), "preview", null),
-                            previewCode,
-                            project
-                        )
-                    }
-                    else {
-                        @Suppress("BlockingMethodInNonBlockingContext")
-                        setPreviewCodeInTemp(createTempDirectory("preview", null), previewCode, project)
-                    }
-                }
-                catch (exception: AccessDeniedException) {
-                    previewForm.setLatexErrorMessage("${exception.message}")
-                }
-                catch (exception: IOException) {
-                    previewForm.setLatexErrorMessage("${exception.message}")
-                }
-            }
+            InkscapePreviewer()
         }
-    }
-
-    /**
-     * Run inkscape command to convert pdf to png, depending on the version of inkscape.
-     */
-    private fun runInkscape(tempBasename: String, tempDirectory: File) {
-        // If 1.0 or higher
-        if (SystemEnvironment.inkscapeMajorVersion >= 1) {
-            runPreviewFormCommand(
-                inkscapeExecutable(),
-                arrayOf(
-                    "$tempBasename.pdf",
-                    "--export-area-drawing",
-                    "--export-dpi", "1000",
-                    "--export-background", "#FFFFFF",
-                    "--export-background-opacity", "1.0",
-                    "--export-filename", "$tempBasename.png"
-                ),
-                tempDirectory
-            ) ?: throw AccessDeniedException(tempDirectory)
-        }
-        else {
-            runPreviewFormCommand(
-                pdf2svgExecutable(),
-                arrayOf(
-                    "$tempBasename.pdf",
-                    "$tempBasename.svg"
-                ),
-                tempDirectory
-            ) ?: return
-
-            runPreviewFormCommand(
-                inkscapeExecutable(),
-                arrayOf(
-                    "$tempBasename.svg",
-                    "--export-area-drawing",
-                    "--export-dpi", "1000",
-                    "--export-background", "#FFFFFF",
-                    "--export-png", "$tempBasename.png"
-                ),
-                tempDirectory
-            ) ?: throw AccessDeniedException(tempDirectory)
-        }
-    }
-
-    private fun runPreviewFormCommand(command: String, args: Array<String>, workDirectory: File): String? {
-
-        val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime)
-
-        if (result.second != 0) {
-            previewForm.setLatexErrorMessage("$command exited with ${result.second}\n${result.first ?: ""}")
-            return null
-        }
-
-        return result.first
-    }
-
-    private fun inkscapeExecutable(): String {
-        var suffix = ""
-        if (SystemInfo.isWindows) {
-            suffix = ".exe"
-        }
-        return "inkscape$suffix"
-    }
-
-    private fun pdf2svgExecutable(): String {
-        var suffix = ""
-        if (SystemInfo.isWindows) {
-            suffix = ".exe"
-        }
-        return "pdf2svg$suffix"
+        previewer.preview(previewCode, previewForm, project, preamble, waitTime)
     }
 }

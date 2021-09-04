@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.preview
 
+import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.ui.PreviewForm
 import org.apache.batik.dom.GenericDOMImplementation
 import org.apache.batik.svggen.SVGGeneratorContext
@@ -7,6 +8,7 @@ import org.apache.batik.svggen.SVGGraphics2D
 import org.apache.batik.transcoder.TranscoderException
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
+import org.apache.batik.transcoder.image.ImageTranscoder
 import org.apache.batik.transcoder.image.PNGTranscoder
 import org.scilab.forge.jlatexmath.DefaultTeXFont
 import org.scilab.forge.jlatexmath.ParseException
@@ -23,7 +25,8 @@ import javax.swing.JLabel
 import javax.swing.SwingUtilities
 
 class JlatexmathPreviewer : Previewer {
-    override fun preview(input: String, previewForm: PreviewForm) {
+
+    override fun preview(input: String, previewForm: PreviewForm, project: Project, preamble: String, waitTime: Long) {
         val tempBaseName = "temp"
         try {
             // Fonts should be shapes, otherwise the user would have needed to install the font to render it
@@ -40,14 +43,37 @@ class JlatexmathPreviewer : Previewer {
         }
     }
 
-
+    @Suppress("SameParameterValue")
     @Throws(FileNotFoundException::class, TranscoderException::class, IOException::class)
     private fun saveSvgAsPng(tempBaseName: String) {
-        val ti = TranscoderInput(FileInputStream("$tempBaseName.svg"))
+        // Make sure image resolution is good
+        // https://stackoverflow.com/a/63684055/4126843
+        // Pick an arbitrary resolution (higher is slower)
+        val resolutionDpi = 200
+
+        // Define image width and height
+        // We have to do some magic with scaling
+        val scaleByResolution = resolutionDpi / 72f
+        // Unfortunately, this is hardcoded for now, as we don't yet know the with of the to-be-created image panel?
+        val scaledWidth = 300 * scaleByResolution
+        val scaledHeight = 50 * scaleByResolution
+
+        // Convert pixels per inch to mm per pixels
+        val inch = 25.4f // mm
+        val pixelUnitToMM = inch / resolutionDpi
+
+        val transcoder = PNGTranscoder()
+        val transcoderInput = TranscoderInput(FileInputStream("$tempBaseName.svg"))
         val os = FileOutputStream("$tempBaseName.png")
-        val to = TranscoderOutput(os)
-        val pt = PNGTranscoder()
-        pt.transcode(ti, to)
+        val transcoderOutput = TranscoderOutput(os)
+        transcoder.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, scaledWidth)
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, scaledHeight)
+
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, pixelUnitToMM)
+
+        transcoder.transcode(transcoderInput, transcoderOutput)
+
         os.flush()
         os.close()
     }

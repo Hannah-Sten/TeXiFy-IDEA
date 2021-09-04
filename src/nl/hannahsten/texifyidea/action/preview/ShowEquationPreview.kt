@@ -33,7 +33,7 @@ class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATI
             resetPreamble()
             preamble += MATH_PREAMBLE
             val psiFile = element.containingFile
-            preamble += findPreamblesFromMagicComments(psiFile, "math")
+            userPreamble += findPreamblesFromMagicComments(psiFile, "math")
         }
     }
 }
