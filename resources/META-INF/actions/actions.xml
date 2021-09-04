@@ -6,7 +6,10 @@
         </action>
 
         <!-- LaTeX Code menu -->
-        <action id="texify.ReformatLatexindent" class="nl.hannahsten.texifyidea.action.ReformatWithLatexindent" description="Run latexindent.pl" >
+        <action id="texify.ReformatLatexindent" class="nl.hannahsten.texifyidea.action.reformat.ReformatWithLatexindent" description="Run latexindent.pl" >
+            <add-to-group group-id="CodeFormatGroup" anchor="after" relative-to-action="ShowReformatFileDialog" />
+        </action>
+        <action id="texify.ReformatBibtexTidy" class="nl.hannahsten.texifyidea.action.reformat.ReformatWithBibtexTidy" description="Run bibtex-tidy" >
             <add-to-group group-id="CodeFormatGroup" anchor="after" relative-to-action="ShowReformatFileDialog" />
         </action>
 
