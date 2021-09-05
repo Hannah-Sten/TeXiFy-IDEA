@@ -62,7 +62,7 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
 
     private fun chooseLanguage(editor: Editor, onChosen: (language: Injectable) -> Unit) {
         // Dummy to determine height of single cell
-        val dimension = JLabel(LatexLanguage.INSTANCE.displayName, EmptyIcon.ICON_16, SwingConstants.LEFT).minimumSize
+        val dimension = JLabel(LatexLanguage.displayName, EmptyIcon.ICON_16, SwingConstants.LEFT).minimumSize
         dimension.height *= 4
 
         val list = JBList(injectableLanguages()).apply {

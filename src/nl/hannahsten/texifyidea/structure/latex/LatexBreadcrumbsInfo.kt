@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.name
  */
 open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
 
-    override fun getLanguages() = arrayOf(LatexLanguage.INSTANCE)
+    override fun getLanguages() = arrayOf(LatexLanguage)
 
     override fun getElementInfo(element: PsiElement) = when (element) {
         is LatexEnvironment -> element.name()?.text

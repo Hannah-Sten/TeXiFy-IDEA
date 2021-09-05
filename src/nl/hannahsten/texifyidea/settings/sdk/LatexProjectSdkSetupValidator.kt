@@ -24,7 +24,7 @@ class LatexProjectSdkSetupValidator : ProjectSdkSetupValidator {
 
     override fun isApplicableFor(project: Project, file: VirtualFile): Boolean {
         // Check if setting up a LaTeX SDK would make sense
-        val isLatexFile = file.fileType is LatexFileType || PsiManager.getInstance(project).findFile(file)?.language?.isKindOf(LatexLanguage.INSTANCE) == true
+        val isLatexFile = file.fileType is LatexFileType || PsiManager.getInstance(project).findFile(file)?.language?.isKindOf(LatexLanguage) == true
         return ModuleManager.getInstance(project).modules.any { it.moduleTypeName == LatexModuleType.ID } && isLatexFile
     }
 

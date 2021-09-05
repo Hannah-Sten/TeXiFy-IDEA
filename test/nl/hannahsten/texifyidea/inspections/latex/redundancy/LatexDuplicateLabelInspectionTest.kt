@@ -76,4 +76,26 @@ class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicat
         )
         myFixture.checkHighlighting()
     }
+
+    fun testNoErrorForDuplicateLabelInCommandDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\dummy}{\label{#1}}
+            \newcommand{\dummy}{\label{#1}}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoErrorForDuplicateLabelInEnvironmentDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newenvironment{\dummy}[1]{\label{#1}}{}
+            \newenvironment{\dummy}[1]{\label{#1}}{}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

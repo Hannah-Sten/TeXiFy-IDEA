@@ -7,4 +7,4 @@ import org.jetbrains.annotations.NonNls
 /**
  * @author Sten Wessel
  */
-class LatexElementType(@NonNls debugName: String) : IElementType(debugName, LatexLanguage.INSTANCE)
+class LatexElementType(@NonNls debugName: String) : IElementType(debugName, LatexLanguage)

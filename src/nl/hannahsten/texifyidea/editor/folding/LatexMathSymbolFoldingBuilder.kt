@@ -1,10 +1,11 @@
-package nl.hannahsten.texifyidea.folding
+package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.FoldingGroup
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -14,7 +15,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 /**
  * @author Sten Wessel
  */
-class LatexMathSymbolFoldingBuilder : FoldingBuilderEx() {
+class LatexMathSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = listOf<FoldingDescriptor>().toMutableList()

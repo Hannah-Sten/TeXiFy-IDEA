@@ -22,7 +22,7 @@ import java.util.stream.Collectors
  * @author Hannah Schellekens
  */
 class LatexCommandsStubElementType(debugName: String) :
-    IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage.INSTANCE) {
+    IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return object : LatexCommandsImpl(latexCommandsStub, this) {
@@ -95,13 +95,13 @@ class LatexCommandsStubElementType(debugName: String) :
             )
         }
         val token = latexCommandsStub.commandToken
-        if (getIncludeCommands().contains(token)) {
+        if (token in getIncludeCommands()) {
             indexSink.occurrence(LatexIncludesIndex.key(), token)
         }
-        if (CommandMagic.definitions.contains(token) || CommandMagic.redefinitions.contains(token)) {
+        if (token in CommandMagic.definitions) {
             indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
-        if (CommandMagic.labelAsParameter.contains(token) && latexCommandsStub.optionalParams.contains("label")) {
+        if (token in CommandMagic.labelAsParameter && "label" in latexCommandsStub.optionalParams) {
             val label = latexCommandsStub.optionalParams["label"]!!
             indexSink.occurrence(LatexParameterLabeledCommandsIndex.key(), label)
         }

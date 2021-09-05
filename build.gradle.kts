@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.1.2"
-    kotlin("jvm") version("1.5.20")
+    kotlin("jvm") version("1.5.30")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.39.0"
@@ -93,6 +93,9 @@ dependencies {
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.1")
 
+    // LaTeX rendering for preview
+    implementation("org.scilab.forge:jlatexmath:1.0.7")
+
     // Test dependencies
 
     // Also implementation junit 4, just in case
@@ -108,7 +111,6 @@ dependencies {
 
     // just in case
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
     testImplementation("io.mockk:mockk:1.12.0")
@@ -169,7 +171,7 @@ tasks.publishPlugin {
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf("alpha"))
+    channels.set(listOf("stable"))
 }
 
 tasks.test {

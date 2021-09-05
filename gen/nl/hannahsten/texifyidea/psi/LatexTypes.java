@@ -56,6 +56,7 @@ public interface LatexTypes {
   IElementType COMMAND_IFNEXTCHAR = new LatexTokenType("COMMAND_IFNEXTCHAR");
   IElementType COMMAND_TOKEN = new LatexTokenType("COMMAND_TOKEN");
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
+  IElementType DASH = new LatexTokenType("DASH");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
   IElementType DISPLAY_MATH_START = new LatexTokenType("\\[");
   IElementType END_PSEUDOCODE_BLOCK = new LatexTokenType("END_PSEUDOCODE_BLOCK");

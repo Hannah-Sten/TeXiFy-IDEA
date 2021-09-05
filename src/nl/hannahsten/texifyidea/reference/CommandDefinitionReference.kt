@@ -22,7 +22,7 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
 
     // Find all command definitions and redefinitions which define the current element
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val definitionsAndRedefinitions = CommandMagic.commandDefinitions + CommandMagic.redefinitions
+        val definitionsAndRedefinitions = CommandMagic.commandDefinitions + CommandMagic.commandRedefinitions
 
         // Don't resolve to a definition when you are in a \newcommand
         if (element.parentsOfType<LatexCommands>().any { it.name in definitionsAndRedefinitions }) {

@@ -5,7 +5,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.scope.PsiScopeProcessor
-import nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder
+import nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder
 import nl.hannahsten.texifyidea.util.endOffset
 import javax.swing.Icon
 

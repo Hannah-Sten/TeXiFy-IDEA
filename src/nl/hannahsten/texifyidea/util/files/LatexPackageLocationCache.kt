@@ -25,6 +25,7 @@ object LatexPackageLocationCache {
     fun getPackageLocation(name: String, project: Project): String? {
         if (cache.containsKey(name).not()) {
             val path = runKpsewhich(name, project)
+            if (path?.isBlank() == true) return null
             cache[name] = path
             return path
         }
