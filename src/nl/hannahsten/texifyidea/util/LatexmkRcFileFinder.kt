@@ -75,7 +75,7 @@ object LatexmkRcFileFinder {
     fun isLatexmkRcFilePresent(runConfig: LatexRunConfiguration): Boolean {
         val isPresent = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(
             runConfig.options.compilerArguments,
-            runConfig.options.mainFile.resolve()?.parent?.path
+            runConfig.workingDirectory
         )
 
         // The first time, by default don't override what's in the latexmkrc (but avoid resetting the user chosen output format)

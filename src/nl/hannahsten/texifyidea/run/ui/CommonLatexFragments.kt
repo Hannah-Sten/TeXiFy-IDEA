@@ -30,6 +30,7 @@ import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOptio
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
+import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.BorderLayout
 import kotlin.reflect.KMutableProperty0
@@ -106,6 +107,15 @@ object CommonLatexFragments {
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor>("latexCompiler", "LaTeX compiler", null, editor, commandLinePosition, { true }) {
             override fun doReset(settings: RunnerAndConfigurationSettingsImpl) {
                 (component as LatexCompileEditor).setSelectedExecutable(settingsProperty(settings.configuration as LatexRunConfiguration).get())
+
+                if (!LatexmkRcFileFinder.isLatexmkRcFilePresent(settings.configuration as LatexRunConfiguration)) {
+                    editor.label.isVisible = false
+                }
+                else {
+                    editor.labelLocation = BorderLayout.SOUTH
+                    editor.label.text = "Default command line arguments are overwritten by a local latexmkrc file."
+                    editor.label.isVisible = true
+                }
             }
 
             override fun applyEditorTo(settings: RunnerAndConfigurationSettingsImpl) {
