@@ -1,5 +1,6 @@
-package nl.hannahsten.texifyidea.ui
+package nl.hannahsten.texifyidea.action.preview
 
+import nl.hannahsten.texifyidea.ui.PreviewForm
 import javax.swing.JPanel
 
 /**
