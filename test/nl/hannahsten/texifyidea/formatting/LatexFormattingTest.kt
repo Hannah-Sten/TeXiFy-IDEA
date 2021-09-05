@@ -69,6 +69,36 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun `test angle parameter formatting`() {
+        """
+            \documentclass{beamer}
+            
+            \begin{document}
+                \begin{frame}
+                    \begin{block}{Title}<1->
+                    Appel.
+                    \end{block}
+                    \begin{block}{Title}<2->
+                    Peer.
+                    \end{block}
+                \end{frame}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{beamer}
+            
+            \begin{document}
+                \begin{frame}
+                    \begin{block}{Title}<1->
+                        Appel.
+                    \end{block}
+                    \begin{block}{Title}<2->
+                        Peer.
+                    \end{block}
+                \end{frame}
+            \end{document}
+        """.trimIndent()
+    }
+
     fun `test indentation in parameter`() {
         """
             \documentclass[
