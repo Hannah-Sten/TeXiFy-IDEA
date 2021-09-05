@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.Compiler
 import nl.hannahsten.texifyidea.run.compiler.latex.CustomLatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexmkCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.macro.insertMacro
 import nl.hannahsten.texifyidea.run.macro.sortOutMacros
@@ -106,9 +107,10 @@ object CommonLatexFragments {
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor>("latexCompiler", "LaTeX compiler", null, editor, commandLinePosition, { true }) {
             override fun doReset(settings: RunnerAndConfigurationSettingsImpl) {
-                (component as LatexCompileEditor).setSelectedExecutable(settingsProperty(settings.configuration as LatexRunConfiguration).get())
+                val runConfig = settings.configuration as LatexRunConfiguration
+                (component as LatexCompileEditor).setSelectedExecutable(settingsProperty(runConfig).get())
 
-                if (!LatexmkRcFileFinder.isLatexmkRcFilePresent(settings.configuration as LatexRunConfiguration)) {
+                if (runConfig.options.compiler !is LatexmkCompiler || !LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)) {
                     editor.label.isVisible = false
                 }
                 else {
