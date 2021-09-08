@@ -31,6 +31,12 @@ public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexPar
 
   @Override
   @Nullable
+  public LatexAngleParam getAngleParam() {
+    return PsiTreeUtil.getChildOfType(this, LatexAngleParam.class);
+  }
+
+  @Override
+  @Nullable
   public LatexOptionalParam getOptionalParam() {
     return PsiTreeUtil.getChildOfType(this, LatexOptionalParam.class);
   }
@@ -58,8 +64,7 @@ public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexPar
   }
 
   @Override
-  @NotNull
-  public LiteralTextEscaper<LatexParameter> createLiteralTextEscaper() {
+  public @NotNull LiteralTextEscaper<LatexParameter> createLiteralTextEscaper() {
     return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 

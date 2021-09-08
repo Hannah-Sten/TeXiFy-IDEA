@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
 /**
  * @author Sten Wessel
  */
-class LatexFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LatexLanguage.INSTANCE) {
+class LatexFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LatexLanguage) {
 
     override fun getFileType() = LatexFileType
 

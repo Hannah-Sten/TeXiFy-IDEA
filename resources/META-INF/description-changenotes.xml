@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.8</strong></p>
+        <p><strong>Beta 0.7.10</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.8! This release will automatically detect the TeX Live SDK on Windows, and fixes some bugs related to Sumatra forward search and WSL2.
+            Welcome to TeXiFy IDEA 0.7.10! This release implements a new 'fill paragraph' action, fixes some false positives in inspections and has some more bug fixes.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,32 +55,26 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Auto-detect TeX Live SDK on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1912">#1912</a>)</li>
-            <li> Implement the 'build project' button to run all run configurations. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1966">#1966</a>)</li>
-            <li> Add inspection to encourage replacing usepackage by requirepackage in package files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
+            <li> Add 'fill paragraph' action. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2032">#2032</a>)</li>
+            <li> Remember resource folder in 'Save image from clipboard' dialog. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2047">#2047</a>)</li>
+            <li> Fold dashes in editor. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2050">#2050</a>)</li>
         </ul>
         <br>
-<!--        <p>-->
-<!--            <em>Changes</em>-->
-<!--        </p>-->
-<!--        <ul>-->
-<!--            <li> Ignore permission problems when extracting package zips on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894"><a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a></a>)</li>-->
-<!--        </ul>-->
-<!--        <br>-->
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix incorrect output path when using WSL 2 on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1963">#1963</a>)</li>
-            <li> Fix Sumatra forward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1961">#1961</a>)</li>
-            <li> Fix crash when inserting optional label parameter in environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1959">#1959</a>)</li>
-            <li> Fix requirepackage commands collapsing as usepackage. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
+            <li> Also show error output when the command to compile the preview times out. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2015">#2015</a>)</li>
+            <li> Add live templates for generic environments with parameters. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2043">#2043</a>)</li>
+            <li> Fix false positives about unescaped or duplicate labels in \(re)newenvironment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2045">#2045</a>)</li>
+            <li> Fix incorrect whitespacing before section command in command definition. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2051">#2051</a>)</li>
+            <li> Fix other crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2050">#2050</a>)</li>
         </ul>
         <br>
-<!--        <p>-->
-<!--            Thanks to ... for contributing to this release.-->
-<!--        </p>-->
-<!--        <br>-->
+        <p>
+            Thanks to F.W. Dekker for contributing to this release!
+        </p>
+        <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>

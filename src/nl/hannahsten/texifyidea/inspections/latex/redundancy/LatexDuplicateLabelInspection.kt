@@ -123,8 +123,8 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         getLabelDescriptor: PsiElement.() -> LabelDescriptor?
     ): List<ProblemDescriptor> = commands
         .mapNotNull { command ->
-            // When the label is defined in \newcommand ignore it, because there could be more than one with #1 as parameter
-            if (command.parentOfType(LatexCommands::class)?.name == "\\newcommand") return@mapNotNull null
+            // When the label is defined in a command definition ignore it, because there could be more than one with #1 as parameter
+            if (command.parentOfType(LatexCommands::class).isDefinitionOrRedefinition()) return@mapNotNull null
             command.getLabelDescriptor()
         }
         .groupBy { it.label }

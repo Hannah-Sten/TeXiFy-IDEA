@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.1.2"
-    kotlin("jvm") version("1.4.30-M1")
+    kotlin("jvm") version("1.5.30")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.39.0"
@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.9-alpha.1"
+version = "0.7.11-alpha.1"
 
 repositories {
     mavenCentral()
@@ -53,7 +53,6 @@ tasks.compileKotlin {
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
-        useIR = true // https://blog.jetbrains.com/kotlin/2021/02/the-jvm-backend-is-in-beta-let-s-make-it-stable-together
     }
 }
 
@@ -65,7 +64,6 @@ tasks.compileTestKotlin {
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
-        useIR = true
     }
 }
 
@@ -95,6 +93,9 @@ dependencies {
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.1")
 
+    // LaTeX rendering for preview
+    implementation("org.scilab.forge:jlatexmath:1.0.7")
+
     // Test dependencies
 
     // Also implementation junit 4, just in case
@@ -110,7 +111,6 @@ dependencies {
 
     // just in case
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
     testImplementation("io.mockk:mockk:1.12.0")

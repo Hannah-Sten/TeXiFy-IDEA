@@ -16,8 +16,8 @@ import com.intellij.psi.tree.IElementType;
 
 public class LatexMagicCommentImpl extends StubBasedPsiElementBase<LatexMagicCommentStub> implements LatexMagicComment {
 
-  public LatexMagicCommentImpl(@NotNull LatexMagicCommentStub stub, @NotNull IStubElementType type) {
-    super(stub, type);
+  public LatexMagicCommentImpl(@NotNull LatexMagicCommentStub stub, @NotNull IStubElementType<?, ?> nodeType) {
+    super(stub, nodeType);
   }
 
   public LatexMagicCommentImpl(@NotNull ASTNode node) {

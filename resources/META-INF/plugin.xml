@@ -21,12 +21,12 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-<idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA" xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
 
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.7.8</version>
+    <version>0.x.x</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*

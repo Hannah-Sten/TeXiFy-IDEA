@@ -18,19 +18,20 @@ import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
-import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.LatexMode
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.toStringMap
+import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.util.*
-import java.util.stream.Collectors
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -93,11 +94,22 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             return
         }
 
+        // If using texlive, filter on commands which are in packages included in the project
+        // The reason for doing this, is that the user probably is using texlive-full, in which case the
+        // completion would be floaded with duplicate commands from packages that nobody uses.
+        // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
+        // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
+        val project = parameters.editor.project ?: return
+        val usesTexlive = TexliveSdk.isAvailable
+        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project)
+
         val commands = mutableSetOf<LookupElementBuilder>()
-        FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
+        FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project)
             .forEach { cmdWithSlash ->
                 val cmdWithoutSlash = cmdWithSlash.substring(1)
-                LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).forEach { cmd ->
+                LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return)
+                    .filter { it.dependency in packagesInProject }
+                    .forEach { cmd ->
                     createCommandLookupElements(cmd)
                         // Avoid duplicates of commands defined in LaTeX base, because they are often very similar commands defined in different document classes so it makes not
                         // much sense at the moment to have them separately in the autocompletion.
@@ -167,7 +179,6 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         parameters: CompletionParameters, result: CompletionResultSet,
         mode: LatexMode? = null
     ) {
-        val project = parameters.editor.project ?: return
         val file = parameters.originalFile
         val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
         val root = file.findRootFile()
@@ -175,12 +186,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         if (documentClass != null) {
             files.add(documentClass)
         }
-        val searchFiles = files.stream()
-            .map { obj: PsiFile -> obj.virtualFile }
-            .collect(Collectors.toSet())
-        searchFiles.add(file.virtualFile)
-        val scope = GlobalSearchScope.filesScope(project, searchFiles)
-        val cmds = LatexCommandsIndex.getItems(project, scope)
+        val cmds = getCommandsInFiles(files, file)
         for (cmd in cmds) {
             if (!cmd.isDefinition() && !cmd.isEnvironmentDefinition()) {
                 continue

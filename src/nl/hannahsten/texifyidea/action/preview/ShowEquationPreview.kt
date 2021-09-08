@@ -6,7 +6,6 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.ui.PreviewFormUpdater
 import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
 
 /**
@@ -34,7 +33,7 @@ class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATI
             resetPreamble()
             preamble += MATH_PREAMBLE
             val psiFile = element.containingFile
-            preamble += findPreamblesFromMagicComments(psiFile, "math")
+            userPreamble += findPreamblesFromMagicComments(psiFile, "math")
         }
     }
 }

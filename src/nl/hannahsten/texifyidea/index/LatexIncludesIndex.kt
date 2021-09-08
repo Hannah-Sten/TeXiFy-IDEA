@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.LatexParserDefinition
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
+ * Index all commands that include other files, see [nl.hannahsten.texifyidea.util.getIncludeCommands].
  * @author Hannah Schellekens
  */
 class LatexIncludesIndex : StringStubIndexExtension<LatexCommands>() {

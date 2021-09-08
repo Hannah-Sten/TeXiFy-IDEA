@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
 /**
  * @author Hannah Schellekens
  */
-class StyleFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LatexLanguage.INSTANCE) {
+class StyleFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LatexLanguage) {
 
     override fun getFileType() = StyleFileType
 

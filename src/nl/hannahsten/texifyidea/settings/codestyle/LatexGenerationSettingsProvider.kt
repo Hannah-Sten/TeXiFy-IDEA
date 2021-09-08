@@ -27,12 +27,12 @@ class LatexGenerationSettingsProvider : CodeStyleSettingsProvider() {
     override fun getConfigurableDisplayName(): String = ApplicationBundle.message("title.code.generation")
     override fun getPriority(): DisplayPriority = DisplayPriority.CODE_SETTINGS
     override fun hasSettingsPage() = false
-    override fun getLanguage(): LatexLanguage = LatexLanguage.INSTANCE
+    override fun getLanguage(): LatexLanguage = LatexLanguage
 }
 
 class LatexCodeStyleGenerationConfigurable(private val mySettings: CodeStyleSettings) : CodeStyleConfigurable {
 
-    private val myCommenterForm: CommenterForm = CommenterForm(LatexLanguage.INSTANCE)
+    private val myCommenterForm: CommenterForm = CommenterForm(LatexLanguage)
 
     override fun getDisplayName(): String = ApplicationBundle.message("title.code.generation")
 

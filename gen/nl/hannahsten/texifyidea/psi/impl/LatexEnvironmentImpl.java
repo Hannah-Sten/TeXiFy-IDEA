@@ -18,8 +18,8 @@ import com.intellij.psi.tree.IElementType;
 
 public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironmentStub> implements LatexEnvironment {
 
-  public LatexEnvironmentImpl(@NotNull LatexEnvironmentStub stub, @NotNull IStubElementType type) {
-    super(stub, type);
+  public LatexEnvironmentImpl(@NotNull LatexEnvironmentStub stub, @NotNull IStubElementType<?, ?> nodeType) {
+    super(stub, nodeType);
   }
 
   public LatexEnvironmentImpl(@NotNull ASTNode node) {
@@ -79,8 +79,7 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
   }
 
   @Override
-  @NotNull
-  public LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
+  public @NotNull LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
     return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 

@@ -95,7 +95,7 @@ MAGIC_COMMENT_LEXER_SWITCH="%"{MAGIC_COMMENT_PREFIX} {WHITE_SPACE}? "parser" {WH
 LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
-NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,]+
+NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,-]+
 // Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
 ANY_CHAR=[^]
 
@@ -428,6 +428,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 ">"                     { return CLOSE_ANGLE_BRACKET; }
 "|"                     { return PIPE;}
 "!"                     { return EXCLAMATION_MARK; }
+[-]+                    { return DASH; } // Dashes of various length
 
 {OPEN_BRACKET}          { return OPEN_BRACKET; }
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }

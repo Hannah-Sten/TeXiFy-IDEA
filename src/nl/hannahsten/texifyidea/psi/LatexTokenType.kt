@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NonNls
 /**
  * @author Sten Wessel
  */
-class LatexTokenType(@NonNls debugName: String) : IElementType(debugName, LatexLanguage.INSTANCE) {
+class LatexTokenType(@NonNls debugName: String) : IElementType(debugName, LatexLanguage) {
 
     override fun toString() = "LatexTokenType." + super.toString()
 }

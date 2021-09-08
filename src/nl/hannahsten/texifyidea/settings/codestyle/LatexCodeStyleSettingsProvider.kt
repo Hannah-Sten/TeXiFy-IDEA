@@ -20,13 +20,13 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
     override fun createCustomSettings(settings: CodeStyleSettings?) = settings?.let { LatexCodeStyleSettings(it) }
 
-    override fun getConfigurableDisplayName() = LatexLanguage.INSTANCE.displayName
+    override fun getConfigurableDisplayName() = LatexLanguage.displayName
 
     override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): CodeStyleConfigurable {
         return object : CodeStyleAbstractConfigurable(settings, originalSettings, configurableDisplayName) {
 
             override fun createPanel(settings: CodeStyleSettings?): CodeStyleAbstractPanel {
-                val language = LatexLanguage.INSTANCE
+                val language = LatexLanguage
 
                 return object : TabbedLanguageCodeStylePanel(language, currentSettings, settings) {
 
@@ -37,7 +37,7 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
                         // Adds the Code Generation tab.
                         for (provider in EXTENSION_POINT_NAME.extensions) {
-                            if (provider.language === LatexLanguage.INSTANCE && !provider.hasSettingsPage()) {
+                            if (provider.language === LatexLanguage && !provider.hasSettingsPage()) {
                                 createTab(provider)
                             }
                         }

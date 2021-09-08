@@ -4,12 +4,12 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
-import nl.hannahsten.texifyidea.util.splitWhitespace
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -28,7 +28,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
             // For now only support custom executable for TeX Live
             // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
-            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project)
+            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.getLatexDistributionType())
             val command = mutableListOf(runConfig.compilerPath ?: executable)
 
             command.add("-file-line-error")
@@ -63,7 +63,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                runConfig.project,
+                runConfig.getLatexDistributionType()
+            ))
 
             // Some commands are the same as for pdflatex
             command.add("-file-line-error")
@@ -95,7 +99,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                runConfig.project,
+                runConfig.getLatexDistributionType()
+            ))
 
             val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
 
@@ -134,7 +142,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                runConfig.project,
+                runConfig.getLatexDistributionType()
+            ))
 
             // As usual, available command line options can be viewed with xelatex --help
             // On TeX Live, installing collection-xetex should be sufficient to get xelatex
@@ -174,7 +186,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                runConfig.project,
+                runConfig.getLatexDistributionType()
+            ))
 
             // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
             // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
@@ -205,7 +221,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(runConfig.compilerPath ?: executableName)
 
             command.add("--synctex")
 
@@ -285,8 +301,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->
-            arguments.splitWhitespace()
-                .dropLastWhile { it.isEmpty() }
+            ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }
 

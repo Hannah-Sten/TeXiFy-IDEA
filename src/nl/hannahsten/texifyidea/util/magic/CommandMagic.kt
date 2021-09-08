@@ -4,17 +4,17 @@ package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.*
+import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import java.awt.Color
 
@@ -54,6 +54,9 @@ object CommandMagic {
             PARAGRAPH to 4,
             SUBPARAGRAPH to 5
     )
+
+    /** Section commands sorted from large to small. */
+    val sectioningCommands = labeledLevels.entries.sortedBy { it.value }.map { it.key }
 
     /**
      * Commands that define a label via an optional parameter
@@ -186,7 +189,7 @@ object CommandMagic {
     /**
      * All commands that define or redefine other commands, whether it exists or not.
      */
-    val redefinitions = hashSetOf(
+    val commandRedefinitions = hashSetOf(
             RENEWCOMMAND,
             RENEWCOMMAND_STAR,
             PROVIDECOMMAND, // Does nothing if command exists
@@ -195,14 +198,13 @@ object CommandMagic {
             DECLAREDOCUMENTCOMMAND,
             DEF,
             LET,
-            RENEWENVIRONMENT,
             CATCODE, // Not really redefining commands, but characters
     ).map { it.cmd }
 
     /**
      * All commands that define or redefine regular commands.
      */
-    val regularCommandDefinitions = regularStrictCommandDefinitions + redefinitions
+    val regularCommandDefinitions = regularStrictCommandDefinitions + commandRedefinitions
 
     /**
      * All commands that define commands that should be used exclusively
@@ -240,6 +242,11 @@ object CommandMagic {
             PROVIDEDOCUMENTENVIRONMENT,
             DECLAREDOCUMENTENVIRONMENT
     ).map { it.cmd }
+
+    /**
+     * All commands that define or redefine other environments, whether it exists or not.
+     */
+    val environmentRedefinitions = hashSetOf(RENEWENVIRONMENT.cmd)
 
     /**
      * All commands that define stuff like classes, environments, and definitions.
@@ -354,10 +361,10 @@ object CommandMagic {
      * Set of text styling commands
      */
     val textStyles = setOf(
-            TEXTRM.cmd, TEXTSF.cmd, TEXTTT.cmd, TEXTIT.cmd,
-            TEXTSL.cmd, TEXTSC.cmd, TEXTBF.cmd, EMPH.cmd,
-            TEXTUP.cmd, TEXTMD.cmd
-    )
+            TEXTRM, TEXTSF, TEXTTT, TEXTIT,
+            TEXTSL, TEXTSC, TEXTBF, EMPH,
+            TEXTUP, TEXTMD
+    ).map { it.cmd }
 
     /**
      * All LaTeX commands that contain a url (in their first parameter).

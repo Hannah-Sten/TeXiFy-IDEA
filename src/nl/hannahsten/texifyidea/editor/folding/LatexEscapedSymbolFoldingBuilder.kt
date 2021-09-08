@@ -1,17 +1,18 @@
-package nl.hannahsten.texifyidea.folding
+package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.FoldingGroup
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 
 /**
  * @author Johannes Berger
  */
-class LatexEscapedSymbolFoldingBuilder : FoldingBuilderEx() {
+class LatexEscapedSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun isCollapsedByDefault(node: ASTNode) = true
 

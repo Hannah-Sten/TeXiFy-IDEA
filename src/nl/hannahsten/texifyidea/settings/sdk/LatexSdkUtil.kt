@@ -122,7 +122,10 @@ object LatexSdkUtil {
     /**
      * Get executable name of pdflatex, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
      */
-    fun getExecutableName(executableName: String, project: Project): String {
+    fun getExecutableName(executableName: String, project: Project, latexDistributionType: LatexDistributionType? = null): String {
+        // Prefixing the LaTeX compiler is not relevant for Docker MiKTeX (perhaps the path to the docker executable)
+        if (latexDistributionType == LatexDistributionType.DOCKER_MIKTEX) return executableName
+
         // Give preference to the project SDK if a valid LaTeX SDK is selected
         getLatexProjectSdk(project)?.let { sdk ->
             if (sdk.homePath != null) {

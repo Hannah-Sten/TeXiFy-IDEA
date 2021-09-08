@@ -9,8 +9,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.ui.content.ContentFactory
 import nl.hannahsten.texifyidea.action.EditorAction
-import nl.hannahsten.texifyidea.ui.EquationPreviewToolWindow
-import nl.hannahsten.texifyidea.ui.PreviewFormUpdater
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.util.*
 import javax.swing.Icon
