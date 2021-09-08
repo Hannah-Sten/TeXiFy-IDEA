@@ -93,21 +93,24 @@ class ReferencedFileSetCache {
      */
     private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<PsiFile>>): Set<PsiFile> {
         return if (file.virtualFile != null) {
-            // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
-            val numberOfIncludesChanged = if (LatexIncludesIndex.getItems(file.project).size != numberOfIncludes[file.project]) {
-                numberOfIncludes[file.project] = LatexIncludesIndex.getItems(file.project).size
-                dropAllCaches()
-                true
-            }
-            else {
-                false
-            }
-
             // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
             runBlocking {
                 mutex.withLock {
+
+                    // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
+                    // Note that LatexIncludesIndex.getItems(file.project) may be a slow operation and should not be run on EDT
+                    val includes = LatexIncludesIndex.getItems(file.project)
+                    val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
+                        numberOfIncludes[file.project] = includes.size
+                        dropAllCaches()
+                        true
+                    }
+                    else {
+                        false
+                    }
+
                     if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                         runReadAction {
                             updateCachesFor(file)
