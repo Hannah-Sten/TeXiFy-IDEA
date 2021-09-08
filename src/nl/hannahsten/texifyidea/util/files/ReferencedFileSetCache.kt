@@ -4,6 +4,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -97,23 +98,25 @@ class ReferencedFileSetCache {
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
             runBlocking {
-                mutex.withLock {
+                launch {
+                    mutex.withLock {
 
-                    // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
-                    // Note that LatexIncludesIndex.getItems(file.project) may be a slow operation and should not be run on EDT
-                    val includes = LatexIncludesIndex.getItems(file.project)
-                    val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
-                        numberOfIncludes[file.project] = includes.size
-                        dropAllCaches()
-                        true
-                    }
-                    else {
-                        false
-                    }
+                        // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
+                        // Note that LatexIncludesIndex.getItems(file.project) may be a slow operation and should not be run on EDT
+                        val includes = LatexIncludesIndex.getItems(file.project)
+                        val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
+                            numberOfIncludes[file.project] = includes.size
+                            dropAllCaches()
+                            true
+                        }
+                        else {
+                            false
+                        }
 
-                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
-                        runReadAction {
-                            updateCachesFor(file)
+                        if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
+                            runReadAction {
+                                updateCachesFor(file)
+                            }
                         }
                     }
                 }
