@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.settings.sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
 
 /**
@@ -10,13 +11,45 @@ import java.io.File
  * but in a Tectonic-specific cache it warrants its own SDK.
  */
 class TectonicSdk : LatexSdk("Tectonic SDK") {
+
+    companion object {
+
+        // Map readable file name (e.g. article.sty) to actual file path on disk
+        // todo make thread safe
+        var fileLocationCache: Map<String, String>? = null
+    }
+
+    /**
+     * Get the location (full path) of a package, given its name.
+     * Returns empty string if the location is unknown.
+     */
+    fun getPackageLocation(name: String, homePath: String?): String {
+        if (homePath == null) return ""
+
+        if (fileLocationCache != null) {
+            fileLocationCache = File("$homePath/urls").listFiles()
+                // Get manifest names
+                ?.mapNotNull { it.readText().trim() }
+                // Get manifest contents
+                ?.flatMap { File("$homePath/manifests/$it.txt").readLines().map { line -> line.trim() } }
+                // Example line: article.sty 1741 9697d28bf5cc3d2f...
+                ?.map { it.split(" ").filter { word -> word.isNotBlank() } }
+                ?.filter { it.size >= 2 }
+                // Map human readable file name to file name on disk
+                ?.associate { Pair(it.first(), it.last()) }
+                // Tectonic stores files like this, currently
+                ?.mapValues { "$homePath/files/${it.value.take(2)}/${it.value.drop(2)}" } ?: return ""
+        }
+        return fileLocationCache?.get(name) ?: ""
+    }
+
     override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
 
     // We assume Tectonic is in PATH.
     override fun getExecutableName(executable: String, homePath: String) = executable
 
     override fun suggestHomePath(): String? {
-        return "~/.cache/Tectonic"
+        return "~/.cache/Tectonic" // todo see github issue
     }
 
     // The home path we are interested in, is actually the cache path, as it contains all the LaTeX files.
@@ -29,14 +62,13 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
 
     override fun getInvalidHomeMessage(path: String) = "Please select the caches path for Tectonic"
 
-    // todo tectonic -X bundle search
+    // Actually we should return the TeX Live version, but not sure how to find it
+    override fun getVersionString(sdkHome: String?): String? {
+        return "tectonic -V".runCommand()?.replace("Tectonic", "", ignoreCase = true)?.trim()
+    }
 
-    // todo is this possible?
-//    override fun getVersionString(sdkHome: String?): String? {
-//        return super.getVersionString(sdkHome)
-//    }
-
-    // todo actually there are no dtx files, just sty, def, clo, cls, tec, cfg, otf, fd, ltx, enc, pfb, tex and ini?
+    // Actually the dtx files are not cached, just lots of other file types.
+    // sty files do seem to be present, but at the moment we're not indexing those.
     override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
         return LocalFileSystem.getInstance().findFileByPath("$homePath/files")
     }

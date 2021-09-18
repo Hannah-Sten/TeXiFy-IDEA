@@ -127,7 +127,7 @@ class InputFileReference(
             }
         }
 
-        // Try search paths
+        // Try graphicspaths
         if (targetFile == null) {
             // If we are not building the fileset, we can make use of it
             if (!isBuildingFileset && element.containingFile.includedPackages().contains(LatexGenericRegularCommand.GRAPHICSPATH.dependency)) {
