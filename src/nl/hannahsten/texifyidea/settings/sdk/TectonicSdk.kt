@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -15,7 +16,6 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
     companion object {
 
         // Map readable file name (e.g. article.sty) to actual file path on disk
-        // todo make thread safe
         var fileLocationCache: Map<String, String>? = null
     }
 
@@ -26,19 +26,22 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
     fun getPackageLocation(name: String, homePath: String?): String {
         if (homePath == null) return ""
 
-        if (fileLocationCache != null) {
-            fileLocationCache = File("$homePath/urls").listFiles()
-                // Get manifest names
-                ?.mapNotNull { it.readText().trim() }
-                // Get manifest contents
-                ?.flatMap { File("$homePath/manifests/$it.txt").readLines().map { line -> line.trim() } }
-                // Example line: article.sty 1741 9697d28bf5cc3d2f...
-                ?.map { it.split(" ").filter { word -> word.isNotBlank() } }
-                ?.filter { it.size >= 2 }
-                // Map human readable file name to file name on disk
-                ?.associate { Pair(it.first(), it.last()) }
-                // Tectonic stores files like this, currently
-                ?.mapValues { "$homePath/files/${it.value.take(2)}/${it.value.drop(2)}" } ?: return ""
+        // Avoid many threads trying to fill the cache at the same time
+        synchronized(this) {
+            if (fileLocationCache == null) {
+                fileLocationCache = File("$homePath/urls").listFiles()
+                    // Get manifest names
+                    ?.mapNotNull { it.readText().trim() }
+                    // Get manifest contents
+                    ?.flatMap { File("$homePath/manifests/$it.txt").readLines().map { line -> line.trim() } }
+                    // Example line: article.sty 1741 9697d28bf5cc3d2f...
+                    ?.map { it.split(" ").filter { word -> word.isNotBlank() } }
+                    ?.filter { it.size >= 2 }
+                    // Map human readable file name to file name on disk
+                    ?.associate { Pair(it.first(), it.last()) }
+                    // Tectonic stores files like this, currently
+                    ?.mapValues { "$homePath/files/${it.value.take(2)}/${it.value.drop(2)}" } ?: return ""
+            }
         }
         return fileLocationCache?.get(name) ?: ""
     }
@@ -48,8 +51,12 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
     // We assume Tectonic is in PATH.
     override fun getExecutableName(executable: String, homePath: String) = executable
 
-    override fun suggestHomePath(): String? {
-        return "~/.cache/Tectonic" // todo see github issue
+    override fun suggestHomePath(): String {
+        // https://github.com/tectonic-typesetting/tectonic/issues/159
+        val home = System.getProperty("user.home")
+        return if (SystemInfo.isMac) "$home/Library/Caches/Tectonic"
+        else if (SystemInfo.isWindows) "$home/TectonicProject/Tectonic" // Did not test if this works
+        else "$home/.cache/Tectonic"
     }
 
     // The home path we are interested in, is actually the cache path, as it contains all the LaTeX files.
