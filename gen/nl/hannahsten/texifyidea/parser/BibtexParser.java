@@ -57,7 +57,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACE normal_text+ CLOSE_BRACE
+  // OPEN_BRACE normal_text* CLOSE_BRACE
   public static boolean braced_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "braced_string")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
@@ -71,19 +71,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // normal_text+
+  // normal_text*
   private static boolean braced_string_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "braced_string_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = normal_text(b, l + 1);
-    while (r) {
+    while (true) {
       int c = current_position_(b);
       if (!normal_text(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "braced_string_1", c)) break;
     }
-    exit_section_(b, m, null, r);
-    return r;
+    return true;
   }
 
   /* ********************************************************** */

@@ -55,7 +55,7 @@ defined_string ::= IDENTIFIER {
 
 quoted_string ::= QUOTES normal_text? END_QUOTES { pin=1 }
 
-braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE { pin=1 }
+braced_string ::= OPEN_BRACE normal_text* CLOSE_BRACE { pin=1 }
 
 comment ::= COMMENT_TOKEN
 
