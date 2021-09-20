@@ -20,10 +20,12 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
+import java.util.*
 import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
+import kotlin.collections.HashMap
 
 /**
  * The Symbol tool window shows an overview of several symbols that can be inserted in the active latex document.
@@ -92,12 +94,14 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             border = EmptyBorder(8, 8, 8, 8)
 
             add(filterPanel(), BorderLayout.NORTH)
-            add(JBScrollPane(panelSymbols,
-                    JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                    JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+            add(JBScrollPane(
+                panelSymbols,
+                JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
             ).apply {
                 border = EmptyBorder(0, 0, 0, 0)
-            }, BorderLayout.CENTER)
+            }, BorderLayout.CENTER
+            )
         }
 
         /**
@@ -148,9 +152,9 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
                 symbolMap.forEach { (symbol, button) ->
                     button.isVisible =
                             // Selected category must match.
-                            (selectedCategory == category || selectedCategory == SymbolCategory.ALL) &&
-                                    // When a query is typed, must match as well.
-                                    (query.isBlank() || symbol.queryString(category).contains(query))
+                        (selectedCategory == category || selectedCategory == SymbolCategory.ALL) &&
+                                // When a query is typed, must match as well.
+                                (query.isBlank() || symbol.queryString(category).contains(query))
                 }
             }
         }
@@ -199,11 +203,11 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          *          The category the symbol is in.
          */
         private fun SymbolUiEntry.queryString(category: SymbolCategory? = null) = buildString {
-            command?.let { append(it.commandWithSlash) }
-            append(generatedLatex)
-            append(dependency.name)
-            append(description.replace(" ", ""))
-            category?.let { append(it.name.replace(" ", "").toLowerCase()) }
-        }.toLowerCase()
+                command?.let { append(it.commandWithSlash) }
+                append(generatedLatex)
+                append(dependency.name)
+                append(description.replace(" ", ""))
+                category?.let { append(it.name.replace(" ", "").lowercase(Locale.getDefault())) }
+            }.lowercase(Locale.getDefault())
     }
 }

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.ui.symbols
 
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.util.formatAsFileName
+import java.util.*
 
 /**
  * Quickly creates a SymbolUiEntry from a command with the following consequences:
@@ -39,8 +40,8 @@ open class CommandUiEntry(
     override val imageLatex = customImageLatex ?: command.commandWithSlash
 
     override val description = customDescription ?: command.identifyer
-            .toLowerCase()
-            .replace("_", " ") + if (command.isMathMode) " (math)" else ""
+        .lowercase(Locale.getDefault())
+        .replace("_", " ") + if (command.isMathMode) " (math)" else ""
 
     override val isMathSymbol = command.isMathMode
 }

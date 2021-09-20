@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.psi.BibtexQuotedString
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.tokenType
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -49,7 +50,7 @@ open class BibtexAnnotator : Annotator {
      */
     private fun annotate(key: BibtexKey, holder: AnnotationHolder) {
         val entry = key.parentOfType(BibtexEntry::class) ?: return
-        val token = entry.tokenType()?.toLowerCase()
+        val token = entry.tokenType()?.lowercase(Locale.getDefault())
         if (token == "@string") {
             return
         }

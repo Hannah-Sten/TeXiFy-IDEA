@@ -6,6 +6,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.util.tokenName
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -17,7 +18,7 @@ object StringFilter : Filter {
             return true
         }
 
-        return treeElement.entry.tokenName()?.toLowerCase() != "string"
+        return treeElement.entry.tokenName()?.lowercase(Locale.getDefault()) != "string"
     }
 
     override fun isReverted() = true

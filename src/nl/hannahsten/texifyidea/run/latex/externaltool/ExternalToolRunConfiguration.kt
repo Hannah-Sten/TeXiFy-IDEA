@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import org.jdom.Element
+import java.util.*
 
 /**
  * Run configuration for running an [nl.hannahsten.texifyidea.run.compiler.ExternalTool].
@@ -93,7 +94,7 @@ class ExternalToolRunConfiguration(
 
     override fun suggestedName(): String {
         val main = if (mainFile != null) mainFile?.nameWithoutExtension + " " else ""
-        return main + this.program.name.toLowerCase()
+        return main + this.program.name.lowercase(Locale.getDefault())
     }
 
     fun setSuggestedName() {

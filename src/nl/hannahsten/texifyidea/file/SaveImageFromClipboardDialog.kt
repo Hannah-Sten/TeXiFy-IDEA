@@ -21,6 +21,7 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.BoxLayout
 import javax.swing.JPanel
@@ -301,7 +302,7 @@ class SaveImageFromClipboardDialog(
 
         companion object {
 
-            fun imageFormatFromExtension(extension: String) = when (extension.toLowerCase()) {
+            fun imageFormatFromExtension(extension: String) = when (extension.lowercase(Locale.getDefault())) {
                 "jpg", "jpeg" -> JPG
                 else -> PNG
             }

@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
+import java.util.*
 
 /**
  * Check if a LaTeX package is not installed (only for TeX Live, since MiKTeX downloads them automatically).
@@ -52,14 +53,14 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     .projectSearchScope
             )
                 .map { it.requiredParameter(0) }
-                .mapNotNull { it?.toLowerCase() }
+                .mapNotNull { it?.lowercase(Locale.getDefault()) }
             val packages = installedPackages + customPackages
 
             val commands = file.childrenOfType(LatexCommands::class)
                 .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
             for (command in commands) {
-                val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
+                val `package` = command.requiredParameters.firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
                 if (`package` !in packages) {
                     // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
                     if (
@@ -70,14 +71,17 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                             manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed or \\ProvidesPackage is missing",
-                                InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`, knownNotInstalledPackages),
+                                InstallPackage(
+                                    SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
+                                    `package`,
+                                    knownNotInstalledPackages
+                                ),
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly
                             )
                         )
                         knownNotInstalledPackages.add(`package`)
-                    }
-                    else {
+                    } else {
                         // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
                         TexLivePackages.packageList.add(`package`)
                     }

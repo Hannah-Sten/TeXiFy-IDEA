@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import org.jdom.Element
+import java.util.*
 
 /**
  * Run configuration for running the makeindex tool.
@@ -50,32 +51,28 @@ class MakeindexRunConfiguration(
             if (!programText.isNullOrEmpty()) {
                 makeindexProgram = MakeindexProgram.valueOf(programText)
             }
+        } catch (ignored: NullPointerException) {
         }
-        catch (ignored: NullPointerException) {}
 
         val mainFilePath = try {
             parent.getChildText(MAIN_FILE)
-        }
-        catch (e: NullPointerException) {
+        } catch (e: NullPointerException) {
             null
         }
         mainFile = if (!mainFilePath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
-        }
-        else {
+        } else {
             null
         }
 
         val workDirPath = try {
             parent.getChildText(WORK_DIR)
-        }
-        catch (e: NullPointerException) {
+        } catch (e: NullPointerException) {
             null
         }
         workingDirectory = if (!workDirPath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(workDirPath)
-        }
-        else {
+        } else {
             null
         }
     }
@@ -93,7 +90,7 @@ class MakeindexRunConfiguration(
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension + " " + makeindexProgram.name.toLowerCase()
+    override fun suggestedName() = mainFile?.nameWithoutExtension + " " + makeindexProgram.name.lowercase(Locale.getDefault())
 
     fun setSuggestedName() {
         name = suggestedName()

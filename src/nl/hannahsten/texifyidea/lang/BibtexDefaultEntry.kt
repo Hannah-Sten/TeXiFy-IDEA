@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntryType.*
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * @author Hannah Schellekens
@@ -261,7 +263,7 @@ enum class BibtexDefaultEntry(
 
         @JvmStatic
         operator fun get(token: String): BibtexEntryType? {
-            var trimmedToken = token.toLowerCase()
+            var trimmedToken = token.lowercase(Locale.getDefault())
             if (token.startsWith("@")) {
                 trimmedToken = token.substring(1)
             }

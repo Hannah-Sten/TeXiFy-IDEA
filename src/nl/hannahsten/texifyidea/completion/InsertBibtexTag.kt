@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -67,7 +68,7 @@ open class InsertBibtexTag : EnterHandlerDelegate {
         // Ignore @string and @preamble
         val parent = element.parentOfType(BibtexEntry::class)
         if (parent != null) {
-            val token = parent.tokenName()?.toLowerCase()
+            val token = parent.tokenName()?.lowercase(Locale.getDefault())
             if (token == "string" || token == "preamble") {
                 return false
             }

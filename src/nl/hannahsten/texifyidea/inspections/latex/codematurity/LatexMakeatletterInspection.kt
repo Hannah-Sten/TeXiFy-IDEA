@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.codematurity
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
+import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -24,6 +25,6 @@ open class LatexMakeatletterInspection : TexifyRegexInspection(
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         val file = element.containingFile
         val extension = file.virtualFile.extension
-        return extension?.toLowerCase() == "tex" && super.checkContext(matcher, element)
+        return extension?.lowercase(Locale.getDefault()) == "tex" && super.checkContext(matcher, element)
     }
 }

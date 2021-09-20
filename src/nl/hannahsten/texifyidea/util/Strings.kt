@@ -4,20 +4,21 @@ import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
 /**
  * Capitalises the first character of the string.
  */
-fun String.capitalizeFirst(): String = this[0].toUpperCase() + substring(1, length)
+fun String.capitalizeFirst(): String = this[0].uppercaseChar() + substring(1, length)
 
 /**
  * Converts the string to camel case.
  */
 fun String.camelCase(): String {
     @Language("RegExp")
-    val parts = toLowerCase().split(Regex("[_\\s]+"))
+    val parts = lowercase(Locale.getDefault()).split(Regex("[_\\s]+"))
 
     val sb = StringBuilder(parts[0])
     for (i in 1 until parts.size) {
@@ -80,8 +81,8 @@ fun String.getIndent(): String {
 fun String.appendExtension(extensionWithoutDot: String): String {
     if (extensionWithoutDot == "") return this
 
-    val dottedExtension = ".${extensionWithoutDot.toLowerCase()}"
-    val thisLower = toLowerCase()
+    val dottedExtension = ".${extensionWithoutDot.lowercase(Locale.getDefault())}"
+    val thisLower = lowercase(Locale.getDefault())
 
     return when {
         thisLower.endsWith(dottedExtension) -> this
@@ -163,7 +164,7 @@ fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "
 fun String.formatAsFilePath(): String {
     val formatted = this.replace(" ", "-")
         .removeAll("<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
-        .toLowerCase()
+        .lowercase(Locale.getDefault())
 
     // If there are no valid characters left, use a default name.
     return if (formatted.isEmpty()) "myfile" else formatted
@@ -175,7 +176,7 @@ fun String.formatAsFilePath(): String {
 fun String.formatAsLabel(): String {
     return replace(" ", "-")
         .removeAll("%", "~", "#", "\\", ",")
-        .toLowerCase()
+        .lowercase(Locale.getDefault())
 }
 
 /**
@@ -197,7 +198,8 @@ fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun String.runCommand(workingDirectory: File? = null) = runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+fun String.runCommand(workingDirectory: File? = null) =
+    runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 /**
  * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.

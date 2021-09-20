@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
+import java.util.*
 
 class LatexCompileMessageTreeView(
     val project: Project,
@@ -94,7 +95,7 @@ class LatexCompileMessageTreeView(
      * Apply all filters to [logMessage].
      */
     fun applyFilters(logMessage: LatexLogMessage) {
-        val hide = logMessage.message.toLowerCase().containsAny(
+        val hide = logMessage.message.lowercase(Locale.getDefault()).containsAny(
             LatexKeywordFilter.values()
                 .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
                 .map { f -> f.triggers }.flatten().toSet()

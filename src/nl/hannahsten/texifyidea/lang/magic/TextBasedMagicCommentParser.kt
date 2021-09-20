@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.magic
 
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser.Companion.COMMENT_PREFIX
+import java.util.*
 
 /**
  * Converts all provided strings to a single magic comments.
@@ -64,7 +65,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
                         pushKeyValuePair()
                     }
 
-                    key = keyMatcher.group(1).toLowerCase()
+                    key = keyMatcher.group(1).lowercase(Locale.getDefault())
 
                     val parts = line.split("=")
                     val contents = parts.subList(1, parts.size).joinToString("=")

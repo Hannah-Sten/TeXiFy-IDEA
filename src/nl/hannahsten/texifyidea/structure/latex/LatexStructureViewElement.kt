@@ -44,12 +44,11 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase()
+        return (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
             ?: if (element is PsiNameIdentifierOwner) {
-                element.name!!.toLowerCase()
-            }
-            else {
-                element.text.toLowerCase()
+                element.name!!.lowercase(Locale.getDefault())
+            } else {
+                element.text.lowercase(Locale.getDefault())
             }
     }
 

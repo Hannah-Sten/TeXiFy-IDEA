@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.hasParent
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.withPattern
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -43,7 +44,7 @@ open class BibtexCompletionContributor : CompletionContributor() {
             .withPattern { psiElement, _ ->
                 val entry = psiElement.parentOfType(BibtexEntry::class)
                 val type = entry?.firstChildOfType(BibtexType::class)
-                if (type?.text?.toLowerCase() == "@string") return@withPattern false
+                if (type?.text?.lowercase(Locale.getDefault()) == "@string") return@withPattern false
 
                 psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class)
             }

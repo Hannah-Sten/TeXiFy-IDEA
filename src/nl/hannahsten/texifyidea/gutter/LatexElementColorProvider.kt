@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import java.awt.Color
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -36,7 +37,7 @@ object LatexElementColorProvider : ElementColorProvider {
             } ?: return
             val colorModel = command?.getRequiredArgumentValueByName("model-list") ?: return
             val oldColor = command.getRequiredArgumentValueByName("spec-list") ?: return
-            val newColorString = when (colorModel.toLowerCase()) {
+            val newColorString = when (colorModel.lowercase(Locale.getDefault())) {
                 "rgb" -> color.toRgbString(integer = oldColor.split(",").firstOrNull()?.contains('.') == false)
                 "hsb" -> color.toHsbString()
                 "html" -> color.toHtmlStsring()
@@ -145,7 +146,7 @@ object LatexElementColorProvider : ElementColorProvider {
         modelText ?: return null
         specText ?: return null
         return try {
-            when (modelText.toLowerCase()) {
+            when (modelText.lowercase(Locale.getDefault())) {
                 "rgb" -> fromRgbString(specText)
                 "hsb" -> fromHsbString(specText)
                 "cmy" -> fromCmyString(specText)
@@ -279,7 +280,7 @@ object LatexElementColorProvider : ElementColorProvider {
      */
     private fun Color.toGrayString() = listOf(0.2126, 0.7152, 0.0722)
         .zip(listOf(red, green, blue))
-        .sumByDouble { (weight, rgb) -> weight * (rgb / 255.0) }
+        .sumOf { (weight, rgb): Pair<Double, Int> -> weight * (rgb / 255.0) }
         .format()
 
     /**

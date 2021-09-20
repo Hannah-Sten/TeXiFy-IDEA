@@ -19,10 +19,12 @@ import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.setInputFilter
 import nl.hannahsten.texifyidea.util.*
 import java.awt.Dimension
+import java.util.*
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JTextField
+import kotlin.collections.LinkedHashMap
 
 /**
  * @author Hannah Schellekens
@@ -36,7 +38,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         text = initialFilePath
         addBrowseFolderListener(TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                        .withFileFilter { vf -> vf.extension?.toLowerCase() in FileMagic.graphicFileExtensions }
+                        .withFileFilter { vf -> vf.extension?.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions }
                         .withTitle("Select graphics file...")
         ))
     }

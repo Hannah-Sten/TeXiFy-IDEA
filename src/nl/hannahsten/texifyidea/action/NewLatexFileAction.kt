@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory
 import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory.Companion.createFromTemplate
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.FileUtil.fileTypeByExtension
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -64,7 +65,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         }
 
         private fun getFileType(fileName: String, option: String): FileType {
-            val smallFileName = fileName.toLowerCase()
+            val smallFileName = fileName.lowercase(Locale.getDefault())
             if (smallFileName.endsWith(".$OPTION_TEX_FILE")) {
                 return LatexFileType
             }
@@ -79,16 +80,14 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
             }
             return if (smallFileName.endsWith(".$OPTION_TIKZ_FILE")) {
                 TikzFileType
-            }
-            else fileTypeByExtension(option)
+            } else fileTypeByExtension(option)
         }
 
         private fun getNewFileName(fileName: String, fileType: FileType): String {
-            val smallFileName = fileName.toLowerCase()
+            val smallFileName = fileName.lowercase(Locale.getDefault())
             return if (smallFileName.endsWith("." + fileType.defaultExtension)) {
                 smallFileName
-            }
-            else fileName.appendExtension(fileType.defaultExtension)
+            } else fileName.appendExtension(fileType.defaultExtension)
         }
 
         override fun createFile(fileName: String, option: String): PsiElement? {
