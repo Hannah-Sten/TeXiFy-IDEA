@@ -74,7 +74,8 @@ class SectionNumbering(private val documentClass: DocumentClass) {
             fun getClassByName(name: String): DocumentClass {
                 return if (BOOK.name == name) {
                     BOOK
-                } else ARTICLE
+                }
+                else ARTICLE
             }
         }
     }

@@ -47,7 +47,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         return (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
             ?: if (element is PsiNameIdentifierOwner) {
                 element.name!!.lowercase(Locale.getDefault())
-            } else {
+            }
+            else {
                 element.text.lowercase(Locale.getDefault())
             }
     }

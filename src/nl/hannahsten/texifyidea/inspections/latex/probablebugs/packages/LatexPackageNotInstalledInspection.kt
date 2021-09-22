@@ -81,7 +81,8 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                             )
                         )
                         knownNotInstalledPackages.add(`package`)
-                    } else {
+                    }
+                    else {
                         // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
                         TexLivePackages.packageList.add(`package`)
                     }

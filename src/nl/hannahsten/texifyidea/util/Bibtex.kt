@@ -89,9 +89,11 @@ fun BibtexContent.evaluate(): String {
 
         if (braced != null) {
             result.append(braced.evaluate())
-        } else if (quoted != null) {
+        }
+        else if (quoted != null) {
             result.append(quoted.evaluate())
-        } else if (defined != null) {
+        }
+        else if (defined != null) {
             result.append(defined.evaluate())
         }
     }

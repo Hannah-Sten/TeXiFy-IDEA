@@ -51,28 +51,33 @@ class MakeindexRunConfiguration(
             if (!programText.isNullOrEmpty()) {
                 makeindexProgram = MakeindexProgram.valueOf(programText)
             }
-        } catch (ignored: NullPointerException) {
+        }
+        catch (ignored: NullPointerException) {
         }
 
         val mainFilePath = try {
             parent.getChildText(MAIN_FILE)
-        } catch (e: NullPointerException) {
+        }
+        catch (e: NullPointerException) {
             null
         }
         mainFile = if (!mainFilePath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
-        } else {
+        }
+        else {
             null
         }
 
         val workDirPath = try {
             parent.getChildText(WORK_DIR)
-        } catch (e: NullPointerException) {
+        }
+        catch (e: NullPointerException) {
             null
         }
         workingDirectory = if (!workDirPath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(workDirPath)
-        } else {
+        }
+        else {
             null
         }
     }
