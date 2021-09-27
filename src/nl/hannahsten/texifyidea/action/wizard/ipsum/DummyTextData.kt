@@ -49,7 +49,7 @@ data class DummyTextData(
         ENUMERATE("blindlist{enumerate}"),
         DESCRIPTION("blindlist{description}");
 
-        override fun toString() = name.lowercase(Locale.getDefault())
+        override fun toString() = name.toLowerCase()
     }
 
     /**
@@ -60,6 +60,6 @@ data class DummyTextData(
         PARAGRAPH,
         SPACE;
 
-        override fun toString() = name.lowercase(Locale.getDefault())
+        override fun toString() = name.toLowerCase()
     }
 }

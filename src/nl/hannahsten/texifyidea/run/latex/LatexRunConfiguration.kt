@@ -414,7 +414,7 @@ class LatexRunConfiguration constructor(
                     .toString()
             }
             else runCommand
-            val compiler = BibliographyCompiler.valueOf(compilerString.uppercase(Locale.getDefault()))
+            val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
             val compilerArguments = runCommand.removePrefix(compilerString)
                 .trim()
             Pair(compiler, compilerArguments)
@@ -552,7 +552,7 @@ class LatexRunConfiguration constructor(
         return "${outputDir?.path}/" + mainFile!!
             .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf"
         else outputFormat.toString()
-            .lowercase(Locale.getDefault())
+            .toLowerCase()
     }
 
     /**

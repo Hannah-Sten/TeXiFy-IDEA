@@ -235,10 +235,10 @@ open class WordCountAction : AnAction(
             // Only count contractions: so do not count start or end single quotes :)
             if (string.isEmpty()) continue
 
-            if (string.lowercase(Locale.getDefault()) == "s") {
+            if (string.toLowerCase() == "s") {
                 if (split.size == 1) return 1
 
-                if (i > 0 && CONTRACTION_S.contains(split[i - 1].lowercase(Locale.getDefault()))) {
+                if (i > 0 && CONTRACTION_S.contains(split[i - 1].toLowerCase())) {
                     count++
                 }
             }

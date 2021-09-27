@@ -52,7 +52,7 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
         regex.append("(")
         for (extension in extensions) {
             regex.append("\\.")
-            val extensionLower = extension.lowercase(Locale.getDefault())
+            val extensionLower = extension.toLowerCase()
             regex.append(extensionLower)
             supportedExtensions.add(extensionLower)
             if (extension != extensions[extensions.size - 1]) {
@@ -70,7 +70,7 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
     }
 
     override fun matchesName(fileName: String): Boolean {
-        return pattern!!.matcher(fileName.lowercase(Locale.getDefault())).matches()
+        return pattern!!.matcher(fileName.toLowerCase()).matches()
     }
 
     override fun matchesExtension(extension: String): Boolean {

@@ -38,7 +38,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         text = initialFilePath
         addBrowseFolderListener(TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                        .withFileFilter { vf -> vf.extension?.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions }
+                        .withFileFilter { vf -> vf.extension?.toLowerCase() in FileMagic.graphicFileExtensions }
                         .withTitle("Select graphics file...")
         ))
     }

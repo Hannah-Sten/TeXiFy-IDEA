@@ -65,7 +65,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
                         pushKeyValuePair()
                     }
 
-                    key = keyMatcher.group(1).lowercase(Locale.getDefault())
+                    key = keyMatcher.group(1).toLowerCase()
 
                     val parts = line.split("=")
                     val contents = parts.subList(1, parts.size).joinToString("=")

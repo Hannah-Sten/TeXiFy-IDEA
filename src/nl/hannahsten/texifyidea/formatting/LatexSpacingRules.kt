@@ -56,7 +56,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             customRule { parent, _, right ->
                 // Lowercase to also catch \STATE from algorithmic
-                if (right.node?.psi?.text?.lowercase(Locale.getDefault()) in setOf(
+                if (right.node?.psi?.text?.toLowerCase() in setOf(
                         "\\state",
                         "\\statex"
                     ) && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {

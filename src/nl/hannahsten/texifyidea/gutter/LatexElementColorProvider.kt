@@ -37,7 +37,7 @@ object LatexElementColorProvider : ElementColorProvider {
             } ?: return
             val colorModel = command?.getRequiredArgumentValueByName("model-list") ?: return
             val oldColor = command.getRequiredArgumentValueByName("spec-list") ?: return
-            val newColorString = when (colorModel.lowercase(Locale.getDefault())) {
+            val newColorString = when (colorModel.toLowerCase()) {
                 "rgb" -> color.toRgbString(integer = oldColor.split(",").firstOrNull()?.contains('.') == false)
                 "hsb" -> color.toHsbString()
                 "html" -> color.toHtmlStsring()
@@ -146,7 +146,7 @@ object LatexElementColorProvider : ElementColorProvider {
         modelText ?: return null
         specText ?: return null
         return try {
-            when (modelText.lowercase(Locale.getDefault())) {
+            when (modelText.toLowerCase()) {
                 "rgb" -> fromRgbString(specText)
                 "hsb" -> fromHsbString(specText)
                 "cmy" -> fromCmyString(specText)

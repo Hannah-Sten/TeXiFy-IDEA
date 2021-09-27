@@ -18,7 +18,7 @@ object PreambleFilter : Filter {
             return true
         }
 
-        return treeElement.entry.tokenName()?.lowercase(Locale.getDefault()) != "preamble"
+        return treeElement.entry.tokenName()?.toLowerCase() != "preamble"
     }
 
     override fun isReverted() = true

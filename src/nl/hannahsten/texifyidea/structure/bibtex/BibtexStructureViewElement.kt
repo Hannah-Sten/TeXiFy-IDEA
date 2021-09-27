@@ -28,8 +28,8 @@ open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTr
     override fun canNavigateToSource() = element is NavigationItem && element.canNavigateToSource()
 
     override fun getAlphaSortKey() = when (element) {
-        is PsiFile -> element.name.lowercase(Locale.getDefault())
-        else -> element.text.lowercase(Locale.getDefault())
+        is PsiFile -> element.name.toLowerCase()
+        else -> element.text.toLowerCase()
     }
 
     override fun getPresentation(): ItemPresentation {

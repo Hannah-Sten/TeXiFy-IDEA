@@ -65,7 +65,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         }
 
         private fun getFileType(fileName: String, option: String): FileType {
-            val smallFileName = fileName.lowercase(Locale.getDefault())
+            val smallFileName = fileName.toLowerCase()
             if (smallFileName.endsWith(".$OPTION_TEX_FILE")) {
                 return LatexFileType
             }
@@ -85,7 +85,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         }
 
         private fun getNewFileName(fileName: String, fileType: FileType): String {
-            val smallFileName = fileName.lowercase(Locale.getDefault())
+            val smallFileName = fileName.toLowerCase()
             return if (smallFileName.endsWith("." + fileType.defaultExtension)) {
                 smallFileName
             }

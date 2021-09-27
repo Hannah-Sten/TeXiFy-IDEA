@@ -302,7 +302,7 @@ class SaveImageFromClipboardDialog(
 
         companion object {
 
-            fun imageFormatFromExtension(extension: String) = when (extension.lowercase(Locale.getDefault())) {
+            fun imageFormatFromExtension(extension: String) = when (extension.toLowerCase()) {
                 "jpg", "jpeg" -> JPG
                 else -> PNG
             }

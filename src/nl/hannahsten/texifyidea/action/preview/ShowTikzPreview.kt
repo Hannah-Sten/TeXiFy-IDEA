@@ -75,5 +75,5 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
     }
 
     private fun LatexEnvironment.isTikz() = beginCommand.environmentName()
-        ?.lowercase(Locale.getDefault()) == "tikzpicture"
+        ?.toLowerCase() == "tikzpicture"
 }

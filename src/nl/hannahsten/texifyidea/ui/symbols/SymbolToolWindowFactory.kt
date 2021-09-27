@@ -207,7 +207,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
                 append(generatedLatex)
                 append(dependency.name)
                 append(description.replace(" ", ""))
-                category?.let { append(it.name.replace(" ", "").lowercase(Locale.getDefault())) }
-            }.lowercase(Locale.getDefault())
+                category?.let { append(it.name.replace(" ", "").toLowerCase()) }
+            }.toLowerCase()
     }
 }

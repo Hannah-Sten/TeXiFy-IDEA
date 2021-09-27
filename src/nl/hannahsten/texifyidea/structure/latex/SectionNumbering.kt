@@ -67,7 +67,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
         ARTICLE(2);
 
         val className: String
-            get() = name.lowercase(Locale.getDefault())
+            get() = name.toLowerCase()
 
         companion object {
 

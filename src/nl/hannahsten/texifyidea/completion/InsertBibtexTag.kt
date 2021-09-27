@@ -68,7 +68,7 @@ open class InsertBibtexTag : EnterHandlerDelegate {
         // Ignore @string and @preamble
         val parent = element.parentOfType(BibtexEntry::class)
         if (parent != null) {
-            val token = parent.tokenName()?.lowercase(Locale.getDefault())
+            val token = parent.tokenName()?.toLowerCase()
             if (token == "string" || token == "preamble") {
                 return false
             }

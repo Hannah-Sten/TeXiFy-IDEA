@@ -5,7 +5,10 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.BufferedReader
 import java.io.IOException
@@ -25,7 +28,6 @@ object EvinceInverseSearchListener {
     /**
      * Starts a listener which listens for inverse search actions from Evince.
      */
-    @OptIn(DelicateCoroutinesApi::class)
     fun start(project: Project) {
         // Check if Evince version supports dbus
         // Technically only version 2.32 is needed, but since 3.0 was released back

@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.util.camelCase
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parentOfType
-import java.util.*
 
 /**
  * Inject language based on magic comments.
@@ -62,8 +61,8 @@ class LatexLanguageInjector : LanguageInjector {
         return if (id.isNullOrBlank()) null
         else {
             Language.findLanguageByID(id)
-                ?: Language.findLanguageByID(id.lowercase(Locale.getDefault()))
-                ?: Language.findLanguageByID(id.uppercase(Locale.getDefault()))
+                ?: Language.findLanguageByID(id.toLowerCase())
+                ?: Language.findLanguageByID(id.toUpperCase())
                 ?: Language.findLanguageByID(id.camelCase())
         }
     }

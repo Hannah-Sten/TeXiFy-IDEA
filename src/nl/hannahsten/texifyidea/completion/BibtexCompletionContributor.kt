@@ -44,7 +44,7 @@ open class BibtexCompletionContributor : CompletionContributor() {
             .withPattern { psiElement, _ ->
                 val entry = psiElement.parentOfType(BibtexEntry::class)
                 val type = entry?.firstChildOfType(BibtexType::class)
-                if (type?.text?.lowercase(Locale.getDefault()) == "@string") return@withPattern false
+                if (type?.text?.toLowerCase() == "@string") return@withPattern false
 
                 psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class)
             }

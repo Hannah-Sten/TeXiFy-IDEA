@@ -22,7 +22,7 @@ open class BibtexStringReference(
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         return string.containingFile.childrenOfType(BibtexEntry::class).asSequence()
-            .filter { it.tokenName()?.lowercase(Locale.getDefault()) == "string" }
+            .filter { it.tokenName()?.toLowerCase() == "string" }
             .map { it.tags() }
             .filter { !it.isEmpty() }
             .map { it.first().key }

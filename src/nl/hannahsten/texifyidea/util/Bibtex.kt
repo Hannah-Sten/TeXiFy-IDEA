@@ -6,7 +6,7 @@ import java.util.*
 /**
  * Get the lowercase token type (including `@`) of the BibTeX entry (e.g. `@article`).
  */
-fun BibtexEntry.tokenType(): String? = type.text.lowercase(Locale.getDefault())
+fun BibtexEntry.tokenType(): String? = type.text.toLowerCase()
 
 /**
  * Get the token type (excluding `@`) of the BibTeX entry (e.g. `article`).
@@ -47,12 +47,12 @@ fun BibtexEntry.keyNames(): Collection<String> = keys().map { it.text }
 /**
  * Checks if the entry is a @string.
  */
-fun BibtexEntry.isString() = tokenName()?.lowercase(Locale.getDefault()) == "string"
+fun BibtexEntry.isString() = tokenName()?.toLowerCase() == "string"
 
 /**
  * Checks if the entry is a @preamble.
  */
-fun BibtexEntry.isPreamble() = tokenName()?.lowercase(Locale.getDefault()) == "preamble"
+fun BibtexEntry.isPreamble() = tokenName()?.toLowerCase() == "preamble"
 
 /**
  * Get the key of the BibTeX tag.
@@ -122,7 +122,7 @@ fun BibtexDefinedString.evaluate(): String {
 
     // Look up all string entries.
     for (entry in file.childrenOfType(BibtexEntry::class)) {
-        val token = entry.tokenName()?.lowercase(Locale.getDefault())
+        val token = entry.tokenName()?.toLowerCase()
         if (token != "string") {
             continue
         }

@@ -18,7 +18,7 @@ object StringFilter : Filter {
             return true
         }
 
-        return treeElement.entry.tokenName()?.lowercase(Locale.getDefault()) != "string"
+        return treeElement.entry.tokenName()?.toLowerCase() != "string"
     }
 
     override fun isReverted() = true
