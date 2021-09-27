@@ -15,7 +15,7 @@ object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
     ): MutableList<String> {
         // For now only support custom executable for TeX Live
         // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
-        val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project)
+        val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.options.getLatexDistribution(runConfig.project))
         val command = mutableListOf(executable)
 
         command.add("-file-line-error")

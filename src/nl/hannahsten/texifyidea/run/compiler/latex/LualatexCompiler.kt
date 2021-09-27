@@ -18,7 +18,8 @@ object LualatexCompiler : SupportedLatexCompiler("LuaLaTeX", "lualatex") {
             val command = mutableListOf(
                 LatexSdkUtil.getExecutableName(
                     executableName,
-                    runConfig.project
+                    runConfig.project,
+                    runConfig.options.getLatexDistribution(runConfig.project)
                 )
             )
 

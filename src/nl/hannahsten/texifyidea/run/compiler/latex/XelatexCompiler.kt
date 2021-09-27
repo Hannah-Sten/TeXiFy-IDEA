@@ -19,7 +19,8 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
         ): MutableList<String> {
             val command = mutableListOf(LatexSdkUtil.getExecutableName(
                 executableName,
-                runConfig.project
+                runConfig.project,
+                runConfig.options.getLatexDistribution(runConfig.project)
             )
             )
 

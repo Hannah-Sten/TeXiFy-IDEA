@@ -18,7 +18,8 @@ object TexliveonflyCompiler : SupportedLatexCompiler("Texliveonfly", "texliveonf
         val command = mutableListOf(
             LatexSdkUtil.getExecutableName(
                 executableName,
-                runConfig.project
+                runConfig.project,
+                runConfig.options.getLatexDistribution(runConfig.project)
             )
         )
 

@@ -24,7 +24,8 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
     ): MutableList<String> {
         val command = mutableListOf(
             LatexSdkUtil.getExecutableName(
-                executableName, runConfig.project
+                executableName, runConfig.project,
+                runConfig.options.getLatexDistribution(runConfig.project)
             )
         )
 
