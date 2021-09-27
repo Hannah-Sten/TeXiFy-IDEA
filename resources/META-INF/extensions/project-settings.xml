@@ -6,6 +6,7 @@
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.NativeTexliveSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexLinuxSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.TectonicSdk" />
         <projectSdkSetupValidator implementation="nl.hannahsten.texifyidea.settings.sdk.LatexProjectSdkSetupValidator" />
     </extensions>
 </idea-plugin>

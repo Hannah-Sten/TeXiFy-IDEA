@@ -163,7 +163,7 @@ object LatexSdkUtil {
     /**
      * If a LaTeX SDK is selected as project SDK, return it, otherwise return null.
      */
-    private fun getLatexProjectSdk(project: Project): Sdk? {
+    fun getLatexProjectSdk(project: Project): Sdk? {
         val sdk = ProjectRootManager.getInstance(project).projectSdk
         if (sdk?.sdkType is LatexSdk) {
             return sdk
