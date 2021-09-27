@@ -11,6 +11,8 @@ import nl.hannahsten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
 
+  IElementType ANGLE_PARAM = new LatexElementType("ANGLE_PARAM");
+  IElementType ANGLE_PARAM_CONTENT = new LatexElementType("ANGLE_PARAM_CONTENT");
   IElementType BEGIN_COMMAND = new LatexElementType("BEGIN_COMMAND");
   IElementType COMMANDS = new LatexCommandsStubElementType("COMMANDS");
   IElementType COMMENT = new LatexElementType("COMMENT");
@@ -81,7 +83,13 @@ public interface LatexTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-      if (type == BEGIN_COMMAND) {
+      if (type == ANGLE_PARAM) {
+        return new LatexAngleParamImpl(node);
+      }
+      else if (type == ANGLE_PARAM_CONTENT) {
+        return new LatexAngleParamContentImpl(node);
+      }
+      else if (type == BEGIN_COMMAND) {
         return new LatexBeginCommandImpl(node);
       }
       else if (type == COMMANDS) {

@@ -135,7 +135,10 @@ object LatexSdkUtil {
     /**
      * Get executable name of a LaTeX executable binary, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
      */
-    fun getExecutableName(executableName: String, project: Project): String {
+    fun getExecutableName(executableName: String, project: Project, latexDistributionType: LatexDistributionType? = null): String {
+        // Prefixing the LaTeX compiler is not relevant for Docker MiKTeX (perhaps the path to the docker executable)
+        if (latexDistributionType == LatexDistributionType.DOCKER_MIKTEX) return executableName
+
         // Give preference to the project SDK if a valid LaTeX SDK is selected
         getLatexProjectSdk(project)?.let { sdk ->
             if (sdk.homePath != null) {
@@ -173,7 +176,7 @@ object LatexSdkUtil {
     /**
      * If a LaTeX SDK is selected as project SDK, return it, otherwise return null.
      */
-    private fun getLatexProjectSdk(project: Project): Sdk? {
+    fun getLatexProjectSdk(project: Project): Sdk? {
         val sdk = ProjectRootManager.getInstance(project).projectSdk
         if (sdk?.sdkType is LatexSdk) {
             return sdk

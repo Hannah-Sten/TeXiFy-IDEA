@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.IOException
 
@@ -24,7 +25,14 @@ object LatexPackageLocationCache {
      */
     fun getPackageLocation(name: String, project: Project): String? {
         if (cache.containsKey(name).not()) {
-            val path = runKpsewhich(name, project)
+            // Tectonic does not have kpsewhich, but works a little differently
+            val projectSdk = LatexSdkUtil.getLatexProjectSdk(project)
+            val path = if (projectSdk?.sdkType is TectonicSdk) {
+                (projectSdk.sdkType as TectonicSdk).getPackageLocation(name, projectSdk.homePath)
+            }
+            else {
+                runKpsewhich(name, project)
+            }
             if (path?.isBlank() == true) return null
             cache[name] = path
             return path
