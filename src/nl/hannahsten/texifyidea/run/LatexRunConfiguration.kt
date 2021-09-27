@@ -5,6 +5,7 @@ import com.intellij.configurationStore.serializeStateInto
 import com.intellij.execution.CommonProgramRunConfigurationParameters
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.runReadAction
@@ -91,6 +92,8 @@ class LatexRunConfiguration constructor(
         super<RunConfigurationBase>.readExternal(element)
 
         val parent = element.getChild(TEXIFY_PARENT) ?: return
+
+        this.options.environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
         // Read compile steps
         // This should be the last option that is read, as it may depend on other options.
