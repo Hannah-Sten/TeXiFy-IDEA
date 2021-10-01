@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessNotCreatedException
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -30,6 +31,11 @@ class SystemEnvironment {
 
         val isTexcountAvailable: Boolean by lazy {
             "texcount".runCommand()?.contains("TeXcount") == true
+        }
+
+        // Assumes version will be given in the format GNOME Document Viewer 3.34.2
+        val evinceVersion: DefaultArtifactVersion by lazy {
+            DefaultArtifactVersion("evince --version".runCommand()?.split(" ")?.lastOrNull())
         }
     }
 }
