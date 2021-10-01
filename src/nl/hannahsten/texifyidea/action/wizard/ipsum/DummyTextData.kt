@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.action.wizard.ipsum
 
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.util.text.Ipsum
+import java.util.*
 import kotlin.random.Random
 
 /**

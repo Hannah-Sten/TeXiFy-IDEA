@@ -132,7 +132,7 @@ class InputFileReference(
             // If we are not building the fileset, we can make use of it
             if (!isBuildingFileset && element.containingFile.includedPackages().contains(LatexGenericRegularCommand.GRAPHICSPATH.dependency)) {
                 // Add the graphics paths to the search paths
-                searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
+                searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
             }
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath

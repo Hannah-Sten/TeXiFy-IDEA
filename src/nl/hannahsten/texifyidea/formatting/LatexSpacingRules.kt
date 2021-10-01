@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.util.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parentOfType
+import java.util.*
 
 fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
     Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
@@ -55,7 +56,10 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             customRule { parent, _, right ->
                 // Lowercase to also catch \STATE from algorithmic
-                if (right.node?.psi?.text?.toLowerCase() in setOf("\\state", "\\statex") && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {
+                if (right.node?.psi?.text?.toLowerCase() in setOf(
+                        "\\state",
+                        "\\statex"
+                    ) && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {
                     return@customRule Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
                 }
 

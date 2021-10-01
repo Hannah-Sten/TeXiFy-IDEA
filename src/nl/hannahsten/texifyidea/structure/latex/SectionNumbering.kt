@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.structure.latex
 
 import nl.hannahsten.texifyidea.util.toRoman
+import java.util.*
 import kotlin.math.max
 
 /**

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.magic
 
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser.Companion.COMMENT_PREFIX
+import java.util.*
 
 /**
  * Converts all provided strings to a single magic comments.

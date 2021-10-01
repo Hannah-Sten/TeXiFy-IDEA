@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntryType.*
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * @author Hannah Schellekens

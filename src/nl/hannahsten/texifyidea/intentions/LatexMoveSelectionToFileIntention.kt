@@ -30,7 +30,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
             return false
         }
 
-        val selectionSize = selectionOffsets(editor).sumBy { (start, end) -> end - start }
+        val selectionSize = selectionOffsets(editor).sumOf { (start, end): Pair<Int, Int> -> end - start }
         return selectionSize >= minimumSelectionLength
     }
 
