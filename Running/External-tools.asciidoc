@@ -35,6 +35,17 @@ list(primes_sieve2(60))
 \end{document}
 ----
 
+=== Sage
+_Since b0.8.0_
+
+To use Sage, you need to have Sagemath installed.
+On some operation systems, you might need to install sagetex separately (for Arch there is the `sagetex` package, for example).
+Then, make sure the package is found, for example by adding `TEXINPUTS=/usr/share/texmf//:` to your run configuration, assuming the package is located there.
+Now you can add `\usepackage{sagetex}` and TeXiFy should be able to find it.
+Then you can use sagetex commands, for example `\sage{EllipticCurve(GF(409),[1,2]).order()}`, and run the file.
+
+If the run configuration is not created correctly the first time, you need to make sure to first run pdflatex, then a general command line step to run `sage main.sagetex.sage`, then pdflatex again.
+
 == Other external tools
 
 === Jinja2 support
