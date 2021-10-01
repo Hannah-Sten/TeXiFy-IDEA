@@ -86,9 +86,9 @@ dependencies {
     implementation("com.beust:klaxon:5.5")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.13.0-rc2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.0-rc2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0-rc2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.12.4")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.12.4")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.2")
