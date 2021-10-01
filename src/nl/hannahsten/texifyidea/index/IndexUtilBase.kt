@@ -2,6 +2,7 @@
 
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.openapi.diagnostic.RuntimeExceptionWithAttachments
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -129,7 +130,14 @@ abstract class IndexUtilBase<T : PsiElement>(
      *          The scope in which to search for the items.
      */
     fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
-        return StubIndex.getElements(indexKey, name, project, scope, elementClass)
+        try {
+            return StubIndex.getElements(indexKey, name, project, scope, elementClass)
+        }
+        catch (e: RuntimeExceptionWithAttachments) {
+            // Ignore, because we've seen it only four times so far (#1375, #1446, #1591, #2086) but I fail to see how this would be a bug in TeXiFy.
+            if (e.message?.contains("PSI and index do not match") == false) throw e
+        }
+        return emptySet()
     }
 
     /**
