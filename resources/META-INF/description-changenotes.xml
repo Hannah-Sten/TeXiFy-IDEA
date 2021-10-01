@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.10</strong></p>
+        <p><strong>Beta 0.7.11</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.10! This release implements a new 'fill paragraph' action, fixes some false positives in inspections and has some more bug fixes.
+            Welcome to TeXiFy IDEA 0.7.11! This release improves the equation preview, improves support for Tectonic and adds a bibtex-tidy action.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
