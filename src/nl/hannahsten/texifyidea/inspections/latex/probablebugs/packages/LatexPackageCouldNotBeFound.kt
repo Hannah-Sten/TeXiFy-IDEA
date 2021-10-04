@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.requiredParameter
+import java.util.*
 
 class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
 

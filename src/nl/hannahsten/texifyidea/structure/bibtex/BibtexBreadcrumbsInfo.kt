@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.psi.BibtexTag
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.substringEnd
 import nl.hannahsten.texifyidea.util.tokenType
+import java.util.*
 
 /**
  * @author Hannah Schellekens

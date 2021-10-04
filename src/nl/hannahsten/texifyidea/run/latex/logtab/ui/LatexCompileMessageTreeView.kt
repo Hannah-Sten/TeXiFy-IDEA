@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
+import java.util.*
 
 class LatexCompileMessageTreeView(
     val project: Project,

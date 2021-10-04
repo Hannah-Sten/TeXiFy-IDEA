@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.10</strong></p>
+        <p><strong>Beta 0.7.11</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.10! This release implements a new 'fill paragraph' action, fixes some false positives in inspections and has some more bug fixes.
+            Welcome to TeXiFy IDEA 0.7.11! This release improves the equation preview, improves support for Tectonic, reduces autocompletion clutter for TeX Live full and adds a bibtex-tidy action.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,25 +55,24 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add 'fill paragraph' action. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2032">#2032</a>)</li>
-            <li> Remember resource folder in 'Save image from clipboard' dialog. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2047">#2047</a>)</li>
-            <li> Fold dashes in editor. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2050">#2050</a>)</li>
+            <li> Add 'reformat with bibtex-tidy' action. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2069">#2069</a>)</li>
+            <li> Add angular brackets as parameter to parser. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2076">#2076</a>)</li>
+            <li> Add Tectonic SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2080">#2080</a>)</li>
+            <li> Implement reference resolving for packages for Tectonic SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2080">#2080</a>)</li>
+            <li> Reduce number of commands in the autocompletion for TeX Live. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2054">#2054</a>)</li>
+            <li> By default, do the equation preview with jlatexmath, if there is no custom preamble. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2028">#2028</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Also show error output when the command to compile the preview times out. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2015">#2015</a>)</li>
-            <li> Add live templates for generic environments with parameters. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2043">#2043</a>)</li>
-            <li> Fix false positives about unescaped or duplicate labels in \(re)newenvironment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2045">#2045</a>)</li>
-            <li> Fix incorrect whitespacing before section command in command definition. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2051">#2051</a>)</li>
-            <li> Fix other crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2050">#2050</a>)</li>
+            <li> An empty bibtex field is not a parse error anymore. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2082">#2082</a>)</li>
         </ul>
-        <br>
-        <p>
-            Thanks to F.W. Dekker for contributing to this release!
-        </p>
+<!--        <br>-->
+<!--        <p>-->
+<!--            Thanks to F.W. Dekker for contributing to this release!-->
+<!--        </p>-->
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.

@@ -8,6 +8,7 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.BibtexFile
+import java.util.*
 
 /**
  * @author Hannah Schellekens

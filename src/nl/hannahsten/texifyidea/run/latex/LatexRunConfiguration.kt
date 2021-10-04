@@ -47,6 +47,7 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
+import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -549,7 +550,8 @@ class LatexRunConfiguration constructor(
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath()
         return "${outputDir?.path}/" + mainFile!!
-            .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf" else outputFormat.toString()
+            .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf"
+        else outputFormat.toString()
             .toLowerCase()
     }
 

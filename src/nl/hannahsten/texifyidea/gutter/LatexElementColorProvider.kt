@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import java.awt.Color
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -279,7 +280,7 @@ object LatexElementColorProvider : ElementColorProvider {
      */
     private fun Color.toGrayString() = listOf(0.2126, 0.7152, 0.0722)
         .zip(listOf(red, green, blue))
-        .sumByDouble { (weight, rgb) -> weight * (rgb / 255.0) }
+        .sumOf { (weight, rgb): Pair<Double, Int> -> weight * (rgb / 255.0) }
         .format()
 
     /**

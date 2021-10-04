@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
+import java.util.*
 
 /**
  * Check if a LaTeX package is not installed (only for TeX Live, since MiKTeX downloads them automatically).
@@ -70,7 +71,11 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                             manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed or \\ProvidesPackage is missing",
-                                InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`, knownNotInstalledPackages),
+                                InstallPackage(
+                                    SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
+                                    `package`,
+                                    knownNotInstalledPackages
+                                ),
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly
                             )
