@@ -35,7 +35,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
@@ -74,7 +74,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
@@ -118,7 +118,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             if (runConfig.outputFormat != Format.DEFAULT) {
-                command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+                command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
             }
 
             command.add("-output-directory=$outputPath")
@@ -226,7 +226,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("--synctex")
 
-            command.add("--outfmt=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             if (outputPath != null) {
                 command.add("--outdir=$outputPath")

@@ -6,7 +6,7 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.*
-import kotlinx.coroutines.launch
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

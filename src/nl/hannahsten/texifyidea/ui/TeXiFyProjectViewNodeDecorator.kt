@@ -24,7 +24,7 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         if (extension == "gz") {
             extension = "synctex.gz"
 
-            if (!file.name.toLowerCase().endsWith("synctex.gz")) {
+            if (!file.name.lowercase(Locale.getDefault()).endsWith("synctex.gz")) {
                 return
             }
         }
@@ -32,7 +32,7 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         // Allow Material design plugins to take over the icons
         // For file types registered in plugin.xml this happens automatically
         if (PluginManager.getLoadedPlugins().none { it.name.contains("Material") }) {
-            val icon = IconMagic.fileIcons[extension.toLowerCase()] ?: return
+            val icon = IconMagic.fileIcons[extension.lowercase(Locale.getDefault())] ?: return
             presentationData.setIcon(icon)
         }
     }

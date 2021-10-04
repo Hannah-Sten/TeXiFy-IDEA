@@ -18,7 +18,7 @@ fun String.capitalizeFirst(): String = this[0].toUpperCase() + substring(1, leng
  */
 fun String.camelCase(): String {
     @Language("RegExp")
-    val parts = toLowerCase().split(Regex("[_\\s]+"))
+    val parts = lowercase(Locale.getDefault()).split(Regex("[_\\s]+"))
 
     val sb = StringBuilder(parts[0])
     for (i in 1 until parts.size) {
@@ -81,8 +81,8 @@ fun String.getIndent(): String {
 fun String.appendExtension(extensionWithoutDot: String): String {
     if (extensionWithoutDot == "") return this
 
-    val dottedExtension = ".${extensionWithoutDot.toLowerCase()}"
-    val thisLower = toLowerCase()
+    val dottedExtension = ".${extensionWithoutDot.lowercase(Locale.getDefault())}"
+    val thisLower = lowercase(Locale.getDefault())
 
     return when {
         thisLower.endsWith(dottedExtension) -> this
@@ -164,7 +164,7 @@ fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "
 fun String.formatAsFilePath(): String {
     val formatted = this.replace(" ", "-")
         .removeAll("<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
-        .toLowerCase()
+        .lowercase(Locale.getDefault())
 
     // If there are no valid characters left, use a default name.
     return if (formatted.isEmpty()) "myfile" else formatted
@@ -176,7 +176,7 @@ fun String.formatAsFilePath(): String {
 fun String.formatAsLabel(): String {
     return replace(" ", "-")
         .removeAll("%", "~", "#", "\\", ",")
-        .toLowerCase()
+        .lowercase(Locale.getDefault())
 }
 
 /**

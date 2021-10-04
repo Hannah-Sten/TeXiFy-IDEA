@@ -53,14 +53,14 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     .projectSearchScope
             )
                 .map { it.requiredParameter(0) }
-                .mapNotNull { it?.toLowerCase() }
+                .mapNotNull { it?.lowercase(Locale.getDefault()) }
             val packages = installedPackages + customPackages
 
             val commands = file.childrenOfType(LatexCommands::class)
                 .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
             for (command in commands) {
-                val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
+                val `package` = command.requiredParameters.firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
                 if (`package` !in packages) {
                     // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
                     if (
@@ -81,8 +81,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                             )
                         )
                         knownNotInstalledPackages.add(`package`)
-                    }
-                    else {
+                    } else {
                         // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
                         TexLivePackages.packageList.add(`package`)
                     }
