@@ -136,6 +136,11 @@ tasks.runIde {
     systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
 }
 
+tasks.test {
+    // https://intellij-support.jetbrains.com/hc/en-us/community/posts/4407334950290-jarFiles-is-not-set-for-PluginDescriptor
+    systemProperty("idea.force.use.core.classloader", "true")
+}
+
 intellij {
     pluginName.set("TeXiFy-IDEA")
 
