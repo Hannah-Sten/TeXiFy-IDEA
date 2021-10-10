@@ -60,23 +60,40 @@ class LatexOutputListener(
     // Stack with the filenames, where the first is the current file.
     private var fileStack = LatexFileStack()
 
+    private var collectingOutputLine: String = ""
+
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         if (outputType !is ProcessOutputType) return
         // Latexmk outputs on stderr, which interleaves with the pdflatex/bibtex/etc output on stdout
         if (outputType.isStderr) return
 
-        // We look for specific strings in the log output for which we know it was probably an error message
-        // (it might be that it is actually not, since anything can be typed to the LaTeX output log, but we ignore
-        // that for now and assume the log is of reasonable format).
-        // Standard log output is only 79 characters wide, meaning these strings might occur over two lines.
-        // We assume the match tokens will always fit over two lines.
-        // Therefore, we maintain a window of two log output lines to detect the error messages.
-        //
-        // We assume that if the first line of the error/warning is exactly the maximum line width, it will continue
-        // on the next line. This may not be accurate, but there is no way of distinguishing this.
+        // The following code wants complete lines as input.
+        // However, this function onTextAvailable will simply give us text when it's available,
+        // which may be only part of a line.
+        // Since it does always include newlines to designate linebreaks, we simply wait here until
+        // we have the full line collected.
+        // It looks like we never get a line ending in the middle of even.text, but not completely sure about that.
+        if (event.text.endsWith("\n").not()) {
+            collectingOutputLine += event.text
+            return
+        }
+        else {
+            val collectedLine = collectingOutputLine + event.text
+            collectingOutputLine = ""
 
-        // Newlines are important to check when message end. Keep.
-        processNewText(event.text)
+            // We look for specific strings in the log output for which we know it was probably an error message
+            // (it might be that it is actually not, since anything can be typed to the LaTeX output log, but we ignore
+            // that for now and assume the log is of reasonable format).
+            // Standard log output is only 79 characters wide, meaning these strings might occur over two lines.
+            // We assume the match tokens will always fit over two lines.
+            // Therefore, we maintain a window of two log output lines to detect the error messages.
+            //
+            // We assume that if the first line of the error/warning is exactly the maximum line width, it will continue
+            // on the next line. This may not be accurate, but there is no way of distinguishing this.
+
+            // Newlines are important to check when message end. Keep.
+            processNewText(collectedLine)
+        }
     }
 
     fun processNewText(newText: String) {
