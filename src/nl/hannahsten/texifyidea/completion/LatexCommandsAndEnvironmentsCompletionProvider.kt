@@ -34,9 +34,11 @@ import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.util.*
 
 /**
+ * Provide autocompletion for commands and environments.
+ *
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexCommandProvider internal constructor(private val mode: LatexMode) :
+class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(private val mode: LatexMode) :
     CompletionProvider<CompletionParameters>() {
 
     companion object {
