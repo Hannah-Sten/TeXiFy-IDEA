@@ -241,7 +241,8 @@ open class WordCountAction : AnAction(
                 if (i > 0 && CONTRACTION_S.contains(split[i - 1].lowercase(Locale.getDefault()))) {
                     count++
                 }
-            } else count++
+            }
+            else count++
         }
 
         return count
