@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.parentsOfType
@@ -161,8 +162,14 @@ class LatexDocumentationProvider : DocumentationProvider {
                 "texdoc -l -M $name"
             }
             else {
-                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
-                "texdoc -l $name"
+                if (SystemEnvironment.isAvailable("texdoc")) {
+                    // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
+                    "texdoc -l $name"
+                }
+                else {
+                    // In some cases, texdoc may not be available but mthelp is
+                    "mthelp -l $name"
+                }
             }
             stream = Runtime.getRuntime().exec(command).inputStream
         }

@@ -201,6 +201,9 @@ fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 fun String.runCommand(workingDirectory: File? = null) =
     runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
+fun String.runCommandWithExitCode(workingDirectory: File? = null) =
+    runCommandWithExitCode(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+
 /**
  * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.
  */
