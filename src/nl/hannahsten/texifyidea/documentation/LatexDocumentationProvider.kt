@@ -34,6 +34,19 @@ class LatexDocumentationProvider : DocumentationProvider {
         else -> null
     }
 
+    /**
+     * Check if this is a command which includes a package, in which case we should show docs for the package that is included instead of the command itself.
+     */
+    private fun isPackageInclusionCommand(element: PsiElement?): Boolean {
+        if (element !is LatexCommands) {
+            return false
+        }
+
+        val command = LatexCommand.lookup(element)
+        if (command.isNullOrEmpty()) return false
+        return command.first().commandWithSlash in CommandMagic.packageInclusionCommands
+    }
+
     override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
         if (element !is LatexCommands) {
             return null
@@ -44,7 +57,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         if (command.isNullOrEmpty()) return null
 
         // Special case for package inclusion commands
-        if (command.first().commandWithSlash in CommandMagic.packageInclusionCommands) {
+        if (isPackageInclusionCommand(element)) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
             return runTexdoc(LatexPackage(pkg))
         }
@@ -94,7 +107,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         // Link to package docs
         originalElement ?: return null
-        val urls = if (lookup is Dependend) runTexdoc((lookup as Dependend).dependency) else getUrlFor(element, originalElement)
+        val urls = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as Dependend).dependency) else getUrlFor(element, originalElement)
 
         if (docString?.isNotBlank() == true && !urls.isNullOrEmpty()) {
             docString += "<br/>"
