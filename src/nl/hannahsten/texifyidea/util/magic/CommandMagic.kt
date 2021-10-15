@@ -280,6 +280,7 @@ object CommandMagic {
             BIBLIOGRAPHY.cmd to listOf(".bib"),
             INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
             USEPACKAGE.cmd to listOf(".sty"),
+            EXTERNALDOCUMENT.cmd to listOf(".tex"),
     )
 
     /**
@@ -314,7 +315,7 @@ object CommandMagic {
             USEPACKAGE.cmd to hashSetOf("sty"),
             DOCUMENTCLASS.cmd to hashSetOf("cls"),
             LOADCLASS.cmd to hashSetOf("cls"),
-            EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels
+            EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels. Technically it references an aux file
     )
 
     /**
