@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
@@ -173,7 +174,12 @@ class InputFileReference(
      * Might be expensive for large projects because of recursively visiting all directories, not sure.
      */
     private fun findAnywhereInProject(fileName: String): VirtualFile? {
-        val basePath = LocalFileSystem.getInstance().findFileByPath(element.project.basePath ?: return null) ?: return null
+        val basePath = if (element.project.isTestProject().not()) {
+            LocalFileSystem.getInstance().findFileByPath(element.project.basePath ?: return null) ?: return null
+        }
+        else {
+            element.containingFile.virtualFile.parent ?: return null
+        }
         BFS(basePath, { file -> file.children.toList() }).apply {
             iterationAction = { file: VirtualFile ->
                 if (file.nameWithoutExtension == fileName && file.extension in extensions) {

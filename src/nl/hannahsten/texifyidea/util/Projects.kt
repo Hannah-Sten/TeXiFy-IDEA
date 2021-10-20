@@ -87,3 +87,8 @@ fun Project.hasLatexModule(): Boolean {
     return ModuleManager.getInstance(this).modules
             .any { it.moduleTypeName == LatexModuleType.ID }
 }
+
+/**
+ * True if we are probably in a unit test.
+ */
+fun Project.isTestProject() = name.contains("_temp_")

@@ -60,6 +60,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
     /**
      * Iteration action that literally does nothing and lets the algorithm continue.
      */
+    @Suppress("MemberVisibilityCanBePrivate", "PropertyName")
     val NO_ITERATION_ACTION: (N) -> BFSAction = { BFSAction.CONTINUE }
 
     /**
@@ -278,18 +279,5 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
     enum class BFSAction {
 
         CONTINUE, ABORT;
-
-        companion object {
-
-            /**
-             * @param abort
-             * `true` if the BFS must abort, `false` if the BFS must continue.
-             * @return [BFSAction.ABORT] when `abort == true` and [BFSAction.CONTINUE]
-             * when `abort == false`.
-             */
-            fun valueOf(abort: Boolean): BFSAction {
-                return if (abort) ABORT else CONTINUE
-            }
-        }
     }
 }

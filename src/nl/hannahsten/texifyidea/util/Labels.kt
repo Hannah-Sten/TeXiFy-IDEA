@@ -75,6 +75,7 @@ fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement>
  * optional parameter.
  */
 fun PsiFile.findLabelingCommandsInFileSetAsSequence(): Sequence<LatexCommands> {
+    // todo if using xr package, need to join some filesets
     return this.commandsInFileSet().asSequence().findLatexCommandsLabels(this.project)
 }
 
