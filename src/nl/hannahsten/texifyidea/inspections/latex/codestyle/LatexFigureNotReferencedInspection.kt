@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.labels.findLabelingCommandsInFile
+import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import org.jetbrains.annotations.NotNull
 import java.util.*
@@ -69,7 +71,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
      * Find all commands in the file that label a figure.
      */
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
-        file.findLabelingCommandsInFileAsSequence()
+        file.findLabelingCommandsInFile()
             .filter(LatexCommands::isFigureLabel)
             .associateBy(LatexCommands::labelName)
             .toMutableMap()

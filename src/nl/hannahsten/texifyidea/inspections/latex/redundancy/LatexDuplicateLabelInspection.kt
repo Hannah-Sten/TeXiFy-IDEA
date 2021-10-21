@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.labels.findBibitemCommands
+import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.lang.Integer.max
@@ -39,7 +41,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
 
         val duplicateLabels =
-            getProblemDescriptors(file.findLatexLabelPsiElementsInFileSetAsSequence(), isOntheFly, manager, file) {
+            getProblemDescriptors(file.findLatexLabelingElementsInFileSet(), isOntheFly, manager, file) {
                 when (this) {
                     is LatexCommands -> {
                         val name = this.name ?: return@getProblemDescriptors null

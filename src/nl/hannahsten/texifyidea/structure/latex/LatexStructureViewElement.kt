@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import java.util.*
 import kotlin.collections.ArrayList
 

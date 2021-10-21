@@ -3,9 +3,9 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.extractLabelElement
-import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.findLatexLabelPsiElementsInFileSetAsSequence
+import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
+import nl.hannahsten.texifyidea.util.labels.extractLabelElement
+import nl.hannahsten.texifyidea.util.labels.extractLabelName
 
 /**
  * The difference with [LatexLabelReference] is that this reference works on parameter text, i.e. the actual label parameters.
@@ -32,7 +32,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         // Find the label definition
-        return myElement.containingFile.findLatexLabelPsiElementsInFileSetAsSequence()
+        return myElement.containingFile.findLatexLabelingElementsInFileSet()
             .filter { it.extractLabelName() == myElement.name }
             .mapNotNull {
                 // Find the normal text in the label command.

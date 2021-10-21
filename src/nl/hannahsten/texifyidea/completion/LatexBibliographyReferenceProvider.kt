@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.findBibtexItems
+import nl.hannahsten.texifyidea.util.labels.findBibtexItems
 import java.util.*
 
 object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParameters>() {

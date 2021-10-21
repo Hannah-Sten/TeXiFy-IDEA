@@ -12,10 +12,13 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.allChildFiles
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Get a project [GlobalSearchScope] for this project.
@@ -92,3 +95,12 @@ fun Project.hasLatexModule(): Boolean {
  * True if we are probably in a unit test.
  */
 fun Project.isTestProject() = name.contains("_temp_")
+
+/**
+ * Finds all section marker commands (as defined in [CommandMagic.sectionMarkers]) in the project.
+ *
+ * @return A list containing all the section marker [LatexCommands].
+ */
+fun Project.findSectionMarkers() = LatexCommandsIndex.getItems(this).filter {
+    it.commandToken.text in CommandMagic.sectionMarkers
+}
