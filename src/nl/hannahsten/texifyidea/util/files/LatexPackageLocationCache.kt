@@ -33,8 +33,8 @@ object LatexPackageLocationCache {
             else {
                 runKpsewhich(name, project)
             }
-            if (path?.isBlank() == true) return null
             cache[name] = path
+            if (path?.isBlank() == true) return null
             return path
         }
 
