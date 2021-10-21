@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
@@ -385,4 +386,18 @@ object CommandMagic {
             DIRECTLUA.cmd to "Lua",
             LUAEXEC.cmd to "Lua"
     )
+
+    /**
+     * Commands that have a verbatim argument.
+     *
+     * Maps a command to a boolean that is true when the required argument can be specified with any pair of characters.
+     */
+    val verbatim = hashMapOf(
+        "verb" to true,
+        "verb*" to true,
+        "directlua" to false,
+        "luaexec" to false,
+        "lstinline" to true
+    )
+
 }
