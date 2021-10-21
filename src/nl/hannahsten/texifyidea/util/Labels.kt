@@ -9,9 +9,12 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
@@ -75,8 +78,19 @@ fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement>
  * optional parameter.
  */
 fun PsiFile.findLabelingCommandsInFileSetAsSequence(): Sequence<LatexCommands> {
-    // todo if using xr package, need to join some filesets
-    return this.commandsInFileSet().asSequence().findLatexCommandsLabels(this.project)
+    // If using the xr package to include label definitions in external files, include those external files when searching for labeling commands in the fileset
+    val externalCommands = this.findXrPackageExternalDocuments().flatMap { it.commandsInFileSet() }
+    return (this.commandsInFileSet() + externalCommands).asSequence().findLatexCommandsLabels(this.project)
+}
+
+/**
+ * Find external files which contain label definitions, as used by the xr package, which are called with \externaldocument anywhere in the fileset.
+ */
+fun PsiFile.findXrPackageExternalDocuments(): List<PsiFile> {
+    return this.commandsInFileSet()
+        .filter { it.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash }
+        .flatMap { it.references.filterIsInstance<InputFileReference>() }
+        .mapNotNull { it.findAnywhereInProject(it.key)?.psiFile(project) }
 }
 
 /**

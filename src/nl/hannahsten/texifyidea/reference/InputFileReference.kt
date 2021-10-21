@@ -158,8 +158,8 @@ class InputFileReference(
         if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
 
         // \externaldocument uses the .aux file in the output directory, we are only interested in the source file, but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
-        // todo problem: should only do this for labels, and not when e.g. checking duplicate package inclusions
-        if (targetFile == null && element.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
+        // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are
+        if (!isBuildingFileset && targetFile == null && element.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
             targetFile = findAnywhereInProject(processedKey)
         }
 
@@ -173,7 +173,7 @@ class InputFileReference(
      * Try to find the file anywhere in the project. Returns the first match.
      * Might be expensive for large projects because of recursively visiting all directories, not sure.
      */
-    private fun findAnywhereInProject(fileName: String): VirtualFile? {
+    fun findAnywhereInProject(fileName: String): VirtualFile? {
         val basePath = if (element.project.isTestProject().not()) {
             LocalFileSystem.getInstance().findFileByPath(element.project.basePath ?: return null) ?: return null
         }
