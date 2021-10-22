@@ -59,11 +59,14 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                 }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
         }
         else if (element.project.getLabelReferenceCommands().contains(command)) {
+            // Create autocompletion entries for each element we could possibly resolve to
             return file.findLatexLabelingElementsInFileSet()
-                .filter { it.extractLabelName().isNotBlank() }
-                .map { labelingCommand: PsiElement ->
+                .mapNotNull { labelingCommand: PsiElement ->
+                    val extractedLabel = labelingCommand.extractLabelName(referencingFileSet = element.containingFile)
+                    if (extractedLabel.isBlank()) return@mapNotNull null
+
                     LookupElementBuilder
-                        .create(labelingCommand.extractLabelName())
+                        .create(extractedLabel)
                         .bold()
                         .withInsertHandler(LatexReferenceInsertHandler())
                         .withTypeText(

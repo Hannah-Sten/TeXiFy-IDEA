@@ -26,7 +26,7 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> =
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
 fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
-    return findLatexLabelingElementsInFileSet().map { it.extractLabelName() }
+    return findLatexLabelingElementsInFileSet().map { it.extractLabelName(referencingFileSet = this) }
 }
 
 /**

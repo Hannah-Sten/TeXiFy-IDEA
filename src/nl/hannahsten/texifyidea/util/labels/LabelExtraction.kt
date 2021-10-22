@@ -1,9 +1,12 @@
 package nl.hannahsten.texifyidea.util.labels
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.identifier
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -53,8 +56,10 @@ fun PsiElement.extractLabelElement(): PsiElement? {
 
 /**
  * Extracts the label name from the PsiElement given that the PsiElement represents a label.
+ *
+ * @param referencingFileSet Any file in the fileset containing the element referencing [this], which can make a different for what the label name should be, as using the xr package labels from other filesets can be included with a prefix.
  */
-fun PsiElement.extractLabelName(): String {
+fun PsiElement.extractLabelName(referencingFileSet: PsiFile? = null): String {
     return when (this) {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
@@ -62,10 +67,25 @@ fun PsiElement.extractLabelName(): String {
                 optionalParameterMap.toStringMap()["label"]!!
             }
             else {
-                // For now just take the first label name (may be multiple for user defined commands)
+                // For now just take the first label name (which may be multiple for user defined commands)
                 val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
                 val position = info?.positions?.firstOrNull() ?: 0
-                val prefix = info?.prefix ?: ""
+                var prefix = info?.prefix ?: ""
+
+                // Check if there is any prefix given by the xr package
+                // todo something wrong here, no commands in file set?
+                if (referencingFileSet != null) {
+                    referencingFileSet.commandsInFileSet()
+                        // Don't think there can be multiple, at least I wouldn't know what prefix it would use
+                        .firstOrNull { it.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash }
+                        ?.parameterList
+                        ?.mapNotNull { it.optionalParam }
+                        // Assume it's the first optional parameter if there is one
+                        ?.firstOrNull()
+                        ?.text?.trim('[', ']')
+                        ?.let { prefix = it }
+                }
+
                 // Skip optional parameters for now (also below and in
                 prefix + this.requiredParameter(position)
             }
