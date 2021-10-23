@@ -1,10 +1,15 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.nio.file.InvalidPathException
 import java.nio.file.Paths
 
@@ -59,7 +64,17 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         // We want the MiKTeX 2.9 folder to be selected
         // Assume path is of the form C:\Users\username\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\pdflatex.exe
         val parent = LatexSdkUtil.getPdflatexParentPath(Paths.get(path, "miktex").toString())
-        return "\"$parent\\pdflatex\" --version".runCommand()?.contains("pdfTeX") == true
+        val output = if (parent != null) {
+            runCommandWithExitCode("$parent\\pdflatex", "--version", returnExceptionMessage = true).first
+        }
+        else {
+            "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
+        } ?: "No output"
+
+        if (output.contains("pdfTeX")) return true
+        val project = ProjectManager.getInstance().openProjects.firstOrNull { !it.isDisposed } ?: throw TeXception(output)
+        Notification("LaTeX", "Invalid SDK selected", output, NotificationType.WARNING).notify(project)
+        return false
     }
 
     override fun getVersionString(sdk: Sdk): String? {
