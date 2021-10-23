@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
@@ -399,5 +398,4 @@ object CommandMagic {
         "luaexec" to false,
         "lstinline" to true
     )
-
 }

@@ -28,7 +28,7 @@ class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim comma
 
         val element = file.findElementAt(editor.caretModel.offset) ?: return false
 
-       return element.isVerbCommand() || element.isVerbEnvironment()
+        return element.isVerbCommand() || element.isVerbEnvironment()
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
@@ -39,7 +39,7 @@ class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim comma
         val element = file.findElementAt(editor.caretModel.offset) ?: return
 
         val availableEnvironments: List<String> = (CommandMagic.verbatim.keys + EnvironmentMagic.verbatim)
-            .filter { it != element.getVerbatimName() }
+            .filter { it != element.getName() }
 
         // Ask for the new environment name.
         JBPopupFactory.getInstance()
@@ -51,49 +51,32 @@ class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim comma
             .showInBestPositionFor(editor)
     }
 
-    private fun PsiElement.isVerbCommand() = getVerbatimName() in CommandMagic.verbatim
+    private fun PsiElement.isVerbCommand() = getName() in CommandMagic.verbatim
 
-    private fun PsiElement.isVerbEnvironment() = getVerbatimName() in EnvironmentMagic.verbatim
+    private fun PsiElement.isVerbEnvironment() = getName() in EnvironmentMagic.verbatim
 
-    private fun PsiElement.getVerbatimName(): String? =
+    /**
+     * Get the name of the command or environment.
+     */
+    private fun PsiElement.getName(): String? =
         firstParentOfType(LatexCommands::class)?.name?.removePrefix("\\")
-        ?: firstParentOfType(LatexEnvironment::class)?.name()?.name
+            ?: firstParentOfType(LatexEnvironment::class)?.name()?.name
 
+    /**
+     * Replace the psi element of the old verbatim with a psi element with the new verbatim.
+     */
     private fun replaceVerbatim(oldVerbatim: PsiElement, newVerbatim: String, file: PsiFile, project: Project) {
-        val (content, parent, oldArgCharacter) = if (oldVerbatim.isVerbCommand()) {
-            val content = oldVerbatim.firstParentOfType(LatexCommands::class)?.getAllRequiredArguments()?.firstOrNull()
-            val parent = oldVerbatim.firstParentOfType(LatexCommands::class)?.parent
-            Triple(content, parent, CommandMagic.verbatim[oldVerbatim.getVerbatimName()] == true)
-        }
-        else if (oldVerbatim.isVerbEnvironment()) {
-            val content = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.environmentContent?.text
-            val parent = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.parent
-            Triple(content, parent, false)
-        }
-        else Triple(null, null, false)
+        val (content, parent, commandArgCharacter) = findVerbatimInformation(oldVerbatim)
 
-        val newElement = if (newVerbatim in CommandMagic.verbatim.keys) {
-            val newArgCharacter = CommandMagic.verbatim[newVerbatim] == true
-            val arg = when {
-                oldArgCharacter && newArgCharacter -> content
-                oldArgCharacter && !newArgCharacter -> "{${content?.drop(1)?.dropLast(1)}}"
-                !oldArgCharacter && newArgCharacter -> "|$content|"
-                else -> "{$content}"
-            }
-            LatexPsiHelper(project).createFromText("\\$newVerbatim$arg")
-                .firstChildOfType(LatexCommands::class)
-        }
-        else {
-            val environmentContent = if (oldArgCharacter) content?.drop(1)?.dropLast(1) else content
-            LatexPsiHelper(project).createFromText("\\begin{$newVerbatim}\n$environmentContent\n\\end{$newVerbatim}")
-                .firstChildOfType(LatexEnvironment::class)
-        } ?: return
+        val newElement = constructNewVerbatim(newVerbatim, content, commandArgCharacter, project) ?: return
 
         runWriteCommandAction(project) {
             parent?.node?.replaceChild(parent.firstChild.node, newElement.node)
 
+            // When the old verbatim was a command (and thus inline) and the new verbatim is an environment,
+            // add a newline before the environment.
             if (oldVerbatim.isVerbCommand() && newVerbatim in EnvironmentMagic.verbatim) {
-               LatexPsiHelper(project).createFromText("\n")
+                LatexPsiHelper(project).createFromText("\n")
                     .firstChildOfType(PsiWhiteSpace::class)
                     ?.node
                     ?.let {
@@ -101,14 +84,67 @@ class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim comma
                     }
             }
 
+            // Check if the newly inserted verbatim depends on a package and insert the package when needed.
             findDependency(newElement)?.let { file.insertUsepackage(it) }
         }
     }
 
+    /**
+     * Use the index to find if the `verbatim` element we insert depends on a package.
+     */
     private fun findDependency(verbatim: PsiElement): LatexPackage? =
         (verbatim as? LatexCommands)?.let {
             LatexCommand.lookup(it)?.firstOrNull()?.dependency
-        } ?: verbatim.getVerbatimName()?.let {
+        } ?: verbatim.getName()?.let {
             Environment.lookup(it)?.dependency
+        }
+
+    /**
+     * Get all information about [oldVerbatim] that is needed to replace it with a new verbatim.
+     *
+     * Returns a triple with
+     * - `content: String` The text inside the command or environment. This has to be included in the new verbatim.
+     * - `parent: PsiElement` The parent psi element. The child of this parent will be replaced with the new verbatim.
+     * - `Boolean` Does the old verbatim command use characters other than `{}` to enclose its argument?
+     *   (e.g. `\verb|test|` would set this boolean to true).
+     */
+    private fun findVerbatimInformation(oldVerbatim: PsiElement): Triple<String?, PsiElement?, Boolean> {
+        return if (oldVerbatim.isVerbCommand()) {
+            val content = oldVerbatim.firstParentOfType(LatexCommands::class)?.getAllRequiredArguments()?.firstOrNull()
+            val parent = oldVerbatim.firstParentOfType(LatexCommands::class)?.parent
+            Triple(content, parent, CommandMagic.verbatim[oldVerbatim.getName()] == true)
+        }
+        else if (oldVerbatim.isVerbEnvironment()) {
+            val content = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.environmentContent?.text
+            val parent = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.parent
+            Triple(content, parent, false)
+        }
+        else Triple(null, null, false)
+    }
+
+    /**
+     * Use [LatexPsiHelper] to create a new psi element.
+     */
+    private fun constructNewVerbatim(
+        newVerbatim: String,
+        content: String?,
+        commandArgCharacter: Boolean,
+        project: Project
+    ): PsiElement? =
+        if (newVerbatim in CommandMagic.verbatim.keys) {
+            val newArgCharacter = CommandMagic.verbatim[newVerbatim] == true
+            val arg = when {
+                commandArgCharacter && newArgCharacter -> content
+                commandArgCharacter && !newArgCharacter -> "{${content?.drop(1)?.dropLast(1)}}"
+                !commandArgCharacter && newArgCharacter -> "|$content|"
+                else -> "{$content}"
+            }
+            LatexPsiHelper(project).createFromText("\\$newVerbatim$arg")
+                .firstChildOfType(LatexCommands::class)
+        }
+        else {
+            val environmentContent = if (commandArgCharacter) content?.drop(1)?.dropLast(1) else content
+            LatexPsiHelper(project).createFromText("\\begin{$newVerbatim}\n$environmentContent\n\\end{$newVerbatim}")
+                .firstChildOfType(LatexEnvironment::class)
         }
 }
