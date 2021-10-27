@@ -35,7 +35,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         val paths = "where pdflatex".runCommand()
         if (paths != null && !paths.contains("Could not find")) { // Full output is INFO: Could not find files for the given pattern(s).
             paths.split("\r\n").forEach { path ->
-                val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: path.length - 1
+                val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: (path.length - 1)
                 results.add(path.substring(0, index))
             }
         }
@@ -60,7 +60,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         // Assume path is of the form C:\Users\username\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\pdflatex.exe
         val directory = LatexSdkUtil.getPdflatexParentPath(Paths.get(path, "miktex").toString())
         val errorMessage = "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
-        return LatexSdkUtil.isPdflatexPresent(directory, errorMessage)
+        return LatexSdkUtil.isPdflatexPresent(directory, errorMessage, name)
     }
 
     override fun getVersionString(sdk: Sdk): String? {

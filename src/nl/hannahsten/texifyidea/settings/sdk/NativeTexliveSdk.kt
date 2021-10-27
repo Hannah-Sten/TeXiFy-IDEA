@@ -48,13 +48,13 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
         // If this is a valid LaTeX installation, pdflatex should be present
         val errorMessage = "Could not find $path/pdflatex"
-        return LatexSdkUtil.isPdflatexPresent(path, errorMessage)
+        return LatexSdkUtil.isPdflatexPresent(path, errorMessage, name)
     }
 
     override fun getVersionString(sdkHome: String?): String {
         // Assume pdflatex --version contains output of the form
         // pdfTeX 3.14159265-2.6-1.40.21 (TeX Live 2020/mydistro)
-        return """TeX Live (\d\d\d\d\/.+)""".toRegex().find(LatexSdkUtil.pdflatexVersionText)?.value ?: "Unknown version"
+        return """TeX Live (\d\d\d\d/.+)""".toRegex().find(LatexSdkUtil.pdflatexVersionText)?.value ?: "Unknown version"
     }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String {
