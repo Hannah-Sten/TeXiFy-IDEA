@@ -195,6 +195,7 @@ fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 
 /**
  * Run a command in the terminal.
+ * You can only use this if you are sure you don't have paths and other escaped things with spaces.
  *
  * @return The output of the command or null if an exception was thrown.
  */

@@ -55,8 +55,9 @@ fun Process.getOutput() = inputStream.bufferedReader().readText().trim() + error
  * See [runCommand], but also returns exit code.
  *
  * @param killAfterTimeout If true, process will be killed after timeout. If false, just return output.
+ * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
  */
-fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, killAfterTimeout: Boolean = true): Pair<String?, Int> {
+fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, killAfterTimeout: Boolean = true, returnExceptionMessage: Boolean = false): Pair<String?, Int> {
     return try {
         val proc = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
@@ -81,10 +82,20 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
         }
     }
     catch (e: IOException) {
-        Pair(null, -1) // Don't print the stacktrace because that is confusing.
+        if (!returnExceptionMessage) {
+            Pair(null, -1) // Don't print the stacktrace because that is confusing.
+        }
+        else {
+            Pair(e.message, -1)
+        }
     }
     catch (e: ProcessNotCreatedException) {
         // e.g. if the command is just trying if a program can be run or not, and it's not the case
-        Pair(null, -1)
+        if (!returnExceptionMessage) {
+            Pair(null, -1)
+        }
+        else {
+            Pair(e.message, -1)
+        }
     }
 }
