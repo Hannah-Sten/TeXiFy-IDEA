@@ -76,12 +76,13 @@ class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim comma
             // When the old verbatim was a command (and thus inline) and the new verbatim is an environment,
             // add a newline before the environment.
             if (oldVerbatim.isVerbCommand() && newVerbatim in EnvironmentMagic.verbatim) {
-                LatexPsiHelper(project).createFromText("\n")
-                    .firstChildOfType(PsiWhiteSpace::class)
-                    ?.node
-                    ?.let {
-                        parent?.node?.addChild(it, newElement.node)
-                    }
+                addNewLines(parent, newElement, project)
+            }
+
+            // When the old verbatim was an environment and the new verbatim is a command, replace the new lines that
+            // surrounded the environment with single spaces.
+            if (oldVerbatim.isVerbEnvironment() && newVerbatim in CommandMagic.verbatim) {
+                removeNewLines(parent, project)
             }
 
             // Check if the newly inserted verbatim depends on a package and insert the package when needed.
@@ -147,4 +148,42 @@ class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim comma
             LatexPsiHelper(project).createFromText("\\begin{$newVerbatim}\n$environmentContent\n\\end{$newVerbatim}")
                 .firstChildOfType(LatexEnvironment::class)
         }
+
+    /**
+     * Add a new line before and after the new environment when the current white space there is not a white space.
+     */
+    private fun addNewLines(parent: PsiElement?, newElement: PsiElement, project: Project) {
+        if (parent?.prevSibling is PsiWhiteSpace && !parent.prevSibling.textContains('\n')) {
+            LatexPsiHelper(project).createSpacing("\n")?.node?.let {
+                parent.node?.addChild(it, newElement.node)
+            }
+        }
+
+        if (parent?.nextSibling is PsiWhiteSpace && !parent.nextSibling.textContains('\n')) {
+            LatexPsiHelper(project).createSpacing("\n")?.node?.let {
+                parent.node?.addChild(it, null)
+            }
+        }
+    }
+
+    /**
+     * Replace the new lines before and after [parent] with single spaces.
+     */
+    private fun removeNewLines(parent: PsiElement?, project: Project) {
+        if (parent?.prevSibling is PsiWhiteSpace && parent.prevSibling.textContains('\n')) {
+            parent.prevSibling.node.let { newLine ->
+                LatexPsiHelper(project).createSpacing()?.node?.let {
+                    newLine.psi.parent.node.replaceChild(newLine, it)
+                }
+            }
+        }
+
+        if (parent?.nextSibling is PsiWhiteSpace && parent.nextSibling.textContains('\n')) {
+            parent.nextSibling.node.let { newLine ->
+                LatexPsiHelper(project).createSpacing()?.node?.let {
+                    newLine.psi.parent.node.replaceChild(newLine, it)
+                }
+            }
+        }
+    }
 }

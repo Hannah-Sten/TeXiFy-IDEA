@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
@@ -150,4 +151,11 @@ class LatexPsiHelper(private val project: Project) {
             closeBracket.prevSibling as LatexKeyvalPair
         }
     }
+
+    /**
+     * Create a [PsiWhiteSpace] element that contains the first spacing of the string [space].
+     */
+    fun createSpacing(space: String = " "): PsiWhiteSpace? = LatexPsiHelper(project)
+        .createFromText(space)
+        .firstChildOfType(PsiWhiteSpace::class)
 }
