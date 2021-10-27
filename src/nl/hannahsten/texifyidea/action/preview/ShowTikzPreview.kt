@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.environmentName
 import nl.hannahsten.texifyidea.util.hasParent
 import nl.hannahsten.texifyidea.util.parentOfType
+import java.util.*
 
 /**
  * The [ShowTikzPreview] class describes an Action in the editor that will display a rendered

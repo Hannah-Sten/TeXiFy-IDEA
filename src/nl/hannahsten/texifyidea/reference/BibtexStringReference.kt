@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.tags
 import nl.hannahsten.texifyidea.util.toTextRange
 import nl.hannahsten.texifyidea.util.tokenName
+import java.util.*
 
 /**
  * @author Hannah Schellekens

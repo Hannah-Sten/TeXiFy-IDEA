@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import nl.hannahsten.texifyidea.psi.*
+import java.util.*
 
 /**
  * Get the lowercase token type (including `@`) of the BibTeX entry (e.g. `@article`).

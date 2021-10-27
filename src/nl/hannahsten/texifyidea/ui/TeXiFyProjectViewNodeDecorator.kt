@@ -7,6 +7,7 @@ import com.intellij.ide.projectView.ProjectViewNodeDecorator
 import com.intellij.packageDependencies.ui.PackageDependenciesNode
 import com.intellij.ui.ColoredTreeCellRenderer
 import nl.hannahsten.texifyidea.util.magic.IconMagic
+import java.util.*
 
 /**
  * @author Hannah Schellekens

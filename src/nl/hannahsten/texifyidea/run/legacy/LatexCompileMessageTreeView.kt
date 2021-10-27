@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexErrorTreeViewConfi
 import nl.hannahsten.texifyidea.run.ui.console.logtab.ui.LatexKeywordFilter
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
+import java.util.*
 
 /**
  * todo remove

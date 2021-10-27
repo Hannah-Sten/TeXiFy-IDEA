@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.awt.datatransfer.Transferable
 import java.io.File
+import java.util.*
 
 /**
  * @author Hannah Schellekens

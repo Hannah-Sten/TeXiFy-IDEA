@@ -58,7 +58,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .andNot(PlatformPatterns.psiElement().inside(LatexMathEnvironment::class.java))
             .withPattern { psiElement, _ -> psiElement.inMathContext().not() }
             .withLanguage(LatexLanguage),
-        LatexCommandProvider(LatexMode.NORMAL)
+        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.NORMAL)
     )
 
     /**
@@ -70,7 +70,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
                 .withPattern { psiElement, _ -> psiElement.inMathContext() }
                 .withLanguage(LatexLanguage),
-            LatexCommandProvider(LatexMode.MATH)
+            LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
         )
 
         registerMathModeInsideEnvironmentCompletion()
@@ -81,7 +81,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
             .inside(LatexMathEnvironment::class.java)
             .withLanguage(LatexLanguage),
-        LatexCommandProvider(LatexMode.MATH)
+        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
     )
 
     /**
@@ -319,9 +319,9 @@ open class LatexCompletionContributor : CompletionContributor() {
         CompletionType.BASIC,
         PlatformPatterns.psiElement()
             .inside(LatexRequiredParam::class.java)
-            .inside(LatexBeginCommand::class.java)
+            .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
             .withLanguage(LatexLanguage),
-        LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
+        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.ENVIRONMENT_NAME)
     )
 
     /**

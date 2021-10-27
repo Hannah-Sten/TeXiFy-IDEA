@@ -20,7 +20,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
         val paths = getProjectRoots()
 
         val rootDirectory = file.findRootFile().containingDirectory.virtualFile
-        getGraphicsPaths(file).forEach {
+        getGraphicsPathsInFileSet(file).forEach {
             paths.add(rootDirectory.findVirtualFileByAbsoluteOrRelativePath(it) ?: return@forEach)
         }
 
@@ -31,7 +31,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      * When using \includegraphics from graphicx package, a path prefix can be set with \graphicspath.
      * @return Graphicspaths defined in the fileset.
      */
-    private fun getGraphicsPaths(file: PsiFile): List<String> {
+    fun getGraphicsPathsInFileSet(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
         val graphicsPathCommands = file.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.GRAPHICSPATH.cmd }
 

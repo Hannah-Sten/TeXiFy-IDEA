@@ -3,8 +3,8 @@ package nl.hannahsten.texifyidea.action.preview
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.ui.PreviewForm
 import nl.hannahsten.texifyidea.util.SystemEnvironment
@@ -22,30 +22,32 @@ import javax.swing.SwingUtilities
 class InkscapePreviewer : Previewer {
 
     override fun preview(input: String, previewForm: PreviewForm, project: Project, preamble: String, waitTime: Long) {
-        GlobalScope.launch {
-            try {
-                // Snap apps are confined to the users home directory
-                if (SystemEnvironment.isInkscapeInstalledAsSnap) {
-                    @Suppress("BlockingMethodInNonBlockingContext")
-                    setPreviewCodeInTemp(
-                        FileUtil.createTempDirectory(File(System.getProperty("user.home")), "preview", null),
-                        input,
-                        project,
-                        preamble,
-                        previewForm,
-                        waitTime
-                    )
+        runBlocking {
+            launch {
+                try {
+                    // Snap apps are confined to the users home directory
+                    if (SystemEnvironment.isInkscapeInstalledAsSnap) {
+                        @Suppress("BlockingMethodInNonBlockingContext")
+                        setPreviewCodeInTemp(
+                            FileUtil.createTempDirectory(File(System.getProperty("user.home")), "preview", null),
+                            input,
+                            project,
+                            preamble,
+                            previewForm,
+                            waitTime
+                        )
+                    }
+                    else {
+                        @Suppress("BlockingMethodInNonBlockingContext")
+                        setPreviewCodeInTemp(FileUtil.createTempDirectory("preview", null), input, project, preamble, previewForm, waitTime)
+                    }
                 }
-                else {
-                    @Suppress("BlockingMethodInNonBlockingContext")
-                    setPreviewCodeInTemp(FileUtil.createTempDirectory("preview", null), input, project, preamble, previewForm, waitTime)
+                catch (exception: AccessDeniedException) {
+                    previewForm.setLatexErrorMessage("${exception.message}")
                 }
-            }
-            catch (exception: AccessDeniedException) {
-                previewForm.setLatexErrorMessage("${exception.message}")
-            }
-            catch (exception: IOException) {
-                previewForm.setLatexErrorMessage("${exception.message}")
+                catch (exception: IOException) {
+                    previewForm.setLatexErrorMessage("${exception.message}")
+                }
             }
         }
     }
