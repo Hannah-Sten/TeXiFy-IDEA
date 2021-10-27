@@ -42,40 +42,10 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.11</strong></p>
+        <p><strong>0.8.0-beta</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.11! This release improves the equation preview, improves support for Tectonic, reduces autocompletion clutter for TeX Live full and adds a bibtex-tidy action.
-        <p>
-        <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
-        </p>
-        <br>
-        <p>
-            <em>Additions</em>
-        </p>
-        <ul>
-            <li> Add 'reformat with bibtex-tidy' action. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2069">#2069</a>)</li>
-            <li> Add angular brackets as parameter to parser. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2076">#2076</a>)</li>
-            <li> Add Tectonic SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2080">#2080</a>)</li>
-            <li> Implement reference resolving for packages for Tectonic SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2080">#2080</a>)</li>
-            <li> Reduce number of commands in the autocompletion for TeX Live. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2054">#2054</a>)</li>
-            <li> By default, do the equation preview with jlatexmath, if there is no custom preamble. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2028">#2028</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Bug fixes</em>
-        </p>
-        <ul>
-            <li> An empty bibtex field is not a parse error anymore. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2082">#2082</a>)</li>
-        </ul>
-<!--        <br>-->
-<!--        <p>-->
-<!--            Thanks to F.W. Dekker for contributing to this release!-->
-<!--        </p>-->
-        <br>
-        <p>
-            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+        This beta release contains a completely new LaTeX run configuration.
+        However, currently is it still incompatible with the old run configuration, so that is why this is published in a separate beta channel.
         </p>
     ]]></change-notes>
 </idea-plugin>
