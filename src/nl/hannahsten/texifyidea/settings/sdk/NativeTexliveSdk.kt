@@ -47,7 +47,8 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         // This is different from a TexliveSdk installation, where we have the parent directory of the TeX Live installation and find everything there.
 
         // If this is a valid LaTeX installation, pdflatex should be present
-        return "$path/pdflatex --version".runCommand()?.contains("pdfTeX") == true
+        val errorMessage = "Could not find $path/pdflatex"
+        return LatexSdkUtil.isPdflatexPresent(path, errorMessage)
     }
 
     override fun getVersionString(sdkHome: String?): String {

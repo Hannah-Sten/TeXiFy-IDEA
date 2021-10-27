@@ -5,7 +5,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
-import java.io.File
 import java.nio.file.Paths
 
 /**
@@ -44,7 +43,8 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
 
     override fun isValidSdkHome(path: String): Boolean {
         // We just want a path where pdflatex is present
-        return "$path${File.separator}pdflatex --version".runCommand()?.contains("pdfTeX") == true
+        val errorMessage = "Could not find $path/pdflatex"
+        return LatexSdkUtil.isPdflatexPresent(path, errorMessage)
     }
 
     override fun getVersionString(sdk: Sdk): String? {
