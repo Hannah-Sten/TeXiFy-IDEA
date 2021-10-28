@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.OrderRootType
@@ -10,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 
 /**
@@ -80,6 +84,33 @@ object LatexSdkUtil {
      * Given the path to the LaTeX home, find the parent path of the executables, e.g. /bin/x86_64-linux/
      */
     fun getPdflatexParentPath(homePath: String) = File("$homePath/bin").listFiles()?.firstOrNull()?.path
+
+    /**
+     * Run pdflatex in the given directory and check if it is present and valid.
+     * If not, also throw a notification in the currently open project (if any), because we cannot modify the actual message in the dialog which complains when an SDK is not valid.
+     *
+     * @param errorMessage Message to show to the user when directory is null. If this is null, no notification will be shown.
+     */
+    fun isPdflatexPresent(directory: String?, errorMessage: String?, sdkName: String): Boolean {
+        val output = if (directory == null) {
+            errorMessage
+        }
+        else {
+            // .exe is optional on windows
+            runCommandWithExitCode("$directory${File.separator}pdflatex", "--version", returnExceptionMessage = true).first
+        } ?: "No output given by $directory${File.separator}pdflatex --version"
+
+        if (output.contains("pdfTeX")) return true
+
+        // Don't send notification if there is no message on purpose
+        if (errorMessage == null) return false
+
+        // Show notification to explain the reason why the SDK is not valid, but only if any project is open
+        // We have to do this because we can't customize the popup which says the SDK is not valid
+        val project = ProjectManager.getInstance().openProjects.firstOrNull { !it.isDisposed } ?: return false
+        Notification("LaTeX", "Invalid $sdkName home directory", output, NotificationType.WARNING).notify(project)
+        return false
+    }
 
     /**
      * Find the full name of the distribution in use, e.g. TeX Live 2019.
