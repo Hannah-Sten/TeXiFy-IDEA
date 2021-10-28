@@ -62,7 +62,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
             // Create autocompletion entries for each element we could possibly resolve to
             return file.findLatexLabelingElementsInFileSet()
                 .mapNotNull { labelingCommand: PsiElement ->
-                    val extractedLabel = labelingCommand.extractLabelName(referencingFileSet = element.containingFile)
+                    val extractedLabel = labelingCommand.extractLabelName(referencingFileSet = file)
                     if (extractedLabel.isBlank()) return@mapNotNull null
 
                     LookupElementBuilder

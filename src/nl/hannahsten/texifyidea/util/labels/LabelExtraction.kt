@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
-
 /**
  * Extracts the label element (so the element that should be resolved to) from the PsiElement given that the PsiElement represents a label.
  */
@@ -73,7 +72,6 @@ fun PsiElement.extractLabelName(referencingFileSet: PsiFile? = null): String {
                 var prefix = info?.prefix ?: ""
 
                 // Check if there is any prefix given by the xr package
-                // todo something wrong here, no commands in file set?
                 if (referencingFileSet != null) {
                     referencingFileSet.commandsInFileSet()
                         // Don't think there can be multiple, at least I wouldn't know what prefix it would use

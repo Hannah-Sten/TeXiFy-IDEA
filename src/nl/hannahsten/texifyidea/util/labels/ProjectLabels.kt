@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
-
 /**
  * Finds all defined labels within the project, including bibtex entries.
  *
@@ -51,4 +50,3 @@ fun Project.getLabelDefinitionCommands(): Set<String> {
     CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this)
     return CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 }
-
