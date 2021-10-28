@@ -87,6 +87,7 @@ Also see the link:Installation[installation guide].
 == Navigation
 * link:++Structure view++[Structure view with filters]
 * link:Go-to-declaration[Go to declaration of labels, citations and custom commands]
+* link:Go-to-declaration#using-the-xr-package[Label reference resolving when using the xr package]
 * link:Find-usages[Find usages for commands defined in a \newcommand-like way]
 * "Goto Symbol" support for section names, labels, bibitems, new environments and new commands
 * link:File-inclusion-navigation[Gutter icons and navigation shortcuts for file inclusions]
