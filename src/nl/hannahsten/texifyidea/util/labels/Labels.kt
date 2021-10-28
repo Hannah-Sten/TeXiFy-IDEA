@@ -22,11 +22,13 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> =
 
 /**
  * Finds all the defined latex labels in the fileset of the file.
+ * May contain duplicates.
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
 fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
-    return findLatexLabelingElementsInFileSet().map { it.extractLabelName(referencingFileSet = this) }
+    val allCommands = this.commandsInFileSet()
+    return findLatexLabelingElementsInFileSet().map { it.extractLabelName(referencingFileSetCommands = allCommands) }
 }
 
 /**
@@ -40,6 +42,7 @@ fun PsiFile.findLatexLabelingElementsInFile(): Sequence<PsiElement> = sequenceOf
 
 /**
  * All labels in the fileset.
+ * May contain duplicates.
  */
 fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> = sequenceOf(
     findLabelingCommandsInFileSet(),

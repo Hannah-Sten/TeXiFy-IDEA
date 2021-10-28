@@ -123,7 +123,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     private fun getProblemDescriptors(
         commands: Sequence<PsiElement>, isOntheFly: Boolean, manager: InspectionManager, file: PsiFile,
         getLabelDescriptor: PsiElement.() -> LabelDescriptor?
-    ): List<ProblemDescriptor> = commands
+    ): List<ProblemDescriptor> = commands.toSet() // We don't want duplicate psi elements
         .mapNotNull { command ->
             // When the label is defined in a command definition ignore it, because there could be more than one with #1 as parameter
             if (command.parentOfType(LatexCommands::class).isDefinitionOrRedefinition()) return@mapNotNull null

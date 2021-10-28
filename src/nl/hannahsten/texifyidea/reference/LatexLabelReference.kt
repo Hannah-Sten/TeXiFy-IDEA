@@ -8,6 +8,7 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findBibtexItems
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
@@ -60,9 +61,11 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
         }
         else if (element.project.getLabelReferenceCommands().contains(command)) {
             // Create autocompletion entries for each element we could possibly resolve to
+            val allCommands = file.commandsInFileSet()
             return file.findLatexLabelingElementsInFileSet()
+                .toSet()
                 .mapNotNull { labelingCommand: PsiElement ->
-                    val extractedLabel = labelingCommand.extractLabelName(referencingFileSet = file)
+                    val extractedLabel = labelingCommand.extractLabelName(referencingFileSetCommands = allCommands)
                     if (extractedLabel.isBlank()) return@mapNotNull null
 
                     LookupElementBuilder

@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.labels.extractLabelElement
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
@@ -31,9 +32,11 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
+        val allCommands = myElement.containingFile.originalFile.commandsInFileSet()
         // Find the label definition
         return myElement.containingFile.findLatexLabelingElementsInFileSet()
-            .filter { it.extractLabelName(myElement.containingFile.originalFile) == myElement.name }
+            .filter { it.extractLabelName(referencingFileSetCommands = allCommands) == myElement.name }
+            .toSet()
             .mapNotNull {
                 // Find the normal text in the label command.
                 // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
