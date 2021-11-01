@@ -85,7 +85,7 @@ class CommandLineStep internal constructor(
         }
 
         val modified = dialog(
-            "Configure Bibliography Step",
+            "Configure Command Line Step",
             panel = panel,
             resizable = true,
         ).showAndGet()
