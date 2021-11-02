@@ -7,8 +7,9 @@
 - [ ] Does it work in PyCharm?
 - [ ] Run ctan.py
 
-- [ ] Copy changelog to description-changenotes.xml, replace using regexes below and update welcome text
-- [ ] Update version in plugin.xml and build.gradle.kts
+- [ ] Copy changelog to description-changenotes.xml, replace using regexes below
+- [ ] Update welcome text
+- [ ] Update version in build.gradle.kts
 - [ ] runIDE and check the changelog is formatted correctly
 - [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
 - [ ] Merge PR
