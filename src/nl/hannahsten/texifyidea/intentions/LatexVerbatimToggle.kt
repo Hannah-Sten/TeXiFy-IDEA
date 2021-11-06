@@ -41,14 +41,19 @@ class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim comma
         val availableEnvironments: List<String> = (CommandMagic.verbatim.keys + EnvironmentMagic.verbatim)
             .filter { it != element.getName() }
 
-        // Ask for the new environment name.
-        JBPopupFactory.getInstance()
-            .createPopupChooserBuilder(availableEnvironments)
-            .setTitle("Verbatim Environments")
-            .setItemChosenCallback { replaceVerbatim(element, it, file, project) }
-            .setRenderer(PopupChooserCellRenderer())
-            .createPopup()
-            .showInBestPositionFor(editor)
+        if (availableEnvironments.size == 1) {
+            replaceVerbatim(element, availableEnvironments.firstOrNull()!!, file, project)
+        }
+        // Ask for the new environment name when there are multiple options.
+        else {
+            JBPopupFactory.getInstance()
+                .createPopupChooserBuilder(availableEnvironments)
+                .setTitle("Verbatim Environments")
+                .setItemChosenCallback { replaceVerbatim(element, it, file, project) }
+                .setRenderer(PopupChooserCellRenderer())
+                .createPopup()
+                .showInBestPositionFor(editor)
+        }
     }
 
     private fun PsiElement.isVerbCommand() = getName() in CommandMagic.verbatim
