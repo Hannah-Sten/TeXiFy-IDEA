@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
-import nl.hannahsten.texifyidea.util.findLatexCommandsLabels
+import nl.hannahsten.texifyidea.util.labels.findLatexCommandsLabels
 import nl.hannahsten.texifyidea.util.identifier
 import nl.hannahsten.texifyidea.util.requiredParameter
 

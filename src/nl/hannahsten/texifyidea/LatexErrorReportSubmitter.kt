@@ -34,8 +34,12 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
     @Suppress("DialogTitleCapitalization")
     override fun getReportActionText() = "Report to TeXiFy-IDEA issue tracker"
 
-    override fun submit(events: Array<out IdeaLoggingEvent>?, additionalInfo: String?, parentComponent: Component, consumer: Consumer<in SubmittedReportInfo>): Boolean {
-
+    override fun submit(
+        events: Array<out IdeaLoggingEvent>,
+        additionalInfo: String?,
+        parentComponent: Component,
+        consumer: Consumer<in SubmittedReportInfo>
+    ): Boolean {
         // Don't do the check when there's no internet connection
         val latestVersion = try {
             getLatestVersion()

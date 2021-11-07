@@ -8,11 +8,12 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.findBibtexItems
-import nl.hannahsten.texifyidea.util.findLabelsInFileSetAsCollection
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.labels.extractLabelName
+import nl.hannahsten.texifyidea.util.labels.findBibtexItems
+import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
+import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
 /**
@@ -59,12 +60,16 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                 }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
         }
         else if (element.project.getLabelReferenceCommands().contains(command)) {
-            return file.findLabelsInFileSetAsCollection()
-                .stream()
-                .filter { it.extractLabelName().isNotBlank() }
-                .map { labelingCommand: PsiElement ->
+            // Create autocompletion entries for each element we could possibly resolve to
+            val allCommands = file.commandsInFileSet()
+            return file.findLatexLabelingElementsInFileSet()
+                .toSet()
+                .mapNotNull { labelingCommand: PsiElement ->
+                    val extractedLabel = labelingCommand.extractLabelName(referencingFileSetCommands = allCommands)
+                    if (extractedLabel.isBlank()) return@mapNotNull null
+
                     LookupElementBuilder
-                        .create(labelingCommand.extractLabelName())
+                        .create(extractedLabel)
                         .bold()
                         .withInsertHandler(LatexReferenceInsertHandler())
                         .withTypeText(
@@ -78,7 +83,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                             true
                         )
                         .withIcon(TexifyIcons.DOT_LABEL)
-                }.toArray()
+                }.toList().toTypedArray()
         }
         // if command isn't ref or cite-styled return empty array
         return arrayOf()
