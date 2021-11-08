@@ -41,6 +41,9 @@ class JlatexmathPreviewer : Previewer {
         catch (e: ParseException) {
             previewForm.setLatexErrorMessage(e.message ?: "There was an unknown problem with compiling the preview.")
         }
+        catch (e: FileNotFoundException) {
+            previewForm.setLatexErrorMessage(e.message ?: "There was an internal problem with JLatexmath")
+        }
     }
 
     @Suppress("SameParameterValue")
