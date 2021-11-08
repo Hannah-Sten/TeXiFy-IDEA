@@ -386,4 +386,17 @@ object CommandMagic {
             DIRECTLUA.cmd to "Lua",
             LUAEXEC.cmd to "Lua"
     )
+
+    /**
+     * Commands that have a verbatim argument.
+     *
+     * Maps a command to a boolean that is true when the required argument can be specified with any pair of characters.
+     */
+    val verbatim = hashMapOf(
+        "verb" to true,
+        "verb*" to true,
+        "directlua" to false,
+        "luaexec" to false,
+        "lstinline" to true
+    )
 }
