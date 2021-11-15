@@ -13,12 +13,13 @@ TeXiFy shows these previews automatically when a project is opened.
 
 You can use the Equation Preview by making sure your cursor is in a math environment and clicking menu:Tools[LaTeX > Preview Equation], or using kbd:[Ctrl + Shift + X].
 
-Since version 0.7.11, if you don't have a custom preamble we use [jlatexmat](https://github.com/opencollab/jlatexmath) and it should work out of the box.
+Since version 0.7.11, if you don't have a custom preamble we use jlatexmath (https://github.com/opencollab/jlatexmath) and it should work out of the box.
 
 If you do have a custom preamble, which jlatexmath does not support, TeXiFy creates a preview by putting your equation in a new temporary (fairly minimal) document and compiling that, and then uses Inkscape to convert to an image.
 You may need to have certain fonts installed to make this work.
 
 The current implementation of the Equation Preview was contributed by Sergei Izmailov and requires external dependencies, for which installation instructions follow.
+It also relies on system installed fonts, because it converts svg to image, and svg doesn't include fonts.
 
 === Instructions for Linux
 
