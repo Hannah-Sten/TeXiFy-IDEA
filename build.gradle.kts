@@ -18,6 +18,7 @@ plugins {
 
     // Test coverage
     jacoco
+    id("org.jetbrains.kotlinx.kover") version "0.4.2"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "10.2.0"

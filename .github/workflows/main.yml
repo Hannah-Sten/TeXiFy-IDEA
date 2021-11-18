@@ -22,7 +22,10 @@ jobs:
         chmod +x gradlew
         ./gradlew ktlintCheck
     - name: Run tests
-      run: ./gradlew check jacocoTestReport
+      run: ./gradlew check koverReport
     - name: Upload coverage report
       if: success() && matrix.os == 'ubuntu-latest'
-      run: bash <(curl -s https://codecov.io/bash)
+      run: |
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov -t ${CODECOV_TOKEN}
