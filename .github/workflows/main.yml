@@ -7,7 +7,29 @@ on:
     types: [opened, synchronize, closed]
 
 jobs:
-  build:
+  qodana:
+    name: Run Qodana
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/work/_temp/_github_home/cache
+          key: ${{ runner.os }}-qodana-${{ github.ref }}
+          restore-keys: |
+            ${{ runner.os }}-qodana-${{ github.ref }}
+            ${{ runner.os }}-qodana-
+      - uses: docker://jetbrains/qodana-jvm
+        with:
+          args: --cache-dir=/github/home/cache --results-dir=/github/workspace/qodana --save-report --report-dir=/github/workspace/qodana/report
+#      - uses: JetBrains/qodana-action@v3.2.1
+#        with:
+#          linter: qodana-jvm-community
+#          fail-threshold: 10
+      - uses: actions/upload-artifact@v2
+        with:
+          path: qodana
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
