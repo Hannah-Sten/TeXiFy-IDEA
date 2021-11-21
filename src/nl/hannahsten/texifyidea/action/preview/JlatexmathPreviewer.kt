@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.ui.PreviewForm
 import org.apache.batik.dom.GenericDOMImplementation
 import org.apache.batik.svggen.SVGGeneratorContext
 import org.apache.batik.svggen.SVGGraphics2D

@@ -51,7 +51,7 @@ object LatexDocsRegexer {
      * - Docs do not necessarily start on their own line
      * - We do use empty lines to guess where the docs end
      */
-    private val docsAfterMacroRegex = """(?:%?\h*(?<line>.+\n))""".toRegex()
+    private val docsAfterMacroRegex = """%?\h*(?<line>.+\n)""".toRegex()
 
     /**
      * Should format to valid HTML as used in the docs popup.

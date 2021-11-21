@@ -1,10 +1,8 @@
 version: "1.0"
-failThreshold: 10
+failThreshold: 16
 profile:
   name: qodana.starter  # todo use profile by path, for running all inspections?
 exclude:
   - name: All
     paths:
       - gen
-
-# docker run --rm -it -v /home/thomas/GitRepos/TeXiFy-IDEA/:/data/project/ -v /tmp/qodana-cache:/data/cache -p 8080:8080 jetbrains/qodana-jvm --show-report

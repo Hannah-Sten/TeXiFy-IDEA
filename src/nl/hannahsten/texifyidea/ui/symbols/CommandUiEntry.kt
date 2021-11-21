@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.ui.symbols
 
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.util.formatAsFileName
-import java.util.*
 
 /**
  * Quickly creates a SymbolUiEntry from a command with the following consequences:
@@ -18,7 +17,7 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
-open class CommandUiEntry(
+class CommandUiEntry(
         command: LatexCommand,
         generatedLatex: String? = null,
         customFileName: String? = null,

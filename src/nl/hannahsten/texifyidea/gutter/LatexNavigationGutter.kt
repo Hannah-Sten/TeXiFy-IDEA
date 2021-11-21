@@ -38,7 +38,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val commandHuh = LatexCommand.lookup(fullCommand.substring(1)) ?: return
 
         val arguments = commandHuh.firstOrNull()?.getArgumentsOf(RequiredFileArgument::class.java)
-        if (arguments?.isNullOrEmpty() == true) {
+        if (arguments?.isEmpty() == true) {
             return
         }
 

@@ -15,7 +15,9 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.util.addLabeledComponent
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
@@ -68,7 +70,7 @@ open class TableCreationDialogWrapper(
     init {
         // Initialise the dialog, otherwise it shows as a line (i.e., infinitely small) and without any of the elements.
         init()
-        title = "Insert table"
+        title = "Insert Table"
     }
 
     /**

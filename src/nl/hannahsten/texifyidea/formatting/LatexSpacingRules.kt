@@ -93,7 +93,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             // BUG OR FEATURE? Does not work for a command that immediately follows \begin{document}.
             customRule { _, _, right ->
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
-                    if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*\\}")) == true &&
+                    if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*}")) == true &&
                         !CommandMagic.definitions.contains(right.node?.psi?.parentOfType(LatexCommands::class)?.name)) {
                         return@customRule createSpacing(
                             minSpaces = 0,

@@ -1,5 +1,6 @@
-package nl.hannahsten.texifyidea.ui
+package nl.hannahsten.texifyidea.action.preview
 
+import nl.hannahsten.texifyidea.ui.ImagePanel
 import java.awt.image.BufferedImage
 import javax.swing.JPanel
 import javax.swing.JTabbedPane

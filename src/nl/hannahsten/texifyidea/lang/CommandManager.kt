@@ -3,13 +3,42 @@ package nl.hannahsten.texifyidea.lang
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.requiredParameters
 import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
+import kotlin.collections.Collection
+import kotlin.collections.HashSet
+import kotlin.collections.Iterable
+import kotlin.collections.Iterator
+import kotlin.collections.MutableIterator
+import kotlin.collections.MutableMap
+import kotlin.collections.MutableSet
+import kotlin.collections.Set
+import kotlin.collections.asSequence
+import kotlin.collections.associateWith
+import kotlin.collections.contains
+import kotlin.collections.emptySet
+import kotlin.collections.filter
+import kotlin.collections.first
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.getOrNull
+import kotlin.collections.intersect
+import kotlin.collections.isNotEmpty
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mapNotNull
+import kotlin.collections.mutableSetOf
+import kotlin.collections.set
+import kotlin.collections.toMutableMap
+import kotlin.collections.toSet
 
 /**
  * Manages all available LaTeX commands and their aliases.
@@ -290,7 +319,6 @@ object CommandManager : Iterable<String?>, Serializable {
                     ?.requiredParamContentList
                     ?.flatMap { it.childrenOfType(LatexCommands::class) }
                     ?.asSequence()
-                    ?.filterNotNull()
 
                 // Positions of label parameters in the custom commands (starting from 0)
                 val positions = parameterCommands
@@ -322,7 +350,7 @@ object CommandManager : Iterable<String?>, Serializable {
                     .map {
                         if (it.indexOf('#') != -1) {
                             val prefix = it.substring(0, it.indexOf('#'))
-                            if (prefix.isNotBlank()) prefix else ""
+                            prefix.ifBlank { "" }
                         }
                         else ""
                     }.firstOrNull() ?: ""
