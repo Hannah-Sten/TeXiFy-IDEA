@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.completion
 
-import com.google.common.base.Strings
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
@@ -258,7 +257,12 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                     catch (ignore: NumberFormatException) {
                     }
                 }
-                (if (optional.size == 2) "[args]" else "") + Strings.repeat("{param}", requiredParameterCount)
+
+                (if (optional.size == 2) "[args]" else "") +
+                        if (requiredParameterCount == 1) "{param}"
+                        // Number the required parameters so a toSet call won't merge them. This way the
+                        // user can keep them apart as well.
+                        else (1..requiredParameterCount).joinToString("") { "{param$it}" }
             }
 
             "\\DeclarePairedDelimiter" -> "{param}"
