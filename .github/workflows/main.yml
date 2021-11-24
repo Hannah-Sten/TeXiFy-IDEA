@@ -22,6 +22,7 @@ jobs:
             ${{ runner.os }}-qodana-
       - uses: docker://jetbrains/qodana-jvm
         with:
+          # https://github.com/JetBrains/qodana-action/blob/main/run_qodana.sh
           args: --cache-dir=/github/home/cache --results-dir=/github/workspace/qodana --save-report --report-dir=/github/workspace/qodana/report
       - uses: actions/upload-artifact@v2
         if: always()
@@ -29,13 +30,11 @@ jobs:
         with:
           path: qodana
       # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
-      - name: Copy content to folder with write permissions
-        run: |
-          cp /github/workspace/qodana/report/results/qodana.sarif.json ${{ github.workspace }}/qodana.sarif.json
       - name: Upload SARIF report to GitHub
         uses: github/codeql-action/upload-sarif@v1
+        if: always()
         with:
-          sarif_file: ${{ github.workspace }}/qodana.sarif.json
+          sarif_file: /github/workspace/qodana/report/results/qodana.sarif.json
   test:
     runs-on: ${{ matrix.os }}
     strategy:
