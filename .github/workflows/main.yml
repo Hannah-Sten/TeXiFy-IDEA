@@ -28,6 +28,14 @@ jobs:
         # To view the report: https://www.jetbrains.com/help/qodana/html-report.html
         with:
           path: qodana
+      # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
+      - name: Copy content to folder with write permissions
+        run: |
+          cp /github/workspace/qodana/report/results/qodana.sarif.json ${{ github.workspace }}/qodana.sarif.json
+      - name: Upload SARIF report to GitHub
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ github.workspace }}/qodana.sarif.json
   test:
     runs-on: ${{ matrix.os }}
     strategy:
