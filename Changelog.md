@@ -6,4 +6,5 @@
 * Add verbatim toggle intention. (#2115)
 
 ### Bug fixes
+* Fix autocompletion of parameters of custom commands. (#2134)
 * Fix crashes. (#2126)
