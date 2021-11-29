@@ -125,6 +125,17 @@ See https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html?from=jetbra
 * Go to Class loader, find the class loader which references TeXiFy things and click Paths from GC Roots.
 * The classes that are mentioned there, were not unloaded successfully for whatever reason. (However, even on a partially successful unload, I see classes present here, so not sure what that means)
 
+== Qodana
+
+Run analysis:
+----
+docker run --rm -it -v /home/thomas/GitRepos/TeXiFy-IDEA/:/data/project/ -p 8080:8080 jetbrains/qodana-jvm --show-report --cache-dir=/tmp/qodana-cache
+----
+View report downloaded from GH Actions:
+----
+docker run -it --rm -p 8000:80 -v $(pwd)/report:/usr/share/nginx/html nginx
+----
+
 == Troubleshooting
 
 === bad class file: class file has wrong version 55.0, should be 52.0
