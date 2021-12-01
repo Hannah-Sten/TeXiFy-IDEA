@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.12</strong></p>
+        <p><strong>Beta 0.7.13</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.12! This release contains improvements related to table formatting, log output messages, performance and usability improvements and more.
+            Welcome to TeXiFy IDEA 0.7.13! This release adds support for the xr package to reference labels in other documents, adds a verbatim toggle intention, and also has some bug fixes.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,18 +55,17 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Improve support for escaped ampersands in table formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2095">#2095</a>)</li>
-            <li> Improve log output messages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2097">#2097</a>)</li>
-            <li> Add full autocompletion to \end command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2097">#2097</a>)</li>
-            <li> Improve performance when some packages have unknown location. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2107">#2107</a>)</li>
-            <li> Improve user experience when selecting an SDK home directory. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2113">#2113</a>)</li>
+            <li> Add support for the xr package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2116">#2116</a>)</li>
+            <li> Add verbatim toggle intention. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2115">#2115</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Include graphicspath in included files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2084">#2084</a>)</li>
+            <li> Fix autocompletion of parameters of custom commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2134">#2134</a>)</li>
+            <li> Fix bug in version of native TeX Live SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2146">#2146</a>)</li>
+            <li> Fix crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2126">#2126</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2139">#2139</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2128">#2128</a>)</li>
         </ul>
 <!--        <br>-->
 <!--        <p>-->
