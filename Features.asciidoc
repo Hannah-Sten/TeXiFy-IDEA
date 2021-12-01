@@ -67,6 +67,7 @@ Also see the link:Installation[installation guide].
 * link:++Menu-entries#insert-graphic-wizard++[Drag and drop graphics inside your document]
 * link:++Menu-entries#table-creation-wizard++[Paste HTML tables and turn them into LaTeX]
 * link:++Pasting-images++[Paste images directly from your clipboard]
+* link:Known-issues[Known issues with parsing LaTeX]
 
 == Reading
 * Customizable syntax highlighting
