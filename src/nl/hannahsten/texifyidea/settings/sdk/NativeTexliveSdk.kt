@@ -54,7 +54,8 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
     override fun getVersionString(sdkHome: String?): String {
         // Assume pdflatex --version contains output of the form
         // pdfTeX 3.14159265-2.6-1.40.21 (TeX Live 2020/mydistro)
-        return """TeX Live (\d\d\d\d/.+)""".toRegex().find(LatexSdkUtil.pdflatexVersionText)?.value ?: "Unknown version"
+        val output = LatexSdkUtil.parsePdflatexOutput(runCommand("$sdkHome/pdflatex", "--version") ?: "")
+        return """TeX Live (\d\d\d\d).*""".toRegex().find(output)?.value ?: "Unknown version"
     }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String {
