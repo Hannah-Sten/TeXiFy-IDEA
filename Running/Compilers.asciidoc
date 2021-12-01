@@ -96,6 +96,8 @@ _Since b0.6.6_
 See https://tectonic-typesetting.github.io/en-US/ for installation and more info.
 Tectonic has the advantage that it downloads packages automatically, compiles just as much times as needed and handles BibTeX, but it often only works for not too complicated LaTeX documents.
 
+It also has automatic compilation using `tectonic -X watch`.
+
 The documentation can be found at https://tectonic-typesetting.github.io/book/latest/
 
 == BibTeX compilers

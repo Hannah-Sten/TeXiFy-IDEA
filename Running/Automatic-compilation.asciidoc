@@ -18,3 +18,9 @@ This is not the case for SumatraPDF, which can forward search without losing foc
 Currently the automatic compilation is only triggered when you type in a document or use backspace, not yet by other ways you edit the document.
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Running/figures/autocompile.gif[]
+
+== Automatic compilation support by compilers
+
+Some compilers, at least latexmk and tectonic, also support automatic compilation.
+It depends on your preferences whether this will work better than the autocompile in TeXiFy or not.
+See link:Compilers[Compilers] for more information.
