@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.2.0"
-    kotlin("jvm") version("1.5.30")
+    kotlin("jvm") version("1.6.0-RC")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.39.0"
@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.12-alpha.2"
+version = "0.7.13"
 
 repositories {
     mavenCentral()
@@ -145,7 +145,7 @@ intellij {
     pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java")) // , "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0") // , "com.jetbrains.hackathon.indices.viewer:1.13")
+    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.12.0-alpha.4@alpha")) // , "com.jetbrains.hackathon.indices.viewer:1.13")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)

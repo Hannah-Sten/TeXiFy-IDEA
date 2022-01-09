@@ -5,7 +5,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.findLabelsInFileSetAsCollection
+import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import java.util.regex.Pattern
@@ -19,7 +19,7 @@ open class LatexEquationReferenceInspection : TexifyRegexInspection(
     groupFetcher = { listOf(it.group(2)) },
     cancelIf = { matcher, psiFile ->
         // Cancel if the label was defined outside a math environment.
-        psiFile.findLabelsInFileSetAsCollection().find { it.text == "\\label{${matcher.group(2)}}" }.findOuterMathEnvironment() == null
+        psiFile.findLatexLabelingElementsInFileSet().find { it.text == "\\label{${matcher.group(2)}}" }.findOuterMathEnvironment() == null
     }
 ) {
 

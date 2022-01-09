@@ -1,0 +1,16 @@
+\documentclass[11pt]{article}
+\usepackage{xr}
+\usepackage{xr-hyper}
+\usepackage{hyperref}
+
+% Note: name of the aux file in the output directory, so no full path
+% extension should NOT be included
+\externaldocument[P-]{presentation}
+% alias: \externalcitedocument
+
+
+\begin{document}
+
+    Slide~\ref{P-slide:first}
+
+\end{document}

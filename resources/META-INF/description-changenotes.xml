@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.11</strong></p>
+        <p><strong>Beta 0.7.13</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.11! This release improves the equation preview, improves support for Tectonic, reduces autocompletion clutter for TeX Live full and adds a bibtex-tidy action.
+            Welcome to TeXiFy IDEA 0.7.13! This release adds support for the xr package to reference labels in other documents, adds a verbatim toggle intention, and also has some bug fixes.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,19 +55,17 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add 'reformat with bibtex-tidy' action. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2069">#2069</a>)</li>
-            <li> Add angular brackets as parameter to parser. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2076">#2076</a>)</li>
-            <li> Add Tectonic SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2080">#2080</a>)</li>
-            <li> Implement reference resolving for packages for Tectonic SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2080">#2080</a>)</li>
-            <li> Reduce number of commands in the autocompletion for TeX Live. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2054">#2054</a>)</li>
-            <li> By default, do the equation preview with jlatexmath, if there is no custom preamble. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2028">#2028</a>)</li>
+            <li> Add support for the xr package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2116">#2116</a>)</li>
+            <li> Add verbatim toggle intention. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2115">#2115</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> An empty bibtex field is not a parse error anymore. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2082">#2082</a>)</li>
+            <li> Fix autocompletion of parameters of custom commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2134">#2134</a>)</li>
+            <li> Fix bug in version of native TeX Live SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2146">#2146</a>)</li>
+            <li> Fix crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2126">#2126</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2139">#2139</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2128">#2128</a>)</li>
         </ul>
 <!--        <br>-->
 <!--        <p>-->

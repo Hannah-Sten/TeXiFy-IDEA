@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.CommandManager
+import org.junit.Test
 
 class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnresolvedReferenceInspection()) {
 
@@ -97,6 +98,13 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
 
     fun testNewcommand() {
         myFixture.configureByText(LatexFileType, """\newcommand{\bla}[1]{\includegraphics{#1}}""")
+        myFixture.checkHighlighting()
+    }
+
+    @Test
+    fun `test using xr package`() {
+        myFixture.configureByFiles("xr-test.tex")
+        myFixture.copyFileToProject("presentations/presentation.tex")
         myFixture.checkHighlighting()
     }
 }

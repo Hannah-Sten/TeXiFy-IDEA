@@ -15,11 +15,9 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.io.File
-import java.util.*
 import java.util.regex.Pattern
 import javax.swing.JLabel
 import javax.swing.SwingConstants
-import kotlin.collections.HashSet
 
 /**
  * @author Hannah Schellekens
@@ -72,7 +70,7 @@ open class WordCountAction : AnAction(
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
         val psiFile = virtualFile.psiFile(project) ?: return
 
-        val dialog = if (SystemEnvironment.isTexcountAvailable) {
+        val dialog = if (SystemEnvironment.isAvailable("texcount")) {
             val root = psiFile.findRootFile().virtualFile
             val words = "texcount -1 -inc -sum ${root.path}".runCommand(workingDirectory = File(root.parent.path))?.toIntOrNull()
             makeDialog(psiFile, words)
