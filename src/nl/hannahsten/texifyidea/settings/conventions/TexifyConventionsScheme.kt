@@ -5,9 +5,34 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
 import nl.hannahsten.texifyidea.util.magic.env
 
+/**
+ * A scheme instance stores settings for a specific scope.
+ *
+ * Concrete scheme implementations decide on which scopes make sense. For example, a scheme could represent different
+ * color settings for code or different inspection rules. In the context of Texify conventions, a scheme stores
+ * either project or IDE level conventions.
+ *
+ * Instances must be serializable since they are persisted as part of [TexifyConventionsGlobalState] or
+ * [TexifyConventionsProjectState].
+ */
 data class TexifyConventionsScheme(
+
+    /**
+     * The name of the scheme
+     */
     var myName: String = DEFAULT_SCHEME_NAME,
+
+    /**
+     * The maximum section size before the corresponding inspection issues a warning.
+     */
     var maxSectionSize: Int = 4000,
+
+    /**
+     * List of configured conventions.
+     * The default conventions mirror the settings currently read from *Magic classes and the existing settings UI.
+     * For example, which label conventions are enabled by default corresponds to the minimum section level which
+     * should receive a label, but provides more fine-grained control.
+     */
     var labelConventions: MutableList<LabelConvention> = mutableListOf(
         LabelConvention(true, LabelConventionType.COMMAND, CHAPTER.command, "ch"),
         LabelConvention(true, LabelConventionType.COMMAND, SECTION.command, "sec"),

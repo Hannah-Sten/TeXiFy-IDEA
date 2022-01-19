@@ -7,6 +7,14 @@ import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
 import javax.naming.OperationNotSupportedException
 
+/**
+ *  Controller for managing the convention settings. The panel allows to select and edit the current scheme and copy settings
+ *  between the schemes. The supplied [TexifyConventionsSettings] instance represents the corresponding model,
+ *  containing the available schemes.
+ *
+ *  @see TexifyConventionsScheme
+ *  @see TexifyConventionsSettings
+ */
 class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
     SimpleSchemesPanel<TexifyConventionsScheme>(),
     SchemesModel<TexifyConventionsScheme> {
@@ -77,6 +85,7 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
     override fun canRenameScheme(scheme: TexifyConventionsScheme) = false
 
     override fun canResetScheme(scheme: TexifyConventionsScheme) = false
+
     override fun differsFromDefault(scheme: TexifyConventionsScheme): Boolean {
         throw OperationNotSupportedException()
     }
@@ -113,13 +122,27 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
         }
 
         override fun getSchemeType() = type
+
         override fun resetScheme(scheme: TexifyConventionsScheme) {
             throw OperationNotSupportedException()
         }
 
+        /**
+         * Duplicates the currently active scheme.
+         *
+         * This method is useful only if there can be other schemes besides the projet and the global default scheme,
+         * which is currently not supported.
+         */
         override fun duplicateScheme(scheme: TexifyConventionsScheme, newName: String) {
             throw OperationNotSupportedException()
         }
+
+        /**
+         * Renames the currently active scheme.
+         *
+         * This method is useful only if there can be other schemes besides the projet and the global default scheme,
+         * which is currently not supported.
+         */
 
         override fun renameScheme(scheme: TexifyConventionsScheme, newName: String) {
             throw OperationNotSupportedException()
@@ -128,8 +151,6 @@ class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
 
     /**
      * A listener that listens to events that occur to this panel.
-     *
-     * @param T the type of scheme about which events are generated
      */
     interface Listener {
 

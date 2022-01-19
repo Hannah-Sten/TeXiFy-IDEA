@@ -24,20 +24,54 @@ enum class LabelConventionType {
 }
 
 /**
- * The parameters need default values for XML serialization
+ * A label convention stores the Texify conventions for a specific label type.
+ *
+ * The parameters need default values for XML serialization.
  */
 data class LabelConvention(
+
+    /**
+     * Whether the convention is enabled
+     */
     var enabled: Boolean = false,
+
+    /**
+     * The type of Latex element this convention applies to
+     */
     var type: LabelConventionType? = null,
+
+    /**
+     * The command name this convention applies to
+     */
     var name: String? = null,
+
+    /**
+     * The prefix to use for an inserted label
+     */
     var prefix: String? = null
 )
 
+/**
+ * Configurable for configuring Texify convention settings.
+ *
+ * The goal of this configurable is to make certain parts of the conventions currently hardcoded in the *Magic classes
+ * configurable.
+ *
+ * The Configurable can manage settings for both, project and IDE scope. To manage the settings for the project scope,
+ * the Configurable is registered as a project configurable. Changes made in the UI are transferred to a
+ * [TexifyConventionsSettings] object.
+ */
 class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, Configurable.VariableProjectAppLevel {
 
     private val settingsManager: TexifyConventionsSettingsManager =
         TexifyConventionsSettingsManager.getInstance(project)
+
+    /**
+     * A settings instance to record active changes. This instance is copied to the actual instance whenever settings
+     * should be applied.
+     */
     private val unsavedSettings: TexifyConventionsSettings = TexifyConventionsSettings()
+
     private lateinit var schemesPanel: TexifyConventionsSchemesPanel
     private lateinit var mainPanel: JPanel
     private lateinit var maxSectionSize: JBIntSpinner
@@ -46,6 +80,10 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     override fun createComponent(): JComponent {
 
         schemesPanel = TexifyConventionsSchemesPanel(unsavedSettings)
+
+        /**
+         * Save the current scheme and load the new scheme whenever the combobox changes
+         */
         schemesPanel.addListener(object : TexifyConventionsSchemesPanel.Listener {
             override fun onCurrentSchemeWillChange(scheme: TexifyConventionsScheme) {
                 saveScheme(scheme)
@@ -146,16 +184,25 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         return mainPanel
     }
 
+    /**
+     * Initialize the view elements with the settings from the supplied scheme
+     */
     fun loadScheme(scheme: TexifyConventionsScheme) {
         maxSectionSize.value = scheme.maxSectionSize
         labelConventionsTable.model.items = scheme.labelConventions
     }
 
+    /**
+     * Transfer the view elements into the supplied scheme
+     */
     fun saveScheme(scheme: TexifyConventionsScheme) {
         scheme.maxSectionSize = maxSectionSize.number
         scheme.labelConventions = labelConventionsTable.model.items
     }
 
+    /**
+     * Load the supplied settings and update the view component to reflect the setting values
+     */
     fun loadSettings(settings: TexifyConventionsSettings) {
         unsavedSettings.copyFrom(settings)
         loadScheme(unsavedSettings.currentScheme)
@@ -169,6 +216,9 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
     override fun reset() = loadSettings(settingsManager.getSettings())
 
+    /**
+     * Persist the currently active settings
+     */
     override fun apply() {
         saveScheme(unsavedSettings.currentScheme)
         settingsManager.saveSettings(unsavedSettings)
