@@ -17,40 +17,6 @@ import javax.swing.JTable
 import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.TableCellRenderer
 
-enum class LabelConventionType {
-
-    ENVIRONMENT,
-    COMMAND
-}
-
-/**
- * A label convention stores the Texify conventions for a specific label type.
- *
- * The parameters need default values for XML serialization.
- */
-data class LabelConvention(
-
-    /**
-     * Whether the convention is enabled
-     */
-    var enabled: Boolean = false,
-
-    /**
-     * The type of Latex element this convention applies to
-     */
-    var type: LabelConventionType? = null,
-
-    /**
-     * The command name this convention applies to
-     */
-    var name: String? = null,
-
-    /**
-     * The prefix to use for an inserted label
-     */
-    var prefix: String? = null
-)
-
 /**
  * Configurable for configuring Texify convention settings.
  *
@@ -96,6 +62,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
             override fun valueOf(item: LabelConvention): String = item.prefix!!
+            override fun getTooltipText(): String = "The prefix labels for the given Latex element should have"
             override fun setValue(item: LabelConvention, value: String?) {
                 item.prefix = value ?: ""
             }
@@ -135,14 +102,17 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                 }
             }
 
-        val enabledColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("") {
-            override fun getColumnClass(): Class<*> = Boolean::class.java
+        val enabledColumnInfo =
+            object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("Should have label") {
+                override fun getColumnClass(): Class<*> = Boolean::class.java
+                override fun getTooltipText(): String =
+                    "If enabled, TeXiFy issues a warning if the given Latex element does not have a label"
 
-            override fun valueOf(item: LabelConvention): Boolean = item.enabled
-            override fun setValue(item: LabelConvention, value: Boolean) {
-                item.enabled = value
+                override fun valueOf(item: LabelConvention): Boolean = item.enabled
+                override fun setValue(item: LabelConvention, value: Boolean) {
+                    item.enabled = value
+                }
             }
-        }
 
         val itemEditor = object : CollectionItemEditor<LabelConvention> {
             override fun getItemClass(): Class<out LabelConvention> = LabelConvention::class.java

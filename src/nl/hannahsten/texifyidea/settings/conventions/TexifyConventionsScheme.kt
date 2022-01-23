@@ -6,11 +6,12 @@ import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTIN
 import nl.hannahsten.texifyidea.util.magic.env
 
 /**
- * A scheme instance stores settings for a specific scope.
+ * A scheme instance for storing settings regarding Texify conventions. Default values of this class represent the
+ * default settings
  *
- * Concrete scheme implementations decide on which scopes make sense. For example, a scheme could represent different
- * color settings for code or different inspection rules. In the context of Texify conventions, a scheme stores
- * either project or IDE level conventions.
+ * Scheme instances generally store settings for a specific scope. Concrete scheme implementations decide on which
+ * scopes make sense. For example, a scheme could represent different color settings for code or different inspection
+ * rules. In the context of Texify conventions, a scheme stores either project or IDE level conventions.
  *
  * Instances must be serializable since they are persisted as part of [TexifyConventionsGlobalState] or
  * [TexifyConventionsProjectState].

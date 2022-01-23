@@ -15,7 +15,7 @@ import javax.naming.OperationNotSupportedException
  *  @see TexifyConventionsScheme
  *  @see TexifyConventionsSettings
  */
-class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
+internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSettings) :
     SimpleSchemesPanel<TexifyConventionsScheme>(),
     SchemesModel<TexifyConventionsScheme> {
 
