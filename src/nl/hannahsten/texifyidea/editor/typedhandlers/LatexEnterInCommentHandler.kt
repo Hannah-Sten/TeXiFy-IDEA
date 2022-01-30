@@ -52,7 +52,8 @@ class LatexEnterInCommentHandler : EnterHandlerDelegateAdapter() {
         if (!currentCaret.isValid) return
         try {
             PsiUtilCore.ensureValid(file)
-        } catch (e: PsiInvalidElementAccessException) {
+        }
+        catch (e: PsiInvalidElementAccessException) {
             return
         }
 

@@ -77,7 +77,8 @@ class DeleteGeneratedFiles : AnAction() {
                 path?.children?.forEach {
                     try {
                         it.delete(this)
-                    } catch (e: IOException) {
+                    }
+                    catch (e: IOException) {
                         notDeleted.add(it)
                     }
                 }
