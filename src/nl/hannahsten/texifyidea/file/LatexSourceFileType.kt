@@ -11,9 +11,11 @@ object LatexSourceFileType : LanguageFileType(PlainTextLanguage.INSTANCE) {
 
     override fun getName() = "LaTeX source file (dtx)"
 
-    override fun getDescription() = "LaTeX source file"
+    override fun getDescription() = "LaTeX source file (dtx)"
 
     override fun getDefaultExtension() = "dtx"
 
     override fun getIcon() = TexifyIcons.FILE
+
+    override fun getDisplayName() = name
 }

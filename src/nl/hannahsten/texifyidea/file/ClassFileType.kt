@@ -16,4 +16,6 @@ object ClassFileType : LanguageFileType(LatexLanguage) {
     override fun getDefaultExtension() = "cls"
 
     override fun getIcon() = TexifyIcons.CLASS_FILE
+
+    override fun getDisplayName() = name
 }
