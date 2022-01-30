@@ -57,7 +57,7 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             ~\ref{sec:some-sec}
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
+        CommandManager.updateAliases(setOf("\\mylabel"), project)
         myFixture.checkHighlighting()
     }
 
