@@ -16,6 +16,7 @@
         <!-- LaTeX Analyze menu -->
         <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex analysis actions" popup="true"
                class="nl.hannahsten.texifyidea.action.group.LatexAnalyzeMenuGroup">
+            <override-text place="GoToAction" text="Analyze _LaTeX"/>
             <!-- Do not add it to the group here, because that will be handled in AnalyzeMenuRegistration. -->
             <!--<add-to-group group-id="AnalyzeMenu" anchor="last"/>-->
 
@@ -28,6 +29,7 @@
         <!-- Generate Latex -->
         <group id="texify.LatexGenerate" text="_LaTeX" description="Latex generation actions" popup="true">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <override-text place="GoToAction" text="Generate _LaTeX"/>
 
             <!-- Table wizard -->
             <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableWizardPopup"
