@@ -5,3 +5,5 @@
 
 
 ### Bug fixes
+
+* Fix crashes (#2208)
