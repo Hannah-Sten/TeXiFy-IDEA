@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
@@ -57,9 +58,9 @@ enum class LatexGenericRegularCommand(
     CITE("cite", "extratext".asOptional(), "keys".asRequired()),
     CLEARDOUBLEPAGE("cleardoublepage"),
     CLEARPAGE("clearpage"),
-    COLOR("color", "color".asRequired(), dependency = LatexPackage.COLOR),
+    COLOR_CMD("color", "color".asRequired(), dependency = LatexPackage.COLOR),
     COLOR2("color", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
-    COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = COLOR),
     COLORBOX2("colorbox", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     COLORMASK("colormask", dependency = XCOLOR),
     COLORSERIESCYCLE("colorseriescycle", dependency = XCOLOR),
@@ -93,7 +94,7 @@ enum class LatexGenericRegularCommand(
     EXTRACTCOLORSPECS("extractcolorspecs", "color".asRequired(), "model-cmd".asRequired(), "color-cmd".asRequired(), dependency = XCOLOR),
     FAMILY("family"),
     FBOX("fbox", "text".asRequired(Argument.Type.TEXT)),
-    FCOLORBOX("fcolorbox", "frame color".asRequired(), "background color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    FCOLORBOX("fcolorbox", "frame color".asRequired(), "background color".asRequired(), "text".asRequired(), dependency = COLOR),
     FCOLORBOX2("fcolorbox", "model-list".asOptional(), "frame spec-list".asRequired(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     FCOLORBOX3("fcolorbox", "frame model-list".asOptional(), "frame spec-list".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     FCOLORBOX4("fcolorbox", "frame color".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
@@ -202,8 +203,8 @@ enum class LatexGenericRegularCommand(
     NOLINEBREAK("nolinebreak", "number".asOptional()),
     NONUMBER("nonumber"),
     NOPAGEBREAK("nopagebreak", "number".asOptional()),
-    NOPAGECOLOR("nopagecolor", dependency = XCOLOR),
-    NORMALCOLOR("normalcolor"),
+    NOPAGECOLOR("nopagecolor", dependency = COLOR),
+    NORMALCOLOR("normalcolor", dependency = COLOR),
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
     OARG("oarg", "arg".asRequired()),
@@ -214,7 +215,7 @@ enum class LatexGenericRegularCommand(
     ODDSIDEMARGIN("oddsidemargin"),
     ONECOLUMN("onecolumn"),
     PAGEBREAK("pagebreak", "number".asOptional()),
-    PAGECOLOR("pagecolor", "color".asRequired(), dependency = XCOLOR),
+    PAGECOLOR("pagecolor", "color".asRequired(), dependency = COLOR),
     PAGECOLOR2("pagecolor", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     PAGENAME("pagename"),
     PAGENUMBERING("pagenumbering", "numstyle".asRequired()),
@@ -318,7 +319,7 @@ enum class LatexGenericRegularCommand(
     TEXTBRACERIGHT("textbraceright", display = "}"),
     TEXT_BULLET("textbullet", display = "•"),
     CIRCLED_TEXT("textcircled", "a".asRequired()),
-    TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = COLOR),
     TEXTCOLOR2("textcolor", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     TEXT_COPYRIGHT("textcopyright", display = "©"),
     TEXTDAGGER("textdagger", display = "†"),
