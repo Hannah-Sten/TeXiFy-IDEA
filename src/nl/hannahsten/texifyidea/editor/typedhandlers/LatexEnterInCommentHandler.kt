@@ -9,6 +9,8 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiInvalidElementAccessException
+import com.intellij.psi.util.PsiUtilCore
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.get
@@ -45,7 +47,16 @@ class LatexEnterInCommentHandler : EnterHandlerDelegateAdapter() {
         // Check location of the % on the previous line, especially the number of spaces before and after it
         // because that's what we want to have on the current line as well
         // (note the cursor is on the second line, after the enter has been processed)
-        val previousLineNumber = (editor.caretModel.currentCaret.logicalPosition.line - 1).coerceAtLeast(0)
+        val currentCaret = editor.caretModel.currentCaret
+
+        if (!currentCaret.isValid) return
+        try {
+            PsiUtilCore.ensureValid(file)
+        } catch (e: PsiInvalidElementAccessException) {
+            return
+        }
+
+        val previousLineNumber = (currentCaret.logicalPosition.line - 1).coerceAtLeast(0)
         val lineStart = editor.document.getLineStartOffset(previousLineNumber)
         val lineEnd = editor.document.getLineEndOffset(previousLineNumber)
         val previousLine = editor.document[IntRange(lineStart, lineEnd)]
