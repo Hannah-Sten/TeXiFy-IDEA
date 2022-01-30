@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -9,7 +8,7 @@ import kotlin.test.assertTrue
 /**
  * @author Hannah Schellekens
  */
-abstract class TexifyRegexInspectionTestBase(regexInspection: TexifyRegexInspection) : TexifyInspectionTestBase(regexInspection) {
+abstract class TexifyRegexInspectionTestBase(regexInspection: TexifyRegexInspection) {
 
     val pattern = regexInspection.pattern
 

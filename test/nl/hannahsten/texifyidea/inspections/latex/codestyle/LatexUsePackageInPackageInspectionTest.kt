@@ -1,8 +1,9 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
+import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.inspections.latex.TexifyRegexInspectionTestBase
 
-class LatexUsePackageInPackageInspectionTest : TexifyRegexInspectionTestBase(LatexUsePackageInPackageInspection()) {
+class LatexUsePackageInPackageInspectionRegexTest : TexifyRegexInspectionTestBase(LatexUsePackageInPackageInspection()) {
 
     override val successfulMatches: List<String> = listOf(
         """\usepackage{xcolor, twee}""",
@@ -15,6 +16,9 @@ class LatexUsePackageInPackageInspectionTest : TexifyRegexInspectionTestBase(Lat
     override val failingMatches: List<String> = listOf(
         """\usepackage[a][b]{test}"""
     )
+}
+
+class LatexUsePackageInPackageInspectionQuickFixTest : TexifyInspectionTestBase(LatexUsePackageInPackageInspection()) {
 
     fun testRequiredArgumentQuickFix() = testQuickFix(
         before = """\usepackage{xcolor}""",
