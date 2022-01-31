@@ -4,7 +4,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 
 /**
  * The xparse package is included in the kernel since the 2020/10/1 release.
- * 
+ *
  * @author Hannah Schellekens
  */
 enum class LatexXparseCommand(
