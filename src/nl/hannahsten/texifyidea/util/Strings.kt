@@ -9,9 +9,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Capitalises the first character of the string.
+ * Capitalises the first character of the string, if present.
  */
-fun String.capitalizeFirst(): String = this[0].toUpperCase() + substring(1, length)
+fun String.capitalizeFirst(): String = if (this.isEmpty()) this else this[0].toUpperCase() + substring(1, length)
 
 /**
  * Converts the string to camel case.
@@ -105,7 +105,7 @@ fun List<String>.removeIndents(): List<String> {
 
     val list = ArrayList<String>(size)
     val (maxIndent, _) = asSequence()
-        .filter { !it.isBlank() }
+        .filter { it.isNotBlank() }
         .map { Pair(it.getIndent().length, it) }
         .minByOrNull { it.first } ?: return this
 
@@ -167,7 +167,7 @@ fun String.formatAsFilePath(): String {
         .toLowerCase()
 
     // If there are no valid characters left, use a default name.
-    return if (formatted.isEmpty()) "myfile" else formatted
+    return formatted.ifEmpty { "myfile" }
 }
 
 /**
@@ -189,7 +189,7 @@ fun String.splitWhitespace() = split(Regex("\\s+"))
  *
  * @return The string with HTML tags removed.
  *
- * @see [Magic.Pattern.htmlTag]
+ * @see [PatternMagic.htmlTag]
  */
 fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 
