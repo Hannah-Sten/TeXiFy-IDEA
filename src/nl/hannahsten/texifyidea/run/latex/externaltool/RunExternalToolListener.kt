@@ -50,11 +50,8 @@ class RunExternalToolListener(
 
             // Only create new one if there is none yet
             val runConfigSettingsList =
-                if (latexRunConfig.externalToolRunConfigs.isEmpty()) {
+                latexRunConfig.externalToolRunConfigs.ifEmpty {
                     generateExternalToolConfigs()
-                }
-                else {
-                    latexRunConfig.externalToolRunConfigs
                 }
 
             // Run all run configurations
