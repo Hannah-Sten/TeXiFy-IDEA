@@ -21,7 +21,8 @@ class DefaultFileCreator(
      * Creates the main.tex file and applies the default file template.
      */
     fun addMainFile(isBibtexEnabled: Boolean) {
-        val mainFilePath = path + File.separator + "main.tex"
+        val fileName = "main.tex"
+        val mainFilePath = path + File.separator + fileName
         val mainFile = File(mainFilePath)
 
         // Create main file.
@@ -40,7 +41,7 @@ class DefaultFileCreator(
         else {
             LatexTemplatesFactory.fileTemplateTex
         }
-        val templateText = LatexTemplatesFactory.getTemplateText(project, template)
+        val templateText = LatexTemplatesFactory.getTemplateText(project, template, fileName)
 
         try {
             FileOutputStream(mainFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }
@@ -55,7 +56,8 @@ class DefaultFileCreator(
      * Creates the main.bib file and applies the default file template.
      */
     fun addBibFile() {
-        val bibFilePath = path + File.separator + "main.bib"
+        val fileName = "main.bib"
+        val bibFilePath = path + File.separator + fileName
         val bibFile = File(bibFilePath)
 
         try {
@@ -68,7 +70,7 @@ class DefaultFileCreator(
 
         // Apply template.
         val template = LatexTemplatesFactory.fileTemplateBib
-        val templateText = LatexTemplatesFactory.getTemplateText(project, template)
+        val templateText = LatexTemplatesFactory.getTemplateText(project, template, fileName)
 
         try {
             FileOutputStream(bibFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }
