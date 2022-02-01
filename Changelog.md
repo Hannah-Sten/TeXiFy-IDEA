@@ -10,4 +10,8 @@
 * Keep optional arguments when converting \usepackage to \RequirePackage. (#2203)
 * Don't warn when a \renewcommand follows a \newcommand. (#2200)
 * Fix some of the hardcoded package dependencies. (#2212)
+* Fix dummy text generation on Windows. (#2213)
+* Don't auto-generate a colon for BIBINPUTS. (#2178)
 * Fix crashes (#2208, #2211)
+
+Thanks to @KindRoach and @antonio-caceres for contributing!
