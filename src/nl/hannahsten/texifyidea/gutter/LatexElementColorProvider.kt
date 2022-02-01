@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import java.awt.Color
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
