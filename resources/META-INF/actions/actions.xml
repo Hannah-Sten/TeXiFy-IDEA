@@ -14,20 +14,18 @@
         </action>
 
         <!-- LaTeX Analyze menu -->
-        <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex analysis actions" popup="true"
-               class="nl.hannahsten.texifyidea.action.group.LatexAnalyzeMenuGroup">
+        <action class="nl.hannahsten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
+                text="_Word Count" description="Estimate the word count of the currently active .tex file and inclusions.">
+            <keyboard-shortcut first-keystroke="control alt W" keymap="$default"/>
+            <override-text place="GoToAction" text="LaTeX _Word Count"/>
             <!-- Do not add it to the group here, because that will be handled in AnalyzeMenuRegistration. -->
             <!--<add-to-group group-id="AnalyzeMenu" anchor="last"/>-->
-
-            <action class="nl.hannahsten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
-                    text="_Word Count" description="Estimate the word count of the currently active .tex file and inclusions.">
-                <keyboard-shortcut first-keystroke="control alt W" keymap="$default"/>
-            </action>
-        </group>
+        </action>
 
         <!-- Generate Latex -->
         <group id="texify.LatexGenerate" text="_LaTeX" description="Latex generation actions" popup="true">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <override-text place="GoToAction" text="Generate _LaTeX"/>
 
             <!-- Table wizard -->
             <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableWizardPopup"
