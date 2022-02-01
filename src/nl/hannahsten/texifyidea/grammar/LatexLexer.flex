@@ -381,6 +381,8 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 <PREAMBLE_OPTION> {
     "$"                 { return NORMAL_TEXT_WORD; }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
     {OPEN_BRACE}        { preambleOptionBracesCount++; return OPEN_BRACE; }
     {CLOSE_BRACE}       {
         if (preambleOptionBracesCount == 0) {
@@ -409,6 +411,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // The array package provides <{...} and >{...} preamble options for tables
 // which are often used with $, in which case the $ is not an inline_math_start (because there's only one $ in the group, which would be a parse errror)
+// or a >{\begin{env}l<{\end{env}} structure
 \<\{                   { yypushState(PREAMBLE_OPTION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
 >\{                    { yypushState(PREAMBLE_OPTION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
 

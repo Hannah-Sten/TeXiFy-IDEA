@@ -130,7 +130,7 @@ tasks.processResources {
 
 // https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
 tasks.runIde {
-    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions")
+    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions", "-Xmx2g")
 
     // Set to true to generate hprof files on unload fails
     systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
