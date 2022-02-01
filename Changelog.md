@@ -1,4 +1,4 @@
-## Beta 0.7.14
+## Beta 0.7.15
 
 ### Additions
 
