@@ -44,5 +44,4 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
             \end{enumerate}
         """.trimIndent())
     }
-
 }
