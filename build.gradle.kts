@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.14-alpha.1"
+version = "0.7.15-alpha.1"
 
 repositories {
     mavenCentral()
@@ -139,6 +139,11 @@ tasks.runIde {
 tasks.test {
     // https://intellij-support.jetbrains.com/hc/en-us/community/posts/4407334950290-jarFiles-is-not-set-for-PluginDescriptor
     systemProperty("idea.force.use.core.classloader", "true")
+}
+
+// Avoid ClassNotFoundException: com.maddyhome.idea.copyright.psi.UpdateCopyrightsProvider
+tasks.buildSearchableOptions {
+    jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 }
 
 intellij {

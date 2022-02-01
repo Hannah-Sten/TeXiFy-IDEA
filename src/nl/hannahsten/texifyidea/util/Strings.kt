@@ -11,7 +11,7 @@ import kotlin.math.min
 /**
  * Capitalises the first character of the string, if present.
  */
-fun String.capitalizeFirst(): String = if (this.isEmpty()) this else this[0].toUpperCase() + substring(1, length)
+fun String.capitalizeFirst(): String = if (this.isEmpty()) this else this[0].uppercaseChar() + substring(1, length)
 
 /**
  * Converts the string to camel case.
