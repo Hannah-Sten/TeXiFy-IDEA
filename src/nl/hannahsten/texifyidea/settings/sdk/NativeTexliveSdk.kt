@@ -48,7 +48,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
         // If this is a valid LaTeX installation, pdflatex should be present
         val errorMessage = "Could not find $path/pdflatex"
-        return LatexSdkUtil.isPdflatexPresent(path, errorMessage, name)
+        return LatexSdkUtil.isPdflatexPresent(path, errorMessage, name, suppressNotification = suggestHomePaths().plus(suggestHomePath()))
     }
 
     override fun getVersionString(sdkHome: String?): String {

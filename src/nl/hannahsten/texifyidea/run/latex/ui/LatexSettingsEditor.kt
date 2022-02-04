@@ -101,7 +101,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         if (auxilPath != null) {
             val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
-            auxilPathTextField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
+            auxilPathTextField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton

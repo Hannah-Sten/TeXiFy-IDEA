@@ -90,8 +90,10 @@ object LatexSdkUtil {
      * If not, also throw a notification in the currently open project (if any), because we cannot modify the actual message in the dialog which complains when an SDK is not valid.
      *
      * @param errorMessage Message to show to the user when directory is null. If this is null, no notification will be shown.
+     * @param suppressNotification If the directory is one of these, then don't send an error message (for example because it
+     * may be a directory that is automatically attempted in the background, so we don't need to give user feedback).
      */
-    fun isPdflatexPresent(directory: String?, errorMessage: String?, sdkName: String): Boolean {
+    fun isPdflatexPresent(directory: String?, errorMessage: String?, sdkName: String, suppressNotification: Collection<String?>): Boolean {
         val output = if (directory == null) {
             errorMessage
         }
@@ -104,6 +106,7 @@ object LatexSdkUtil {
 
         // Don't send notification if there is no message on purpose
         if (errorMessage == null) return false
+        if (directory in suppressNotification) return false
 
         // Show notification to explain the reason why the SDK is not valid, but only if any project is open
         // We have to do this because we can't customize the popup which says the SDK is not valid
