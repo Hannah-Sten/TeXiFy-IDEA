@@ -1,7 +1,8 @@
-package nl.hannahsten.texifyidea.lang
+package nl.hannahsten.texifyidea.lang.alias
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -290,7 +291,6 @@ object CommandManager : Iterable<String?>, Serializable {
                     ?.requiredParamContentList
                     ?.flatMap { it.childrenOfType(LatexCommands::class) }
                     ?.asSequence()
-                    ?.filterNotNull()
 
                 // Positions of label parameters in the custom commands (starting from 0)
                 val positions = parameterCommands
@@ -322,7 +322,7 @@ object CommandManager : Iterable<String?>, Serializable {
                     .map {
                         if (it.indexOf('#') != -1) {
                             val prefix = it.substring(0, it.indexOf('#'))
-                            if (prefix.isNotBlank()) prefix else ""
+                            prefix.ifBlank { "" }
                         }
                         else ""
                     }.firstOrNull() ?: ""

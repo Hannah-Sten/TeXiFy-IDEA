@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexKeyvalPair
 import nl.hannahsten.texifyidea.util.childrenOfType
 

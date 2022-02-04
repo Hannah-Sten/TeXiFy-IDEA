@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.util.labels
 
 import com.intellij.psi.PsiElement
 import com.jetbrains.rd.util.first
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.firstChildOfType

@@ -3,7 +3,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
