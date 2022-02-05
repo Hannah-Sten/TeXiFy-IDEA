@@ -46,4 +46,16 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
+
+    fun testGerman() {
+        myFixture.configureByText(LatexFileType, """
+            Das ist eine Function ${'$'} f${'$'}.
+            Nur zum Testen.
+        
+            Dies ist ein deutscher Satz.%comment
+            Und hier ist ein zweiter Satz.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }
