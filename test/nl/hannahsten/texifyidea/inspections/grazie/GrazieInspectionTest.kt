@@ -49,11 +49,22 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     fun testGerman() {
         myFixture.configureByText(LatexFileType, """
-            Das ist eine Function ${'$'} f${'$'}.
-            Nur zum Testen.
+            \begin{document}
+                Das ist eine Function ${'$'} f${'$'}.
+                Nur zum Testen.
         
-            Dies ist ein deutscher Satz.%comment
-            Und hier ist ein zweiter Satz.
+                Dies ist ein deutscher Satz.% This comment is a sentence so should end with a full stop.
+                Und hier ist ein zweiter Satz.
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testGerman2() {
+        myFixture.configureByText(LatexFileType, """
+            This is a function $ f${'$'}. Nur fur Testing.
+            Das ist eine Function.
             """.trimIndent()
         )
         myFixture.checkHighlighting()
