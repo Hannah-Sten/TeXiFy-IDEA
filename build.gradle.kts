@@ -130,7 +130,7 @@ tasks.processResources {
 
 // https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
 tasks.runIde {
-    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions", "-Xmx2g")
+    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions", "-Xmx2g", "-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 
     // Set to true to generate hprof files on unload fails
     systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
@@ -161,7 +161,7 @@ intellij {
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
 //    version.set("2021.2")
-    version.set("LATEST-EAP-SNAPSHOT")
+    version.set("221.3427.89-EAP-SNAPSHOT")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
