@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.hasParent
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.withPattern
+import java.util.*
 
 /**
  * @author Hannah Schellekens

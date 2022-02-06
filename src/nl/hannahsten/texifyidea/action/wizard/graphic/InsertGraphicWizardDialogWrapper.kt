@@ -19,10 +19,12 @@ import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.setInputFilter
 import nl.hannahsten.texifyidea.util.*
 import java.awt.Dimension
+import java.util.*
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JTextField
+import kotlin.collections.LinkedHashMap
 
 /**
  * @author Hannah Schellekens

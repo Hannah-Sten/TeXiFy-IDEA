@@ -5,7 +5,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.scope.PsiScopeProcessor
-import nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder
+import nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder
 import nl.hannahsten.texifyidea.util.endOffset
 import javax.swing.Icon
 
@@ -96,7 +96,7 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getTextRange() = TextRange(start.textOffset, end.endOffset())
 
-    override fun <T : Any?> putCopyableUserData(key: Key<T>?, value: T?) = elements().forEach {
+    override fun <T : Any> putCopyableUserData(key: Key<T>, value: T?) = elements().forEach {
         it.putCopyableUserData(key, value)
     }
 
@@ -164,5 +164,5 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun textContains(c: Char) = text.contains(c)
 
-    override fun <T : Any?> getCopyableUserData(key: Key<T>?): T? = start.getCopyableUserData(key)
+    override fun <T : Any> getCopyableUserData(key: Key<T>): T? = start.getCopyableUserData(key)
 }

@@ -69,6 +69,36 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun `test angle parameter formatting`() {
+        """
+            \documentclass{beamer}
+            
+            \begin{document}
+                \begin{frame}
+                    \begin{block}{Title}<1->
+                    Appel.
+                    \end{block}
+                    \begin{block}{Title}<2->
+                    Peer.
+                    \end{block}
+                \end{frame}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{beamer}
+            
+            \begin{document}
+                \begin{frame}
+                    \begin{block}{Title}<1->
+                        Appel.
+                    \end{block}
+                    \begin{block}{Title}<2->
+                        Peer.
+                    \end{block}
+                \end{frame}
+            \end{document}
+        """.trimIndent()
+    }
+
     fun `test indentation in parameter`() {
         """
             \documentclass[
@@ -185,6 +215,24 @@ fun Int?.ifPositiveAddTwo(): Int =
                     }
                 }
             \end{algorithm}
+        """.trimIndent()
+    }
+
+    fun `test section used in command definition`() {
+        """
+            \documentclass{article}
+            \newcommand{\sectionlorem}[2]{\section{#1}\label{#2}}
+
+            \begin{document}
+                \sectionlorem{Title}{sec:label}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{article}
+            \newcommand{\sectionlorem}[2]{\section{#1}\label{#2}}
+
+            \begin{document}
+                \sectionlorem{Title}{sec:label}
+            \end{document}
         """.trimIndent()
     }
 

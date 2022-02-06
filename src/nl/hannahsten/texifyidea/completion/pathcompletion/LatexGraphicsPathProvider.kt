@@ -3,10 +3,12 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.cmd
 import java.io.File
 
 /**
@@ -18,7 +20,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
         val paths = getProjectRoots()
 
         val rootDirectory = file.findRootFile().containingDirectory.virtualFile
-        getGraphicsPaths(file).forEach {
+        getGraphicsPathsInFileSet(file).forEach {
             paths.add(rootDirectory.findVirtualFileByAbsoluteOrRelativePath(it) ?: return@forEach)
         }
 
@@ -29,9 +31,9 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      * When using \includegraphics from graphicx package, a path prefix can be set with \graphicspath.
      * @return Graphicspaths defined in the fileset.
      */
-    private fun getGraphicsPaths(file: PsiFile): List<String> {
+    fun getGraphicsPathsInFileSet(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = file.commandsInFileSet().filter { it.name == "\\graphicspath" }
+        val graphicsPathCommands = file.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.GRAPHICSPATH.cmd }
 
         // Is a graphicspath defined?
         if (graphicsPathCommands.isNotEmpty()) {

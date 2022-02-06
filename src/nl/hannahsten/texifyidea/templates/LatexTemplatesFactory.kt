@@ -37,7 +37,7 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
             templateName: String, fileType: FileType
         ): PsiFile {
             val project = directory.project
-            val templateText = getTemplateText(project, templateName)
+            val templateText = getTemplateText(project, templateName, fileName)
 
             val fileFactory = PsiFileFactory.getInstance(project)
             val file = fileFactory.createFileFromText(fileName, fileType, templateText)
@@ -60,10 +60,11 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
          * @return The contents of the template with applied properties.
          */
         @JvmStatic
-        fun getTemplateText(project: Project, templateName: String): String {
+        fun getTemplateText(project: Project, templateName: String, fileName: String): String {
             val templateManager = FileTemplateManager.getInstance(project)
             val template = templateManager.getInternalTemplate(templateName)
             val properties = Properties(templateManager.defaultProperties)
+            properties["FILE_NAME"] = fileName
 
             try {
                 return template.getText(properties)

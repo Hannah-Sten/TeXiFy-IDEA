@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.lang.Integer.max
@@ -63,7 +63,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                     // We have to subtract from the total length, because we do not know whether optional
                     // parameters were included with [a][b][c] or [a,b,c] in which case the
                     // indices of the parts are different with respect to the start of the command
-                    var offset = command.textLength - parts.sumBy { it.length + 1 }
+                    var offset = command.textLength - parts.sumOf { it.length + 1 }
                     for (j in 0 until i) {
                         offset += parts[j].length + 1
                     }

@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.commands.*
@@ -58,8 +58,8 @@ open class LatexCompletionContributor : CompletionContributor() {
         PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
             .andNot(PlatformPatterns.psiElement().inside(LatexMathEnvironment::class.java))
             .withPattern { psiElement, _ -> psiElement.inMathContext().not() }
-            .withLanguage(LatexLanguage.INSTANCE),
-        LatexCommandProvider(LatexMode.NORMAL)
+            .withLanguage(LatexLanguage),
+        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.NORMAL)
     )
 
     /**
@@ -70,8 +70,8 @@ open class LatexCompletionContributor : CompletionContributor() {
             CompletionType.BASIC,
             PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
                 .withPattern { psiElement, _ -> psiElement.inMathContext() }
-                .withLanguage(LatexLanguage.INSTANCE),
-            LatexCommandProvider(LatexMode.MATH)
+                .withLanguage(LatexLanguage),
+            LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
         )
 
         registerMathModeInsideEnvironmentCompletion()
@@ -81,8 +81,8 @@ open class LatexCompletionContributor : CompletionContributor() {
         CompletionType.BASIC,
         PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
             .inside(LatexMathEnvironment::class.java)
-            .withLanguage(LatexLanguage.INSTANCE),
-        LatexCommandProvider(LatexMode.MATH)
+            .withLanguage(LatexLanguage),
+        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
     )
 
     /**
@@ -102,7 +102,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 if (args.isNotEmpty()) processingContext?.put("type", args.first())
                 args.isNotEmpty()
             }
-            .withLanguage(LatexLanguage.INSTANCE),
+            .withLanguage(LatexLanguage),
         LatexFileProvider()
     )
 
@@ -122,7 +122,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 if (args.isNotEmpty()) processingContext?.put("type", args.first())
                 args.isNotEmpty()
             }
-            .withLanguage(LatexLanguage.INSTANCE),
+            .withLanguage(LatexLanguage),
         LatexFolderProvider()
     )
 
@@ -143,7 +143,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 if (args.isNotEmpty()) processingContext?.put("type", args.first())
                 args.isNotEmpty()
             }
-            .withLanguage(LatexLanguage.INSTANCE),
+            .withLanguage(LatexLanguage),
         LatexGraphicsPathProvider()
     )
 
@@ -180,7 +180,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .withPattern("Magic comment completion pattern") { comment, _ ->
                 comment.containsMagicComment() && comment.text.contains('=').not()
             }
-            .withLanguage(LatexLanguage.INSTANCE),
+            .withLanguage(LatexLanguage),
         LatexMagicCommentKeyProvider
     )
 
@@ -275,7 +275,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .withPattern("Magic comment $commentName pattern") { comment, _ ->
                 comment.containsMagicComment() && comment.text.contains(regex)
             }
-            .withLanguage(LatexLanguage.INSTANCE),
+            .withLanguage(LatexLanguage),
         completionProvider
     )
 
@@ -319,7 +319,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                     val argument = command.arguments.getOrNull(index) ?: return@withPattern false
                     argument.type == type
                 }
-                .withLanguage(LatexLanguage.INSTANCE),
+                .withLanguage(LatexLanguage),
             completionProvider
         )
     }
@@ -331,9 +331,9 @@ open class LatexCompletionContributor : CompletionContributor() {
         CompletionType.BASIC,
         PlatformPatterns.psiElement()
             .inside(LatexRequiredParam::class.java)
-            .inside(LatexBeginCommand::class.java)
-            .withLanguage(LatexLanguage.INSTANCE),
-        LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
+            .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
+            .withLanguage(LatexLanguage),
+        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.ENVIRONMENT_NAME)
     )
 
     /**
@@ -362,7 +362,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
                 CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
             }
-            .withLanguage(LatexLanguage.INSTANCE),
+            .withLanguage(LatexLanguage),
         provider
     )
 }

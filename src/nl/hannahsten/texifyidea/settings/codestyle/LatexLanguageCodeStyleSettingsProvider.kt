@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.codestyle
 
-import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.openapi.application.ApplicationBundle
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_ADD_SPACE
@@ -24,11 +23,11 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
         private val demoText = GeneralMagic.latexDemoText.removeHtmlTags()
     }
 
-    override fun getLanguage() = LatexLanguage.INSTANCE
+    override fun getLanguage() = LatexLanguage
 
     override fun getCodeSample(settingsType: SettingsType) = demoText
 
-    override fun getIndentOptionsEditor() = SmartIndentOptionsEditor()
+    override fun getIndentOptionsEditor() = LatexIndentOptionsEditor(this)
 
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {

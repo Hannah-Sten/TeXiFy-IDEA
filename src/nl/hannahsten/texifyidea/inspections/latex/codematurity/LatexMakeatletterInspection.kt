@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.codematurity
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
+import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

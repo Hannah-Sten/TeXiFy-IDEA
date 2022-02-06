@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -101,7 +102,7 @@ object PackageUtils {
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
 
         // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
-        // Avoid 'Write access is allowed inside write-action only" exception
+        // Avoid 'Write access is allowed inside write-action only' exception
         runWriteAction {
             // Avoid "Attempt to modify PSI for non-committed Document"
             PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
@@ -282,6 +283,13 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  */
 fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexPackage> {
     val commands = this.commandsInFileSet()
+    return includedPackages(commands, project, onlyDirectInclusions)
+}
+
+/**
+ * See [includedPackages].
+ */
+fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
     val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
         .map { LatexPackage(it) }
     return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()

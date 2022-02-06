@@ -3,11 +3,14 @@ package nl.hannahsten.texifyidea.run.sumatra
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isRoot
@@ -29,11 +32,13 @@ class SumatraForwardSearchListener(
         // First check if the user provided a custom path to SumatraPDF, if not, check if it is installed
         if (event.exitCode == 0 && (runConfig.sumatraPath != null || isSumatraAvailable)) {
             try {
-                SumatraConversation.openFile(runConfig.outputFilePath, sumatraPath = runConfig.sumatraPath)
+                SumatraConversation().openFile(runConfig.outputFilePath, sumatraPath = runConfig.sumatraPath)
             }
             catch (ignored: TeXception) {
             }
         }
+
+        (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = InternalPdfViewer.SUMATRA
 
         // Forward search.
         invokeLater {
@@ -63,7 +68,7 @@ class SumatraForwardSearchListener(
                     // Otherwise the person is out of luck ¯\_(ツ)_/¯
                     Thread.sleep(1250)
                     // Never focus, because forward search will work fine without focus, and the user might want to continue typing after doing forward search/compiling
-                    SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = false)
+                    SumatraConversation().forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = false)
                 }
                 catch (ignored: TeXception) {
                 }

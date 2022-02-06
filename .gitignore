@@ -1,4 +1,5 @@
 .gradle
+!.idea/icon.svg
 .idea
 out
 build

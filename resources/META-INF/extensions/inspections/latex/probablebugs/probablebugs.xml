@@ -52,7 +52,6 @@
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Label before caption"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
-
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexEscapeUnderscoreInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Unescaped _ character"
                          enabledByDefault="true"
@@ -67,6 +66,10 @@
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexMultipleGraphicsPathInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Multiple \graphicspath definitions"
+                         enabledByDefault="true"
+                         level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexBibinputsRelativePathInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Relative path to parent is not allowed when using BIBINPUTS"
                          enabledByDefault="true"
                          level="ERROR" />
     </extensions>

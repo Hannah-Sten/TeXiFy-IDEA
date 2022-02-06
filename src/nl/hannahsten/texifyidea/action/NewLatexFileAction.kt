@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory
 import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory.Companion.createFromTemplate
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.FileUtil.fileTypeByExtension
+import java.util.*
 
 /**
  * @author Hannah Schellekens

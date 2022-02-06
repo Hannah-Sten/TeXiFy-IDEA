@@ -10,6 +10,9 @@ import com.intellij.psi.LiteralTextEscaper;
 public interface LatexParameter extends PsiLanguageInjectionHost {
 
   @Nullable
+  LatexAngleParam getAngleParam();
+
+  @Nullable
   LatexOptionalParam getOptionalParam();
 
   @Nullable
@@ -22,7 +25,6 @@ public interface LatexParameter extends PsiLanguageInjectionHost {
 
   PsiLanguageInjectionHost updateText(@NotNull String text);
 
-  @NotNull
-  LiteralTextEscaper<LatexParameter> createLiteralTextEscaper();
+  @NotNull LiteralTextEscaper<LatexParameter> createLiteralTextEscaper();
 
 }

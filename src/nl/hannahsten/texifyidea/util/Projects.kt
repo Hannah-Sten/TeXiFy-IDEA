@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
@@ -11,10 +12,13 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.allChildFiles
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Get a project [GlobalSearchScope] for this project.
@@ -50,8 +54,10 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
  * Get all the virtual files that are in the project of a given file type.
  */
 fun Project.allFiles(type: FileType): Collection<VirtualFile> {
-    val scope = GlobalSearchScope.projectScope(this)
-    return FileTypeIndex.getFiles(type, scope)
+    return runReadAction {
+        val scope = GlobalSearchScope.projectScope(this)
+        return@runReadAction FileTypeIndex.getFiles(type, scope)
+    }
 }
 
 /**
@@ -83,4 +89,18 @@ fun Project.currentTextEditor(): TextEditor? {
 fun Project.hasLatexModule(): Boolean {
     return ModuleManager.getInstance(this).modules
             .any { it.moduleTypeName == LatexModuleType.ID }
+}
+
+/**
+ * True if we are probably in a unit test.
+ */
+fun Project.isTestProject() = name.contains("_temp_")
+
+/**
+ * Finds all section marker commands (as defined in [CommandMagic.sectionMarkers]) in the project.
+ *
+ * @return A list containing all the section marker [LatexCommands].
+ */
+fun Project.findSectionMarkers() = LatexCommandsIndex.getItems(this).filter {
+    it.commandToken.text in CommandMagic.sectionMarkers
 }

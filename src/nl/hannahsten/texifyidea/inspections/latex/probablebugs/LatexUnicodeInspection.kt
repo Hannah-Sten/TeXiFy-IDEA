@@ -66,11 +66,12 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
-            val compilerCompat = file.project.selectedRunConfig()?.compiler ?: return false
+            val compilerCompat = file.project.selectedRunConfig()?.compiler
             if (compilerCompat == LatexCompiler.LUALATEX || compilerCompat == LatexCompiler.XELATEX || TexliveSdk.version >= 2018) {
                 return true
             }
 
+            // If we can't figure it out by compiler, check included packages
             val included = file.includedPackages()
             return PackageMagic.unicode.stream().allMatch { p -> included.contains(p) }
         }
@@ -167,7 +168,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
      * When neither of these steps is successful, the character is too exotic to replace and an
      * appropriate fail message is shown.
      */
-    private class EscapeUnicodeFix internal constructor(private val inMathMode: Boolean) : LocalQuickFix {
+    private class EscapeUnicodeFix(private val inMathMode: Boolean) : LocalQuickFix {
 
         @Nls
         override fun getFamilyName(): String {
@@ -176,8 +177,17 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
+            val editor = FileEditorManager.getInstance(project).selectedTextEditor
 
-            val c = descriptor.textRangeInElement.substring(element.text)
+            val c = try {
+                descriptor.textRangeInElement.substring(element.text)
+            }
+            catch (e: IndexOutOfBoundsException) {
+                if (editor != null) {
+                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                }
+                return
+            }
 
             // Try to find in lookup for special command
             val replacement: String?
@@ -199,7 +209,6 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             // When no replacement is found, show error message
             val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
             if (replacement == null) {
-                val editor = FileEditorManager.getInstance(project).selectedTextEditor
                 if (editor != null) {
                     HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
                 }

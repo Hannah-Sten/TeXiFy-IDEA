@@ -22,7 +22,9 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
         for (reference in references) {
             val fileName = reference.key
             for (extension in reference.extensions) {
-                parentDir.findFileByRelativePath(fileName.appendExtension(extension))?.let { return it.psiFile(command.project) }
+                parentDir.findFileByRelativePath(fileName.appendExtension(extension))?.let {
+                    return it.psiFile(command.project)
+                }
             }
         }
     }

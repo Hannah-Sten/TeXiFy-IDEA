@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.bibtex.logtab
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.MessageCategory
 import nl.hannahsten.texifyidea.util.capitalizeFirst
+import java.util.*
 
 data class BibtexLogMessage(val message: String, val fileName: String? = null, val line: Int? = -1, val type: BibtexLogMessageType, val file: VirtualFile? = null) {
 

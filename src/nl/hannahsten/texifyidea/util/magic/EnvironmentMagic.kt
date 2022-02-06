@@ -6,7 +6,7 @@ object EnvironmentMagic {
 
     val listingEnvironments = hashSetOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }
 
-    val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU).map { it.env }
+    val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU, MATRIX, BMATRIX, PMATRIX, VMATRIX, VMATRIX_CAPITAL).map { it.env }
 
     /**
      * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
@@ -34,7 +34,8 @@ object EnvironmentMagic {
 
     // Note: used in the lexer
     @JvmField
-    val verbatim = hashSetOf(VERBATIM.env, VERBATIM_CAPITAL.env, LISTINGS.env, "plantuml", LUACODE.env,
+    val verbatim = hashSetOf(
+        VERBATIM.env, VERBATIM_CAPITAL.env, LISTINGS.env, "plantuml", LUACODE.env,
         LUACODE_STAR.env, "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted"
     )
 

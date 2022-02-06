@@ -1,14 +1,16 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <extensions defaultExtensionNs="com.intellij">
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEscapedSymbolFoldingBuilder"/>
-        <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.folding.BibtexEntryFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEnvironmentFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEscapedSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.folding.BibtexEntryFoldingBuilder"/>
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
+        <codeInsight.fillParagraph language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexParagraphFillHandler"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.LatexCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.BibtexCompletionContributor"/>
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
@@ -20,7 +22,7 @@
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexParameterInfoHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
         <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
-        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InsertEnumerationItem"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInEnumerationHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.UpDownAutoBracket"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.BibtexQuoteInsertHandler"/>

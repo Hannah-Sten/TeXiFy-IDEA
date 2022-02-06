@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.openapi.project.Project
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 
 /**
@@ -19,7 +20,7 @@ internal object BiberCompiler : Compiler<BibtexRunConfiguration> {
         // The extra directory added is the directory from which the path to the .bib resource file is searched as specified in the .bcf file.
         add("--input-directory=${runConfig.mainFile?.parent?.path ?: ""}")
 
-        runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
+        runConfig.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
         add(runConfig.mainFile?.nameWithoutExtension ?: return null)
     }

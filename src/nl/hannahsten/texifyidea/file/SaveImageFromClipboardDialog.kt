@@ -21,6 +21,7 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.BoxLayout
 import javax.swing.JPanel
@@ -29,7 +30,7 @@ import javax.swing.border.EmptyBorder
 /**
  * @author Hannah Schellekens
  */
-open class SaveImageFromClipboardDialog(
+class SaveImageFromClipboardDialog(
 
         /**
          * The current project.
@@ -40,7 +41,7 @@ open class SaveImageFromClipboardDialog(
          * The transferable data from the clipboard.
          * Must support the image data flavor [DataFlavor.imageFlavor].
          */
-        val transferable: Transferable,
+        private val transferable: Transferable,
 
         /**
          * The function to execute when the dialog is succesfully closed.
@@ -49,8 +50,30 @@ open class SaveImageFromClipboardDialog(
         onOkFunction: (SaveImageFromClipboardDialog) -> Unit
 ) : DialogWrapper(true) {
 
+    companion object {
+
+        fun supportsImage(transferable: Transferable): Boolean {
+            return transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && transferable.getTransferData(DataFlavor.imageFlavor) is BufferedImage
+        }
+
+        // Default or lasted used resource folder.
+        private var resourceFolder: String? = null
+    }
+
+    init {
+        if (resourceFolder == null) {
+            // Use the resource folder by default. If there is no "resources" folder, assume that a non "src/source" folder
+            // is a resource folder.
+            resourceFolder = ProjectRootManager.getInstance(project).contentSourceRoots.let { roots ->
+                roots.firstOrNull { it.nameWithoutExtension == "resources" }?.path
+                    ?: roots.firstOrNull { it.nameWithoutExtension.matches(Regex("(src|sources?)", RegexOption.IGNORE_CASE)) }?.path
+                    ?: roots.firstOrNull()?.path ?: ""
+            }
+        }
+    }
+
     /**
-     * The image data from the clipboard.
+     * The image data from the clipboard. Only supports BufferedImages currently, see [supportsImage].
      */
     private val image = transferable.getTransferData(DataFlavor.imageFlavor) as BufferedImage
 
@@ -96,17 +119,15 @@ open class SaveImageFromClipboardDialog(
      * Stores the folder where the image is stored in.
      */
     private val txtResourceFolder = TextFieldWithBrowseButton().apply {
-        // Use the resource folder by default. If there is no "resources" folder, assume that a non "src/source" folder
-        // is a resource folder.
-        val roots = ProjectRootManager.getInstance(project).contentSourceRoots
-        text = roots.firstOrNull { it.nameWithoutExtension == "resources" }?.path
-                ?: roots.firstOrNull { it.nameWithoutExtension.matches(Regex("(src|sources?)", RegexOption.IGNORE_CASE)) }?.path
-                        ?: roots.firstOrNull()?.path ?: ""
+        // resourceFolder is only null before the class is initialised
+        text = resourceFolder!!
 
-        addBrowseFolderListener(TextBrowseFolderListener(
+        addBrowseFolderListener(
+            TextBrowseFolderListener(
                 FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Select resource folder...")
-        ))
+                    .withTitle("Select Resource Folder...")
+            )
+        )
     }
 
     /**
@@ -131,7 +152,7 @@ open class SaveImageFromClipboardDialog(
 
         // Setup dialog.
         super.init()
-        title = "Save image from clipboard"
+        title = "Save Image from Clipboard"
         myPreferredFocusedComponent = txtImageName
 
         if (showAndGet()) {
@@ -181,6 +202,9 @@ open class SaveImageFromClipboardDialog(
             savedImage = destination
             LocalFileSystem.getInstance().refresh(true)
         }
+
+        // Store user-entered text for next time
+        resourceFolder = txtResourceFolder.text
     }
 
     /**
@@ -253,8 +277,9 @@ open class SaveImageFromClipboardDialog(
 
         // Parse clipboard data.
         val clipboardData = transferable.getTransferData(DataFlavor.fragmentHtmlFlavor) as String
-        val htmlFragment = Clipboard.extractHtmlFragmentFromClipboard(clipboardData)
-        val html = Jsoup.parse(htmlFragment)
+        val html = Clipboard.extractHtmlFragmentFromClipboard(clipboardData)?.let {
+            Jsoup.parse(it)
+        } ?: return
         val image = html.select("img").firstOrNull() ?: return
 
         // Handle data.

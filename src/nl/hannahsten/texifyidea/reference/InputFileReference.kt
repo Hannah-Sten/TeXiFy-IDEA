@@ -10,13 +10,17 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
+import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
@@ -48,8 +52,10 @@ class InputFileReference(
      *              Whether to look for packages installed elsewhere on the filesystem.
      *              Set to false when it would make the operation too expensive, for example when trying to
      *              calculate the fileset of many files.
-     * @param includeGraphicsFiles
-     *              True if we also need to resolve to graphics files. Doing so is really expensive at
+     * @param givenRootFile Used to avoid unnecessarily recalculating the root file.
+     * @param isBuildingFileset
+     *              True if we are building the fileset.
+     *              If false we also need to resolve to graphics files. Doing so is really expensive at
      *              the moment (at least until the implementation in LatexGraphicsPathProvider is improved):
      *              for projects with 500 include commands in hundreds of files this can take 10 seconds in total if
      *              you call this function for every include command.
@@ -57,7 +63,7 @@ class InputFileReference(
      *              (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve
      *              (if requested by the user).
      */
-    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, includeGraphicsFiles: Boolean = true): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set,
         // because this function is used to find the file set so that would cause an infinite loop
 
@@ -66,16 +72,14 @@ class InputFileReference(
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
-        val rootDirectory = rootFile?.parent ?: return null
-
-        var targetFile: VirtualFile? = null
+        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles().mapNotNull { it.virtualFile }
+        val rootDirectories = rootFiles.mapNotNull { it.parent }
 
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
         val texInputPath = runManager.allConfigurationsList
                 .filterIsInstance<LatexRunConfiguration>()
-                .firstOrNull { it.mainFile == rootFile }
+                .firstOrNull { it.mainFile in rootFiles }
                 ?.environmentVariables
                 ?.envs
                 ?.getOrDefault("TEXINPUTS", null)
@@ -94,11 +98,28 @@ class InputFileReference(
             }
         }
 
-        val processedKey = expandCommandsOnce(key, element.project, file = rootFile.psiFile(element.project)) ?: key
+        // BIBINPUTS
+        // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
+        if (!isBuildingFileset && (element.name in CommandMagic.bibliographyIncludeCommands || extensions.contains("bib"))) {
+            val bibRunConfigs = element.containingFile.getBibtexRunConfigurations()
+            if (bibRunConfigs.any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }) {
+                // When using BIBINPUTS, the file will only be sought relative to BIBINPUTS
+                searchPaths.clear()
+                searchPaths.addAll(bibRunConfigs.mapNotNull { it.environmentVariables.envs["BIBINPUTS"] })
+            }
+        }
+
+        val processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
+
+        var targetFile: VirtualFile? = null
 
         // Try to find the target file directly from the given path
+        @Suppress("KotlinConstantConditions")
         if (targetFile == null) {
-            targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+            for (rootDirectory in rootDirectories) {
+                targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+                if (targetFile != null) break
+            }
         }
 
         // Try content roots
@@ -109,15 +130,19 @@ class InputFileReference(
             }
         }
 
-        // Try search paths
+        // Try graphicspaths
         if (targetFile == null) {
-            if (includeGraphicsFiles) {
+            // If we are not building the fileset, we can make use of it
+            if (!isBuildingFileset && element.containingFile.includedPackages().contains(LatexGenericRegularCommand.GRAPHICSPATH.dependency)) {
                 // Add the graphics paths to the search paths
-                searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
+                searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
             }
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
-                targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                for (rootDirectory in rootDirectories) {
+                    targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                    if (targetFile != null) break
+                }
                 if (targetFile != null) break
             }
         }
@@ -131,10 +156,42 @@ class InputFileReference(
         }
 
         if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
+
+        // \externaldocument uses the .aux file in the output directory, we are only interested in the source file, but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
+        // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are
+        if (!isBuildingFileset && targetFile == null && element.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
+            targetFile = findAnywhereInProject(processedKey)
+        }
+
         if (targetFile == null) return null
 
         // Return a reference to the target file.
         return PsiManager.getInstance(element.project).findFile(targetFile)
+    }
+
+    /**
+     * Try to find the file anywhere in the project. Returns the first match.
+     * Might be expensive for large projects because of recursively visiting all directories, not sure.
+     */
+    fun findAnywhereInProject(fileName: String): VirtualFile? {
+        val basePath = if (element.project.isTestProject().not()) {
+            LocalFileSystem.getInstance().findFileByPath(element.project.basePath ?: return null) ?: return null
+        }
+        else {
+            element.containingFile.virtualFile.parent ?: return null
+        }
+        BFS(basePath, { file -> file.children.toList() }).apply {
+            iterationAction = { file: VirtualFile ->
+                if (file.nameWithoutExtension == fileName && file.extension in extensions) {
+                    BFS.BFSAction.ABORT
+                }
+                else {
+                    BFS.BFSAction.CONTINUE
+                }
+            }
+            execute()
+            return end
+        }
     }
 
     /**

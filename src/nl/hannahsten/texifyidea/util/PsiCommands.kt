@@ -43,27 +43,22 @@ fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Colo
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
-        (this.name in CommandMagic.redefinitions || this.name in CommandMagic.redefinitions)
+        (this.name in CommandMagic.commandDefinitions || this.name in CommandMagic.commandRedefinitions ||
+                this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions)
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
  *
  * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
  */
-fun LatexCommands?.isCommandDefinition(): Boolean =
-    this != null && (name in CommandMagic.regularCommandDefinitions || name in CommandMagic.mathCommandDefinitions)
+fun LatexCommands?.isCommandDefinition(): Boolean = this != null && name in CommandMagic.commandDefinitions
 
 /**
  * Checks whether the given LaTeX commands is an environment definition or not.
  *
  * @return `true` if the command is an environment definition, `false` when the command is `null` or otherwise.
  */
-fun LatexCommands?.isEnvironmentDefinition(): Boolean {
-    return this != null && (
-        "\\newenvironment" == name ||
-            "\\renewenvironment" == name
-        )
-}
+fun LatexCommands?.isEnvironmentDefinition(): Boolean = this != null && name in CommandMagic.environmentDefinitions
 
 /**
  * Get the command that gets defined by a definition (`\let` or `\def` command).

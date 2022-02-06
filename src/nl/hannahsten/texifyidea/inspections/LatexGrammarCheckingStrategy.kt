@@ -35,7 +35,12 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             // Also note that ranges have to be valid in 'text' and not in 'root'
-            .flatMap { listOf(it.textRange.startOffset - root.startOffset, it.textRange.endOffset - root.startOffset) }
+            .flatMap {
+                listOf(
+                    it.textRange.startOffset - root.startOffset - 1,
+                    it.textRange.endOffset - root.startOffset + 1
+                )
+            }
             .sorted()
             .toMutableList()
             // Make sure that if the root does not start/end with normal text, that those parts are excluded
@@ -43,7 +48,7 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
             .also { it.add(root.endOffset) }
             // To get the ranges that we need to ignore
             .chunked(2) { IntRange(it[0], it[1]) }
-            .filter { it.first < it.last && it.first >= 0 && it.last <= text.length }
+            .filter { it.first < it.last && it.first >= 0 && it.last < text.length }
             .toMutableSet()
 
         // There is still a bit of a problem, because when stitching together the NormalTexts, whitespace is lost

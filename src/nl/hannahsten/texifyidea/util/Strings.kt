@@ -4,13 +4,14 @@ import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Capitalises the first character of the string.
+ * Capitalises the first character of the string, if present.
  */
-fun String.capitalizeFirst(): String = this[0].toUpperCase() + substring(1, length)
+fun String.capitalizeFirst(): String = if (this.isEmpty()) this else this[0].toUpperCase() + substring(1, length)
 
 /**
  * Converts the string to camel case.
@@ -104,7 +105,7 @@ fun List<String>.removeIndents(): List<String> {
 
     val list = ArrayList<String>(size)
     val (maxIndent, _) = asSequence()
-        .filter { !it.isBlank() }
+        .filter { it.isNotBlank() }
         .map { Pair(it.getIndent().length, it) }
         .minByOrNull { it.first } ?: return this
 
@@ -166,7 +167,7 @@ fun String.formatAsFilePath(): String {
         .toLowerCase()
 
     // If there are no valid characters left, use a default name.
-    return if (formatted.isEmpty()) "myfile" else formatted
+    return formatted.ifEmpty { "myfile" }
 }
 
 /**
@@ -188,16 +189,21 @@ fun String.splitWhitespace() = split(Regex("\\s+"))
  *
  * @return The string with HTML tags removed.
  *
- * @see [Magic.Pattern.htmlTag]
+ * @see [PatternMagic.htmlTag]
  */
 fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 
 /**
  * Run a command in the terminal.
+ * You can only use this if you are sure you don't have paths and other escaped things with spaces.
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun String.runCommand(workingDirectory: File? = null) = runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+fun String.runCommand(workingDirectory: File? = null) =
+    runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+
+fun String.runCommandWithExitCode(workingDirectory: File? = null) =
+    runCommandWithExitCode(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 /**
  * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.

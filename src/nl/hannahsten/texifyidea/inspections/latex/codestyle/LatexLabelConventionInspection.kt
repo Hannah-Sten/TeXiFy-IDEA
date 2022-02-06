@@ -14,11 +14,13 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
+import nl.hannahsten.texifyidea.util.labels.extractLabelName
+import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * Check for label conventions, e.g. sec: in \section{A section}\label{sec:a-section}
@@ -81,7 +83,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Label conventions"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = mutableListOf<ProblemDescriptor>()
         checkLabels(file, manager, isOntheFly, descriptors)
         return descriptors
     }
@@ -90,7 +92,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     ) {
-        file.findLatexLabelPsiElementsInFileAsSequence().forEach { label ->
+        file.findLatexLabelingElementsInFile().forEach { label ->
             val labeledCommand = getLabeledCommand(label) ?: return@forEach
             val expectedPrefix = getLabelPrefix(labeledCommand)
             val labelName = label.extractLabelName()

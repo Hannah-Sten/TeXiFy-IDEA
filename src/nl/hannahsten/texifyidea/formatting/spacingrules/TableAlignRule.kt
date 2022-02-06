@@ -67,7 +67,8 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
 
     // Convert a -1 return value to a line feed.
     var lineFeeds = 0
-    if (spaces < 0) {
+    // I think checking for 'ensure right margin is not exceeded' makes more sense, but don't know which option that is
+    if (spaces < 0 && latexCommonSettings.WRAP_ON_TYPING > 0) {
         spaces = 0
         lineFeeds = 1
     }
@@ -91,7 +92,8 @@ fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: Mu
     return contentLines.map { line ->
         val indices = mutableListOf<Int>()
         line.withIndex().forEach { (i, it) ->
-            if (it == '&') indices.add(currentOffset)
+            // Do not count escaped ampersands: \&
+            if ((it == '&') && (i == 0 || line[i - 1] != '\\')) indices.add(currentOffset)
             if (it == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false) indices.add(currentOffset)
             currentOffset++
         }
@@ -158,7 +160,8 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
                 }
                 value in setOf(' ', '\n') -> {
                     if (i > 0 && i < line.length - 1) {
-                        val isAfterSpaceOrSeparator = line[i - 1] in setOf(' ', '&', '\n')
+                        // Spaces after an ignored ampersand are not removed
+                        val isAfterSpaceOrSeparator = (line[i - 1] in setOf(' ', '&', '\n') && (i < 2 || line[i - 2] != '\\'))
                         val isBeforeSpaceOrSeparator = line[i + 1] in setOf(' ', '&', '\n')
                         val isBeforeDoubleBackslash = i < line.length - 2 && line[i + 1] == '\\' && line[i + 2] == '\\'
                         if (isAfterSpaceOrSeparator || isBeforeSpaceOrSeparator || isBeforeDoubleBackslash) removedSpaces++

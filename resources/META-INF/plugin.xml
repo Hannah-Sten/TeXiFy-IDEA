@@ -21,19 +21,19 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-<idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA" xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
 
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.7.5</version>
+    <version>0.x.x</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="203.5251.39"/>
+    <idea-version since-build="211.5538.10"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
@@ -53,6 +53,8 @@
     </applicationListeners>
 
     <!-- Hooks for plugin functionality -->
+    <!-- IMPORTANT if including files in a nested way, make sure to include them in the idea-plugin tag (and not in nested tags) -->
+    <!-- java.lang.Throwable: `include` is supported only on a root level ([row,col {unknown-source}]: [9,9]) -->
     <xi:include href="/META-INF/extensions/startup.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/files-and-project.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/extensions/file-templates.xml" xpointer="xpointer(/idea-plugin/*)"/>

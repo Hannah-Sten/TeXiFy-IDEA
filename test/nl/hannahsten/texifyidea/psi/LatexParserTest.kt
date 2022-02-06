@@ -59,10 +59,16 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            \begin{tabular}{l >{$}l<{$}}
-                some text & y = x (or any math) \\
-                more text & z = 2 (or any math) \\
+            \newenvironment{keyword}{\leavevmode\color{magenta}}{}
+            \begin{tabular}{l >{$}l<{$} >{\begin{keyword}} l <{\end{keyword}} }
+                some text & y = x (or any math) & prop1 \\
+                more text & z = 2 (or any math) & prop2 \\
             \end{tabular}
+            Fake preamble option:
+            \begin{tikzpicture}
+            \visible<+->{\node (a) at (0, 0) {$ \{A\}_{j}$ };}
+            \node (b) at (1, 1) { $ B $ };
+            \end{tikzpicture}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -112,6 +118,7 @@ class LatexParserTest : BasePlatformTestCase() {
             \verb-afdsa$-
             \lstinline|$|
             \lstinline{$}
+            \lstinline[language=Fortran]{$}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

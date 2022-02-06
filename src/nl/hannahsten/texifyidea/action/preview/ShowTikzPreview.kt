@@ -7,11 +7,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.ui.PreviewFormUpdater
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.environmentName
 import nl.hannahsten.texifyidea.util.hasParent
 import nl.hannahsten.texifyidea.util.parentOfType
+import java.util.*
 
 /**
  * The [ShowTikzPreview] class describes an Action in the editor that will display a rendered
@@ -42,13 +42,17 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
 
             // Add all of the tikz libs included in related packages (via \usetikzlibrary{}) to the produced document.
             val tikzLibs = PackageUtils.getIncludedTikzLibraries(psiFile)
-            preamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
+            if (tikzLibs.isNotEmpty()) {
+                userPreamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
+            }
 
             // Add all of the pgfplots libs included in related packages (via \usepgfplotslibrary{}) to the produced document.
             val pgfLibs = PackageUtils.getIncludedPgfLibraries(psiFile)
-            preamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
+            if (pgfLibs.isNotEmpty()) {
+                userPreamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
+            }
 
-            preamble += findPreamblesFromMagicComments(psiFile, "tikz")
+            userPreamble += findPreamblesFromMagicComments(psiFile, "tikz")
             waitTime = 5L
         }
     }

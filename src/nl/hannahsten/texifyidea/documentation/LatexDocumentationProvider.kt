@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.parentsOfType
@@ -33,6 +34,19 @@ class LatexDocumentationProvider : DocumentationProvider {
         else -> null
     }
 
+    /**
+     * Check if this is a command which includes a package, in which case we should show docs for the package that is included instead of the command itself.
+     */
+    private fun isPackageInclusionCommand(element: PsiElement?): Boolean {
+        if (element !is LatexCommands) {
+            return false
+        }
+
+        val command = LatexCommand.lookup(element)
+        if (command.isNullOrEmpty()) return false
+        return command.first().commandWithSlash in CommandMagic.packageInclusionCommands
+    }
+
     override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
         if (element !is LatexCommands) {
             return null
@@ -43,7 +57,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         if (command.isNullOrEmpty()) return null
 
         // Special case for package inclusion commands
-        if (command.first().commandWithSlash in CommandMagic.packageInclusionCommands) {
+        if (isPackageInclusionCommand(element)) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
             return runTexdoc(LatexPackage(pkg))
         }
@@ -93,7 +107,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         // Link to package docs
         originalElement ?: return null
-        val urls = if (lookup is Dependend) runTexdoc((lookup as Dependend).dependency) else getUrlFor(element, originalElement)
+        val urls = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as Dependend).dependency) else getUrlFor(element, originalElement)
 
         if (docString?.isNotBlank() == true && !urls.isNullOrEmpty()) {
             docString += "<br/>"
@@ -161,8 +175,14 @@ class LatexDocumentationProvider : DocumentationProvider {
                 "texdoc -l -M $name"
             }
             else {
-                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
-                "texdoc -l $name"
+                if (SystemEnvironment.isAvailable("texdoc")) {
+                    // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
+                    "texdoc -l $name"
+                }
+                else {
+                    // In some cases, texdoc may not be available but mthelp is
+                    "mthelp -l $name"
+                }
             }
             stream = Runtime.getRuntime().exec(command).inputStream
         }

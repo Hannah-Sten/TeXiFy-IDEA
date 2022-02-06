@@ -9,6 +9,7 @@ import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntry
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import java.util.*
 
 /**
  * @author Hannah Schellekens

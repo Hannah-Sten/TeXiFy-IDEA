@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
+import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -12,16 +13,19 @@ import com.intellij.ui.SearchTextField
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.WrapLayout
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
+import java.util.*
 import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
+import kotlin.collections.HashMap
 
 /**
  * The Symbol tool window shows an overview of several symbols that can be inserted in the active latex document.
@@ -36,7 +40,13 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.contentManager.addContent(content)
     }
 
-    override fun isApplicable(project: Project) = project.hasLatexModule()
+    // Non-idea has no concept of modules so we need to use some other criterion based on the project
+    override fun isApplicable(project: Project) = if (ApplicationNamesInfo.getInstance().scriptName == "idea") {
+        project.hasLatexModule()
+    }
+    else {
+        project.allFiles(LatexFileType).isNotEmpty()
+    }
 
     /**
      * The swing contents of the symbol tool window.
@@ -84,12 +94,14 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             border = EmptyBorder(8, 8, 8, 8)
 
             add(filterPanel(), BorderLayout.NORTH)
-            add(JBScrollPane(panelSymbols,
-                    JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                    JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+            add(JBScrollPane(
+                panelSymbols,
+                JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
             ).apply {
                 border = EmptyBorder(0, 0, 0, 0)
-            }, BorderLayout.CENTER)
+            }, BorderLayout.CENTER
+            )
         }
 
         /**
@@ -140,9 +152,9 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
                 symbolMap.forEach { (symbol, button) ->
                     button.isVisible =
                             // Selected category must match.
-                            (selectedCategory == category || selectedCategory == SymbolCategory.ALL) &&
-                                    // When a query is typed, must match as well.
-                                    (query.isBlank() || symbol.queryString(category).contains(query))
+                        (selectedCategory == category || selectedCategory == SymbolCategory.ALL) &&
+                                // When a query is typed, must match as well.
+                                (query.isBlank() || symbol.queryString(category).contains(query))
                 }
             }
         }
@@ -191,11 +203,11 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          *          The category the symbol is in.
          */
         private fun SymbolUiEntry.queryString(category: SymbolCategory? = null) = buildString {
-            command?.let { append(it.commandWithSlash) }
-            append(generatedLatex)
-            append(dependency.name)
-            append(description.replace(" ", ""))
-            category?.let { append(it.name.replace(" ", "").toLowerCase()) }
-        }.toLowerCase()
+                command?.let { append(it.commandWithSlash) }
+                append(generatedLatex)
+                append(dependency.name)
+                append(description.replace(" ", ""))
+                category?.let { append(it.name.replace(" ", "").toLowerCase()) }
+            }.toLowerCase()
     }
 }

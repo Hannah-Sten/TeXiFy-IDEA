@@ -9,6 +9,7 @@ import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.*
+import java.util.*
 
 /**
  * @author Hannah Schellekens

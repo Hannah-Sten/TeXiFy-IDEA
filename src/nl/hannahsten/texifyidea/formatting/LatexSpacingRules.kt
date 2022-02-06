@@ -5,10 +5,14 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parentOfType
+import java.util.*
 
 fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
     Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
@@ -20,7 +24,7 @@ fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBre
 fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
     val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
-    val latexCommonSettings = settings.getCommonSettings(LatexLanguage.INSTANCE)
+    val latexCommonSettings = settings.getCommonSettings(LatexLanguage)
 
     return rules(latexCommonSettings) {
 
@@ -52,7 +56,10 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             customRule { parent, _, right ->
                 // Lowercase to also catch \STATE from algorithmic
-                if (right.node?.psi?.text?.toLowerCase() in setOf("\\state", "\\statex") && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {
+                if (right.node?.psi?.text?.toLowerCase() in setOf(
+                        "\\state",
+                        "\\statex"
+                    ) && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {
                     return@customRule Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
                 }
 
@@ -86,7 +93,8 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             // BUG OR FEATURE? Does not work for a command that immediately follows \begin{document}.
             customRule { _, _, right ->
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
-                    if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*\\}")) == true) {
+                    if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*\\}")) == true &&
+                        !CommandMagic.definitions.contains(right.node?.psi?.parentOfType(LatexCommands::class)?.name)) {
                         return@customRule createSpacing(
                             minSpaces = 0,
                             maxSpaces = Int.MAX_VALUE,

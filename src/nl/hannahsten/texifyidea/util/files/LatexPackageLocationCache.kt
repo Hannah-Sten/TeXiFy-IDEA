@@ -2,9 +2,9 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import java.io.BufferedReader
+import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
+import nl.hannahsten.texifyidea.util.runCommand
 import java.io.IOException
-import java.io.InputStreamReader
 
 /**
  * Cache locations of LaTeX packages in memory, because especially on Windows they can be expensive to retrieve
@@ -25,8 +25,16 @@ object LatexPackageLocationCache {
      */
     fun getPackageLocation(name: String, project: Project): String? {
         if (cache.containsKey(name).not()) {
-            val path = runKpsewhich(name, project)
+            // Tectonic does not have kpsewhich, but works a little differently
+            val projectSdk = LatexSdkUtil.getLatexProjectSdk(project)
+            val path = if (projectSdk?.sdkType is TectonicSdk) {
+                (projectSdk.sdkType as TectonicSdk).getPackageLocation(name, projectSdk.homePath)
+            }
+            else {
+                runKpsewhich(name, project)
+            }
             cache[name] = path
+            if (path?.isBlank() == true) return null
             return path
         }
 
@@ -41,9 +49,7 @@ object LatexPackageLocationCache {
         else {
             "${LatexSdkUtil.getExecutableName("kpsewhich", project)} $arg"
         }
-        BufferedReader(
-                InputStreamReader(Runtime.getRuntime().exec(command).inputStream)
-        ).readLine() // Returns null if no line read.
+        command.runCommand()
     }
     catch (e: IOException) {
         null

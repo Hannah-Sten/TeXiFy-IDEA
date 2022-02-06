@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import org.jdom.Element
+import java.util.*
 
 /**
  * Run configuration for running the makeindex tool.
@@ -51,7 +52,8 @@ class MakeindexRunConfiguration(
                 makeindexProgram = MakeindexProgram.valueOf(programText)
             }
         }
-        catch (ignored: NullPointerException) {}
+        catch (ignored: NullPointerException) {
+        }
 
         val mainFilePath = try {
             parent.getChildText(MAIN_FILE)

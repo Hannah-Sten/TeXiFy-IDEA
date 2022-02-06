@@ -1,21 +1,35 @@
 package nl.hannahsten.texifyidea.action
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
+import java.io.IOException
+import java.security.PrivilegedActionException
 
 /**
  * Similar to [DeleteAuxFiles].
  */
 class DeleteGeneratedFiles : AnAction() {
 
-    override fun actionPerformed(e: AnActionEvent) {
+    override fun actionPerformed(event: AnActionEvent) {
+        try {
+            deleteFiles(event)
+        }
+        catch (e: PrivilegedActionException) {
+            Notification("LaTeX", "Could not delete some files", e.message ?: "", NotificationType.ERROR).notify(event.project)
+        }
+    }
+
+    private fun deleteFiles(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
 
@@ -55,11 +69,24 @@ class DeleteGeneratedFiles : AnAction() {
             path.walk().maxDepth(1).forEach { it.delete() }
         }
 
+        val notDeleted = mutableListOf<VirtualFile>()
+
         // Custom out/aux dirs
         runWriteAction {
             for (path in customOutput) {
-                path?.children?.forEach { it.delete(this) }
+                path?.children?.forEach {
+                    try {
+                        it.delete(this)
+                    }
+                    catch (e: IOException) {
+                        notDeleted.add(it)
+                    }
+                }
             }
+        }
+
+        if (notDeleted.isNotEmpty()) {
+            Notification("LaTeX", "Could not delete some files", "The following files need to be deleted manually: ${notDeleted.map { it.path }}", NotificationType.WARNING).notify(project)
         }
 
         // Generated minted files

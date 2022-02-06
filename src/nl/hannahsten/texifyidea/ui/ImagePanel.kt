@@ -50,7 +50,8 @@ internal class ImagePanel : JPanel() {
         val width = max(50, width)
         val height = max(50, height)
 
-        val ratio = min(width.toDouble() / imageWidth, height.toDouble() / imageHeight)
+        // With larger ratios, the quality of the png will be too low for convenient viewing
+        val ratio = min(width.toDouble() / imageWidth, height.toDouble() / imageHeight).coerceAtMost(2.0)
 
         val scaledImageWidth = (imageWidth * ratio).toInt()
         val scaledImageHeight = (imageHeight * ratio).toInt()
