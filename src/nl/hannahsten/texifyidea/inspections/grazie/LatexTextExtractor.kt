@@ -76,5 +76,4 @@ class LatexTextExtractor : TextExtractor() {
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }
         ?.let { it is LatexGroup } ?: true
-
 }
