@@ -3,6 +3,7 @@
 ### Additions
 
 ### Bug fixes
+* Update Grazie implementation. (#1951)
 * Ignore nested enumerations when finding the item marker in autocompletion. (#2220)
 * Add FILE_NAME to the new file properties. (#2218)
 * Allow \begin and \end commands in table header column prefix/suffix. (#2218)
