@@ -47,6 +47,7 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 import java.io.File
+import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -415,7 +416,7 @@ class LatexRunConfiguration constructor(
                     .toString()
             }
             else runCommand
-            val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
+            val compiler = BibliographyCompiler.valueOf(compilerString.uppercase(Locale.getDefault()))
             val compilerArguments = runCommand.removePrefix(compilerString)
                 .trim()
             Pair(compiler, compilerArguments)
@@ -553,7 +554,7 @@ class LatexRunConfiguration constructor(
         return "${outputDir?.path}/" + mainFile!!
             .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf"
         else outputFormat.toString()
-            .toLowerCase()
+            .lowercase(Locale.getDefault())
     }
 
     /**

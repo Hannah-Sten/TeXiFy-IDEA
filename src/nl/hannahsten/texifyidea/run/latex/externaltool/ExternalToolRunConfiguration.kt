@@ -94,7 +94,7 @@ class ExternalToolRunConfiguration(
 
     override fun suggestedName(): String {
         val main = if (mainFile != null) mainFile?.nameWithoutExtension + " " else ""
-        return main + this.program.name.toLowerCase()
+        return main + this.program.name.lowercase(Locale.getDefault())
     }
 
     fun setSuggestedName() {

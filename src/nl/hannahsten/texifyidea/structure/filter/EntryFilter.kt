@@ -18,7 +18,7 @@ object EntryFilter : Filter {
             return true
         }
 
-        val name = treeElement.entry.tokenName()?.toLowerCase()
+        val name = treeElement.entry.tokenName()?.lowercase(Locale.getDefault())
         return name == "string" || name == "preamble"
     }
 

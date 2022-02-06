@@ -33,7 +33,7 @@
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="211.5538.10"/>
+    <idea-version since-build="213"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
