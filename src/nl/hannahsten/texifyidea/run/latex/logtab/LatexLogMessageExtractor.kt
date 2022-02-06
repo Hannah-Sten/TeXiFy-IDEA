@@ -55,7 +55,7 @@ object LatexLogMessageExtractor {
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach { handler ->
-            if (handler.regex.any { it.containsMatchIn(textToMatch) }) {
+            if (handler.regex.any { it.containsMatchIn(text) }) {
                 return handler.findMessage(text, newText, currentFile)
             }
         }
@@ -77,7 +77,6 @@ object LatexLogMessageExtractor {
         }
 
         // Check if we have found a warning
-        // Assumes
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
             var messageText = if (LatexOutputListener.isLineEndOfMessage(newText, text)) text.remove(newText) else text
 

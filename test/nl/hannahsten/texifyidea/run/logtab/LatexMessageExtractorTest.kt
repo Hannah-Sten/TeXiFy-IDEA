@@ -209,7 +209,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         val expected = LatexLogMessage("You have requested package `', but the package provides `mypackage'.", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
-    
+
     fun `test unused global option`() {
         val text = "LaTeX Warning: Unused global option(s):"
         val newText = "    [a4]."

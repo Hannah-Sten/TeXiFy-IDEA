@@ -528,8 +528,32 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             """.trimIndent()
 
         val expectedMessages = setOf(
-            // Possible improvement: detecting line 4
+            // todo Possible improvement: detecting line 4
             LatexLogMessage("unexpected symbol near '3'.", "./main.tex", -1, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test line number pdflatex`() {
+        val log =
+            """
+                Latexmk: applying rule 'pdflatex'...
+                This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.1) (preloaded format=pdflatex.fmt)
+                 \write18 enabled.
+                entering extended mode
+                [...]
+                (C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\typearea.sty))
+                (config/constants.tex
+                ! Undefined control sequence.
+                l.70 \if\PrintVersion
+                                     \IsTrue
+             
+             
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Undefined control sequence. \\PrintVersion", "config/constants.tex", 70, ERROR)
         )
 
         testLog(log, expectedMessages)
