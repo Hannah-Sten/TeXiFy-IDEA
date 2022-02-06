@@ -211,9 +211,9 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun `test unused global option`() {
-        val text = "LaTeX Warning: Unused global option(s):"
         val newText = "    [a4]."
-        val expected = LatexLogMessage("Unused global options(s): a4", "test.tex", -1, WARNING)
+        val text = "LaTeX Warning: Unused global option(s):$newText"
+        val expected = LatexLogMessage("Unused global option(s): [a4].", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 

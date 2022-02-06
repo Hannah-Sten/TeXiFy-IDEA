@@ -40,7 +40,9 @@ class LatexOutputListener(
                 // Package warning/error continuation.
                 !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine) &&
                 // Assume the undefined control sequence always continues on the next line
-                !firstLine.trim().endsWith("Undefined control sequence.")
+                !firstLine.trim().endsWith("Undefined control sequence.") &&
+                // Case of the first line pointing out something interesting on the second line
+                !(firstLine.endsWith(":") && secondLine.startsWith("    "))
         }
     }
 

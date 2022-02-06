@@ -77,14 +77,11 @@ object LatexLogMessageExtractor {
         }
 
         // Check if we have found a warning
-        if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
-            var messageText = if (LatexOutputListener.isLineEndOfMessage(newText, text)) text.remove(newText) else text
-
+        val firstLine = text.removeSuffix(newText)
+        if (TEX_MISC_WARNINGS.any { firstLine.startsWith(it) }) {
             // Don't include the second line if it is not part of the message
             // (Do this before cleaning up the messageText)
-            if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText))) {
-                messageText = messageText.remove(newText).trim()
-            }
+            var messageText = if (LatexOutputListener.isLineEndOfMessage(newText, firstLine)) firstLine.trim() else text
 
             messageText = messageText.remove("LaTeX Warning: ")
                 // Improves readability, and at the moment we don't have an example where this would be incorrect

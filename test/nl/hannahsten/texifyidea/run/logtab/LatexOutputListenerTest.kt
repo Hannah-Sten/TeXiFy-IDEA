@@ -528,7 +528,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             """.trimIndent()
 
         val expectedMessages = setOf(
-            // todo Possible improvement: detecting line 4
+            // Possible improvement: detecting line 4
             LatexLogMessage("unexpected symbol near '3'.", "./main.tex", -1, ERROR)
         )
 
