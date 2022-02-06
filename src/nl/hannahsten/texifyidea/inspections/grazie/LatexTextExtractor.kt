@@ -39,8 +39,14 @@ class LatexTextExtractor : TextExtractor() {
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             .flatMap {
+                // I have no idea what happens here. I don't think Grazie uses the same indices and text as root.text, because it doesn't behave consistently when I move around indices, so it may appear we are ignoring too much or too little while in practice the inspections may work.
+                var start = it.textRange.startOffset - root.startOffset
+                if (start > 0 && root.text[start - 1] != '\n' && root.text[start - 1] != ' ') {
+                    // Support sentence ends with inline math
+                    start -= 1
+                }
                 listOf(
-                    it.textRange.startOffset - root.startOffset,
+                    start,
                     it.textRange.endOffset - root.startOffset
                 )
             }
@@ -48,7 +54,7 @@ class LatexTextExtractor : TextExtractor() {
             .toMutableList()
             // Make sure that if the root does not start/end with normal text, that those parts are excluded
             .also { it.add(0, 0) }
-            .also { it.add(root.endOffset()) }
+            .also { it.add(root.endOffset() - 1) }
             // To get the ranges that we need to ignore
             .chunked(2) { IntRange(it[0], it[1]) }
             .filter { it.first < it.last && it.first >= 0 && it.last < root.text.length }
