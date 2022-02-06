@@ -9,9 +9,9 @@ object LatexLogMagicRegex {
     const val LINE_WIDTH = 80
 
     // Match filename:linenumber: as this probably denotes an error, but not if it appears in a stacktrace
-    // and starts with ...
+    // and starts with ... and also not if this starts with a ( as then we assume the ( is not part of the file
     const val FILE_LINE_REGEX: String =
-        """(?!\s*\.\.\.)(?<file>.+\.\w+):(?<line>\d+):""" // error
+        """(?!\s*\.\.\.)(?<file>[^\(\)]+\.\w+):(?<line>\d+):""" // error
     val REPORTED_ON_LINE_REGEX =
         """( Reported| Found)? on input line (?<line>\d+).""".toRegex()
     const val LINE_REGEX: String =

@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 
 object LatexErrorHandler : LatexMessageHandler(
     LatexLogMessageType.ERROR,
-    """^$FILE_LINE_REGEX (?<message>.+)""".toRegex(),
+    """$FILE_LINE_REGEX (?<message>.+)""".toRegex(),
     """^$LATEX_ERROR_REGEX (?<message>.+)""".toRegex(),
     """^$PDFTEX_ERROR_REGEX (?<message>.+)""".toRegex(),
     directLuaError

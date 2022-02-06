@@ -824,7 +824,9 @@ stack traceback:
 
         val expectedMessages = setOf(
             LatexLogMessage("attempt to index a nil value (local 'file')", "./csvreader.lua", 18, ERROR),
-            LatexLogMessage("attempt to get length of a nil value (local 'array')", "../csvreader.lua", 58, ERROR)
+            LatexLogMessage("in function 'dataToTable'", "./csvreader.lua", 18, ERROR, null),
+            LatexLogMessage("attempt to get length of a nil value (local 'array')", "./csvreader.lua", 58, ERROR),
+            LatexLogMessage(message="in function 'tableToTeX'", fileName="./csvreader.lua", line=58, type=ERROR, file=null)
         )
 
         testLog(log, expectedMessages)
