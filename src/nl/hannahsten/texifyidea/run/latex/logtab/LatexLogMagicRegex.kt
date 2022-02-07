@@ -71,6 +71,7 @@ object LatexLogMagicRegex {
         "Overfull \\vbox",
         "Loose \\vbox",
         "Tight \\vbox",
-        "(\\end occurred"
+        "(\\end occurred",
+        "makeindex:"
     )
 }

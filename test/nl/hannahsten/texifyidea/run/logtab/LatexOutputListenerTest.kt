@@ -361,10 +361,10 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: attempt to ind
             ex a nil value (local 'fontdata')
             stack traceback:
-                ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: in field 'get
-            _math_dimension'
-                .../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua:75: in field 'math
-            fontdimen'
+                ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: in field '
+            get_math_dimension'
+                .../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua:75: in field 'm
+            athfontdimen'
                 [\directlua]:1: in main chunk.
             lua_now:e #1->__lua_now:n {#1}
                                           
@@ -372,7 +372,10 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("Improper `at' size (0.0pt), replaced by 10pt.", "./errors.tex", 10, ERROR)
+            LatexLogMessage("Improper `at' size (0.0pt), replaced by 10pt.", "./errors.tex", 10, ERROR),
+            LatexLogMessage(message="attempt to index a nil value (local 'fontdata')", fileName="..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line=702, type=ERROR, file=null),
+            LatexLogMessage(message="in field 'get_math_dimension'", fileName="..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line=702, type=ERROR, file=null),
+            LatexLogMessage(message="in field 'mathfontdimen'", fileName="../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua", line=75, type=ERROR, file=null)
         )
 
         testLog(log, expectedMessages)
