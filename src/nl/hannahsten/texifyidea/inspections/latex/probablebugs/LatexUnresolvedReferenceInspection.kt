@@ -41,7 +41,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             }
 
             // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions) {
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitionsAndRedefinitions) {
                 continue
             }
 

@@ -72,6 +72,10 @@
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Relative path to parent is not allowed when using BIBINPUTS"
                          enabledByDefault="true"
                          level="ERROR" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUndefinedCommandInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Command is not defined"
+                         enabledByDefault="false"
+                         level="ERROR" />
     </extensions>
 
     <xi:include href="/META-INF/extensions/inspections/latex/probablebugs/packages.xml" xpointer="xpointer(/idea-plugin/*)"/>
