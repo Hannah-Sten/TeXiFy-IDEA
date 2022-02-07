@@ -373,9 +373,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             LatexLogMessage("Improper `at' size (0.0pt), replaced by 10pt.", "./errors.tex", 10, ERROR),
-            LatexLogMessage(message="attempt to index a nil value (local 'fontdata')", fileName="..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line=702, type=ERROR, file=null),
-            LatexLogMessage(message="in field 'get_math_dimension'", fileName="..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line=702, type=ERROR, file=null),
-            LatexLogMessage(message="in field 'mathfontdimen'", fileName="../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua", line=75, type=ERROR, file=null)
+            LatexLogMessage(message = "attempt to index a nil value (local 'fontdata')", fileName = "..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line = 702, type = ERROR, file = null),
+            LatexLogMessage(message = "in field 'get_math_dimension'", fileName = "..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line = 702, type = ERROR, file = null),
+            LatexLogMessage(message = "in field 'mathfontdimen'", fileName = "../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua", line = 75, type = ERROR, file = null)
         )
 
         testLog(log, expectedMessages)
@@ -829,7 +829,7 @@ stack traceback:
             LatexLogMessage("attempt to index a nil value (local 'file')", "./csvreader.lua", 18, ERROR),
             LatexLogMessage("in function 'dataToTable'", "./csvreader.lua", 18, ERROR, null),
             LatexLogMessage("attempt to get length of a nil value (local 'array')", "./csvreader.lua", 58, ERROR),
-            LatexLogMessage(message="in function 'tableToTeX'", fileName="./csvreader.lua", line=58, type=ERROR, file=null)
+            LatexLogMessage(message = "in function 'tableToTeX'", fileName = "./csvreader.lua", line = 58, type = ERROR, file = null)
         )
 
         testLog(log, expectedMessages)
@@ -851,7 +851,8 @@ Latexmk: Summary of warnings from last run of *latex:
             """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("makeindex: file not writable for security reasons: /home/thomas/GitRepos/random-math/out/random-math.ind", null, -1, ERROR)
+            LatexLogMessage("makeindex: file not writable for security reasons: /home/thomas/GitRepos/random-math/out/random-math.ind", null, -1, ERROR),
+            LatexLogMessage("Can't create output index file /home/thomas/GitRepos/random-math/out/random-math.ind.", null, -1, ERROR),
         )
 
         testLog(log, expectedMessages)
