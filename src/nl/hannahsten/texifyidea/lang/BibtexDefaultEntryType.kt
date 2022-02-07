@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
-import nl.hannahsten.texifyidea.lang.BibtexDefaultField.*
+import nl.hannahsten.texifyidea.lang.BibtexDefaultEntryField.*
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import java.util.*
 import kotlin.collections.HashMap
@@ -118,7 +118,7 @@ enum class BibtexDefaultEntryType(
         emptyArray()
     ),
 
-    // BibLaTeX entries
+    // BibLaTeX entries. Source: biblatex docs
     BIBLATEX_ARTICLE(
         "article",
         "An article in a journal, magazine, newspaper, or other periodical which forms a self-contained unit with its own title.",
@@ -143,6 +143,21 @@ enum class BibtexDefaultEntryType(
     BIBLATEX_INBOOK(
         "inbook",
         "A part of a book which forms a self-contained unit with its own title.",
+        arrayOf(AUTHOR, TITLE, BOOKTITLE, DATE),
+        arrayOf(BOOKAUTHOR, EDITOR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    BOOKINBOOK(
+        "bookinbook",
+        "This type is similar to @inbook but intended for works originally published as a\n" +
+                "stand-alone book.",
+        arrayOf(AUTHOR, TITLE, BOOKTITLE, DATE),
+        arrayOf(BOOKAUTHOR, EDITOR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    SUPPBOOK(
+        "suppbook",
+        "Supplemental material in a @book. This type is closely related to the @inbook entry type.",
         arrayOf(AUTHOR, TITLE, BOOKTITLE, DATE),
         arrayOf(BOOKAUTHOR, EDITOR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
@@ -175,6 +190,13 @@ enum class BibtexDefaultEntryType(
         arrayOf(YEAR, EDITOR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
     ),
+    BIBLATEX_SUPPCOLLECTION(
+        "suppcollection",
+        "Supplemental material in a @collection. This type is similar to @suppbook but related to the @collection entry type. ",
+        arrayOf(AUTHOR, TITLE, BOOKTITLE, DATE),
+        arrayOf(YEAR, EDITOR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
     DATASET(
         "dataset",
         "A data set or a similar collection of (mostly) raw data.",
@@ -187,6 +209,13 @@ enum class BibtexDefaultEntryType(
         "Technical or other documentation.",
         arrayOf(TITLE, DATE),
         arrayOf(AUTHOR, EDITOR, YEAR, SUBTITLE, TITLEADDON, LANGUAGE, EDITION, TYPE, SERIES, NUMBER, VERSION, NOTE, ORGANISATION, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    BIBLATEX_MISC(
+        "misc",
+        "A fallback type for entries which do not fit into any other category.",
+        arrayOf(TITLE, DATE),
+        arrayOf(AUTHOR, EDITOR, YEAR, SUBTITLE, TITLEADDON, LANGUAGE, HOWPUBLISHED, TYPE, VERSION, NOTE, ORGANISATION, LOCATION, MONTH, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
     ),
     ONLINE(
@@ -206,6 +235,13 @@ enum class BibtexDefaultEntryType(
     PERIODICAL(
         "periodical",
         "A complete issue of a periodical.",
+        arrayOf(EDITOR, TITLE, DATE),
+        arrayOf(YEAR, EDITORA, EDITORB, EDITORC, SUBTITLE, ISSUETITLE, ISSUESUBTITLE, LANGUAGE, SERIES, VOLUME, NUMBER, ISSUE, MONTH, NOTE, ISSN, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    SUPPPERIODICAL(
+        "suppperiodical",
+        "Supplemental material in a @periodical. This type is similar to @suppbook but related to the @periodical entry type.",
         arrayOf(EDITOR, TITLE, DATE),
         arrayOf(YEAR, EDITORA, EDITORB, EDITORC, SUBTITLE, ISSUETITLE, ISSUESUBTITLE, LANGUAGE, SERIES, VOLUME, NUMBER, ISSUE, MONTH, NOTE, ISSN, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
@@ -231,11 +267,41 @@ enum class BibtexDefaultEntryType(
         arrayOf(EDITOR, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, EVENTTITLE, EVENTTITLEADDON, EVENTDATE, VENUE, LANGUAGE, VOLUME, PART, VOLUMES, SERIES, NUMBER, NOTE, ORGANISATION, PUBLISHER, LOCATION, MONTH, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
     ),
+    REFERENCE(
+        "reference",
+        "A single-volume work of reference such as an encyclopedia or a dictionary. This is a\n" +
+                "more specific variant of the generic @collection entry type",
+        arrayOf(EDITOR, TITLE, DATE),
+        arrayOf(EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    MVREFERENCE(
+        "mvreference",
+        "A multi-volume @reference entry. ",
+        arrayOf(EDITOR, TITLE, DATE),
+        arrayOf(YEAR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, LANGUAGE, ORIGLANGUAGE, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    INREFERENCE(
+        "inreference",
+        "An article in a work of reference.",
+        arrayOf(EDITOR, TITLE, DATE),
+        arrayOf(YEAR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, LANGUAGE, ORIGLANGUAGE, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
     REPORT(
         "report",
         "A technical report, research report, or white paper published by a university or other institution.",
         arrayOf(AUTHOR, TITLE, TYPE, INSTITUTION, DATE),
         arrayOf(YEAR, SUBTITLE, TITLEADDON, LANGUAGE, NUMBER, VERSION, NOTE, LOCATION, MONTH, ISRN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    SOFTWARE(
+        "software",
+        "Computer software. The standard styles will treat this entry type as an alias for\n" +
+                "@misc.",
+        arrayOf(TITLE, DATE),
+        arrayOf(AUTHOR, EDITOR, YEAR, SUBTITLE, TITLEADDON, LANGUAGE, HOWPUBLISHED, TYPE, VERSION, NOTE, ORGANISATION, LOCATION, MONTH, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
     ),
     BIBLATEX_THESIS(
@@ -251,7 +317,53 @@ enum class BibtexDefaultEntryType(
         arrayOf(AUTHOR, TITLE, DATE),
         arrayOf(SUBTITLE, TITLEADDON, TYPE, EVENTTITLE, EVENTTITLEADDON, EVENTDATE, VENUE, LANGUAGE, HOWPUBLISHED, NOTE, LOCATION, ISBN, MONTH, ADDENDUM, PUBSTATE, URL, URLDATE),
         BIBLATEX
-    );
+    ),
+    BIBLATEX_CONFERENCE(
+        "conference",
+        "A legacy alias for @inproceedings.",
+        arrayOf(AUTHOR, TITLE, BOOKTITLE, DATE),
+        arrayOf(EDITOR, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, EVENTTITLE, EVENTTITLEADDON, EVENTDATE, VENUE, LANGUAGE, VOLUME, PART, VOLUMES, SERIES, NUMBER, NOTE, ORGANISATION, PUBLISHER, LOCATION, MONTH, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    ELECTRONIC(
+        "electronic",
+        "An alias for @online.",
+        arrayOf(AUTHOR, TITLE, DATE, URL),
+        arrayOf(SUBTITLE, TITLEADDON, LANGUAGE, VERSION, NOTE, ORGANISATION, ADDENDUM, PUBSTATE, EPRINTCLASS, EPRINTTYPE, URLDATE),
+        BIBLATEX
+    ),
+    MASTERSTHESIS(
+        "mastersthesis",
+        "Similar to @thesis except that the type field is optional and defaults to the\n" +
+                "localised term ‘Master’s thesis’. You may still use the type field to override that.",
+        arrayOf(AUTHOR, TITLE, INSTITUTION, DATE),
+        arrayOf(YEAR, SUBTITLE, TITLEADDON, LANGUAGE, NOTE, LOCATION, MONTH, ISBN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE, TYPE),
+        BIBLATEX
+    ),
+    BIBLATEX_PHDTHESIS(
+        "phdthesis",
+        "Similar to @thesis except that the type field is optional and defaults to the\n" +
+                "localised term ‘PhD thesis’. You may still use the type field to override that.",
+        arrayOf(AUTHOR, TITLE, INSTITUTION, DATE),
+        arrayOf(YEAR, SUBTITLE, TITLEADDON, LANGUAGE, NOTE, LOCATION, MONTH, ISBN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE, TYPE),
+        BIBLATEX
+    ),
+    BIBLATEX_TECHREPORT(
+        "techreport",
+        "Similar to @report except that the type field is optional and defaults to the\n" +
+                "localised term ‘technical report’. You may still use the type field to override that.",
+        arrayOf(AUTHOR, TITLE, TYPE, INSTITUTION, DATE),
+        arrayOf(YEAR, SUBTITLE, TITLEADDON, LANGUAGE, NUMBER, VERSION, NOTE, LOCATION, MONTH, ISRN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
+        BIBLATEX
+    ),
+    WWW(
+        "www",
+        "An alias for @online, provided for jurabib compatibility.",
+        arrayOf(AUTHOR, TITLE, DATE, URL),
+        arrayOf(SUBTITLE, TITLEADDON, LANGUAGE, VERSION, NOTE, ORGANISATION, ADDENDUM, PUBSTATE, EPRINTCLASS, EPRINTTYPE, URLDATE),
+        BIBLATEX
+    ),
+    ;
 
     companion object {
 

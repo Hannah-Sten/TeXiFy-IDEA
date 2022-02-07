@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
  *
  * @author Hannah Schellekens
  */
-enum class BibtexDefaultField(
+enum class BibtexDefaultEntryField(
     override val fieldName: String,
     override val description: String,
     override val dependency: LatexPackage = DEFAULT
