@@ -1,6 +1,7 @@
 ## Beta 0.7.15
 
 ### Additions
+* Recognise custom environments as defining a tabular-like environment. (#2221)
 
 ### Bug fixes
 * Update Grazie implementation. (#1951)
