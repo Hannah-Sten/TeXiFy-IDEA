@@ -32,6 +32,21 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.checkHighlighting(true, false, false, false)
     }
 
+    fun `test that ampersand in custom tabular environment does not trigger a warning`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newenvironment{kwak}{ \begin{tabular}{lc} }{ \end{tabular} }
+            \begin{document}
+                \begin{kwak}
+                    kwik & kwek \\
+                \end{kwak}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
     fun `test that ampersand in math environment does trigger a warning`() {
         myFixture.configureByText(
             LatexFileType,

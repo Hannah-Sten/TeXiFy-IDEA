@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

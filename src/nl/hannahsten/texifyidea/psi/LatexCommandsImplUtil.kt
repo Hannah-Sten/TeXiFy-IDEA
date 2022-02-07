@@ -9,7 +9,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
