@@ -263,7 +263,7 @@ enum class BibtexDefaultEntry(
 
         @JvmStatic
         operator fun get(token: String): BibtexEntryType? {
-            var trimmedToken = token.toLowerCase()
+            var trimmedToken = token.lowercase(Locale.getDefault())
             if (token.startsWith("@")) {
                 trimmedToken = token.substring(1)
             }

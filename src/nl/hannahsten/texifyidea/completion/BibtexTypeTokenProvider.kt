@@ -30,7 +30,7 @@ object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
     }
 
     private fun tags(entry: BibtexDefaultEntry): String {
-        return " {" + entry.required.joinToString { it.toString().toLowerCase() } + "}"
+        return " {" + entry.required.joinToString { it.toString().lowercase(Locale.getDefault()) } + "}"
     }
 
     private fun packageName(entry: BibtexDefaultEntry): String {

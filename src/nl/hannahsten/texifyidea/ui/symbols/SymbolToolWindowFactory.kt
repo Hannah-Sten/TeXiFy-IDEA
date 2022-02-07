@@ -94,13 +94,14 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             border = EmptyBorder(8, 8, 8, 8)
 
             add(filterPanel(), BorderLayout.NORTH)
-            add(JBScrollPane(
-                panelSymbols,
-                JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-            ).apply {
-                border = EmptyBorder(0, 0, 0, 0)
-            }, BorderLayout.CENTER
+            add(
+                JBScrollPane(
+                    panelSymbols,
+                    JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                    JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                ).apply {
+                    border = EmptyBorder(0, 0, 0, 0)
+                }, BorderLayout.CENTER
             )
         }
 
@@ -203,11 +204,11 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          *          The category the symbol is in.
          */
         private fun SymbolUiEntry.queryString(category: SymbolCategory? = null) = buildString {
-                command?.let { append(it.commandWithSlash) }
-                append(generatedLatex)
-                append(dependency.name)
-                append(description.replace(" ", ""))
-                category?.let { append(it.name.replace(" ", "").toLowerCase()) }
-            }.toLowerCase()
+            command?.let { append(it.commandWithSlash) }
+            append(generatedLatex)
+            append(dependency.name)
+            append(description.replace(" ", ""))
+            category?.let { append(it.name.replace(" ", "").lowercase(Locale.getDefault())) }
+        }.lowercase(Locale.getDefault())
     }
 }
