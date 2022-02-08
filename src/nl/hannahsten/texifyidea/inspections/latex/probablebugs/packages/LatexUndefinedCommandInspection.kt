@@ -79,6 +79,5 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             descriptor.psiElement.containingFile.insertUsepackage(dependency)
         }
-
     }
 }
