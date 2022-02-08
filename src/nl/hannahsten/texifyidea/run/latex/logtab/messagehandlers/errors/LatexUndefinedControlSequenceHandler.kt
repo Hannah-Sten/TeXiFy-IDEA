@@ -11,20 +11,27 @@ object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
     // The last part (with line number and command) is optional because it may appear on the next line
     // Any line content may appear before the command which is undefined (which is the last thing on the line)
     """^$FILE_LINE_REGEX (?<message>Undefined control sequence.)(\s*l.\d+[\s\S]*(?<command>\\\w+)$)?""".toRegex(),
-    """^$LATEX_ERROR_REGEX (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)$""".toRegex()
+    """^$LATEX_ERROR_REGEX (?<message>Undefined control sequence\.)\s*l\.(?<line>\d+)\s*.*(?<command>\\\w+)${'$'}""".toRegex()
 ) {
 
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {
-                val (line, fileName) = try {
-                    Pair(groups["line"]?.value?.toInt(), groups["file"]?.value?.trim() ?: currentFile)
+                val line = try {
+                    groups["line"]?.value?.toInt()
                 }
-                catch (e: IllegalArgumentException) {
-                    Pair(null, currentFile)
+                catch (ignored: IllegalArgumentException) {
+                    null
+                }
+                val fileName = try {
+                    groups["file"]?.value?.trim()
+                }
+                catch (ignored: IllegalArgumentException) {
+                    currentFile
                 }
 
                 val message = "${groups["message"]?.value} ${groups["command"]?.value ?: ""}"
+
                 return LatexLogMessage(message, fileName, line ?: 1, messageType)
             }
         }
