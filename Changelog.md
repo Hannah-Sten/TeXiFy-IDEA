@@ -4,6 +4,7 @@
 * Recognise custom environments as defining a tabular-like environment. (#2221)
 
 ### Bug fixes
+* Many improvements in log error parsing. (#2227)
 * Update Grazie implementation. (#1951)
 * Ignore nested enumerations when finding the item marker in autocompletion. (#2220)
 * Add FILE_NAME to the new file properties. (#2218)
