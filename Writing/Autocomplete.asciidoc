@@ -51,4 +51,5 @@ The MiKTeX installer clearly warns about this:
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/miktex-admin.PNG[]
 
 On Linux the warning is less clear though:
+
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/miktex-linux.png[]
