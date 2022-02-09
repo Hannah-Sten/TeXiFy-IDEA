@@ -112,7 +112,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project).toSet()
             .forEach { cmdWithSlash ->
                 val cmdWithoutSlash = cmdWithSlash.substring(1)
-                LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return)
+                LatexCommand.lookupInIndex(cmdWithoutSlash, project)
                     .filter { if (usesTexlive) it.dependency in packagesInProject else true }
                     .forEach { cmd ->
                     createCommandLookupElements(cmd)

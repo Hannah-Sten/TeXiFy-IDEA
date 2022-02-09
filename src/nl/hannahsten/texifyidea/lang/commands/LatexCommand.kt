@@ -82,12 +82,12 @@ interface LatexCommand : Described, Dependend {
             // Now we might have duplicates, some of which might differ only in description.
             // Of those, we just want to take any command which doesn't have an empty description if it exists
             // Since an interface cannot override equals, and it has to be an interface because enums implement it, filter duplicates first
-            val filteredCommands = cmds.distinctBy { listOf(it.command, it.dependency, it.isMathMode, it.description).plus(it.arguments) }
-                .groupBy { listOf(it.command, it.dependency, it.isMathMode).plus(it.arguments) }
+            return cmds.distinctBy { listOf(it.command, it.dependency, it.isMathMode, it.description).plus(it.arguments) }
+                // Do not group by arguments, because if there is a difference in arguments, probably the command with better (non-empty) docs is also the one with better argument info
+                .groupBy { listOf(it.command, it.dependency, it.isMathMode) }
                 // Assume empty descriptions appear first when sorted
                 .mapValues { it.value.maxByOrNull { cmd -> cmd.description }!! }
                 .values.toSet()
-            return filteredCommands
         }
 
         /**
