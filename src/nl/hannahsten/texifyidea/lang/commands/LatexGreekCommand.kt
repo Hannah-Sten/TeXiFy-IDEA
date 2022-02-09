@@ -68,6 +68,6 @@ enum class LatexGreekCommand(
     CAPITAL_OMEGA_VARIANT("varOmega", dependency = AMSMATH, collapse = true),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

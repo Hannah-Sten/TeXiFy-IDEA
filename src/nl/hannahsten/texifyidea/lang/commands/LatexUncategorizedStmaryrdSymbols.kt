@@ -80,6 +80,6 @@ enum class LatexUncategorizedStmaryrdSymbols(
     BIG_SQUARE_CAP("bigsqcap", dependency = STMARYRD, display = "⊓", collapse = true),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }
