@@ -1,8 +1,13 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileContent
+import nl.hannahsten.texifyidea.file.LatexSourceFileType
+import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.startsWithAny
+import java.io.File
+import java.nio.file.Paths
 
 /**
  * Extract docs and do some basic formatting on documentation strings found in dtx files.
@@ -108,5 +113,27 @@ object LatexDocsRegexer {
                 }
             }
         }
+    }
+
+    /**
+     * Determine which files to index.
+     */
+    val inputFilter = FileBasedIndex.InputFilter { file ->
+        if (file.fileType is LatexSourceFileType) return@InputFilter true
+        if (file.fileType !is StyleFileType) return@InputFilter false
+        // Some packages don't have a dtx file, so for those we include the sty files (which won't have documentation)
+        // This is some work, but it saves us indexing these packages and filtering out the duplicates later, so it's probably worth it
+        // Also it's not always easy to find out in which package a certain environment is defined (for example, the proof environment from the amscls/amsthm package is defined in amscls/amsclass.dtx) so we also include the sty files to not miss anything,
+        // unless we know that we have the dtx file of the package, then we assume there's no need to index the sty and it will just introduce unnecessary duplicates in the index
+        """(?<root>.+)tex.latex.(?<package>.+)[\\/](?<filename>[^\\/\.]+)\.sty""".toRegex().matchEntire(file.path)?.let { match ->
+            val root = match.groups["root"]?.value ?: return@InputFilter false
+            val packageName = match.groups["package"]?.value ?: return@InputFilter false
+            val fileName = match.groups["filename"]?.value ?: return@InputFilter false
+            val dtxFilePath = File(Paths.get(root, "source", "latex", packageName, "$fileName.dtx").toUri())
+            if (!dtxFilePath.exists()) {
+                return@InputFilter true
+            }
+        }
+        return@InputFilter false
     }
 }

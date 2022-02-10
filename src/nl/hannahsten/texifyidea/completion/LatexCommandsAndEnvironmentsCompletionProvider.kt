@@ -45,6 +45,9 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
         /** Cache for commands which are indexed and which should be added to the autocompletion. */
         val indexedCommands = mutableSetOf<LookupElementBuilder>()
+
+        /** Whether TeX Live is available at all, in which case it could be that all packages from texlive-full are in the index. */
+        val isTexliveAvailable = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
     }
 
     override fun addCompletions(
@@ -103,17 +106,14 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
         val project = parameters.editor.project ?: return
 
-        // If TeX Live is available at all, either implicitly or explicitly, it could be in the index, so we filter commands
-        val usesTexlive = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
-
-        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(LatexPackage.DEFAULT)
+        val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(LatexPackage.DEFAULT)
 
         val commands = mutableSetOf<LookupElementBuilder>()
         FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project).toSet()
             .forEach { cmdWithSlash ->
                 val cmdWithoutSlash = cmdWithSlash.substring(1)
                 LatexCommand.lookupInIndex(cmdWithoutSlash, project)
-                    .filter { if (usesTexlive) it.dependency in packagesInProject else true }
+                    .filter { if (isTexliveAvailable) it.dependency in packagesInProject else true }
                     .forEach { cmd ->
                     createCommandLookupElements(cmd)
                         // Avoid duplicates of commands defined in LaTeX base, because they are often very similar commands defined in different document classes, so it makes not
