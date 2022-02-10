@@ -2,6 +2,7 @@
 
 ### Additions
 * Recognise custom environments as defining a tabular-like environment. (#2221)
+* Add some missing biblatex entry types to autocompletion. (#2228)
 
 ### Bug fixes
 * Many improvements in log error parsing. (#2227)
