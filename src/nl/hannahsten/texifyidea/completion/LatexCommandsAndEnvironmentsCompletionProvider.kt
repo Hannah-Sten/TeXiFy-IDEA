@@ -237,7 +237,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     }
 
     private fun getTypeText(commands: LatexCommands): String {
-        if (commands.commandToken.text in CommandMagic.commandDefinitions) {
+        if (commands.commandToken.text in CommandMagic.commandDefinitionsAndRedefinitions) {
             return ""
         }
         val firstNext = commands.nextCommand() ?: return ""

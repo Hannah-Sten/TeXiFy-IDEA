@@ -187,24 +187,30 @@ object CommandMagic {
     )
 
     /**
+     * Commands that define other command but don't complain if it is already defined.
+     */
+    val flexibleCommandDefinitions = setOf(
+        PROVIDECOMMAND, // Does nothing if command exists
+        PROVIDECOMMAND_STAR,
+        PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
+        DECLAREDOCUMENTCOMMAND,
+        DEF,
+        LET,
+    ).map { it.cmd }
+
+    /**
      * All commands that define or redefine other commands, whether it exists or not.
      */
-    val commandRedefinitions = hashSetOf(
+    val commandRedefinitions = setOf(
             RENEWCOMMAND,
             RENEWCOMMAND_STAR,
-            PROVIDECOMMAND, // Does nothing if command exists
-            PROVIDECOMMAND_STAR,
-            PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
-            DECLAREDOCUMENTCOMMAND,
-            DEF,
-            LET,
             CATCODE, // Not really redefining commands, but characters
-    ).map { it.cmd }
+    ).map { it.cmd } + flexibleCommandDefinitions
 
     /**
      * All commands that define or redefine regular commands.
      */
-    val regularCommandDefinitions = regularStrictCommandDefinitions + commandRedefinitions
+    val regularCommandDefinitionsAndRedefinitions = regularStrictCommandDefinitions + commandRedefinitions
 
     /**
      * All commands that define commands that should be used exclusively
@@ -218,9 +224,14 @@ object CommandMagic {
     )
 
     /**
-     * All commands that define new commands.
+     * All commands that can define regular commands.
      */
-    val commandDefinitions = regularCommandDefinitions + mathCommandDefinitions
+    val commandDefinitions = regularStrictCommandDefinitions + mathCommandDefinitions + flexibleCommandDefinitions
+
+    /**
+     * All commands that (re)define new commands.
+     */
+    val commandDefinitionsAndRedefinitions = regularCommandDefinitionsAndRedefinitions + mathCommandDefinitions
 
     /**
      * All commands that define new documentclasses.
@@ -251,7 +262,7 @@ object CommandMagic {
     /**
      * All commands that define stuff like classes, environments, and definitions.
      */
-    val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
+    val definitions = commandDefinitionsAndRedefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
     /**
      * Commands for which TeXiFy-IDEA has essential custom behaviour and which should not be redefined.

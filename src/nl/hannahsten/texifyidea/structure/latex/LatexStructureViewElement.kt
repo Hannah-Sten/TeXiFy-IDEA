@@ -126,7 +126,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add command definitions.
-        CommandMagic.commandDefinitions.forEach {
+        CommandMagic.commandDefinitionsAndRedefinitions.forEach {
             addFromCommand(treeElements, commands, it)
         }
 

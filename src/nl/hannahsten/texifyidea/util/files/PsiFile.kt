@@ -197,14 +197,14 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
- * @param name
+ * @param commandName
  *          The name of the command including a backslash, or `null` for all commands.
  *
  * @see [LatexCommandsIndex.getItems]
  */
 @JvmOverloads
-fun PsiFile.commandsInFile(name: String? = null): Collection<LatexCommands> {
-    return name?.let {
+fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
+    return commandName?.let {
         LatexCommandsIndex.getCommandsByName(it, this)
     } ?: LatexCommandsIndex.getItems(this)
 }
