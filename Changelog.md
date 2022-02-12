@@ -3,6 +3,8 @@
 ### Additions
 * Recognise custom environments as defining a tabular-like environment. (#2221)
 * Add some missing biblatex entry types to autocompletion. (#2228)
+* Add inspection which checks if all commands are defined somewhere. (#2229)
+* Improve package indexing and autocompletion. (#2232)
 
 ### Bug fixes
 * Many improvements in log error parsing. (#2227)

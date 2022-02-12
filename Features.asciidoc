@@ -348,6 +348,7 @@ Issues which indicate probable unintended behaviour and often highlight possible
 * link:Probable-bugs#unescaped--symbol#[Unescaped `#` symbol]
 * link:Probable-bugs#Multiple-graphicspath[Multiple \graphicspath definitions]
 * link:Probable-bugs#bibinputs-relative-path[Relative path to parent is not allowed when using BIBINPUTS]
+* link:Probable-bugs#undefined-command[Command is not defined anywhere]
 
 ===== Packages
 Probable bugs related to packages.

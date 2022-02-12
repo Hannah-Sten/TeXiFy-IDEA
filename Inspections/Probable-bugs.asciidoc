@@ -181,3 +181,11 @@ The `BIBINPUTS` environment variable cannot handle paths which start with `../` 
 Solution: set the `BIBINPUTS` path to the parent and use `\bibliography{mybib}` instead (or use a "fake" subfolder and do `\bibliography{fake/../../mybib}`).
 This solution can be applied using the quickfix for this inspection.
 See https://tex.stackexchange.com/questions/406024/relative-paths-with-bibinputs
+
+[#undefined-command]
+== Command is not defined anywhere
+
+This inspection complains when you use a LaTeX command that is not defined anywhere.
+The inspection checks files in the file set, packages and document classes.
+It is disabled by default, because many commands from packages are unknown to TeXiFy, usually because they are defined in a way that the code which searches for command definitions doesn't handle yet.
+Therefore, if you find such a command that is defined but this inspection cannot find it, please report it to the issue tracker.
