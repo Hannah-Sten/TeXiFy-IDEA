@@ -38,6 +38,6 @@ enum class LatexIfCommand(
     OR("or"),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

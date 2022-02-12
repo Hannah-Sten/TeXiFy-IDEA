@@ -105,6 +105,6 @@ enum class LatexArrowCommand(
     SHORT_DOWN_ARROW("shortdownarrow", dependency = STMARYRD, display = "↓", collapse = true),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

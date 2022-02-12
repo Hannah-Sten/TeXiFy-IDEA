@@ -29,6 +29,6 @@ enum class LatexColorDefinitionCommand(
     DEFINECOLORSERIES("definecolorseries", "name".asRequired(), "core model".asRequired(), "method".asRequired(), "b-model".asOptional(), "b-spec".asRequired(), "s-model".asRequired(), "s-spec".asRequired(), dependency = XCOLOR),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

@@ -206,7 +206,7 @@ object PackageUtils {
     /**
      * Analyses all the given commands and reduces it to a set of all included packages, libraries or whatever is imported
      * with the given [packageCommands].
-     * Classes will not be included.
+     * Classes will be included.
      *
      * Note that not all elements returned may be valid package names.
      */
@@ -227,20 +227,11 @@ object PackageUtils {
             }
 
             // Assume packages can be included in both optional and required parameters
-            // Except a class, because a class is not a package
-            val packages = if (cmd.commandToken
-                    .text == "\\documentclass" || cmd.commandToken
-                    .text == "\\LoadClass"
-            ) {
-                setOf(cmd.optionalParameterMap.toStringMap().keys.toList())
-            }
-            else {
-                setOf(
-                    cmd.requiredParameters,
-                    cmd.optionalParameterMap.toStringMap().keys
-                        .toList()
-                )
-            }
+            // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
+            val packages = setOf(
+                cmd.requiredParameters,
+                cmd.optionalParameterMap.toStringMap().keys.toList()
+            )
 
             for (list in packages) {
 

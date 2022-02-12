@@ -31,15 +31,15 @@ open class CommandUiEntry(
     override val generatedLatex: String = generatedLatex ?: command.commandWithSlash
 
     override val fileName = customFileName ?: if (command.isMathMode) {
-        "math_${command.identifyer.formatAsFileName()}.png"
+        "math_${command.identifier.formatAsFileName()}.png"
     }
-    else "text_${command.identifyer.formatAsFileName()}.png"
+    else "text_${command.identifier.formatAsFileName()}.png"
 
     override val imagePath = "/nl/hannahsten/texifyidea/symbols/$fileName"
 
     override val imageLatex = customImageLatex ?: command.commandWithSlash
 
-    override val description = customDescription ?: command.identifyer
+    override val description = customDescription ?: command.identifier
         .lowercase(Locale.getDefault())
         .replace("_", " ") + if (command.isMathMode) " (math)" else ""
 

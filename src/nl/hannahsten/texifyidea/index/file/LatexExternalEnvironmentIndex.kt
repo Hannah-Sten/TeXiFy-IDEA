@@ -4,7 +4,6 @@ import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
-import nl.hannahsten.texifyidea.file.LatexSourceFileType
 
 /**
  * Similar to [LatexExternalCommandIndex] but for environments.
@@ -39,9 +38,7 @@ class LatexExternalEnvironmentIndex : FileBasedIndexExtension<String, String>() 
     override fun getVersion() = 0
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return FileBasedIndex.InputFilter {
-            it.fileType is LatexSourceFileType
-        }
+        return LatexDocsRegexer.inputFilter
     }
 
     override fun dependsOnFileContent() = true
