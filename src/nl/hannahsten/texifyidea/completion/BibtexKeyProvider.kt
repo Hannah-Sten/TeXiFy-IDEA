@@ -25,7 +25,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         val psiElement = parameters.position
         val entry = psiElement.parentOfType(BibtexEntry::class) ?: return
         val token = entry.tokenType() ?: return
-        val entryType = BibtexDefaultEntry[token] ?: return
+        val entryType = BibtexDefaultEntryType[token] ?: return
         val optional: Set<BibtexEntryField> = entryType.optional.toSet()
         val required: Set<BibtexEntryField> = entryType.required.toSet()
 
