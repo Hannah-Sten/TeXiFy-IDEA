@@ -84,10 +84,11 @@ internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSett
 
     override fun canRenameScheme(scheme: TexifyConventionsScheme) = false
 
-    override fun canResetScheme(scheme: TexifyConventionsScheme) = false
+    override fun canResetScheme(scheme: TexifyConventionsScheme) = true
 
     override fun differsFromDefault(scheme: TexifyConventionsScheme): Boolean {
-        throw OperationNotSupportedException()
+        // schemes differ if any setting except the name is different
+        return scheme.deepCopy() != TexifyConventionsScheme(myName = scheme.myName)
     }
 
     override fun removeScheme(scheme: TexifyConventionsScheme) {
@@ -124,7 +125,8 @@ internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSett
         override fun getSchemeType() = type
 
         override fun resetScheme(scheme: TexifyConventionsScheme) {
-            throw OperationNotSupportedException()
+            scheme.copyFrom(TexifyConventionsScheme())
+            listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
         }
 
         /**

@@ -4,7 +4,7 @@ import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
-import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
+import nl.hannahsten.texifyidea.testutils.updateConvention
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexAddLabelIntentionTest : BasePlatformTestCase() {
@@ -75,16 +75,10 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
     }
 
-    private fun enableConvention(name: String) {
-        val settingsManager = TexifyConventionsSettingsManager.getInstance(myFixture.project)
-        val settings = settingsManager.getSettings()
-        val itemConvention = settings.getLabelConvention(name, LabelConventionType.COMMAND)!!
-        itemConvention.enabled = true
-        settingsManager.saveSettings(settings)
-    }
-
     fun testLabelForItem() {
-        enableConvention("\\item")
+        myFixture.updateConvention { s ->
+            s.getLabelConvention("\\item", LabelConventionType.COMMAND)!!.enabled = true
+        }
         myFixture.configureByText(
             LatexFileType,
             """

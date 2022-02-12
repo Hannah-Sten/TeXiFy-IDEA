@@ -69,4 +69,12 @@ data class TexifyConventionsScheme(
      * Same as [myName].
      */
     override fun getName() = myName
+
+    fun copyFrom(scheme: TexifyConventionsScheme) {
+        if (scheme !== this) {
+            maxSectionSize = scheme.maxSectionSize
+            labelConventions.clear()
+            labelConventions.addAll(scheme.labelConventions)
+        }
+    }
 }

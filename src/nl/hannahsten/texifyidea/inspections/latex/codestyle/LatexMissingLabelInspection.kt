@@ -16,8 +16,8 @@ import nl.hannahsten.texifyidea.lang.LatexDocumentClass
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.hasStar
@@ -127,16 +127,15 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
      */
     private class ChangeMinimumLabelLevelFix : LocalQuickFix {
 
-        // TODO: must change label convention instead
         @Nls
         override fun getFamilyName(): String {
-            return "Change minimum sectioning level"
+            return "Change label conventions"
         }
 
         override fun startInWriteAction() = false
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyConfigurable::class.java)
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyConventionsConfigurable::class.java)
         }
     }
 

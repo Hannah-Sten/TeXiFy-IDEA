@@ -164,7 +164,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
      */
     fun loadScheme(scheme: TexifyConventionsScheme) {
         maxSectionSize.value = scheme.maxSectionSize
-        labelConventionsTable.model.items = scheme.labelConventions
+        labelConventionsTable.model.items = scheme.labelConventions.map { l -> l.copy() }
     }
 
     /**
@@ -172,7 +172,8 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
      */
     fun saveScheme(scheme: TexifyConventionsScheme) {
         scheme.maxSectionSize = maxSectionSize.number
-        scheme.labelConventions = labelConventionsTable.model.items
+        scheme.labelConventions.clear()
+        scheme.labelConventions.addAll(labelConventionsTable.model.items)
     }
 
     /**

@@ -14,37 +14,61 @@ data class TexifyConventionsSettings internal constructor(
     private var globalState: TexifyConventionsGlobalState = TexifyConventionsGlobalState()
 ) {
 
+    /**
+     * Copies the settings of the supplied scheme to the default (global) scheme
+     *
+     * The method is internal because it should only be called by the convention settings GUI components
+     */
     internal fun copyToDefaultScheme(scheme: TexifyConventionsScheme) {
-        globalState.schemes =
-            globalState.schemes.map { if (it.name == TexifyConventionsScheme.DEFAULT_SCHEME_NAME) scheme.deepCopy() else it }
+        globalState.schemes.single { it.name == TexifyConventionsScheme.DEFAULT_SCHEME_NAME }.copyFrom(scheme)
     }
 
+    /**
+     * Copies the settings of the supplied scheme to the project scheme
+     *
+     * The method is internal because it should only be called by the convention settings GUI components
+     */
     internal fun copyToProjectScheme(scheme: TexifyConventionsScheme) {
-        projectState.scheme = scheme.deepCopy()
+        projectState.scheme.copyFrom(scheme)
     }
 
+    /**
+     * Copies the settings from another settings instance
+     *
+     * The method is internal because it should only be called by the convention settings GUI components
+     */
     internal fun copyFrom(newState: TexifyConventionsSettings) {
         projectState = newState.projectState.deepCopy()
         globalState = newState.globalState.deepCopy()
     }
 
+    /**
+     * Returns the substates constituting this settings instance
+     *
+     * The method is internal because it should only be called by the [TexifyConventionsSettingsManager] for persistence
+     */
     internal fun getStateCopy() = Pair(projectState.deepCopy(), globalState.deepCopy())
 
+    /**
+     * The currently active scheme.
+     *
+     * When changing the scheme make sure that the new scheme is either a project scheme or a known global scheme.
+     */
     var currentScheme: TexifyConventionsScheme
         get() {
             return if (projectState.useProjectScheme) projectState.scheme
             else schemes.firstOrNull { it.name == globalState.selectedScheme }
                 ?: throw IllegalStateException("No scheme named ${globalState.selectedScheme} exists")
         }
-        internal set(scheme) {
+        set(scheme) {
             if (scheme.isProjectScheme) {
-                projectState.scheme = scheme.deepCopy()
+                projectState.scheme.copyFrom(scheme)
                 projectState.useProjectScheme = true
             }
             else {
-                if (!globalState.schemes.any { it.name == scheme.name }) {
-                    throw IllegalArgumentException("Scheme ${scheme.name} is neither a project scheme nor a known global scheme")
-                }
+                val globalScheme = globalState.schemes.singleOrNull { it.name == scheme.name }
+                    ?: throw IllegalArgumentException("Scheme ${scheme.name} is neither a project scheme nor a known global scheme")
+                globalScheme.copyFrom(scheme)
                 globalState.selectedScheme = scheme.name
                 projectState.useProjectScheme = false
             }
