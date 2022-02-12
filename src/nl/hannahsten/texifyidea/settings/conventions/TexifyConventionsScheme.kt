@@ -35,6 +35,7 @@ data class TexifyConventionsScheme(
      * should receive a label, but provides more fine-grained control.
      */
     var labelConventions: MutableList<LabelConvention> = mutableListOf(
+        LabelConvention(true, LabelConventionType.COMMAND, PART.command, "part"),
         LabelConvention(true, LabelConventionType.COMMAND, CHAPTER.command, "ch"),
         LabelConvention(true, LabelConventionType.COMMAND, SECTION.command, "sec"),
         LabelConvention(true, LabelConventionType.COMMAND, SUBSECTION.command, "subsec"),

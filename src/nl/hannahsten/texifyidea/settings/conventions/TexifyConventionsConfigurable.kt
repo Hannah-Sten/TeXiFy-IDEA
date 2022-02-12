@@ -112,6 +112,11 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                 override fun setValue(item: LabelConvention, value: Boolean) {
                     item.enabled = value
                 }
+
+                override fun getMaxStringValue(): String? {
+                    // Give a hint that the column won't ever need more space than its label
+                    return super.getName()
+                }
             }
 
         val itemEditor = object : CollectionItemEditor<LabelConvention> {
@@ -125,7 +130,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         }
 
         labelConventionsTable = object : TableModelEditor<LabelConvention>(
-            listOf(enabledColumnInfo, nameColumnInfo, prefixColumnInfo).toTypedArray(),
+            listOf(nameColumnInfo, prefixColumnInfo, enabledColumnInfo).toTypedArray(),
             itemEditor,
             "Label Conventions"
         ) {

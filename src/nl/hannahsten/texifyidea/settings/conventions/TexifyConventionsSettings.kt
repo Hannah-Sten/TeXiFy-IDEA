@@ -52,4 +52,20 @@ data class TexifyConventionsSettings internal constructor(
 
     val schemes: List<TexifyConventionsScheme>
         get() = listOfNotNull(*globalState.schemes.toTypedArray(), projectState.scheme)
+
+    /**
+     * Convenience method to retrieve the currently active label convention
+     *
+     * @param name the name of the command or environment of the label convention
+     */
+    fun getLabelConvention(name: String?, type: LabelConventionType): LabelConvention? {
+        val conventionName = if (type == LabelConventionType.COMMAND) {
+            name?.replace("\\", "")
+        }
+        else {
+            name
+        }
+
+        return currentScheme.labelConventions.singleOrNull { c -> c.name == conventionName && c.type == type }
+    }
 }

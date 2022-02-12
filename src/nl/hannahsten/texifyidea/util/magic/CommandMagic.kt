@@ -30,18 +30,6 @@ object CommandMagic {
     )
 
     /**
-     * Maps commands to their expected label prefix. Which commands are expected to have a label at all is determined in settings.
-     */
-    val labeledPrefixes = mapOf(
-            CHAPTER.cmd to "ch",
-            SECTION.cmd to "sec",
-            SUBSECTION.cmd to "subsec",
-            SUBSUBSECTION.cmd to "subsubsec",
-            ITEM.cmd to "itm",
-            LSTINPUTLISTING.cmd to "lst",
-    )
-
-    /**
      * Level of labeled commands.
      */
     val labeledLevels: Map<LatexCommand, Int> = mapOf(
@@ -93,7 +81,8 @@ object CommandMagic {
     /**
      * LaTeX commands that increase a counter that can be labeled.
      */
-    val increasesCounter = hashSetOf(CAPTION.cmd, CAPTIONOF.cmd) + labeledPrefixes.keys
+    val increasesCounter =
+        hashSetOf(CAPTION.cmd, CAPTIONOF.cmd, CHAPTER.cmd, SECTION.cmd, SUBSECTION.cmd, ITEM.cmd, LSTINPUTLISTING.cmd)
 
     /**
      * All commands that represent a reference to a label, excluding user defined commands.
@@ -146,7 +135,7 @@ object CommandMagic {
      *
      * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
      */
-    fun getLabelDefinitionCommands(project: Project): Set<String>? {
+    fun getLabelDefinitionCommands(project: Project): Set<String> {
         // Check if updates are needed
         CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
         return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
