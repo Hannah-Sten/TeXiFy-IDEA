@@ -7,10 +7,10 @@ import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.PsiContainer
+import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parentOfType
@@ -36,7 +36,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val covered = HashSet<LatexCommands>()
-        val commands = LatexIncludesIndex.getCommandsByNames(root.containingFile, *includesArray)
+        val commands = root.allCommands().filter { it.name in includesArray }
 
         for (command in commands) {
             // Do not cover commands twice.
