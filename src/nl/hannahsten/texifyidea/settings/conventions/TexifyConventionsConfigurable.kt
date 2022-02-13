@@ -43,23 +43,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     private lateinit var maxSectionSize: JBIntSpinner
     private lateinit var labelConventionsTable: TableModelEditor<LabelConvention>
 
-    override fun createComponent(): JComponent {
-
-        schemesPanel = TexifyConventionsSchemesPanel(unsavedSettings)
-
-        /**
-         * Save the current scheme and load the new scheme whenever the combobox changes
-         */
-        schemesPanel.addListener(object : TexifyConventionsSchemesPanel.Listener {
-            override fun onCurrentSchemeWillChange(scheme: TexifyConventionsScheme) {
-                saveScheme(scheme)
-            }
-
-            override fun onCurrentSchemeHasChanged(scheme: TexifyConventionsScheme) {
-                loadScheme(scheme)
-            }
-        })
-
+    private fun createConventionsTable(): TableModelEditor<LabelConvention> {
         val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
             override fun valueOf(item: LabelConvention): String = item.prefix!!
             override fun getTooltipText(): String = "The prefix labels for the given Latex element should have"
@@ -137,6 +121,27 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             override fun canCreateElement(): Boolean = false
         }
         labelConventionsTable.disableUpDownActions()
+        return labelConventionsTable
+    }
+
+    override fun createComponent(): JComponent {
+
+        schemesPanel = TexifyConventionsSchemesPanel(unsavedSettings)
+
+        /**
+         * Save the current scheme and load the new scheme whenever the combobox changes
+         */
+        schemesPanel.addListener(object : TexifyConventionsSchemesPanel.Listener {
+            override fun onCurrentSchemeWillChange(scheme: TexifyConventionsScheme) {
+                saveScheme(scheme)
+            }
+
+            override fun onCurrentSchemeHasChanged(scheme: TexifyConventionsScheme) {
+                loadScheme(scheme)
+            }
+        })
+
+        labelConventionsTable = createConventionsTable()
 
         maxSectionSize = JBIntSpinner(4000, 100, Integer.MAX_VALUE)
         val centerPanel = panel {
@@ -162,15 +167,17 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     /**
      * Initialize the view elements with the settings from the supplied scheme
      */
-    fun loadScheme(scheme: TexifyConventionsScheme) {
+    private fun loadScheme(scheme: TexifyConventionsScheme) {
         maxSectionSize.value = scheme.maxSectionSize
+
+        // make sure to make a copy so changes to the elements are transferred explicitely
         labelConventionsTable.model.items = scheme.labelConventions.map { l -> l.copy() }
     }
 
     /**
      * Transfer the view elements into the supplied scheme
      */
-    fun saveScheme(scheme: TexifyConventionsScheme) {
+    private fun saveScheme(scheme: TexifyConventionsScheme) {
         scheme.maxSectionSize = maxSectionSize.number
         scheme.labelConventions.clear()
         scheme.labelConventions.addAll(labelConventionsTable.model.items)
@@ -179,7 +186,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     /**
      * Load the supplied settings and update the view component to reflect the setting values
      */
-    fun loadSettings(settings: TexifyConventionsSettings) {
+    private fun loadSettings(settings: TexifyConventionsSettings) {
         unsavedSettings.copyFrom(settings)
         loadScheme(unsavedSettings.currentScheme)
         schemesPanel.updateComboBoxList()

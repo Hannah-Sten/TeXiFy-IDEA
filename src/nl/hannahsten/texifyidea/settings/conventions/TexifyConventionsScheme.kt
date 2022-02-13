@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.util.magic.env
  * rules. In the context of Texify conventions, a scheme stores either project or IDE level conventions.
  *
  * Instances must be serializable since they are persisted as part of [TexifyConventionsGlobalState] or
- * [TexifyConventionsProjectState].
+ * [TexifyConventionsProjectState]. Changing the properties to "val" silently fails serialization.
  */
 data class TexifyConventionsScheme(
 
@@ -70,8 +70,12 @@ data class TexifyConventionsScheme(
      */
     override fun getName() = myName
 
+    /**
+     * Copy all settings except the name from the given scheme. This method is useful when you want to transfer settings
+     * from one instance to another.
+     */
     fun copyFrom(scheme: TexifyConventionsScheme) {
-        if (scheme !== this) {
+        if (scheme != this) {
             maxSectionSize = scheme.maxSectionSize
             labelConventions.clear()
             labelConventions.addAll(scheme.labelConventions)

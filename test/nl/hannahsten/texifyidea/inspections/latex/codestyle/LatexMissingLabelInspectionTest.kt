@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
-import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
@@ -14,7 +13,6 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
 
     override fun setUp() {
         super.setUp()
-        VfsRootAccess.allowRootAccess(testRootDisposable, "/usr/share/texlive/texmf-dist")
         // reset to default
         myFixture.updateConvention { s -> s.currentScheme = TexifyConventionsScheme() }
     }

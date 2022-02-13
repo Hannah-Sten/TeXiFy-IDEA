@@ -3,7 +3,8 @@ package nl.hannahsten.texifyidea.settings.conventions
 /**
  * A label convention stores the Texify conventions for a specific label type.
  *
- * The parameters need default values for XML serialization.
+ * The parameters need default values for XML serialization. Turning any of them into a "val" leads to the serialization
+ * silently failing.
  */
 data class LabelConvention(
 

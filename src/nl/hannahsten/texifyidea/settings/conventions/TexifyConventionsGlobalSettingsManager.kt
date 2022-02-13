@@ -6,6 +6,8 @@ import com.intellij.openapi.components.Storage
 
 /**
  * Settings manager that persists and loads settings from a global settings file.
+ *
+ * The class is internal because clients should use the [TexifyConventionsSettingsManager] facade.
  */
 @State(name = "Conventions", storages = [Storage("texifySettings.xml")])
 internal class TexifyConventionsGlobalSettingsManager : PersistentStateComponent<TexifyConventionsGlobalState> {
