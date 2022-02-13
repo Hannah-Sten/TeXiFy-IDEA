@@ -107,7 +107,8 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             override fun getItemClass(): Class<out LabelConvention> = LabelConvention::class.java
 
             override fun clone(item: LabelConvention, forInPlaceEditing: Boolean): LabelConvention {
-                TODO("Not yet implemented")
+                // adding and deleting items is currently not supported
+                throw NotImplementedError("Not impelemented")
             }
 
             override fun isRemovable(item: LabelConvention): Boolean = false
