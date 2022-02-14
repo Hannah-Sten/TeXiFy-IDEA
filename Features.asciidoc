@@ -181,7 +181,6 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#backslash-selection[Option to include the backslash when selecting a LaTeX command]
 * link:Global-settings#package-structure-view[Option to show LaTeX package files in the structure view]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
-* link:Global-settings#missing-label-minimum-level[Option to change the minimum sectioning level for which the missing label inspection is shown]
 * link:Global-settings#pdfviewer[Option to select default PDF viewer]
 
 === Project settings
@@ -231,6 +230,11 @@ These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX 
 * link:Code-style-settings#section-newlines[Specify the number of blank lines before a sectioning command]
 * link:Code-style-settings#section-indentation[Indent text in sections]
 
+=== Conventions
+These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy > Conventions] and allow you to configure Latex code conventions that apply either globally or for the current project.
+
+* link:Conventions#maximum-section-size[The maximum number of characters in a section before TeXiFy will suggest to split the section]
+* link:Conventions#label-conventions[Which commands and environments should have a label and which prefix the label should have]
 
 == Menu entries
 
