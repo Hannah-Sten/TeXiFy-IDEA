@@ -9,9 +9,9 @@ When a section grows bigger than the configured number of characters, TeXiFy wil
 
 Label conventions allow you to configure which commands and environments should have a label and which prefix the label should habe. TeXiFy will show a warning if any of the configured commands or environments does not have a label and provide a quickfix to add a new label. 
 
-<img width="289" alt="Missing label warning" src="https://user-images.githubusercontent.com/7955528/153943614-d5671569-dfa4-47c8-9ae2-e61db11c90b1.png">
+image::https://user-images.githubusercontent.com/7955528/153943614-d5671569-dfa4-47c8-9ae2-e61db11c90b1.png[Missing Label Warning]
 
 In addition, you can configure the preferred prefix for a label, e.g., `fig:` for a figure or `sec:` for a section. TeXiFy will check that all existing labels adhere to the configured convention, and if not, provide a quickfix to change the prefix. Newly added labels will also automatically receive the configured prefix.
 
-<img width="271" alt="Added label" src="https://user-images.githubusercontent.com/7955528/153943754-176325aa-cd3c-4efb-8ec6-0b561d8ac3dc.png">
+image::https://user-images.githubusercontent.com/7955528/153943754-176325aa-cd3c-4efb-8ec6-0b561d8ac3dc.png[Added Label]
 
