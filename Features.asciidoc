@@ -233,7 +233,7 @@ These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX 
 === Conventions
 These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy > Conventions] and allow you to configure Latex code conventions that apply either globally or for the current project.
 
-* link:Conventions#maximum-section-size[The maximum number of characters in a section before TeXiFy will suggest to split the section]
+* link:Conventions#maximum-section-size[The maximum number of characters in a section before TeXiFy will suggest to move the section to another file]
 * link:Conventions#label-conventions[Which commands and environments should have a label and which prefix the label should have]
 
 == Menu entries
