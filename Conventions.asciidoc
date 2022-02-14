@@ -1,3 +1,4 @@
+Each project can either use the globally configured conventions (called `Default`) or project specific conventions. You can select the conventions to use with the `Scheme` combobox at the top of the settings page.
 
 [#maximum-section-size]
 == Maximum Section Size
