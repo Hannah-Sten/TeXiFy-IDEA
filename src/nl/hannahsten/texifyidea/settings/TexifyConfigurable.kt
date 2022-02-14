@@ -95,7 +95,7 @@ class TexifyConfigurable : SearchableConfigurable {
             continuousPreview?.isSelected != settings.continuousPreview ||
             includeBackslashInSelection?.isSelected != settings.includeBackslashInSelection ||
             showPackagesInStructureView?.isSelected != settings.showPackagesInStructureView ||
-                automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal
+            automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal
     }
 
     override fun apply() {

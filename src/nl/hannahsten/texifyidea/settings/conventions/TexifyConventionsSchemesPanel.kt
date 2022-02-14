@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
 import javax.naming.OperationNotSupportedException
 
 /**
- *  Controller for managing the convention settings. The panel allows to select and edit the current scheme and copy settings
+ *  Controller for managing the convention settings. The panel allows selecting and editing the current scheme and copying settings
  *  between the schemes. The supplied [TexifyConventionsSettings] instance represents the corresponding model,
  *  containing the available schemes.
  *

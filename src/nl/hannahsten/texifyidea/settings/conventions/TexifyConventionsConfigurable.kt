@@ -161,7 +161,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     private fun loadScheme(scheme: TexifyConventionsScheme) {
         maxSectionSize.value = scheme.maxSectionSize
 
-        // make sure to make a copy so changes to the elements are transferred explicitely
+        // make sure to make a copy so changes to the elements are transferred explicitly
         val items = scheme.labelConventions.map { l -> l.copy() }
         val model = ListTableModel(arrayOf(nameColumnInfo, prefixColumnInfo, enabledColumnInfo), items)
         labelConventionsTable.model = model
