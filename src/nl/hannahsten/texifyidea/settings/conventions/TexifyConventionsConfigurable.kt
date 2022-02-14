@@ -4,8 +4,10 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBIntSpinner
+import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.layout.panel
-import com.intellij.util.ui.CollectionItemEditor
+import com.intellij.ui.table.TableView
+import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.settings.TexifyConventionsSchemesPanel
@@ -41,87 +43,71 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     private lateinit var schemesPanel: TexifyConventionsSchemesPanel
     private lateinit var mainPanel: JPanel
     private lateinit var maxSectionSize: JBIntSpinner
-    private lateinit var labelConventionsTable: TableModelEditor<LabelConvention>
+    private lateinit var labelConventionsTable: TableView<LabelConvention>
 
-    private fun createConventionsTable(): TableModelEditor<LabelConvention> {
-        val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
-            override fun valueOf(item: LabelConvention): String = item.prefix!!
-            override fun getTooltipText(): String = "The prefix labels for the given Latex element should have"
-            override fun setValue(item: LabelConvention, value: String?) {
-                item.prefix = value ?: ""
-            }
+    private val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
+        override fun valueOf(item: LabelConvention): String = item.prefix!!
+        override fun getTooltipText(): String = "The prefix labels for the given Latex element should have"
+        override fun setValue(item: LabelConvention, value: String?) {
+            item.prefix = value ?: ""
         }
+    }
 
-        val nameColumnInfo =
-            object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Element") {
-                override fun valueOf(item: LabelConvention): LabelConvention = item
-                override fun isCellEditable(item: LabelConvention?): Boolean = false
-                override fun getColumnClass(): Class<*> = LabelConvention::class.java
-                override fun getRenderer(item: LabelConvention?): TableCellRenderer {
-                    return object : DefaultTableCellRenderer() {
-                        override fun getTableCellRendererComponent(
-                            table: JTable?,
-                            value: Any?,
-                            selected: Boolean,
-                            focus: Boolean,
-                            row: Int,
-                            column: Int
-                        ): Component {
-                            val convention = value as LabelConvention?
-                            super.getTableCellRendererComponent(table, convention?.name, selected, focus, row, column)
-                            //noinspection unchecked
-                            icon = if (value != null) {
-                                when (value.type!!) {
-                                    LabelConventionType.ENVIRONMENT -> TexifyIcons.DOT_ENVIRONMENT
-                                    LabelConventionType.COMMAND -> TexifyIcons.DOT_COMMAND
-                                }
+    private val nameColumnInfo =
+        object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Element") {
+            override fun valueOf(item: LabelConvention): LabelConvention = item
+            override fun isCellEditable(item: LabelConvention?): Boolean = false
+            override fun getColumnClass(): Class<*> = LabelConvention::class.java
+            override fun getRenderer(item: LabelConvention?): TableCellRenderer {
+                return object : DefaultTableCellRenderer() {
+                    override fun getTableCellRendererComponent(
+                        table: JTable?,
+                        value: Any?,
+                        selected: Boolean,
+                        focus: Boolean,
+                        row: Int,
+                        column: Int
+                    ): Component {
+                        val convention = value as LabelConvention?
+                        super.getTableCellRendererComponent(table, convention?.name, selected, focus, row, column)
+                        //noinspection unchecked
+                        icon = if (value != null) {
+                            when (value.type!!) {
+                                LabelConventionType.ENVIRONMENT -> TexifyIcons.DOT_ENVIRONMENT
+                                LabelConventionType.COMMAND -> TexifyIcons.DOT_COMMAND
                             }
-                            else {
-                                null
-                            }
-
-                            return this
                         }
+                        else {
+                            null
+                        }
+
+                        return this
                     }
                 }
             }
-
-        val enabledColumnInfo =
-            object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("Should have label") {
-                override fun getColumnClass(): Class<*> = Boolean::class.java
-                override fun getTooltipText(): String =
-                    "If enabled, TeXiFy issues a warning if the given Latex element does not have a label"
-
-                override fun valueOf(item: LabelConvention): Boolean = item.enabled
-                override fun setValue(item: LabelConvention, value: Boolean) {
-                    item.enabled = value
-                }
-
-                override fun getMaxStringValue(): String? {
-                    // Give a hint that the column won't ever need more space than its label
-                    return super.getName()
-                }
-            }
-
-        val itemEditor = object : CollectionItemEditor<LabelConvention> {
-            override fun getItemClass(): Class<out LabelConvention> = LabelConvention::class.java
-
-            override fun clone(item: LabelConvention, forInPlaceEditing: Boolean): LabelConvention {
-                // adding and deleting items is currently not supported
-                throw NotImplementedError("Not impelemented")
-            }
-
-            override fun isRemovable(item: LabelConvention): Boolean = false
         }
 
-        labelConventionsTable = object : TableModelEditor<LabelConvention>(
-            listOf(nameColumnInfo, prefixColumnInfo, enabledColumnInfo).toTypedArray(),
-            itemEditor,
-            "Label Conventions"
-        ) {
-            override fun canCreateElement(): Boolean = false
+    private val enabledColumnInfo =
+        object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("Should Have Label") {
+            override fun getColumnClass(): Class<*> = Boolean::class.java
+            override fun getTooltipText(): String =
+                "If enabled, TeXiFy issues a warning if the given Latex element does not have a label"
+
+            override fun valueOf(item: LabelConvention): Boolean = item.enabled
+            override fun setValue(item: LabelConvention, value: Boolean) {
+                item.enabled = value
+            }
+
+            override fun getMaxStringValue(): String? {
+                // Give a hint that the column won't ever need more space than its label
+                return super.getName()
+            }
         }
-        labelConventionsTable.disableUpDownActions()
+
+    private fun createConventionsTable(): TableView<LabelConvention> {
+        val model = ListTableModel<LabelConvention>(nameColumnInfo, prefixColumnInfo, enabledColumnInfo)
+        labelConventionsTable = TableView(model)
+
         return labelConventionsTable
     }
 
@@ -144,7 +130,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         labelConventionsTable = createConventionsTable()
 
-        maxSectionSize = JBIntSpinner(4000, 100, Integer.MAX_VALUE)
+        maxSectionSize = JBIntSpinner(4000, 1, Integer.MAX_VALUE)
         val centerPanel = panel {
             row {
                 label("Maximum section size (characters)")
@@ -153,7 +139,11 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
             titledRow("Labels") {
                 row {
-                    labelConventionsTable.createComponent()(grow)
+                    ToolbarDecorator.createDecorator(labelConventionsTable)
+                        .disableAddAction()
+                        .disableRemoveAction()
+                        .disableUpDownActions()
+                        .createPanel()(grow)
                 }
             }
         }
@@ -172,7 +162,9 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         maxSectionSize.value = scheme.maxSectionSize
 
         // make sure to make a copy so changes to the elements are transferred explicitely
-        labelConventionsTable.model.items = scheme.labelConventions.map { l -> l.copy() }
+        val items = scheme.labelConventions.map { l -> l.copy() }
+        val model = ListTableModel(arrayOf(nameColumnInfo, prefixColumnInfo, enabledColumnInfo), items)
+        labelConventionsTable.model = model
     }
 
     /**
@@ -181,7 +173,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     private fun saveScheme(scheme: TexifyConventionsScheme) {
         scheme.maxSectionSize = maxSectionSize.number
         scheme.labelConventions.clear()
-        scheme.labelConventions.addAll(labelConventionsTable.model.items)
+        scheme.labelConventions.addAll(labelConventionsTable.items)
     }
 
     /**
