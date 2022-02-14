@@ -44,6 +44,6 @@ enum class LatexNatbibCommand(
     CITETEXT("citetext", "text".asRequired(), dependency = NATBIB),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

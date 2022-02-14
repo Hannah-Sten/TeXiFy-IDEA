@@ -205,8 +205,8 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
 @JvmOverloads
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
     return commandName?.let {
-        LatexCommandsIndex.getCommandsByName(it, this)
-    } ?: LatexCommandsIndex.getItems(this)
+        this.allCommands().filter { it.name == commandName }
+    } ?: this.allCommands()
 }
 
 /**

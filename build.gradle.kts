@@ -4,17 +4,17 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.3.0"
-    kotlin("jvm") version("1.6.10")
+    id("org.jetbrains.intellij") version "1.4.0"
+    kotlin("jvm") version("1.6.20-M1")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.41.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "4.1.2"
+    id("de.undercouch.download") version "5.0.1"
 
     // Test coverage
     jacoco
@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.15-alpha.2"
+version = "0.7.15-alpha.3"
 
 repositories {
     mavenCentral()
@@ -52,7 +52,7 @@ tasks.compileKotlin {
 
     kotlinOptions {
         jvmTarget = "11"
-        freeCompilerArgs = listOf("-Xjvm-default=enable")
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
@@ -63,7 +63,7 @@ tasks.compileTestKotlin {
 
     kotlinOptions {
         jvmTarget = "11"
-        freeCompilerArgs = listOf("-Xjvm-default=enable")
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
@@ -75,7 +75,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.1")
-    implementation("org.slf4j:slf4j-simple:2.0.0-alpha5")
+    implementation("org.slf4j:slf4j-simple:2.0.0-alpha6")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")

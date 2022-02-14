@@ -33,6 +33,6 @@ enum class LatexAlgorithmicxCommand(
     ENDPROCEDURE("EndProcedure", dependency = ALGPSEUDOCODE),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

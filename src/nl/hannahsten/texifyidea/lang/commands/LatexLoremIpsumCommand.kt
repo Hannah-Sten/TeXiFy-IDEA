@@ -33,6 +33,6 @@ enum class LatexLoremIpsumCommand(
     LIPSUM_AS_SINGLE_PARAGRAPH("lipsum*", "paragraph range".asOptional(), "sentence range".asOptional(), dependency = LatexPackage.LIPSUM),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

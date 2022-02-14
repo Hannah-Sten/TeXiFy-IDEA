@@ -30,6 +30,6 @@ enum class LatexColoneqCommand(
     DOUBLE_COLON_SIM("Colonsim", dependency = MATHTOOLS, display = "::∼", collapse = true),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }
