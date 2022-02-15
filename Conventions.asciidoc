@@ -3,7 +3,7 @@ Each project can either use the globally configured conventions (called `Default
 [#maximum-section-size]
 == Maximum Section Size
 
-When a section grows bigger than the configured number of characters, TeXiFy will show a warning and suggest to move the section to separate file.
+When a section grows bigger than the configured number of characters, and there are also other sections in the file, TeXiFy will show a warning and suggest to move the section to separate file.
 
 [#label-conventions]
 == Label Conventions
