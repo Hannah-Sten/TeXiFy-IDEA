@@ -5,6 +5,8 @@ Each project can either use the globally configured conventions (called `Default
 
 When a section grows bigger than the configured number of characters, and there are also other sections in the file, TeXiFy will show a warning and suggest to move the section to separate file.
 
+See link:Code-style-issues#too-large-section[Too large section inspection].
+
 [#label-conventions]
 == Label Conventions
 
@@ -15,4 +17,6 @@ image::https://user-images.githubusercontent.com/7955528/153943614-d5671569-dfa4
 In addition, you can configure the preferred prefix for a label, e.g., `fig:` for a figure or `sec:` for a section. TeXiFy will check that all existing labels adhere to the configured convention, and if not, provide a quickfix to change the prefix. Newly added labels will also automatically receive the configured prefix.
 
 image::https://user-images.githubusercontent.com/7955528/153943754-176325aa-cd3c-4efb-8ec6-0b561d8ac3dc.png[Added Label]
+
+See link:Code-style-issues#Label-conventions[Label conventions inspection] and link:Code-style-issues#Missing-labels[Missing labels inspection].
 
