@@ -123,12 +123,6 @@ Whenever the next character is not a closing brace, we assume you want opening q
 
 For more advantages, see https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f
 
-[#missing-label-minimum-level]
-== Option to change the minimum sectioning level for which the missing label inspection is shown
-
-When set to `\subsection`, the missing label inspection will trigger for `\subsection`, `\section`, `\chapter` and `\part`.
-Similar for other settings.
-
 [#pdfviewer]
 == Option to select default PDF viewer
 _Since b0.6.7_
