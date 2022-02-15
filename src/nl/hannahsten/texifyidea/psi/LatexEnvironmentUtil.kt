@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
@@ -23,7 +25,16 @@ fun getLabel(element: LatexEnvironment): String? {
         optionalParameters.getOrDefault("label", null)
     }
     else {
-        if (!EnvironmentMagic.labeled.containsKey(element.environmentName)) return null
+        // Not very clean. We don't really need the conventions here, but determine which environments *can* have a
+        // label. However, if we didn't use the conventions, we would have to duplicate the information in
+        // EnvironmentMagic
+        val conventionSettings = TexifyConventionsSettingsManager.getInstance(element.project).getSettings()
+        if (conventionSettings.getLabelConvention(
+                element.environmentName,
+                LabelConventionType.ENVIRONMENT
+            ) == null
+        ) return null
+
         val content = element.environmentContent ?: return null
 
         // See if we can find a label command inside the environment

@@ -4,9 +4,18 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexKeyvalPair
+import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
+import nl.hannahsten.texifyidea.testutils.updateConvention
 import nl.hannahsten.texifyidea.util.childrenOfType
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
+
+    override fun setUp() {
+        super.setUp()
+        // reset to default
+        myFixture.updateConvention { s -> s.currentScheme = TexifyConventionsScheme() }
+    }
 
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missinglabel"
@@ -17,8 +26,28 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         myFixture.checkHighlighting(false, false, true, false)
     }
 
-    fun `test missing figure label warnings`() = testHighlighting(
+    fun `test no missing label warning if convention is disabled`() {
+        myFixture.updateConvention { s ->
+            s.getLabelConvention("\\section", LabelConventionType.COMMAND)!!.enabled = false
+            s.getLabelConvention("figure", LabelConventionType.ENVIRONMENT)!!.enabled = false
+        }
+        myFixture.configureByText(
+            LatexFileType,
             """
+            \begin{document}
+                \section{some section}
+                
+                \begin{figure}
+                \end{figure}
+            \end{document}
+            """.trimIndent()
+        )
+
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    fun `test missing figure label warnings`() = testHighlighting(
+        """
             \begin{document}
                 % figure without label
                 <weak_warning descr="Missing label">\begin{figure}
@@ -35,7 +64,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 \end{figure}
             \end{document}
             """.trimIndent()
-        )
+    )
 
     fun `test missing section label no warnings (custom label command)`() {
         myFixture.configureByText(
@@ -88,7 +117,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
     )
 
     fun `test missing listings label warnings`() = testHighlighting(
-            """
+        """
             \usepackage{listings}
             \begin{document}
                 <weak_warning descr="Missing label">\begin{lstlisting}
@@ -101,10 +130,10 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 \end{lstlisting}
             \end{document}
             """.trimIndent()
-        )
+    )
 
     fun `test listings label no warnings`() = testHighlighting(
-            """
+        """
             \usepackage{listings}
             \begin{document}
                 \begin{lstlisting}[language=Python, label=somelabel]
@@ -114,10 +143,10 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 \end{lstlisting}
             \end{document}
             """.trimIndent()
-        )
+    )
 
     fun `test exam parts`() = testHighlighting(
-            """
+        """
             \documentclass{exam}
             \begin{document}
                 \begin{questions}
@@ -128,7 +157,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 \end{questions}
             \end{document}
             """.trimIndent()
-        )
+    )
 
     fun `test quick fix in listings with no other parameters`() = testQuickFix(
         before = """
@@ -182,18 +211,18 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
     }
 
     fun `test fix all missing label problems in this file`() = testQuickFixAll(
-            before = """
+        before = """
                 \section{one}
                 \section{two}
             """.trimIndent(),
-            after = """
+        after = """
                 \section{one}\label{sec:one}
                 
                 
                 \section{two}\label{sec:two}
             """.trimIndent(),
-            quickFixName = "Add label for this command",
-            numberOfFixes = 4
+        quickFixName = "Add label for this command",
+        numberOfFixes = 4
     )
 
     fun `test missing lstinputlistings label warnings`() = testHighlighting(

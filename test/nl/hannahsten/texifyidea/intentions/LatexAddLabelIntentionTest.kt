@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.intentions
 import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.testutils.updateConvention
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexAddLabelIntentionTest : BasePlatformTestCase() {
@@ -74,6 +76,9 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
     }
 
     fun testLabelForItem() {
+        myFixture.updateConvention { s ->
+            s.getLabelConvention("\\item", LabelConventionType.COMMAND)!!.enabled = true
+        }
         myFixture.configureByText(
             LatexFileType,
             """
