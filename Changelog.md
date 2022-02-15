@@ -1,6 +1,7 @@
 ## Beta 0.7.15
 
 ### Additions
+* Add conventions settings, by @fberlakovich. (#1917)
 * Recognise custom environments as defining a tabular-like environment. (#2221)
 * Add some missing biblatex entry types to autocompletion. (#2228)
 * Add inspection which checks if all commands are defined somewhere. (#2229)
@@ -16,4 +17,4 @@
 * Suppress notifications for background SDK checks. (#2215)
 * Fix output path in run config template overriding the auxil path. (#2219)
 
-Thanks to @JeremiasBohn for contributing to this release!
+Thanks to @JeremiasBohn and @fberlakovich for contributing to this release!
