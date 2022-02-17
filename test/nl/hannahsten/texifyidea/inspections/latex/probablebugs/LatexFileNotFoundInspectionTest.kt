@@ -75,6 +75,13 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         }
     }
 
+    @Test
+    fun testNoWarningInDefinition() {
+        myFixture.configureByText(LatexFileType, """\newcommand*{\gridelement}[1]{\subbottom[#1]{\includegraphics[width=2cm]{media/#1}}}""")
+
+        myFixture.checkHighlighting()
+    }
+
     // Test isn't working
 //    @Test
 //    fun testImportAbsolutePath() {
