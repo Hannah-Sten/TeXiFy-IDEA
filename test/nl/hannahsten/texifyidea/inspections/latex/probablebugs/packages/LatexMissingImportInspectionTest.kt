@@ -1,9 +1,12 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
+import io.mockk.every
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
 
@@ -15,6 +18,8 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         super.setUp()
         myFixture.copyDirectoryToProject("", "")
         (myFixture as CodeInsightTestFixtureImpl).canChangeDocumentDuringHighlighting(true)
+        mockkStatic(::runCommandWithExitCode)
+        every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
     }
 
     fun testWarning() {
