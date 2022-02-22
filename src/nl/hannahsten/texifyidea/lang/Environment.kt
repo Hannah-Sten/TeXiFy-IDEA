@@ -39,7 +39,7 @@ interface Environment : Dependend, Described {
                     override val arguments = extractArgumentsFromDocs(value)
                     override val description = value
                     override val dependency =
-                        if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
+                        if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage.create(file)
                     override val context = Context.NORMAL
                     override val initialContents = ""
                     override val environmentName = environmentName
@@ -47,7 +47,13 @@ interface Environment : Dependend, Described {
                 envs.add(env)
                 true
             }, GlobalSearchScope.everythingScope(project))
-            return envs
+
+            // See LatexCommand#lookUpInIndex()
+            val filteredEnvs = envs.distinctBy { listOf(it.environmentName, it.dependency, it.context, it.description).plus(it.arguments) }
+                .groupBy { listOf(it.environmentName, it.dependency, it.context) }
+                .mapValues { it.value.maxByOrNull { cmd -> cmd.description }!! }
+                .values.toSet()
+            return filteredEnvs
         }
 
         fun extractArgumentsFromDocs(docs: String): Array<Argument> {

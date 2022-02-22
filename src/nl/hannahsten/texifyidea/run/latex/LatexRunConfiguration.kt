@@ -392,7 +392,9 @@ class LatexRunConfiguration constructor(
         if (!latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + ":"))
+                // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
+                // so since it does not appear to be necessary we do not include it by default
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path))
             }
         }
 
@@ -414,7 +416,7 @@ class LatexRunConfiguration constructor(
                     .toString()
             }
             else runCommand
-            val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
+            val compiler = BibliographyCompiler.valueOf(compilerString.uppercase(Locale.getDefault()))
             val compilerArguments = runCommand.removePrefix(compilerString)
                 .trim()
             Pair(compiler, compilerArguments)
@@ -552,7 +554,7 @@ class LatexRunConfiguration constructor(
         return "${outputDir?.path}/" + mainFile!!
             .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf"
         else outputFormat.toString()
-            .toLowerCase()
+            .lowercase(Locale.getDefault())
     }
 
     /**

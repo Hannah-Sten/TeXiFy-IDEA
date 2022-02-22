@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.12</strong></p>
+        <p><strong>Beta 0.7.14</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.12! This release contains improvements related to table formatting, log output messages, performance and usability improvements and more.
+            Welcome to TeXiFy IDEA 0.7.14! This release just fixes a few minor bugs.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,23 +55,24 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Improve support for escaped ampersands in table formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2095">#2095</a>)</li>
-            <li> Improve log output messages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2097">#2097</a>)</li>
-            <li> Add full autocompletion to \end command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2097">#2097</a>)</li>
-            <li> Improve performance when some packages have unknown location. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2107">#2107</a>)</li>
-            <li> Improve user experience when selecting an SDK home directory. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2113">#2113</a>)</li>
+            <li> Distinguish names of LaTeX action groups in find action dialog. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2210">#2210</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Include graphicspath in included files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2084">#2084</a>)</li>
+            <li> Keep optional arguments when converting \usepackage to \RequirePackage. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2203">#2203</a>)</li>
+            <li> Don't warn when a \renewcommand follows a \newcommand. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2200">#2200</a>)</li>
+            <li> Fix some of the hardcoded package dependencies. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2212">#2212</a>)</li>
+            <li> Fix dummy text generation on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2213">#2213</a>)</li>
+            <li> Don't auto-generate a colon for BIBINPUTS. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2178">#2178</a>)</li>
+            <li> Fix crashes (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2208">#2208</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2211">#2211</a>)</li>
         </ul>
-<!--        <br>-->
-<!--        <p>-->
-<!--            Thanks to F.W. Dekker for contributing to this release!-->
-<!--        </p>-->
+        <br>
+        <p>
+            Thanks to @KindRoach and @antonio-caceres for contributing!
+        </p>
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.

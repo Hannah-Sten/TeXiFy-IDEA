@@ -2,11 +2,14 @@ package nl.hannahsten.texifyidea.testutils
 
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
+import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
@@ -21,6 +24,16 @@ fun <T> writeCommand(project: Project, action: () -> T) {
     WriteCommandAction.writeCommandAction(project).compute<T, Exception> {
         action.invoke()
     }
+}
+
+/**
+ * Update a convention setting and save the modified settings
+ */
+fun IdeaProjectTestFixture.updateConvention(action: (settings: TexifyConventionsSettings) -> Unit) {
+    val settingsManager = TexifyConventionsSettingsManager.getInstance(this.project)
+    val settings = settingsManager.getSettings()
+    action(settings)
+    settingsManager.saveSettings(settings)
 }
 
 /**

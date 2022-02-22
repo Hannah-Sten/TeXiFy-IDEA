@@ -36,7 +36,7 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         if (this.isComment()) return true
 
         // Do not trigger in environments that use the ampersand as special character.
-        if (this.inDirectEnvironment(EnvironmentMagic.tableEnvironments)) return true
+        if (this.inDirectEnvironment(EnvironmentMagic.getAllTableEnvironments(project))) return true
         if (this.inDirectEnvironment(EnvironmentMagic.alignableEnvironments)) return true
 
         // Other exceptions

@@ -5,9 +5,18 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.every
+import io.mockk.mockkStatic
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.junit.Test
 
 class LatexGutterTest : BasePlatformTestCase() {
+
+    override fun setUp() {
+        super.setUp()
+        mockkStatic(::runCommandWithExitCode)
+        every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+    }
 
     override fun getTestDataPath(): String {
         return "test/resources/gutter"

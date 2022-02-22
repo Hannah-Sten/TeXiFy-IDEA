@@ -1,7 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import io.mockk.every
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
 
@@ -32,6 +35,12 @@ class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
 }
 
 class InsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
+
+    override fun setUp() {
+        super.setUp()
+        mockkStatic(::runCommandWithExitCode)
+        every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+    }
 
     fun `test without support`() {
         setUnicodeSupport(false)

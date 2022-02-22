@@ -1,11 +1,20 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import io.mockk.every
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.junit.Test
 
 class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnresolvedReferenceInspection()) {
+
+    override fun setUp() {
+        super.setUp()
+        mockkStatic(::runCommandWithExitCode)
+        every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+    }
 
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/unresolvedreference"
@@ -57,7 +66,7 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             ~\ref{sec:some-sec}
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
+        CommandManager.updateAliases(setOf("\\mylabel"), project)
         myFixture.checkHighlighting()
     }
 

@@ -54,6 +54,7 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
  * Get all the virtual files that are in the project of a given file type.
  */
 fun Project.allFiles(type: FileType): Collection<VirtualFile> {
+    if (!isInitialized) return emptyList()
     return runReadAction {
         val scope = GlobalSearchScope.projectScope(this)
         return@runReadAction FileTypeIndex.getFiles(type, scope)

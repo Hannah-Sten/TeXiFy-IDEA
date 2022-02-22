@@ -16,4 +16,6 @@ object BibtexFileType : LanguageFileType(BibtexLanguage) {
     override fun getDefaultExtension() = "bib"
 
     override fun getIcon() = TexifyIcons.BIBLIOGRAPHY_FILE
+
+    override fun getDisplayName() = name
 }

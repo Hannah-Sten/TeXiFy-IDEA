@@ -1,6 +1,10 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileContent
+import nl.hannahsten.texifyidea.file.ClassFileType
+import nl.hannahsten.texifyidea.file.LatexSourceFileType
+import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.startsWithAny
 
@@ -51,7 +55,7 @@ object LatexDocsRegexer {
      * - Docs do not necessarily start on their own line
      * - We do use empty lines to guess where the docs end
      */
-    private val docsAfterMacroRegex = """(?:%?\h*(?<line>.+\n))""".toRegex()
+    private val docsAfterMacroRegex = """%?\h*(?<line>.+\n)""".toRegex()
 
     /**
      * Should format to valid HTML as used in the docs popup.
@@ -108,5 +112,14 @@ object LatexDocsRegexer {
                 }
             }
         }
+    }
+
+    /**
+     * Determine which files to index.
+     */
+    val inputFilter = FileBasedIndex.InputFilter { file ->
+        // sty files are included, because in some cases there are no dtx files, or the dtx files have a different name, so we use the sty file to find out which package should be imported.
+        // This does mean we get many duplicates in the index.
+        file.fileType is LatexSourceFileType || file.fileType is StyleFileType || file.fileType is ClassFileType
     }
 }

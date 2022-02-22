@@ -48,7 +48,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
         val referenceCommands = file.project.getLabelReferenceCommands()
         for (command in file.commandsInFileSet()) {
             // Don't resolve references in command definitions
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions ||
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitionsAndRedefinitions ||
                 referenceCommands.contains(command.name)
             ) {
                 command.referencedLabelNames.forEach { figureLabels.remove(it) }

@@ -21,7 +21,7 @@ open class GraphicsDragAndDropHandler : CustomFileDropHandler() {
      * Whether the file can be dropped using this handler.
      */
     private fun File.isDroppable(): Boolean {
-        return extension.toLowerCase() in FileMagic.graphicFileExtensions
+        return extension.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions
     }
 
     override fun canHandle(transferable: Transferable, editor: Editor?): Boolean {

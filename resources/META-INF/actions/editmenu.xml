@@ -4,6 +4,7 @@
                class="nl.hannahsten.texifyidea.action.group.LatexEditMenuGroup">
             <!-- MPS doesn't have the EditSmartGroup group, so we register directly in the Edit menu. -->
             <add-to-group group-id="EditMenu" anchor="last"/>
+            <override-text place="GoToAction" text="Edit _LaTeX"/>
 
             <!-- Toggle Star -->
             <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"

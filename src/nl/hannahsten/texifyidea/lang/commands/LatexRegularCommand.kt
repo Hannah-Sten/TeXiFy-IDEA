@@ -11,7 +11,7 @@ object LatexRegularCommand {
     val TEXT_SYMBOLS: Set<LatexCommand> = LatexTextSymbolCommand.values().toSet()
     val NEW_DEFINITIONS: Set<LatexCommand> = LatexNewDefinitionCommand.values().toSet()
     val MATHTOOLS: Set<LatexCommand> = LatexMathtoolsRegularCommand.values().toSet()
-    val XCOLOR: Set<LatexCommand> = LatexXcolorCommand.values().toSet()
+    val XCOLOR: Set<LatexCommand> = LatexColorDefinitionCommand.values().toSet()
     val XPARSE: Set<LatexCommand> = LatexXparseCommand.values().toSet()
     val NATBIB: Set<LatexCommand> = LatexNatbibCommand.values().toSet()
     val BIBLATEX: Set<LatexCommand> = LatexBiblatexCommand.values().toSet()
