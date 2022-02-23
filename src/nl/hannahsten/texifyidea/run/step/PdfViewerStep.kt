@@ -125,7 +125,7 @@ class PdfViewerStep internal constructor(
                     fileChooserDescriptor = FileTypeDescriptor("PDF File", ".pdf", ".dvi")
                 )
                 MacrosDialog.addMacroSupport(
-                    textFieldBuilder.component.textField as @NotNull ExtendableTextField,
+                    textFieldBuilder.component.textField as ExtendableTextField,
                     MacrosDialog.Filters.DIRECTORY_PATH
                 ) { false }
                 setMonospaced(textFieldBuilder.component.textField)

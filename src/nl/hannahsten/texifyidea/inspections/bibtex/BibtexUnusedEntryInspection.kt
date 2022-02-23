@@ -36,7 +36,7 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
             }
             .toList()
 
-    class RemoveBibtexEntryFix(private val id: SmartPsiElementPointer<BibtexId>) : SafeDeleteFix(id.element as @NotNull PsiElement) {
+    class RemoveBibtexEntryFix(private val id: SmartPsiElementPointer<BibtexId>) : SafeDeleteFix(id.element as PsiElement) {
 
         override fun getText(): String = "Safe delete ${id.element?.text}"
     }
