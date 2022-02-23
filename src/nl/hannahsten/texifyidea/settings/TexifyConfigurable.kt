@@ -7,7 +7,6 @@ import com.intellij.ui.components.JBLabel
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JComponent
-import javax.swing.JLabel
 import javax.swing.JPanel
 
 /**
@@ -47,7 +46,6 @@ class TexifyConfigurable : SearchableConfigurable {
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                     automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
-                    addPdfViewerText()
                 }
             )
         }

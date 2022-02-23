@@ -206,8 +206,8 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     @Suppress("UNNECESSARY_SAFE_CALL")
     override fun cleanUpOnLeave() {
-        steps?.forEach { it.showDropPlace(false) }
-        dropFirst?.isVisible = false
+        steps.forEach { it.showDropPlace(false) }
+        dropFirst.isVisible = false
     }
 
     private inner class StepButton(val step: Step) : TagButton(step.provider.name, { changeListener() }), DnDSource {
@@ -246,9 +246,9 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             dropPlace.setBounds((bounds.maxX + gap).toInt(), bounds.y + (bounds.height - size.height) / 2, size.width, size.height)
         }
 
-        override fun canStartDragging(action: DnDAction?, dragOrigin: Point?) = true
+        override fun canStartDragging(action: DnDAction?, dragOrigin: Point) = true
 
-        override fun startDragging(action: DnDAction?, dragOrigin: Point?) = DnDDragStartBean(this)
+        override fun startDragging(action: DnDAction?, dragOrigin: Point) = DnDDragStartBean(this)
 
         fun showDropPlace(show: Boolean) {
             dropPlace.isVisible = show

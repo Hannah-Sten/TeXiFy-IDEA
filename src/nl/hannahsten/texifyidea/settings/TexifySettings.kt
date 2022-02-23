@@ -4,9 +4,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 
 /**
  * @author Sten Wessel
@@ -39,7 +36,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var showPackagesInStructureView = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
 
-    override fun getState(): TexifySettingsState? {
+    override fun getState(): TexifySettingsState {
         return TexifySettingsState(
             automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
             automaticUpDownBracket = automaticUpDownBracket,
@@ -50,7 +47,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             includeBackslashInSelection = includeBackslashInSelection,
             showPackagesInStructureView = showPackagesInStructureView,
             automaticQuoteReplacement = automaticQuoteReplacement,
-            pdfViewer = pdfViewer
         )
     }
 
@@ -64,6 +60,5 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         includeBackslashInSelection = state.includeBackslashInSelection
         showPackagesInStructureView = state.showPackagesInStructureView
         automaticQuoteReplacement = state.automaticQuoteReplacement
-        pdfViewer = state.pdfViewer
     }
 }
