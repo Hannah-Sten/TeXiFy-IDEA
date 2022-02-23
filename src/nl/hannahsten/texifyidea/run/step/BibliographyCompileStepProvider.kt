@@ -77,7 +77,9 @@ object BibliographyCompileStepProvider : StepProvider {
                     step.state.envs = step.getEnvironmentVariables().with(
                         mapOf(
                             "BIBINPUTS" to mainFile.parent.path,
-                            "BSTINPUTS" to mainFile.parent.path + ":"
+                            // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
+                            // so since it does not appear to be necessary we do not include it by default
+                            "BSTINPUTS" to mainFile.parent.path
                         )
                     ).envs
                 }
