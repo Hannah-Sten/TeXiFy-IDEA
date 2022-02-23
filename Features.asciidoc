@@ -286,6 +286,8 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 === LaTeX
 
+If you see a minor issue, like some missing metadata about commands or environments, you are encouraged to check if you can link:Contributing-to-TeXiFy#editing-magic[fix it yourself].
+
 ==== Typesetting issues
 Issues which have influence on the typeset result.
 

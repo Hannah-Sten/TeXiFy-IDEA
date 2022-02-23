@@ -16,6 +16,17 @@ If you do not have a favourite profiler yet, you can use VisualVM. Install it us
 * Now you can zip the nps file and upload it here on GitHub.
 * To clear the profiling view, close and reopen the tab.
 
+[#editing-magic]
+== Adding missing table environments, verbatim environments, cite commands or other commands or environments metadata
+
+TeXiFy inspections and other functionality relies in many cases on certain magic knowledge about commands or environments.
+Often, this information is manually hardcoded in the source code, and can be incomplete or incorrect.
+Most often this is really easy to fix, even without any knowledge of the source code of TeXiFy.
+If you think something can be improved, you are encouraged to scroll through the files in https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/util/magic for example CommandMagic and EnvironmentMagic.
+You can also look at previous pull requests for inspiration, for example https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/2245[#2245].
+
+Note, if commands are just missing from the autocompletion, this is likely more complicated because these shouldn't be hardcoded, but detected automatically.
+
 == Don't edit generated files directly
 
 So, the files in `gen`. Do edit the files in `src`.
