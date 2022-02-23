@@ -4,27 +4,27 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.1.6"
-    kotlin("jvm") version("1.5.30")
+    id("org.jetbrains.intellij") version "1.4.0"
+    kotlin("jvm") version("1.6.20-M1")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
-    id("se.patrikerdes.use-latest-versions") version "0.2.17"
+    id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "4.1.2"
+    id("de.undercouch.download") version "5.0.1"
 
     // Test coverage
     jacoco
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
 }
 
 group = "nl.hannahsten"
-version = "0.8.0-alpha.5"
+version = "0.8.0-alpha.6"
 
 repositories {
     mavenCentral()
@@ -52,7 +52,7 @@ tasks.compileKotlin {
 
     kotlinOptions {
         jvmTarget = "11"
-        freeCompilerArgs = listOf("-Xjvm-default=enable")
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
@@ -63,7 +63,7 @@ tasks.compileTestKotlin {
 
     kotlinOptions {
         jvmTarget = "11"
-        freeCompilerArgs = listOf("-Xjvm-default=enable")
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
@@ -74,24 +74,24 @@ dependencies {
     implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java:3.3.0")
-    implementation("org.slf4j:slf4j-simple:2.0.0-alpha5")
+    implementation("com.github.hypfvieh:dbus-java:3.3.1")
+    implementation("org.slf4j:slf4j-simple:2.0.0-alpha6")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
-    implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
-    implementation("org.codehaus.plexus:plexus-archiver:4.2.5")
+    implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
+    implementation("org.codehaus.plexus:plexus-archiver:4.2.7")
 
     // Parsing json
     implementation("com.beust:klaxon:5.5")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.12.4")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.12.4")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:3.8.2")
+    implementation("org.apache.maven:maven-artifact:3.8.4")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
@@ -100,20 +100,20 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.0")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.8.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.8.2")
 
     // just in case
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.mockk:mockk:1.12.2")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -130,10 +130,20 @@ tasks.processResources {
 
 // https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
 tasks.runIde {
-    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions")
+    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions", "-Xmx2g", "-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 
     // Set to true to generate hprof files on unload fails
     systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
+}
+
+tasks.test {
+    // https://intellij-support.jetbrains.com/hc/en-us/community/posts/4407334950290-jarFiles-is-not-set-for-PluginDescriptor
+    systemProperty("idea.force.use.core.classloader", "true")
+}
+
+// Avoid ClassNotFoundException: com.maddyhome.idea.copyright.psi.UpdateCopyrightsProvider
+tasks.buildSearchableOptions {
+    jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 }
 
 intellij {
@@ -151,8 +161,8 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2021.1.3")
-//    version = "PY-203.5419.8-EAP-SNAPSHOT"
+    version.set("2021.3.2")
+//    version.set("221.3427.89-EAP-SNAPSHOT")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE

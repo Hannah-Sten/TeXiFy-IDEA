@@ -4,7 +4,6 @@ import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
-import nl.hannahsten.texifyidea.file.LatexSourceFileType
 
 /**
  * Index of all defined commands in source files (dtx) of LaTeX packages.
@@ -46,9 +45,7 @@ class LatexExternalCommandIndex : FileBasedIndexExtension<String, String>() {
     override fun getVersion() = 1
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return FileBasedIndex.InputFilter {
-            it.fileType is LatexSourceFileType
-        }
+        return LatexDocsRegexer.inputFilter
     }
 
     override fun dependsOnFileContent() = true

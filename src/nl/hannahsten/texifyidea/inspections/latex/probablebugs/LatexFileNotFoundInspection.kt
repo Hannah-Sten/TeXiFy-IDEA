@@ -43,7 +43,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         // Loop through commands of file
         for (command in commands) {
             // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions) {
+            if (command.parent.parentsOfType(LatexCommands::class).any { it.name in CommandMagic.commandDefinitionsAndRedefinitions }) {
                 continue
             }
 
@@ -64,7 +64,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         // CTAN packages are no targets of the InputFileReference, so we check them here and don't show a warning if a CTAN package is included
         if (extensions.contains("sty")) {
-            val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.toLowerCase() }
+            val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
             if (reference.key in ctanPackages) return
         }
 

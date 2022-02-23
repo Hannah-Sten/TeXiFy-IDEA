@@ -9,11 +9,16 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
+import nl.hannahsten.texifyidea.util.labels.extractLabelName
+import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -36,9 +41,14 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                     }
 
                     if (label.inDirectEnvironmentMatching {
-                        EnvironmentMagic.labeled.containsKey(it.environmentName) &&
-                            !EnvironmentMagic.labelAsParameter.contains(it.environmentName)
-                    }
+                            val conventionSettings = TexifyConventionsSettingsManager
+                                .getInstance(label.project).getSettings()
+                            conventionSettings.getLabelConvention(
+                                it.environmentName,
+                                LabelConventionType.ENVIRONMENT
+                            ) != null &&
+                                    !EnvironmentMagic.labelAsParameter.contains(it.environmentName)
+                        }
                     ) {
                         label.parentOfType(LatexEnvironment::class)
                     }
@@ -59,12 +69,21 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
          * Finds the expected prefix for the supplied label
          */
         private fun getLabelPrefix(labeledCommand: PsiElement): String? {
+            val conventionSettings =
+                TexifyConventionsSettingsManager.getInstance(labeledCommand.project).getSettings()
+
             return when (labeledCommand) {
                 is LatexCommands -> {
-                    CommandMagic.labeledPrefixes.getOrDefault(labeledCommand.name, null)
+                    conventionSettings.getLabelConvention(
+                        labeledCommand.name,
+                        LabelConventionType.COMMAND
+                    )?.prefix
                 }
                 is LatexEnvironment -> {
-                    EnvironmentMagic.labeled.getOrDefault(labeledCommand.environmentName, null)
+                    conventionSettings.getLabelConvention(
+                        labeledCommand.environmentName,
+                        LabelConventionType.ENVIRONMENT
+                    )?.prefix
                 }
                 else -> null
             }
@@ -89,7 +108,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     ) {
-        file.findLatexLabelPsiElementsInFileAsSequence().forEach { label ->
+        file.findLatexLabelingElementsInFile().forEach { label ->
             val labeledCommand = getLabeledCommand(label) ?: return@forEach
             val expectedPrefix = getLabelPrefix(labeledCommand)
             val labelName = label.extractLabelName()
@@ -166,7 +185,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         /**
          * Find all references to label `labelName`.
          */
-        private fun findReferences(file: PsiFile, labelName: String): MutableSet<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
+        private fun findReferences(
+            file: PsiFile,
+            labelName: String
+        ): MutableSet<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
             val result = mutableSetOf<Pair<PsiFile, MutableList<LatexRequiredParam>>>()
 
             val commandsAndFiles = file.commandsAndFilesInFileSet()
@@ -174,12 +196,14 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             // Loop over every file
             for (pair in commandsAndFiles) {
                 // Only look at commands which refer to something
-                val commands = pair.second.filter { CommandMagic.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
+                val commands =
+                    pair.second.filter { CommandMagic.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
                 val requiredParams = mutableListOf<LatexRequiredParam>()
 
                 // Find all the parameters with the given labelName
                 for (ref in commands) {
-                    val parameters = ref.requiredParameters().filter { p -> p.firstChildOfType(LatexParameterText::class)?.text == labelName }
+                    val parameters = ref.requiredParameters()
+                        .filter { p -> p.firstChildOfType(LatexParameterText::class)?.text == labelName }
                     requiredParams.addAll(parameters)
                 }
 

@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexXcolorCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexColorDefinitionCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -32,12 +32,12 @@ object LatexElementColorProvider : ElementColorProvider {
     override fun setColorTo(element: PsiElement, color: Color) {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
-            val commandTemplate = LatexXcolorCommand.values().firstOrNull {
+            val commandTemplate = LatexColorDefinitionCommand.values().firstOrNull {
                 it.commandWithSlash == command?.name
             } ?: return
             val colorModel = command?.getRequiredArgumentValueByName("model-list") ?: return
             val oldColor = command.getRequiredArgumentValueByName("spec-list") ?: return
-            val newColorString = when (colorModel.toLowerCase()) {
+            val newColorString = when (colorModel.lowercase(Locale.getDefault())) {
                 "rgb" -> color.toRgbString(integer = oldColor.split(",").firstOrNull()?.contains('.') == false)
                 "hsb" -> color.toHsbString()
                 "html" -> color.toHtmlStsring()
@@ -104,10 +104,10 @@ object LatexElementColorProvider : ElementColorProvider {
                 val colorDefinitionCommand =
                     colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
                 when (colorDefinitionCommand?.name?.substring(1)) {
-                    LatexXcolorCommand.COLORLET.command -> {
+                    LatexColorDefinitionCommand.COLORLET.command -> {
                         getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"))
                     }
-                    LatexXcolorCommand.DEFINECOLOR.command, LatexXcolorCommand.PROVIDECOLOR.command -> {
+                    LatexColorDefinitionCommand.DEFINECOLOR.command, LatexColorDefinitionCommand.PROVIDECOLOR.command -> {
                         getColorFromDefineColor(
                             colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
                             colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
@@ -146,7 +146,7 @@ object LatexElementColorProvider : ElementColorProvider {
         modelText ?: return null
         specText ?: return null
         return try {
-            when (modelText.toLowerCase()) {
+            when (modelText.lowercase(Locale.getDefault())) {
                 "rgb" -> fromRgbString(specText)
                 "hsb" -> fromHsbString(specText)
                 "cmy" -> fromCmyString(specText)

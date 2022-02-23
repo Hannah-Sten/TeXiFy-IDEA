@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.errors.NoReply
+import org.freedesktop.dbus.errors.ServiceUnknown
 import org.gnome.evince.Daemon
 import java.io.File
 
@@ -36,9 +37,9 @@ object EvinceConversation : ViewerConversation() {
     /**
      * Open a file in Evince, starting it if it is not running yet. This also finds the process owner of the pdf, so we can execute forward search later.
      */
-    fun openFile(pdfFilePath: String) {
+    fun openFile(pdfFilePath: String, project: Project) {
         // Will do nothing if file is already open in Evince
-        findProcessOwner(pdfFilePath)
+        findProcessOwner(pdfFilePath, project)
     }
 
     /**
@@ -57,7 +58,7 @@ object EvinceConversation : ViewerConversation() {
         }
 
         if (pdfPath != null) {
-            findProcessOwner(pdfPath)
+            findProcessOwner(pdfPath, project)
         }
 
         if (processOwner != null) {
@@ -86,7 +87,7 @@ object EvinceConversation : ViewerConversation() {
      *
      * @param pdfFilePath Full path to the pdf file to find the owner of.
      */
-    private fun findProcessOwner(pdfFilePath: String) {
+    private fun findProcessOwner(pdfFilePath: String, project: Project) {
         if (!File(pdfFilePath).isFile) throw TeXception("PDF File $pdfFilePath not found")
 
         // Initialize a session bus
@@ -102,5 +103,8 @@ object EvinceConversation : ViewerConversation() {
             processOwner = daemon.FindDocument("file://$pdfFilePath", true)
         }
         catch (ignored: NoReply) {}
+        catch (e: ServiceUnknown) {
+            Notification("LaTeX", "Cannot communicate to Evince", "Please update Evince and then try again.", NotificationType.ERROR).notify(project)
+        }
     }
 }

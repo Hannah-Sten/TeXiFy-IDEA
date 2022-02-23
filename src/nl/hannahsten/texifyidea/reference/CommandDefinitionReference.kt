@@ -4,7 +4,9 @@ import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentsOfType
 import nl.hannahsten.texifyidea.util.projectSearchScope
@@ -22,10 +24,12 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
 
     // Find all command definitions and redefinitions which define the current element
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val definitionsAndRedefinitions = CommandMagic.commandDefinitions + CommandMagic.commandRedefinitions
+        val definitionsAndRedefinitions = CommandMagic.commandDefinitionsAndRedefinitions + CommandMagic.commandRedefinitions
 
-        // Don't resolve to a definition when you are in a \newcommand
-        if (element.parentsOfType<LatexCommands>().any { it.name in definitionsAndRedefinitions }) {
+        // Don't resolve to a definition when you are in a \newcommand,
+        // and if this element is the element that is being defined
+        if (element.parentsOfType<LatexCommands>().any { it.name in definitionsAndRedefinitions } &&
+            element.parent.firstParentOfType(LatexCommands::class)?.parameterList?.firstOrNull() == element.firstParentOfType(LatexParameter::class)) {
             return emptyArray()
         }
         else {

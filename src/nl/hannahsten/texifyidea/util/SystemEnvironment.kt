@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessNotCreatedException
+import com.intellij.openapi.util.SystemInfo
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 import java.io.IOException
@@ -25,12 +26,24 @@ class SystemEnvironment {
             "snap list".runCommand()?.contains("inkscape") == true
         }
 
-        val isPerlInstalled: Boolean by lazy {
-            "perl -v".runCommand()?.contains("This is perl") == true
-        }
+        /** Cache for [isAvailable]. */
+        private var availabilityCache = mutableMapOf<String, Boolean>()
 
-        val isTexcountAvailable: Boolean by lazy {
-            "texcount".runCommand()?.contains("TeXcount") == true
+        /**
+         * Check if [command] is available as a system command.
+         */
+        fun isAvailable(command: String): Boolean {
+            // Not thread-safe, but don't think that's a problem here
+            availabilityCache.getOrDefault(command, null)?.let { return it }
+
+            val isAvailable = if (SystemInfo.isUnix) {
+                "command -v $command".runCommandWithExitCode().second == 0
+            }
+            else {
+                "where $command".runCommandWithExitCode().second == 0
+            }
+            availabilityCache[command] = isAvailable
+            return isAvailable
         }
 
         // Assumes version will be given in the format GNOME Document Viewer 3.34.2

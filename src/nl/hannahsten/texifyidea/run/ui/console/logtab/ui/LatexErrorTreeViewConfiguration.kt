@@ -18,8 +18,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
             )
     ]
 )
+
 data class LatexErrorTreeViewConfiguration(
-    var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.values().associate { it to true }.toMutableMap(),
+    var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.values().associateWith { true }.toMutableMap(),
     var showBibtexWarnings: Boolean = true,
     var expanded: Boolean = true // Unfortunately we cannot use this, because expandAll() apparently only works in Actions
 ) :
@@ -29,13 +30,10 @@ data class LatexErrorTreeViewConfiguration(
 
         @JvmStatic
         fun getInstance(project: Project): LatexErrorTreeViewConfiguration =
-            ServiceManager.getService(
-                project,
-                LatexErrorTreeViewConfiguration::class.java
-            )
+            project.getService(LatexErrorTreeViewConfiguration::class.java)
     }
 
-    override fun getState(): LatexErrorTreeViewConfiguration? {
+    override fun getState(): LatexErrorTreeViewConfiguration {
         return this
     }
 

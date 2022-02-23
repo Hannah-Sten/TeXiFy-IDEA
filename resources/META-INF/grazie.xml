@@ -1,5 +1,6 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij.grazie">
-        <grammar.strategy language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexGrammarCheckingStrategy"/>
+        <problemFilter language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.grazie.LatexProblemFilter" />
+        <textExtractor language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.grazie.LatexTextExtractor" />
     </extensions>
 </idea-plugin>

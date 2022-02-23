@@ -1,7 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import io.mockk.every
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.junit.Test
 import java.io.File
 import java.nio.file.Path
@@ -15,6 +18,12 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     init {
         val currentRelativePath: Path = Paths.get("")
         absoluteWorkingPath = currentRelativePath.toAbsolutePath().toString().replace(File.separatorChar, '/')
+    }
+
+    override fun setUp() {
+        super.setUp()
+        mockkStatic(::runCommandWithExitCode)
+        every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
     }
 
     override fun getTestDataPath(): String {
@@ -73,6 +82,13 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         assertFails {
             myFixture.checkHighlighting()
         }
+    }
+
+    @Test
+    fun testNoWarningInDefinition() {
+        myFixture.configureByText(LatexFileType, """\newcommand*{\gridelement}[1]{\subbottom[#1]{\includegraphics[width=2cm]{media/#1}}}""")
+
+        myFixture.checkHighlighting()
     }
 
     // Test isn't working

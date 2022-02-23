@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.completion
 
-import com.google.common.base.Strings
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
@@ -45,6 +45,9 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
         /** Cache for commands which are indexed and which should be added to the autocompletion. */
         val indexedCommands = mutableSetOf<LookupElementBuilder>()
+
+        /** Whether TeX Live is available at all, in which case it could be that all packages from texlive-full are in the index. */
+        val isTexliveAvailable = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
     }
 
     override fun addCompletions(
@@ -98,22 +101,22 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
         // If using texlive, filter on commands which are in packages included in the project
         // The reason for doing this, is that the user probably is using texlive-full, in which case the
-        // completion would be floaded with duplicate commands from packages that nobody uses.
+        // completion would be flooded with duplicate commands from packages that nobody uses.
         // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
         // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
         val project = parameters.editor.project ?: return
-        val usesTexlive = TexliveSdk.isAvailable
-        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project)
+
+        val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(LatexPackage.DEFAULT)
 
         val commands = mutableSetOf<LookupElementBuilder>()
-        FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project)
+        FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project).toSet()
             .forEach { cmdWithSlash ->
                 val cmdWithoutSlash = cmdWithSlash.substring(1)
-                LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return)
-                    .filter { it.dependency in packagesInProject }
+                LatexCommand.lookupInIndex(cmdWithoutSlash, project)
+                    .filter { if (isTexliveAvailable) it.dependency in packagesInProject else true }
                     .forEach { cmd ->
                     createCommandLookupElements(cmd)
-                        // Avoid duplicates of commands defined in LaTeX base, because they are often very similar commands defined in different document classes so it makes not
+                        // Avoid duplicates of commands defined in LaTeX base, because they are often very similar commands defined in different document classes, so it makes not
                         // much sense at the moment to have them separately in the autocompletion.
                         // Effectively this results in just taking the first one we found
                         .filter { newBuilder ->
@@ -234,7 +237,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     }
 
     private fun getTypeText(commands: LatexCommands): String {
-        if (commands.commandToken.text in CommandMagic.commandDefinitions) {
+        if (commands.commandToken.text in CommandMagic.commandDefinitionsAndRedefinitions) {
             return ""
         }
         val firstNext = commands.nextCommand() ?: return ""
@@ -258,7 +261,12 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                     catch (ignore: NumberFormatException) {
                     }
                 }
-                (if (optional.size == 2) "[args]" else "") + Strings.repeat("{param}", requiredParameterCount)
+
+                (if (optional.size == 2) "[args]" else "") +
+                        if (requiredParameterCount == 1) "{param}"
+                        // Number the required parameters so a toSet call won't merge them. This way the
+                        // user can keep them apart as well.
+                        else (1..requiredParameterCount).joinToString("") { "{param$it}" }
             }
 
             "\\DeclarePairedDelimiter" -> "{param}"

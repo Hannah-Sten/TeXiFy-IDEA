@@ -3,7 +3,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
@@ -27,18 +27,6 @@ object CommandMagic {
             FRAC.cmd, DFRAC.cmd, SQUARE_ROOT.cmd, SUM.cmd, INTEGRAL.cmd, DOUBLE_INTEGRAL.cmd, TRIPLE_INTEGRAL.cmd,
             QUADRUPLE_INTEGRAL.cmd, N_ARY_PRODUCT.cmd, N_ARY_UNION.cmd, N_ARY_INTERSECTION.cmd,
             N_ARY_SQUARE_UNION.cmd, BIG_SQUARE_CAP.cmd
-    )
-
-    /**
-     * Maps commands to their expected label prefix. Which commands are expected to have a label at all is determined in settings.
-     */
-    val labeledPrefixes = mapOf(
-            CHAPTER.cmd to "ch",
-            SECTION.cmd to "sec",
-            SUBSECTION.cmd to "subsec",
-            SUBSUBSECTION.cmd to "subsubsec",
-            ITEM.cmd to "itm",
-            LSTINPUTLISTING.cmd to "lst",
     )
 
     /**
@@ -93,7 +81,8 @@ object CommandMagic {
     /**
      * LaTeX commands that increase a counter that can be labeled.
      */
-    val increasesCounter = hashSetOf(CAPTION.cmd, CAPTIONOF.cmd) + labeledPrefixes.keys
+    val increasesCounter =
+        hashSetOf(CAPTION.cmd, CAPTIONOF.cmd, CHAPTER.cmd, SECTION.cmd, SUBSECTION.cmd, ITEM.cmd, LSTINPUTLISTING.cmd)
 
     /**
      * All commands that represent a reference to a label, excluding user defined commands.
@@ -146,7 +135,7 @@ object CommandMagic {
      *
      * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
      */
-    fun getLabelDefinitionCommands(project: Project): Set<String>? {
+    fun getLabelDefinitionCommands(project: Project): Set<String> {
         // Check if updates are needed
         CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
         return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
@@ -187,24 +176,30 @@ object CommandMagic {
     )
 
     /**
+     * Commands that define other command but don't complain if it is already defined.
+     */
+    val flexibleCommandDefinitions = setOf(
+        PROVIDECOMMAND, // Does nothing if command exists
+        PROVIDECOMMAND_STAR,
+        PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
+        DECLAREDOCUMENTCOMMAND,
+        DEF,
+        LET,
+    ).map { it.cmd }
+
+    /**
      * All commands that define or redefine other commands, whether it exists or not.
      */
-    val commandRedefinitions = hashSetOf(
+    val commandRedefinitions = setOf(
             RENEWCOMMAND,
             RENEWCOMMAND_STAR,
-            PROVIDECOMMAND, // Does nothing if command exists
-            PROVIDECOMMAND_STAR,
-            PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
-            DECLAREDOCUMENTCOMMAND,
-            DEF,
-            LET,
             CATCODE, // Not really redefining commands, but characters
-    ).map { it.cmd }
+    ).map { it.cmd } + flexibleCommandDefinitions
 
     /**
      * All commands that define or redefine regular commands.
      */
-    val regularCommandDefinitions = regularStrictCommandDefinitions + commandRedefinitions
+    val regularCommandDefinitionsAndRedefinitions = regularStrictCommandDefinitions + commandRedefinitions
 
     /**
      * All commands that define commands that should be used exclusively
@@ -218,9 +213,14 @@ object CommandMagic {
     )
 
     /**
-     * All commands that define new commands.
+     * All commands that can define regular commands.
      */
-    val commandDefinitions = regularCommandDefinitions + mathCommandDefinitions
+    val commandDefinitions = regularStrictCommandDefinitions + mathCommandDefinitions + flexibleCommandDefinitions
+
+    /**
+     * All commands that (re)define new commands.
+     */
+    val commandDefinitionsAndRedefinitions = regularCommandDefinitionsAndRedefinitions + mathCommandDefinitions
 
     /**
      * All commands that define new documentclasses.
@@ -251,7 +251,7 @@ object CommandMagic {
     /**
      * All commands that define stuff like classes, environments, and definitions.
      */
-    val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
+    val definitions = commandDefinitionsAndRedefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
     /**
      * Commands for which TeXiFy-IDEA has essential custom behaviour and which should not be redefined.
@@ -280,6 +280,7 @@ object CommandMagic {
             BIBLIOGRAPHY.cmd to listOf(".bib"),
             INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
             USEPACKAGE.cmd to listOf(".sty"),
+            EXTERNALDOCUMENT.cmd to listOf(".tex"),
     )
 
     /**
@@ -314,7 +315,7 @@ object CommandMagic {
             USEPACKAGE.cmd to hashSetOf("sty"),
             DOCUMENTCLASS.cmd to hashSetOf("cls"),
             LOADCLASS.cmd to hashSetOf("cls"),
-            EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels
+            EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels. Technically it references an aux file
     )
 
     /**
@@ -384,5 +385,18 @@ object CommandMagic {
     val languageInjections = hashMapOf(
             DIRECTLUA.cmd to "Lua",
             LUAEXEC.cmd to "Lua"
+    )
+
+    /**
+     * Commands that have a verbatim argument.
+     *
+     * Maps a command to a boolean that is true when the required argument can be specified with any pair of characters.
+     */
+    val verbatim = hashMapOf(
+        "verb" to true,
+        "verb*" to true,
+        "directlua" to false,
+        "luaexec" to false,
+        "lstinline" to true
     )
 }

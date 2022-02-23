@@ -16,4 +16,7 @@ object LatexFileType : LanguageFileType(LatexLanguage) {
     override fun getDefaultExtension() = "tex"
 
     override fun getIcon() = TexifyIcons.LATEX_FILE
+
+    // Fix https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2195#issuecomment-1024344147
+    override fun getDisplayName() = name
 }

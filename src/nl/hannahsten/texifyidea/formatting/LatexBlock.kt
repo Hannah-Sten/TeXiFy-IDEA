@@ -69,7 +69,8 @@ class LatexBlock(
 
         // Create child blocks
         while (child != null) {
-            val isSectionCommand = child.psi is LatexNoMathContent && child.psi.firstChildOfType(LatexCommands::class)?.name in CommandMagic.labeledLevels.keys.map { it.cmd }
+            val isSectionCommand =
+                child.psi is LatexNoMathContent && child.psi.firstChildOfType(LatexCommands::class)?.name in CommandMagic.sectioningCommands.map { it.cmd }
 
             var targetIndent = extraSectionIndent
 

@@ -19,7 +19,6 @@ import java.util.*
 import java.util.regex.Pattern
 import javax.swing.JLabel
 import javax.swing.SwingConstants
-import kotlin.collections.HashSet
 
 /**
  * @author Hannah Schellekens
@@ -72,7 +71,7 @@ open class WordCountAction : AnAction(
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
         val psiFile = virtualFile.psiFile(project) ?: return
 
-        val dialog = if (SystemEnvironment.isTexcountAvailable) {
+        val dialog = if (SystemEnvironment.isAvailable("texcount")) {
             val root = psiFile.findRootFile().virtualFile
             val words = "texcount -1 -inc -sum ${root.path}".runCommand(workingDirectory = File(root.parent.path))?.toIntOrNull()
             makeDialog(psiFile, words)
@@ -235,10 +234,10 @@ open class WordCountAction : AnAction(
             // Only count contractions: so do not count start or end single quotes :)
             if (string.isEmpty()) continue
 
-            if (string.toLowerCase() == "s") {
+            if (string.lowercase(Locale.getDefault()) == "s") {
                 if (split.size == 1) return 1
 
-                if (i > 0 && CONTRACTION_S.contains(split[i - 1].toLowerCase())) {
+                if (i > 0 && CONTRACTION_S.contains(split[i - 1].lowercase(Locale.getDefault()))) {
                     count++
                 }
             }

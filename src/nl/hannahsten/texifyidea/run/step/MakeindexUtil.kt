@@ -34,7 +34,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
     }
 
     if (LatexPackage.GLOSSARIES in usedPackages) {
-        val glossaryProgram = if (SystemEnvironment.isPerlInstalled) {
+        val glossaryProgram = if (SystemEnvironment.isAvailable("perl")) {
             MakeindexProgram.MAKEGLOSSARIES
         }
         else {

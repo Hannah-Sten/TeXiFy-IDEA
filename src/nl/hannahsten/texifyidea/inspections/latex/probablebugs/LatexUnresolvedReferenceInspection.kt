@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.lang.Integer.max
@@ -41,7 +41,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             }
 
             // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions) {
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitionsAndRedefinitions) {
                 continue
             }
 

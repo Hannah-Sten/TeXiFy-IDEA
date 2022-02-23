@@ -5,6 +5,8 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.regex.Matcher
@@ -34,7 +36,7 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         if (this.isComment()) return true
 
         // Do not trigger in environments that use the ampersand as special character.
-        if (this.inDirectEnvironment(EnvironmentMagic.tableEnvironments)) return true
+        if (this.inDirectEnvironment(EnvironmentMagic.getAllTableEnvironments(project))) return true
         if (this.inDirectEnvironment(EnvironmentMagic.alignableEnvironments)) return true
 
         // Other exceptions

@@ -6,10 +6,10 @@ import com.intellij.util.xml.model.gotosymbol.GoToSymbolProvider
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.extractLabelName
+import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.requiredParameter
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 
 /**
  * @author Hannah Schellekens

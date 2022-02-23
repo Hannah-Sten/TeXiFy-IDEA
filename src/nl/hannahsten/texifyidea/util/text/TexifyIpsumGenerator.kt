@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.text
 
 import nl.hannahsten.texifyidea.util.capitalizeFirst
+import java.util.regex.Pattern
 import kotlin.random.Random
 
 /**
@@ -63,7 +64,8 @@ open class TexifyIpsumGenerator(
      */
     private val template: Map<String, List<String>> by lazy {
         val input = ipsum.generateInput()
-        val parts = input.split(System.lineSeparator() + System.lineSeparator())
+        // Whether the newlines are Windows or Unix style depends on which system the plugin was built, so catch both
+        val parts = input.split(Pattern.compile("(\\r?\\n){2,}"))
 
         parts.associate { templatePart ->
             val lines = templatePart.lines()

@@ -23,8 +23,9 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         after: String,
         numberOfFixes: Int = 1,
         selectedFix: Int = 1,
+        fileName: String = "test.tex"
     ) {
-        myFixture.configureByText(LatexFileType, before)
+        myFixture.configureByText(fileName, before)
         // Collect the quick fixed before going into write action, to avoid AssertionError: Must not start highlighting from within write action.
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals("Expected number of quick fixes:", numberOfFixes, quickFixes.size)

@@ -68,7 +68,7 @@ open class TablePasteProvider : PasteProvider {
         if (height == 0 && width == 0) return null
 
         // Convert html to data vector Vector<Vector<Any?>> and headers.
-        val header = rows.first().select("td, th").map { it.text() }.toVector()
+        val header = rows.firstOrNull()?.select("td, th")?.mapNotNull { it.text() }?.toVector() ?: return null
         val content: Vector<Vector<Any?>> = rows.drop(1).map { tr ->
             tr.select("td, th").map { td -> td.handleHtmlFormatting() as Any? }.toVector()
         }.toVector()

@@ -17,15 +17,15 @@ class AnalyzeMenuRegistration : StartupActivity, DumbAware {
 
     @Synchronized
     override fun runActivity(project: Project) {
-        // Get the group which should be added to either the Analyze menu or something else
-        val latexAnalyzeMenuGroup = ActionManager.getInstance().getAction("texify.LatexMenuAnalyze") as DefaultActionGroup
+        // Get the action which should be added to either the Analyze menu or something else
+        val wordCountAction = ActionManager.getInstance().getAction("texify.analysis.WordCount")
 
         val analyzeGroup = getAnalyzeGroup() ?: return
 
         // Add the group which contains the LaTeX actions to the Analyze menu
         // First remove it, to avoid adding it twice
-        analyzeGroup.remove(latexAnalyzeMenuGroup)
-        analyzeGroup.add(latexAnalyzeMenuGroup)
+        analyzeGroup.remove(wordCountAction)
+        analyzeGroup.add(wordCountAction)
     }
 
     /**
@@ -46,8 +46,8 @@ class AnalyzeMenuRegistration : StartupActivity, DumbAware {
     }
 
     fun unload() {
-        val latexAnalyzeMenuGroup = ActionManager.getInstance().getAction("texify.LatexMenuAnalyze") as DefaultActionGroup
+        val wordCountAction = ActionManager.getInstance().getAction("texify.analysis.WordCount")
         val analyzeGroup = getAnalyzeGroup() ?: return
-        analyzeGroup.remove(latexAnalyzeMenuGroup)
+        analyzeGroup.remove(wordCountAction)
     }
 }

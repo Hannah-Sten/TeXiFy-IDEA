@@ -64,6 +64,7 @@ enum class DefaultEnvironment(
     TABU(environmentName = "tabu", arguments = arrayOf(RequiredArgument("cols"))),
     TABULAR(environmentName = "tabular", arguments = arrayOf(OptionalArgument("pos"), RequiredArgument("cols"))),
     TABULARX(environmentName = "tabularx", arguments = arrayOf(RequiredArgument("width"), RequiredArgument("cols"))),
+    TABULARY(environmentName = "tabulary", arguments = arrayOf(RequiredArgument("length"), RequiredArgument("pream"))),
     TABULAR_STAR(environmentName = "tabular*", arguments = arrayOf(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"))),
     THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = arrayOf(RequiredArgument("widestlabel"))),
     THEINDEX(environmentName = "theindex"),
@@ -156,7 +157,7 @@ enum class DefaultEnvironment(
         @JvmStatic
         fun fromPsi(latexEnvironment: LatexEnvironment): DefaultEnvironment? {
             val text: String = latexEnvironment.name()?.text ?: return null
-            return get(text.toLowerCase())
+            return get(text.lowercase(Locale.getDefault()))
         }
 
         /**

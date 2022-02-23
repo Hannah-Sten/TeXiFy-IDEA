@@ -17,15 +17,14 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import org.intellij.lang.annotations.Language
 import java.io.File
 import java.util.*
-import java.util.regex.Pattern
 
 /**
  * @author Hannah Schellekens
@@ -34,18 +33,10 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
     companion object {
 
-        @Language("RegExp")
-        private val SECTION_COMMAND = Pattern.compile("\\\\(section|chapter)\\{[^{}]+}")
-
         /**
          * All commands that count as inspected sections in order of hierarchy.
          */
         private val SECTION_NAMES = listOf("\\chapter", "\\section")
-
-        /**
-         * The amount of characters it takes before a section is considered 'too long'.
-         */
-        private const val TOO_LONG_LIMIT = 4000
 
         /**
          * Looks up the section command that comes after the given command.
@@ -132,7 +123,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      *         The section command to start checking from.
      * @param nextCommand
      *         The section command after the `command` one, or `null` when there is no such command.
-     * @return `true` when the command starts a section that is too long (see [TOO_LONG_LIMIT])
+     * @return `true` when the command starts a section that is too long.
      */
     private fun isTooLong(command: LatexCommands, nextCommand: PsiElement?): Boolean {
         if (!SECTION_NAMES.contains(command.name)) {
@@ -143,7 +134,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val startIndex = command.textOffset + command.textLength
         val endIndex = nextCommand?.textOffset ?: file.textLength
 
-        return (endIndex - startIndex) >= TOO_LONG_LIMIT
+        val conventionSettings = TexifyConventionsSettingsManager.getInstance(command.project).getSettings()
+        val maxSectionSize = conventionSettings.currentScheme.maxSectionSize
+        return (endIndex - startIndex) >= maxSectionSize
     }
 
     /**

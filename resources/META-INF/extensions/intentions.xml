@@ -71,5 +71,11 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexLanguageInjectionIntention</descriptionDirectoryName>
         </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexVerbatimToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexVerbatimToggleIntention</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 </idea-plugin>

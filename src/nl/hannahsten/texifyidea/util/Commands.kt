@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.util.stream.Collectors
@@ -23,7 +24,7 @@ import java.util.stream.Collectors
  */
 fun Project.findCommandDefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this).filter {
-        it.name in CommandMagic.commandDefinitions
+        it.name in CommandMagic.commandDefinitionsAndRedefinitions
     }
 }
 
@@ -47,7 +48,7 @@ fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): Str
 
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
-        val commandExpansion = LatexCommandsIndex.getCommandsByNames(file ?: return null, *CommandMagic.commandDefinitions.toTypedArray())
+        val commandExpansion = LatexCommandsIndex.getCommandsByNames(file ?: return null, *CommandMagic.commandDefinitionsAndRedefinitions.toTypedArray())
                 .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
                 ?.getRequiredArgumentValueByName("def")
         text = text.replace(command.text, commandExpansion ?: command.text)

@@ -479,7 +479,7 @@ object TexifyIcons {
         return if (extension == null) {
             FILE
         }
-        else when (extension.toLowerCase()) {
+        else when (extension.lowercase(Locale.getDefault())) {
             "tex" -> if (smaller) LATEX_FILE_SMALLER else LATEX_FILE
             "bib" -> if (smaller) BIBLIOGRAPHY_FILE_SMALLER else BIBLIOGRAPHY_FILE
             "cls" -> if (smaller) CLASS_FILE_SMALLER else CLASS_FILE

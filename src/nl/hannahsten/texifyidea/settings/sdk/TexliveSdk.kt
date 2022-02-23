@@ -82,7 +82,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         val parent = LatexSdkUtil.getPdflatexParentPath(path)
 
         val errorMessage = "Could not find $path/bin/*/pdflatex"
-        return LatexSdkUtil.isPdflatexPresent(parent, errorMessage, name)
+        return LatexSdkUtil.isPdflatexPresent(parent, errorMessage, name, suppressNotification = suggestHomePaths().plus(suggestHomePath()))
     }
 
     override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE

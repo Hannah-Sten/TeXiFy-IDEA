@@ -359,10 +359,10 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: attempt to ind
             ex a nil value (local 'fontdata')
             stack traceback:
-                ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: in field 'get
-            _math_dimension'
-                .../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua:75: in field 'math
-            fontdimen'
+                ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: in field '
+            get_math_dimension'
+                .../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua:75: in field 'm
+            athfontdimen'
                 [\directlua]:1: in main chunk.
             lua_now:e #1->__lua_now:n {#1}
                                           
@@ -370,7 +370,10 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("Improper `at' size (0.0pt), replaced by 10pt.", "./errors.tex", 10, ERROR)
+            LatexLogMessage("Improper `at' size (0.0pt), replaced by 10pt.", "./errors.tex", 10, ERROR),
+            LatexLogMessage(message = "attempt to index a nil value (local 'fontdata')", fileName = "..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line = 702, type = ERROR, file = null),
+            LatexLogMessage(message = "in field 'get_math_dimension'", fileName = "..exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua", line = 702, type = ERROR, file = null),
+            LatexLogMessage(message = "in field 'mathfontdimen'", fileName = "../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua", line = 75, type = ERROR, file = null)
         )
 
         testLog(log, expectedMessages)
@@ -528,6 +531,30 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val expectedMessages = setOf(
             // Possible improvement: detecting line 4
             LatexLogMessage("unexpected symbol near '3'.", "./main.tex", -1, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test line number pdflatex`() {
+        val log =
+            """
+                Latexmk: applying rule 'pdflatex'...
+                This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.1) (preloaded format=pdflatex.fmt)
+                 \write18 enabled.
+                entering extended mode
+                [...]
+                (C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\typearea.sty))
+                (config/constants.tex
+                ! Undefined control sequence.
+                l.70 \if\PrintVersion
+                                     \IsTrue
+             
+             
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Undefined control sequence. \\PrintVersion", "config/constants.tex", 70, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -770,6 +797,60 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
         val expectedMessages = setOf(
             LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR),
             LatexLogMessage("Undefined control sequence. \\cupt", "./hw5.tex", 79, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test luatex errors`() {
+        val log =
+            """
+ (/home/nobody/GitRepos/read-csv-luatex-example/out/main.aux)
+(/home/nobody/texlive/2020/texmf-dist/tex/latex/base/ts1cmr.fd)./csvreader.lua:
+18: attempt to index a nil value (local 'file')
+stack traceback:
+	./csvreader.lua:18: in function 'dataToTable'
+	[\directlua]:1: in main chunk.
+\luacode@dbg@exec ...code@maybe@printdbg {#1} #1 }
+                                                
+l.20         }
+             \\
+./csvreader.lua:58: attempt to get length of a nil value (local 'array')
+stack traceback:
+	./csvreader.lua:58: in function 'tableToTeX'
+	[\directlua]:1: in main chunk.
+\luacode@dbg@exec ...code@maybe@printdbg {#1} #1 }
+                                                  
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("attempt to index a nil value (local 'file')", "./csvreader.lua", 18, ERROR),
+            LatexLogMessage("in function 'dataToTable'", "./csvreader.lua", 18, ERROR, null),
+            LatexLogMessage("attempt to get length of a nil value (local 'array')", "./csvreader.lua", 58, ERROR),
+            LatexLogMessage(message = "in function 'tableToTeX'", fileName = "./csvreader.lua", line = 58, type = ERROR, file = null)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test makeindex errors`() {
+        val log =
+            """
+Latexmk: Examining '/home/thomas/GitRepos/random-math/out/random-math.log'
+=== TeX engine is 'pdfTeX'
+Latexmk: applying rule 'makeindex /home/thomas/GitRepos/random-math/out/random-math.idx'...
+
+makeindex: file not writable for security reasons: /home/thomas/GitRepos/random-math/out/random-math.ind
+Can't create output index file /home/thomas/GitRepos/random-math/out/random-math.ind.
+Usage: makeindex [-ilqrcgLT] [-s sty] [-o ind] [-t log] [-p num] [idx0 idx1 ...]
+Latexmk: Errors, so I did not complete making targets
+Latexmk: Summary of warnings from last run of *latex:
+  Latex failed to resolve 7 reference(s)
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("makeindex: file not writable for security reasons: /home/thomas/GitRepos/random-math/out/random-math.ind", null, -1, ERROR),
+            LatexLogMessage("Can't create output index file /home/thomas/GitRepos/random-math/out/random-math.ind.", null, -1, ERROR),
         )
 
         testLog(log, expectedMessages)

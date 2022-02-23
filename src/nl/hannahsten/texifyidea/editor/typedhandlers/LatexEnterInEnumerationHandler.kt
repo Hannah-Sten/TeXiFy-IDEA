@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.editor
+package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.editorActions.AutoHardWrapHandler
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
@@ -10,11 +10,10 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.editor.ControlTracker
+import nl.hannahsten.texifyidea.editor.ShiftTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.psi.LatexBeginCommand
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexOptionalParam
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -22,7 +21,7 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 /**
  * @author Hannah Schellekens
  */
-class InsertEnumerationItem : EnterHandlerDelegate {
+class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
 
     override fun postProcessEnter(
         file: PsiFile, editor: Editor,
@@ -96,12 +95,13 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      * @return The last label in the environment, or `null` when there are no labels.
      */
     private fun getLastLabel(environment: PsiElement): LatexCommands? {
-        val commands = environment.childrenOfType(LatexCommands::class).filter { it.name == "\\item" }
-        if (commands.isEmpty()) {
-            return null
-        }
-
-        return commands.last()
+        // Only consider direct children, because there could be nested enumerations which we should ignore
+        return environment.children
+            .firstOrNull { it is LatexEnvironmentContent }
+            ?.children
+            ?.flatMap { it.children.toList() }
+            ?.filterIsInstance<LatexCommands>()
+            ?.lastOrNull { it.name == "\\item" }
     }
 
     /**

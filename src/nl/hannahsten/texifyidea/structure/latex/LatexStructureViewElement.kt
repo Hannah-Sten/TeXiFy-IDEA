@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -44,12 +44,12 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase()
+        return (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
             ?: if (element is PsiNameIdentifierOwner) {
-                element.name!!.toLowerCase()
+                element.name!!.lowercase(Locale.getDefault())
             }
             else {
-                element.text.toLowerCase()
+                element.text.lowercase(Locale.getDefault())
             }
     }
 
@@ -126,7 +126,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add command definitions.
-        CommandMagic.commandDefinitions.forEach {
+        CommandMagic.commandDefinitionsAndRedefinitions.forEach {
             addFromCommand(treeElements, commands, it)
         }
 

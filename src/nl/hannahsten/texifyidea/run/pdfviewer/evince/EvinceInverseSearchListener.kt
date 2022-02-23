@@ -5,10 +5,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.BufferedReader
 import java.io.IOException
@@ -23,7 +20,7 @@ import java.io.InputStreamReader
  */
 object EvinceInverseSearchListener {
 
-    private var currentCoroutineJob: Job? = null
+    private var currentCoroutineScope = MainScope()
 
     /**
      * Starts a listener which listens for inverse search actions from Evince.
@@ -38,7 +35,7 @@ object EvinceInverseSearchListener {
 
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
-        currentCoroutineJob = GlobalScope.launch {
+        currentCoroutineScope.launch {
             startListening()
         }
     }
@@ -54,7 +51,7 @@ object EvinceInverseSearchListener {
             val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
             var line: String? = bufferedReader.readLine()
 
-            while (line != null && currentCoroutineJob?.isActive == true) {
+            while (line != null && currentCoroutineScope.isActive) {
                 // Check if a SyncSource signal appeared from Evince and if so, read the contents
                 if (line.contains("interface=org.gnome.evince.Window; member=SyncSource")) {
                     // Get the value between quotes
@@ -78,7 +75,7 @@ object EvinceInverseSearchListener {
                 // This is to ensure we can quickly stop this coroutine on plugin unload
                 while (!bufferedReader.ready()) {
                     Thread.sleep(100)
-                    if (currentCoroutineJob?.isActive == false) return
+                    if (!currentCoroutineScope.isActive) return
                 }
                 line = bufferedReader.readLine()
             }
@@ -108,7 +105,7 @@ object EvinceInverseSearchListener {
         }
     }
 
-    suspend fun unload() {
-        currentCoroutineJob?.cancelAndJoin()
+    fun unload() {
+        currentCoroutineScope.cancel(CancellationException(("Unloading the plugin")))
     }
 }
