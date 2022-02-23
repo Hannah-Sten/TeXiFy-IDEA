@@ -136,6 +136,8 @@ enum class DefaultEnvironment(
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
     TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
+    WIDETABULAR(environmentName = "widetabular", dependency = LatexPackage.WIDETABLE),
+    WIDETABLE(environmentName = "widetable", dependency = LatexPackage.WIDETABLE),
     ;
 
     companion object {
