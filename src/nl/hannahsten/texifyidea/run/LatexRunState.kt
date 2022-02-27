@@ -26,6 +26,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
 
         val console = LatexExecutionConsole(runConfig)
 
+        // todo make this a hidden step/handler as well?
         if (!runConfig.options.hasBeenRun) {
             firstRunSetup(runConfig)
         }

@@ -6,7 +6,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.macro.MacrosDialog
-import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
@@ -37,9 +37,9 @@ import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.name
 import nl.hannahsten.texifyidea.util.parentsOfType
-import org.jetbrains.annotations.NotNull
 import java.io.File
 import java.io.OutputStream
+import java.util.*
 
 class PdfViewerStep internal constructor(
     override val provider: StepProvider, override var configuration: LatexRunConfiguration
@@ -78,7 +78,7 @@ class PdfViewerStep internal constructor(
         else {
             configuration.options.outputFormat.toString()
         }
-        val pdfFileName = mainFile?.nameWithoutExtension + "." + outputFormat.toLowerCase()
+        val pdfFileName = mainFile?.nameWithoutExtension + "." + outputFormat.lowercase(Locale.getDefault())
         val pathWithMacro = File(OutputDirMacro().macro, pdfFileName).path
         val resolvedPath = File(configuration.options.outputPath.resolvedPath, pdfFileName).path
         return LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
@@ -160,7 +160,9 @@ class PdfViewerStep internal constructor(
             override fun startNotify() {
                 super.startNotify()
                 console.startStep(id, this@PdfViewerStep, this)
-                runInEdt {
+
+                runReadAction {
+
                     val exit = try {
                         openViewer()
                     }
@@ -183,14 +185,21 @@ class PdfViewerStep internal constructor(
         val texFile = configuration.project.currentTextEditor()?.file
         val pdfFile = state.pdfFilePath.resolvedPath ?: throw TeXception("pdf not specified")
 
-        val belongsToFileset = texFile?.psiFile(project) in ReferencedFileSetCache().fileSetFor(
-            configuration.options.mainFile.resolve()?.psiFile(
-                project
-            )!!
-        )
+        // Needs to run on EDT
+        val psiFile = texFile?.psiFile(project)
+
+        val mainFile = configuration.options
+            .mainFile
+            .resolve()
+            ?.psiFile(configuration.project)!!
+
+        // Shouldn't run on EDT because it is slow
+        val fileSet = ReferencedFileSetCache().fileSetFor(mainFile)
+
+        val belongsToFileset = psiFile in fileSet
 
         // Do not forward search if we are editing the preamble
-        val isEditingPreamble = true == texFile?.psiFile(project)?.run {
+        val isEditingPreamble = true == psiFile?.run {
             // Only applicable for root files (or files included in the preamble, but we don't check that yet)
             if (!isRoot()) return@run false
             val offset = currentEditor?.editor?.caretOffset() ?: return@run false
