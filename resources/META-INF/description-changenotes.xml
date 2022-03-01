@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.14</strong></p>
+        <p><strong>Beta 0.7.15</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.14! This release just fixes a few minor bugs.
+            Welcome to TeXiFy IDEA 0.7.15! This release adds conventions settings by Felix Berlakovich, and has a nice amount of bug fixes.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,23 +55,34 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Distinguish names of LaTeX action groups in find action dialog. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2210">#2210</a>)</li>
+            <li> Add conventions settings, by @fberlakovich. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1917">#1917</a>)</li>
+            <li> Recognise custom environments as defining a tabular-like environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2221">#2221</a>)</li>
+            <li> Add some missing biblatex entry types to autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2228">#2228</a>)</li>
+            <li> Add inspection which checks if all commands are defined somewhere. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2229">#2229</a>)</li>
+            <li> Improve package indexing and autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2232">#2232</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Keep optional arguments when converting \usepackage to \RequirePackage. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2203">#2203</a>)</li>
-            <li> Don't warn when a \renewcommand follows a \newcommand. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2200">#2200</a>)</li>
-            <li> Fix some of the hardcoded package dependencies. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2212">#2212</a>)</li>
-            <li> Fix dummy text generation on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2213">#2213</a>)</li>
-            <li> Don't auto-generate a colon for BIBINPUTS. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2178">#2178</a>)</li>
-            <li> Fix crashes (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2208">#2208</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2211">#2211</a>)</li>
+            <li> Many improvements in log error parsing. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2227">#2227</a>)</li>
+            <li> Update Grazie implementation. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1951">#1951</a>)</li>
+            <li> Fix false positive in File Not Found inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2240">#2240</a>)</li>
+            <li> Resolve to command definition inside definition when not the first parameter. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2240">#2240</a>)</li>
+            <li> Ignore nested enumerations when finding the item marker in autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2220">#2220</a>)</li>
+            <li> Add FILE_NAME to the new file properties. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2218">#2218</a>)</li>
+            <li> Allow \begin and \end commands in table header column prefix/suffix. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2218">#2218</a>)</li>
+            <li> Fix autocompletion filtering for texlive. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2215">#2215</a>)</li>
+            <li> Suppress notifications for background SDK checks. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2215">#2215</a>)</li>
+            <li> Fix \item being inserted on hard line wrap with IdeaVim installed. (<a href="https://github.com/JetBrains/ideavim/pull/468">JetBrains/ideavim#468</a>)</li>
+            <li> Fix output path in run config template overriding the auxil path. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2219">#2219</a>)</li>
+            <li> Fix crash reporting issue labels. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2246">#2246</a>)</li>
+            <li> Fix invalid index access. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2240">#2240</a>)</li>
         </ul>
         <br>
         <p>
-            Thanks to @KindRoach and @antonio-caceres for contributing!
+            Thanks to @JeremiasBohn and @fberlakovich for contributing to this release!
         </p>
         <br>
         <p>
