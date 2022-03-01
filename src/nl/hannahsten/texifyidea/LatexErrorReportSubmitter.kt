@@ -90,7 +90,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             builder.append(URLEncoder.encode("### TeXiFy IDEA version\n$currentVersion\n\n", ENCODING))
             builder.append(URLEncoder.encode("### Description\n", ENCODING))
             builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
-            builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(7000)}\n```", ENCODING))
+            builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(6000)}\n```", ENCODING))
         }
         catch (e: UnsupportedEncodingException) {
             consumer.consume(
@@ -103,7 +103,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             return false
         }
 
-        BrowserUtil.browse(builder.toString().take(7000))
+        BrowserUtil.browse(builder.toString())
         consumer.consume(
             SubmittedReportInfo(
                 null,
@@ -116,7 +116,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
     companion object {
 
-        private const val ISSUE_URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&title="
+        private const val ISSUE_URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&template=crash_report.md&title="
 
         private const val JETBRAINS_API_URL = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
 

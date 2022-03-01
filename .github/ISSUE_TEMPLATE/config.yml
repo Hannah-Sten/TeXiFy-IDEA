@@ -3,3 +3,6 @@ contact_links:
   - name: TeXiFy IDEA wiki
     url: https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features
     about: List of features and documentation of TeXiFy IDEA.
+  - name: Contributing to TeXiFy IDEA
+    url: https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Contributing-to-TeXiFy
+    about: Help in contributing to the source of TeXiFy IDEA

@@ -393,8 +393,8 @@ class LatexRunConfiguration constructor(
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
                 // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
-                // so since it does not appear to be necessary we do not include it by default
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path))
+                // however it may be necessary on Mac/Linux as seen in #2249.
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + File.pathSeparator))
             }
         }
 
