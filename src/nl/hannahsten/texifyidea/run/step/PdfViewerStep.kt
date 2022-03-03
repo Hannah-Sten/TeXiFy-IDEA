@@ -6,6 +6,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
@@ -163,22 +164,34 @@ class PdfViewerStep internal constructor(
 
                 runReadAction {
 
-                    val exit = try {
+                    // This has both .psiFile calls which need to run in read action or EDT, and long-running operations which cannot run in EDT, so it has to be a read action.
+                    val forwardSearch = try {
                         openViewer()
                     }
                     catch (e: TeXception) {
-                        this.notifyTextAvailable(e.message ?: "", STDERR)
-                        -1
+                        { throw e }
                     }
-                    // Next step should wait for the pdf to open, as it may require the pdf
-                    super.notifyProcessTerminated(exit)
-                    console.finishStep(id, exit)
+
+                    runInEdt {
+                        val exit =
+                            try {
+                                // The forward search itselfs needs to run in EDT because of a synchronous refresh
+                                forwardSearch()
+                            }
+                            catch (e: TeXception) {
+                                this.notifyTextAvailable(e.message ?: "", STDERR)
+                                -1
+                            }
+                        // Next step should wait for the pdf to open, as it may require the pdf
+                        super.notifyProcessTerminated(exit)
+                        console.finishStep(id, exit)
+                    }
                 }
             }
         }
     }
 
-    private fun openViewer(): Int {
+    private fun openViewer(): () -> Int {
         val project = configuration.project
         val currentEditor = configuration.project.currentTextEditor()
         val pdfViewer = state.pdfViewer
@@ -209,11 +222,11 @@ class PdfViewerStep internal constructor(
 
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.
         return if (texFile != null && belongsToFileset && currentEditor != null && !isEditingPreamble) {
-            ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, pdfFile, currentEditor)
+            { ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, pdfFile, currentEditor) }
         }
         // If the file does not belong to the compiled file set, forward search to the first line of the main file.
         else {
-            ForwardSearchAction(pdfViewer).forwardSearch(configuration.options.mainFile.resolve()!!, project, pdfFile, null)
+            { ForwardSearchAction(pdfViewer).forwardSearch(configuration.options.mainFile.resolve()!!, project, pdfFile, null) }
         }
     }
 
