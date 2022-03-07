@@ -105,4 +105,12 @@ class CommandLineStep internal constructor(
         state.resetModificationCount()
         this.state = state
     }
+
+    override fun clone(): Step {
+        // See RunConfigurationBase.clone()
+        val newStep = CommandLineStep(provider, configuration)
+        newStep.loadState(State())
+        newStep.state.copyFrom(this.state)
+        return newStep
+    }
 }

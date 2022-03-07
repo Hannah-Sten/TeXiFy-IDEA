@@ -236,4 +236,12 @@ class PdfViewerStep internal constructor(
         state.resetModificationCount()
         this.state = state
     }
+
+    override fun clone(): Step {
+        // See RunConfigurationBase.clone()
+        val newStep = PdfViewerStep(provider, configuration)
+        newStep.loadState(State())
+        newStep.state.copyFrom(this.state)
+        return newStep
+    }
 }

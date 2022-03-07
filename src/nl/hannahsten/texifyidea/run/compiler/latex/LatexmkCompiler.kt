@@ -4,6 +4,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
+import java.util.*
 
 object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
 
@@ -41,7 +42,7 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
         }
 
         if (runConfig.options.outputFormat != OutputFormat.DEFAULT) {
-            command.add("-output-format=${runConfig.options.outputFormat.name.toLowerCase()}")
+            command.add("-output-format=${runConfig.options.outputFormat.name.lowercase(Locale.getDefault())}")
         }
 
         command.add("-output-directory=$outputPath")

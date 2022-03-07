@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.compiler.latex
 
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import java.util.*
 
 object TectonicCompiler : SupportedLatexCompiler("Tectonic", "tectonic") {
 
@@ -24,7 +25,7 @@ object TectonicCompiler : SupportedLatexCompiler("Tectonic", "tectonic") {
 
         command.add("--synctex")
 
-        command.add("--outfmt=${runConfig.options.outputFormat.name.toLowerCase()}")
+        command.add("--outfmt=${runConfig.options.outputFormat.name.lowercase(Locale.getDefault())}")
 
         if (outputPath != null) {
             command.add("--outdir=$outputPath")

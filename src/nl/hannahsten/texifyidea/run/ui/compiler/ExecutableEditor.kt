@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.run.executable.CustomExecutable
 import nl.hannahsten.texifyidea.run.executable.Executable
 import nl.hannahsten.texifyidea.run.executable.SupportedExecutable
 import java.awt.BorderLayout
+import java.util.*
 import javax.swing.JList
 
 /**
@@ -43,7 +44,7 @@ class ExecutableEditor<in S : SupportedExecutable, E : Executable>(label: String
     }
 
     private fun initComboBoxModel() = object : SortedComboBoxModel<ExecutableComboBoxItem>(
-        compareBy<ExecutableComboBoxItem> { it.order }.thenBy { it.presentableText.toLowerCase() }
+        compareBy<ExecutableComboBoxItem> { it.order }.thenBy { it.presentableText.lowercase(Locale.getDefault()) }
     ) {
 
         override fun setSelectedItem(anItem: Any?) {
@@ -90,7 +91,7 @@ class ExecutableEditor<in S : SupportedExecutable, E : Executable>(label: String
     }
 
     private fun buildBrowseRunnable(): Runnable = BrowseFolderRunnable(
-        "Select Alternative ${executables.first().displayType.capitalize()}",
+        "Select Alternative ${executables.first().displayType.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}",
         "Select ${executables.first().displayType} executable to run with",
         null,
         BrowseFilesListener.SINGLE_FILE_DESCRIPTOR,

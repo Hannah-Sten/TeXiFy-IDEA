@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.options
 
 import com.intellij.execution.ExecutionException
 import com.intellij.ide.macro.ProjectFileDirMacro
-import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.project.IndexNotReadyException
@@ -18,6 +17,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.io.File
 import java.nio.file.Path
+import java.util.*
 
 /**
  * Output or auxiliary path of the run configuration.
@@ -60,7 +60,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
         return "${outputDir?.path}/" + options.mainFile.resolve()
             ?.nameWithoutExtension + "." + if (options.outputFormat == LatexCompiler.OutputFormat.DEFAULT) "pdf"
         else options.outputFormat.toString()
-            .toLowerCase()
+            .lowercase(Locale.getDefault())
     }
 
     /**

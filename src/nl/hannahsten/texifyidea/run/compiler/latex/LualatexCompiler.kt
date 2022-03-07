@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.compiler.latex
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import java.util.*
 
 object LualatexCompiler : SupportedLatexCompiler("LuaLaTeX", "lualatex") {
 
@@ -27,7 +28,7 @@ object LualatexCompiler : SupportedLatexCompiler("LuaLaTeX", "lualatex") {
         command.add("-file-line-error")
         command.add("-interaction=nonstopmode")
         command.add("-synctex=1")
-        command.add("-output-format=${runConfig.options.outputFormat.name.toLowerCase()}")
+        command.add("-output-format=${runConfig.options.outputFormat.name.lowercase(Locale.getDefault())}")
 
         command.add("-output-directory=$outputPath")
 

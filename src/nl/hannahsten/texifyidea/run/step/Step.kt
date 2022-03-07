@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
  *
  * This can be anything that executes something, e.g., a latex or bibtex compiler or opening a pdf file in a pdf viewer.
  */
-interface Step {
+interface Step : Cloneable {
 
     val provider: StepProvider
 
@@ -22,4 +22,6 @@ interface Step {
     fun execute(id: String, console: LatexExecutionConsole): ProcessHandler?
 
     fun isValid() = true
+
+    public override fun clone(): Step
 }

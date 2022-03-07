@@ -34,6 +34,7 @@ import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.awt.BorderLayout
+import java.util.*
 import kotlin.reflect.KMutableProperty0
 
 typealias LatexCompileEditor = ExecutableEditor<SupportedLatexCompiler, Compiler<LatexCompileStep>>
@@ -231,11 +232,12 @@ object CommonLatexFragments {
         val outputDirectoryField = TextFieldWithBrowseButton()
         outputDirectoryField.minimumSize = standardDimension
         setMonospaced(outputDirectoryField.textField)
-        outputDirectoryField.addBrowseFolderListener("Select ${type.capitalize()} Directory", "Select directory to store $type files", project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
+        outputDirectoryField.addBrowseFolderListener("Select ${type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }} Directory", "Select directory to store $type files", project, FileChooserDescriptorFactory.createSingleFolderDescriptor(), TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
 
         MacrosDialog.addMacroSupport(outputDirectoryField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
 
-        val field = LabeledComponent.create(outputDirectoryField, "&${type.capitalize()} directory:")
+        val field = LabeledComponent.create(outputDirectoryField,
+            "&${type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }} directory:")
         field.labelLocation = BorderLayout.WEST
 
         // Don't show when not applicable (non-MiKTeX)

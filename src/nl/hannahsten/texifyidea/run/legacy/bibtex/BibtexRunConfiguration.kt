@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogTabComponent
 import org.jdom.Element
+import java.util.*
 
 /**
  * @author Sten Wessel
@@ -79,7 +80,7 @@ class BibtexRunConfiguration(
         val parent = element.getChild(PARENT_ELEMENT)
 
         compiler = try {
-            SupportedBibliographyCompiler.byExecutableName(parent.getChildText(COMPILER).toLowerCase())
+            SupportedBibliographyCompiler.byExecutableName(parent.getChildText(COMPILER).lowercase(Locale.getDefault()))
         }
         catch (e: IllegalArgumentException) {
             null

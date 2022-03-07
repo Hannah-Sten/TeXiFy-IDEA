@@ -18,4 +18,8 @@ class LatexCompileStep internal constructor(
     override fun getWorkingDirectory() = configuration.workingDirectory ?: configuration.options.mainFile.resolve()?.parent?.path
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(configuration.envs, configuration.isPassParentEnvs)
+
+    override fun clone(): Step {
+        return LatexCompileStep(provider, configuration)
+    }
 }

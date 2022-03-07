@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.usesBiber
+import java.util.*
 
 object BibliographyCompileStepProvider : StepProvider {
 
@@ -145,7 +146,7 @@ object BibliographyCompileStepProvider : StepProvider {
                         .toString()
                 }
                 else runCommand
-                val compiler = CompilerMagic.bibliographyCompilerByExecutableName[compilerString.toLowerCase()] ?: return@lazy null
+                val compiler = CompilerMagic.bibliographyCompilerByExecutableName[compilerString.lowercase(Locale.getDefault())] ?: return@lazy null
                 val compilerArguments = runCommand.removePrefix(compilerString)
                     .trim()
                 Pair(compiler, compilerArguments)

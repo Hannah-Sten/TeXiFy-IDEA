@@ -54,6 +54,17 @@ class LatexRunConfiguration constructor(
 
     /** A run configuration consists of one or more steps to execute. */
     val compileSteps: MutableList<Step> = mutableListOf()
+        get() = field.onEach { it.configuration = this@LatexRunConfiguration }
+
+    override fun clone(): LatexRunConfiguration {
+        // Super already handles copying the options
+        val new = super.clone() as? LatexRunConfiguration ?: LatexRunConfiguration(project, factory ?: LatexTemplateConfigurationFactory(LatexRunConfigurationType.instance), name)
+        val newSteps = compileSteps.map { it.clone() }.toMutableList().onEach { it.configuration = new }
+        new.compileSteps.clear()
+        new.compileSteps.addAll(newSteps)
+
+        return new
+    }
 
     override fun getDefaultOptionsClass(): Class<out LatexRunConfigurationOptions> {
         // Data holder for the options
