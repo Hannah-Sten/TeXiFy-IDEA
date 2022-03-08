@@ -48,7 +48,7 @@ class SystemEnvironment {
 
         // Assumes version will be given in the format GNOME Document Viewer 3.34.2
         val evinceVersion: DefaultArtifactVersion by lazy {
-            DefaultArtifactVersion("evince --version".runCommand()?.split(" ")?.lastOrNull())
+            DefaultArtifactVersion("evince --version".runCommand()?.split(" ")?.lastOrNull() ?: "")
         }
     }
 }
