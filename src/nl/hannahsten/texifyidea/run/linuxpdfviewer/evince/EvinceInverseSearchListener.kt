@@ -20,7 +20,7 @@ import java.io.InputStreamReader
  */
 object EvinceInverseSearchListener {
 
-    private var currentCoroutineScope = MainScope()
+    private var currentCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     /**
      * Starts a listener which listens for inverse search actions from Evince.
