@@ -234,7 +234,30 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             return command
         }
-    };
+    },
+
+    ARARA("Arara", "arara") {
+
+        override val includesBibtex = true
+
+        override val handlesNumberOfCompiles = true
+
+        override val outputFormats = arrayOf(Format.PDF)
+
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
+
+            // Arara handles everything as configured by magic comments in the file.
+            // We cannot use --verbose because it relies on user input
+            return mutableListOf(runConfig.compilerPath ?: executableName)
+        }
+    },
+    ;
 
     /**
      * Convert Windows paths to WSL paths.
