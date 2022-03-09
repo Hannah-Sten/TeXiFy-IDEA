@@ -55,7 +55,7 @@ abstract class IndexUtilBase<T : PsiElement>(
         }
 
         // Search index.
-        val scope = GlobalSearchScope.filesScope(project, searchFiles)
+        val scope = GlobalSearchScope.filesScope(project, searchFiles.filterNotNull())
         return getItems(project, scope)
     }
 
