@@ -30,6 +30,8 @@ plugins {
     id("org.owasp.dependencycheck") version "8.2.1"
 
     id("org.jetbrains.changelog") version "2.0.0"
+
+    id("org.jetbrains.grammarkit") version "2022.3.1"
 }
 
 group = "nl.hannahsten"
@@ -276,4 +278,17 @@ tasks.dependencyUpdates {
 tasks.useLatestVersions {
     // Do not update this ktlint plugin, it is mostly unmaintained and newer versions are usually either broken or introduce unwanted style changes
     updateBlacklist = listOf("org.jlleitschuh.gradle.ktlint")
+}
+
+tasks.generateLexer {
+    source.set("src/nl/hannahsten/texifyidea/grammar/LatexLexer.flex")
+    targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
+    targetClass.set("LatexLexer")
+}
+
+tasks.generateParser {
+    source.set("src/nl/hannahsten/texifyidea/grammar/Latex.bnf")
+    targetRoot.set("gen")
+    pathToParser.set("nl/hannahsten/texifidea/parser/LatexParser.java")
+    pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
 }
