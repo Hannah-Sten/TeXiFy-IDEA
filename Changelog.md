@@ -1,7 +1,5 @@
-## Beta 0.7.15
+## Beta 0.7.17
 
 ### Additions
-* Add arara to the compiler list. (#2264)
 
 ### Bug fixes
-* Fixed crashes. (#2262)
