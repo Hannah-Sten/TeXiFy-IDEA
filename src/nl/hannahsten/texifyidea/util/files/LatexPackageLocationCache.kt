@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util.files
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
+import nl.hannahsten.texifyidea.util.PackageUtils.CTAN_PACKAGE_NAMES
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.IOException
 
@@ -24,6 +25,9 @@ object LatexPackageLocationCache {
      * @param name Package name with extension.
      */
     fun getPackageLocation(name: String, project: Project): String? {
+        // Because this method may be called on partial package names (e.g. when the user is still typing it), we first check if the package even exists before doing expensive sytem calls to find the location.
+        if (name !in CTAN_PACKAGE_NAMES) return null
+
         if (cache.containsKey(name).not()) {
             // Tectonic does not have kpsewhich, but works a little differently
             val projectSdk = LatexSdkUtil.getLatexProjectSdk(project)
