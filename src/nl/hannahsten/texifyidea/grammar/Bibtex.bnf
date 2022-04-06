@@ -16,6 +16,7 @@
     extends("entry")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
     implements("entry")="com.intellij.psi.PsiNameIdentifierOwner"
     implements("id")="com.intellij.psi.PsiNameIdentifierOwner"
+
 }
 
 bibtexFile ::= (entry | comment)*

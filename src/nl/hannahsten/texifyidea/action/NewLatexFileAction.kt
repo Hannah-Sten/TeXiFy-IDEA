@@ -16,13 +16,14 @@ import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory.Companion.create
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.FileUtil.fileTypeByExtension
 import java.util.*
+import java.util.function.Consumer
 
 /**
  * @author Hannah Schellekens
  */
 class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE) {
 
-    override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: java.util.function.Consumer<Array<PsiElement>>) {
+    override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: Consumer<in Array<PsiElement>>) {
         val fileCreator = LatexFileCreator(project, psiDirectory)
         val builder = CreateFileFromTemplateDialog.createDialog(project)
         builder.setTitle("Create a New LaTeX File")

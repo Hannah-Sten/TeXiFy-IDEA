@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.bibreferencemanagers
+package nl.hannahsten.texifyidea.externallibrary
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
@@ -12,8 +12,7 @@ import nl.hannahsten.texifyidea.BibtexLanguage
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.childrenOfType
 
-class ZoteroReferenceManager(val userID: Int = Temp.userID, private val userApiKey: String = Temp.userApiKey) :
-    ReferenceManager {
+class ZoteroLibrary(val userID: Int = Temp.userID, private val userApiKey: String = Temp.userApiKey) : ExternalBibLibrary("Zotero") {
 
     private val client by lazy { HttpClient(CIO) }
 

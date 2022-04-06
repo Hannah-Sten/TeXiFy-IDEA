@@ -4,7 +4,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.4.0"
+//    id("org.jetbrains.intellij") version "1.4.0"
+    id("org.jetbrains.intellij") version "1.5.2"
     kotlin("jvm") version("1.6.20-M1")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
@@ -24,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.15-alpha.3"
+version = "0.7.15-alpha.4"
 
 repositories {
     mavenCentral()
@@ -164,8 +165,8 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2021.3.2")
-//    version.set("221.3427.89-EAP-SNAPSHOT")
+//    version.set("2021.3.2")
+    version.set("LATEST-EAP-SNAPSHOT")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
