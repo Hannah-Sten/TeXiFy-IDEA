@@ -203,4 +203,4 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
 /**
  * Get all [LatexCommands] that are children (direct or indirect) of the given element.
  */
-fun PsiElement.allCommands() = childrenOfType(LatexCommands::class)
+fun PsiElement.allCommands() = childrenOfType(LatexCommands::class).toList()

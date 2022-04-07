@@ -24,11 +24,12 @@ class LatexTextExtractor : TextExtractor() {
         // However, we do need it as a root because we need to filter out certain things like inline math ourselves, so that we can make sure all the whitespace around ignored items is correct.
         val domain = TextContent.TextDomain.PLAIN_TEXT
 
-        val textContent = TextContent.builder().build(root, domain)
+        val textContent = TextContent.builder().build(root, domain) ?: return null
         val stealthyRanges = getStealthyRanges(root)
             .map { TextContent.Exclusion.exclude(it.toTextRange()) }
+            .filter { it.start >= 0 && it.end <= textContent.length }
 
-        return textContent?.excludeRanges(stealthyRanges)
+        return textContent.excludeRanges(stealthyRanges)
     }
 
     private fun getStealthyRanges(root: PsiElement): List<IntRange> {
