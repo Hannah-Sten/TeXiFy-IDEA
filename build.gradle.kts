@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.4.0"
-    kotlin("jvm") version("1.6.20-RC")
+    kotlin("jvm") version("1.6.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
