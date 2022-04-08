@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
 /**
  * todo clean up this mess and duplicate code
+ *
+ * todo can we replace this by the built-in 'run external tool'? See ToolBeforeRunTask
  */
 class CommandLineStep internal constructor(
     override val provider: StepProvider,
