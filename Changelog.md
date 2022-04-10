@@ -3,3 +3,4 @@
 ### Additions
 
 ### Bug fixes
+* Fixed crashes. (#2315)
