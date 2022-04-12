@@ -8,13 +8,17 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyLineOptionsInspection
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -61,6 +65,9 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                 val closeOffset = seek(document, openOffset, file) ?: continue
                 val openElement = file.findElementAt(openOffset) ?: continue
                 val closeElement = file.findElementAt(closeOffset) ?: continue
+                // Create one fix that is passed to both the descriptors because this fix shares some state: it needs to
+                // know whether it has been applied or not.
+                val fix = InsertLeftRightFix(SmartPointerManager.createPointer(openElement), SmartPointerManager.createPointer(closeElement), document[openOffset])
 
                 descriptors.add(
                     manager.createProblemDescriptor(
@@ -69,7 +76,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                         "Parentheses pair could be replaced by \\left(..\\right)",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
+                        fix
                     )
                 )
 
@@ -80,7 +87,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                         "Parentheses pair could be replaced by \\left(..\\right)",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
+                        fix
                     )
                 )
             }
@@ -182,18 +189,35 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     private fun affectedCommands() = CommandMagic.high + lines
 
     /**
+     * Use references to the [PsiElement]s of the open and close brackets because text offsets are not reliable when
+     * applying all fixes.
+     *
      * @author Hannah Schellekens
      */
-    private open class InsertLeftRightFix(val openOffset: Int, val closeOffset: Int, val open: String) : LocalQuickFix {
+    private open class InsertLeftRightFix(val openElement: SmartPsiElementPointer<PsiElement>, val closeElement: SmartPsiElementPointer<PsiElement>, val open: String) : LocalQuickFix {
+
+        /**
+         * Keep track of whether or not this fix has been applied.
+         *
+         * There are two descriptors per fix (one for the open bracket and one for the close bracket). Whenever the user
+         * applies one of those fixes by hand, all is good. But when the user uses the "fix all" action, both fixes will
+         * applied. Which, when not keeping track of a fix being applied or not, means that the fix will be applied twice.
+         */
+        private var applied = false
 
         override fun getFamilyName() = "Convert (..) to \\left(..\\right)"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val file = descriptor.psiElement.containingFile
-            val document = file.document() ?: return
+            if (!applied) {
+                val psiHelper = LatexPsiHelper(project)
+                val openReplacement = psiHelper.createFromText("\\left$open").firstChild
+                val closeReplacement = psiHelper.createFromText("\\right${brackets[open]}").firstChild
 
-            document[closeOffset] = "\\right${brackets[open]}"
-            document[openOffset] = "\\left$open"
+                openElement.element?.parent?.replace(openReplacement) ?: return
+                closeElement.element?.parent?.replace(closeReplacement) ?: return
+
+                applied = true
+            }
         }
     }
 }
