@@ -38,6 +38,7 @@ import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.name
 import nl.hannahsten.texifyidea.util.parentsOfType
+import java.awt.event.MouseEvent
 import java.io.File
 import java.io.OutputStream
 import java.util.*
@@ -93,7 +94,7 @@ class PdfViewerStep internal constructor(
         return state.pdfViewer != null
     }
 
-    override fun configure() {
+    override fun configure(e: MouseEvent) {
         val viewerEditor = ExecutableEditor<SupportedPdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
         setDefaultLayout(viewerEditor, state.pdfViewer)
 

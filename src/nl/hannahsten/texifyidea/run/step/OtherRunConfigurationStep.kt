@@ -6,17 +6,31 @@ import com.intellij.execution.ExecutionTargetManagerImpl
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.compound.ConfigurationSelectionUtil
 import com.intellij.execution.compound.TypeNameTarget
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.components.PersistentStateComponent
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
+import java.awt.event.MouseEvent
 
+/**
+ * Run any other run configuration as a step.
+ *
+ * Based on [com.intellij.execution.impl.RunConfigurationBeforeRunProvider].
+ */
 class OtherRunConfigurationStep internal constructor(
     override val provider: StepProvider,
     override var configuration: LatexRunConfiguration
 ) : CompileStep(), PersistentStateComponent<TypeNameTarget> {
 
     override val name = "Other Run Configuration step"
+
+    // todo use it
+    fun getDescription(): String {
+        val (settings, target) = mySettingsWithTarget ?: return name
+        val text = ConfigurationSelectionUtil.getDisplayText(settings.configuration, target)
+        return "Run ''$text''"
+    }
 
     // Cache the settings object
     private var mySettingsWithTarget: Pair<RunnerAndConfigurationSettings, ExecutionTarget>? = null
@@ -36,12 +50,12 @@ class OtherRunConfigurationStep internal constructor(
             field = value
             val settings = value?.first
             val target = value?.second
-            this.state?.name = settings.name
-            this.state?.type = settings.type.id
+            this.state?.name = settings?.name
+            this.state?.type = settings?.type?.id
             this.state?.targetId = target?.id
         }
 
-    override fun configure() {
+    override fun configure(e: MouseEvent) {
         // See RunConfigurationBeforeRunProvider#configureTask
         val project = configuration.project
         val runManager = RunManagerImpl.getInstanceImpl(project)
@@ -54,6 +68,29 @@ class OtherRunConfigurationStep internal constructor(
                 ?.let { runManager.getSettings(it) } ?: return@createPopup
 
             mySettingsWithTarget = Pair(selectedSettings, selectedTarget)
-        }.showInBestPositionFor(context)
+        }.show(e.component)
+    }
+    override fun getCommand(): List<String>? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getWorkingDirectory(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getEnvironmentVariables(): EnvironmentVariablesData {
+        TODO("Not yet implemented")
+    }
+
+    override fun clone(): Step {
+        TODO("Not yet implemented")
+    }
+
+    override fun getState(): TypeNameTarget? {
+        TODO("Not yet implemented")
+    }
+
+    override fun loadState(state: TypeNameTarget) {
+        TODO("Not yet implemented")
     }
 }

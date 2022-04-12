@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.CustomBibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
+import java.awt.event.MouseEvent
 
 class BibliographyCompileStep internal constructor(
     override val provider: StepProvider,
@@ -62,7 +63,7 @@ class BibliographyCompileStep internal constructor(
 
     private var state = State()
 
-    override fun configure() {
+    override fun configure(e: MouseEvent) {
         val executableEditor = ExecutableEditor<SupportedBibliographyCompiler, BibliographyCompiler>("Compiler", CompilerMagic.bibliographyCompilerByExecutableName.values) {
             CustomBibliographyCompiler(it)
         }

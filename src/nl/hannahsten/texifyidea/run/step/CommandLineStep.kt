@@ -12,6 +12,7 @@ import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import java.awt.event.MouseEvent
 
 /**
  * todo clean up this mess and duplicate code
@@ -50,7 +51,7 @@ class CommandLineStep internal constructor(
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(state.envs, state.isPassParentEnvs)
 
-    override fun configure() {
+    override fun configure(e: MouseEvent) {
         // todo duplicate from bib step
 
         val commandLineField = createParametersTextField("Command line", state.commandLine)

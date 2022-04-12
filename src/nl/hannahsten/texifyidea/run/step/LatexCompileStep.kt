@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import java.awt.event.MouseEvent
 
 class LatexCompileStep internal constructor(
     override val provider: StepProvider,
@@ -10,7 +11,7 @@ class LatexCompileStep internal constructor(
 
     override val name = "LaTeX compile step"
 
-    override fun configure() {
+    override fun configure(e: MouseEvent) {
     }
 
     override fun getCommand() = configuration.options.compiler?.getCommand(this)

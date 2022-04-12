@@ -25,7 +25,8 @@ import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
 import java.awt.Rectangle
-import java.awt.event.*
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.Box
 import javax.swing.JLabel
 import javax.swing.JLayeredPane
@@ -224,7 +225,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
-                        step.configure()
+                        step.configure(e)
                     }
                 }
             })

@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.step
 import com.intellij.execution.process.ProcessHandler
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
+import java.awt.event.MouseEvent
 
 /**
  * A step in the run configuration flow of compiling a LaTeX document.
@@ -17,7 +18,7 @@ interface Step : Cloneable {
 
     val name: String
 
-    fun configure()
+    fun configure(e: MouseEvent)
 
     fun execute(id: String, console: LatexExecutionConsole): ProcessHandler?
 
