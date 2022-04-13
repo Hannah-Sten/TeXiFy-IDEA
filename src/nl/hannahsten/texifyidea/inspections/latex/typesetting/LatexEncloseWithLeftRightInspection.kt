@@ -197,11 +197,11 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     private open class InsertLeftRightFix(val openElement: SmartPsiElementPointer<PsiElement>, val closeElement: SmartPsiElementPointer<PsiElement>, val open: String) : LocalQuickFix {
 
         /**
-         * Keep track of whether or not this fix has been applied.
+         * Keep track of whether this fix has been applied.
          *
          * There are two descriptors per fix (one for the open bracket and one for the close bracket). Whenever the user
          * applies one of those fixes by hand, all is good. But when the user uses the "fix all" action, both fixes will
-         * applied. Which, when not keeping track of a fix being applied or not, means that the fix will be applied twice.
+         * be applied. Which, when not keeping track of a fix being applied or not, means that the fix will be applied twice.
          */
         private var applied = false
 
@@ -213,8 +213,13 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                 val openReplacement = psiHelper.createFromText("\\left$open").firstChild
                 val closeReplacement = psiHelper.createFromText("\\right${brackets[open]}").firstChild
 
-                openElement.element?.parent?.replace(openReplacement) ?: return
-                closeElement.element?.parent?.replace(closeReplacement) ?: return
+                // Get the elements from the psi pointers before replacing elements, because the pointers are not accurate
+                // anymore after changing the psi structure.
+                val openElement = openElement.element ?: return
+                val closeElement = closeElement.element ?: return
+
+                openElement.replace(openReplacement)
+                closeElement.replace(closeReplacement)
 
                 applied = true
             }
