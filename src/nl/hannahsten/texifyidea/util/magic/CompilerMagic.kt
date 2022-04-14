@@ -12,7 +12,8 @@ object CompilerMagic {
         LatexCompileStepProvider.id to LatexCompileStepProvider,
         BibliographyCompileStepProvider.id to BibliographyCompileStepProvider,
         PdfViewerStepProvider.id to PdfViewerStepProvider,
-        CommandLineStepProvider.id to CommandLineStepProvider
+        CommandLineStepProvider.id to CommandLineStepProvider,
+        OtherRunConfigurationStepProvider.id to OtherRunConfigurationStepProvider,
     )
 
     val latexCompilerByExecutableName: Map<String, SupportedLatexCompiler> = mapOf(
