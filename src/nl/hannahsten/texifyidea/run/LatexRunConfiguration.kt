@@ -44,7 +44,7 @@ class LatexRunConfiguration constructor(
         private const val SUMATRA_PATH = "sumatra-path"
         private const val VIEWER_COMMAND = "viewer-command"
         private const val COMPILE_STEP = "compile-step"
-        private const val COMPILE_STEP_NAME_ATTR = "name"
+        private const val COMPILE_STEP_NAME_ATTR = "step-name" // Should avoid conflicts with any possible step state variables
     }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile

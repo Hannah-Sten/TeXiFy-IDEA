@@ -58,6 +58,10 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             runConfiguration.compileSteps.add(LatexCompileStepProvider.createStep(runConfiguration))
             runConfiguration.compileSteps.add(PdfViewerStepProvider.createStep(runConfiguration))
         }
+        else {
+            runConfiguration.compileSteps.clear()
+            runConfiguration.compileSteps.addAll(runConfiguration.compileSteps.map { it.clone() })
+        }
         runConfiguration.compileSteps.forEach { it.configuration = runConfiguration }
 
         // Set default pdf path to the pdf corresponding to the main file

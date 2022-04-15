@@ -7,11 +7,9 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.compound.ConfigurationSelectionUtil
 import com.intellij.execution.compound.TypeNameTarget
 import com.intellij.execution.executors.DefaultRunExecutor
-import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
-import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.components.PersistentStateComponent
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
@@ -79,12 +77,13 @@ class OtherRunConfigurationStep internal constructor(
         }.showInBestPositionFor(context)
     }
 
-    override fun isValid(): Boolean {
-        val configuration = mySettingsWithTarget?.first?.configuration ?: return false
-        val executorId = DefaultRunExecutor.getRunExecutorInstance().id
-        val runner = ProgramRunner.getRunner(executorId, configuration) ?: return false
-        return runner.canRun(executorId, configuration)
-    }
+    // todo needs fixing
+//    override fun isValid(): Boolean {
+//        val configuration = mySettingsWithTarget?.first?.configuration ?: return false
+//        val executorId = DefaultRunExecutor.getRunExecutorInstance().id
+//        val runner = ProgramRunner.getRunner(executorId, configuration) ?: return false
+//        return runner.canRun(executorId, configuration)
+//    }
 
     override fun execute(id: String, console: LatexExecutionConsole): ProcessHandler? {
         val (settings, target) = mySettingsWithTarget ?: return null
@@ -103,8 +102,9 @@ class OtherRunConfigurationStep internal constructor(
             override fun startNotify() {
                 super.startNotify()
                 console.startStep(id, this@OtherRunConfigurationStep, this)
-                // todo log output to console
-                RunConfigurationBeforeRunProvider.doExecuteTask(environment, settings, target)
+                // todo transfer focus back to original run config after running another one
+//                RunConfigurationBeforeRunProvider.doExecuteTask(environment, settings, target) // The semaphore gets stuck
+                environment.runner.execute(environment)
                 super.notifyProcessTerminated(0) // todo exit code
                 console.finishStep(id, 0)
             }
@@ -112,7 +112,10 @@ class OtherRunConfigurationStep internal constructor(
     }
 
     override fun clone(): Step {
-        return OtherRunConfigurationStep(provider, configuration).also { it.state.copyFrom(this.state) }
+        return OtherRunConfigurationStep(provider, configuration).also {
+            it.loadState(TypeNameTarget())
+            it.state.copyFrom(this.state)
+        }
     }
 
     override fun getState(): TypeNameTarget {
