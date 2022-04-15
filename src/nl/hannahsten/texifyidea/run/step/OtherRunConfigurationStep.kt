@@ -12,11 +12,11 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.execution.runners.ProgramRunner
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.components.PersistentStateComponent
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
-import java.awt.event.MouseEvent
 import java.io.OutputStream
 
 /**
@@ -63,7 +63,7 @@ class OtherRunConfigurationStep internal constructor(
             this.state.targetId = target?.id
         }
 
-    override fun configure(e: MouseEvent) {
+    override fun configure(context: DataContext) {
         // See RunConfigurationBeforeRunProvider#configureTask
         val project = configuration.project
         val runManager = RunManagerImpl.getInstanceImpl(project)
@@ -76,7 +76,7 @@ class OtherRunConfigurationStep internal constructor(
                 ?.let { runManager.getSettings(it) } ?: return@createPopup
 
             mySettingsWithTarget = Pair(selectedSettings, selectedTarget)
-        }.show(e.component)
+        }.showInBestPositionFor(context)
     }
 
     override fun isValid(): Boolean {
@@ -112,7 +112,7 @@ class OtherRunConfigurationStep internal constructor(
     }
 
     override fun clone(): Step {
-        TODO("Not yet implemented")
+        return OtherRunConfigurationStep(provider, configuration).also { it.state.copyFrom(this.state) }
     }
 
     override fun getState(): TypeNameTarget {

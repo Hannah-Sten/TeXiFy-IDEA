@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.step
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -19,7 +20,6 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.CustomBibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
-import java.awt.event.MouseEvent
 
 class BibliographyCompileStep internal constructor(
     override val provider: StepProvider,
@@ -63,7 +63,7 @@ class BibliographyCompileStep internal constructor(
 
     private var state = State()
 
-    override fun configure(e: MouseEvent) {
+    override fun configure(context: DataContext) {
         val executableEditor = ExecutableEditor<SupportedBibliographyCompiler, BibliographyCompiler>("Compiler", CompilerMagic.bibliographyCompilerByExecutableName.values) {
             CustomBibliographyCompiler(it)
         }

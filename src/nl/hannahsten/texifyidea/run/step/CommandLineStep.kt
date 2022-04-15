@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.configuration.EnvironmentVariablesData
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -51,7 +52,7 @@ class CommandLineStep internal constructor(
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(state.envs, state.isPassParentEnvs)
 
-    override fun configure(e: MouseEvent) {
+    override fun configure(context: DataContext) {
         // todo duplicate from bib step
 
         val commandLineField = createParametersTextField("Command line", state.commandLine)

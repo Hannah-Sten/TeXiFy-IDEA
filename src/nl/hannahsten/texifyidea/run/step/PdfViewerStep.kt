@@ -6,6 +6,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputType.STDERR
 import com.intellij.execution.ui.CommonParameterFragments.setMonospaced
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.BaseState
@@ -94,7 +95,7 @@ class PdfViewerStep internal constructor(
         return state.pdfViewer != null
     }
 
-    override fun configure(e: MouseEvent) {
+    override fun configure(context: DataContext) {
         val viewerEditor = ExecutableEditor<SupportedPdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
         setDefaultLayout(viewerEditor, state.pdfViewer)
 

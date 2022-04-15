@@ -108,12 +108,13 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         popup.showUnderneathOf(addButton)
     }
 
-    private fun createStep(provider: StepProvider) {
+    private fun createStep(provider: StepProvider, e: AnActionEvent) {
         val step = provider.createStep(configuration)
         val tag = StepButton(step)
         steps.add(tag)
         buildPanel()
         changeListener()
+        step.configure(e.dataContext)
     }
 
     fun resetEditorFrom(c: LatexRunConfiguration) {
@@ -225,7 +226,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
-                        step.configure(e)
+                        step.configure(DataManager.getInstance().getDataContext(myButton))
                     }
                 }
             })
@@ -259,7 +260,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     private inner class TagAction(private val provider: StepProvider) : AnAction(provider.name, null, provider.icon) {
 
         override fun actionPerformed(e: AnActionEvent) {
-            createStep(provider)
+            createStep(provider, e)
         }
     }
 }
