@@ -24,8 +24,8 @@ import java.io.File
  */
 abstract class CompileStep : Step {
 
-    override fun execute(id: String, console: LatexExecutionConsole): KillableProcessHandler? {
-        val command = getCommand() ?: return null
+    override fun execute(id: String, console: LatexExecutionConsole): KillableProcessHandler {
+        val command = getCommand()
         val workingDirectory = getWorkingDirectory() ?: ProjectUtil.getBaseDir()
 
         val commandLine = GeneralCommandLine(command)
@@ -78,7 +78,7 @@ abstract class CompileStep : Step {
         return handler
     }
 
-    abstract fun getCommand(): List<String>?
+    abstract fun getCommand(): List<String>
 
     abstract fun getWorkingDirectory(): String?
 

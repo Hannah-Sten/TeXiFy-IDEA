@@ -12,8 +12,8 @@ import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import java.awt.event.MouseEvent
 
 /**
  * todo clean up this mess and duplicate code
@@ -42,8 +42,8 @@ class CommandLineStep internal constructor(
         var isPassParentEnvs by property(EnvironmentVariablesData.DEFAULT.isPassParentEnvs)
     }
 
-    override fun getCommand(): List<String>? {
-        return this.state.commandLine?.split(" ") // todo BAD
+    override fun getCommand(): List<String> {
+        return this.state.commandLine?.split(" ") ?: throw TeXception("Step $name has no command") // todo BAD
     }
 
     override fun getWorkingDirectory(): String? {

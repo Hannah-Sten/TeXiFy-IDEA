@@ -12,6 +12,8 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.wm.ToolWindowManager
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
@@ -39,14 +41,14 @@ class OtherRunConfigurationStep internal constructor(
     }
 
     // Cache the settings object
-    private var mySettingsWithTarget: Pair<RunnerAndConfigurationSettings, ExecutionTarget>? = null
+    private var mySettingsWithTarget: Pair<RunnerAndConfigurationSettings, ExecutionTarget?>? = null
         get() {
             if (field != null) return field
             val type = this.state.type ?: return null
             val name = this.state.name ?: return null
             val settings = RunManagerImpl.getInstanceImpl(configuration.project).findConfigurationByTypeAndName(type, name) ?: return null
-            val targetId = this.state.targetId ?: return null
-            val target = (ExecutionTargetManager.getInstance(configuration.project) as ExecutionTargetManagerImpl).findTargetByIdFor(settings.configuration, targetId) ?: return null
+            val targetId = this.state.targetId
+            val target = (ExecutionTargetManager.getInstance(configuration.project) as ExecutionTargetManagerImpl).findTargetByIdFor(settings.configuration, targetId)
 
             val pair = Pair(settings, target)
             field = pair
@@ -68,6 +70,7 @@ class OtherRunConfigurationStep internal constructor(
         val configurations = RunManagerImpl.getInstanceImpl(project).allSettings
             .filter { it.type is LatexRunConfigurationType }
             .map { it.configuration }
+            .filter { it != configuration }
         ConfigurationSelectionUtil.createPopup(project, runManager, configurations) { selectedConfigs, selectedTarget ->
             val selectedSettings = selectedConfigs
                 .firstOrNull()
@@ -85,10 +88,11 @@ class OtherRunConfigurationStep internal constructor(
 //        return runner.canRun(executorId, configuration)
 //    }
 
-    override fun execute(id: String, console: LatexExecutionConsole): ProcessHandler? {
-        val (settings, target) = mySettingsWithTarget ?: return null
+    override fun execute(id: String, console: LatexExecutionConsole): ProcessHandler {
+        // Don't silently skip the step when there is a problem
+        val (settings, target) = mySettingsWithTarget ?: throw TeXception("Could not get settings from ${this.state.type} ${this.state.name}")
         val environment = ExecutionEnvironmentBuilder.createOrNull(DefaultRunExecutor.getRunExecutorInstance(), settings)?.build()
-            ?: return null
+            ?: throw TeXception("Could not get run executor")
 
         return object : ProcessHandler() {
             override fun destroyProcessImpl() = notifyProcessTerminated(0)
@@ -102,11 +106,16 @@ class OtherRunConfigurationStep internal constructor(
             override fun startNotify() {
                 super.startNotify()
                 console.startStep(id, this@OtherRunConfigurationStep, this)
-                // todo transfer focus back to original run config after running another one
-//                RunConfigurationBeforeRunProvider.doExecuteTask(environment, settings, target) // The semaphore gets stuck
+                // Inspired by RunConfigurationBeforeRunProvider.doExecuteTask, but we cannot use it directly because the semaphore gets stuck if it's not the last step in the sequence
+                // Trigger other run config (will run later)
                 environment.runner.execute(environment)
-                super.notifyProcessTerminated(0) // todo exit code
+                // todo need to do the following _after_ execution, not directly after triggering it (execution will take back focus)
+                super.notifyProcessTerminated(0) // todo exit code?
                 console.finishStep(id, 0)
+                val executor = DefaultRunExecutor.getRunExecutorInstance()
+                val contentManager = ToolWindowManager.getInstance(configuration.project).getToolWindow(executor.toolWindowId)?.contentManager ?: return
+                contentManager.requestFocus(contentManager.getContent(0), true)
+
             }
         }
     }

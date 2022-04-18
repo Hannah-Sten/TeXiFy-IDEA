@@ -2,8 +2,8 @@ package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.openapi.actionSystem.DataContext
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import java.awt.event.MouseEvent
 
 class LatexCompileStep internal constructor(
     override val provider: StepProvider,
@@ -15,7 +15,7 @@ class LatexCompileStep internal constructor(
     override fun configure(context: DataContext) {
     }
 
-    override fun getCommand() = configuration.options.compiler?.getCommand(this)
+    override fun getCommand() = configuration.options.compiler?.getCommand(this) ?: throw TeXception("Skipping step $name because no command is available")
 
     override fun getWorkingDirectory() = configuration.workingDirectory ?: configuration.options.mainFile.resolve()?.parent?.path
 

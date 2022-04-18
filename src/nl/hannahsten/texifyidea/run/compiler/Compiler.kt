@@ -15,8 +15,6 @@ interface Compiler<in S : CompileStep> : Executable {
 
     /**
      * The command to execute to compile [step].
-     *
-     * Returns `null` if no command should be executed.
      */
-    fun getCommand(step: S): List<String>?
+    fun getCommand(step: S): List<String>
 }

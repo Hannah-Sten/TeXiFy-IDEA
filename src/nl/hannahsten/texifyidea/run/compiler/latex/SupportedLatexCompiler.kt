@@ -4,6 +4,7 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
@@ -33,13 +34,13 @@ abstract class SupportedLatexCompiler(
     /**
      * Get the execution command for the latex compiler.
      */
-    override fun getCommand(step: LatexCompileStep): List<String>? {
+    override fun getCommand(step: LatexCompileStep): List<String> {
         val runConfig = step.configuration
         val project = runConfig.project
 
         val rootManager = ProjectRootManager.getInstance(project)
         val fileIndex = rootManager.fileIndex
-        val mainFile = runConfig.options.mainFile.resolve() ?: return null
+        val mainFile = runConfig.options.mainFile.resolve() ?: throw TeXception("No main file found")
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory

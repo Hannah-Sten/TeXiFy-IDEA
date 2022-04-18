@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
@@ -93,9 +94,9 @@ fun Project.hasLatexModule(): Boolean {
 }
 
 /**
- * True if we are probably in a unit test.
+ * True if we are in a unit test.
  */
-fun Project.isTestProject() = name.contains("_temp_")
+fun Project.isTestProject() = ApplicationManager.getApplication().isUnitTestMode
 
 /**
  * Finds all section marker commands (as defined in [CommandMagic.sectionMarkers]) in the project.

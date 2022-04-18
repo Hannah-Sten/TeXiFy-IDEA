@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.compiler.bibtex
 
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.compiler.Compiler
 import nl.hannahsten.texifyidea.run.compiler.CustomCompiler
 import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
@@ -24,14 +25,14 @@ sealed class BibliographyCompiler : Compiler<BibliographyCompileStep> {
 class CustomBibliographyCompiler(override val executablePath: String) : BibliographyCompiler(),
                                                                         CustomCompiler<BibliographyCompileStep> {
 
-    override fun getCommand(step: BibliographyCompileStep): List<String>? {
-        return listOf(executablePath, step.state.mainFileName ?: return null)
+    override fun getCommand(step: BibliographyCompileStep): List<String> {
+        return listOf(executablePath, step.state.mainFileName ?: throw TeXception("Step ${step.name} has no main file"))
     }
 }
 
 abstract class SupportedBibliographyCompiler(override val displayName: String, override val executableName: String) : BibliographyCompiler(), SupportedCompiler<BibliographyCompileStep> {
 
-    abstract override fun getCommand(step: BibliographyCompileStep): List<String>?
+    abstract override fun getCommand(step: BibliographyCompileStep): List<String>
 
     override fun toString() = this.displayName
 

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.compiler.bibtex
 
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.step.BibliographyCompileStep
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
@@ -10,7 +11,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
  */
 object BibtexCompiler : SupportedBibliographyCompiler("BibTeX", "bibtex") {
 
-    override fun getCommand(step: BibliographyCompileStep): List<String>? {
+    override fun getCommand(step: BibliographyCompileStep): List<String> {
         val command = mutableListOf<String>()
 
         val moduleRoots = ProjectRootManager.getInstance(step.configuration.project).contentSourceRoots
@@ -26,7 +27,7 @@ object BibtexCompiler : SupportedBibliographyCompiler("BibTeX", "bibtex") {
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }
 
-            add(step.state.mainFileName ?: return null)
+            add(step.state.mainFileName ?: throw TeXception("Unknown main file"))
         }
 
         return command.toList()

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
@@ -22,7 +23,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
 
     override fun getAdditionalProjectRootsToIndex(project: Project): MutableSet<VirtualFile> {
         // Avoid indexing in tests
-        if (project.isTestProject()) {
+        if (ApplicationManager.getApplication().isUnitTestMode) {
             return mutableSetOf()
         }
 

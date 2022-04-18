@@ -14,6 +14,7 @@ import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.CustomBibliographyCompiler
@@ -124,8 +125,8 @@ class BibliographyCompileStep internal constructor(
         }
     }
 
-    override fun getCommand(): List<String>? {
-        return state.compiler?.getCommand(this)
+    override fun getCommand(): List<String> {
+        return state.compiler?.getCommand(this) ?: throw TeXception("Unknown bibliography compiler")
     }
 
     override fun getWorkingDirectory() =

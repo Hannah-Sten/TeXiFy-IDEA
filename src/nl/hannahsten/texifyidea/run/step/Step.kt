@@ -20,7 +20,7 @@ interface Step : Cloneable {
 
     fun configure(context: DataContext)
 
-    fun execute(id: String, console: LatexExecutionConsole): ProcessHandler?
+    fun execute(id: String, console: LatexExecutionConsole): ProcessHandler
 
     fun isValid() = true
 

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.compiler.bibtex
 
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.step.BibliographyCompileStep
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
@@ -9,7 +10,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
  */
 object BiberCompiler : SupportedBibliographyCompiler("Biber", "biber") {
 
-    override fun getCommand(step: BibliographyCompileStep): List<String>? = mutableListOf<String>().apply {
+    override fun getCommand(step: BibliographyCompileStep): List<String> = mutableListOf<String>().apply {
         add(LatexSdkUtil.getExecutableName(executableName, step.configuration.project))
 
         // Biber can find auxiliary files, but the flag is different from bibtex.
@@ -19,6 +20,6 @@ object BiberCompiler : SupportedBibliographyCompiler("Biber", "biber") {
 
         step.state.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
-        add(step.state.mainFileName ?: return null)
+        add(step.state.mainFileName ?: throw TeXception("Unknown main file"))
     }
 }

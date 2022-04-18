@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -175,7 +176,7 @@ class InputFileReference(
      * Might be expensive for large projects because of recursively visiting all directories, not sure.
      */
     fun findAnywhereInProject(fileName: String): VirtualFile? {
-        val basePath = if (element.project.isTestProject().not()) {
+        val basePath = if (ApplicationManager.getApplication().isUnitTestMode.not()) {
             LocalFileSystem.getInstance().findFileByPath(element.project.basePath ?: return null) ?: return null
         }
         else {

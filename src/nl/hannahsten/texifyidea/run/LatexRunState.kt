@@ -11,6 +11,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 
@@ -34,6 +35,10 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
         val handlers = runConfig.compileSteps.withIndex().mapNotNull { (i, step) ->
             val id = i.toString()
             step.execute(id, console)
+        }
+
+        if (handlers.isEmpty()) {
+            throw TeXception("Run config ${runConfig.name} has no steps")
         }
 
         val overallProcessHandler = SequentialProcessHandler(handlers)
