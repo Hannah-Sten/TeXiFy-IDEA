@@ -3,7 +3,7 @@ You can also turn it on in the run configuration settings or template to always 
 
 
 Since the official Dockerized MiKTeX image at https://hub.docker.com/r/miktex/miktex is a bit old, which can cause problems downloading new packages, we provide our own Dockerized MiKTeX via GitHub.
-You can pull it with `docker pull docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest`.
+You can pull it with `docker pull ghcr.io/hannah-sten/texify-idea/miktex:latest`.
 
 You can then run your favourite LaTeX compiler like usual, and TeXify will make sure to perform the `docker run` (you can see the exact command at the top of the output log).
 Custom output directories are supported.
