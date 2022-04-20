@@ -147,6 +147,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * VCS integration including Git
 * Terminal window
 * link:Tools[Detexify]
+* https://github.com/dkandalov/live-plugin[Extend TeXiFy functionality with custom scripts]
 
 == UI
 * link:Symbol-view[Symbol tool window]
