@@ -15,6 +15,7 @@
 - [ ] Merge PR
 - [ ] buildPlugin and release on GitHub, using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone
+- [ ] Update MiKTeX Docker image
 
 Regexes to replace markdown by html:
 
