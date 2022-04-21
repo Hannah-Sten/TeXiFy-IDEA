@@ -212,7 +212,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         dropFirst.isVisible = false
     }
 
-    private inner class StepButton(val step: Step) : TagButton(step.provider.name, { changeListener() }), DnDSource {
+    private inner class StepButton(val step: Step) : TagButton(step.getDescription(), { changeListener() }), DnDSource {
 
         private val dropPlace = JLabel(AllIcons.General.DropPlace)
 

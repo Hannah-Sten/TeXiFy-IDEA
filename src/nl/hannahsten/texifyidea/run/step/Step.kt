@@ -24,5 +24,7 @@ interface Step : Cloneable {
 
     fun isValid() = true
 
+    fun getDescription(): String = provider.name
+
     public override fun clone(): Step
 }

@@ -36,11 +36,10 @@ class OtherRunConfigurationStep internal constructor(
 
     private var state = TypeNameTarget()
 
-    // todo use it
-    fun getDescription(): String {
+    override fun getDescription(): String {
         val (settings, target) = mySettingsWithTarget ?: return name
         val text = ConfigurationSelectionUtil.getDisplayText(settings.configuration, target)
-        return "Run ''$text''"
+        return "Run '$text'"
     }
 
     // Cache the settings object
@@ -136,6 +135,7 @@ class OtherRunConfigurationProcessHandler(val id: String, val console: LatexExec
                     console.finishStep(id, exitCode)
                     val executor = DefaultRunExecutor.getRunExecutorInstance()
                     val contentManager = ToolWindowManager.getInstance(settings.configuration.project).getToolWindow(executor.toolWindowId)?.contentManager ?: return
+                    // todo doesn't work
                     contentManager.requestFocus(contentManager.findContent("main"), true)
                 }
 

@@ -32,7 +32,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
             firstRunSetup(runConfig)
         }
 
-        val handlers = runConfig.compileSteps.withIndex().mapNotNull { (i, step) ->
+        val handlers = runConfig.compileSteps.withIndex().map { (i, step) ->
             val id = i.toString()
             step.execute(id, console)
         }
