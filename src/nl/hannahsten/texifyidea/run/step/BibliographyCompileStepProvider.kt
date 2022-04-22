@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.usesBiber
+import java.io.File
 import java.util.*
 
 object BibliographyCompileStepProvider : StepProvider {
@@ -79,8 +80,8 @@ object BibliographyCompileStepProvider : StepProvider {
                         mapOf(
                             "BIBINPUTS" to mainFile.parent.path,
                             // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
-                            // so since it does not appear to be necessary we do not include it by default
-                            "BSTINPUTS" to mainFile.parent.path
+                            // however it may be necessary on Mac/Linux as seen in #2249.
+                            "BSTINPUTS" to mainFile.parent.path + File.pathSeparator
                         )
                     ).envs
                 }
