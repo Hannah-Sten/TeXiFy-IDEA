@@ -27,10 +27,7 @@ import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.Box
-import javax.swing.JLabel
-import javax.swing.JLayeredPane
-import javax.swing.JPanel
+import javax.swing.*
 
 /**
  * Tag editor for defining a LaTeX compile sequence.
@@ -114,7 +111,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         steps.add(tag)
         buildPanel()
         changeListener()
-        step.configure(e.dataContext)
+        step.configure(e.dataContext, tag.getButton())
     }
 
     fun resetEditorFrom(c: LatexRunConfiguration) {
@@ -226,7 +223,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
-                        step.configure(DataManager.getInstance().getDataContext(myButton))
+                        step.configure(DataManager.getInstance().getDataContext(myButton), myButton)
                     }
                 }
             })
@@ -255,6 +252,8 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         fun showDropPlace(show: Boolean) {
             dropPlace.isVisible = show
         }
+
+        fun getButton(): JButton = myButton
     }
 
     private inner class TagAction(private val provider: StepProvider) : AnAction(provider.name, null, provider.icon) {

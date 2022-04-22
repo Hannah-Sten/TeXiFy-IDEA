@@ -214,6 +214,13 @@ class LatexRunConfiguration constructor(
                 '}'.toString()
     }
 
+    // equals() is final and cannot be overridden
+    fun myEquals(other: Any?): Boolean {
+        if (other !is LatexRunConfiguration) return false
+        // Not sure if this is completely right, but we use something similar in OtherRunConfigurationStep
+        return other.type.id == this.type.id && other.name == this.name
+    }
+
     override fun getProgramParameters() = options.compilerArguments
 
     override fun setProgramParameters(value: String?) {

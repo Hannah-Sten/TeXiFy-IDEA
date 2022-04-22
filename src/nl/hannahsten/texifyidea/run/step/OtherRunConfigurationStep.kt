@@ -18,9 +18,9 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindowManager
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import java.io.OutputStream
+import javax.swing.JButton
 
 /**
  * Run any other run configuration as a step.
@@ -65,20 +65,21 @@ class OtherRunConfigurationStep internal constructor(
             this.state.targetId = target?.id
         }
 
-    override fun configure(context: DataContext) {
+    override fun configure(context: DataContext, button: JButton) {
         // See RunConfigurationBeforeRunProvider#configureTask
         val project = configuration.project
         val runManager = RunManagerImpl.getInstanceImpl(project)
         val configurations = RunManagerImpl.getInstanceImpl(project).allSettings
-            .filter { it.type is LatexRunConfigurationType }
             .map { it.configuration }
-            .filter { it != configuration }
+            .filter { !configuration.myEquals(it) }
+
         ConfigurationSelectionUtil.createPopup(project, runManager, configurations) { selectedConfigs, selectedTarget ->
             val selectedSettings = selectedConfigs
                 .firstOrNull()
                 ?.let { runManager.getSettings(it) } ?: return@createPopup
 
             mySettingsWithTarget = Pair(selectedSettings, selectedTarget)
+            button.name = getDescription() // todo button name doesn't update
         }.showInBestPositionFor(context)
     }
 
@@ -131,12 +132,12 @@ class OtherRunConfigurationProcessHandler(val id: String, val console: LatexExec
 
                 override fun processTerminated(event: ProcessEvent) {
                     val exitCode = event.exitCode
-                    this@OtherRunConfigurationProcessHandler.notifyProcessTerminated(exitCode)
-                    console.finishStep(id, exitCode)
                     val executor = DefaultRunExecutor.getRunExecutorInstance()
                     val contentManager = ToolWindowManager.getInstance(settings.configuration.project).getToolWindow(executor.toolWindowId)?.contentManager ?: return
                     // todo doesn't work
                     contentManager.requestFocus(contentManager.findContent("main"), true)
+                    console.finishStep(id, exitCode)
+                    this@OtherRunConfigurationProcessHandler.notifyProcessTerminated(exitCode)
                 }
 
                 override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {}

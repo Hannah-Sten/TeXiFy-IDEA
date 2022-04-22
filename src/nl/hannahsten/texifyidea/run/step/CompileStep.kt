@@ -11,6 +11,7 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
@@ -35,6 +36,10 @@ abstract class CompileStep : Step {
         val handler = KillableProcessHandler(commandLine)
         handler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {
+                // Make sure generated files from previous steps are recognised
+                // todo refreshing is apparently not the issue, as even if the file is refreshed the old version is picked up
+                LocalFileSystem.getInstance().refresh(false)
+
                 console.startStep(id, this@CompileStep, handler)
             }
 
