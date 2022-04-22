@@ -77,6 +77,7 @@ open class LatexPackage @JvmOverloads constructor(
         val TIKZ = LatexPackage("tikz")
         val ULEM = LatexPackage("ulem")
         val WASYSYM = LatexPackage("wasysym")
+        val WIDETABLE = LatexPackage("widetable")
         val XCOLOR = LatexPackage("xcolor")
         val XPARSE = LatexPackage("xparse")
 

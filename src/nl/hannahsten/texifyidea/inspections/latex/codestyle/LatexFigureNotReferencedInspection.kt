@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.labels.findLabelingCommandsInFile
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import org.jetbrains.annotations.NotNull
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
