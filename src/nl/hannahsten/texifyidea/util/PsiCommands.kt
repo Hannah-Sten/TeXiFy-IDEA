@@ -6,6 +6,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
@@ -120,6 +121,26 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
         }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
     else requiredParameters.getOrNull(min(requiredArgIndices.first(), requiredParameters.size - 1))
+}
+
+/**
+ * Get the value of the named optional [argument] given in `this` command.
+ *
+ * @return null when the optional argument is not given.
+ */
+fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
+    // Find all pre-defined commands that define `this` command.
+    val optionalArgIndices = LatexRegularCommand[
+            name?.substring(1)
+                ?: return null
+    ]
+        // Find the index of their optional argument named [argument].
+        ?.map {
+            it.arguments.filterIsInstance<OptionalArgument>()
+                .indexOfFirst { arg -> arg.name == argument }
+        }
+    return if (optionalArgIndices.isNullOrEmpty() || optionalArgIndices.all { it == -1 }) null
+    else optionalParameterMap.keys.toList().getOrNull(min(optionalArgIndices.first(), optionalParameterMap.keys.toList().size - 1))?.text
 }
 
 /**
