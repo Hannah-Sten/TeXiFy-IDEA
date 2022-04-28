@@ -113,6 +113,12 @@ object LatexElementColorProvider : ElementColorProvider {
                             colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
                         )
                     }
+                    LatexColorDefinitionCommand.DEFINECOLORSERIES.command -> {
+                        getColorFromDefineColor(
+                            colorDefinitionCommand.getOptionalArgumentValueByName("b-model") ?: colorDefinitionCommand.getRequiredArgumentValueByName("core model"),
+                            colorDefinitionCommand.getRequiredArgumentValueByName("b-spec")
+                        )
+                    }
                     else -> getColorFromColorParameter(file, colorName)
                 }
             }
