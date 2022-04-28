@@ -32,6 +32,7 @@ open class LatexMagicCommentStubElementType(debugName: String) : IStubElementTyp
     }
 
     override fun indexStub(stub: LatexMagicCommentStub, sink: IndexSink) {
+        LatexMagicCommentIndex.cache.clear()
         sink.occurrence(LatexMagicCommentIndex.key(), stub.key)
     }
 }

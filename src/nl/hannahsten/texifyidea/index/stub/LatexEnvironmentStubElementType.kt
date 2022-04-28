@@ -35,10 +35,12 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     }
 
     override fun indexStub(stub: LatexEnvironmentStub, sink: IndexSink) {
+        LatexEnvironmentsIndex.cache.clear()
         sink.occurrence(LatexEnvironmentsIndex.key(), stub.environmentName)
 
         // only record environments with a label in the optional parameters
         if (stub.label.isNotEmpty() && EnvironmentMagic.labelAsParameter.contains(stub.environmentName)) {
+            LatexParameterLabeledEnvironmentsIndex.cache.clear()
             sink.occurrence(LatexParameterLabeledEnvironmentsIndex.key(), stub.label)
         }
     }

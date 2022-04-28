@@ -74,10 +74,10 @@ class LatexCommandsStubElementType(debugName: String) :
 
     private fun deserializeMap(fromString: String): Map<String, String> {
         val keyValuePairs = deserialiseList(fromString)
-        return keyValuePairs.filter { it.isNotEmpty() }.map {
+        return keyValuePairs.filter { it.isNotEmpty() }.associate {
             val parts = it.split(KEY_VALUE_SEPARATOR)
             parts[0] to parts[1]
-        }.toMap()
+        }
     }
 
     override fun indexStub(latexCommandsStub: LatexCommandsStub, indexSink: IndexSink) {
@@ -89,6 +89,8 @@ class LatexCommandsStubElementType(debugName: String) :
         // Unfortunately, this seems to make indexing five times slower
         val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
         if (getCachedProjectRoots(latexCommandsStub.psi?.project).none { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
+            // Clear cache to be sure that any update will be reflected (we don't know whether something will be added to the index or whether it's already in there)
+            LatexCommandsIndex.cache.clear()
             indexSink.occurrence(
                 LatexCommandsIndex.key(),
                 latexCommandsStub.commandToken
@@ -96,13 +98,16 @@ class LatexCommandsStubElementType(debugName: String) :
         }
         val token = latexCommandsStub.commandToken
         if (token in getIncludeCommands()) {
+            LatexIncludesIndex.cache.clear()
             indexSink.occurrence(LatexIncludesIndex.key(), token)
         }
         if (token in CommandMagic.definitions) {
+            LatexDefinitionIndex.cache.clear()
             indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
         if (token in CommandMagic.labelAsParameter && "label" in latexCommandsStub.optionalParams) {
             val label = latexCommandsStub.optionalParams["label"]!!
+            LatexParameterLabeledCommandsIndex.cache.clear()
             indexSink.occurrence(LatexParameterLabeledCommandsIndex.key(), label)
         }
     }
