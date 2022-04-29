@@ -180,7 +180,7 @@ tasks.publishPlugin {
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf("stable"))
+    channels.set(listOf("alpha"))
 }
 
 tasks.test {
