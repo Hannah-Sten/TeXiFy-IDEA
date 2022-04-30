@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.labels.findLabelingCommandsInFile
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import org.jetbrains.annotations.NotNull
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -76,7 +75,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             .associateBy(LatexCommands::labelName)
             .toMutableMap()
 
-    class RemoveFigureFix(label: SmartPsiElementPointer<LatexParameterText>) : SafeDeleteFix(label.element as @NotNull PsiElement) {
+    class RemoveFigureFix(label: SmartPsiElementPointer<LatexParameterText>) : SafeDeleteFix(label.element as PsiElement) {
 
         override fun getText(): String {
             return "Safe delete figure environment"

@@ -6,7 +6,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
 //    id("org.jetbrains.intellij") version "1.4.0"
     id("org.jetbrains.intellij") version "1.5.2"
-    kotlin("jvm") version("1.6.20-M1")
+    kotlin("jvm") version("1.6.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -15,7 +15,7 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.0.1"
+    id("de.undercouch.download") version "5.0.2"
 
     // Test coverage
     jacoco
@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.15-alpha.4"
+version = "0.7.16"
 
 repositories {
     mavenCentral()
@@ -118,7 +118,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.12.2")
+    testImplementation("io.mockk:mockk:1.12.3")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -173,7 +173,7 @@ intellij {
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
     // Also disable "version" above
     // If it doesn't work (Could not resolve all files for configuration ':detachedConfiguration4'.), specify 'version' instead
-//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-1/203.5419.8/"
+//    localPath.set("/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/213.6777.50/")
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task
@@ -185,7 +185,7 @@ tasks.publishPlugin {
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf("alpha"))
+    channels.set(listOf("stable"))
 }
 
 tasks.test {

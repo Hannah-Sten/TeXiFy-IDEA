@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -65,26 +66,30 @@ fun findVirtualFileByAbsoluteOrRelativePath(path: String, project: Project): Vir
  * @return The matching file, or `null` when the file couldn't be found.
  */
 fun VirtualFile.findFile(filePath: String, extensions: Set<String> = emptySet()): VirtualFile? {
-    val isAbsolute = File(filePath).isAbsolute
-    var file = if (!isAbsolute) {
-        findFileByRelativePath(filePath)
-    }
-    else {
-        LocalFileSystem.getInstance().findFileByPath(filePath)
-    }
-    if (file != null && !file.isDirectory) return file
-
-    extensions.forEach { extension ->
-        val lookFor = filePath.appendExtension(extension)
-        file = if (!isAbsolute) {
-            findFileByRelativePath(lookFor)
+    try {
+        val isAbsolute = File(filePath).isAbsolute
+        var file = if (!isAbsolute) {
+            findFileByRelativePath(filePath)
         }
         else {
-            LocalFileSystem.getInstance().findFileByPath(lookFor)
+            LocalFileSystem.getInstance().findFileByPath(filePath)
         }
+        if (file != null && !file.isDirectory) return file
 
-        if (file != null && !file!!.isDirectory) return file
+        extensions.forEach { extension ->
+            val lookFor = filePath.appendExtension(extension)
+            file = if (!isAbsolute) {
+                findFileByRelativePath(lookFor)
+            }
+            else {
+                LocalFileSystem.getInstance().findFileByPath(lookFor)
+            }
+
+            if (file != null && !file!!.isDirectory) return file
+        }
     }
+    // #2248
+    catch (ignored: InvalidVirtualFileAccessException) {}
 
     return null
 }

@@ -42,37 +42,28 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.14</strong></p>
-        <p>
-            Welcome to TeXiFy IDEA 0.7.14! This release just fixes a few minor bugs.
-        <p>
-        <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
-        </p>
+        <p><strong>Beta 0.7.16</strong></p>
+<!--        <p>-->
+<!--            Welcome to TeXiFy IDEA 0.7.15! This release adds conventions settings by Felix Berlakovich, and has a nice amount of bug fixes.-->
+<!--        <p>-->
+<!--        <p>-->
+<!--            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.-->
+<!--            Your input is valuable and well appreciated.-->
+<!--        </p>-->
         <br>
         <p>
             <em>Additions</em>
         </p>
         <ul>
-            <li> Distinguish names of LaTeX action groups in find action dialog. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2210">#2210</a>)</li>
+            <li> Add arara to the compiler list. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2264">#2264</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Keep optional arguments when converting \usepackage to \RequirePackage. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2203">#2203</a>)</li>
-            <li> Don't warn when a \renewcommand follows a \newcommand. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2200">#2200</a>)</li>
-            <li> Fix some of the hardcoded package dependencies. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2212">#2212</a>)</li>
-            <li> Fix dummy text generation on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2213">#2213</a>)</li>
-            <li> Don't auto-generate a colon for BIBINPUTS. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2178">#2178</a>)</li>
-            <li> Fix crashes (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2208">#2208</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2211">#2211</a>)</li>
+            <li> Fixed crash. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2262">#2262</a>)</li>
         </ul>
-        <br>
-        <p>
-            Thanks to @KindRoach and @antonio-caceres for contributing!
-        </p>
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.

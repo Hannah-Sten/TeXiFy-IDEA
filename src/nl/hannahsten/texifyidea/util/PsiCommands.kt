@@ -6,6 +6,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
@@ -123,6 +124,26 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
 }
 
 /**
+ * Get the value of the named optional [argument] given in `this` command.
+ *
+ * @return null when the optional argument is not given.
+ */
+fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
+    // Find all pre-defined commands that define `this` command.
+    val optionalArgIndices = LatexRegularCommand[
+            name?.substring(1)
+                ?: return null
+    ]
+        // Find the index of their optional argument named [argument].
+        ?.map {
+            it.arguments.filterIsInstance<OptionalArgument>()
+                .indexOfFirst { arg -> arg.name == argument }
+        }
+    return if (optionalArgIndices.isNullOrEmpty() || optionalArgIndices.all { it == -1 }) null
+    else optionalParameterMap.keys.toList().getOrNull(min(optionalArgIndices.first(), optionalParameterMap.keys.toList().size - 1))?.text
+}
+
+/**
  * Checks whether the command is known by TeXiFy.
  *
  * @return Whether the command is known (`true`), or unknown (`false`).
@@ -201,20 +222,6 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
 }
 
 /**
- * Get all [LatexCommands] that are children of the given element.
+ * Get all [LatexCommands] that are children (direct or indirect) of the given element.
  */
-fun PsiElement.allCommands(): List<LatexCommands> {
-    val commands = ArrayList<LatexCommands>()
-    allCommands(commands)
-    return commands
-}
-
-/**
- * Recursive implementation of [allCommands].
- */
-private fun PsiElement.allCommands(commands: MutableList<LatexCommands>) {
-    forEachChild { it.allCommands(commands) }
-    if (this is LatexCommands) {
-        commands.add(this)
-    }
-}
+fun PsiElement.allCommands() = childrenOfType(LatexCommands::class).toList()
