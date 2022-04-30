@@ -21,6 +21,7 @@ class LatexSurroundDescriptor : SurroundDescriptor {
 
     override fun getSurrounders(): Array<Surrounder> = arrayOf(
         DoubleQuotesSurrounder(),
-        SingleQuotesSurrounder()
+        SingleQuotesSurrounder(),
+        CustomFoldingRegionSurrounder(),
     )
 }
