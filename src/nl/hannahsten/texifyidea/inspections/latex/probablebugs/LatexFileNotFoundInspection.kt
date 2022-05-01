@@ -65,7 +65,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         // CTAN packages are no targets of the InputFileReference, so we check them here and don't show a warning if a CTAN package is included
         if (extensions.contains("sty")) {
             val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
-            if (reference.key in ctanPackages) return
+            if (reference.key.lowercase(Locale.getDefault()) in ctanPackages) return
         }
 
         val fixes = mutableListOf<LocalQuickFix>()

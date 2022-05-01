@@ -28,10 +28,10 @@ object PackageUtils {
      */
     val CTAN_PACKAGE_NAMES: List<String> = javaClass
         .getResourceAsStream("/nl/hannahsten/texifyidea/packages/package.list")
-        .bufferedReader()
-        .readLine()
-        .split(";")
-        .toList()
+        ?.bufferedReader()
+        ?.readLine()
+        ?.split(";")
+        ?.toList() ?: emptyList()
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
