@@ -111,9 +111,15 @@ cd install-tl-*
 
 In the installer, press kbd:[D] and kbd:[Enter] to change the home directory from `/user/local/texlive/yyyy` to `/home/username/texlive/yyyy` or whatever you want.
 
-Add `/home/username/texlive/yyyy/bin/x86_64-linux` or wherever you installed it to your `PATH`, for example by putting in some configuration file like `~/.bashrc` or `~/.profile` the line `export PATH="/home/username/texlive/2018/bin/x86_64-linux:$PATH`.
+Add `/home/username/texlive/yyyy/bin/x86_64-linux` or wherever you installed it to your `PATH` environment variable, for example by putting in some configuration file like `~/.bashrc` or `~/.profile` the line `export PATH="/home/username/texlive/2018/bin/x86_64-linux:$PATH`.
 Don't forget to log out and back in.
 You can test the installation by running `latex small2e`.
+
+[NOTE]
+
+If IntelliJ does not recognise your TeX Live installation, for example you get a warning `SyncTeX not installed: Forward search and inverse search need the synctex command line tool to be installed.`, make sure you modify your PATH as above. Note that for example `~/.zshrc` might not be picked up and you need to use `~/.profile`.
+
+
 
 ==== Installing packages for not-full installations
 
