@@ -22,6 +22,11 @@ See link:Preview[Preview].
 If you want to temporarily switch off the parser for a part of your LaTeX, for example because there is a parse error which is causing other problems in your files, you can use the magic comments `%! parser = off` and `%! parser = on` to avoid parsing the text between these two comments.
 The syntax `% !TeX parser = off` is also supported.
 
+== Custom folding regions
+
+You can use either `%! region My description` and `%! endregion` or NetBeans-style `%! <editor-fold desc="My Description">` and `%! <editor-fold>` magic comments to specify custom folding regions.
+For more information, see https://blog.jetbrains.com/idea/2012/03/custom-code-folding-regions-in-intellij-idea-111/ and https://www.jetbrains.com/help/idea/code-folding-settings.html
+
 == Fake sections
 
 Use `%! fake section` to introduce a fake section which can be folded like any other section.
