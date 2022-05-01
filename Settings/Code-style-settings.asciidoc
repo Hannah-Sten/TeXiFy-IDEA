@@ -116,3 +116,7 @@ will be reformatted as
 \section{Start}
     The happy opportunity responds the sister of a volume by silent dependency.
 ----
+
+=== Indent document environment
+
+When disabled, all the text between `\begin{document}` and `\end{document}` will not be indented.
