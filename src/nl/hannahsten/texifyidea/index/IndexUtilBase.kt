@@ -123,6 +123,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 
     /**
      * Get all the items in the index that have the given name.
+     * WARNING This takes significant time because of index access. Be very careful about performance when calling it many times.
      *
      * @param name
      *          The name of the items to get.
@@ -131,7 +132,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param scope
      *          The scope in which to search for the items.
      */
-    open fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
+    private fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
         try {
             return StubIndex.getElements(indexKey, name, project, scope, elementClass)
         }
