@@ -4,10 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.stubs.*
 import com.intellij.testFramework.LightVirtualFile
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
-import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
+import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
@@ -89,26 +86,18 @@ class LatexCommandsStubElementType(debugName: String) :
         // Unfortunately, this seems to make indexing five times slower
         val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
         if (getCachedProjectRoots(latexCommandsStub.psi?.project).none { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
-            // Clear cache to be sure that any update will be reflected (we don't know whether something will be added to the index or whether it's already in there)
-            LatexCommandsIndex.cache.clear()
-            indexSink.occurrence(
-                LatexCommandsIndex.key(),
-                latexCommandsStub.commandToken
-            )
+            indexSinkOccurrence(indexSink, LatexCommandsIndex, latexCommandsStub.commandToken)
         }
         val token = latexCommandsStub.commandToken
         if (token in getIncludeCommands()) {
-            LatexIncludesIndex.cache.clear()
-            indexSink.occurrence(LatexIncludesIndex.key(), token)
+            indexSinkOccurrence(indexSink, LatexIncludesIndex, token)
         }
         if (token in CommandMagic.definitions) {
-            LatexDefinitionIndex.cache.clear()
-            indexSink.occurrence(LatexDefinitionIndex.key(), token)
+            indexSinkOccurrence(indexSink, LatexDefinitionIndex, token)
         }
         if (token in CommandMagic.labelAsParameter && "label" in latexCommandsStub.optionalParams) {
             val label = latexCommandsStub.optionalParams["label"]!!
-            LatexParameterLabeledCommandsIndex.cache.clear()
-            indexSink.occurrence(LatexParameterLabeledCommandsIndex.key(), label)
+            indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex, label)
         }
     }
 

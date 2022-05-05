@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.index.stub
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.index.LatexMagicCommentIndex
+import nl.hannahsten.texifyidea.index.indexSinkOccurrence
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.psi.impl.LatexMagicCommentImpl
 import nl.hannahsten.texifyidea.psi.key
@@ -32,7 +33,6 @@ open class LatexMagicCommentStubElementType(debugName: String) : IStubElementTyp
     }
 
     override fun indexStub(stub: LatexMagicCommentStub, sink: IndexSink) {
-        LatexMagicCommentIndex.cache.clear()
-        sink.occurrence(LatexMagicCommentIndex.key(), stub.key)
+        indexSinkOccurrence(sink, LatexMagicCommentIndex, stub.key)
     }
 }
