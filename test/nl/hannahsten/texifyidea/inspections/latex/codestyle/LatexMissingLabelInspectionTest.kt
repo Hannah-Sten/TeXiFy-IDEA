@@ -98,6 +98,16 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent()
     )
 
+    fun `test label name generation`() = testQuickFix(
+        before = """
+        \section{~Ação –função}
+        """.trimIndent(),
+        after = """
+        \section{~Ação –função}\label{sec:acao-funcao}
+        """.trimIndent(),
+        numberOfFixes = 2
+    )
+
     fun `test quick fix in figure`() = testQuickFix(
         before = """
         \begin{document}

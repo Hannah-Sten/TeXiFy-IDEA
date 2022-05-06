@@ -4,6 +4,7 @@ import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.text.Normalizer
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -174,9 +175,11 @@ fun String.formatAsFilePath(): String {
  * Formats the string as a valid LaTeX label name.
  */
 fun String.formatAsLabel(): String {
-    return replace(" ", "-")
-        .removeAll("%", "~", "#", "\\", ",")
-        .lowercase(Locale.getDefault())
+    return this.let { Normalizer.normalize(it, Normalizer.Form.NFKD) }
+            .replace(" ", "-")
+            .removeAll("%", "~", "#", "\\", ",")
+            .replace("[^\\x00-\\x7F]".toRegex(), "")
+            .lowercase(Locale.getDefault())
 }
 
 /**
