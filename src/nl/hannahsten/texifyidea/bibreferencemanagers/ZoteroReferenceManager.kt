@@ -8,8 +8,8 @@ import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.externallibrary.Temp
 
 class ZoteroReferenceManager(val userID: Int = Temp.userID, val userApiKey: String = Temp.userApiKey) : ReferenceManager() {
-    private val client by lazy { HttpClient(CIO) }
 
+    private val client by lazy { HttpClient(CIO) }
 
     override fun getCollection(): Set<String> {
         return emptySet()
@@ -26,6 +26,7 @@ class ZoteroReferenceManager(val userID: Int = Temp.userID, val userApiKey: Stri
     }
 
     companion object {
+
         const val VERSION = 3
     }
 }
