@@ -123,5 +123,4 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             document.replaceString(offset, offset + whitespace.textLength, replacement)
         }
     }
-
 }
