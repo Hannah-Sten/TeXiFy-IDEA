@@ -114,8 +114,10 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param scope
      *          The scope in which to search for the items.
      */
-    fun getItems(project: Project, scope: GlobalSearchScope): Collection<T> {
-        cache[project]?.get(scope)?.let { return it }
+    fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
+        if (useCache) {
+            cache[project]?.get(scope)?.let { return it }
+        }
         val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
         cache.getOrPut(project) { mutableMapOf() }[scope] = result
         return result
