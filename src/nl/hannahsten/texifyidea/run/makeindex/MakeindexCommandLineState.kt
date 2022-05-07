@@ -8,6 +8,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.appendExtension
 
@@ -19,7 +20,8 @@ class MakeindexCommandLineState(
     private val mainFile: VirtualFile?,
     private val workingDirectory: VirtualFile?,
     private val makeindexOptions: Map<String, String>,
-    private val indexProgram: MakeindexProgram
+    private val indexProgram: MakeindexProgram,
+    private val commandLineArguments: String?,
 ) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)
@@ -33,7 +35,10 @@ class MakeindexCommandLineState(
         // texindy requires the file extension
         val indexFilename = if (indexProgram != MakeindexProgram.XINDY) indexBasename else indexBasename.appendExtension("idx")
 
-        val command = listOf(indexProgram.executableName, indexFilename)
+        val command = ParametersListUtil.parse(commandLineArguments ?: "").apply {
+            add(0, indexProgram.executableName)
+            add(indexFilename)
+        }
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
