@@ -1,42 +1,44 @@
 package nl.hannahsten.texifyidea.externallibrary
 
-import com.intellij.openapi.components.*
-import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.annotations.OptionTag
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import org.xmlpull.v1.XmlSerializer
 
-@State(name = "ExternalBibLibraryManager", storages = [Storage("library.xml")])
-class ExternalLibraryManager : PersistentStateComponent<ExternalLibraryManager.ExternalLibraryState> {
+@State(name = "ExternalBibLibraryManager", storages = [(Storage("library.xml"))])
+class ExternalLibraryManager : PersistentStateComponent<ExternalLibraryState> {
 
-    data class ExternalLibraryState(val libraries: MutableMap<String, LibraryItems> = mutableMapOf()) {
-        fun loadState(other: ExternalLibraryState) {
-            libraries.clear()
-            libraries.putAll(other.libraries)
-        }
 
-        fun updateLibrary(library: ExternalBibLibrary, bibItems: LibraryItems) {
-            libraries[library.name] = bibItems
-        }
+    companion object {
+        fun getInstance(): ExternalLibraryManager = ApplicationManager.getApplication().getService(ExternalLibraryManager::class.java)
     }
+//    data class ExternalLibraryState(var libraries: Map<String, LibraryItems>)
 
     data class LibraryItems(
-        @OptionTag(converter = BibtexEntryListConverter::class)
-        val items: List<BibtexEntry>
+        val items: List<BibtexEntry> = emptyList()
     )
 
-    private val state: ExternalLibraryState = ExternalLibraryState()
+//    @JvmField
+//    @OptionTag(converter = BibtexEntryListConverter::class)
+//    var libraries: MutableMap<String, List<BibtexEntry>> = mutableMapOf()
+    var libraries: Boolean = false
 
     override fun getState(): ExternalLibraryState {
-        return state
+//        return ExternalLibraryState(libraries.mapValues { LibraryItems(it.value) })
+        return ExternalLibraryState(libraries)
     }
 
     override fun loadState(state: ExternalLibraryState) {
-        XmlSerializerUtil.copyBean(state, this.state)
+        libraries = state.libraries
+//        libraries = state.libraries.mapValues { it.value.items }.toMutableMap()
+//        XmlSerializerUtil.copyBean(state, this.state)
 //        this.state.loadState(state)
     }
 
     fun updateLibrary(library: ExternalBibLibrary, bibItems: List<BibtexEntry>) {
-        this.state.updateLibrary(library, LibraryItems(bibItems))
+        libraries = true
+//        libraries[library.name] = bibItems
     }
 }
