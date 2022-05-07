@@ -18,7 +18,7 @@ class MakeindexCommandLineState(
     environment: ExecutionEnvironment,
     private val mainFile: VirtualFile?,
     private val workingDirectory: VirtualFile?,
-    private val makeindexOptions: HashMap<String, String>,
+    private val makeindexOptions: Map<String, String>,
     private val indexProgram: MakeindexProgram
 ) : CommandLineState(environment) {
 

@@ -20,7 +20,8 @@ class ReformatWithLatexindent : ExternalReformatAction("Reformat File with Latex
         if (document != null) {
             FileDocumentManager.getInstance().saveDocument(document)
         }
-        return listOf("latexindent.pl", file.name)
+        // latexindent as command seems to work more often than latexindent.pl
+        return listOf("latexindent", file.name)
     }
 
     override fun processOutput(output: String, file: PsiFile, project: Project) {
