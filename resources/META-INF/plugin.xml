@@ -86,7 +86,7 @@
         <!-- Other inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 <!--        <projectService serviceImplementation="nl.hannahsten.texifyidea.externallibrary.ExternalLibraryManager"/>-->
-        <applicationService serviceImplementation="nl.hannahsten.texifyidea.externallibrary.ExternalLibraryManager"/>
+        <applicationService serviceImplementation="nl.hannahsten.texifyidea.externallibrary.RemoteLibraryManager"/>
     </extensions>
 
 <!--    <application-components>-->

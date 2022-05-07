@@ -15,7 +15,7 @@ class SyncZoteroAction : AnAction() {
             CoroutineScope(Dispatchers.Default).launch {
                 val zotero = ZoteroLibrary()
                 val bibItems = zotero.getCollection(project)
-                ExternalLibraryManager.getInstance().updateLibrary(zotero, bibItems)
+                RemoteLibraryManager.getInstance().updateLibrary(zotero, bibItems)
             }
         }
     }

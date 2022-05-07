@@ -7,24 +7,24 @@ import com.intellij.openapi.components.Storage
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 
 @State(name = "ExternalBibLibraryManager", storages = [(Storage("library.xml"))])
-class ExternalLibraryManager : PersistentStateComponent<ExternalLibraryState> {
+class RemoteLibraryManager : PersistentStateComponent<RemoteLibraryState> {
 
     companion object {
 
-        fun getInstance(): ExternalLibraryManager = ApplicationManager.getApplication().getService(ExternalLibraryManager::class.java)
+        fun getInstance(): RemoteLibraryManager = ApplicationManager.getApplication().getService(RemoteLibraryManager::class.java)
     }
 
     var libraries: MutableMap<String, List<BibtexEntry>> = mutableMapOf()
 
-    override fun getState(): ExternalLibraryState {
-        return ExternalLibraryState(libraries.toMap())
+    override fun getState(): RemoteLibraryState {
+        return RemoteLibraryState(libraries.toMap())
     }
 
-    override fun loadState(state: ExternalLibraryState) {
+    override fun loadState(state: RemoteLibraryState) {
         libraries = state.libraries.toMutableMap()
     }
 
-    fun updateLibrary(library: ExternalBibLibrary, bibItems: List<BibtexEntry>) {
+    fun updateLibrary(library: RemoteBibLibrary, bibItems: List<BibtexEntry>) {
         libraries[library.name] = bibItems
     }
 }
