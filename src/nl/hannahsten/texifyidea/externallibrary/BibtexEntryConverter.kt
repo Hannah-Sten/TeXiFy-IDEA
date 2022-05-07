@@ -7,6 +7,10 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.childrenOfType
 
+/**
+ * Convert from String to [BibtexEntry], and the other way around, using PSI and the parser.
+ * This implies that this converter has to be used from within a thread that has read access.
+ */
 class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
 
     override fun toString(value: List<BibtexEntry>): String {
@@ -19,18 +23,4 @@ class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
             .childrenOfType<BibtexEntry>()
             .toList()
     }
-}
-
-class LibraryMapConverter : Converter<Map<String, List<BibtexEntry>>>() {
-
-    override fun toString(value: Map<String, List<BibtexEntry>>): String {
-        return value.entries.joinToString(",\n") {
-            "${it.key}>${BibtexEntryListConverter().toString(it.value)}"
-        }
-    }
-
-    override fun fromString(value: String): Map<String, List<BibtexEntry>>? {
-        return null
-    }
-
 }
