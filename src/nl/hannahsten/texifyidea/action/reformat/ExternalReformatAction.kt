@@ -99,7 +99,8 @@ abstract class ExternalReformatAction(title: String, val isValidFile: (file: Psi
      * If you just modify the file content in the background, only on re-focus will the user be asked if he wants to see the external changes made.
      */
     fun replaceLatexFileContent(output: String, file: PsiFile, project: Project) {
-        val newFile = LatexPsiHelper(project).createFromText(output)
+        // replaceChild does not like Windows line separators
+        val newFile = LatexPsiHelper(project).createFromText(output.replace("\r\n", "\n"))
         runWriteCommandAction(project) {
             file.node.replaceChild(file.node.firstChildNode, newFile.node.firstChildNode)
         }

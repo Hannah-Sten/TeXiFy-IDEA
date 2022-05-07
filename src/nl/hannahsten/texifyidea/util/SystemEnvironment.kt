@@ -68,6 +68,7 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null): String?
  * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
  */
 fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false): Pair<String?, Int> {
+    Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
     return try {
         val proc = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
@@ -76,16 +77,21 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
 
         if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
             val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+            if (proc.exitValue() != 0) {
+                Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
+            }
             return Pair(output, proc.exitValue())
         }
         else {
             val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
             proc.destroy()
             proc.waitFor()
+            Log.info("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
             Pair(output, proc.exitValue())
         }
     }
     catch (e: IOException) {
+        Log.info(e.message ?: "Unknown IOException occurred")
         if (!returnExceptionMessage) {
             Pair(null, -1) // Don't print the stacktrace because that is confusing.
         }
@@ -94,6 +100,7 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
         }
     }
     catch (e: ProcessNotCreatedException) {
+        Log.info(e.message ?: "Unknown ProcessNotCreatedException occurred")
         // e.g. if the command is just trying if a program can be run or not, and it's not the case
         if (!returnExceptionMessage) {
             Pair(null, -1)

@@ -31,6 +31,11 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
      */
     @JvmField var INDENT_SECTIONS = false
 
+    /**
+     * Indent the document environment as a normal environment.
+     */
+    @JvmField var INDENT_DOCUMENT_ENVIRONMENT = true
+
     companion object {
 
         val blankLinesOptions = mapOf(

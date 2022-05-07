@@ -8,11 +8,10 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.util.prevLeaf
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import java.lang.Integer.max
@@ -141,8 +140,13 @@ class LatexBlock(
     }
 
     override fun getIndent(): Indent? {
-        if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT ||
-            myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
+        val shouldIndentDocumentEnvironment = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
+        val shouldIndentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT && ((myNode.psi as LatexEnvironmentContent)
+            .firstParentOfType(LatexEnvironment::class)
+            ?.firstChildOfType(LatexBeginCommand::class)
+            ?.firstChildOfType(LatexParameterText::class)?.text != "document" || shouldIndentDocumentEnvironment)
+
+        if (shouldIndentEnvironment || myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
             // Fix for leading comments inside an environment, because somehow they are not placed inside environments.
             // Note that this does not help to insert the indentation, but at least the indent is not removed
             // when formatting.
