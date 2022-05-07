@@ -16,14 +16,10 @@ class ExternalLibraryManager : PersistentStateComponent<ExternalLibraryState> {
     }
 //    data class ExternalLibraryState(var libraries: Map<String, LibraryItems>)
 
-    data class LibraryItems(
-        val items: List<BibtexEntry> = emptyList()
-    )
-
 //    @JvmField
 //    @OptionTag(converter = BibtexEntryListConverter::class)
-//    var libraries: MutableMap<String, List<BibtexEntry>> = mutableMapOf()
-    var libraries: Boolean = false
+    var libraries: List<BibtexEntry> = listOf()
+//    var libraries: Int = 0
 
     override fun getState(): ExternalLibraryState {
 //        return ExternalLibraryState(libraries.mapValues { LibraryItems(it.value) })
@@ -38,7 +34,7 @@ class ExternalLibraryManager : PersistentStateComponent<ExternalLibraryState> {
     }
 
     fun updateLibrary(library: ExternalBibLibrary, bibItems: List<BibtexEntry>) {
-        libraries = true
-//        libraries[library.name] = bibItems
+//        libraries += bibItems.size
+        libraries = bibItems
     }
 }

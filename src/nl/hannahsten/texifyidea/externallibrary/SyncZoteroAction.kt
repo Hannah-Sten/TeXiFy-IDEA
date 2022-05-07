@@ -12,15 +12,15 @@ class SyncZoteroAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-//        ApplicationManager.getApplication().invokeLater {
-//            CoroutineScope(Dispatchers.EDT).launch {
+        ApplicationManager.getApplication().invokeLater {
+            CoroutineScope(Dispatchers.Default).launch {
                 val zotero = ZoteroLibrary()
-//                val bibItems = zotero.getCollection(project)
-                ExternalLibraryManager.getInstance().updateLibrary(zotero, emptyList())
-//                ExternalLibraryManager.getInstance().updateLibrary(zotero, bibItems)
+                val bibItems = zotero.getCollection(project)
+//                ExternalLibraryManager.getInstance().updateLibrary(zotero, emptyList())
+                ExternalLibraryManager.getInstance().updateLibrary(zotero, bibItems)
 //                ApplicationManager.getApplication().getComponent(ExternalLibraryManager::class.java).updateLibrary(zotero, bibItems)
 //                project.service<ExternalLibraryManager>().updateLibrary(zotero, bibItems)
-//            }
-//        }
+            }
+        }
     }
 }
