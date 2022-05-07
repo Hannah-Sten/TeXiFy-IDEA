@@ -9,13 +9,15 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parentOfType
@@ -36,6 +38,11 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         val IGNORED_COMMANDS = setOf(
             "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\Cref", "\\cpageref", "\\autoref", "\\citeauthor", "\\textcite", "\\Textcite"
         )
+
+        /**
+         * Commands redefined by cleveref, such that no non-breaking space is needed anymore.
+         */
+        val CLEVEREF_REDEFINITIONS = setOf(THREF, VREF, VREFRANGE, FULLREF).map { it.commandWithSlash }
     }
 
     override val inspectionGroup = InsightGroup.LATEX
@@ -48,6 +55,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
+        val isCleverefLoaded = file.includedPackages().contains(LatexPackage.CLEVEREF)
 
         val commands = file.commandsInFile()
         for (command in commands) {
@@ -56,6 +64,9 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
             // Don't consider certain commands.
             if (command.name in IGNORED_COMMANDS) continue
+
+            // Don't out-clever cleveref
+            if (isCleverefLoaded && command.name in CLEVEREF_REDEFINITIONS) continue
 
             // Get the NORMAL_TEXT in front of the command.
             val sibling = command.prevSibling
@@ -113,21 +124,4 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         }
     }
 
-    /**
-     * Replaces the ending of [LatexNormalText] element with `~`.
-     *
-     * @author Hannah Schellekens
-     */
-    private class TextReplacementFix : LocalQuickFix {
-
-        override fun getFamilyName() = "Insert non-breaking space"
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val command = descriptor.psiElement as LatexCommands
-            val file = command.containingFile
-            val document = file.document() ?: return
-
-            document.insertString(command.textOffset, "~")
-        }
-    }
 }
