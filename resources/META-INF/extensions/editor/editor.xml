@@ -21,7 +21,7 @@
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInCommentHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexParameterInfoHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexTypedHandler"/>
         <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInEnumerationHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>
