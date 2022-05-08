@@ -44,10 +44,10 @@ abstract class AliasManager {
 
     /**
      * We have to somehow know when we need to look for new aliases.
-     * We do this by keeping a count of the number of \newcommand-like commands in the index,
+     * We do this by keeping track of the \newcommand-like commands in the index,
      * and when this changes we go gather new aliases.
      */
-    open var numberOfIndexedCommandDefinitions = 0
+    open var indexedCommandDefinitions = setOf<LatexCommands>()
 
     /**
      * Register a new item, which creates a new alias set.
@@ -137,8 +137,10 @@ abstract class AliasManager {
         // Uses projectScope now, may be improved to filesetscope
         val indexedCommandDefinitions = LatexDefinitionIndex.getItems(project)
 
+        // Check if something has changed (the number of indexed command might be the same while the content is different), and if so, update the aliases.
         // Also do this the first time something is registered, because then we have to update aliases as well
-        if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size || wasRegistered) {
+        val hasNotChanged = this.indexedCommandDefinitions.containsAll(indexedCommandDefinitions) && indexedCommandDefinitions.containsAll(this.indexedCommandDefinitions)
+        if (!hasNotChanged || wasRegistered) {
             // Update everything, since it is difficult to know beforehand what aliases could be added or not
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
             // requested alias set (otherwise only the first alias set requesting an update will get it)
@@ -150,7 +152,7 @@ abstract class AliasManager {
                 }
             }
 
-            numberOfIndexedCommandDefinitions = indexedCommandDefinitions.size
+            this.indexedCommandDefinitions = indexedCommandDefinitions.toSet()
         }
     }
 
