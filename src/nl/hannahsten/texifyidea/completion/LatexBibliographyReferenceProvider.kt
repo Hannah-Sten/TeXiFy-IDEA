@@ -18,17 +18,23 @@ import java.util.*
 object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-        val remoteEntries = RemoteLibraryManager.getInstance().libraries.flatMap { it.value }
         val localEntries = parameters.originalFile.findBibtexItems()
+        val remoteEntries = RemoteLibraryManager.getInstance().libraries
+            .flatMap { it.value }
+            .toSet()
+            // Filter ids that are already included in the local bib entries.
+            .filter { it.id !in localEntries.filterIsInstance<BibtexEntry>().map { bib -> bib.id } }
 
-        val lookupItems = (localEntries + remoteEntries)
-            .mapNotNull { bibtexEntry ->
+        val lookupItems = localEntries.mapNotNull { bibtexEntry ->
                 when (bibtexEntry) {
                     is BibtexEntry -> createLookupElementFromBibtexEntry(bibtexEntry)
                     is LatexCommands -> createLookupElementFromLatexCommand(bibtexEntry)
                     else -> null
                 }
             }
+
+        val lookupItemsFromRemote = remoteEntries.map { createLookupElementFromBibtexEntry(it, true) }
+
         val before = result.prefixMatcher.prefix
         val prefix =
             if (before.contains(',')) {
@@ -37,17 +43,17 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
             else {
                 before
             }
-        result.withPrefixMatcher(CamelHumpMatcher(prefix, false)).addAllElements(lookupItems)
+        result.withPrefixMatcher(CamelHumpMatcher(prefix, false)).addAllElements(lookupItems + lookupItemsFromRemote)
     }
 
-    private fun createLookupElementFromBibtexEntry(bibtexEntry: BibtexEntry): LookupElementBuilder {
+    private fun createLookupElementFromBibtexEntry(bibtexEntry: BibtexEntry, remote: Boolean = false): LookupElementBuilder {
         val lookupStrings = LinkedList(bibtexEntry.authors)
         lookupStrings.add(bibtexEntry.title)
         return LookupElementBuilder.create(bibtexEntry.identifier)
             .withPsiElement(bibtexEntry.id)
             .withPresentableText(bibtexEntry.title)
             .bold()
-            .withInsertHandler(LatexReferenceInsertHandler())
+            .withInsertHandler(LatexReferenceInsertHandler(remote, if (remote) bibtexEntry else null))
             .withLookupStrings(lookupStrings)
             .withTypeText(
                 bibtexEntry.identifier,
