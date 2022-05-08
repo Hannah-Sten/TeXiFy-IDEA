@@ -1,7 +1,8 @@
-package nl.hannahsten.texifyidea.highlighting
+package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
+import com.intellij.grazie.utils.orFalse
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileTypes.FileType
@@ -10,11 +11,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.inVerbatim
 
 /**
  * @author Sten Wessel
@@ -61,8 +65,9 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     }
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        if (file is LatexFile) {
-            if (c == '$' && getInstance().automaticSecondInlineMathSymbol) {
+        if (file is LatexFile && !getElementAtCaret(editor)?.inVerbatim().orFalse()) {
+            val dollarSign = LatexGenericRegularCommand.DOLLAR_SIGN.command.toCharArray().first()
+            if (c == dollarSign && getInstance().automaticSecondInlineMathSymbol) {
                 val tokenType = getTypedTokenType(editor)
                 if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN && tokenType !== LatexTypes.INLINE_MATH_END) {
                     editor.document.insertString(
