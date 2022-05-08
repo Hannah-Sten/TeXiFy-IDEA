@@ -2,5 +2,11 @@
 
 ### Additions
 * Replace non-ascii characters when generating a label name. (#2360)
+* Improve performance of inspections and formatting. (#2344)
+* Disable some autocompletion related to inline math in verbatim environments. (#2362)
+* Add command line arguments for makeindex run config. (#2363)
+* Improve latex3 syntax highlighting
 
 ### Bug fixes
+* Fix false positive inspection when using cleveref with varioref. (#2361)
+* Fix macro resolving for auxiliary path of run config. (#2365)
