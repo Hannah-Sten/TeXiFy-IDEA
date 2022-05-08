@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.4.0"
+    id("org.jetbrains.intellij") version "1.5.3"
     kotlin("jvm") version("1.6.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
@@ -14,13 +14,13 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.0.2"
+    id("de.undercouch.download") version "5.1.0"
 
     // Test coverage
     jacoco
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
+    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 }
 
 group = "nl.hannahsten"
@@ -75,7 +75,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.1")
-    implementation("org.slf4j:slf4j-simple:2.0.0-alpha6")
+    implementation("org.slf4j:slf4j-simple:2.0.0-alpha7")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
@@ -83,15 +83,15 @@ dependencies {
     implementation("org.codehaus.plexus:plexus-archiver:4.2.7")
 
     // Parsing json
-    implementation("com.beust:klaxon:5.5")
+    implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:3.8.4")
+    implementation("org.apache.maven:maven-artifact:3.8.5")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
@@ -160,7 +160,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2021.3.2")
+    version.set("2022.1")
 //    version.set("221.3427.89-EAP-SNAPSHOT")
 //    type = "PY"
 
