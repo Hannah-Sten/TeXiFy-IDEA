@@ -10,8 +10,10 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NTHEOREM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.VARIOREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 
 /**
@@ -366,6 +368,7 @@ enum class LatexGenericRegularCommand(
     THICKLINES("thicklines"),
     THINLINES("thinlines"),
     THISPAGESTYLE("thispagestyle", "style".asRequired()),
+    THREF("thref", "label".asRequired(), dependency = NTHEOREM),
     TIME("time"),
     TINY("tiny"),
     TITLE("title", "text".asRequired(Argument.Type.TEXT)),
@@ -385,7 +388,8 @@ enum class LatexGenericRegularCommand(
     USETIKZLIBRARY("usetikzlibrary", "libraries".asRequired()),
     VDOTS("vdots", display = "⋮"),
     VLINE("vline"),
-    VREF("vref", "key".asRequired(), dependency = CLEVEREF),
+    VREF("vref", "key".asRequired(), dependency = VARIOREF),
+    VREFRANGE("vrefrange", "start".asRequired(), "end".asRequired(), "text".asOptional(), dependency = VARIOREF),
     VSPACE("vspace", "length".asRequired()),
     VSPACE_STAR("vspace*", "length".asRequired()),
     WIDTH("width"),
