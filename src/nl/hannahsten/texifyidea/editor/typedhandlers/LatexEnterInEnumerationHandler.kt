@@ -3,6 +3,9 @@ package nl.hannahsten.texifyidea.editor.typedhandlers
 import com.intellij.codeInsight.editorActions.AutoHardWrapHandler
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
+import com.intellij.codeInsight.template.TemplateManager
+import com.intellij.codeInsight.template.impl.TemplateImpl
+import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
@@ -42,11 +45,20 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset)
         if (hasValidContext(element)) {
-            editor.insertAndMove(caret.offset, getInsertionString(element!!))
+            val previousMarker = getPreviousMarker(element!!)
+            if (previousMarker == null) {
+                editor.insertAtCaretAndMove( "\\item ")
+            }
+            else {
+                // Use live template, so that the user can choose to replace the label and press enter to jump out of the optional argument
+                val template = TemplateImpl("", "\\item[\$__Variable0\$] ", "")
+                template.addVariable(TextExpression(previousMarker.trim('[', ']')), true)
+                TemplateManager.getInstance(file.project).startTemplate(editor, template)
+            }
         }
         else {
             if (ControlTracker.isControlPressed) {
-                editor.insertAndMove(caret.offset, "")
+                editor.insertAtCaretAndMove( "")
             }
         }
 
@@ -59,14 +71,6 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         p5: EditorActionHandler?
     ): Result {
         return Result.Continue
-    }
-
-    /**
-     * Get the string that must be inserted at the caret.
-     */
-    private fun getInsertionString(element: PsiElement): String {
-        val marker = getPreviousMarker(element)
-        return "\\item" + if (marker == null) " " else "$marker "
     }
 
     /**
