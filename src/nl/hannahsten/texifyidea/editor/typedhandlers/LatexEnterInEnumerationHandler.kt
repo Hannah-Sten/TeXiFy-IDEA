@@ -47,7 +47,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         if (hasValidContext(element)) {
             val previousMarker = getPreviousMarker(element!!)
             if (previousMarker == null) {
-                editor.insertAtCaretAndMove( "\\item ")
+                editor.insertAtCaretAndMove("\\item ")
             }
             else {
                 // Use live template, so that the user can choose to replace the label and press enter to jump out of the optional argument
@@ -58,7 +58,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         }
         else {
             if (ControlTracker.isControlPressed) {
-                editor.insertAtCaretAndMove( "")
+                editor.insertAtCaretAndMove("")
             }
         }
 
