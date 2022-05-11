@@ -6,6 +6,7 @@
 * Disable some autocompletion related to inline math in verbatim environments. (#2362)
 * Add command line arguments for makeindex run config. (#2363)
 * Improve latex3 syntax highlighting
+* Improve completion in itemize. (#2368)
 
 ### Bug fixes
 * Fix false positive inspection when using cleveref with varioref. (#2361)
