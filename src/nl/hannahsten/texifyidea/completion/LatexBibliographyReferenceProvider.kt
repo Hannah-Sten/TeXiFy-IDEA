@@ -9,7 +9,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
-import nl.hannahsten.texifyidea.externallibrary.RemoteLibraryManager
+import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.labels.findBibtexItems

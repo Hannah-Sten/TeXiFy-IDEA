@@ -39,7 +39,7 @@
 
             <separator/>
             
-            <action class="nl.hannahsten.texifyidea.externallibrary.SyncZoteroAction" id="texify.zotero.Sync"
+            <action class="nl.hannahsten.texifyidea.remotelibraries.SyncZoteroAction" id="texify.zotero.Sync"
                     text="Sync Zotero Reference Manager"/>
         </group>
     </actions>

@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.externallibrary
+package nl.hannahsten.texifyidea.remotelibraries
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project

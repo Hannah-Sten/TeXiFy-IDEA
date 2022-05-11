@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.externallibrary
+package nl.hannahsten.texifyidea.remotelibraries
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser

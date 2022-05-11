@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.externallibrary
+package nl.hannahsten.texifyidea.remotelibraries
 
 import com.intellij.util.xmlb.annotations.OptionTag
 import nl.hannahsten.texifyidea.psi.BibtexEntry
