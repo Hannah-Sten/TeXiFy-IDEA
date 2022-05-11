@@ -1,24 +1,20 @@
 package nl.hannahsten.texifyidea.ui
 
+import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.psi.codeStyle.extractor.ui.ExtractedSettingsDialog.CellRenderer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.treeStructure.Tree
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.hasLatexModule
-import java.awt.Component
-import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.TreeCellRenderer
 
 class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
@@ -42,8 +38,13 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         val library = RemoteLibraryManager.getInstance().libraries.toMap().entries.first()
 
         val treeNode = DefaultMutableTreeNode(library.key).apply {
-            library.value.forEach {
-                add(DefaultMutableTreeNode(it))
+            library.value.forEach { entry ->
+                val entryElement = BibtexStructureViewEntryElement(entry)
+                val entryNode = DefaultMutableTreeNode(entryElement)
+                add(entryNode)
+                entryElement.children.forEach {
+                    entryNode.add(DefaultMutableTreeNode(it))
+                }
             }
         }
 
@@ -51,17 +52,17 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
             setCellRenderer { tree, value, selected, expanded, leaf, row, hasFocus ->
                 panel { row {
                     when(val userObject = (value as DefaultMutableTreeNode).userObject) {
-                        is BibtexEntry -> {
-                            val presentation = BibtexStructureViewEntryElement(userObject).presentation
-                            icon(presentation.getIcon(true)!!)
-                            label(presentation.presentableText!!)
-                            label(presentation.locationString!!)
+                        is StructureViewTreeElement -> {
+                            icon(userObject.presentation.getIcon(true)!!)
+                            label(userObject.presentation.presentableText!!)
+                            label(userObject.presentation.locationString!!)
                         }
                         else -> label(value.toString())
                     }
                 }}
             }
         }
+
         val content = JBScrollPane(tree)
     }
 
