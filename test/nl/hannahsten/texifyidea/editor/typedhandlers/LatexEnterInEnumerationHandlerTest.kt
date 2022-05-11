@@ -40,7 +40,7 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
                     \item[foobar:]
                     \item[barfoo:]
                 \end{labeling} 
-                \item[whoo] <caret>
+                \item[whoo] 
             \end{enumerate}
         """.trimIndent())
     }
