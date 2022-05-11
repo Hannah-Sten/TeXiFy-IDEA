@@ -5,6 +5,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.util.runCommand
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.errors.NoReply
 import org.freedesktop.dbus.errors.ServiceUnknown
@@ -67,7 +68,8 @@ object EvinceConversation : ViewerConversation() {
             // Theoretically we should use the Java D-Bus bindings as well to call SyncView, but that did
             // not succeed with a NoReply exception, so we will execute a command via the shell
             val command = "gdbus call --session --dest $processOwner --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView $sourceFilePath '($line, 1)' 0"
-            Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
+            runCommand("bash", "-c", command)
+
             // The above process will only exit when the document is closed
             return 0
         }

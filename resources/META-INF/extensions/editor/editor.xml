@@ -6,6 +6,7 @@
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEscapedSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCustomFoldingBuilder"/>
         <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.folding.BibtexEntryFoldingBuilder"/>
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
@@ -20,7 +21,7 @@
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInCommentHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexParameterInfoHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexTypedHandler"/>
         <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInEnumerationHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>

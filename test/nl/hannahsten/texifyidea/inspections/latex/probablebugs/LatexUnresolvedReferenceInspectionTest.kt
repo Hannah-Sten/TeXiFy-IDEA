@@ -48,8 +48,8 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.configureByText(
             LatexFileType,
             """
-            \newcommand{\mylabel}[1]{\label{#1}}
-            \section{some sec}\mylabel{some-sec}
+            \newcommand{\mylabell}[1]{\label{#1}}
+            \section{some sec}\mylabell{some-sec}
             ~\ref{some-sec}
             """.trimIndent()
         )

@@ -45,9 +45,11 @@ interface LatexCommand : Described, Dependend {
         fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
             // Don't try to access index when in dumb mode
             if (DumbService.isDumb(project)) return emptySet()
-
-            val cmds = mutableSetOf<LatexCommand>()
             val cmdWithSlash = "\\$cmdWithoutSlash"
+
+            // Make sure to look up the hardcoded commands, to have something in case nothing is found in the index
+            val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
+
             // Look up in index
             FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
                 val dependency = LatexPackage.create(file)

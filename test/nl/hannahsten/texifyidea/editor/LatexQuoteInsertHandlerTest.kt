@@ -11,6 +11,10 @@ class LatexQuoteInsertHandlerTest : BasePlatformTestCase() {
         TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.CSQUOTES
         myFixture.type("\"")
         myFixture.checkResult("""\usepackage{csquotes}Typing \enquote{<caret>} test""")
+    }
+    fun testCsquotes2() {
+        myFixture.configureByText(LatexFileType, """\usepackage{csquotes}Typing \enquote{<caret>} test""")
+        TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.CSQUOTES
         myFixture.type("quote\"")
         myFixture.checkResult("""\usepackage{csquotes}Typing \enquote{quote}<caret> test""")
     }

@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.ExecutionException
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -77,9 +79,14 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
 /**
  * Get optional parameters of the \makeindex command. If an option key does not have a value it will map to the empty string.
  */
-fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): HashMap<String, String> {
+fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): Map<String, String> {
     return runReadAction {
-        val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
+        val mainPsiFile = mainFile?.psiFile(project)
+        if (mainPsiFile == null) {
+            Notification("LaTeX", "Could not find main file ${mainFile?.path}", "Please make sure the main file exists.", NotificationType.ERROR).notify(project)
+            return@runReadAction mapOf<String, String>()
+        }
+
         val makeindexOptions = HashMap<String, String>()
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text == "\\makeindex" }

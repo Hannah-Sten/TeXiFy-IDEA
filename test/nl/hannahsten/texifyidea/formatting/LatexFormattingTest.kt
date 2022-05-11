@@ -5,6 +5,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexFormattingTest : BasePlatformTestCase() {
@@ -234,6 +235,43 @@ fun Int?.ifPositiveAddTwo(): Int =
                 \sectionlorem{Title}{sec:label}
             \end{document}
         """.trimIndent()
+    }
+
+    fun `test indentation of environments`() {
+        val text = """
+            \begin{document}
+            Don't indent this if turned off.
+            \begin{some-env}
+            Indent this.
+            \end{some-env}
+            \end{document}
+        """.trimIndent()
+        val file = myFixture.configureByText(LatexFileType, text)
+        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT = false
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+
+        val expected = """
+            \begin{document}
+            Don't indent this if turned off.
+            \begin{some-env}
+                Indent this.
+            \end{some-env}
+            \end{document}
+        """.trimIndent()
+        myFixture.checkResult(expected)
+
+        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT = true
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+
+        val expected2 = """
+            \begin{document}
+                Don't indent this if turned off.
+                \begin{some-env}
+                    Indent this.
+                \end{some-env}
+            \end{document}
+        """.trimIndent()
+        myFixture.checkResult(expected2)
     }
 
     fun testComments() {

@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.reference.InputFileReference
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameters
 import javax.swing.Icon
@@ -59,14 +60,20 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // Gutter requires a smaller icon per IJ SDK docs.
         val icon = TexifyIcons.getIconFromExtension(extension, smaller = true)
 
-        val builder = NavigationGutterIconBuilder
-                .create(icon)
-                .setTargets(files)
-                .setPopupTitle("Navigate to Referenced File")
-                .setTooltipText("Go to referenced file")
-                .setCellRenderer { GotoFileCellRenderer(0) }
+        try {
+            val builder = NavigationGutterIconBuilder
+                    .create(icon)
+                    .setTargets(files)
+                    .setPopupTitle("Navigate to Referenced File")
+                    .setTooltipText("Go to referenced file")
+                    .setCellRenderer { GotoFileCellRenderer(0) }
 
-        result.add(builder.createLineMarkerInfo(element))
+            result.add(builder.createLineMarkerInfo(element))
+        }
+        catch (e: NoSuchMethodError) {
+            // I have no idea what could lead to the setCellRenderer method not existing, as it almost always exists, but in April 2022 there are suddenly 10 reports in which it doesn't.
+            Log.warn(e.message ?: "NoSuchMethodError in LatexNavigationGutter")
+        }
     }
 
     override fun getName(): String {

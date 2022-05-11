@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.nio.file.InvalidPathException
 import java.nio.file.Paths
 
@@ -16,7 +17,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
     companion object {
 
         // Cache version
-        var version: String? = null
+        var version: DefaultArtifactVersion? = null
     }
 
     override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
@@ -63,17 +64,18 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         return LatexSdkUtil.isPdflatexPresent(directory, errorMessage, name, suppressNotification = suggestHomePaths().plus(suggestHomePath()))
     }
 
-    override fun getVersionString(sdk: Sdk): String? {
+    override fun getVersionString(sdk: Sdk): String {
         return getVersionString(sdk.homePath)
     }
 
-    override fun getVersionString(sdkHome: String?): String? {
-        version?.let { return version }
+    override fun getVersionString(sdkHome: String?) = "MiKTeX " + getVersion(sdkHome).toString()
 
+    fun getVersion(sdkHome: String?): DefaultArtifactVersion {
+        version?.let { return it }
         val executable = sdkHome?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
         val output = "$executable --version".runCommand() ?: ""
-        version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
-
-        return version
+        val versionString = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.groups?.get(1)?.value ?: ""
+        version = DefaultArtifactVersion(versionString)
+        return version!!
     }
 }

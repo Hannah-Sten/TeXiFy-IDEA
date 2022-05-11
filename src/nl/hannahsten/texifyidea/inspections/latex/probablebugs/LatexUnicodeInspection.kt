@@ -22,11 +22,13 @@ import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
+import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.selectedRunConfig
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -66,7 +68,9 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         internal fun unicodeEnabled(file: PsiFile): Boolean {
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
             val compilerCompat = file.project.selectedRunConfig()?.let { it.options.compiler }
-            if (compilerCompat?.supportsUnicode == true || TexliveSdk.version >= 2018) {
+            if (compilerCompat?.supportsUnicode == true ||
+                TexliveSdk.version >= 2018  ||
+                MiktexWindowsSdk().getVersion(null) >= DefaultArtifactVersion("2.9.7350")) {
                 return true
             }
 
