@@ -1,7 +1,13 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.projectRoots.AdditionalDataConfigurable
+import com.intellij.openapi.projectRoots.SdkAdditionalData
+import com.intellij.openapi.projectRoots.SdkModel
+import com.intellij.openapi.projectRoots.SdkModificator
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import org.jdom.Element
 
 class DockerSdk : LatexSdk("LaTeX Docker SDK") {
 
@@ -55,4 +61,32 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         // Could be improved by prefixing docker command here, but needs to be in sync with LatexCompiler
         return executable
     }
+
+    override fun getHomeChooserDescriptor(): FileChooserDescriptor {
+        val descriptor = super.getHomeChooserDescriptor()
+        descriptor.title = "Select the Directory Containing the Docker Executable"
+        return descriptor
+    }
+
+    override fun getHomeFieldLabel() = "Path to directory containing Docker executable:"
+
+    override fun getInvalidHomeMessage(path: String): String {
+        return "Could not find docker executable $path/docker"
+    }
+
+    override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator): AdditionalDataConfigurable {
+        return DockerSdkConfigurable()
+    }
+
+    override fun saveAdditionalData(additionalData: SdkAdditionalData, additional: Element) {
+        if (additionalData is DockerSdkAdditionalData) {
+            additionalData.save(additional)
+        }
+    }
+
+    override fun loadAdditionalData(additional: Element): SdkAdditionalData {
+        return DockerSdkAdditionalData(additional)
+    }
+
+    // todo override showCustomCreateUI to let user choose image name instead of home path?
 }
