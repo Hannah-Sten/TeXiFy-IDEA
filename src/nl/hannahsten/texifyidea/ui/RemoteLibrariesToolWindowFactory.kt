@@ -7,6 +7,8 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
+import com.intellij.ui.dsl.builder.RightGap
+import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.treeStructure.Tree
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -34,32 +36,44 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         }
 
 
-    class RemoteLibrariesToolWindow(val project: Project)  {
-        val library = RemoteLibraryManager.getInstance().libraries.toMap().entries.first()
+    class RemoteLibrariesToolWindow(val project: Project) {
 
-        val treeNode = DefaultMutableTreeNode(library.key).apply {
-            library.value.forEach { entry ->
-                val entryElement = BibtexStructureViewEntryElement(entry)
-                val entryNode = DefaultMutableTreeNode(entryElement)
-                add(entryNode)
-                entryElement.children.forEach {
-                    entryNode.add(DefaultMutableTreeNode(it))
+        val libraries = RemoteLibraryManager.getInstance().libraries.toMap().entries
+
+        val rootNode = DefaultMutableTreeNode().apply {
+            libraries.forEach { library ->
+                val treeNode = DefaultMutableTreeNode(library.key).apply {
+                    library.value.forEach { entry ->
+                        val entryElement = BibtexStructureViewEntryElement(entry)
+                        val entryNode = DefaultMutableTreeNode(entryElement)
+                        add(entryNode)
+                        entryElement.children.forEach {
+                            entryNode.add(DefaultMutableTreeNode(it))
+                        }
+                    }
                 }
+
+                add(treeNode)
             }
         }
 
-        val tree = Tree(treeNode).apply {
+
+        val tree = Tree(rootNode).apply {
+            isRootVisible = false
+
             setCellRenderer { tree, value, selected, expanded, leaf, row, hasFocus ->
-                panel { row {
-                    when(val userObject = (value as DefaultMutableTreeNode).userObject) {
-                        is StructureViewTreeElement -> {
-                            icon(userObject.presentation.getIcon(true)!!)
-                            label(userObject.presentation.presentableText!!)
-                            label(userObject.presentation.locationString!!)
+                panel {
+                    row {
+                        when (val userObject = (value as DefaultMutableTreeNode).userObject) {
+                            is StructureViewTreeElement -> {
+                                icon(userObject.presentation.getIcon(true)!!).gap(RightGap.SMALL)
+                                label(userObject.presentation.presentableText!!).gap(RightGap.SMALL)
+                                label(userObject.presentation.locationString!!)
+                            }
+                            else -> label(value.toString())
                         }
-                        else -> label(value.toString())
-                    }
-                }}
+                    }.layout(RowLayout.LABEL_ALIGNED)
+                }
             }
         }
 
