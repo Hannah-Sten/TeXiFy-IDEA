@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.structure.bibtex
 
+import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
@@ -16,7 +17,7 @@ import java.util.*
  */
 open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureViewTreeElement, SortableTreeElement {
 
-    private val entryPresentation: ItemPresentation = object : ItemPresentation {
+    private val entryPresentation: PresentationData = object : PresentationData() {
 
         override fun getLocationString() = when (entry.tokenName()?.lowercase(Locale.getDefault())) {
             "string" -> entry.tags().first().content?.text.orEmpty()

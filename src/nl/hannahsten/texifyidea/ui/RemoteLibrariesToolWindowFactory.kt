@@ -1,15 +1,13 @@
 package nl.hannahsten.texifyidea.ui
 
-import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.util.treeView.NodeRenderer
+import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
-import com.intellij.ui.dsl.builder.RightGap
-import com.intellij.ui.dsl.builder.RowLayout
-import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.treeStructure.Tree
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
@@ -57,23 +55,18 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
             }
         }
 
-
         val tree = Tree(rootNode).apply {
             isRootVisible = false
 
-            setCellRenderer { tree, value, selected, expanded, leaf, row, hasFocus ->
-                panel {
-                    row {
-                        when (val userObject = (value as DefaultMutableTreeNode).userObject) {
-                            is StructureViewTreeElement -> {
-                                icon(userObject.presentation.getIcon(true)!!).gap(RightGap.SMALL)
-                                label(userObject.presentation.presentableText!!).gap(RightGap.SMALL)
-                                label(userObject.presentation.locationString!!)
-                            }
-                            else -> label(value.toString())
-                        }
-                    }.layout(RowLayout.LABEL_ALIGNED)
-                }
+            // Nodes in the tree of the structure view are rendered by NodeRenderer, which internally uses PresentationData
+            // (a subclass of ItemPresentation) to render a cell. We use the same renderer and presentation data here
+            // for consistency.
+            cellRenderer = object : NodeRenderer() {
+                // We cannot depend on the StructureView to resolve the presentation for us, so we have to manually point
+                // the renderer to our custom PresentationData (which we can reuse).
+                override fun getPresentation(node: Any?): ItemPresentation? =
+                    if (node is BibtexStructureViewEntryElement) node.presentation
+                    else super.getPresentation(node)
             }
         }
 
