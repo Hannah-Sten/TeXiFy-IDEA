@@ -12,6 +12,7 @@ import com.intellij.ui.treeStructure.Tree
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
+import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewTagElement
 import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.hasLatexModule
 import javax.swing.tree.DefaultMutableTreeNode
@@ -39,23 +40,28 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         val libraries = RemoteLibraryManager.getInstance().libraries.toMap().entries
 
         val rootNode = DefaultMutableTreeNode().apply {
+            // Add all the bib items for each library.
             libraries.forEach { library ->
-                val treeNode = DefaultMutableTreeNode(library.key).apply {
+                val libraryNode = DefaultMutableTreeNode(library.key).apply {
                     library.value.forEach { entry ->
                         val entryElement = BibtexStructureViewEntryElement(entry)
                         val entryNode = DefaultMutableTreeNode(entryElement)
                         add(entryNode)
+
+                        // Each bib item has tags that show information, e.g., the author.
                         entryElement.children.forEach {
                             entryNode.add(DefaultMutableTreeNode(it))
                         }
                     }
                 }
 
-                add(treeNode)
+                add(libraryNode)
             }
         }
 
         val tree = Tree(rootNode).apply {
+            // The root is an invisible dummy so multiple libraries can be shown in the tree alongside one another
+            // without a redundant (and annoying) root element.
             isRootVisible = false
 
             // Nodes in the tree of the structure view are rendered by NodeRenderer, which internally uses PresentationData
@@ -65,8 +71,11 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
                 // We cannot depend on the StructureView to resolve the presentation for us, so we have to manually point
                 // the renderer to our custom PresentationData (which we can reuse).
                 override fun getPresentation(node: Any?): ItemPresentation? =
-                    if (node is BibtexStructureViewEntryElement) node.presentation
-                    else super.getPresentation(node)
+                    when (node) {
+                        is BibtexStructureViewEntryElement -> node.presentation
+                        is BibtexStructureViewTagElement -> node.presentation
+                        else -> super.getPresentation(node)
+                    }
             }
         }
 
