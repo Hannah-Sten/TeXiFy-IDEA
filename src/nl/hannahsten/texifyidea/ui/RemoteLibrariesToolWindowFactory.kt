@@ -17,6 +17,11 @@ import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.hasLatexModule
 import javax.swing.tree.DefaultMutableTreeNode
 
+/**
+ * The remote libraries tool window shows an overview of all remote libraries a user has connected with.
+ *
+ * @author Abby Berkers
+ */
 class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -35,6 +40,10 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         }
 
 
+    /**
+     * The UI elements of the tool window. Most actual UI elements are taken from the structure view, with the aim of
+     * this tree looking the same as the one in the structure view.
+     */
     class RemoteLibrariesToolWindow(val project: Project) {
 
         val libraries = RemoteLibraryManager.getInstance().libraries.toMap().entries

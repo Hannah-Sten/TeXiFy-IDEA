@@ -4,6 +4,6 @@
                     id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg" order="before Detexify"/>
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
                     id="Detexify" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/search_13x13.svg"/>
-        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.RemoteLibrariesToolWindowFactory" id="Remote libraries" secondary="false" anchor="right"/>
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.RemoteLibrariesToolWindowFactory" id="Remote Libraries" secondary="false" anchor="right"/>
     </extensions>
 </idea-plugin>
