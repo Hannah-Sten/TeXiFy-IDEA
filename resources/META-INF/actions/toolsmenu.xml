@@ -38,9 +38,10 @@
                     text="Configure Inverse Search for Skim" description="Instructions for configuring inverse search."/>
 
             <separator/>
-            
+        </group>
+        <group id="texify.RemoteLibraries" text="_Remote Libraries">
             <action class="nl.hannahsten.texifyidea.remotelibraries.SyncZoteroAction" id="texify.zotero.Sync"
-                    text="Sync Zotero Reference Manager"/>
+                    text="Sync Zotero Reference Manager" icon="/nl/hannahsten/texifyidea/icons/symbols.svg"/>
         </group>
     </actions>
 </idea-plugin>

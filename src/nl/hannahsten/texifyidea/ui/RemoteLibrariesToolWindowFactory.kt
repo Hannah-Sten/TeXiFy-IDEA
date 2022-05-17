@@ -2,8 +2,13 @@ package nl.hannahsten.texifyidea.ui
 
 import com.intellij.ide.util.treeView.NodeRenderer
 import com.intellij.navigation.ItemPresentation
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
@@ -25,8 +30,8 @@ import javax.swing.tree.DefaultMutableTreeNode
 class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val librariesToolWindow = RemoteLibrariesToolWindow(project)
-        val content = ContentFactory.SERVICE.getInstance().createContent(librariesToolWindow.content, "", false)
+        val librariesToolWindow = RemoteLibrariesToolWindowPanel(project)
+        val content = ContentFactory.SERVICE.getInstance().createContent(librariesToolWindow, "", false)
         toolWindow.contentManager.addContent(content)
     }
 
@@ -39,12 +44,35 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
             project.allFiles(LatexFileType).isNotEmpty()
         }
 
+    /**
+     * The tool window panel that contains the toolbar and the actual window (which is [RemoteLibraryToolWindow]).
+     */
+    class RemoteLibrariesToolWindowPanel(val project: Project) : SimpleToolWindowPanel(true, false) {
+
+        private val toolWindow = RemoteLibraryToolWindow(project)
+
+        init {
+            toolbar = toolWindow.toolbar.apply {
+                targetComponent = this@RemoteLibrariesToolWindowPanel
+            }.component
+
+            setContent(toolWindow.content)
+        }
+    }
 
     /**
-     * The UI elements of the tool window. Most actual UI elements are taken from the structure view, with the aim of
-     * this tree looking the same as the one in the structure view.
+     * The UI elements of the tool window contents. Most actual UI elements are taken from the structure view, with the
+     * aim of this tree looking the same as the one in the structure view.
      */
-    class RemoteLibrariesToolWindow(val project: Project) {
+    class RemoteLibraryToolWindow(val project: Project) {
+
+        private val actionManager: ActionManager = ActionManager.getInstance()
+
+        val toolbar = actionManager.createActionToolbar(
+            ActionPlaces.TOOLWINDOW_TOOLBAR_BAR,
+            actionManager.getAction("texify.RemoteLibraries") as ActionGroup,
+            true
+        )
 
         val libraries = RemoteLibraryManager.getInstance().libraries.toMap().entries
 
