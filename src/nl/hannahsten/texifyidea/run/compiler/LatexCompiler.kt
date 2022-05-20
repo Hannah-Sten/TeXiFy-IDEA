@@ -2,11 +2,14 @@ package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
@@ -344,8 +347,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         // See https://hub.docker.com/r/miktex/miktex
         "docker volume create --name miktex".runCommand()
 
+        // Find the sdk corresponding to the type the user has selected in the run config
+        val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull { it.sdkType is DockerSdk }
+
         val parameterList = mutableListOf(
-            "docker", // Could be improved by getting executable name based on SDK
+            if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),
             "run",
             "--rm",
             "-v",
@@ -364,7 +370,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()}:$dockerAuxilDir"))
         }
 
-        parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
+        parameterList.add((sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName ?: "miktex:latest")
 
         command.addAll(0, parameterList)
     }

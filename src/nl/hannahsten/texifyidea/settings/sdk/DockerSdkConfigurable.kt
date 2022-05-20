@@ -5,8 +5,9 @@ import com.intellij.openapi.projectRoots.AdditionalDataConfigurable
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.util.runCommand
+import java.awt.Dimension
 import java.awt.FlowLayout
-import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -18,26 +19,29 @@ import javax.swing.JPanel
 class DockerSdkConfigurable : AdditionalDataConfigurable {
 
     private var sdk: Sdk? = null
-    override fun setSdk(sdk: Sdk?) { this.sdk = sdk }
+    override fun setSdk(sdk: Sdk?) {
+        this.sdk = sdk
+    }
 
-    lateinit var imageName: ComboBox<String>
+    private lateinit var imageName: ComboBox<String>
 
     override fun createComponent(): JComponent {
+        // docker image ls --format 'table {{.Repository}}:{{.Tag}}'
+        val availableDockerImages = runCommand("docker", "image", "ls", "--format", "table {{.Repository}}:{{.Tag}}")?.split('\n')
+            ?.drop(1) // header
+            ?.filter { it.isNotBlank() } ?: emptyList()
+
+        imageName = ComboBox(availableDockerImages.toTypedArray())
+
+        // Set width
+        val longestString = availableDockerImages.maxByOrNull { it.length } ?: "miktex:latest"
+        val width = imageName.getFontMetrics(imageName.font)
+            .stringWidth(longestString)
+        imageName.preferredSize = Dimension(width, imageName.preferredSize.height)
+
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(
-                JPanel().apply {
-                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
-                    imageName = ComboBox(arrayOf("item1", "item2"))
-                    add(
-                        JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                            add(JBLabel("Docker image name: "))
-                            add(imageName)
-                        }
-                    )
-
-                }
-            )
+            add(JBLabel("Docker image name: "))
+            add(imageName)
         }
     }
 
