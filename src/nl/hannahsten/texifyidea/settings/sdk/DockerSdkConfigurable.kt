@@ -43,13 +43,21 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
 
     override fun isModified(): Boolean {
         val data = sdk?.sdkAdditionalData as? DockerSdkAdditionalData
-        return data?.imageName == this.imageName.selectedItem as? String
+        return data?.imageName != this.imageName.selectedItem as? String
     }
 
     override fun apply() {
         if (sdk == null) return
         val newData = DockerSdkAdditionalData(this.imageName.selectedItem as String)
-        sdk!!.sdkModificator.sdkAdditionalData = newData
-        ApplicationManager.getApplication().runWriteAction { sdk!!.sdkModificator.commitChanges() }
+        val modificator = sdk!!.sdkModificator
+        modificator.versionString = newData.imageName
+        modificator.sdkAdditionalData = newData
+        ApplicationManager.getApplication().runWriteAction { modificator.commitChanges() }
+    }
+
+    override fun reset() {
+        if (sdk == null) return
+        val data = sdk!!.sdkAdditionalData as? DockerSdkAdditionalData ?: return
+        imageName.selectedItem = data.imageName ?: return
     }
 }
