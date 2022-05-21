@@ -14,6 +14,7 @@ import org.jdom.Element
 class DockerSdkAdditionalData(val imageName: String?) : ValidatableSdkAdditionalData {
 
     companion object {
+
         private const val IMAGE = "image"
     }
 
