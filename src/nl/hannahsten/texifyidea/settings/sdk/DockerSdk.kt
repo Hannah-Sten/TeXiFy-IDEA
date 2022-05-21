@@ -94,15 +94,18 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         selectedSdk: Sdk?,
         sdkCreatedCallback: Consumer<in Sdk>
     ) {
-        val imagesComboBox = ComboBox(availableImages.toTypedArray())
+        val chooseImageComponent = DockerSdkConfigurable().createComponent()
+        val imagesComboBox = chooseImageComponent.components.filterIsInstance<ComboBox<String>>().firstOrNull()
         val dialog = DialogBuilder().apply {
             setTitle("Choose Docker Image")
-            setCenterPanel(
-                imagesComboBox // todo fix width
-            )
+            setCenterPanel(chooseImageComponent)
         }
         dialog.show()
-        val sdk = SdkConfigurationUtil.createSdk(sdkModel.sdks.toMutableList(), suggestHomePath(), this, DockerSdkAdditionalData(imagesComboBox.selectedItem as? String), "custom sdk suggested name") // todo
+
+        // Currently, we don't ask the user for this. See SdkConfigurationUtil.selectSdkHome
+        val homePath = suggestHomePath()
+
+        val sdk = SdkConfigurationUtil.createSdk(sdkModel.sdks.toMutableList(), homePath, this, DockerSdkAdditionalData(imagesComboBox?.selectedItem as? String), name)
         sdkCreatedCallback.consume(sdk)
     }
 }

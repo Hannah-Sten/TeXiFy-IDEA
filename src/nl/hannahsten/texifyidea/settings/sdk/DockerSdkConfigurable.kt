@@ -26,6 +26,13 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
 
     override fun createComponent(): JComponent {
         imageName = ComboBox(DockerSdk.availableImages.toTypedArray())
+        val selected = (sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName
+        if (selected != null) {
+            imageName.selectedItem = selected
+        }
+        else {
+            imageName.selectedIndex = 0
+        }
 
         // Set width
         val longestString = DockerSdk.availableImages.maxByOrNull { it.length } ?: "miktex:latest"
