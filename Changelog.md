@@ -11,3 +11,5 @@
 ### Bug fixes
 * Fix false positive inspection when using cleveref with varioref. (#2361)
 * Fix macro resolving for auxiliary path of run config. (#2365)
+* Fix parse error on partial environment definitions using \pretitle \and \posttitle. (#2372)
+* Fix bug in text detection for Grazie inspections. (#2375)
