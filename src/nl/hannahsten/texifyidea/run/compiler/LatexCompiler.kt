@@ -367,7 +367,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         if (runConfig.auxilPath.getAndCreatePath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()}:$dockerAuxilDir"))
+            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()?.path}:$dockerAuxilDir"))
         }
 
         parameterList.add((sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName ?: "miktex:latest")

@@ -91,7 +91,8 @@ object LatexSdkUtil {
      *
      * @param errorMessage Message to show to the user when directory is null. If this is null, no notification will be shown.
      * @param suppressNotification If the directory is one of these, then don't send an error message (for example because it
-     * may be a directory that is automatically attempted in the background, so we don't need to give user feedback). todo give user feedback by overriding getInvalidHomeMessage in sdk type
+     * may be a directory that is automatically attempted in the background, so we don't need to give user feedback).
+     * todo give user feedback by overriding getInvalidHomeMessage in sdk type
      */
     fun isPdflatexPresent(directory: String?, errorMessage: String?, sdkName: String, suppressNotification: Collection<String?>): Boolean {
         val output = if (directory == null) {
