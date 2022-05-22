@@ -70,7 +70,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
         val toolbar = actionManager.createActionToolbar(
             ActionPlaces.TOOLWINDOW_TOOLBAR_BAR,
-            actionManager.getAction("texify.RemoteLibraries") as ActionGroup,
+            actionManager.getAction("texify.remotelibraries") as ActionGroup,
             true
         )
 
@@ -106,7 +106,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
             // for consistency.
             cellRenderer = object : NodeRenderer() {
                 // We cannot depend on the StructureView to resolve the presentation for us, so we have to manually point
-                // the renderer to our custom PresentationData (which we can reuse).
+                // the renderer to our custom PresentationData (which we can reuse from the structure view's elements).
                 override fun getPresentation(node: Any?): ItemPresentation? =
                     when (node) {
                         is BibtexStructureViewEntryElement -> node.presentation

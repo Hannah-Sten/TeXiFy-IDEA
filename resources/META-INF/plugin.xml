@@ -85,15 +85,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Other inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
-<!--        <projectService serviceImplementation="nl.hannahsten.texifyidea.remotelibraries.ExternalLibraryManager"/>-->
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager"/>
     </extensions>
-
-<!--    <application-components>-->
-<!--        <component>-->
-<!--            <implementation-class>nl.hannahsten.texifyidea.remotelibraries.ExternalLibraryManager</implementation-class>-->
-<!--        </component>-->
-<!--    </application-components>-->
 
     <extensionPoints>
         <extensionPoint name="pdfViewer"

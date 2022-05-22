@@ -6,4 +6,20 @@
                     id="Detexify" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/search_13x13.svg"/>
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.RemoteLibrariesToolWindowFactory" id="Remote Libraries" secondary="false" anchor="right"/>
     </extensions>
+
+    <actions>
+        <group id="texify.remotelibraries" text="_Remote Libraries">
+            <action class="nl.hannahsten.texifyidea.remotelibraries.SyncZoteroAction" id="texify.zotero.Sync"
+                    text="Sync Zotero Reference Manager" icon="AllIcons.Actions.Refresh"/>
+        </group>
+
+        <group id="texify.remotelibraries.add" icon="AllIcons.General.Add" text="Add Remote Library" popup="true">
+            <add-to-group group-id="texify.remotelibraries" anchor="first"/>
+            <action class="nl.hannahsten.texifyidea.remotelibraries.AddZoteroAction" id="texify.zotero.add"
+                    text="Zotero"/>
+            <action class="nl.hannahsten.texifyidea.remotelibraries.AddMendeleyAction" id="texify.mendeley.add"
+                    text="Mendeley"/>
+        </group>
+
+    </actions>
 </idea-plugin>
