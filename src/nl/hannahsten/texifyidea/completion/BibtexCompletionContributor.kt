@@ -4,11 +4,9 @@ import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns
 import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.firstChildOfType
-import nl.hannahsten.texifyidea.util.hasParent
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.withPattern
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
 /**
@@ -20,6 +18,7 @@ open class BibtexCompletionContributor : CompletionContributor() {
         registerTypeCompletion()
         registerKeyCompletion()
         registerStringCompletion()
+        registerFileCompletion()
     }
 
     /**
@@ -62,5 +61,18 @@ open class BibtexCompletionContributor : CompletionContributor() {
             .inside(BibtexContent::class.java)
             .withLanguage(BibtexLanguage),
         BibtexStringProvider
+    )
+
+    private fun registerFileCompletion() = extend(
+        CompletionType.BASIC,
+        PlatformPatterns.psiElement()
+            .inside(BibtexContent::class.java)
+            .withPattern("File completion pattern") { psiElement, _ ->
+                val key = psiElement.firstParentOfType(BibtexTag::class)?.firstChildOfType(BibtexKey::class) ?: return@withPattern false
+                // Currently, the bibsource field is used for file sources, but this is apparently not 'official'
+                key.text == "bibsource"
+            }
+            .withLanguage(BibtexLanguage),
+        LatexFileProvider()
     )
 }
