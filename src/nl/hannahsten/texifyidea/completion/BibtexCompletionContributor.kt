@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.BibtexLanguage
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.util.*
 
 /**
@@ -70,7 +71,7 @@ open class BibtexCompletionContributor : CompletionContributor() {
             .withPattern("File completion pattern") { psiElement, _ ->
                 val key = psiElement.firstParentOfType(BibtexTag::class)?.firstChildOfType(BibtexKey::class) ?: return@withPattern false
                 // Currently, the bibsource field is used for file sources, but this is apparently not 'official'
-                key.text == "bibsource"
+                key.text in FileMagic.bibtexFileKeys
             }
             .withLanguage(BibtexLanguage),
         LatexFileProvider()
