@@ -9,7 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 
-class ZoteroLibrary(val userID: Int = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary("Zotero") {
+class ZoteroLibrary(val userID: String = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary("Zotero") {
 
     private val client by lazy { HttpClient(CIO) }
 
