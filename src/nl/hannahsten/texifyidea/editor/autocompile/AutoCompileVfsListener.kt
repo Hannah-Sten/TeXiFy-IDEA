@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
  * @author Thomas
  */
 class AutoCompileVfsListener : AsyncFileListener {
+
     override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
         if (!TexifySettings.getInstance().autoCompileOnSaveOnly || !events.any { it.file?.fileType == LatexFileType }) return null
         return object : ChangeApplier {
