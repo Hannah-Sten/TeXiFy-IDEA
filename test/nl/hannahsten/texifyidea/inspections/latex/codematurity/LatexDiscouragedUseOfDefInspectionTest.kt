@@ -15,6 +15,19 @@ class LatexDiscouragedUseOfDefInspectionTest : TexifyInspectionTestBase(LatexDis
             quickFixName = "Convert to \\newcommand"
     )
 
+    fun `test quick fix def to newcommand 2`() = testNamedQuickFix(
+            before = """
+                \def \indentpar {\hangindent=1cm \hangafter=0}
+                \setlength{\parskip}{0.5em}
+            """.trimIndent(),
+            after = """
+                \newcommand{\indentpar}{\hangindent=1cm \hangafter=0}
+                \setlength{\parskip}{0.5em}
+            """.trimIndent(),
+            numberOfFixes = 2,
+            quickFixName = "Convert to \\newcommand"
+    )
+
     fun `test quick fix def to renewcommand`() = testNamedQuickFix(
             before = """\def\a1""",
             after = """\renewcommand{\a}{1}""",
