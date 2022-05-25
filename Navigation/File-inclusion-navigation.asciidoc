@@ -24,6 +24,7 @@ For more information, see http://mirrors.ctan.org/macros/latex/contrib/import/im
 
 When you have a `file` or `bibsource` field, the content can include a path (absolute or relative) to a local pdf file from which the bibtex entry was created.
 Then when you press kbd:[Ctrl + B] when your cursor is on the file path, the file will be opened.
+Autocompletion is also available (for any file type).
 
 An example:
 
