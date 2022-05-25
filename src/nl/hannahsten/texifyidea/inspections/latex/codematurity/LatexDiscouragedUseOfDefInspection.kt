@@ -12,8 +12,10 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
 import java.util.*
 import kotlin.math.max
@@ -75,14 +77,20 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
             val startOFfset = command.textOffset
             val endOffset = max(cmd.textOffset + cmd.textLength, value.textOffset + value.textLength)
 
-            document.replaceString(startOFfset, endOffset, "$commandName{${cmd.text}}{${value.text}}")
+            val valueText = if (value.text.startsWith("{") && value.text.endsWith("}")) value.text.drop(1).dropLast(1) else value.text
+
+            document.replaceString(startOFfset, endOffset, "$commandName{${cmd.text}}{$valueText}")
         }
 
         open fun getArguments(command: LatexCommands): Pair<PsiElement, PsiElement>? {
             val parent = command.parent
-            val firstSib = parent.nextSiblingIgnoreWhitespace() ?: return null
-            val secondSib = firstSib.nextSiblingIgnoreWhitespace() ?: return null
-            return Pair(firstSib, secondSib)
+            val definedCommand = parent.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class) ?: return null
+            // Either the definition is wrapped in braces, in which case it will be parsed as a parameter of the command being defined, or it is a sibling of the command
+            val value = definedCommand.firstChildOfType(LatexParameter::class)
+                ?: definedCommand.nextSiblingIgnoreWhitespace()
+                ?: definedCommand.parent.nextSiblingIgnoreWhitespace()
+                ?: return null
+            return Pair(definedCommand.commandToken, value)
         }
     }
 }
