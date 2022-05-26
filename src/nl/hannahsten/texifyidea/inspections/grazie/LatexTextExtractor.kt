@@ -26,12 +26,17 @@ class LatexTextExtractor : TextExtractor() {
 
         val textContent = TextContent.builder().build(root, domain) ?: return null
         val stealthyRanges = getStealthyRanges(root)
+            // Convert IntRange (inclusive end) to TextRange (exclusive end)
             .map { TextContent.Exclusion.exclude(it.toTextRange()) }
             .filter { it.start >= 0 && it.end <= textContent.length }
 
         return textContent.excludeRanges(stealthyRanges)
     }
 
+    /**
+     * Get ranges to ignore.
+     * Note: IntRange has an inclusive end.
+     */
     private fun getStealthyRanges(root: PsiElement): List<IntRange> {
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
         val ranges = root.childrenOfType(LatexNormalText::class)
@@ -48,16 +53,18 @@ class LatexTextExtractor : TextExtractor() {
                 }
                 listOf(
                     start,
-                    it.textRange.endOffset - root.startOffset
+                    // -1 Because endOffset is exclusive but we are working with inclusive end here
+                    it.textRange.endOffset - 1 - root.startOffset
                 )
             }
             .sorted()
             .toMutableList()
             // Make sure that if the root does not start/end with normal text, that those parts are excluded
             .also { it.add(0, 0) }
-            .also { it.add(root.endOffset() - 1) }
+            .also { it.add(root.endOffset()) }
             // To get the ranges that we need to ignore
-            .chunked(2) { IntRange(it[0], it[1]) }
+            // -1 because IntRange has inclusive end, but we want to exclude all letters _excluding_ the letter where the normal text started
+            .chunked(2) { IntRange(it[0], it[1] - 1) }
             .filter { it.first < it.last && it.first >= 0 && it.last < root.text.length }
             .toMutableSet()
 

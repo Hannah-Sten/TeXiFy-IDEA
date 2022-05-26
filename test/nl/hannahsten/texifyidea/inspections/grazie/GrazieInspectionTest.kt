@@ -45,8 +45,17 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     fun testInlineMath() {
         myFixture.configureByText(
-            LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?
-"""
+            LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?"""
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testSentenceStart() {
+        myFixture.configureByText(
+            LatexFileType, """
+               \subsubsection{Something}
+                The hardware requirements 
+            """.trimIndent()
         )
         myFixture.checkHighlighting()
     }

@@ -23,6 +23,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var automaticItemInItemize: JBCheckBox? = null
     private var automaticDependencyCheck: JBCheckBox? = null
     private var autoCompile: JBCheckBox? = null
+    private var autoCompileOnSaveOnly: JBCheckBox? = null
     private var continuousPreview: JBCheckBox? = null
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
@@ -43,6 +44,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
                     automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
                     autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
+                    autoCompileOnSaveOnly = addCheckbox("Automatic compilation only after document save")
                     continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
@@ -92,6 +94,7 @@ class TexifyConfigurable : SearchableConfigurable {
             automaticItemInItemize?.isSelected != settings.automaticItemInItemize ||
             automaticDependencyCheck?.isSelected != settings.automaticDependencyCheck ||
             autoCompile?.isSelected != settings.autoCompile ||
+            autoCompileOnSaveOnly?.isSelected != settings.autoCompileOnSaveOnly ||
             continuousPreview?.isSelected != settings.continuousPreview ||
             includeBackslashInSelection?.isSelected != settings.includeBackslashInSelection ||
             showPackagesInStructureView?.isSelected != settings.showPackagesInStructureView ||
@@ -104,6 +107,7 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.automaticItemInItemize = automaticItemInItemize?.isSelected == true
         settings.automaticDependencyCheck = automaticDependencyCheck?.isSelected == true
         settings.autoCompile = autoCompile?.isSelected == true
+        settings.autoCompileOnSaveOnly = autoCompileOnSaveOnly?.isSelected == true
         settings.continuousPreview = continuousPreview?.isSelected == true
         settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
         settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
@@ -116,6 +120,7 @@ class TexifyConfigurable : SearchableConfigurable {
         automaticItemInItemize?.isSelected = settings.automaticItemInItemize
         automaticDependencyCheck?.isSelected = settings.automaticDependencyCheck
         autoCompile?.isSelected = settings.autoCompile
+        autoCompileOnSaveOnly?.isSelected = settings.autoCompileOnSaveOnly
         continuousPreview?.isSelected = settings.continuousPreview
         includeBackslashInSelection?.isSelected = settings.includeBackslashInSelection
         showPackagesInStructureView?.isSelected = settings.showPackagesInStructureView

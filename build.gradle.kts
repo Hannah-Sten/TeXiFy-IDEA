@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.17"
+version = "0.7.18-alpha.1"
 
 repositories {
     mavenCentral()
@@ -184,7 +184,7 @@ tasks.publishPlugin {
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf("stable"))
+    channels.set(listOf("alpha"))
 }
 
 tasks.test {

@@ -41,7 +41,7 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
   private int verbatimOptionalArgumentBracketsCount = 0;
 
   /**
-   * Keep track of braces in the PREAMBLE_OPTION state.
+   * Keep track of braces in the PARTIAL_DEFINITION state.
    * We need to count braces in order to avoid exiting the state too early, especially in case of entering this state incorrectly
    * (for example because someone has >{ in their text for whatever reason).
    */
@@ -77,14 +77,16 @@ BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
-COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:]+|.|\r) // _ and : are only LaTeX3 syntax
-LATEX3_ON=\\ExplSyntaxOn
+COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:0-9]+|.|\r) // _ and : are only LaTeX3 syntax
+LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage)
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline
  // These can contain unescaped % for example
  | \\url | \\path | \\href
+// Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
+PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 
 // Comments
 MAGIC_COMMENT_PREFIX=("!"|" !"[tT][eE][xX])
@@ -105,7 +107,7 @@ BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | 
 MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
-%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
+%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC
 
 // latex3 has some special syntax
@@ -379,7 +381,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {ROBUST_INLINE_MATH_END}    { yypopState(); return INLINE_MATH_END; }
 }
 
-<PREAMBLE_OPTION> {
+// In this situation, we are defining one side of a pair of definitions, so an unmatched \begin or single $ is perfectly fine and is hence ignored. We rely on braces to check when we exit the definition.
+// We do this at lexer level, because we do want to keep an unmatched \begin a parse error outside these (rare) special cases
+<PARTIAL_DEFINITION> {
     "$"                 { return NORMAL_TEXT_WORD; }
     {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
     {END_TOKEN}         { return COMMAND_TOKEN; }
@@ -412,8 +416,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // The array package provides <{...} and >{...} preamble options for tables
 // which are often used with $, in which case the $ is not an inline_math_start (because there's only one $ in the group, which would be a parse errror)
 // or a >{\begin{env}l<{\end{env}} structure
-\<\{                   { yypushState(PREAMBLE_OPTION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
->\{                    { yypushState(PREAMBLE_OPTION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
+{PARTIAL_DEFINITION_COMMAND}                   { yypushState(PARTIAL_DEFINITION); preambleOptionBracesCount = -1; return COMMAND_TOKEN; } // -1 because the { is not included in the regex
+\<\{                   { yypushState(PARTIAL_DEFINITION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
+>\{                    { yypushState(PARTIAL_DEFINITION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
 
 // In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line

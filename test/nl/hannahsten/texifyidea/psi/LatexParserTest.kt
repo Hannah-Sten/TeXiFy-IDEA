@@ -78,6 +78,9 @@ class LatexParserTest : BasePlatformTestCase() {
             \visible<+->{\node (a) at (0, 0) {$ \{A\}_{j}$ };}
             \node (b) at (1, 1) { $ B $ };
             \end{tikzpicture}
+            Similar but with different commands:
+            \pretitle{\begin{center}\fontsize{18bp}{18bp}\selectfont}
+            \posttitle{\par\end{center}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

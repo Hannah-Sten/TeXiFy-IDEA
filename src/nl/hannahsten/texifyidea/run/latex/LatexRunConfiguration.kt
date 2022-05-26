@@ -103,6 +103,8 @@ class LatexRunConfiguration constructor(
             field = value
             this.outputPath.mainFile = value
             this.outputPath.contentRoot = getMainFileContentRoot()
+            this.auxilPath.mainFile = value
+            this.auxilPath.contentRoot = getMainFileContentRoot()
         }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
