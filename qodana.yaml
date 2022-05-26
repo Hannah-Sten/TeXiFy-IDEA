@@ -1,8 +1,10 @@
 version: "1.0"
-failThreshold: 16
+linter: jetbrains/qodana-jvm:2021.3-eap
 profile:
-  name: qodana.starter  # todo use profile by path, for running all inspections?
+  name: Project Default
+failThreshold: 16
 exclude:
   - name: All
     paths:
       - gen
+      - .github

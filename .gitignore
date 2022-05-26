@@ -7,3 +7,4 @@ build
 idea-flex.skeleton
 jflex-*.jar
 scripts/venv
+results/
