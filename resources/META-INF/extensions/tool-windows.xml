@@ -11,6 +11,8 @@
         <group id="texify.remotelibraries" text="_Remote Libraries">
             <action class="nl.hannahsten.texifyidea.remotelibraries.SyncZoteroAction" id="texify.zotero.Sync"
                     text="Sync Zotero Reference Manager" icon="AllIcons.Actions.Refresh"/>
+            <action class="nl.hannahsten.texifyidea.remotelibraries.RemoveLibraryAction" id="texify.library.Remove"
+                    text="Remove Selected Library" icon="AllIcons.General.Remove"/>
         </group>
 
         <group id="texify.remotelibraries.add" icon="AllIcons.General.Add" text="Add Remote Library" popup="true">

@@ -23,7 +23,7 @@ import java.util.function.Consumer
  */
 class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE) {
 
-    override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: Consumer<in Array<PsiElement>>) {
+    override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: Consumer<Array<PsiElement>>) {
         val fileCreator = LatexFileCreator(project, psiDirectory)
         val builder = CreateFileFromTemplateDialog.createDialog(project)
         builder.setTitle("Create a New LaTeX File")

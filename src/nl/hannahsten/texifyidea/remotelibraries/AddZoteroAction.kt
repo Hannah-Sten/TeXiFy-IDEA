@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.remotelibraries
 
+import com.intellij.credentialStore.Credentials
+import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -21,9 +23,10 @@ class AddZoteroAction : AnAction() {
             ApplicationManager.getApplication().invokeLater {
                 CoroutineScope(Dispatchers.Default).launch {
                     val library = ZoteroLibrary(dialogWrapper.userID, dialogWrapper.userApiKey)
+                    val credentials = Credentials(dialogWrapper.userID, dialogWrapper.userApiKey)
+                    PasswordSafe.instance.set(ZoteroLibrary.credentialAttributes, credentials)
                     val bibItems = library.getCollection(e.project!!)
                     RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
-                    println(RemoteLibraryManager.getInstance().libraries[library.name]?.size)
                 }
             }
         }
@@ -42,9 +45,11 @@ class AddZoteroAction : AnAction() {
             return panel {
                 row("User ID:") {
                     textField().bindText({ userID }, { userID = it })
+                    contextHelp("You can find your user ID in Zotero Settings > Feeds/API.")
                 }
                 row("User API key:") {
                     textField().bindText({ userApiKey }, { userApiKey = it })
+                    contextHelp("Create a new API key in Zotero Settings > Feeds/API > Create new private key")
                 }
             }
         }

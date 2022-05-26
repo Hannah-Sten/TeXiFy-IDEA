@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.remotelibraries
 
+import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -13,9 +14,14 @@ class SyncZoteroAction : AnAction() {
         val project = e.project ?: return
         ApplicationManager.getApplication().invokeLater {
             CoroutineScope(Dispatchers.Default).launch {
-                val zotero = ZoteroLibrary()
-                val bibItems = zotero.getCollection(project)
-                RemoteLibraryManager.getInstance().updateLibrary(zotero, bibItems)
+                val credentials = PasswordSafe.instance.get(ZoteroLibrary.credentialAttributes)
+                credentials?.userName?.let {
+                    credentials.password?.let { apiKey ->
+                        val zotero = ZoteroLibrary(it, apiKey.toString())
+                        val bibItems = zotero.getCollection(project)
+                        RemoteLibraryManager.getInstance().updateLibrary(zotero, bibItems)
+                    }
+                }
             }
         }
     }
