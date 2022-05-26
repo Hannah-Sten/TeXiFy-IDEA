@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
  *
  * @author Hannah Schellekens
  */
+@Suppress("unused") // All are used in completion
 enum class BibtexDefaultEntryField(
     override val fieldName: String,
     override val description: String,

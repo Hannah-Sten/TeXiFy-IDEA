@@ -12,29 +12,20 @@ jobs:
     name: Run Qodana
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
         with:
-          path: ~/work/_temp/_github_home/cache
-          key: ${{ runner.os }}-qodana-${{ github.ref }}
-          restore-keys: |
-            ${{ runner.os }}-qodana-${{ github.ref }}
-            ${{ runner.os }}-qodana-
-      - uses: docker://jetbrains/qodana-jvm
-        with:
-          # https://github.com/JetBrains/qodana-action/blob/main/run_qodana.sh
-          args: --cache-dir=/github/home/cache --results-dir=/github/workspace/qodana --save-report --report-dir=/github/workspace/qodana/report
-      - uses: actions/upload-artifact@v2
-        if: always()
-        # To view the report: https://www.jetbrains.com/help/qodana/html-report.html
-        with:
-          path: qodana
+          fetch-depth: 0
+      - name: Qodana
+        uses: JetBrains/qodana-action@v5.1.0
       # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
       - name: Upload SARIF report to GitHub
-        uses: github/codeql-action/upload-sarif@v1
-        if: always()
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: /github/workspace/qodana/report/results/qodana.sarif.json
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
+      - uses: actions/upload-artifact@v2
+        # To view the report: https://www.jetbrains.com/help/qodana/html-report.html
+        with:
+          path: ${{ runner.temp }}/qodana
   test:
     runs-on: ${{ matrix.os }}
     strategy:
