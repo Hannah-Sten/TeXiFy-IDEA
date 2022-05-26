@@ -19,10 +19,13 @@ jobs:
         uses: JetBrains/qodana-action@v5.1.0
       # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
       - name: Upload SARIF report to GitHub
+        # Also upload report if quality gate fails
+        if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
       - uses: actions/upload-artifact@v2
+        if: always()
         # To view the report: https://www.jetbrains.com/help/qodana/html-report.html
         with:
           path: ${{ runner.temp }}/qodana
