@@ -38,14 +38,15 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         return listOf(
             Paths.get(System.getProperty("user.home"), "bin").toString(),
             "/usr/local/bin"
-        ).filter { LatexSdkUtil.isPdflatexPresent(it, null, name) }.toMutableList()
+        ).toMutableList()
     }
 
     override fun isValidSdkHome(path: String): Boolean {
         // We just want a path where pdflatex is present
-        val errorMessage = "Could not find $path/pdflatex"
-        return LatexSdkUtil.isPdflatexPresent(path, errorMessage, name)
+        return LatexSdkUtil.isPdflatexPresent(path)
     }
+
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/pdflatex"
 
     override fun getVersionString(sdk: Sdk): String? {
         return getVersionString(sdk.homePath)

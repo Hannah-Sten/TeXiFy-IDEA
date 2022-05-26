@@ -7,12 +7,11 @@ import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Dependend
-import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.lang.SimpleEnvironment
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.util.Kindness
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
@@ -23,10 +22,18 @@ import java.util.*
 object LatexEnvironmentProvider {
 
     fun addIndexedEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
+        val project = parameters.editor.project ?: return
+
+        val usesTexlive = LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable
+        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(
+            LatexPackage.DEFAULT)
+
         result.addAllElements(
-            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.id, parameters.editor.project ?: return)
+            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.id, project)
                 .flatMap { envText ->
-                    Environment.lookupInIndex(envText, parameters.editor.project ?: return).map { env ->
+                    Environment.lookupInIndex(envText, project)
+                        .filter { if (usesTexlive) it.dependency in packagesInProject else true }
+                        .map { env ->
                         createEnvironmentLookupElement(env)
                     }
                 }

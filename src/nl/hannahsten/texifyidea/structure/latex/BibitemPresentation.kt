@@ -19,11 +19,7 @@ class BibitemPresentation(labelCommand: LatexCommands) : ItemPresentation {
         }
 
         // Get label name.
-        val required = labelCommand.requiredParameters
-        if (required.isEmpty()) {
-            throw IllegalArgumentException("\\bibitem has no label name")
-        }
-        this.bibitemName = required[0]
+        this.bibitemName = labelCommand.requiredParameters.firstOrNull() ?: ""
 
         // Location string.
         val manager = FileDocumentManager.getInstance()

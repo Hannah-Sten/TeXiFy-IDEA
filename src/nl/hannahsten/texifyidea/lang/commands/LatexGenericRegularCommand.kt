@@ -4,13 +4,16 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NTHEOREM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.VARIOREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 
 /**
@@ -57,9 +60,9 @@ enum class LatexGenericRegularCommand(
     CITE("cite", "extratext".asOptional(), "keys".asRequired()),
     CLEARDOUBLEPAGE("cleardoublepage"),
     CLEARPAGE("clearpage"),
-    COLOR("color", "color".asRequired(), dependency = LatexPackage.COLOR),
+    COLOR_CMD("color", "color".asRequired(), dependency = COLOR),
     COLOR2("color", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
-    COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = COLOR),
     COLORBOX2("colorbox", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     COLORMASK("colormask", dependency = XCOLOR),
     COLORSERIESCYCLE("colorseriescycle", dependency = XCOLOR),
@@ -93,7 +96,7 @@ enum class LatexGenericRegularCommand(
     EXTRACTCOLORSPECS("extractcolorspecs", "color".asRequired(), "model-cmd".asRequired(), "color-cmd".asRequired(), dependency = XCOLOR),
     FAMILY("family"),
     FBOX("fbox", "text".asRequired(Argument.Type.TEXT)),
-    FCOLORBOX("fcolorbox", "frame color".asRequired(), "background color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    FCOLORBOX("fcolorbox", "frame color".asRequired(), "background color".asRequired(), "text".asRequired(), dependency = COLOR),
     FCOLORBOX2("fcolorbox", "model-list".asOptional(), "frame spec-list".asRequired(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     FCOLORBOX3("fcolorbox", "frame model-list".asOptional(), "frame spec-list".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     FCOLORBOX4("fcolorbox", "frame color".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
@@ -202,8 +205,8 @@ enum class LatexGenericRegularCommand(
     NOLINEBREAK("nolinebreak", "number".asOptional()),
     NONUMBER("nonumber"),
     NOPAGEBREAK("nopagebreak", "number".asOptional()),
-    NOPAGECOLOR("nopagecolor", dependency = XCOLOR),
-    NORMALCOLOR("normalcolor"),
+    NOPAGECOLOR("nopagecolor", dependency = COLOR),
+    NORMALCOLOR("normalcolor", dependency = COLOR),
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
     OARG("oarg", "arg".asRequired()),
@@ -214,7 +217,7 @@ enum class LatexGenericRegularCommand(
     ODDSIDEMARGIN("oddsidemargin"),
     ONECOLUMN("onecolumn"),
     PAGEBREAK("pagebreak", "number".asOptional()),
-    PAGECOLOR("pagecolor", "color".asRequired(), dependency = XCOLOR),
+    PAGECOLOR("pagecolor", "color".asRequired(), dependency = COLOR),
     PAGECOLOR2("pagecolor", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     PAGENAME("pagename"),
     PAGENUMBERING("pagenumbering", "numstyle".asRequired()),
@@ -318,7 +321,7 @@ enum class LatexGenericRegularCommand(
     TEXTBRACERIGHT("textbraceright", display = "}"),
     TEXT_BULLET("textbullet", display = "•"),
     CIRCLED_TEXT("textcircled", "a".asRequired()),
-    TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = COLOR),
     TEXTCOLOR2("textcolor", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     TEXT_COPYRIGHT("textcopyright", display = "©"),
     TEXTDAGGER("textdagger", display = "†"),
@@ -365,6 +368,7 @@ enum class LatexGenericRegularCommand(
     THICKLINES("thicklines"),
     THINLINES("thinlines"),
     THISPAGESTYLE("thispagestyle", "style".asRequired()),
+    THREF("thref", "label".asRequired(), dependency = NTHEOREM),
     TIME("time"),
     TINY("tiny"),
     TITLE("title", "text".asRequired(Argument.Type.TEXT)),
@@ -384,13 +388,14 @@ enum class LatexGenericRegularCommand(
     USETIKZLIBRARY("usetikzlibrary", "libraries".asRequired()),
     VDOTS("vdots", display = "⋮"),
     VLINE("vline"),
-    VREF("vref", "key".asRequired(), dependency = CLEVEREF),
+    VREF("vref", "key".asRequired(), dependency = VARIOREF),
+    VREFRANGE("vrefrange", "start".asRequired(), "end".asRequired(), "text".asOptional(), dependency = VARIOREF),
     VSPACE("vspace", "length".asRequired()),
     VSPACE_STAR("vspace*", "length".asRequired()),
     WIDTH("width"),
     XGLOBAL("xglobal", dependency = XCOLOR),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.12</strong></p>
+        <p><strong>Beta 0.7.17</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.12! This release contains improvements related to table formatting, log output messages, performance and usability improvements and more.
+            Welcome to TeXiFy IDEA 0.7.17! This release adds the option to disable indentation of the document environment, and adds custom folding region magic comments, as well has some nice bug fixes.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,23 +55,23 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Improve support for escaped ampersands in table formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2095">#2095</a>)</li>
-            <li> Improve log output messages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2097">#2097</a>)</li>
-            <li> Add full autocompletion to \end command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2097">#2097</a>)</li>
-            <li> Improve performance when some packages have unknown location. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2107">#2107</a>)</li>
-            <li> Improve user experience when selecting an SDK home directory. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2113">#2113</a>)</li>
+            <li> Add option to disable indentation of the document environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2347">#2347</a>)</li>
+            <li> Add magic comments for custom folding regions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2349">#2349</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Include graphicspath in included files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2084">#2084</a>)</li>
+            <li> Fix package documentation urls not showing in documentation popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2336">#2336</a>)</li>
+            <li> Make the latexindent action work on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2319">#2319</a>)</li>
+            <li> Also check MiKTeX version for default unicode support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2343">#2343</a>)</li>
+            <li> Improve user feedback when main file is not present for makeindex run config. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2350">#2350</a>)</li>
+            <li> Performance improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2309">#2309</a>)</li>
+            <li> Fix incorrect result when using 'apply all fixes' for left/right brackets inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2324">#2324</a>)</li>
+            <li> Improve internal logging. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2301">#2301</a>)</li>
+            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2315">#2315</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2337">#2337</a>)</li>
         </ul>
-<!--        <br>-->
-<!--        <p>-->
-<!--            Thanks to F.W. Dekker for contributing to this release!-->
-<!--        </p>-->
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.

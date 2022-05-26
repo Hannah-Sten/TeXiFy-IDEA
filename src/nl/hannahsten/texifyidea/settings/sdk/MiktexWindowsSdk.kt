@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.nio.file.InvalidPathException
 import java.nio.file.Paths
 
@@ -16,7 +17,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
     companion object {
 
         // Cache version
-        var version: String? = null
+        var version: DefaultArtifactVersion? = null
     }
 
     override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
@@ -59,21 +60,23 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         // We want the MiKTeX 2.9 folder to be selected
         // Assume path is of the form C:\Users\username\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\pdflatex.exe
         val directory = LatexSdkUtil.getPdflatexParentPath(Paths.get(path, "miktex").toString())
-        val errorMessage = "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
-        return LatexSdkUtil.isPdflatexPresent(directory, errorMessage, name)
+        return LatexSdkUtil.isPdflatexPresent(directory)
     }
 
-    override fun getVersionString(sdk: Sdk): String? {
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
+
+    override fun getVersionString(sdk: Sdk): String {
         return getVersionString(sdk.homePath)
     }
 
-    override fun getVersionString(sdkHome: String?): String? {
-        version?.let { return version }
+    override fun getVersionString(sdkHome: String?) = "MiKTeX " + getVersion(sdkHome).toString()
 
+    fun getVersion(sdkHome: String?): DefaultArtifactVersion {
+        version?.let { return it }
         val executable = sdkHome?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
         val output = "$executable --version".runCommand() ?: ""
-        version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
-
-        return version
+        val versionString = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.groups?.get(1)?.value ?: ""
+        version = DefaultArtifactVersion(versionString)
+        return version!!
     }
 }

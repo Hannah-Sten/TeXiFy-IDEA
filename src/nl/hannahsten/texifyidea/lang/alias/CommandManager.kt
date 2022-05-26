@@ -1,7 +1,6 @@
-package nl.hannahsten.texifyidea.lang
+package nl.hannahsten.texifyidea.lang.alias
 
-import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.containsAny
@@ -60,39 +59,7 @@ import kotlin.collections.toSet
  * @author Hannah Schellekens
  */
 // Currently it is a singleton, in the future this may be one instance per fileset
-object CommandManager : Iterable<String?>, Serializable {
-
-    /**
-     * Maps a command to a set of aliases including the command itself.
-     *
-     *
-     * All elements of the set are in the map as keys as well linking to the set in which they
-     * are themselves. This means that the set of all keys that are aliases of each other all
-     * link to the same set of aliases. This ensures that you only have to modify the alias sets
-     * once and automatically update for all others.
-     *
-     *
-     * The commands are stored including the backslash.
-     *
-     *
-     * *Example:*
-     *
-     *
-     * Definitions:<br></br>
-     * `A := {\one, \een, \ein}`<br></br>
-     * `B := {\twee}`<br></br>
-     * `C := {\drie, \three}`
-     *
-     *
-     * Map:<br></br>
-     * `\one => A`<br></br>
-     * `\een => A`<br></br>
-     * `\ein => A`<br></br>
-     * `\twee => B`<br></br>
-     * `\three => C`<br></br>
-     * `\drie => C`
-     */
-    private val aliases = ConcurrentHashMap<String, MutableSet<String>>()
+object CommandManager : Iterable<String?>, Serializable, AliasManager() {
 
     /**
      * Maps an original command to the set of current aliases.
@@ -127,13 +94,6 @@ object CommandManager : Iterable<String?>, Serializable {
     private val original = ConcurrentHashMap<String, Set<String>>()
 
     /**
-     * We have to somehow know when we need to look for new aliases.
-     * We do this by keeping a count of the number of \newcommand-like commands in the index,
-     * and when this changes we go gather new aliases.
-     */
-    private var numberOfIndexedCommandDefinitions = 0
-
-    /**
      * Map commands that define labels to the positions of the label parameter.
      * For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2} the label parameter is second, so \mylabel maps to [2].
      * It is not so nice to have to maintain this separately, but maintaining
@@ -160,13 +120,8 @@ object CommandManager : Iterable<String?>, Serializable {
      */
     @Throws(IllegalArgumentException::class)
     fun registerCommand(command: String) {
-        require(!isRegistered(command)) { "command '$command' has already been registered" }
-        val aliasSet: MutableSet<String> = HashSet()
-        aliasSet.add(command)
-        original[command] = aliasSet
-        synchronized(aliases) {
-            aliases[command] = aliasSet
-        }
+        super.register(command)
+        original[command] = aliases[command] ?: mutableSetOf(command)
     }
 
     /**
@@ -193,36 +148,6 @@ object CommandManager : Iterable<String?>, Serializable {
      * The alias will be added to the set of aliases for the given command. The alias will be
      * removed from its original alias set if the alias is an existing command.
      *
-     * @param command
-     * An existing command to register the alias for starting with a backslash. *E.g.
-     * `\begin`*
-     * @param alias
-     * The alias to register for the command starting with a backslash. This could be either
-     * a new command, or an existing command *E.g. `\start`*
-     */
-    @Synchronized
-    fun registerAlias(command: String, alias: String) {
-        synchronized(aliases) {
-            val aliasSet = aliases[command] ?: mutableSetOf()
-
-            // If the alias is already assigned: unassign it.
-            if (isRegistered(alias)) {
-                val previousAliases = aliases[alias]
-                previousAliases?.remove(alias)
-                aliases.remove(alias)
-            }
-            aliasSet.add(alias)
-            aliases[alias] = aliasSet
-        }
-    }
-
-    /**
-     * Register an alias for a given command.
-     *
-     *
-     * The alias will be added to the set of aliases for the given command. The alias will be
-     * removed from its original alias set if the alias is an existing command.
-     *
      * @param commandNoSlash
      * An existing command to register the alias for starting without the command backslash.
      * *E.g. `begin`*
@@ -237,67 +162,15 @@ object CommandManager : Iterable<String?>, Serializable {
         registerAlias("\\" + commandNoSlash, "\\" + aliasNoSlash)
     }
 
-    /**
-     * Get an unmodifiable set with all the aliases for the given command.
-     *
-     * @param command
-     * An existing command to get all aliases of starting with a backslash. *E.g. `\begin`*
-     * @return An unmodifiable set of all aliases including the command itself. All aliases include
-     * a command backslash. Returns the empty set if the command is not registered.
-     */
-    fun getAliases(command: String): Set<String> {
-        if (!isRegistered(command)) return emptySet()
-        synchronized(aliases) {
-            return aliases[command]?.toSet() ?: emptySet()
-        }
-    }
-
-    /**
-     * If needed (based on the number of indexed \newcommand-like commands) check for new aliases of the given alias set. This alias can be any alias of its alias set.
-     * If the alias set is not yet registered, it will be registered as a new alias set.
-     */
-    @Synchronized
-    fun updateAliases(aliasSet: Set<String>, project: Project) {
-        // Register if needed
-        if (aliasSet.isEmpty()) return
-        val firstAlias = aliasSet.first()
-        var wasRegistered = false
-        if (!isRegistered(firstAlias)) {
-            registerCommand(firstAlias)
-            wasRegistered = true
-            aliasSet.forEach { registerAlias(firstAlias, it) }
-        }
-
-        // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
-        // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = LatexDefinitionIndex.getItems(project)
-
-        // Also do this the first time something is registered, because then we have to update aliases as well
-        if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size || wasRegistered) {
-            // Update everything, since it is difficult to know beforehand what aliases could be added or not
-            // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
-            // requested alias set (otherwise only the first alias set requesting an update will get it)
-            // We have to deepcopy the set of alias sets before iterating over it, because we want to modify aliases
-            synchronized(aliases) {
-                val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
-                for (copiedAliasSet in deepCopy) {
-                    findAllAliases(copiedAliasSet, indexedCommandDefinitions)
-                }
-            }
-
-            numberOfIndexedCommandDefinitions = indexedCommandDefinitions.size
-        }
-    }
-
-    private fun findAllAliases(
+    override fun findAllAliases(
         aliasSet: Set<String>,
-        indexedCommandDefinitions: Collection<LatexCommands>
+        indexedDefinitions: Collection<LatexCommands>
     ) {
         val firstAlias = aliasSet.first()
 
         // Get definitions which define one of the commands in the given command names set
         // These will be aliases of the given set (which is assumed to be an alias set itself)
-        indexedCommandDefinitions.filter {
+        indexedDefinitions.filter {
             // Assume the parameter definition has the command being defined in the first required parameter,
             // and the command definition itself in the second
             it.requiredParameter(1)?.containsAny(aliasSet) == true
@@ -309,7 +182,7 @@ object CommandManager : Iterable<String?>, Serializable {
         // Assumes the predefined label definitions all have the label parameter in the same position
         // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
         if (aliasSet.intersect(CommandMagic.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
-            indexedCommandDefinitions.forEach { commandDefinition ->
+            indexedDefinitions.forEach { commandDefinition ->
                 val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
                 if (definedCommand.isBlank()) return@forEach
 
@@ -427,21 +300,6 @@ object CommandManager : Iterable<String?>, Serializable {
      */
     val allCommands: Set<String>
         get() = Collections.unmodifiableSet(aliases.keys)
-
-    /**
-     * Checks if the given command has been registered to the command manager.
-     *
-     * @param command
-     * The command to check if it has been registered starting with the command backslash.
-     * *E.g. `\begin`*
-     * @return `true` if the given command is present in the command manager, `false`
-     * otherwise.
-     */
-    fun isRegistered(command: String): Boolean {
-        synchronized(aliases) {
-            return aliases.containsKey(command)
-        }
-    }
 
     /**
      * Checks if the given command has been registered to the command manager.

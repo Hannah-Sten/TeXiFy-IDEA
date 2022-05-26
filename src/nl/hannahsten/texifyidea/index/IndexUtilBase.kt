@@ -30,6 +30,9 @@ abstract class IndexUtilBase<T : PsiElement>(
     private val indexKey: StubIndexKey<String, T>
 ) {
 
+    /** Cache the index items to avoid unnecessary get actions from the index, which take a long time (50-100ms) even for a small index, which can be problematic if index is accessed many times per second. */
+    var cache: MutableMap<Project, MutableMap<GlobalSearchScope, Collection<T>>> = mutableMapOf()
+
     /**
      * Get all the items in the index in the given file set.
      * Consider using [PsiFile.commandsInFileSet] where applicable.
@@ -55,7 +58,7 @@ abstract class IndexUtilBase<T : PsiElement>(
         }
 
         // Search index.
-        val scope = GlobalSearchScope.filesScope(project, searchFiles)
+        val scope = GlobalSearchScope.filesScope(project, searchFiles.filterNotNull())
         return getItems(project, scope)
     }
 
@@ -111,16 +114,18 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param scope
      *          The scope in which to search for the items.
      */
-    fun getItems(project: Project, scope: GlobalSearchScope): Collection<T> {
-        val result = ArrayList<T>()
-        for (key in getKeys(project)) {
-            result.addAll(getItemsByName(key, project, scope))
+    fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
+        if (useCache) {
+            cache[project]?.get(scope)?.let { return it }
         }
+        val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result
         return result
     }
 
     /**
      * Get all the items in the index that have the given name.
+     * WARNING This takes significant time because of index access. Be very careful about performance when calling it many times.
      *
      * @param name
      *          The name of the items to get.
@@ -129,7 +134,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param scope
      *          The scope in which to search for the items.
      */
-    fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
+    private fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
         try {
             return StubIndex.getElements(indexKey, name, project, scope, elementClass)
         }

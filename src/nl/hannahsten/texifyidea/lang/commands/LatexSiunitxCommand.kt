@@ -27,6 +27,6 @@ enum class LatexSiunitxCommand(
     TABLENUM("tablenum", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

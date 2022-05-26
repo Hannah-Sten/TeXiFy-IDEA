@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.formatting.spacingrules
 
 import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -20,7 +21,7 @@ const val LINE_LENGTH = 80
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments
+            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject)
     ) return null
 
     // Only add spaces after &, unless escaped
@@ -42,7 +43,8 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments) return null
+    val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(project)) return null
 
     val tableLineSeparator = "\\\\"
     if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
@@ -244,8 +246,11 @@ private fun getSpacesForRightBlock(
             if (absoluteIndices[level] == rightElementOffset) {
                 // For very long lines, it's a lot more readable to start & on a new line instead of inserting a whole bunch of spaces
                 // Make sure not to only put the \\ on a new line
-                val didPreviousCellGetNewline = if (level == 0) true else relativeIndices.getOrNull(i)?.getOrNull(level - 1) ?: 0 > LINE_LENGTH
-                if (relativeIndices.getOrNull(i)?.getOrNull(level) ?: 0 > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)) return -1
+                val didPreviousCellGetNewline = if (level == 0) true else (relativeIndices.getOrNull(i)?.getOrNull(level - 1)
+                    ?: 0) > LINE_LENGTH
+                if ((relativeIndices.getOrNull(i)?.getOrNull(level)
+                        ?: 0) > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
+                ) return -1
                 return spacesPerCell.getOrNull(min(i, spacesPerCell.size - 1))?.getOrNull(level)
             }
         }

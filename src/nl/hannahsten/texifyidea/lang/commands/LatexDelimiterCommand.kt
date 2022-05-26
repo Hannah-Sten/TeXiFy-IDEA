@@ -56,6 +56,6 @@ enum class LatexDelimiterCommand(
     RIGHT_PARENTHESIS_BOLD("rrparenthesis", display = "⦆", dependency = STMARYRD),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

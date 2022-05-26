@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 
 class LatexParameterTextUtilTest : BasePlatformTestCase() {
 

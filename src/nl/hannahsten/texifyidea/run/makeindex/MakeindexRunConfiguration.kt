@@ -26,17 +26,19 @@ class MakeindexRunConfiguration(
         private const val PARENT_ELEMENT = "texify-makeindex"
         private const val PROGRAM = "program"
         private const val MAIN_FILE = "main-file"
+        private const val COMMAND_LINE_ARGS = "command-line-args"
         private const val WORK_DIR = "work-dir"
     }
 
     // The following variables are saved in the MakeindexSettingsEditor
     var makeindexProgram: MakeindexProgram = MakeindexProgram.MAKEINDEX
     var mainFile: VirtualFile? = null
+    var commandLineArguments: String? = null
     var workingDirectory: VirtualFile? = null
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         val makeindexOptions = getMakeindexOptions(mainFile, project)
-        return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, makeindexProgram)
+        return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, makeindexProgram, commandLineArguments)
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = MakeindexSettingsEditor(project)
@@ -68,6 +70,19 @@ class MakeindexRunConfiguration(
             null
         }
 
+        val commandLineArgsText = try {
+            parent.getChildText(COMMAND_LINE_ARGS)
+        }
+        catch (e: NullPointerException) {
+            null
+        }
+        commandLineArguments = if (!commandLineArgsText.isNullOrBlank()) {
+            commandLineArgsText
+        }
+        else {
+            null
+        }
+
         val workDirPath = try {
             parent.getChildText(WORK_DIR)
         }
@@ -90,12 +105,13 @@ class MakeindexRunConfiguration(
 
         parent.addContent(Element(PROGRAM).apply { text = makeindexProgram.name })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
+        parent.addContent(Element(COMMAND_LINE_ARGS).apply { text = commandLineArguments ?: "" })
         parent.addContent(Element(WORK_DIR).apply { text = workingDirectory?.path ?: "" })
     }
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension + " " + makeindexProgram.name.toLowerCase()
+    override fun suggestedName() = mainFile?.nameWithoutExtension + " " + makeindexProgram.name.lowercase(Locale.getDefault())
 
     fun setSuggestedName() {
         name = suggestedName()

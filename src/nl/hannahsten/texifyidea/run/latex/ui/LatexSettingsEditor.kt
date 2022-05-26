@@ -101,7 +101,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         if (auxilPath != null) {
             val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
-            auxilPathTextField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
+            auxilPathTextField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
@@ -233,6 +233,17 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Apply LaTeX distribution
         runConfiguration.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
+
+        if (chosenCompiler == LatexCompiler.ARARA) {
+            outputPath.isVisible = false
+            auxilPath?.isVisible = false
+            outputFormat.isVisible = false
+        }
+        else {
+            outputPath.isVisible = true
+            auxilPath?.isVisible = true
+            outputFormat.isVisible = true
+        }
     }
 
     override fun createEditor(): JComponent {

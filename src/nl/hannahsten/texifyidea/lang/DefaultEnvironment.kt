@@ -64,6 +64,7 @@ enum class DefaultEnvironment(
     TABU(environmentName = "tabu", arguments = arrayOf(RequiredArgument("cols"))),
     TABULAR(environmentName = "tabular", arguments = arrayOf(OptionalArgument("pos"), RequiredArgument("cols"))),
     TABULARX(environmentName = "tabularx", arguments = arrayOf(RequiredArgument("width"), RequiredArgument("cols"))),
+    TABULARY(environmentName = "tabulary", arguments = arrayOf(RequiredArgument("length"), RequiredArgument("pream"))),
     TABULAR_STAR(environmentName = "tabular*", arguments = arrayOf(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"))),
     THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = arrayOf(RequiredArgument("widestlabel"))),
     THEINDEX(environmentName = "theindex"),
@@ -135,6 +136,8 @@ enum class DefaultEnvironment(
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
     TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
+    WIDETABULAR(environmentName = "widetabular", dependency = LatexPackage.WIDETABLE),
+    WIDETABLE(environmentName = "widetable", dependency = LatexPackage.WIDETABLE),
     ;
 
     companion object {
@@ -156,7 +159,7 @@ enum class DefaultEnvironment(
         @JvmStatic
         fun fromPsi(latexEnvironment: LatexEnvironment): DefaultEnvironment? {
             val text: String = latexEnvironment.name()?.text ?: return null
-            return get(text.toLowerCase())
+            return get(text.lowercase(Locale.getDefault()))
         }
 
         /**

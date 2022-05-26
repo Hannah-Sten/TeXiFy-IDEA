@@ -21,6 +21,6 @@ enum class LatexListingCommand(
     LUAEXEC("luaexec", dependency = LUACODE),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

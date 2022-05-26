@@ -95,7 +95,7 @@ class LatexCompileMessageTreeView(
      * Apply all filters to [logMessage].
      */
     fun applyFilters(logMessage: LatexLogMessage) {
-        val hide = logMessage.message.toLowerCase().containsAny(
+        val hide = logMessage.message.lowercase(Locale.getDefault()).containsAny(
             LatexKeywordFilter.values()
                 .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
                 .map { f -> f.triggers }.flatten().toSet()

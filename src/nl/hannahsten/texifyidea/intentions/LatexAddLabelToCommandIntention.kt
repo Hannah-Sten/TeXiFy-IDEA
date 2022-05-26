@@ -11,6 +11,8 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.firstParentOfType
@@ -28,7 +30,10 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             return false
         }
 
-        return findTarget<LatexCommands>(editor, file)?.name in CommandMagic.labeledPrefixes
+        val targetName = findTarget<LatexCommands>(editor, file)?.name
+        val conventionSettings = TexifyConventionsSettingsManager.getInstance(project).getSettings()
+
+        return conventionSettings.getLabelConvention(targetName, LabelConventionType.COMMAND)?.enabled ?: false
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
@@ -41,7 +46,8 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             ?: findTarget(editor, file)
             ?: return
 
-        val prefix = CommandMagic.labeledPrefixes[command.name!!] ?: return
+        val conventionSettings = TexifyConventionsSettingsManager.getInstance(project).getSettings()
+        val prefix = conventionSettings.getLabelConvention(command.name, LabelConventionType.COMMAND)?.prefix ?: return
 
         val factory = LatexPsiHelper(project)
 

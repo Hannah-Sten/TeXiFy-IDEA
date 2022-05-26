@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 
 /**
@@ -10,7 +11,7 @@ open class LatexPackage @JvmOverloads constructor(
     val name: String,
     vararg val parameters: String = emptyArray(),
     /**
-     * Source (dtx) filename without extension.
+     * Source (dtx/sty) filename without extension.
      * Since a package can consist of multiple source/doc files, we do want
      * to track in which source file a command is defined, for example to find
      * the matching pdf file.
@@ -64,6 +65,7 @@ open class LatexPackage @JvmOverloads constructor(
         val MATHTOOLS = LatexPackage("mathtools")
         val MULTIND = LatexPackage("multind")
         val NATBIB = LatexPackage("natbib")
+        val NTHEOREM = LatexPackage("ntheorem")
         val PDFCOMMENT = LatexPackage("pdfcomment")
         val PYTHONTEX = LatexPackage("pythontex")
         val REPEATINDEX = LatexPackage("repeatindex")
@@ -75,17 +77,25 @@ open class LatexPackage @JvmOverloads constructor(
         val TEXTCOMP = LatexPackage("textcomp")
         val TIKZ = LatexPackage("tikz")
         val ULEM = LatexPackage("ulem")
+        val VARIOREF = LatexPackage("varioref")
         val WASYSYM = LatexPackage("wasysym")
+        val WIDETABLE = LatexPackage("widetable")
         val XCOLOR = LatexPackage("xcolor")
         val XPARSE = LatexPackage("xparse")
 
         /**
-         * Create package based on the source (dtx) file.
+         * Create package based on the source (dtx/sty) file.
          */
-        fun create(sourceFileName: VirtualFile): LatexPackage {
-            val isLatexBase = sourceFileName.parent.name == "base"
-            val dependencyText = sourceFileName.parent.name
-            val fileName = sourceFileName.name.removeFileExtension()
+        fun create(sourceFile: VirtualFile): LatexPackage {
+            val isLatexBase = sourceFile.parent.name == "base"
+            val dependencyText = if (sourceFile.fileType is StyleFileType) {
+                sourceFile.nameWithoutExtension
+            }
+            else {
+                // The mapping from dtx to package names is nontrivial, we just do a guess for now
+                sourceFile.parent.name
+            }
+            val fileName = sourceFile.name.removeFileExtension()
             return if (isLatexBase) LatexPackage("", fileName = fileName) else LatexPackage(dependencyText, fileName = fileName)
         }
     }

@@ -5,8 +5,10 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.util.runCommand
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.errors.NoReply
+import org.freedesktop.dbus.errors.ServiceUnknown
 import org.gnome.evince.Daemon
 
 /**
@@ -37,9 +39,9 @@ object EvinceConversation : ViewerConversation() {
     /**
      * Open a file in Evince, starting it if it is not running yet. This also finds the process owner of the pdf, so we can execute forward search later.
      */
-    fun openFile(pdfFilePath: String) {
+    fun openFile(pdfFilePath: String, project: Project) {
         // Will do nothing if file is already open in Evince
-        findProcessOwner(pdfFilePath)
+        findProcessOwner(pdfFilePath, project)
     }
 
     /**
@@ -58,14 +60,14 @@ object EvinceConversation : ViewerConversation() {
         }
 
         if (pdfPath != null) {
-            findProcessOwner(pdfPath)
+            findProcessOwner(pdfPath, project)
         }
 
         if (processOwner != null) {
             // Theoretically we should use the Java D-Bus bindings as well to call SyncView, but that did
             // not succeed with a NoReply exception, so we will execute a command via the shell
             val command = "gdbus call --session --dest $processOwner --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView $sourceFilePath '($line, 1)' 0"
-            Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
+            runCommand("bash", "-c", command)
         }
         else {
             // If the user used the forward search menu action
@@ -85,7 +87,7 @@ object EvinceConversation : ViewerConversation() {
      *
      * @param pdfFilePath Full path to the pdf file to find the owner of.
      */
-    private fun findProcessOwner(pdfFilePath: String) {
+    private fun findProcessOwner(pdfFilePath: String, project: Project) {
         // Initialize a session bus
         val connection = DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION)
 
@@ -98,5 +100,8 @@ object EvinceConversation : ViewerConversation() {
             processOwner = daemon.FindDocument("file://$pdfFilePath", true)
         }
         catch (ignored: NoReply) {}
+        catch (e: ServiceUnknown) {
+            Notification("LaTeX", "Cannot communicate to Evince", "Please update Evince and then try again.", NotificationType.ERROR).notify(project)
+        }
     }
 }

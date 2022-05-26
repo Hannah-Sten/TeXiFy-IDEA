@@ -20,6 +20,6 @@ enum class LatexMathtoolsRegularCommand(
     DECLARE_PAIRED_DELIMITER_XPP("DeclarePairedDelimiterXPP", "cmd".asRequired(), "num args".asOptional(), "pre code".asRequired(), "left delimiter".asRequired(), "right delimiter".asRequired(), "post code".asRequired(), "body".asRequired(Argument.Type.TEXT), dependency = MATHTOOLS),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

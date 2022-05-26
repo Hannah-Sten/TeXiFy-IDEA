@@ -23,6 +23,6 @@ enum class LatexEuroCommand(
     OFFICIAL_EURO("officialeuro", dependency = EUROSYM, display = "€"),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

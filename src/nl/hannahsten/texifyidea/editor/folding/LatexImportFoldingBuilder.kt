@@ -4,13 +4,15 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.psi.PsiContainer
+import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parentOfType
@@ -36,7 +38,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val covered = HashSet<LatexCommands>()
-        val commands = LatexIncludesIndex.getCommandsByNames(root.containingFile, *includesArray)
+        val commands = root.allCommands().filter { it.name in includesArray }
 
         for (command in commands) {
             // Do not cover commands twice.
@@ -53,8 +55,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
                 next = next.nextCommand()
             }
 
-            val elt = PsiContainer(command, last)
-            descriptors.add(FoldingDescriptor(elt, elt.textRange))
+            descriptors.add(FoldingDescriptor(command, TextRange(command.startOffset, last.endOffset)))
         }
 
         return descriptors.toTypedArray()

@@ -2,6 +2,7 @@
     <actions>
         <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <override-text place="GoToAction" text="_LaTeX Tools"/>
 
             <!-- Clear files -->
             <action class="nl.hannahsten.texifyidea.action.DeleteAuxFiles" id="texify.ClearAuxFiles" text="Delete Auxiliary Files">

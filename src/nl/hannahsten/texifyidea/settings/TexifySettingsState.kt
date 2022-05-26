@@ -10,6 +10,7 @@ data class TexifySettingsState(
         var automaticItemInItemize: Boolean = true,
         var automaticDependencyCheck: Boolean = true,
         var autoCompile: Boolean = false,
+        var autoCompileOnSaveOnly: Boolean = false,
         var continuousPreview: Boolean = false,
         var includeBackslashInSelection: Boolean = false,
         var showPackagesInStructureView: Boolean = false,

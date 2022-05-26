@@ -1,8 +1,11 @@
-package nl.hannahsten.texifyidea.editor
+package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.editorActions.AutoHardWrapHandler
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
+import com.intellij.codeInsight.template.TemplateManager
+import com.intellij.codeInsight.template.impl.TemplateImpl
+import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
@@ -10,11 +13,10 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.editor.ControlTracker
+import nl.hannahsten.texifyidea.editor.ShiftTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.psi.LatexBeginCommand
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexOptionalParam
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -22,7 +24,7 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 /**
  * @author Hannah Schellekens
  */
-class InsertEnumerationItem : EnterHandlerDelegate {
+class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
 
     override fun postProcessEnter(
         file: PsiFile, editor: Editor,
@@ -43,11 +45,20 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset)
         if (hasValidContext(element)) {
-            editor.insertAndMove(caret.offset, getInsertionString(element!!))
+            val previousMarker = getPreviousMarker(element!!)
+            if (previousMarker == null) {
+                editor.insertAtCaretAndMove("\\item ")
+            }
+            else {
+                // Use live template, so that the user can choose to replace the label and press enter to jump out of the optional argument
+                val template = TemplateImpl("", "\\item[\$__Variable0\$] ", "")
+                template.addVariable(TextExpression(previousMarker.trim('[', ']')), true)
+                TemplateManager.getInstance(file.project).startTemplate(editor, template)
+            }
         }
         else {
             if (ControlTracker.isControlPressed) {
-                editor.insertAndMove(caret.offset, "")
+                editor.insertAtCaretAndMove("")
             }
         }
 
@@ -60,14 +71,6 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         p5: EditorActionHandler?
     ): Result {
         return Result.Continue
-    }
-
-    /**
-     * Get the string that must be inserted at the caret.
-     */
-    private fun getInsertionString(element: PsiElement): String {
-        val marker = getPreviousMarker(element)
-        return "\\item" + if (marker == null) " " else "$marker "
     }
 
     /**
@@ -96,12 +99,13 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      * @return The last label in the environment, or `null` when there are no labels.
      */
     private fun getLastLabel(environment: PsiElement): LatexCommands? {
-        val commands = environment.childrenOfType(LatexCommands::class).filter { it.name == "\\item" }
-        if (commands.isEmpty()) {
-            return null
-        }
-
-        return commands.last()
+        // Only consider direct children, because there could be nested enumerations which we should ignore
+        return environment.children
+            .firstOrNull { it is LatexEnvironmentContent }
+            ?.children
+            ?.flatMap { it.children.toList() }
+            ?.filterIsInstance<LatexCommands>()
+            ?.lastOrNull { it.name == "\\item" }
     }
 
     /**

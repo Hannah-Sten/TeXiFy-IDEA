@@ -2,11 +2,14 @@ package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
@@ -35,7 +38,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
@@ -74,7 +77,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
@@ -118,7 +121,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             if (runConfig.outputFormat != Format.DEFAULT) {
-                command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+                command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
             }
 
             command.add("-output-directory=$outputPath")
@@ -226,7 +229,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("--synctex")
 
-            command.add("--outfmt=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             if (outputPath != null) {
                 command.add("--outdir=$outputPath")
@@ -234,7 +237,30 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             return command
         }
-    };
+    },
+
+    ARARA("Arara", "arara") {
+
+        override val includesBibtex = true
+
+        override val handlesNumberOfCompiles = true
+
+        override val outputFormats = arrayOf(Format.PDF)
+
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
+
+            // Arara handles everything as configured by magic comments in the file.
+            // We cannot use --verbose because it relies on user input
+            return mutableListOf(runConfig.compilerPath ?: executableName)
+        }
+    },
+    ;
 
     /**
      * Convert Windows paths to WSL paths.
@@ -321,8 +347,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         // See https://hub.docker.com/r/miktex/miktex
         "docker volume create --name miktex".runCommand()
 
+        // Find the sdk corresponding to the type the user has selected in the run config
+        val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull { it.sdkType is DockerSdk }
+
         val parameterList = mutableListOf(
-            "docker", // Could be improved by getting executable name based on SDK
+            if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),
             "run",
             "--rm",
             "-v",
@@ -338,10 +367,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         if (runConfig.auxilPath.getAndCreatePath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()}:$dockerAuxilDir"))
+            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()?.path}:$dockerAuxilDir"))
         }
 
-        parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
+        parameterList.add((sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName ?: "miktex:latest")
 
         command.addAll(0, parameterList)
     }

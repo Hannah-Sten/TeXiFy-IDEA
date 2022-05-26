@@ -1,9 +1,18 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.every
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexParserTest : BasePlatformTestCase() {
+
+    override fun setUp() {
+        super.setUp()
+        mockkStatic(::runCommandWithExitCode)
+        every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+    }
 
     fun testSomeGeneralConstructs() {
         myFixture.configureByText(
@@ -59,15 +68,19 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            \begin{tabular}{l >{$}l<{$}}
-                some text & y = x (or any math) \\
-                more text & z = 2 (or any math) \\
+            \newenvironment{keyword}{\leavevmode\color{magenta}}{}
+            \begin{tabular}{l >{$}l<{$} >{\begin{keyword}} l <{\end{keyword}} }
+                some text & y = x (or any math) & prop1 \\
+                more text & z = 2 (or any math) & prop2 \\
             \end{tabular}
             Fake preamble option:
             \begin{tikzpicture}
             \visible<+->{\node (a) at (0, 0) {$ \{A\}_{j}$ };}
             \node (b) at (1, 1) { $ B $ };
             \end{tikzpicture}
+            Similar but with different commands:
+            \pretitle{\begin{center}\fontsize{18bp}{18bp}\selectfont}
+            \posttitle{\par\end{center}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

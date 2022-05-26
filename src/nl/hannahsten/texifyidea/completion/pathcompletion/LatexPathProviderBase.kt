@@ -206,8 +206,9 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
 
             val rootManager = ProjectRootManager.getInstance(this.originalFile.project)
             rootManager.contentSourceRoots.asSequence()
-                .filter { it != resultList.first() }
+                .filter { it != resultList.firstOrNull() }
                 .toSet()
+                .filterNotNull()
                 .forEach { resultList.add(it) }
         }
 

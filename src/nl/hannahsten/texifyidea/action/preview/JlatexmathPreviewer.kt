@@ -19,6 +19,7 @@ import java.awt.Color
 import java.awt.Dimension
 import java.awt.Insets
 import java.io.*
+import java.nio.file.Paths
 import javax.imageio.ImageIO
 import javax.swing.JLabel
 import javax.swing.SwingUtilities
@@ -26,7 +27,7 @@ import javax.swing.SwingUtilities
 class JlatexmathPreviewer : Previewer {
 
     override fun preview(input: String, previewForm: PreviewForm, project: Project, preamble: String, waitTime: Long) {
-        val tempBaseName = "temp"
+        val tempBaseName = Paths.get(System.getProperty("java.io.tmpdir"), "temp").toString()
         try {
             // Fonts should be shapes, otherwise the user would have needed to install the font to render it
             // when converting to png (because fonts are not saved in svg).

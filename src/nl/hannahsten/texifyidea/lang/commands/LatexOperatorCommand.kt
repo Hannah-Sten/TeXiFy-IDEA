@@ -245,6 +245,6 @@ enum class LatexOperatorCommand(
     REVERSED_IN_PLUS("niplus", dependency = STMARYRD),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }
