@@ -3,7 +3,7 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ master, kover ]
   pull_request:
     types: [opened, synchronize, closed]
 
@@ -24,11 +24,6 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
-      - uses: actions/upload-artifact@v2
-        if: always()
-        # To view the report: https://www.jetbrains.com/help/qodana/html-report.html
-        with:
-          path: ${{ runner.temp }}/qodana
   test:
     runs-on: ${{ matrix.os }}
     strategy:

@@ -5,7 +5,9 @@ profile:
 exclude:
   - name: XmlUnusedNamespaceDeclaration
   - name: XmlHighlighting
-  - name: unused
+  - name: HtmlDeprecatedTag
+  - name: HtmlRequiredLangAttribute
+  - name: EditorConfigUnusedDeclaration
     paths:
       - src/nl/hannahsten/texifyidea/lang/commands
   - name: All
