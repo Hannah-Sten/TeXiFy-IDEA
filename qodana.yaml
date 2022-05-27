@@ -12,7 +12,7 @@ exclude:
     paths:
       - src/nl/hannahsten/texifyidea/lang/commands
   - name: All
-    paths:D
+    paths:
       - gen
       - .github
       - results
