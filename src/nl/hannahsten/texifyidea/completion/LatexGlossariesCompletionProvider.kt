@@ -1,0 +1,84 @@
+package nl.hannahsten.texifyidea.completion
+
+import com.intellij.codeInsight.completion.CompletionParameters
+import com.intellij.codeInsight.completion.CompletionProvider
+import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.util.ProcessingContext
+import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
+import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
+import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
+import nl.hannahsten.texifyidea.psi.LatexKeyvalKey
+import nl.hannahsten.texifyidea.psi.LatexKeyvalValue
+import nl.hannahsten.texifyidea.psi.LatexStrictKeyvalPair
+import nl.hannahsten.texifyidea.psi.toStringMap
+import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.requiredParameters
+
+object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParameters>() {
+
+    private fun getOptionsMap(pairs: List<LatexStrictKeyvalPair>): LinkedHashMap<String, String> {
+        val map = HashMap<LatexKeyvalKey, LatexKeyvalValue?>()
+        pairs.forEach { p -> map[p.keyvalKey] = p.keyvalValue }
+        return map.toStringMap()
+    }
+
+    override fun addCompletions(
+        parameters: CompletionParameters,
+        context: ProcessingContext,
+        result: CompletionResultSet
+    ) {
+        val glossaryCommands = LatexGlossaryEntryIndex.getItemsInFileSet(parameters.originalFile)
+        val lookupItems = glossaryCommands.mapNotNull { command ->
+            when (command.name) {
+                NEWACRONYM.cmd, NEWABBREVIATION.cmd -> {
+                    val params = command.requiredParameters
+                    val label = params.getOrNull(0) ?: return@mapNotNull null
+                    val short = params.getOrNull(1) ?: return@mapNotNull null
+                    val description = params.getOrNull(2) ?: return@mapNotNull null
+                    LookupElementBuilder.create(label, label)
+                        .withPsiElement(command)
+                        .withPresentableText(label)
+                        .withTailText(" $description", true)
+                        .withTypeText(short)
+                        .bold()
+                        .withInsertHandler(MoveToEndOfCommandHandler)
+                }
+                NEWGLOSSARYENTRY.cmd -> {
+                    val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
+                    val options =
+                        command.requiredParameters().getOrNull(1)?.strictKeyvalPairList ?: return@mapNotNull null
+                    val optionsMap = getOptionsMap(options)
+                    val short = optionsMap.getOrDefault("name", "")
+                    val description = optionsMap.getOrDefault("description", "")
+                    LookupElementBuilder.create(label, label)
+                        .withPsiElement(command)
+                        .withPresentableText(label)
+                        .withTailText(" $description", true)
+                        .withTypeText(short)
+                        .bold()
+                        .withInsertHandler(MoveToEndOfCommandHandler)
+                }
+                LONGNEWGLOSSARYENTRY.cmd -> {
+                    val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
+                    val options =
+                        command.requiredParameters().getOrNull(1)?.strictKeyvalPairList ?: return@mapNotNull null
+                    val optionsMap = getOptionsMap(options)
+                    val description = command.requiredParameters.getOrNull(2) ?: return@mapNotNull null
+                    val short = optionsMap.getOrDefault("name", "")
+                    LookupElementBuilder.create(label, label)
+                        .withPsiElement(command)
+                        .withPresentableText(label)
+                        .withTailText(" $description", true)
+                        .withTypeText(short)
+                        .bold()
+                        .withInsertHandler(MoveToEndOfCommandHandler)
+                }
+                else -> {
+                    null
+                }
+            }
+        }
+        result.addAllElements(lookupItems)
+    }
+}

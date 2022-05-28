@@ -5,12 +5,15 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.isFigureLabel
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.remove
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -60,6 +63,7 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
         !CommandMagic.labelDefinitionsWithoutCustomCommands.contains(name) &&
         !CommandMagic.bibliographyReference.contains(name) &&
         !CommandMagic.labelAsParameter.contains(name) &&
+        !CommandMagic.glossaryReference.contains(name) &&
         !EnvironmentMagic.labelAsParameter.contains(environmentName) &&
         element.firstParentOfType(LatexEndCommand::class) == null &&
         element.firstParentOfType(LatexBeginCommand::class) == null

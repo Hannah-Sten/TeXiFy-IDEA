@@ -5,22 +5,21 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.psi.LatexRequiredParam;
-import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent;
+import nl.hannahsten.texifyidea.psi.LatexKeyvalKey;
+import nl.hannahsten.texifyidea.psi.LatexKeyvalValue;
 import nl.hannahsten.texifyidea.psi.LatexStrictKeyvalPair;
 import nl.hannahsten.texifyidea.psi.LatexVisitor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public class LatexStrictKeyvalPairImpl extends ASTWrapperPsiElement implements LatexStrictKeyvalPair {
 
-public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements LatexRequiredParam {
-
-  public LatexRequiredParamImpl(@NotNull ASTNode node) {
+  public LatexStrictKeyvalPairImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitRequiredParam(this);
+    visitor.visitStrictKeyvalPair(this);
   }
 
   @Override
@@ -31,14 +30,14 @@ public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @NotNull
-  public List<LatexRequiredParamContent> getRequiredParamContentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexRequiredParamContent.class);
+  public LatexKeyvalKey getKeyvalKey() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexKeyvalKey.class));
   }
 
   @Override
-  @NotNull
-  public List<LatexStrictKeyvalPair> getStrictKeyvalPairList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexStrictKeyvalPair.class);
+  @Nullable
+  public LatexKeyvalValue getKeyvalValue() {
+    return PsiTreeUtil.getChildOfType(this, LatexKeyvalValue.class);
   }
 
 }
