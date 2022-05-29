@@ -27,4 +27,12 @@ class RemoteLibraryManager : PersistentStateComponent<RemoteLibraryState> {
     fun updateLibrary(library: RemoteBibLibrary, bibItems: List<BibtexEntry>) {
         libraries[library.name] = bibItems
     }
+
+    fun removeLibrary(library: RemoteBibLibrary) {
+        removeLibraryByKey(library.name)
+    }
+
+    fun removeLibraryByKey(key: String) {
+        libraries.remove(key)
+    }
 }

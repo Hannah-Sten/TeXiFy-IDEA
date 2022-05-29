@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -47,7 +48,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
     /**
      * The tool window panel that contains the toolbar and the actual window (which is [RemoteLibraryToolWindow]).
      */
-    class RemoteLibrariesToolWindowPanel(val project: Project) : SimpleToolWindowPanel(true, false) {
+    class RemoteLibrariesToolWindowPanel(val project: Project) : SimpleToolWindowPanel(true, false), DataProvider {
 
         private val toolWindow = RemoteLibraryToolWindow(project)
 
@@ -58,13 +59,15 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
             setContent(toolWindow.content)
         }
+
+        override fun getData(dataId: String): Any? = toolWindow.getData(dataId)
     }
 
     /**
      * The UI elements of the tool window contents. Most actual UI elements are taken from the structure view, with the
      * aim of this tree looking the same as the one in the structure view.
      */
-    class RemoteLibraryToolWindow(val project: Project) {
+    class RemoteLibraryToolWindow(val project: Project) : DataProvider {
 
         private val actionManager: ActionManager = ActionManager.getInstance()
 
@@ -117,6 +120,12 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         }
 
         val content = JBScrollPane(tree)
-    }
 
+        override fun getData(dataId: String): Any? {
+            return when(dataId) {
+                "library" -> tree.selectionPath.getPathComponent(1).toString()
+                else -> null
+            }
+        }
+    }
 }
