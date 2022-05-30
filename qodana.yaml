@@ -1,7 +1,6 @@
 version: "1.0"
 linter: jetbrains/qodana-jvm:2021.3-eap
-profile:
-  name: Project Default
+profile: qodana.recommended
 exclude:
   - name: XmlUnusedNamespaceDeclaration
   - name: XmlHighlighting
