@@ -18,6 +18,8 @@ jobs:
           # todo caching results is not working?
       - name: Qodana
         uses: JetBrains/qodana-action@v5.1.0
+        with:
+          additional-cache-hash: "v1"
       # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
