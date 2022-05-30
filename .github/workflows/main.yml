@@ -20,6 +20,7 @@ jobs:
         uses: JetBrains/qodana-action@v5.1.0
         with:
           additional-cache-hash: "v1"
+          use-caches: false
       # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
@@ -27,25 +28,25 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-java@v1
-      with:
-        java-version: '11'
-    - name: Run linting
-      run: |
-        chmod +x gradlew
-        ./gradlew ktlintCheck
-    - name: Run tests
-      run: ./gradlew check koverReport
-    - name: Upload coverage report
-      if: success() && matrix.os == 'ubuntu-latest'
-      run: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov -t ${CODECOV_TOKEN}
+#  test:
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      matrix:
+#        os: [ubuntu-latest, windows-latest]
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: actions/setup-java@v1
+#      with:
+#        java-version: '11'
+#    - name: Run linting
+#      run: |
+#        chmod +x gradlew
+#        ./gradlew ktlintCheck
+#    - name: Run tests
+#      run: ./gradlew check koverReport
+#    - name: Upload coverage report
+#      if: success() && matrix.os == 'ubuntu-latest'
+#      run: |
+#        curl -Os https://uploader.codecov.io/latest/linux/codecov
+#        chmod +x codecov
+#        ./codecov -t ${CODECOV_TOKEN}
