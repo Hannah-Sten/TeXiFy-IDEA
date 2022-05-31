@@ -1,6 +1,12 @@
 package nl.hannahsten.texifyidea.lang.commands
 
+import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.requiredParameters
 
 enum class LatexGlossariesCommand(
     override val command: String,
@@ -10,6 +16,7 @@ enum class LatexGlossariesCommand(
     override val isMathMode: Boolean = false,
     val collapse: Boolean = false
 ) : LatexCommand {
+
     LONGNEWGLOSSARYENTRY(
         "longnewglossaryentry",
         "name".asRequired(),
@@ -42,5 +49,26 @@ enum class LatexGlossariesCommand(
     GLS("gls", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
     GLSUPPER("Gls", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
     GLSPLURAL("glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
-    GLSPLURALUPPER("Glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
+    GLSPLURALUPPER("Glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES);
+
+    companion object {
+
+        /**
+         * Extract the label text from a glossary entry command
+         */
+        fun extractGlossaryLabel(command: LatexCommands): String? {
+            if (!CommandMagic.glossaryEntry.contains(command.name) &&
+                !CommandMagic.glossaryReference.contains(command.name)
+            ) return null
+            return command.requiredParameters[0]
+        }
+
+        /**
+         * Extract the label element from a glossary entry command
+         */
+        fun extractGlossaryLabelElement(command: LatexCommands): PsiElement? {
+            if (!CommandMagic.glossaryEntry.contains(command.name)) return null
+            return command.requiredParameters()[0].firstChildOfType(LatexParameterText::class)
+        }
+    }
 }

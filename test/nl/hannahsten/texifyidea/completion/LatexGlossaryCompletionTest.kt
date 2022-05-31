@@ -32,7 +32,6 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
         // given
         myFixture.configureByFiles("${getTestName(false)}.tex")
 
-
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
