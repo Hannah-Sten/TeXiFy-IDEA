@@ -8,10 +8,7 @@ import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
-import nl.hannahsten.texifyidea.psi.LatexKeyvalKey
-import nl.hannahsten.texifyidea.psi.LatexKeyvalValue
-import nl.hannahsten.texifyidea.psi.LatexStrictKeyvalPair
-import nl.hannahsten.texifyidea.psi.toStringMap
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.requiredParameters
 
@@ -22,6 +19,24 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
         pairs.forEach { p -> map[p.keyvalKey] = p.keyvalValue }
         return map.toStringMap()
     }
+
+    private fun prettyPrintParameter(param: LatexRequiredParam): String {
+        return if (param.requiredParamContentList.isNotEmpty()) {
+            param.requiredParamContentList.joinToString { c -> c.text }
+        }
+        else {
+            param.strictKeyvalPairList.joinToString { p -> p.text }
+        }
+    }
+
+    private fun buildLookupElement(command: LatexCommands, label: String, short: String, long: String) =
+        LookupElementBuilder.create(label, label)
+            .withPsiElement(command)
+            .withPresentableText(label)
+            .withTailText(" ${long.replace("\n", " ")}", true)
+            .withTypeText(short)
+            .bold()
+            .withInsertHandler(MoveToEndOfCommandHandler)
 
     override fun addCompletions(
         parameters: CompletionParameters,
@@ -35,14 +50,8 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     val params = command.requiredParameters
                     val label = params.getOrNull(0) ?: return@mapNotNull null
                     val short = params.getOrNull(1) ?: return@mapNotNull null
-                    val description = params.getOrNull(2) ?: return@mapNotNull null
-                    LookupElementBuilder.create(label, label)
-                        .withPsiElement(command)
-                        .withPresentableText(label)
-                        .withTailText(" $description", true)
-                        .withTypeText(short)
-                        .bold()
-                        .withInsertHandler(MoveToEndOfCommandHandler)
+                    val description = command.requiredParameters().getOrNull(2) ?: return@mapNotNull null
+                    buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
                 NEWGLOSSARYENTRY.cmd -> {
                     val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
@@ -51,28 +60,16 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     val optionsMap = getOptionsMap(options)
                     val short = optionsMap.getOrDefault("name", "")
                     val description = optionsMap.getOrDefault("description", "")
-                    LookupElementBuilder.create(label, label)
-                        .withPsiElement(command)
-                        .withPresentableText(label)
-                        .withTailText(" $description", true)
-                        .withTypeText(short)
-                        .bold()
-                        .withInsertHandler(MoveToEndOfCommandHandler)
+                    buildLookupElement(command, label, short, description)
                 }
                 LONGNEWGLOSSARYENTRY.cmd -> {
                     val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
                     val options =
                         command.requiredParameters().getOrNull(1)?.strictKeyvalPairList ?: return@mapNotNull null
                     val optionsMap = getOptionsMap(options)
-                    val description = command.requiredParameters.getOrNull(2) ?: return@mapNotNull null
+                    val description = command.requiredParameters().getOrNull(2) ?: return@mapNotNull null
                     val short = optionsMap.getOrDefault("name", "")
-                    LookupElementBuilder.create(label, label)
-                        .withPsiElement(command)
-                        .withPresentableText(label)
-                        .withTailText(" $description", true)
-                        .withTypeText(short)
-                        .bold()
-                        .withInsertHandler(MoveToEndOfCommandHandler)
+                    buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
                 else -> {
                     null
