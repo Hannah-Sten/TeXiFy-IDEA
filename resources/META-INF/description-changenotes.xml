@@ -75,7 +75,7 @@
             <li> Fix parse error on partial environment definitions using \pretitle \and \posttitle. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2372">#2372</a>)</li>
             <li> Fix bug in text detection for Grazie inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2375">#2375</a>)</li>
             <li> Support \def to \newcommand quickfix with braced definition. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2384">#2384</a>)</li>
-* Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2384">#2384</a>)
+            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2384">#2384</a>)</li>
         </ul>
         <br>
         <p>
