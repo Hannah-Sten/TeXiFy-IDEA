@@ -17,7 +17,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
     private fun getOptionsMap(pairs: List<LatexStrictKeyvalPair>): LinkedHashMap<String, String> {
         val map = HashMap<LatexKeyvalKey, LatexKeyvalValue?>()
         pairs.forEach { p -> map[p.keyvalKey] = p.keyvalValue }
-        return map.toStringMap()
+        return pairs.associate { Pair(it.keyvalKey, it.keyvalValue) }.toStringMap()
     }
 
     private fun prettyPrintParameter(param: LatexRequiredParam): String {
