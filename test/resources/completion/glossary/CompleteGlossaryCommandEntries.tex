@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{glossaries}
+
+\newglossaryentry{maths}
+{
+    name=mathematics,
+    description={Mathematics is what mathematicians do}
+}
+
+\newglossaryentry{latex}
+{
+    name=latex,
+    description={Is a markup language specially suited for
+scientific documents}
+}
+
+\longnewglossaryentry{fishage}
+{name={Fish Age}}
+{%
+A common name for the Devonian geologic period
+spanning from the end of the Silurian Period.
+}
+
+\newacronym{aslr}{ASLR}{Address Space Layout Randomization}
+
+\begin{document}
+    I am talking about \gls{<caret>}
+\end{document}

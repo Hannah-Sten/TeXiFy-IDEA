@@ -99,6 +99,9 @@ class LatexCommandsStubElementType(debugName: String) :
             val label = latexCommandsStub.optionalParams["label"]!!
             indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex, label)
         }
+        if (token in CommandMagic.glossaryEntry) {
+            indexSinkOccurrence(indexSink, LatexGlossaryEntryIndex, latexCommandsStub.requiredParams[0])
+        }
     }
 
     private fun deserialiseList(string: String): List<String> {

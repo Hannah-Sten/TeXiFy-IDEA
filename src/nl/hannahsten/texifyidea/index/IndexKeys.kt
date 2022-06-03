@@ -24,4 +24,6 @@ object IndexKeys {
         StubIndexKey.createIndexKey<String, LatexEnvironment>("nl.hannahsten.texifyidea.parameterlabeledenvironments")
     val LABELED_COMMANDS_KEY =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.parameterlabeledcommands")
+    val GLOSSARY_ENTRIES_KEY =
+        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.glossaryentries")
 }
