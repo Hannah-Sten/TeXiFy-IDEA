@@ -10,6 +10,17 @@ image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/fi
 
 If you are looking for a 'dumb' autocompletion mode to autocomplete on any word in the file/project, you can use Hippie completion: https://www.jetbrains.com/go/guide/tips/cyclic-expand-word/ and https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion
 
+== GitHub Copilot
+
+GitHub Copilot is machine-learning based autocompletion provided as a separate plugin.
+It can give larger suggestions than TeXiFy will do, but in some cases the completion conflicts with or confuses TeXiFy, so use with care.
+
+image::https://user-images.githubusercontent.com/15669080/172696176-2d49266b-95e3-4f4b-93a3-cefa08204cb9.png[]
+
+image::https://user-images.githubusercontent.com/15669080/172696465-ee68437d-1fbf-4fd7-adc3-76d58711fb23.png[]
+
+
+
 == Autocompletion of required parameters
 _Since b0.6.9_
 
