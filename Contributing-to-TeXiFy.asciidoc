@@ -36,6 +36,14 @@ You can also look at previous pull requests for inspiration, for example https:/
 
 Note, if commands are just missing from the autocompletion, this is likely more complicated because these shouldn't be hardcoded, but detected automatically.
 
+
+== Adding an inspection
+
+* Use highlight level `ProblemHighlightType.GENERIC_ERROR_OR_WARNING` when it should be a warning by default, or `GENERIC_ERROR` for errors, because any other levels (like `WEAK_WARNING`, `WARNING`, `ERROR`) will not be overridden when the user selects a different highlighting level.
+* Inspection descriptions should not end with a full stop.
+* Looking at previous pull requests may be helpful, for example https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/2420
+* Read the IntelliJ Platform UI guidelines at https://jetbrains.github.io/ui/text/inspections/
+
 == Don't edit generated files directly
 
 So, the files in `gen`. Do edit the files in `src`.
@@ -52,13 +60,6 @@ When you edit a `.bnf` file, regenerate the parser with Grammar-Kit from the con
 
 
 Note that we have the generated files committed to git because of https://github.com/JetBrains/gradle-grammar-kit-plugin/issues/3
-
-=== Adding an inspection
-
-* Use highlight level `ProblemHighlightType.GENERIC_ERROR_OR_WARNING` when it should be a warning by default, or `GENERIC_ERROR` for errors, because any other levels (like `WEAK_WARNING`, `WARNING`, `ERROR`) will not be overridden when the user selects a different highlighting level.
-* Inspection descriptions should not end with a full stop.
-* Looking at previous pull requests may be helpful, for example https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/2420
-* Read the IntelliJ Platform UI guidelines at https://jetbrains.github.io/ui/text/inspections/
 
 == Building from source
 
