@@ -1,7 +1,12 @@
 :experimental:
+:toc:
+:toclevels: 4
+:toc-placement!:
 
 See https://github.com/Ruben-Sten/TeXiFy-IDEA/blob/master/CONTRIBUTING.md for the general contributing guide.
 Note that we keep track of 'internal' tasks at a YouTrack instance: https://texify-idea.myjetbrains.com/youtrack/issues
+
+If you are contributing UI, please read the IntelliJ Platform UI guidelines at https://jetbrains.github.io/ui/
 
 == Debugging performance issues
 
@@ -50,6 +55,8 @@ Note that we have the generated files committed to git because of https://github
 
 * Use highlight level `ProblemHighlightType.GENERIC_ERROR_OR_WARNING` when it should be a warning by default, or `GENERIC_ERROR` for errors, because any other levels (like `WEAK_WARNING`, `WARNING`, `ERROR`) will not be overridden when the user selects a different highlighting level.
 * Inspection descriptions should not end with a full stop.
+* Looking at previous pull requests may be helpful, for example https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/2420
+* Read the IntelliJ Platform UI guidelines at https://jetbrains.github.io/ui/text/inspections/
 
 == Building from source
 
