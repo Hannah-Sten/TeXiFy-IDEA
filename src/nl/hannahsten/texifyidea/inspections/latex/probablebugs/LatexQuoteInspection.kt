@@ -9,7 +9,7 @@ import java.util.regex.Pattern
  */
 class LatexQuoteInspection : TexifyRegexInspection(
         inspectionDisplayName = "Incorrect quotation",
-        inspectionId = "DoubleQuotes",
+        inspectionId = "AsciiQuotes",
         errorMessage = { """"ASCII quotes" were used instead of ``LaTeX quotes''""" },
         highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
         pattern = Pattern.compile("""".+?"|'.+?'"""),
