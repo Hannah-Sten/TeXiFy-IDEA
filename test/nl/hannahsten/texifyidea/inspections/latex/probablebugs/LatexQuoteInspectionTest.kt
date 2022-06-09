@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
-internal class LatexDoubleQuoteInspectionTest : TexifyInspectionTestBase(LatexDoubleQuoteInspection()) {
+internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteInspection()) {
 
     fun `test ascii double quotes triggers warning in normal text`() {
         val original = """Lorem ipsum "dolor" sit amet, consectetur adipiscing elit."""

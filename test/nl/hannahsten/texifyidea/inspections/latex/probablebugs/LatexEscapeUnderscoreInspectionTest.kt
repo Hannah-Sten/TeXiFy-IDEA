@@ -6,27 +6,23 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(LatexEscapeUnderscoreInspection()) {
 
     fun `test unescaped _ character triggers warning in normal text`() {
-        myFixture.configureByText(
-            LatexFileType,
+        myFixture.testHighlighting(
             """
             \begin{document}
                 some text <warning descr="Escape character \ expected">_</warning> with unescaped underscore character
             \end{document}
             """.trimIndent()
         )
-        myFixture.checkHighlighting(true, false, false, false)
     }
 
     fun `test unescaped _ character triggers warning in section title`() {
-        myFixture.configureByText(
-            LatexFileType,
+        myFixture.testHighlighting(
             """
             \begin{document}
                 \section{some title <warning descr="Escape character \ expected">_</warning> with unescaped underscore character}
             \end{document}
             """.trimIndent()
         )
-        myFixture.checkHighlighting(true, false, false, false)
     }
 
     fun `test unescaped _ character triggers warning in captions`() {

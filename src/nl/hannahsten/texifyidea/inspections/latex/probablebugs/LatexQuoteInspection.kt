@@ -2,14 +2,12 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInspection.ProblemHighlightType
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
  * @author Michael Milton
  */
-class LatexDoubleQuoteInspection : TexifyRegexInspection(
+class LatexQuoteInspection : TexifyRegexInspection(
         inspectionDisplayName = "Incorrect quotation",
         inspectionId = "DoubleQuotes",
         errorMessage = { """"ASCII quotes" were used instead of ``LaTeX quotes''""" },
