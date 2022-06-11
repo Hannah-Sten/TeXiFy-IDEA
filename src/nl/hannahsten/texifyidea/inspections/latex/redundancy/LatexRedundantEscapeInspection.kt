@@ -32,7 +32,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
     companion object {
 
         fun getNormalTextSibling(command: LatexCommands): LatexNormalText? {
-            val content = PsiTreeUtil.getParentOfType(command, LatexNoMathContent::class.java)
+            val content = PsiTreeUtil.getParentOfType(command, LatexNormalText::class.java)
             val siblingContent = PsiTreeUtil.getNextSiblingOfType(content, LatexNoMathContent::class.java)
             return siblingContent?.normalText
         }

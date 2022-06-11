@@ -126,4 +126,9 @@ object PatternMagic {
                     "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
                     "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))"
     )
+
+    /**
+     * Matches any consecutive sequence of LaTex quote characters
+     */
+    val quotePattern = """["'`]+""".toRegex();
 }

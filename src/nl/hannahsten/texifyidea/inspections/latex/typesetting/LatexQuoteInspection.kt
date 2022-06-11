@@ -1,39 +1,31 @@
-package nl.hannahsten.texifyidea.inspections.latex.probablebugs
+package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTreeUtil.findChildrenOfType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.magic.GeneralMagic
-import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.magic.RegexPattern
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.magic.PatternMagic.quotePattern
 import nl.hannahsten.texifyidea.util.requiredParameter
 import nl.hannahsten.texifyidea.util.toTextRange
-import java.util.regex.Pattern
-import javax.annotation.RegEx
 
 /**
  * @author Michael Milton
  */
 class LatexQuoteInspection : TexifyInspectionBase() {
-    override val inspectionGroup = InsightGroup.LATEX;
-    override val inspectionId = "AsciiQuotes";
+    override val inspectionGroup = InsightGroup.LATEX
+    override val inspectionId = "AsciiQuotes"
 
     /**
-     * Matches anything that looks like a LaTeX quote
-     */
-    private val quotePattern = """["'`]+""".toRegex();
-
-    /**
-     * Defines how to extract a quote pair from a command
+     * Defines how to extract a quote pair from a command.
+     * @param command The LaTeX command to extract a new quote pair from
+     * @param openParam The index of the argument to that command where the opening quote is defined
+     * @param closeParam The index of the argument to that command where the closing quote is defined
      */
     data class QuoteMaker(val command: String, val openParam: Int, val closeParam: Int)
 
@@ -49,39 +41,48 @@ class LatexQuoteInspection : TexifyInspectionBase() {
         QuoteMaker("\\MakeForeignBlockQuote", 1, 3),
         QuoteMaker("\\MakeHyphenBlockQuote", 1, 3),
         QuoteMaker("\\MakeHybridBlockQuote", 1, 3),
-    );
+    )
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         // Build up a list of acceptable quote pairs. The ith index in both arrays must contain a matching quote
         // pair. Additional quote pairs are extracted from the csquotes quote making commands
-        val openers = LinkedHashSet(arrayListOf("`", "``"));
-        val closers = LinkedHashSet(arrayListOf("'", "''"));
+        val validQuotes = arrayListOf(
+            "`" to "'",
+            "``" to "''",
+        )
+        val commands = file.commandsInFileSet()
         for (quoteMaker in quoteMakers) {
-            for (command in file.commandsInFile(quoteMaker.command)) {
-                val opener = command.requiredParameter(quoteMaker.openParam);
-                val closer = command.requiredParameter(quoteMaker.closeParam);
+            for (command in commands) {
+                val opener = command.requiredParameter(quoteMaker.openParam)
+                val closer = command.requiredParameter(quoteMaker.closeParam)
 
                 if (!opener.isNullOrEmpty() && !closer.isNullOrEmpty()) {
-                    openers.add(opener);
-                    closers.add(opener);
+                    validQuotes.add(opener to closer)
                 }
             }
         }
+        val openers = LinkedHashSet(validQuotes.map { it.first })
+        val closers = LinkedHashSet(validQuotes.map { it.second })
 
         // Process each of the quote tokens individually
-        val quoteStack = ArrayDeque<Int>();
-        val issues = descriptorList();
+
+        // Each index corresponds to a quote pair in validQuotes
+        val unclosedQuoteIndexStack = ArrayDeque<Int>()
+        val issues = descriptorList()
         for (text in findChildrenOfType(file, LatexNormalText::class.java)) {
+            if (text.inMathContext()) {
+                continue
+            }
             for (match in quotePattern.findAll(text.text)) {
-                val openIndex = openers.indexOf(match.value);
-                if (openIndex > -1) {
+                val openQuoteIndex = openers.indexOf(match.value)
+                if (openQuoteIndex > -1) {
                     // First case: we find a valid opener
                     // In that case, push the ID of that opener onto the stack
-                    quoteStack.add(openIndex);
+                    unclosedQuoteIndexStack.add(openQuoteIndex)
                 }
                 else {
-                    val closeIndex = closers.indexOf(match.value);
-                    if (closeIndex == -1) {
+                    val closeQuoteIndex = closers.indexOf(match.value)
+                    if (closeQuoteIndex == -1) {
                         // Second case: we find a token that's neither a valid opener nor closer
                         issues.add(
                             manager.createProblemDescriptor(
@@ -93,10 +94,10 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                             )
                         )
                     }
-                    else if (!quoteStack.isEmpty() && closeIndex == quoteStack.last()) {
+                    else if (!unclosedQuoteIndexStack.isEmpty() && closeQuoteIndex == unclosedQuoteIndexStack.last()) {
                         // Third case: we find a closer that's correctly paired.
                         // In this case, we can pop the stack.
-                        quoteStack.removeLast();
+                        unclosedQuoteIndexStack.removeLast()
                     }
                     else {
                         // Fourth case: we find a closer that's incorrectly paired
@@ -113,6 +114,6 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                 }
             }
         }
-        return issues;
+        return issues
     }
 }

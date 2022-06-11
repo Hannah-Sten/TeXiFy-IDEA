@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex.probablebugs
+package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
@@ -52,8 +52,8 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
     }
 
 
-    fun `test not quote apostrophe`() {
-        val original = """Specifying of `algorithms' flows this length of 2'\thinspace3''"""
+    fun `test imperial measurements`() {
+        val original = """This is a length of $2'11''$ in the imperial measurement system"""
         myFixture.configureByText(
             LatexFileType, original
         )
