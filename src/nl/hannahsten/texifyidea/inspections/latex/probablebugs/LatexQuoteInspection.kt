@@ -38,7 +38,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
     data class QuoteMaker(val command: String, val openParam: Int, val closeParam: Int)
 
     /**
-     * Matches any quote expression
+     * All the ways that csquotes defines a new quotation mark
      */
     private val quoteMakers = arrayOf(
         QuoteMaker("\\MakeOuterQuote", 0, 0),
