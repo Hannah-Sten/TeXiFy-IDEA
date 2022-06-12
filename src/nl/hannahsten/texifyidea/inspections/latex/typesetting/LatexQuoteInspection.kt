@@ -1,16 +1,21 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
 import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil.findChildrenOfType
+import com.intellij.refactoring.suggested.extend
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.quotePattern
+import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.requiredParameter
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -41,6 +46,14 @@ class LatexQuoteInspection : TexifyInspectionBase() {
         QuoteMaker("\\MakeForeignBlockQuote", 1, 3),
         QuoteMaker("\\MakeHyphenBlockQuote", 1, 3),
         QuoteMaker("\\MakeHybridBlockQuote", 1, 3),
+    )
+
+    private val fixers = arrayOf(
+        MathFix(),
+        LatexQuoteFix("opening single quote", "`"),
+        LatexQuoteFix("opening double quote", "``"),
+        LatexQuoteFix("closing single quote", "'"),
+        LatexQuoteFix("closing double quote", "''"),
     )
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
@@ -90,7 +103,8 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                                 match.range.toTextRange(),
                                 "${match.value} is not a valid set of LaTex quotes",
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                isOntheFly
+                                isOntheFly,
+                                *fixers
                             )
                         )
                     }
@@ -107,7 +121,8 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                                 match.range.toTextRange(),
                                 "Closing quote without opening quote",
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                isOntheFly
+                                isOntheFly,
+                                *fixers
                             )
                         )
                     }
@@ -115,5 +130,34 @@ class LatexQuoteInspection : TexifyInspectionBase() {
             }
         }
         return issues
+    }
+
+    /**
+     * Fixes an invalid quote by putting it into an inline math environment
+     */
+    private class MathFix: LocalQuickFix{
+        override fun getFamilyName(): String {
+            return "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation."
+        }
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val document = descriptor.psiElement.containingFile.document() ?: return
+            val expandedRange = descriptor.textRangeInElement.extend(descriptor.psiElement.text) {
+                it.isDigit() || it in """`"'"""
+            }
+            val originalText = expandedRange.substring(descriptor.psiElement.text)
+            document.replaceString(expandedRange, "\\(${originalText}\\)")
+        }
+    }
+
+    private class LatexQuoteFix(val description: String, val replacement: String): LocalQuickFix {
+        override fun getFamilyName(): String {
+            return "Replace with a LaTeX $description"
+        }
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val document = descriptor.psiElement.containingFile.document() ?: return
+            document.replaceString(descriptor.textRangeInElement, replacement)
+        }
     }
 }
