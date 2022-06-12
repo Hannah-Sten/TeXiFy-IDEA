@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.util.toTextRange
  * @author Michael Milton
  */
 class LatexQuoteInspection : TexifyInspectionBase() {
+
     override val inspectionGroup = InsightGroup.LATEX
     override val inspectionId = "AsciiQuotes"
 
@@ -135,7 +136,8 @@ class LatexQuoteInspection : TexifyInspectionBase() {
     /**
      * Fixes an invalid quote by putting it into an inline math environment
      */
-    private class MathFix: LocalQuickFix{
+    private class MathFix : LocalQuickFix {
+
         override fun getFamilyName(): String {
             return "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation."
         }
@@ -150,7 +152,8 @@ class LatexQuoteInspection : TexifyInspectionBase() {
         }
     }
 
-    private class LatexQuoteFix(val description: String, val replacement: String): LocalQuickFix {
+    private class LatexQuoteFix(val description: String, val replacement: String) : LocalQuickFix {
+
         override fun getFamilyName(): String {
             return "Replace with a LaTeX $description"
         }

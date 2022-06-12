@@ -51,7 +51,6 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-
     fun `test imperial measurements in math mode are ignored`() {
         val original = """This is a length of $2'11''$ in the imperial measurement system"""
         myFixture.configureByText(
