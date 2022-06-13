@@ -14,7 +14,7 @@ class DetexifyToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val detexifyToolWindow = DetexifyToolWindow()
-        val content = ContentFactory.SERVICE.getInstance().createContent(detexifyToolWindow.content, "", false)
+        val content = ContentFactory.getInstance().createContent(detexifyToolWindow.content, "", false)
         toolWindow.contentManager.addContent(content)
     }
 

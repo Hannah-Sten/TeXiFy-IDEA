@@ -25,7 +25,6 @@ import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
-import kotlin.collections.HashMap
 
 /**
  * The Symbol tool window shows an overview of several symbols that can be inserted in the active latex document.
@@ -36,7 +35,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val toolWindowPanel = SymbolToolWindow(project)
-        val content = ContentFactory.SERVICE.getInstance().createContent(toolWindowPanel, "", false)
+        val content = ContentFactory.getInstance().createContent(toolWindowPanel, "", false)
         toolWindow.contentManager.addContent(content)
     }
 

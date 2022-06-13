@@ -71,7 +71,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             }
         }
 
-        val contentFactory = ContentFactory.SERVICE.getInstance()
+        val contentFactory = ContentFactory.getInstance()
 
         if (!replaced) {
             val previewToolWindow = EquationPreviewToolWindow()
