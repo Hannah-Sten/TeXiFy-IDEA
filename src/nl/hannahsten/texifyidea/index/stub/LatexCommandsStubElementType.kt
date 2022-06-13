@@ -99,7 +99,7 @@ class LatexCommandsStubElementType(debugName: String) :
             val label = latexCommandsStub.optionalParams["label"]!!
             indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex, label)
         }
-        if (token in CommandMagic.glossaryEntry) {
+        if (token in CommandMagic.glossaryEntry && latexCommandsStub.requiredParams.isNotEmpty()) {
             indexSinkOccurrence(indexSink, LatexGlossaryEntryIndex, latexCommandsStub.requiredParams[0])
         }
     }
