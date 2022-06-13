@@ -53,7 +53,8 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
 
     fun `test sentence with math in it`() {
         val original = """It is joyfully not outstanding to monitor \(\Xi\) 'attentions'."""
-        val fixed = """It is joyfully not outstanding to monitor \(\Xi\) `attentions'."""
+        val fixedWithLatexQuote = """It is joyfully not outstanding to monitor \(\Xi\) `attentions'."""
+        val partiallyFixedWithMathMode = """It is joyfully not outstanding to monitor \(\Xi\) \('\)attentions'."""
         val warning =
             """It is joyfully not outstanding to monitor \(\Xi\) <warning descr="Closing quote without opening quote">'</warning>attentions<warning descr="Closing quote without opening quote">'</warning>."""
         myFixture.configureByText(
@@ -61,7 +62,13 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
             warning
         )
         myFixture.checkHighlighting(true, false, false, false)
-        testNamedQuickFix(original, fixed, "Replace with a LaTeX opening single quote", 10)
+        testNamedQuickFix(original, fixedWithLatexQuote, "Replace with a LaTeX opening single quote", 10)
+        testNamedQuickFix(
+            original,
+            partiallyFixedWithMathMode,
+            "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation.",
+            10
+        )
     }
 
     fun `test imperial measurements in math mode are ignored`() {

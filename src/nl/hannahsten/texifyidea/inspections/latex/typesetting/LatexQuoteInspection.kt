@@ -148,7 +148,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                 it.isDigit() || it in """`"'"""
             }
             val originalText = expandedRange.substring(descriptor.psiElement.text)
-            document.replaceString(expandedRange, "\\(${originalText}\\)")
+            document.replaceString(expandedRange.shiftRight(descriptor.psiElement.textOffset), "\\(${originalText}\\)")
         }
     }
 
