@@ -51,6 +51,19 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
         myFixture.checkHighlighting(true, false, false, false)
     }
 
+    fun `test sentence with math in it`() {
+        val original = """It is joyfully not outstanding to monitor \(\Xi\) 'attentions'."""
+        val fixed = """It is joyfully not outstanding to monitor \(\Xi\) `attentions'."""
+        val warning =
+            """It is joyfully not outstanding to monitor \(\Xi\) <warning descr="Closing quote without opening quote">'</warning>attentions<warning descr="Closing quote without opening quote">'</warning>."""
+        myFixture.configureByText(
+            LatexFileType,
+            warning
+        )
+        myFixture.checkHighlighting(true, false, false, false)
+        testNamedQuickFix(original, fixed, "Replace with a LaTeX opening single quote", 10)
+    }
+
     fun `test imperial measurements in math mode are ignored`() {
         val original = """This is a length of $2'11''$ in the imperial measurement system"""
         myFixture.configureByText(
