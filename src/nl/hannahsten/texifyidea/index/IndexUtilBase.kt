@@ -7,9 +7,11 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
+import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
@@ -31,7 +33,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 ) {
 
     /** Cache the index items to avoid unnecessary get actions from the index, which take a long time (50-100ms) even for a small index, which can be problematic if index is accessed many times per second. */
-    var cache: MutableMap<Project, MutableMap<GlobalSearchScope, Collection<T>>> = mutableMapOf()
+    var cache: MutableMap<Project, MutableMap<GlobalSearchScope, Collection<SmartPsiElementPointer<T>>>> = mutableMapOf()
 
     /**
      * Get all the items in the index in the given file set.
@@ -116,10 +118,10 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
         if (useCache) {
-            cache[project]?.get(scope)?.let { return it }
+            cache[project]?.get(scope)?.let { return it.mapNotNull { pointer -> pointer.element } }
         }
         val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
-        cache.getOrPut(project) { mutableMapOf() }[scope] = result
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() }
         return result
     }
 
@@ -151,7 +153,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param project
      *          The project instance.
      */
-    fun getKeys(project: Project): Array<String> {
+    private fun getKeys(project: Project): Array<String> {
         return if (!DumbService.isDumb(project)) {
             StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray()
         }
