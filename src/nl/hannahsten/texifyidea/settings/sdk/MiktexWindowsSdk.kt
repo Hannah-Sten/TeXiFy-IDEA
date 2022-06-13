@@ -60,9 +60,10 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         // We want the MiKTeX 2.9 folder to be selected
         // Assume path is of the form C:\Users\username\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\pdflatex.exe
         val directory = LatexSdkUtil.getPdflatexParentPath(Paths.get(path, "miktex").toString())
-        val errorMessage = "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
-        return LatexSdkUtil.isPdflatexPresent(directory, errorMessage, name, suppressNotification = suggestHomePaths().plus(suggestHomePath()))
+        return LatexSdkUtil.isPdflatexPresent(directory)
     }
+
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
 
     override fun getVersionString(sdk: Sdk): String {
         return getVersionString(sdk.homePath)

@@ -38,6 +38,7 @@
         <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
         <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.TablePasteProvider"/>
         <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
+        <vfs.asyncListener implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileVfsListener"/>
 
     </extensions>
 

@@ -112,7 +112,10 @@ parameter ::= optional_param | required_param | picture_param | angle_param {
 // https://stackoverflow.com/a/48709143/6629569
 optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
-required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
+// Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
+// Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both
+// a key and a value.
+required_param ::= OPEN_BRACE (strict_keyval_pair (COMMA strict_keyval_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=1 }
 
 picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 
@@ -129,6 +132,7 @@ picture_param_content ::= raw_text | magic_comment | comment | environment | pse
 // Cannot contain < or >
 angle_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
 
+strict_keyval_pair ::= keyval_key EQUALS keyval_value?
 keyval_pair ::= keyval_key (EQUALS keyval_value?)?
 keyval_key ::= keyval_content+ {
     methods=[toString]
@@ -156,7 +160,7 @@ parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }
 // Be sure to capture the whitespace before and after the actual content as groups are meant to capture
 // *everything* inside them.
 // This element is needed instead of parameter_text in order to avoid parse errors for various other tokens that do not appear in parameter_text because they are not usually part of the reference
-parameter_group_text ::= (parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
+parameter_group_text ::= (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
 
 comment ::= COMMENT_TOKEN
 
