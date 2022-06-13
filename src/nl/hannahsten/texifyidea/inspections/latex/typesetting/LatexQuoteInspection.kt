@@ -160,7 +160,12 @@ class LatexQuoteInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val document = descriptor.psiElement.containingFile.document() ?: return
-            document.replaceString(descriptor.textRangeInElement, replacement)
+            document.replaceString(
+                // The text range in the document is the text range in the containing element, shifted forward by
+                // the offset of the containing element in the document
+                descriptor.textRangeInElement.shiftRight(descriptor.psiElement.textOffset),
+                replacement
+            )
         }
     }
 }
