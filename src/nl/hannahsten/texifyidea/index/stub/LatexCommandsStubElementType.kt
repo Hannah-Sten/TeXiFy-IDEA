@@ -84,11 +84,15 @@ class LatexCommandsStubElementType(debugName: String) :
         // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
         // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
         // Unfortunately, this seems to make indexing five times slower
-        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
-        if (getCachedProjectRoots(latexCommandsStub.psi?.project).none { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
-            indexSinkOccurrence(indexSink, LatexCommandsIndex, latexCommandsStub.commandToken)
+        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path ?: return
+
+        // If none of the project roots is part of the currently indexed path, don't index the file
+        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile.contains(it) }) {
+            return
         }
+
         val token = latexCommandsStub.commandToken
+        indexSinkOccurrence(indexSink, LatexCommandsIndex, token)
         if (token in getIncludeCommands()) {
             indexSinkOccurrence(indexSink, LatexIncludesIndex, token)
         }
@@ -126,7 +130,7 @@ class LatexCommandsStubElementType(debugName: String) :
 
         private var projectRootsCache: List<String>? = null
 
-        fun getCachedProjectRoots(project: Project?): List<String> {
+        fun getAdditionalProjectRoots(project: Project?): List<String> {
             if (projectRootsCache == null && project != null) {
                 projectRootsCache = LatexIndexableSetContributor().getAdditionalProjectRootsToIndex(project).map { it.path }
             }
