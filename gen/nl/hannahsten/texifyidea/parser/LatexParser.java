@@ -333,18 +333,33 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // keyval_content+
+  // (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+
   public static boolean keyval_key(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_key")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, KEYVAL_KEY, "<keyval key>");
-    r = keyval_content(b, l + 1);
+    r = keyval_key_0(b, l + 1);
     while (r) {
       int c = current_position_(b);
-      if (!keyval_content(b, l + 1)) break;
+      if (!keyval_key_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "keyval_key", c)) break;
     }
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH
+  private static boolean keyval_key_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_key_0")) return false;
+    boolean r;
+    r = group(b, l + 1);
+    if (!r) r = consumeToken(b, NORMAL_TEXT_WORD);
+    if (!r) r = consumeToken(b, STAR);
+    if (!r) r = consumeToken(b, AMPERSAND);
+    if (!r) r = consumeToken(b, QUOTATION_MARK);
+    if (!r) r = consumeToken(b, PIPE);
+    if (!r) r = consumeToken(b, EXCLAMATION_MARK);
+    if (!r) r = consumeToken(b, DASH);
     return r;
   }
 
