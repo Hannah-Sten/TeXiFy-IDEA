@@ -25,7 +25,7 @@ import nl.hannahsten.texifyidea.util.toTextRange
 class LatexQuoteInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
-    override val inspectionId = "AsciiQuotes"
+    override val inspectionId = "Quote"
 
     /**
      * Defines how to extract a quote pair from a command.
