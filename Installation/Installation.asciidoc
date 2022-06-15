@@ -48,7 +48,7 @@ congratulations!
 * If you see `LaTeX error: file a4.sty not found` then you did not
 restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a
-Play button) in the top-right menu, or using kbd[Shift+F10].
+Play button) in the top-right menu, or using kbd:[Shift+F10].
 
 ==== Configuring forward and inverse search
 
