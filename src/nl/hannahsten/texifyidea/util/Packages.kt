@@ -216,7 +216,7 @@ object PackageUtils {
         initial: T
     ): T {
         for (cmd in commands) {
-            if (cmd.commandToken.text !in packageCommands) {
+            if (cmd.name !in packageCommands) {
                 continue
             }
 
