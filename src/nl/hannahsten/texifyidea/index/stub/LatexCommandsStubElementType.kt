@@ -87,7 +87,7 @@ class LatexCommandsStubElementType(debugName: String) :
         val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
 
         // If any of the sdk source roots is part of the currently indexed path, don't index the file
-        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true}) {
+        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
             return
         }
 
