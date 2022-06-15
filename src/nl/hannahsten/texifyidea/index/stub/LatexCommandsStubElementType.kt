@@ -84,10 +84,10 @@ class LatexCommandsStubElementType(debugName: String) :
         // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
         // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
         // Unfortunately, this seems to make indexing five times slower
-        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path ?: return
+        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
 
-        // If none of the project roots is part of the currently indexed path, don't index the file
-        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile.contains(it) }) {
+        // If any of the sdk source roots is part of the currently indexed path, don't index the file
+        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true}) {
             return
         }
 
