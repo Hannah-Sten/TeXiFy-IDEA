@@ -38,6 +38,9 @@ class LatexTextExtractor : TextExtractor() {
      * Note: IntRange has an inclusive end.
      */
     private fun getStealthyRanges(root: PsiElement): List<IntRange> {
+        // Getting text takes time, so we only do it once
+        val rootText = root.text
+
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
         val ranges = root.childrenOfType(LatexNormalText::class)
             .asSequence()
@@ -47,7 +50,7 @@ class LatexTextExtractor : TextExtractor() {
             .flatMap {
                 // I have no idea what happens here. I don't think Grazie uses the same indices and text as root.text, because it doesn't behave consistently when I move around indices, so it may appear we are ignoring too much or too little while in practice the inspections may work.
                 var start = it.textRange.startOffset - root.startOffset
-                if (start > 0 && root.text[start - 1] != '\n' && root.text[start - 1] != ' ') {
+                if (start > 0 && rootText[start - 1] != '\n' && rootText[start - 1] != ' ') {
                     // Support sentence ends with inline math
                     start -= 1
                 }
@@ -65,7 +68,7 @@ class LatexTextExtractor : TextExtractor() {
             // To get the ranges that we need to ignore
             // -1 because IntRange has inclusive end, but we want to exclude all letters _excluding_ the letter where the normal text started
             .chunked(2) { IntRange(it[0], it[1] - 1) }
-            .filter { it.first < it.last && it.first >= 0 && it.last < root.text.length }
+            .filter { it.first < it.last && it.first >= 0 && it.last < rootText.length }
             .toMutableSet()
 
         // There is still a bit of a problem, because when stitching together the NormalTexts, whitespace is lost

@@ -135,11 +135,11 @@ abstract class AliasManager {
 
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = LatexDefinitionIndex.getItems(project)
+        val indexedCommandDefinitions = LatexDefinitionIndex.getItems(project).toSet()
 
         // Check if something has changed (the number of indexed command might be the same while the content is different), and if so, update the aliases.
         // Also do this the first time something is registered, because then we have to update aliases as well
-        val hasNotChanged = this.indexedCommandDefinitions.containsAll(indexedCommandDefinitions) && indexedCommandDefinitions.containsAll(this.indexedCommandDefinitions)
+        val hasNotChanged = this.indexedCommandDefinitions == indexedCommandDefinitions
         if (!hasNotChanged || wasRegistered) {
             // Update everything, since it is difficult to know beforehand what aliases could be added or not
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
