@@ -19,9 +19,14 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewTagElement
+import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.hasLatexModule
+import javax.swing.event.TreeModelEvent
+import javax.swing.event.TreeModelListener
 import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreeModel
+import javax.swing.tree.TreePath
 
 /**
  * The remote libraries tool window shows an overview of all remote libraries a user has connected with.
@@ -122,8 +127,9 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         val content = JBScrollPane(tree)
 
         override fun getData(dataId: String): Any? {
-            return when(dataId) {
-                "library" -> tree.selectionPath.getPathComponent(1).toString()
+            return when {
+                TexifyDataKeys.LIBRARY_TREE.`is`(dataId) -> tree
+                TexifyDataKeys.LIBRARY_NAME.`is`(dataId) -> tree.selectionPath?.getPathComponent(1)?.toString()
                 else -> null
             }
         }

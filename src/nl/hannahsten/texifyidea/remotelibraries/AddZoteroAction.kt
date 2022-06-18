@@ -9,10 +9,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.intellij.ui.treeStructure.Tree
+import kotlinx.coroutines.runBlocking
+import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
+import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import javax.swing.JComponent
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
 
 class AddZoteroAction : AnAction() {
 
@@ -21,15 +25,36 @@ class AddZoteroAction : AnAction() {
 
         if(dialogWrapper.showAndGet()) {
             ApplicationManager.getApplication().invokeLater {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val library = ZoteroLibrary(dialogWrapper.userID, dialogWrapper.userApiKey)
-                    val credentials = Credentials(dialogWrapper.userID, dialogWrapper.userApiKey)
-                    PasswordSafe.instance.set(ZoteroLibrary.credentialAttributes, credentials)
-                    val bibItems = library.getCollection(e.project!!)
-                    RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+                runBlocking {
+                    val (library, bibItems) = createLibrary(dialogWrapper.userID, dialogWrapper.userApiKey, e.project!!)
+                    val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree
+                    val model = tree.model as DefaultTreeModel
+                    val root = model.root as DefaultMutableTreeNode
+                    val libraryNode = DefaultMutableTreeNode(library.name)
+                    bibItems.forEach { bib ->
+                        val entryElement = BibtexStructureViewEntryElement(bib)
+                        val entryNode = DefaultMutableTreeNode(entryElement)
+                        libraryNode.add(entryNode)
+
+                        // Each bib item has tags that show information, e.g., the author.
+                        entryElement.children.forEach {
+                            entryNode.add(DefaultMutableTreeNode(it))
+                        }
+                    }
+                    root.add(libraryNode)
+                    model.nodeStructureChanged(root)
                 }
             }
         }
+    }
+
+    private suspend fun createLibrary(userID: String, apiKey: String, project: Project): Pair<ZoteroLibrary, List<BibtexEntry>> {
+        val library = ZoteroLibrary(userID, apiKey)
+        val credentials = Credentials(userID, apiKey)
+        PasswordSafe.instance.set(ZoteroLibrary.credentialAttributes, credentials)
+        val bibItems = library.getCollection(project)
+        RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+        return library to bibItems
     }
 
     class AddZoteroDialogWrapper(val project: Project) : DialogWrapper(true) {
