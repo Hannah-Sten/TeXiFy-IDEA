@@ -18,8 +18,8 @@ enum class LatexListingCommand(
 ) : LatexCommand {
 
     LSTINPUTLISTING("lstinputlisting", "options".asOptional(), RequiredFileArgument("filename", false, commaSeparatesArguments = false), dependency = LISTINGS),
-    DIRECTLUA("directlua", dependency = LUACODE),
-    LUAEXEC("luaexec", dependency = LUACODE),
+    DIRECTLUA("directlua", "lua code".asRequired(), dependency = LUACODE),
+    LUAEXEC("luaexec", "lua code".asRequired(), dependency = LUACODE),
     PY("py", dependency = PYTHONTEX),
     PYB("pyb", dependency = PYTHONTEX),
     PYC("pyc", dependency = PYTHONTEX),
