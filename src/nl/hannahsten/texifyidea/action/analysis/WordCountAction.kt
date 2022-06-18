@@ -71,10 +71,18 @@ open class WordCountAction : AnAction(
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
         val psiFile = virtualFile.psiFile(project) ?: return
 
+        // Prefer texcount, I think it is slightly more accurate
         val dialog = if (SystemEnvironment.isAvailable("texcount")) {
             val root = psiFile.findRootFile().virtualFile
-            val words = "texcount -1 -inc -sum ${root.path}".runCommand(workingDirectory = File(root.parent.path))?.toIntOrNull()
-            makeDialog(psiFile, words)
+            val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = File(root.parent.path))
+            if (exitCode == 0 && output?.toIntOrNull() != null) {
+                makeDialog(psiFile, output.toInt())
+            }
+            else {
+                // If there is an error, the output will contain both word count and error message (which could indicate a problem with the document itself)
+                val words = "[0-9]+".toRegex().find(output ?: "")?.value
+                makeDialog(psiFile, wordCount = words?.toIntOrNull(), errorMessage = output?.drop(words?.length ?: 0))
+            }
         }
         else {
             val (words, chars) = countWords(psiFile)
@@ -84,26 +92,30 @@ open class WordCountAction : AnAction(
         dialog.show()
     }
 
+    private fun formatAsHtml(type: String, message: String?): String {
+        return if (message == null) {
+            ""
+        }
+        else {
+            "|   <tr><td style='text-align:right'>$type:</td><td><b>${message.take(5000)}</b></td></tr>"
+        }
+    }
+
     /**
      * Builds the dialog that must show the word count.
      */
-    private fun makeDialog(baseFile: PsiFile, wordCount: Int?, characters: Int? = null): DialogBuilder {
+    private fun makeDialog(baseFile: PsiFile, wordCount: Int?, characters: Int? = null, errorMessage: String? = null): DialogBuilder {
         return DialogBuilder().apply {
             setTitle("Word Count")
 
-            val characterString = if (characters == null) {
-                ""
-            }
-            else {
-                "|   <tr><td style='text-align:right'>Character count:</td><td><b>$characters</b></td>"
-            }
             setCenterPanel(
                 JLabel(
                     """|<html>
                         |<p>Analysis of <i>${baseFile.name}</i> (and inclusions):</p>
                         |<table cellpadding=1 style='margin-top:4px'>
-                        |   <tr><td style='text-align:right'>Word count:</td><td><b>$wordCount</b></td></tr>
-                        $characterString
+                        ${formatAsHtml("Word count", wordCount?.toString())}
+                        ${formatAsHtml("Characters", characters?.toString())}
+                        ${formatAsHtml("Error message", errorMessage)}
                         |</table>
                         |</html>""".trimMargin(),
                     AllIcons.General.InformationDialog,
