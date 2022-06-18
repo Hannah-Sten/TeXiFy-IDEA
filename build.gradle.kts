@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.18-alpha.1"
+version = "0.7.19-alpha.3"
 
 repositories {
     mavenCentral()
@@ -155,7 +155,7 @@ intellij {
     pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java")) // , "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.12.0-alpha.4@alpha")) // , "com.jetbrains.hackathon.indices.viewer:1.13")
+    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.20"))
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
@@ -213,4 +213,8 @@ tasks.jacocoTestReport {
 
 ktlint {
     verbose.set(true)
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

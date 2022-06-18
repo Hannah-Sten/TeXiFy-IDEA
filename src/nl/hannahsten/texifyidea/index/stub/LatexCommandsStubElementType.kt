@@ -85,10 +85,14 @@ class LatexCommandsStubElementType(debugName: String) :
         // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
         // Unfortunately, this seems to make indexing five times slower
         val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
-        if (getCachedProjectRoots(latexCommandsStub.psi?.project).none { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
-            indexSinkOccurrence(indexSink, LatexCommandsIndex, latexCommandsStub.commandToken)
+
+        // If any of the sdk source roots is part of the currently indexed path, don't index the file
+        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
+            return
         }
+
         val token = latexCommandsStub.commandToken
+        indexSinkOccurrence(indexSink, LatexCommandsIndex, token)
         if (token in getIncludeCommands()) {
             indexSinkOccurrence(indexSink, LatexIncludesIndex, token)
         }
@@ -98,6 +102,9 @@ class LatexCommandsStubElementType(debugName: String) :
         if (token in CommandMagic.labelAsParameter && "label" in latexCommandsStub.optionalParams) {
             val label = latexCommandsStub.optionalParams["label"]!!
             indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex, label)
+        }
+        if (token in CommandMagic.glossaryEntry && latexCommandsStub.requiredParams.isNotEmpty()) {
+            indexSinkOccurrence(indexSink, LatexGlossaryEntryIndex, latexCommandsStub.requiredParams[0])
         }
     }
 
@@ -123,7 +130,7 @@ class LatexCommandsStubElementType(debugName: String) :
 
         private var projectRootsCache: List<String>? = null
 
-        fun getCachedProjectRoots(project: Project?): List<String> {
+        fun getAdditionalProjectRoots(project: Project?): List<String> {
             if (projectRootsCache == null && project != null) {
                 projectRootsCache = LatexIndexableSetContributor().getAdditionalProjectRootsToIndex(project).map { it.path }
             }

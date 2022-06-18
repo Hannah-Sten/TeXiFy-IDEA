@@ -20,13 +20,13 @@ const val LINE_LENGTH = 80
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
 
-    if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject)
-    ) return null
-
     // Only add spaces after &, unless escaped
     if (left.node?.text?.endsWith("&") == false) return null
     if (left.node?.text?.endsWith("\\&") == true) return null
+
+    if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject)
+    ) return null
 
     return createSpacing(
         minSpaces = 1,

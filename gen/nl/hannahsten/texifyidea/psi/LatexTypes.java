@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType;
@@ -45,6 +45,7 @@ public interface LatexTypes {
   IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
   IElementType REQUIRED_PARAM_CONTENT = new LatexElementType("REQUIRED_PARAM_CONTENT");
+  IElementType STRICT_KEYVAL_PAIR = new LatexElementType("STRICT_KEYVAL_PAIR");
 
   IElementType AMPERSAND = new LatexTokenType("&");
   IElementType BACKSLASH = new LatexTokenType("BACKSLASH");
@@ -184,6 +185,8 @@ public interface LatexTypes {
       }
       else if (type == REQUIRED_PARAM_CONTENT) {
         return new LatexRequiredParamContentImpl(node);
+      } else if (type == STRICT_KEYVAL_PAIR) {
+        return new LatexStrictKeyvalPairImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

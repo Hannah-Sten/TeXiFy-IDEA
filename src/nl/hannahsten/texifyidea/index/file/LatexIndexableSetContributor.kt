@@ -42,6 +42,8 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         }
 
         // Add style files (used in e.g. LatexExternalPackageInclusionIndex)
+        // Unfortunately, since .sty is a LaTeX file type, these will all be parsed, which will take an enormous amount of time.
+        // Note that using project-independent getAdditionalRootsToIndex does not fix this
         roots.addAll(LatexSdkUtil.getSdkStyleFileRoots(project))
 
         return roots

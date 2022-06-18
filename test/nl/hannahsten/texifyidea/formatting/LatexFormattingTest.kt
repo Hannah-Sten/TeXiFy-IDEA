@@ -237,6 +237,18 @@ fun Int?.ifPositiveAddTwo(): Int =
         """.trimIndent()
     }
 
+    fun `test newlines before sectioning commands`() {
+        """
+            Text.
+            \section{New section}
+        """.trimIndent() `should be reformatted to` """
+            Text.
+            
+            
+            \section{New section}
+        """.trimIndent()
+    }
+
     fun `test indentation of environments`() {
         val text = """
             \begin{document}

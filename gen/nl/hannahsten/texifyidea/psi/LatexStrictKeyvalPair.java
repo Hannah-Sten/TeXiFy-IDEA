@@ -3,12 +3,14 @@ package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public interface LatexKeyvalKey extends PsiElement {
+public interface LatexStrictKeyvalPair extends PsiElement {
 
   @NotNull
-  List<LatexGroup> getGroupList();
+  LatexKeyvalKey getKeyvalKey();
+
+  @Nullable
+  LatexKeyvalValue getKeyvalValue();
 
 }
