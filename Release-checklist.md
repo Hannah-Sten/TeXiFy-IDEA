@@ -16,6 +16,7 @@
 - [ ] buildPlugin and release on GitHub, using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone
 - [ ] Update MiKTeX Docker image
+- [ ] Check performance: indexing texlive full should take around one minute, inspections on a 10k line file should take around 10 seconds, pressing enter in such a file should react within a second.
 
 Regexes to replace markdown by html:
 
