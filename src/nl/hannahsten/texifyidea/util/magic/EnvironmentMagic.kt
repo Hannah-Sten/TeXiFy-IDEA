@@ -31,8 +31,8 @@ object EnvironmentMagic {
     // Note: used in the lexer
     @JvmField
     val verbatim = hashSetOf(
-        VERBATIM.env, VERBATIM_CAPITAL.env, LISTINGS.env, "plantuml", LUACODE.env,
-        LUACODE_STAR.env, "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted"
+        VERBATIM.env, VERBATIM_CAPITAL.env, LISTINGS.env, "plantuml", LUACODE.env, LUACODE_STAR.env, PYCODE.env,
+        "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted"
     )
 
     /**

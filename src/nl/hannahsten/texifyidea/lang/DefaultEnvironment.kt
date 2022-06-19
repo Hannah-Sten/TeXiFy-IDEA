@@ -134,6 +134,7 @@ enum class DefaultEnvironment(
     LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),
     LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
+    PYCODE(environmentName = "pycode", dependency = LatexPackage.PYTHONTEX),
     TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
     WIDETABULAR(environmentName = "widetabular", dependency = LatexPackage.WIDETABLE),
