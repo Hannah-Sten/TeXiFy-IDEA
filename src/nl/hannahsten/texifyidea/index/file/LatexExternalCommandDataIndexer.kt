@@ -25,7 +25,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
          * Supports a definition with or without braces.
          */
         val describeMacroRegex =
-            """(?=\\DescribeMacro(?:(?<key>\\[a-zA-Z_:]+\*?)|\{(?<key1>\\[a-zA-Z_:]+\*?)})\s*(?<value>[\s\S]{0,500}))""".toRegex()
+            """(?=\\DescribeMacro\{?(?<key>\\[a-zA-Z_:]+\*?)}?\s*(?<value>[\s\S]{0,500}))""".toRegex()
 
         // Avoid matching commands with @ in it by using an atomic group
         val directCommandDefinitionRegex = """\\(DeclareRobustCommand|newcommand|def)\*?(?:(?<key>(?>\\[a-zA-Z_:]+\*?)(?!@))|\{(?<key1>\\[a-zA-Z_:]+\*?)})(?<value>)""".toRegex()

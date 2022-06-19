@@ -102,17 +102,19 @@ interface LatexCommand : Described, Dependend {
         /**
          * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).
          */
-        fun getArgumentsFromStartOfString(docs: String, counterInit: Int): Array<Argument> {
+        fun getArgumentsFromStartOfString(docs: String, counterInit: Int = 0): Array<Argument> {
             val arguments = mutableListOf<Argument>()
             var counter = counterInit
             run breaker@{
                 // Only use the ones at the beginning of the string to avoid matching too much
-                """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
+                // I don't know what the \meta command is intended for, but it's used instead of \marg in pythontex at least
+                """\s*\\(?<command>[omp]arg|meta)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
                     if (it.range.first == counter) {
-                        when (it.groups["command"]?.value) {
-                            OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
-                            MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
-                            PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                        if (it.groups["command"]?.value == OARG.command) {
+                            arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
+                        }
+                        else {
+                            arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
                         }
                         counter += it.range.length + 1
                     }
@@ -153,7 +155,7 @@ interface LatexCommand : Described, Dependend {
             // Maybe the arguments are given right at the beginning of the docs
             val argCommands = arrayOf(OARG, MARG, PARG).map { it.commandWithSlash }.toTypedArray()
             if (docs.startsWithAny(*argCommands)) {
-                return getArgumentsFromStartOfString(docs, 0)
+                return getArgumentsFromStartOfString(docs)
             }
 
             // Maybe the command appears somewhere in the docs with all the arguments after it
