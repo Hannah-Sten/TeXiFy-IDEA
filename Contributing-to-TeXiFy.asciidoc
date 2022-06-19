@@ -161,6 +161,10 @@ docker run -it --rm -p 8000:80 -v $(pwd)/report:/usr/share/nginx/html nginx
 
 == Troubleshooting
 
+=== java.util.zip.ZipException: Archive is not a ZIP archive
+
+
+
 === bad class file: class file has wrong version 55.0, should be 52.0
 
 The IntelliJ SDK https://blog.jetbrains.com/platform/2020/09/intellij-project-migrates-to-java-11/[requires Java 11], see https://stackoverflow.com/a/59783851/4126843.
