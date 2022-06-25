@@ -107,19 +107,19 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-    fun `test apostrophe`(){
+    fun `test apostrophe`() {
         val original = "Group III: Axiom of Parallels (Euclid's axiom)"
         myFixture.configureByText(LatexFileType, original)
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-    fun `test apostrophe in quotes`(){
+    fun `test apostrophe in quotes`() {
         val original = "I said ``Group III: Axiom of Parallels (Euclid's axiom)''"
         myFixture.configureByText(LatexFileType, original)
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-    fun `test final apostrophe`(){
+    fun `test final apostrophe`() {
         val original = "the humans' planet"
         myFixture.configureByText(LatexFileType, original)
         myFixture.checkHighlighting(true, false, false, false)

@@ -114,7 +114,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                         // In this case, we can pop the stack.
                         unclosedQuoteIndexStack.removeLast()
                     }
-                    else if (match.value == "'" && match.range.first > 0 && !text.text[match.range.first - 1].isWhitespace()){
+                    else if (match.value == "'" && match.range.first > 0 && !text.text[match.range.first - 1].isWhitespace()) {
                         // Fourth case: it looks like an unpaired quote, but it's impossible to tell because it would
                         // also be a valid apostrophe (e.g. it's preceded by non-whitespace), so we ignore it.
                         continue
