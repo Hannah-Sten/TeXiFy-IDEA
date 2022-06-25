@@ -1,11 +1,10 @@
-package nl.hannahsten.texifyidea.ui
+package nl.hannahsten.texifyidea.ui.remotelibraries
 
 import com.intellij.ide.util.treeView.NodeRenderer
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.project.Project
@@ -22,11 +21,7 @@ import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewTagElement
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.hasLatexModule
-import javax.swing.event.TreeModelEvent
-import javax.swing.event.TreeModelListener
 import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.TreeModel
-import javax.swing.tree.TreePath
 
 /**
  * The remote libraries tool window shows an overview of all remote libraries a user has connected with.
