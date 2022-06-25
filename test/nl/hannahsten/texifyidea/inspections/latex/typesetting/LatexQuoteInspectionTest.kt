@@ -26,18 +26,18 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
         val original = """Lorem ipsum 'dolor' sit amet, consectetur adipiscing elit."""
         val fixed = """Lorem ipsum `dolor' sit amet, consectetur adipiscing elit."""
         val warning =
-            """Lorem ipsum <warning descr="Closing quote without opening quote">'</warning>dolor<warning descr="Closing quote without opening quote">'</warning> sit amet, consectetur adipiscing elit."""
+            """Lorem ipsum <warning descr="Closing quote without opening quote">'</warning>dolor' sit amet, consectetur adipiscing elit."""
         myFixture.configureByText(
             LatexFileType,
             warning
         )
         myFixture.checkHighlighting(true, false, false, false)
-        testNamedQuickFix(original, fixed, "Replace with a LaTeX opening single quote", 10)
+        testNamedQuickFix(original, fixed, "Replace with a LaTeX opening single quote", 5)
     }
 
     fun `test two sets of ascii double quotes triggers two warnings`() {
         val warning =
-            """Lorem ipsum <warning descr="Closing quote without opening quote">'</warning>dolor<warning descr="Closing quote without opening quote">'</warning> sit amet, <warning descr="\" is not a valid set of LaTex quotes">"</warning>consectetur<warning descr="\" is not a valid set of LaTex quotes">"</warning> adipiscing elit."""
+            """Lorem ipsum <warning descr="Closing quote without opening quote">'</warning>dolor' sit amet, <warning descr="\" is not a valid set of LaTex quotes">"</warning>consectetur<warning descr="\" is not a valid set of LaTex quotes">"</warning> adipiscing elit."""
         myFixture.configureByText(
             LatexFileType,
             warning
@@ -56,18 +56,18 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
         val fixedWithLatexQuote = """It is joyfully not outstanding to monitor \(\Xi\) `attentions'."""
         val partiallyFixedWithMathMode = """It is joyfully not outstanding to monitor \(\Xi\) \('\)attentions'."""
         val warning =
-            """It is joyfully not outstanding to monitor \(\Xi\) <warning descr="Closing quote without opening quote">'</warning>attentions<warning descr="Closing quote without opening quote">'</warning>."""
+            """It is joyfully not outstanding to monitor \(\Xi\) <warning descr="Closing quote without opening quote">'</warning>attentions'."""
         myFixture.configureByText(
             LatexFileType,
             warning
         )
         myFixture.checkHighlighting(true, false, false, false)
-        testNamedQuickFix(original, fixedWithLatexQuote, "Replace with a LaTeX opening single quote", 10)
+        testNamedQuickFix(original, fixedWithLatexQuote, "Replace with a LaTeX opening single quote", 5)
         testNamedQuickFix(
             original,
             partiallyFixedWithMathMode,
             "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation.",
-            10
+            5
         )
     }
 
@@ -82,7 +82,7 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
     fun `test imperial measurements quickfix`() {
         val original = """This is a length of 2'11'' in the imperial measurement system"""
         val warning =
-            """This is a length of 2<warning descr="Closing quote without opening quote">'</warning>11<warning descr="Closing quote without opening quote">''</warning> in the imperial measurement system"""
+            """This is a length of 2'11<warning descr="Closing quote without opening quote">''</warning> in the imperial measurement system"""
         val fixed = """This is a length of \(2'11''\) in the imperial measurement system"""
         myFixture.configureByText(LatexFileType, warning)
         myFixture.checkHighlighting(true, false, false, false)
@@ -91,7 +91,7 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
             original,
             fixed,
             "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation.",
-            10
+            5
         )
     }
 
@@ -104,6 +104,24 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
         myFixture.configureByText(
             LatexFileType, original
         )
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
+    fun `test apostrophe`(){
+        val original = "Group III: Axiom of Parallels (Euclid's axiom)"
+        myFixture.configureByText(LatexFileType, original)
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
+    fun `test apostrophe in quotes`(){
+        val original = "I said ``Group III: Axiom of Parallels (Euclid's axiom)''"
+        myFixture.configureByText(LatexFileType, original)
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
+    fun `test final apostrophe`(){
+        val original = "the humans' planet"
+        myFixture.configureByText(LatexFileType, original)
         myFixture.checkHighlighting(true, false, false, false)
     }
 }
