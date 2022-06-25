@@ -92,8 +92,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:1.6.5")
-    implementation("io.ktor:ktor-client-cio:1.6.5")
+    implementation("io.ktor:ktor-client-core:2.0.2")
+    implementation("io.ktor:ktor-client-cio:2.0.2")
+    implementation("io.ktor:ktor-server-auth:2.0.2")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.4")

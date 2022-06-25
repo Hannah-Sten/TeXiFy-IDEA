@@ -10,12 +10,12 @@ import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.createCredentialsAttributes
 
-class ZoteroLibrary(val userID: String = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary(NAME) {
+class ZoteroLibrary(private val userID: String = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary(NAME) {
 
     private val client by lazy { HttpClient(CIO) }
 
     override suspend fun getCollection(project: Project): List<BibtexEntry> {
-        val body: String = getFromAPI().receive()
+        val body: String = getFromAPI().body()
 
         // Reading the dummy bib file needs to happen in a place where we have read access.
         return runReadAction {
