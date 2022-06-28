@@ -84,3 +84,8 @@ If you end a sentence with a captial letter, for example like `Then QED. However
 == Use the matching amssymb symbol for extreme inequalities
 
 Instead of writing `<<`, use `\ll` for better spacing. Same for `>>` and more variants.
+
+[#incorrect-quotes]
+== Incorrectly typeset quotation marks
+
+Different characters are used to open and close a quotation. For example `"quotation"` should be typeset as `+``quotation''+`, and `'quotation'` should be typeset as `+`quotation'+`.
