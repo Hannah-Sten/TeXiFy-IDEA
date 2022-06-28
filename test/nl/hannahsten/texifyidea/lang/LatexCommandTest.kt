@@ -1,6 +1,10 @@
 package nl.hannahsten.texifyidea.lang
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.util.indexing.FileBasedIndex
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
@@ -54,5 +58,19 @@ class LatexCommandTest : BasePlatformTestCase() {
         assertEquals(RequiredArgument("type"), args[0])
         assertEquals(RequiredArgument("entry"), args[1])
         assertEquals(RequiredArgument("page"), args[2])
+    }
+
+    fun testDocumentation() {
+        val value = "\\oarg{session}\\meta{opening~delim}\\meta{code}\\meta{closing~delim}}<br> This command is used for executing but not typesetting \\meta{code}.  The suffix  c is an abbreviation of code.  If the print statement/function is used within \\meta{code}, printed content will be included automatically so long as the package autoprint option is set to true (the default setting)."
+        val command = "\\pyc"
+
+//        every { FileBasedIndex.getInstance() } returns mockk()
+        mockkStatic(FileBasedIndex::class)
+        val index = FileBasedIndex.getInstance()
+        every { index.processValues<String, String>(any(), any(), any(), any(), any()) } returns mockk()
+
+        LatexCommand.lookupInIndex("test", project)
+
+
     }
 }

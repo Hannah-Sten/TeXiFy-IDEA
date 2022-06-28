@@ -86,7 +86,7 @@ VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline
  // These can contain unescaped % for example
  | \\url | \\path | \\href
  // PythonTex Python code commands
- | \\py | \\pyb | \\pyc | \\pys | \\pyv
+ | \\pyb | \\pyc | \\pys | \\pyv
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
 PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 

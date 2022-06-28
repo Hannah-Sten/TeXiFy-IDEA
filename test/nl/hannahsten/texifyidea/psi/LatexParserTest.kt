@@ -14,6 +14,16 @@ class LatexParserTest : BasePlatformTestCase() {
         every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
     }
 
+    fun testFakeVerbatimPy() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \DeclareOption{Bjornstrup}{\settowidth{\py}{\CNoV\thechapter}}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testSomeGeneralConstructs() {
         myFixture.configureByText(
             LatexFileType,

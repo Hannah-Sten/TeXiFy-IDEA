@@ -1,12 +1,13 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.LiteralTextEscaper;
+import java.util.List;
+import org.jetbrains.annotations.*;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.psi.LiteralTextEscaper;
 
 public interface LatexEnvironment extends PsiLanguageInjectionHost, StubBasedPsiElement<LatexEnvironmentStub> {
 

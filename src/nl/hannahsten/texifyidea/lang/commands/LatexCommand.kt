@@ -39,6 +39,8 @@ interface LatexCommand : Described, Dependend {
             return LatexMathCommand[result] ?: LatexRegularCommand[result]
         }
 
+        fun processValues()
+
         /**
          * Create a [LatexCommand] for the given command name, or merge with existing one.
          */
@@ -51,7 +53,7 @@ interface LatexCommand : Described, Dependend {
             val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
 
             // Look up in index
-            FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
+            val test = FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
