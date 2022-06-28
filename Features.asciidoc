@@ -256,7 +256,7 @@ menu:Code[Reformat File with Latexindent]:: link:Code-formatting#latexindent[Run
 
 menu:Code[Reformat File with bibtex-tidy]:: link:Code-formatting#bibtex-tidy[Run bibtex-tidy on the file the caret is in.]
 
-menu:Analyze[LaTeX > Word Count]:: Word counting tool.
+menu:Analyze[Code > Word Count]:: link:Menu-entries#_word_counting_tool[Word counting tool].
 
 menu:Tools[LaTeX > Equation Preview]:: Preview equations.
 
