@@ -190,33 +190,23 @@ object LatexSdkUtil {
     }
 
     /**
-     * Similar to [getSdkSourceRoots] but for package style files.
-     * Only works when a LaTeX project sdk is selected.
-     */
-    fun getSdkStyleFileRoots(project: Project): Set<VirtualFile> {
-        getLatexProjectSdk(project)?.let { sdk ->
-            return if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultStyleFilesPath(sdk.homePath!!)).filterNotNull().toSet() else emptySet()
-        }
-        return emptySet()
-    }
-
-    /**
      * Collect SDK source paths, so paths to texmf-dist/source/latex, based on Project SDK if available (combining the default
      * for the SDK type and any user-added source roots) and otherwise on a random guess (ok not really).
+     *
+     * @param getRoots Given an sdk type and a home path, return a list of source roots.
      */
-    fun getSdkSourceRoots(project: Project): Set<VirtualFile> {
+    fun getSdkSourceRoots(project: Project, getRoots: (LatexSdk, String) -> VirtualFile?): Set<VirtualFile> {
         // Get user provided and default source roots
         getLatexProjectSdk(project)?.let { sdk ->
+            if (sdk.sdkType !is LatexSdk) return@let
             val userProvided = sdk.rootProvider.getFiles(OrderRootType.SOURCES).toSet()
-            val default = if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultSourcesPath(sdk.homePath!!)).filterNotNull() else emptySet()
+            val default = if (sdk.homePath != null) setOf(getRoots(sdk.sdkType as LatexSdk, sdk.homePath!!)).filterNotNull() else emptySet()
             return userProvided + default
         }
 
         // If no sdk is known, guess something
         for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexWindowsSdk())) {
-            val roots = sdkType.suggestHomePaths().mapNotNull { homePath ->
-                sdkType.getDefaultSourcesPath(homePath)
-            }.toSet()
+            val roots = sdkType.suggestHomePaths().mapNotNull { homePath -> getRoots(sdkType, homePath) }.toSet()
             if (roots.isNotEmpty()) return roots
         }
         return emptySet()
