@@ -1,5 +1,6 @@
 :experimental:
 
+[#_word_counting_tool]
 == Word counting tool
 
 menu:Analyze[LaTeX > Word count]
