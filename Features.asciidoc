@@ -303,6 +303,7 @@ Issues which have influence on the typeset result.
 * link:Typesetting-issues#dotless-i[Dotless versions of i and j must be used with diacritics]
 * link:Typesetting-issues#high-commands[Enclose high commands with `\leftX..\rightX`]
 * link:Typesetting-issues#citation-before-interpunction[Citations must be placed before interpunction]
+* link:Typesetting-issues#incorrect-quotes[Incorrectly typeset quotation marks]
 
 ===== Spacing
 Typesetting issues related to incorrect spacing.
