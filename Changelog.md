@@ -13,4 +13,4 @@
 * Fix incorrect import from other plugin. (#2491)
 * Fixed crashes. (#2427, #2437, #2491)
 
-Thanks to @fberlakovich and @golmschenk for contributing to this release.
+Thanks to @fberlakovich, @golmschenk and @multimeric for contributing to this release!
