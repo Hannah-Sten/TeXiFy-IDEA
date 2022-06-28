@@ -36,8 +36,10 @@ class SystemEnvironment {
             // Not thread-safe, but don't think that's a problem here
             availabilityCache.getOrDefault(command, null)?.let { return it }
 
+            // Has to be run with bash because command is a shell command
             val isAvailable = if (SystemInfo.isUnix) {
-                "command -v $command".runCommandWithExitCode().second == 0
+                val (_, exitCode) = runCommandWithExitCode("bash", "-c", "command -v $command")
+                exitCode == 0
             }
             else {
                 "where $command".runCommandWithExitCode().second == 0

@@ -85,6 +85,8 @@ NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline
  // These can contain unescaped % for example
  | \\url | \\path | \\href
+ // PythonTex Python code commands
+ | \\pyb | \\pyc | \\pys | \\pyv // \py is temporarily removed because it breaks indexing (#2467)
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
 PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 

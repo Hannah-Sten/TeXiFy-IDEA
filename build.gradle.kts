@@ -4,9 +4,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-//    id("org.jetbrains.intellij") version "1.4.0"
-    id("org.jetbrains.intellij") version "1.5.2"
-    kotlin("jvm") version("1.6.21")
+    id("org.jetbrains.intellij") version "1.6.0"
+    kotlin("jvm") version("1.7.0")
     kotlin("plugin.serialization") version("1.6.21")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
@@ -49,9 +48,6 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=all")
@@ -60,9 +56,6 @@ tasks.compileKotlin {
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=all")
