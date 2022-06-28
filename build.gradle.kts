@@ -6,7 +6,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
 //    id("org.jetbrains.intellij") version "1.4.0"
     id("org.jetbrains.intellij") version "1.5.2"
-    kotlin("jvm") version("1.6.20")
+    kotlin("jvm") version("1.6.21")
+    kotlin("plugin.serialization") version("1.6.21")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -94,7 +95,11 @@ dependencies {
     // Http requests
     implementation("io.ktor:ktor-client-core:2.0.2")
     implementation("io.ktor:ktor-client-cio:2.0.2")
-    implementation("io.ktor:ktor-server-auth:2.0.2")
+    implementation("io.ktor:ktor-client-auth:2.0.2")
+    implementation("io.ktor:ktor-client-content-negotiation:2.0.2")
+    implementation("io.ktor:ktor-server-core:2.0.2")
+    implementation("io.ktor:ktor-server-netty:2.0.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.2")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.4")
