@@ -36,8 +36,11 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         val paths = "where pdflatex".runCommand()
         if (paths != null && !paths.contains("Could not find")) { // Full output is INFO: Could not find files for the given pattern(s).
             paths.split("\r\n").forEach { path ->
+                if (path.isBlank()) return@forEach
                 val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: (path.length - 1)
-                results.add(path.substring(0, index))
+                if (index > 0) {
+                    results.add(path.substring(0, index))
+                }
             }
         }
         else {
