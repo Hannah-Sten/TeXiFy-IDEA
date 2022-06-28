@@ -10,7 +10,7 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
         val halfFixed = """Lorem ipsum ``dolor" sit amet, consectetur adipiscing elit."""
         val fixed = """Lorem ipsum ``dolor'' sit amet, consectetur adipiscing elit."""
         val warning =
-            """Lorem ipsum <warning descr="\" is not a valid set of LaTex quotes">"</warning>dolor<warning descr="\" is not a valid set of LaTex quotes">"</warning> sit amet, consectetur adipiscing elit."""
+            """Lorem ipsum <warning descr="\" is not a valid set of LaTeX quotes">"</warning>dolor<warning descr="\" is not a valid set of LaTeX quotes">"</warning> sit amet, consectetur adipiscing elit."""
 
         myFixture.configureByText(
             LatexFileType,
@@ -37,7 +37,7 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
 
     fun `test two sets of ascii double quotes triggers two warnings`() {
         val warning =
-            """Lorem ipsum <warning descr="Closing quote without opening quote">'</warning>dolor' sit amet, <warning descr="\" is not a valid set of LaTex quotes">"</warning>consectetur<warning descr="\" is not a valid set of LaTex quotes">"</warning> adipiscing elit."""
+            """Lorem ipsum <warning descr="Closing quote without opening quote">'</warning>dolor' sit amet, <warning descr="\" is not a valid set of LaTeX quotes">"</warning>consectetur<warning descr="\" is not a valid set of LaTeX quotes">"</warning> adipiscing elit."""
         myFixture.configureByText(
             LatexFileType,
             warning

@@ -128,7 +128,7 @@ object PatternMagic {
     )
 
     /**
-     * Matches any consecutive sequence of LaTex quote characters
+     * Matches any consecutive sequence of LaTeX quote characters
      */
     val quotePattern = """["'`]+""".toRegex()
 }

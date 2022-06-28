@@ -102,7 +102,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                             manager.createProblemDescriptor(
                                 text,
                                 match.range.toTextRange(),
-                                "${match.value} is not a valid set of LaTex quotes",
+                                "${match.value} is not a valid set of LaTeX quotes",
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly,
                                 *fixers
