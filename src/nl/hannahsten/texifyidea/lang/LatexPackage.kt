@@ -32,6 +32,7 @@ open class LatexPackage @JvmOverloads constructor(
         val AMSSYMB = LatexPackage("amssymb")
         val BIBLATEX = LatexPackage("biblatex")
         val BLINDTEXT = LatexPackage("blindtext")
+        val BLKARRAY = LatexPackage("blkarray")
         val BM = LatexPackage("bm")
         val BOOKTABS = LatexPackage("booktabs")
         val CHAPTERBIB = LatexPackage("chapterbib")
