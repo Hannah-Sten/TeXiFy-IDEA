@@ -1,8 +1,7 @@
 package nl.hannahsten.texifyidea.remotelibraries
 
+import com.intellij.credentialStore.Credentials
 import com.intellij.ide.passwordSafe.PasswordSafe
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.project.Project
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -10,14 +9,15 @@ import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.createCredentialsAttributes
 
 class MendeleyLibrary : RemoteBibLibrary(NAME) {
 
-    val client by lazy {
+    private val client by lazy {
         HttpClient(CIO) {
             install(Auth) {
                 bearer {
@@ -27,26 +27,45 @@ class MendeleyLibrary : RemoteBibLibrary(NAME) {
                             PasswordSafe.instance.getPassword(refreshTokenAttributes)!!
                         )
                     }
-                    // TODO refresh tokens
-                }
-            }
+                    refreshTokens {
+                        val token: AddMendeleyAction.TokenInfo = authClient.submitForm(
+                            url = "https://api.mendeley.com/oauth/token",
+                            formParameters = Parameters.build {
+                                append("grant_type", "refresh_token")
+                                append("refresh_token", PasswordSafe.instance.getPassword(refreshTokenAttributes)!!)
+                                append("redirect_uri", "http://localhost:80/")
+                            }) {
+                            basicAuth(Mendeley.id, Mendeley.secret)
+                        }.body()
 
-            install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
+                        val tokenCredentials = Credentials("token", token.accessToken)
+                        val refreshTokenCredentials = Credentials("refresh_token", token.refreshToken)
+
+                        PasswordSafe.instance.set(tokenAttributes, tokenCredentials)
+                        PasswordSafe.instance.set(refreshTokenAttributes, refreshTokenCredentials)
+
+                        return@refreshTokens BearerTokens(tokenCredentials.password.toString(), refreshTokenCredentials.password.toString())
+                    }
+                }
             }
         }
     }
 
-    override suspend fun getCollection(project: Project): List<BibtexEntry> {
-        val body: String = client.get(urlString = "https://api.mendeley.com/documents") {
+    val authClient by lazy {
+        HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                })
+            }
+        }
+    }
+
+    override suspend fun getBibtexString(): String {
+        return client.get(urlString = "https://api.mendeley.com/documents") {
             header("Accept", "application/x-bibtex")
             parameter("view", "bib")
         }.body()
-
-        // Reading the dummy bib file needs to happen in a place where we have read access.
-        return runReadAction {
-            BibtexEntryListConverter().fromString(body)
-        }
     }
 
     companion object {

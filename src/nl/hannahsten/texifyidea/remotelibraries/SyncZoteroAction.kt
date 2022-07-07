@@ -34,7 +34,7 @@ class SyncZoteroAction : AnAction() {
                     override fun run(indicator: ProgressIndicator) {
                         runBlocking {
                             expandedPaths = tree.getExpandedDescendants(TreePath(tree.model.root))
-                            bibItems = zotero.getCollection(project)
+                            bibItems = zotero.getCollection()
                             RemoteLibraryManager.getInstance().updateLibrary(zotero, bibItems)
                         }
                     }

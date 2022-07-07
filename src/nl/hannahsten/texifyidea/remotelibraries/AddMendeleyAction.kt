@@ -2,13 +2,9 @@ package nl.hannahsten.texifyidea.remotelibraries
 
 import com.intellij.credentialStore.Credentials
 import com.intellij.ide.passwordSafe.PasswordSafe
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.jcef.JBCefBrowser
-import com.intellij.ui.treeStructure.Tree
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -22,17 +18,13 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
-import nl.hannahsten.texifyidea.util.TexifyDataKeys
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import javax.swing.JComponent
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.DefaultTreeModel
 
-class AddMendeleyAction : AnAction() {
+class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.AddMendeleyDialogWrapper>() {
 
     private val port = 8080
 
@@ -67,54 +59,37 @@ class AddMendeleyAction : AnAction() {
         }
     }
 
-    override fun actionPerformed(e: AnActionEvent) {
+    override suspend fun createLibrary(
+        dialogWrapper: AddMendeleyDialogWrapper,
+        project: Project
+    ): Pair<MendeleyLibrary, List<BibtexEntry>> {
+        if (PasswordSafe.instance.get(MendeleyLibrary.tokenAttributes) == null) {
+            authenticationCode?.let {
+                val token: TokenInfo = authClient.submitForm(
+                    url = "https://api.mendeley.com/oauth/token",
+                    formParameters = Parameters.build {
+                        append("grant_type", "authorization_code")
+                        append("code", it)
+                        append("redirect_uri", redirectUrl)
+                    }) {
+                    basicAuth(Mendeley.id, Mendeley.secret)
+                }.body()
 
-        val dialogWrapper = AddMendeleyDialogWrapper(e.project!!, server, serverRunning, redirectUrl, port)
+                val tokenCredentials = Credentials("token", token.accessToken)
+                val refreshTokenCredentials = Credentials("refresh_token", token.refreshToken)
 
-        dialogWrapper.show()
-
-        ApplicationManager.getApplication().invokeLater {
-            runBlocking {
-                if (PasswordSafe.instance.get(MendeleyLibrary.tokenAttributes) == null) {
-                    authenticationCode?.let {
-                        val token: TokenInfo = authClient.submitForm(
-                            url = "https://api.mendeley.com/oauth/token",
-                            formParameters = Parameters.build {
-                                append("grant_type", "authorization_code")
-                                append("code", it)
-                                append("redirect_uri", redirectUrl)
-                            }) {
-                            basicAuth(Mendeley.id, Mendeley.secret)
-                        }.body()
-
-                        val tokenCredentials = Credentials("token", token.accessToken)
-                        val refreshTokenCredentials = Credentials("refresh_token", token.refreshToken)
-
-                        PasswordSafe.instance.set(MendeleyLibrary.tokenAttributes, tokenCredentials)
-                        PasswordSafe.instance.set(MendeleyLibrary.refreshTokenAttributes, refreshTokenCredentials)
-                    }
-                }
-                val library = MendeleyLibrary()
-                val bibItems = library.getCollection(e.project!!)
-                RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
-                val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree
-                val model = tree.model as DefaultTreeModel
-                val root = model.root as DefaultMutableTreeNode
-                val libraryNode = DefaultMutableTreeNode(library.name)
-                bibItems.forEach { bib ->
-                    val entryElement = BibtexStructureViewEntryElement(bib)
-                    val entryNode = DefaultMutableTreeNode(entryElement)
-                    libraryNode.add(entryNode)
-
-                    // Each bib item has tags that show information, e.g., the author.
-                    entryElement.children.forEach {
-                        entryNode.add(DefaultMutableTreeNode(it))
-                    }
-                }
-                root.add(libraryNode)
-                model.nodeStructureChanged(root)
+                PasswordSafe.instance.set(MendeleyLibrary.tokenAttributes, tokenCredentials)
+                PasswordSafe.instance.set(MendeleyLibrary.refreshTokenAttributes, refreshTokenCredentials)
             }
         }
+        val library = MendeleyLibrary()
+        val bibItems = library.getCollection()
+        RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+        return library to bibItems
+    }
+
+    override fun getDialog(project: Project): AddMendeleyDialogWrapper {
+        return AddMendeleyDialogWrapper(project, server, serverRunning, redirectUrl, port)
     }
 
     class AddMendeleyDialogWrapper(

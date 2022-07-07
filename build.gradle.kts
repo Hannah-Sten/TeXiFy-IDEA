@@ -6,7 +6,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id("org.jetbrains.intellij") version "1.6.0"
     kotlin("jvm") version("1.7.0")
-    kotlin("plugin.serialization") version("1.6.21")
+    kotlin("plugin.serialization") version("1.7.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
