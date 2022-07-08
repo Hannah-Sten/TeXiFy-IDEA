@@ -87,5 +87,6 @@ Instead of writing `<<`, use `\ll` for better spacing. Same for `>>` and more va
 
 [#incorrect-quotes]
 == Incorrectly typeset quotation marks
+_Since b0.7.19_
 
 Different characters are used to open and close a quotation. For example `"quotation"` should be typeset as `+``quotation''+`, and `'quotation'` should be typeset as `+`quotation'+`.
