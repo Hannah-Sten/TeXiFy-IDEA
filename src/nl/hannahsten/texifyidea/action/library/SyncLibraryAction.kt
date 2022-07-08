@@ -34,10 +34,10 @@ class SyncLibraryAction : AnAction() {
             else -> listOf(ZoteroLibrary.createFromPasswordSafe(), MendeleyLibrary())
         }
 
-        libraries.forEach { it?.let { syncLibraries(it, project, e) } }
+        libraries.forEach { it?.let { syncLibrary(it, project, e) } }
     }
 
-    private fun syncLibraries(library: RemoteBibLibrary, project: Project, e: AnActionEvent) {
+    private fun syncLibrary(library: RemoteBibLibrary, project: Project, e: AnActionEvent) {
         ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Syncing ${library.name}...") {
             lateinit var bibItems: List<BibtexEntry>
             lateinit var expandedPaths: Enumeration<TreePath>
@@ -45,7 +45,7 @@ class SyncLibraryAction : AnAction() {
 
             override fun run(indicator: ProgressIndicator) {
                 runBlocking {
-                    expandedPaths = tree.getExpandedDescendants(TreePath(tree.model.root))
+                    expandedPaths = tree.getExpandedDescendants(TreePath(tree.model.root)) ?: return@runBlocking
                     bibItems = library.getCollection()
                     RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
                 }
@@ -56,7 +56,7 @@ class SyncLibraryAction : AnAction() {
                     override fun run(indicator: ProgressIndicator) {
                         runReadAction {
                             val model = tree.model as DefaultTreeModel
-                            val root = model.root as DefaultMutableTreeNode
+                            val root = model.root as? DefaultMutableTreeNode ?: return@runReadAction
                             val libraryNode: DefaultMutableTreeNode = root.children()
                                 .asSequence()
                                 .firstOrNull { (it as DefaultMutableTreeNode).userObject == library.name } as? DefaultMutableTreeNode
