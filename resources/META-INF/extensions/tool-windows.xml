@@ -9,17 +9,17 @@
 
     <actions>
         <group id="texify.remotelibraries" text="_Remote Libraries">
-            <action class="nl.hannahsten.texifyidea.remotelibraries.SyncZoteroAction" id="texify.zotero.Sync"
+            <action class="nl.hannahsten.texifyidea.action.library.zotero.SyncZoteroAction" id="texify.zotero.Sync"
                     text="Sync Zotero Reference Manager" icon="AllIcons.Actions.Refresh"/>
-            <action class="nl.hannahsten.texifyidea.remotelibraries.RemoveLibraryAction" id="texify.library.Remove"
+            <action class="nl.hannahsten.texifyidea.action.library.RemoveLibraryAction" id="texify.library.Remove"
                     text="Remove Selected Library" icon="AllIcons.General.Remove"/>
         </group>
 
         <group id="texify.remotelibraries.add" icon="AllIcons.General.Add" text="Add Remote Library" popup="true">
             <add-to-group group-id="texify.remotelibraries" anchor="first"/>
-            <action class="nl.hannahsten.texifyidea.remotelibraries.AddZoteroAction" id="texify.zotero.add"
+            <action class="nl.hannahsten.texifyidea.action.library.zotero.AddZoteroAction" id="texify.zotero.add"
                     text="Zotero"/>
-            <action class="nl.hannahsten.texifyidea.remotelibraries.AddMendeleyAction" id="texify.mendeley.add"
+            <action class="nl.hannahsten.texifyidea.action.library.mendeley.AddMendeleyAction" id="texify.mendeley.add"
                     text="Mendeley"/>
         </group>
 

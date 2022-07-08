@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.remotelibraries
 
 import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
 
 /**
  * Remote library with a unique [name].

@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.remotelibraries
+package nl.hannahsten.texifyidea.remotelibraries.mendeley
 
 import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
@@ -7,6 +7,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
+import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley
 
 class MendeleyLibrary : RemoteBibLibrary(NAME) {

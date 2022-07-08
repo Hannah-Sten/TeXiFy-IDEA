@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.remotelibraries
+package nl.hannahsten.texifyidea.action.library.zotero
 
 import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.actionSystem.AnAction
@@ -10,6 +10,8 @@ import com.intellij.openapi.progress.Task
 import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
+import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Zotero
 import nl.hannahsten.texifyidea.util.TexifyDataKeys

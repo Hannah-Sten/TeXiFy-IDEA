@@ -1,8 +1,9 @@
-package nl.hannahsten.texifyidea.remotelibraries
+package nl.hannahsten.texifyidea.action.library
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.treeStructure.Tree
+import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel

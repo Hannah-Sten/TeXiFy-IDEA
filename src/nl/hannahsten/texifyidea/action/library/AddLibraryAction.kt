@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.remotelibraries
+package nl.hannahsten.texifyidea.action.library
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import javax.swing.tree.DefaultMutableTreeNode

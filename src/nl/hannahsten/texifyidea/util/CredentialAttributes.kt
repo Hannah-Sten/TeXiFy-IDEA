@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
-import nl.hannahsten.texifyidea.remotelibraries.MendeleyLibrary
-import nl.hannahsten.texifyidea.remotelibraries.ZoteroLibrary
+import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyLibrary
+import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 
 object CredentialAttributes {
     object Zotero {

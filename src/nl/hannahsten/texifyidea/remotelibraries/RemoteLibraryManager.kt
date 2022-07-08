@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.remotelibraries.state.RemoteLibraryState
 
 @State(name = "ExternalBibLibraryManager", storages = [(Storage("library.xml"))])
 class RemoteLibraryManager : PersistentStateComponent<RemoteLibraryState> {

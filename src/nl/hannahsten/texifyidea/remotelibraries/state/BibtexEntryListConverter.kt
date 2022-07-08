@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.remotelibraries
+package nl.hannahsten.texifyidea.remotelibraries.state
 
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.PsiFileFactory

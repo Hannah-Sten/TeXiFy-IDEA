@@ -1,12 +1,16 @@
-package nl.hannahsten.texifyidea.remotelibraries
+package nl.hannahsten.texifyidea.remotelibraries.zotero
 
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
+import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
+import nl.hannahsten.texifyidea.remotelibraries.Temp
 import nl.hannahsten.texifyidea.util.createCredentialsAttributes
 
-class ZoteroLibrary(private val userID: String = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary(NAME) {
+class ZoteroLibrary(private val userID: String = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary(
+    NAME
+) {
 
     private val client by lazy { HttpClient(CIO) }
 
