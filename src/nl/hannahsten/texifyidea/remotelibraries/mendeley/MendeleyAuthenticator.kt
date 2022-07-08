@@ -87,20 +87,19 @@ object MendeleyAuthenticator {
      * Exchange the [authenticationCode] for an access token.
      */
     suspend fun getAccessToken(): Credentials? {
-        return PasswordSafe.instance.get(tokenAttributes) ?:
-            authenticationCode?.let {
-                val token: AccessTokenInfo = authenticationClient.submitForm(
-                    url = "https://api.mendeley.com/oauth/token",
-                    formParameters = Parameters.build {
-                        append("grant_type", "authorization_code")
-                        append("code", it)
-                        append("redirect_uri", redirectUrl)
-                    }) {
-                    basicAuth(Mendeley.id, Mendeley.secret)
-                }.body()
+        return PasswordSafe.instance.get(tokenAttributes) ?: authenticationCode?.let {
+            val token: AccessTokenInfo = authenticationClient.submitForm(
+                url = "https://api.mendeley.com/oauth/token",
+                formParameters = Parameters.build {
+                    append("grant_type", "authorization_code")
+                    append("code", it)
+                    append("redirect_uri", redirectUrl)
+                }) {
+                basicAuth(Mendeley.id, Mendeley.secret)
+            }.body()
 
-                token.getCredentials().first
-            }
+            token.getCredentials().first
+        }
     }
 
     /**
@@ -120,7 +119,6 @@ object MendeleyAuthenticator {
         val (tokenCredentials, refreshTokenCredentials) = token.getCredentials()
 
         return BearerTokens(tokenCredentials.password.toString(), refreshTokenCredentials.password.toString())
-
     }
 
     /**
@@ -134,6 +132,7 @@ object MendeleyAuthenticator {
         @SerialName("refresh_token") val refreshToken: String? = null,
         @SerialName("token_type") val tokenType: String,
     ) {
+
         fun getCredentials(): Pair<Credentials, Credentials> {
             val tokenCredentials = Credentials("token", accessToken)
             val refreshTokenCredentials = Credentials("refresh_token", refreshToken)

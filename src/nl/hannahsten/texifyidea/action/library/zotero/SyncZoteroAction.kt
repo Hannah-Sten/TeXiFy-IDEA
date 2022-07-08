@@ -33,7 +33,6 @@ class SyncZoteroAction : AnAction() {
                     lateinit var expandedPaths: Enumeration<TreePath>
                     val tree by lazy { e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree }
 
-
                     override fun run(indicator: ProgressIndicator) {
                         runBlocking {
                             expandedPaths = tree.getExpandedDescendants(TreePath(tree.model.root))
@@ -58,7 +57,7 @@ class SyncZoteroAction : AnAction() {
                                         .forEach { libraryNode.remove(it) }
 
                                     val itemsInLib = libraryNode.children().asSequence()
-                                        .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.identifier}
+                                        .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.identifier }
                                         .toList()
                                     bibItems.forEach { bib ->
                                         if (bib.identifier !in itemsInLib) {

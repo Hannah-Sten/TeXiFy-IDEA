@@ -3,8 +3,6 @@ package nl.hannahsten.texifyidea.completion.handlers
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.files.bibtexIdsInFileSet
 

@@ -17,7 +17,7 @@ import javax.swing.tree.DefaultTreeModel
 /**
  * Action to add a remote library to the libraries tool window.
  */
-abstract class AddLibraryAction<Lib: RemoteBibLibrary, T: DialogWrapper> : AnAction() {
+abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : DialogWrapper> : AnAction() {
 
     /**
      * Add the elements from the library to the tree in the tool window.
@@ -25,7 +25,7 @@ abstract class AddLibraryAction<Lib: RemoteBibLibrary, T: DialogWrapper> : AnAct
     override fun actionPerformed(e: AnActionEvent) {
         val dialogWrapper = getDialog(e.project ?: return)
 
-        if(dialogWrapper.showAndGet()) {
+        if (dialogWrapper.showAndGet()) {
             ApplicationManager.getApplication().invokeLater {
                 runBlocking {
                     val (library, bibItems) = createLibrary(dialogWrapper, e.project!!)

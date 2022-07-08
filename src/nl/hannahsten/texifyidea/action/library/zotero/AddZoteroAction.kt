@@ -29,6 +29,7 @@ class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoter
     }
 
     class AddZoteroDialogWrapper(val project: Project) : DialogWrapper(true) {
+
         var userID: String = ""
 
         var userApiKey: String = ""
