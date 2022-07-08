@@ -63,7 +63,7 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
     }
 
     private fun createLookupElementFromLatexCommand(latexCommand: LatexCommands): LookupElementBuilder? {
-        if (latexCommand.requiredParameters.isEmpty()) null
+        if (latexCommand.requiredParameters.isEmpty()) return null
         return LookupElementBuilder.create(latexCommand.requiredParameters[0])
             .bold()
             .withInsertHandler(LatexReferenceInsertHandler())

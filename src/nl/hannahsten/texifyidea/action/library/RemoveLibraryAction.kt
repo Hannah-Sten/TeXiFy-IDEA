@@ -12,6 +12,7 @@ class RemoveLibraryAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val library = e.getData(TexifyDataKeys.LIBRARY_NAME) ?: return
+        println("Removing $library")
         RemoteLibraryManager.getInstance().removeLibraryByKey(library)
 
         val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree

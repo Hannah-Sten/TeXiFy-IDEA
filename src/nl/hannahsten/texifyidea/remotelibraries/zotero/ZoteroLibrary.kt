@@ -1,11 +1,13 @@
 package nl.hannahsten.texifyidea.remotelibraries.zotero
 
+import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.Temp
+import nl.hannahsten.texifyidea.util.CredentialAttributes
 import nl.hannahsten.texifyidea.util.createCredentialsAttributes
 
 class ZoteroLibrary(private val userID: String = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary(
@@ -28,6 +30,13 @@ class ZoteroLibrary(private val userID: String = Temp.userID, private val userAp
 
         const val VERSION = 3
         const val NAME = "Zotero"
-        val credentialAttributes = createCredentialsAttributes(NAME)
+
+        fun createFromPasswordSafe(): ZoteroLibrary? {
+            val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)
+            return if (credentials?.userName == null || credentials.password == null) null
+            else {
+                ZoteroLibrary(credentials.userName.toString(), credentials.password.toString())
+            }
+        }
     }
 }
