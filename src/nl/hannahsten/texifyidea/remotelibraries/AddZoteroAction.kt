@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.util.CredentialAttributes.Zotero
 import javax.swing.JComponent
 
 class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoteroDialogWrapper>() {
@@ -18,7 +19,7 @@ class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoter
     override suspend fun createLibrary(dialogWrapper: AddZoteroDialogWrapper, project: Project): Pair<ZoteroLibrary, List<BibtexEntry>> {
         val library = ZoteroLibrary(dialogWrapper.userID, dialogWrapper.userApiKey)
         val credentials = Credentials(dialogWrapper.userID, dialogWrapper.userApiKey)
-        PasswordSafe.instance.set(ZoteroLibrary.credentialAttributes, credentials)
+        PasswordSafe.instance.set(Zotero.userAttributes, credentials)
         val bibItems = library.getCollection()
         RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
         return library to bibItems

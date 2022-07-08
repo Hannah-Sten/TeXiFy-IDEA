@@ -11,6 +11,7 @@ import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
+import nl.hannahsten.texifyidea.util.CredentialAttributes.Zotero
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import java.util.Enumeration
 import javax.swing.tree.DefaultMutableTreeNode
@@ -21,7 +22,7 @@ class SyncZoteroAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val credentials = PasswordSafe.instance.get(ZoteroLibrary.credentialAttributes)
+        val credentials = PasswordSafe.instance.get(Zotero.userAttributes)
         credentials?.userName?.let {
             credentials.password?.let { apiKey ->
                 val zotero = ZoteroLibrary(it, apiKey.toString())
