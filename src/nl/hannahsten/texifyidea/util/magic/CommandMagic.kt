@@ -305,13 +305,21 @@ object CommandMagic {
             NEWTHEOREM,
             NEWDOCUMENTENVIRONMENT,
             PROVIDEDOCUMENTENVIRONMENT,
-            DECLAREDOCUMENTENVIRONMENT
+            DECLAREDOCUMENTENVIRONMENT,
+            NEWTCOLORBOX,
+            DECLARETCOLORBOX,
+            NEWTCOLORBOX_,
+            PROVIDETCOLORBOX,
     ).map { it.cmd }
 
     /**
      * All commands that define or redefine other environments, whether it exists or not.
      */
-    val environmentRedefinitions = hashSetOf(RENEWENVIRONMENT.cmd)
+    val environmentRedefinitions = hashSetOf(
+        RENEWENVIRONMENT.cmd,
+        RENEWTCOLORBOX.cmd,
+        RENEWTCOLORBOX_.cmd,
+    )
 
     /**
      * All commands that define stuff like classes, environments, and definitions.
