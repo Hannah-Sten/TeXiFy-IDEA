@@ -43,9 +43,6 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
     companion object {
 
-        /** Cache for commands which are indexed and which should be added to the autocompletion. */
-        val indexedCommands = mutableSetOf<LookupElementBuilder>()
-
         /** Whether TeX Live is available at all, in which case it could be that all packages from texlive-full are in the index. */
         val isTexliveAvailable = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
     }
@@ -93,45 +90,46 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
      * Add all indexed commands to the autocompletion.
      */
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
-        // Use cache if available
-        if (indexedCommands.isNotEmpty()) {
-            result.addAllElements(indexedCommands)
-            return
-        }
+        val project = parameters.editor.project ?: return
 
         // If using texlive, filter on commands which are in packages included in the project
         // The reason for doing this, is that the user probably is using texlive-full, in which case the
         // completion would be flooded with duplicate commands from packages that nobody uses.
         // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
         // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
-        val project = parameters.editor.project ?: return
 
         val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(LatexPackage.DEFAULT)
 
-        val commands = mutableSetOf<LookupElementBuilder>()
-        FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project).toSet()
-            .forEach { cmdWithSlash ->
-                val cmdWithoutSlash = cmdWithSlash.substring(1)
-                LatexCommand.lookupInIndex(cmdWithoutSlash, project)
-                    .filter { if (isTexliveAvailable) it.dependency in packagesInProject else true }
-                    .forEach { cmd ->
+        val lookupElementBuilders = mutableSetOf<LookupElementBuilder>()
+
+        val commandsFromIndex = mutableListOf<Set<LatexCommand>>()
+
+        FileBasedIndex.getInstance().processAllKeys(
+            LatexExternalCommandIndex.id,
+            { cmdWithSlash -> commandsFromIndex.add(LatexCommand.lookupInIndex(cmdWithSlash.substring(1), project)) },
+            GlobalSearchScope.everythingScope(project),
+            null
+        )
+
+        // Process each set of command aliases (commands with the same name, but possibly with different arguments) separately.
+        commandsFromIndex.map { commandAliases ->
+            commandAliases.filter { command -> if (isTexliveAvailable) command.dependency in packagesInProject else true }
+                .forEach { cmd ->
                     createCommandLookupElements(cmd)
                         // Avoid duplicates of commands defined in LaTeX base, because they are often very similar commands defined in different document classes, so it makes not
                         // much sense at the moment to have them separately in the autocompletion.
                         // Effectively this results in just taking the first one we found
                         .filter { newBuilder ->
                             if (cmd.dependency.isDefault) {
-                                commands.none { it.lookupString == newBuilder.lookupString }
+                                lookupElementBuilders.none { it.lookupString == newBuilder.lookupString }
                             }
                             else {
                                 true
                             }
-                        }
-                        .forEach { commands.add(it) }
+                        }.forEach { lookupElementBuilders.add(it) }
                 }
-            }
-        indexedCommands.addAll(commands)
-        result.addAllElements(commands)
+        }
+        result.addAllElements(lookupElementBuilders)
     }
 
     private fun addNormalCommands(result: CompletionResultSet, project: Project) {
@@ -229,7 +227,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     private fun getArgumentsFromDefinition(commands: LatexCommands): List<Argument> {
         val argumentString = getTailText(commands)
         val argumentStrings =
-            """(\[[\w\d]*])|(\{[\w\d]*})""".toRegex().findAll(argumentString).map { it.value }.toList()
+            """(\[\w*])|(\{\w*})""".toRegex().findAll(argumentString).map { it.value }.toList()
         return argumentStrings.map {
             if (it.startsWith("{")) RequiredArgument(it.drop(1).dropLast(1))
             else OptionalArgument(it.drop(1).dropLast(1))
