@@ -80,10 +80,10 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
         // If this is a valid LaTeX installation, pdflatex should be present in a subfolder in bin, e.g. $path/bin/x86_64-linux/pdflatex
         val parent = LatexSdkUtil.getPdflatexParentPath(path)
-
-        val errorMessage = "Could not find $path/bin/*/pdflatex"
-        return LatexSdkUtil.isPdflatexPresent(parent, errorMessage, name, suppressNotification = suggestHomePaths().plus(suggestHomePath()))
+        return LatexSdkUtil.isPdflatexPresent(parent)
     }
+
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/bin/*/pdflatex"
 
     override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
 

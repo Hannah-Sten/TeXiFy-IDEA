@@ -29,7 +29,8 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
 
     override fun getVariants(): Array<Any> {
         val file = myElement!!.containingFile.originalFile
-        val command = myElement.commandToken.text
+        @Suppress("USELESS_CAST") // Smart cast to 'LatexCommands' is deprecated, because 'myElement' is a property declared in base class from different module
+        val command = (myElement as LatexCommands).commandToken.text
 
         // add bibreferences to autocompletion for \cite-style commands
         if (CommandMagic.bibliographyReference.contains(command)) {

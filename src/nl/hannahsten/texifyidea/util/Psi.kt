@@ -25,7 +25,7 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
  * @see [PsiTreeUtil.getChildrenOfType]
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
-    if (project.isDisposed) return emptyList()
+    if (project.isDisposed || !this.isValid) return emptyList()
     return PsiTreeUtil.findChildrenOfType(this, clazz.java)
 }
 
@@ -412,7 +412,9 @@ fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequenc
 /**
  * Get a sequence of all parents of this element.
  */
-fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.parent }
+fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) {
+    it.parent?.run { if (!isValid) null else this }
+}
 
 /**
  * Adds the pattern condition to this psi element pattern.

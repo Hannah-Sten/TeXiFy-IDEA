@@ -13,8 +13,8 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvi
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexMode
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
@@ -44,6 +44,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         registerMagicCommentCompletion()
         registerBibliographyReferenceCompletion()
         registerPackageNameCompletion()
+        registerGlossariesCompletion()
         registerDocumentClassCompletion()
         registerLatexArgumentTypeCompletion()
         registerDefaultEnvironmentCompletion()
@@ -279,6 +280,10 @@ open class LatexCompletionContributor : CompletionContributor() {
      */
     private fun registerPackageNameCompletion() {
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
+    }
+
+    private fun registerGlossariesCompletion() {
+        extendLatexCommands(LatexGlossariesCompletionProvider, CommandMagic.glossaryReference)
     }
 
     /**

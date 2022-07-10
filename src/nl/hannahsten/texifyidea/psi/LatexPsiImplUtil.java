@@ -40,7 +40,7 @@ public class LatexPsiImplUtil {
     }
 
     public static String toString(@NotNull LatexKeyvalKey element) {
-        return LatexCommandsImplUtilKt.keyValContentToString(element);
+        return LatexCommandsImplUtilKt.keyValKeyToString(element);
     }
 
     public static String toString(@NotNull LatexKeyvalValue element) {

@@ -31,6 +31,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticItemInItemize = true
     var automaticDependencyCheck = true
     var autoCompile = false
+    var autoCompileOnSaveOnly = false
     var continuousPreview = false
     var includeBackslashInSelection = false
     var showPackagesInStructureView = false
@@ -43,6 +44,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             automaticItemInItemize = automaticItemInItemize,
             automaticDependencyCheck = automaticDependencyCheck,
             autoCompile = autoCompile,
+            autoCompileOnSaveOnly = autoCompileOnSaveOnly,
             continuousPreview = continuousPreview,
             includeBackslashInSelection = includeBackslashInSelection,
             showPackagesInStructureView = showPackagesInStructureView,
@@ -56,6 +58,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         automaticItemInItemize = state.automaticItemInItemize
         automaticDependencyCheck = state.automaticDependencyCheck
         autoCompile = state.autoCompile
+        autoCompileOnSaveOnly = state.autoCompileOnSaveOnly
         continuousPreview = state.continuousPreview
         includeBackslashInSelection = state.includeBackslashInSelection
         showPackagesInStructureView = state.showPackagesInStructureView

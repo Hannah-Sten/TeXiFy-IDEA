@@ -4,8 +4,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.4.0"
-    kotlin("jvm") version("1.6.20")
+    id("org.jetbrains.intellij") version "1.6.0"
+    kotlin("jvm") version("1.7.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.8.0-alpha.9"
+version = "0.8.0-alpha.10"
 
 repositories {
     mavenCentral()
@@ -47,9 +47,6 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=all")
@@ -58,9 +55,6 @@ tasks.compileKotlin {
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=all")
@@ -151,7 +145,7 @@ intellij {
 
     // todo support pdf viewer plugin
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.13.0")) // , "com.jetbrains.hackathon.indices.viewer:1.13")
+    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.20"))
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
@@ -210,4 +204,8 @@ tasks.jacocoTestReport {
 
 ktlint {
     verbose.set(true)
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

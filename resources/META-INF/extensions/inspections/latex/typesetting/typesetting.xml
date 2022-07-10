@@ -40,5 +40,9 @@
                          groupPath="LaTeX" groupName="Typesetting issues" displayName="Citations must be placed before interpunction"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexQuoteInspection"
+                         groupPath="LaTeX" groupName="Typesetting issues" displayName="Incorrectly typeset quotation marks"
+                         enabledByDefault="true"
+                         level="WARNING" />
     </extensions>
 </idea-plugin>

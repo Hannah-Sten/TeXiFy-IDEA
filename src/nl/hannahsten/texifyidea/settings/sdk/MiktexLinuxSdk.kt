@@ -43,9 +43,10 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
 
     override fun isValidSdkHome(path: String): Boolean {
         // We just want a path where pdflatex is present
-        val errorMessage = "Could not find $path/pdflatex"
-        return LatexSdkUtil.isPdflatexPresent(path, errorMessage, name, suppressNotification = suggestHomePaths().plus(suggestHomePath()))
+        return LatexSdkUtil.isPdflatexPresent(path)
     }
+
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/pdflatex"
 
     override fun getVersionString(sdk: Sdk): String? {
         return getVersionString(sdk.homePath)

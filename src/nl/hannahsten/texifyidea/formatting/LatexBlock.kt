@@ -167,9 +167,12 @@ class LatexBlock(
         // Indentation in groups and parameters.
         if (myNode.elementType === LatexTypes.REQUIRED_PARAM_CONTENT ||
             myNode.elementType === LatexTypes.OPTIONAL_PARAM_CONTENT ||
+            myNode.elementType === LatexTypes.STRICT_KEYVAL_PAIR ||
             myNode.elementType === LatexTypes.KEYVAL_PAIR ||
             (myNode.elementType !== LatexTypes.CLOSE_BRACE &&
-                myNode.treeParent?.elementType === LatexTypes.GROUP)
+                    myNode.treeParent?.elementType === LatexTypes.GROUP) ||
+            (myNode.elementType !== LatexTypes.CLOSE_BRACE &&
+                    myNode.treeParent?.elementType === LatexTypes.PARAMETER_GROUP)
         ) {
             return Indent.getNormalIndent(false)
         }
