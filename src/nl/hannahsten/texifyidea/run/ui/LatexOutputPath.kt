@@ -23,6 +23,7 @@ import java.nio.file.Path
  *
  * @param variant: out or auxil
  */
+@Deprecated("unused")
 class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?, var mainFile: VirtualFile?, private val project: Project) {
 
     companion object {

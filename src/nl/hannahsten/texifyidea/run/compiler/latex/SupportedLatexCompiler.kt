@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.compiler.latex
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
@@ -9,6 +10,8 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.SupportedCompiler
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -110,8 +113,11 @@ abstract class SupportedLatexCompiler(
         // See https://hub.docker.com/r/miktex/miktex
         "docker volume create --name miktex".runCommand()
 
+        // Find the sdk corresponding to the type the user has selected in the run config
+        val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull { it.sdkType is DockerSdk }
+
         val parameterList = mutableListOf(
-            "docker", // Could be improved by getting executable name based on SDK
+            if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),
             "run",
             "--rm",
             "-v",
@@ -132,7 +138,7 @@ abstract class SupportedLatexCompiler(
             parameterList.addAll(listOf("-v", "${auxilPath?.path}:$dockerAuxilDir"))
         }
 
-        parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
+        parameterList.add((sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName ?: "miktex:latest")
 
         command.addAll(0, parameterList)
     }
