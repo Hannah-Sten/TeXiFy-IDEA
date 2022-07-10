@@ -128,6 +128,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile:
  * @return The found file, or `null` when the file could not be found.
  */
 fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
+    if (project.isDisposed) return null
     val directory = containingDirectory?.virtualFile
 
     val file = directory?.findFile(
