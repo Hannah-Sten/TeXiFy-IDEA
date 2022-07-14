@@ -6,7 +6,7 @@ import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
-import java.io.IOException
+import nl.hannahsten.texifyidea.util.runCommand
 
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
@@ -50,13 +50,7 @@ private fun isSumatraInstalled(): Boolean {
     }
 
     // Try if Sumatra is in PATH
-    return try {
-        Runtime.getRuntime().exec("start SumatraPDF")
-        true
-    }
-    catch (e: IOException) {
-        false
-    }
+    return runCommand("start", "SumatraPDF") != null
 }
 
 /**
