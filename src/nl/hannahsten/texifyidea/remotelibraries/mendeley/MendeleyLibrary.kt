@@ -10,7 +10,7 @@ import io.ktor.client.request.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley
 
-class MendeleyLibrary : RemoteBibLibrary(NAME) {
+class MendeleyLibrary(override val identifier: String = NAME, override val displayName: String = "Mendeley") : RemoteBibLibrary(identifier, displayName) {
 
     private val client by lazy {
         HttpClient(CIO) {

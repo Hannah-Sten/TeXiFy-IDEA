@@ -15,6 +15,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewTagElement
@@ -22,6 +23,7 @@ import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.hasLatexModule
 import javax.swing.tree.DefaultMutableTreeNode
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 /**
  * The remote libraries tool window shows an overview of all remote libraries a user has connected with.
@@ -82,8 +84,8 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         val rootNode = DefaultMutableTreeNode().apply {
             // Add all the bib items for each library.
             libraries.forEach { library ->
-                val libraryNode = DefaultMutableTreeNode(library.key).apply {
-                    library.value.forEach { entry ->
+                val libraryNode = LibraryMutableTreeNode(library.key, library.value.displayName).apply {
+                    library.value.entries.forEach { entry ->
                         val entryElement = BibtexStructureViewEntryElement(entry)
                         val entryNode = DefaultMutableTreeNode(entryElement)
                         add(entryNode)
@@ -124,9 +126,12 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         override fun getData(dataId: String): Any? {
             return when {
                 TexifyDataKeys.LIBRARY_TREE.`is`(dataId) -> tree
-                TexifyDataKeys.LIBRARY_NAME.`is`(dataId) -> tree.selectionPath?.getPathComponent(1)?.toString()
+                TexifyDataKeys.LIBRARY_NAME.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.toString()
+                TexifyDataKeys.LIBRARY_IDENTIFIER.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.identifier
                 else -> null
             }
         }
     }
 }
+
+class LibraryMutableTreeNode(val identifier: String, val displayName: String) : DefaultMutableTreeNode(displayName)

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.remotelibraries.state
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -17,24 +18,34 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
  * Converter to serialize the library map from and to a string. We use Jackson to convert the map from and to XML. This
  * XML will be stored in a `value="<insert xml here>"` tag inside IntelliJs XML, so we end up with some form of nested XML. Fun.
  */
-class LibraryStateConverter : Converter<Map<String, List<BibtexEntry>>>() {
+class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
 
-    data class BibItems(val items: List<BibtexEntry>)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class LibraryWrapper(
+        val displayName: String = "",
+        val libraryType: Class<*> = Any::class.java,
+        val bibtex: BibItems = BibItems()
+    )
 
-    override fun toString(value: Map<String, List<BibtexEntry>>): String? {
-        val transformedValues = value.mapValues { BibItems(it.value) }
+    data class BibItems(val items: List<BibtexEntry> = emptyList())
+
+    override fun toString(value: Map<String, LibraryState>): String? {
         val module = JacksonXmlModule()
+
         module.addSerializer(BibItems::class.java, object : JsonSerializer<BibItems>() {
             override fun serialize(p0: BibItems, p1: JsonGenerator, p2: SerializerProvider) {
                 runReadAction { p1.writeString(BibtexEntryListConverter().toString(p0.items)) }
             }
         })
 
-        return XmlMapper(module).writeValueAsString(transformedValues)
+        return XmlMapper(module)
+            .writerWithDefaultPrettyPrinter()
+            .writeValueAsString(value.mapValues { LibraryWrapper(it.value.displayName, it.value.libraryType, BibItems(it.value.entries)) })
     }
 
-    override fun fromString(value: String): Map<String, List<BibtexEntry>> {
+    override fun fromString(value: String): Map<String, LibraryState> {
         val module = JacksonXmlModule()
+
         module.addDeserializer(BibItems::class.java, object : JsonDeserializer<BibItems>() {
             override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems {
                     return runReadAction { BibItems(BibtexEntryListConverter().fromString(p0.text)) }
@@ -42,7 +53,7 @@ class LibraryStateConverter : Converter<Map<String, List<BibtexEntry>>>() {
         })
 
         return XmlMapper(module)
-            .readValue<Map<String, BibItems>>(value)
-            .mapValues { it.value.items }
+            .readValue<Map<String, LibraryWrapper>>(value)
+            .mapValues { LibraryState(it.value.displayName, it.value.libraryType, it.value.bibtex.items) }
     }
 }

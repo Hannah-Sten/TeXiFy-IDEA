@@ -6,13 +6,12 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
-import nl.hannahsten.texifyidea.remotelibraries.Temp
+import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.util.CredentialAttributes
-import nl.hannahsten.texifyidea.util.createCredentialsAttributes
 
-class ZoteroLibrary(private val userID: String = Temp.userID, private val userApiKey: String = Temp.userApiKey) : RemoteBibLibrary(
-    NAME
-) {
+class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") : RemoteBibLibrary(identifier, displayName) {
+    private lateinit var userID: String
+    private lateinit var userApiKey: String
 
     private val client by lazy { HttpClient(CIO) }
 
@@ -31,12 +30,25 @@ class ZoteroLibrary(private val userID: String = Temp.userID, private val userAp
         const val VERSION = 3
         const val NAME = "Zotero"
 
-        fun createFromPasswordSafe(): ZoteroLibrary? {
+        fun createFromPasswordSafe(identifier: String = NAME, displayName: String): ZoteroLibrary? {
             val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)
             return if (credentials?.userName == null || credentials.password == null) null
             else {
-                ZoteroLibrary(credentials.userName.toString(), credentials.password.toString())
+                ZoteroLibrary(identifier = identifier, displayName = displayName).apply {
+                    this.userID = credentials.userName.toString()
+                    this.userApiKey = credentials.password.toString()
+                }
             }
+        }
+
+        fun createWithGeneratedId(displayName: String, userID: String, userApiKey: String): ZoteroLibrary? {
+            val library = RemoteBibLibraryFactory.create(displayName) as? ZoteroLibrary ?: return null
+            library.apply {
+                this.userID = userID
+                this.userApiKey = userApiKey
+            }
+
+            return library
         }
     }
 }

@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
+import nl.hannahsten.texifyidea.ui.remotelibraries.LibraryMutableTreeNode
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
@@ -28,11 +29,11 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : DialogWrapper> : AnA
         if (dialogWrapper.showAndGet()) {
             ApplicationManager.getApplication().invokeLater {
                 runBlocking {
-                    val (library, bibItems) = createLibrary(dialogWrapper, e.project!!)
+                    val (library, bibItems) = createLibrary(dialogWrapper, e.project!!) ?: return@runBlocking
                     val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree
                     val model = tree.model as DefaultTreeModel
                     val root = model.root as DefaultMutableTreeNode
-                    val libraryNode = DefaultMutableTreeNode(library.name)
+                    val libraryNode = LibraryMutableTreeNode(library.identifier, library.displayName)
                     bibItems.forEach { bib ->
                         val entryElement = BibtexStructureViewEntryElement(bib)
                         val entryNode = DefaultMutableTreeNode(entryElement)
@@ -60,5 +61,5 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : DialogWrapper> : AnA
     /**
      * Get access to the user's online library, retrieve, store, and return the elements.
      */
-    abstract suspend fun createLibrary(dialogWrapper: T, project: Project): Pair<Lib, List<BibtexEntry>>
+    abstract suspend fun createLibrary(dialogWrapper: T, project: Project): Pair<Lib, List<BibtexEntry>>?
 }

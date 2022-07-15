@@ -20,7 +20,7 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val localEntries = parameters.originalFile.findBibtexItems()
         val remoteEntries = RemoteLibraryManager.getInstance().libraries
-            .flatMap { it.value }
+            .flatMap { it.value.entries }
             .toSet()
             // Filter ids that are already included in the local bib entries.
             .filter { it.id !in localEntries.filterIsInstance<BibtexEntry>().map { bib -> bib.id } }

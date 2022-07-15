@@ -2,12 +2,14 @@ package nl.hannahsten.texifyidea.remotelibraries
 
 import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyLibrary
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
+import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 
 /**
- * Remote library with a unique [name].
+ * Remote library with a unique [identifier].
  */
-abstract class RemoteBibLibrary(val name: String) {
+abstract class RemoteBibLibrary(open val identifier: String, open val displayName: String) {
 
     /**
      * Get the bib items from the remote library in bibtex format, then parse the bibtex to obtain all the bib entries.

@@ -11,10 +11,10 @@ import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
+import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
-import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyLibrary
-import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
+import nl.hannahsten.texifyidea.ui.remotelibraries.LibraryMutableTreeNode
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
@@ -25,20 +25,17 @@ class SyncLibraryAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val libraries = when (e.getData(TexifyDataKeys.LIBRARY_NAME)) {
-            ZoteroLibrary.NAME -> {
-                listOf(ZoteroLibrary.createFromPasswordSafe())
-            }
+        val libraries = RemoteBibLibraryFactory.fromStorage(e.getData(TexifyDataKeys.LIBRARY_IDENTIFIER))?.let { listOf(it) }
+            ?: RemoteLibraryManager.getInstance().libraries
+                .map {
+                    RemoteBibLibraryFactory.fromStorage(it.key)
+                }
 
-            MendeleyLibrary.NAME -> listOf(MendeleyLibrary())
-            else -> listOf(ZoteroLibrary.createFromPasswordSafe(), MendeleyLibrary())
-        }
-
-        libraries.forEach { it?.let { syncLibrary(it, project, e) } }
+        libraries.filterNotNull().forEach { syncLibrary(it, project, e) }
     }
 
     private fun syncLibrary(library: RemoteBibLibrary, project: Project, e: AnActionEvent) {
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Syncing ${library.name}...") {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Syncing ${library.displayName}...") {
             lateinit var bibItems: List<BibtexEntry>
             lateinit var expandedPaths: Enumeration<TreePath>
             val tree by lazy { e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree }
@@ -57,10 +54,10 @@ class SyncLibraryAction : AnAction() {
                         runReadAction {
                             val model = tree.model as DefaultTreeModel
                             val root = model.root as? DefaultMutableTreeNode ?: return@runReadAction
-                            val libraryNode: DefaultMutableTreeNode = root.children()
+                            val libraryNode: LibraryMutableTreeNode = root.children()
                                 .asSequence()
-                                .firstOrNull { (it as DefaultMutableTreeNode).userObject == library.name } as? DefaultMutableTreeNode
-                                ?: DefaultMutableTreeNode(library.name)
+                                .firstOrNull { (it as LibraryMutableTreeNode).identifier == library.identifier } as? LibraryMutableTreeNode
+                                ?: LibraryMutableTreeNode(library.identifier, library.displayName)
                             libraryNode.children().asSequence()
                                 .map { it as DefaultMutableTreeNode }
                                 .filter { (it.userObject as BibtexStructureViewEntryElement).entry.identifier !in bibItems.map { bib -> bib.identifier } }

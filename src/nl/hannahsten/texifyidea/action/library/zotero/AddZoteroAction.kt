@@ -19,8 +19,8 @@ class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoter
         return AddZoteroDialogWrapper(project)
     }
 
-    override suspend fun createLibrary(dialogWrapper: AddZoteroDialogWrapper, project: Project): Pair<ZoteroLibrary, List<BibtexEntry>> {
-        val library = ZoteroLibrary(dialogWrapper.userID, dialogWrapper.userApiKey)
+    override suspend fun createLibrary(dialogWrapper: AddZoteroDialogWrapper, project: Project): Pair<ZoteroLibrary, List<BibtexEntry>>? {
+        val library = ZoteroLibrary.createWithGeneratedId(ZoteroLibrary.NAME, dialogWrapper.userID, dialogWrapper.userApiKey) ?: return null
         val credentials = Credentials(dialogWrapper.userID, dialogWrapper.userApiKey)
         PasswordSafe.instance.set(Zotero.userAttributes, credentials)
         val bibItems = library.getCollection()

@@ -11,9 +11,9 @@ import javax.swing.tree.DefaultTreeModel
 class RemoveLibraryAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        val library = e.getData(TexifyDataKeys.LIBRARY_NAME) ?: return
-        println("Removing $library")
-        RemoteLibraryManager.getInstance().removeLibraryByKey(library)
+        val libraryKey = e.getData(TexifyDataKeys.LIBRARY_IDENTIFIER) ?: return
+        println("Removing $libraryKey")
+        RemoteLibraryManager.getInstance().removeLibraryByKey(libraryKey)
 
         val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree
         val model = tree.model as DefaultTreeModel
