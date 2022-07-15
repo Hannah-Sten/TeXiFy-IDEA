@@ -15,7 +15,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewTagElement
@@ -23,7 +22,6 @@ import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.hasLatexModule
 import javax.swing.tree.DefaultMutableTreeNode
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 /**
  * The remote libraries tool window shows an overview of all remote libraries a user has connected with.

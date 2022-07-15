@@ -2,9 +2,7 @@ package nl.hannahsten.texifyidea.remotelibraries
 
 import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyLibrary
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
-import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 
 /**
  * Remote library with a unique [identifier].

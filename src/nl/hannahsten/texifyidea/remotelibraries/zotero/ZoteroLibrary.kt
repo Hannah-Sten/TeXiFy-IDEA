@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.util.CredentialAttributes
 
 class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") : RemoteBibLibrary(identifier, displayName) {
+
     private lateinit var userID: String
     private lateinit var userApiKey: String
 

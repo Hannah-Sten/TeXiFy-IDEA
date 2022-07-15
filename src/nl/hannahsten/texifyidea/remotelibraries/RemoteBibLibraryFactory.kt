@@ -21,10 +21,10 @@ object RemoteBibLibraryFactory {
         }
     }
 
-    inline fun <reified T: RemoteBibLibrary> create(displayName: String): T? {
+    inline fun <reified T : RemoteBibLibrary> create(displayName: String): T? {
         val identifier = generateId()
 
-        return when(T::class.simpleName) {
+        return when (T::class.simpleName) {
             ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, displayName) as T
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, displayName) as T
             else -> null

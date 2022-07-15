@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.remotelibraries.state
 
 import com.intellij.util.xmlb.annotations.OptionTag
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 
 /**
  * State that can read and write library contents to and from disk.
