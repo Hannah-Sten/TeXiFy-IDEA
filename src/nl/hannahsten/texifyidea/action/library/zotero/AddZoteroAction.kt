@@ -3,10 +3,9 @@ package nl.hannahsten.texifyidea.action.library.zotero
 import com.intellij.credentialStore.Credentials
 import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
-import nl.hannahsten.texifyidea.action.library.AddLibDialogWrapper
+import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.action.library.AddLibraryAction
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager

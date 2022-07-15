@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.ui.remotelibraries.LibraryMutableTreeNode
+import nl.hannahsten.texifyidea.ui.remotelibraries.findLibraryNode
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
@@ -54,9 +55,7 @@ class SyncLibraryAction : AnAction() {
                         runReadAction {
                             val model = tree.model as DefaultTreeModel
                             val root = model.root as? DefaultMutableTreeNode ?: return@runReadAction
-                            val libraryNode: LibraryMutableTreeNode = root.children()
-                                .asSequence()
-                                .firstOrNull { (it as LibraryMutableTreeNode).identifier == library.identifier } as? LibraryMutableTreeNode
+                            val libraryNode: LibraryMutableTreeNode = tree.findLibraryNode(library.identifier)
                                 ?: LibraryMutableTreeNode(library.identifier, library.displayName)
                             libraryNode.children().asSequence()
                                 .map { it as DefaultMutableTreeNode }

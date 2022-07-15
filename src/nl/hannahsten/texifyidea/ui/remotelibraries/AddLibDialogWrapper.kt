@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.action.library
+package nl.hannahsten.texifyidea.ui.remotelibraries
 
 import com.intellij.openapi.ui.DialogWrapper
 

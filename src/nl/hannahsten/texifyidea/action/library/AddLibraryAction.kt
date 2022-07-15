@@ -2,18 +2,16 @@ package nl.hannahsten.texifyidea.action.library
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
-import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
+import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
 import nl.hannahsten.texifyidea.ui.remotelibraries.LibraryMutableTreeNode
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
 import javax.swing.tree.DefaultMutableTreeNode
