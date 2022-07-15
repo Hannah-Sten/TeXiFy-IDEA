@@ -30,8 +30,11 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
         if (selected != null) {
             imageName.selectedItem = selected
         }
-        else {
+        else if (imageName.itemCount > 0) {
             imageName.selectedIndex = 0
+        }
+        else {
+            imageName.selectedIndex = -1
         }
 
         // Set width

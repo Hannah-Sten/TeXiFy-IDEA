@@ -49,4 +49,6 @@ class LatexExternalCommandIndex : FileBasedIndexExtension<String, String>() {
     }
 
     override fun dependsOnFileContent() = true
+
+    override fun traceKeyHashToVirtualFileMapping() = true
 }
