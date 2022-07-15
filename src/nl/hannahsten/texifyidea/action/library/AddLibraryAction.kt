@@ -3,6 +3,10 @@ package nl.hannahsten.texifyidea.action.library
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task.Backgroundable
+import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.treeStructure.Tree
@@ -18,36 +22,47 @@ import javax.swing.tree.DefaultTreeModel
 /**
  * Action to add a remote library to the libraries tool window.
  */
-abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : DialogWrapper> : AnAction() {
+abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper> : AnAction() {
 
     /**
      * Add the elements from the library to the tree in the tool window.
      */
     override fun actionPerformed(e: AnActionEvent) {
-        val dialogWrapper = getDialog(e.project ?: return)
+        val dialogWrapper: T = getDialog(e.project ?: return)
 
         if (dialogWrapper.showAndGet()) {
-            ApplicationManager.getApplication().invokeLater {
-                runBlocking {
-                    val (library, bibItems) = createLibrary(dialogWrapper, e.project!!) ?: return@runBlocking
-                    val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree
-                    val model = tree.model as DefaultTreeModel
-                    val root = model.root as DefaultMutableTreeNode
-                    val libraryNode = LibraryMutableTreeNode(library.identifier, library.displayName)
-                    bibItems.forEach { bib ->
-                        val entryElement = BibtexStructureViewEntryElement(bib)
-                        val entryNode = DefaultMutableTreeNode(entryElement)
-                        libraryNode.add(entryNode)
+            ProgressManager.getInstance()
+                .run(object : Backgroundable(e.project, "Adding ${dialogWrapper.displayName} library") {
+                    lateinit var library: Lib
+                    lateinit var bibItems: List<BibtexEntry>
 
-                        // Each bib item has tags that show information, e.g., the author.
-                        entryElement.children.forEach {
-                            entryNode.add(DefaultMutableTreeNode(it))
+                    override fun run(indicator: ProgressIndicator) {
+                        runBlocking {
+                            val (libraryT, bibItemsT) = createLibrary(dialogWrapper, e.project!!) ?: return@runBlocking
+                            library = libraryT
+                            bibItems = bibItemsT
                         }
                     }
-                    root.add(libraryNode)
-                    model.nodeStructureChanged(root)
-                }
-            }
+
+                    override fun onSuccess() {
+                        val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree
+                        val model = tree.model as DefaultTreeModel
+                        val root = model.root as DefaultMutableTreeNode
+                        val libraryNode = LibraryMutableTreeNode(library.identifier, library.displayName)
+                        bibItems.forEach { bib ->
+                            val entryElement = BibtexStructureViewEntryElement(bib)
+                            val entryNode = DefaultMutableTreeNode(entryElement)
+                            libraryNode.add(entryNode)
+
+                            // Each bib item has tags that show information, e.g., the author.
+                            entryElement.children.forEach {
+                                entryNode.add(DefaultMutableTreeNode(it))
+                            }
+                        }
+                        root.add(libraryNode)
+                        model.nodeStructureChanged(root)
+                    }
+                })
         }
     }
 

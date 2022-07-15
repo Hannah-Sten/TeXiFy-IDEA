@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.action.library.mendeley
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.jcef.JBCefBrowser
+import nl.hannahsten.texifyidea.action.library.AddLibDialogWrapper
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.action.library.AddLibraryAction
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
@@ -26,7 +27,7 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
 
     class AddMendeleyDialogWrapper(
         val project: Project,
-    ) : DialogWrapper(true) {
+    ) : AddLibDialogWrapper(MendeleyLibrary.NAME) {
 
         private val browser = JBCefBrowser(MendeleyAuthenticator.authorizationUrl)
 
