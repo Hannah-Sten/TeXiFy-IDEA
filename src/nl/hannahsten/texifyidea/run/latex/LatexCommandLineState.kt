@@ -51,7 +51,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         firstRunSetup(compiler)
-        if (!runConfig.getLatexDistributionType().isMiktex()) {
+        if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
             runConfig.outputPath.updateOutputSubDirs()
         }
 
