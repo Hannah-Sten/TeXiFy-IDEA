@@ -19,6 +19,9 @@ import javax.swing.tree.DefaultTreeModel
 
 /**
  * Action to add a remote library to the libraries tool window.
+ *
+ * To create an action to add a remote library, subclass this one and implement the abstract members. Then add that action
+ * to plugin.xml.
  */
 abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper> : AnAction() {
 
@@ -36,6 +39,7 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper>
 
                     override fun run(indicator: ProgressIndicator) {
                         runBlocking {
+                            // Cannot be destructured directly.
                             val (libraryT, bibItemsT) = createLibrary(dialogWrapper, e.project!!) ?: return@runBlocking
                             library = libraryT
                             bibItems = bibItemsT
