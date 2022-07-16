@@ -20,6 +20,7 @@ fun createBibtexSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             after(OPEN_PARENTHESIS).spaces(1)
             around(CONCATENATE).spaces(1)
             between(ENTRY_CONTENT, ENDTRY).spaces(1)
+            before(ENTRY).blankLines(1)
         }
 
         custom {

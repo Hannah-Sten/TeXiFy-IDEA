@@ -6,7 +6,8 @@ import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
-import java.io.IOException
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import nl.hannahsten.texifyidea.util.runCommand
 
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
@@ -34,29 +35,15 @@ val isSumatraAvailable: Boolean by lazy {
 }
 
 private fun isSumatraInstalled(): Boolean {
-    // Look up SumatraPDF registry key
-    val process = Runtime.getRuntime().exec(
-        "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
-    )
+    // Try some SumatraPDF registry keys
+    // For some reason this first one isn't always present anymore, it used to be
+    val regQuery1 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe", "/ve")?.startsWith("ERROR:") == false
+    val regQuery2 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf", "/ve")?.startsWith("ERROR:") == false
 
-    val br = process.inputStream.bufferedReader()
-    val firstLine = br.readLine() ?: return false
-    br.close()
-
-    val sumatraInRegistry = !firstLine.startsWith("ERROR:")
-
-    if (sumatraInRegistry) {
-        return true
-    }
+    if (regQuery1 || regQuery2) return true
 
     // Try if Sumatra is in PATH
-    return try {
-        Runtime.getRuntime().exec("start SumatraPDF")
-        true
-    }
-    catch (e: IOException) {
-        false
-    }
+    return runCommandWithExitCode("start", "SumatraPDF").second == 0
 }
 
 /**
