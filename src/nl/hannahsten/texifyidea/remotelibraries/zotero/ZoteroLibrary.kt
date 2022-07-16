@@ -9,9 +9,11 @@ import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.util.CredentialAttributes
+import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
 import nl.hannahsten.texifyidea.util.parseLinkHeader
 
-class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") : RemoteBibLibrary(identifier, displayName) {
+class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") :
+    RemoteBibLibrary(identifier, displayName) {
 
     private lateinit var userID: String
     private lateinit var userApiKey: String
@@ -19,44 +21,23 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
     private val client by lazy { HttpClient(CIO) }
 
     override suspend fun getBibtexString(): String {
-        val result: HttpResponse = client.get("$BASE_URL/users/$userID/items") {
+        return client.get("$BASE_URL/users/$userID/items") {
             headers {
                 append("Zotero-API-version", VERSION.toString())
                 append("Zotero-API-key", userApiKey)
             }
             parameter("format", "bibtex")
             parameter("limit", PAGINATION_LIMIT)
-        }
-
-        val resultString = StringBuilder().append(result.body<String>())
-
-        var lastResponse = result
-        while (lastResponse.hasNextPage()) {
-            lastResponse = lastResponse.getNextPage() ?: return resultString.toString()
-            resultString.append(lastResponse.body<String>())
-        }
-
-        return resultString.toString()
-    }
-
-    /**
-     * Get the next page from [nextUrl] and append its result to the [resultString].
-     *
-     * @return true if there is a next page with results.
-     */
-    private suspend fun HttpResponse.getNextPage(): HttpResponse? {
-        val nextUrl = headers["Link"]?.parseLinkHeader()?.get("next") ?: return null
-        val result = client.get(nextUrl) {
-            headers {
-                append("Zotero-API-version", VERSION.toString())
-                append("Zotero-API-key", userApiKey)
+        }.paginateViaLinkHeader {
+            client.get(it) {
+                headers {
+                    append("Zotero-API-version", VERSION.toString())
+                    append("Zotero-API-key", userApiKey)
+                }
             }
         }
-
-        return result
     }
 
-    private fun HttpResponse.hasNextPage(): Boolean = headers["Link"]?.let { it.parseLinkHeader()["next"] != null } ?: false
 
     companion object {
 

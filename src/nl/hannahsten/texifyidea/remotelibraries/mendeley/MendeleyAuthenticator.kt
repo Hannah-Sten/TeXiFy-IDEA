@@ -84,7 +84,7 @@ object MendeleyAuthenticator {
     }
 
     /**
-     * Exchange the [authenticationCode] for an access token.
+     * Exchange the [authenticationCode] for an access token. Use the stored access token when available.
      */
     suspend fun getAccessToken(): Credentials? {
         return PasswordSafe.instance.get(tokenAttributes) ?: authenticationCode?.let {
