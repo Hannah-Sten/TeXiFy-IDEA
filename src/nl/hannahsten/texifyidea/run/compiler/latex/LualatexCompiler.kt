@@ -7,6 +7,8 @@ import java.util.*
 
 object LualatexCompiler : SupportedLatexCompiler("LuaLaTeX", "lualatex") {
 
+    override val defaultArguments = "-interaction=nonstopmode -file-line-error -synctex=1"
+
     override val supportsUnicode = true
 
         override fun createCommand(
@@ -25,9 +27,6 @@ object LualatexCompiler : SupportedLatexCompiler("LuaLaTeX", "lualatex") {
             )
 
         // Some commands are the same as for pdflatex
-        command.add("-file-line-error")
-        command.add("-interaction=nonstopmode")
-        command.add("-synctex=1")
         command.add("-output-format=${runConfig.options.outputFormat.name.lowercase(Locale.getDefault())}")
 
         command.add("-output-directory=$outputPath")

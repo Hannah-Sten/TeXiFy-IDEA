@@ -8,6 +8,8 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
 
     override val supportsUnicode = true
 
+    override val defaultArguments = "-interaction=nonstopmode -file-line-error -synctex=1"
+
     override val outputFormats = arrayOf(OutputFormat.PDF, OutputFormat.XDV)
 
         override fun createCommand(
@@ -26,9 +28,6 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
 
         // As usual, available command line options can be viewed with xelatex --help
         // On TeX Live, installing collection-xetex should be sufficient to get xelatex
-        command.add("-file-line-error")
-        command.add("-interaction=nonstopmode")
-        command.add("-synctex=1")
 
             if (runConfig.options.outputFormat == OutputFormat.XDV) {
                 command.add("-no-pdf")

@@ -95,6 +95,7 @@ object CommonLatexFragments {
 
     fun createLatexCompilerFragment(
         commandLinePosition: Int,
+        compilerArguments: SettingsEditorFragment<LatexRunConfiguration, RawCommandLineEditor>,
         settingsProperty: (LatexRunConfiguration) -> KMutableProperty0<LatexCompiler?>
     ): RunConfigurationEditorFragment<LatexRunConfiguration, LatexCompileEditor> {
         val editor = ExecutableEditor<SupportedLatexCompiler, Compiler<LatexCompileStep>>("&LaTeX compiler:", CompilerMagic.latexCompilerByExecutableName.values) { CustomLatexCompiler(it) }
@@ -122,7 +123,19 @@ object CommonLatexFragments {
             }
 
             override fun applyEditorTo(settings: RunnerAndConfigurationSettingsImpl) {
-                settingsProperty(settings.configuration as LatexRunConfiguration).set((component as? LatexCompileEditor)?.getSelectedExecutable() as? LatexCompiler)
+                val runConfig = settings.configuration as LatexRunConfiguration
+                val setting = settingsProperty(runConfig)
+                val old = setting.get()
+                val new = (component as? LatexCompileEditor)?.getSelectedExecutable() as? LatexCompiler
+                setting.set(new)
+
+                // Update default compiler arguments, if not changed by the user
+                if (old != new && new != null) {
+                    if (runConfig.options.compilerArguments == old?.defaultArguments) {
+                        runConfig.options.compilerArguments = new.defaultArguments
+                        compilerArguments.component().text = new.defaultArguments
+                    }
+                }
             }
         }
 

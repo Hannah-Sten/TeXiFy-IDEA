@@ -27,6 +27,8 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     @get:OptionTag("compilerArguments")
     var compilerArguments by string() // todo transformed(string()) { it.trim() }
 
+    fun hasDefaultCompilerArguments() = compiler?.defaultArguments == compilerArguments
+
     @Property(description = "Environment variables")
     @get:XMap(propertyElementName = "envs", entryTagName = "env", keyAttributeName = "name")
     var env by linkedMap<String, String>()

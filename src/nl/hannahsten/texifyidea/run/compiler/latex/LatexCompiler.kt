@@ -30,6 +30,14 @@ abstract class LatexCompiler : Compiler<LatexCompileStep> {
      */
     open val outputFormats: Array<OutputFormat> = arrayOf(OutputFormat.PDF, OutputFormat.DVI)
 
+    /**
+     * Arguments that are added to the compiler command by default.
+     * This ensures that there is a sensible default, but they are still user editable.
+     * Not all arguments that are added by default are required to be here, for example arguments
+     * that require information only available when compilation is started.
+     */
+    open val defaultArguments: String = ""
+
     class Converter : com.intellij.util.xmlb.Converter<LatexCompiler>() {
 
         override fun toString(value: LatexCompiler) = when (value) {

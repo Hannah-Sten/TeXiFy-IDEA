@@ -7,6 +7,8 @@ import java.util.*
 
 object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
 
+    override val defaultArguments = "-interaction=nonstopmode -file-line-error -synctex=1"
+
     override fun createCommand(
         runConfig: LatexRunConfiguration,
         auxilPath: String?,
@@ -19,9 +21,6 @@ object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
         val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.options.getLatexDistribution(runConfig.project))
         val command = mutableListOf(executable)
 
-        command.add("-file-line-error")
-        command.add("-interaction=nonstopmode")
-        command.add("-synctex=1")
         command.add("-output-format=${runConfig.options.outputFormat.name.lowercase(Locale.getDefault())}")
 
         command.add("-output-directory=$outputPath")

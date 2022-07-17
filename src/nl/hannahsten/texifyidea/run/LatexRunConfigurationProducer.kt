@@ -50,6 +50,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption(mainFile.parent.path, LatexRunConfigurationAbstractPathOption.defaultWorkingDirectoryWithMacro)
         runConfiguration.options.outputPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("out", runConfiguration.project)
         runConfiguration.options.auxilPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", runConfiguration.project)
+        runConfiguration.options.compilerArguments = runConfiguration.options.compiler?.defaultArguments
         runConfiguration.psiFile = container
         runConfiguration.setSuggestedName()
 
