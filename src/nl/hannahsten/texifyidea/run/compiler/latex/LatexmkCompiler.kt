@@ -47,7 +47,7 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
 
         command.add("-output-directory=$outputPath")
 
-        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
+        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
             command.add("-aux-directory=$auxilPath")
         }
 

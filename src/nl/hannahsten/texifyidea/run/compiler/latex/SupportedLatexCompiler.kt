@@ -65,7 +65,7 @@ abstract class SupportedLatexCompiler(
         }
 
         // Make sure the output path is valid
-        if (!runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
+        if (!runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
             runConfig.options.outputPath.updateOutputSubDirs(mainFile, project)
         }
 

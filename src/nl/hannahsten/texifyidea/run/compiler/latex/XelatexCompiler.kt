@@ -36,12 +36,12 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
 
         command.add("-output-directory=$outputPath")
 
-        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
+        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
             command.add("-aux-directory=$auxilPath")
         }
 
         // Prepend root paths to the input search path
-            if (runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
+            if (runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }

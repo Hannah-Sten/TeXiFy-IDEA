@@ -157,7 +157,7 @@ class LatexRunConfiguration constructor(
      * @return The auxil folder when MiKTeX used, or else the out folder.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return if (options.latexDistribution.isMiktex()) {
+        return if (options.latexDistribution.isMiktex(project)) {
             options.auxilPath.getOrCreateOutputPath(options.mainFile.resolve(), project)
         }
         else {

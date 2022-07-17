@@ -27,12 +27,12 @@ object PdflatexCompiler : SupportedLatexCompiler("pdfLaTeX", "pdflatex") {
         command.add("-output-directory=$outputPath")
 
         // -aux-directory only exists on MiKTeX
-        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
+        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
             command.add("-aux-directory=$auxilPath")
         }
 
         // Prepend root paths to the input search path
-        if (runConfig.options.getLatexDistribution(runConfig.project).isMiktex()) {
+        if (runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
             moduleRoots.forEach {
                 command.add("-include-directory=${it.path}")
             }

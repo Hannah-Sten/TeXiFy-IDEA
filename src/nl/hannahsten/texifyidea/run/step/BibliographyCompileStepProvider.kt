@@ -72,7 +72,7 @@ object BibliographyCompileStepProvider : StepProvider {
     private fun setEnvironmentVariables(runConfig: LatexRunConfiguration, step: BibliographyCompileStep) {
         with(runConfig) {
             // On non-MiKTeX systems, add bibinputs for bibtex to work
-            if (!options.latexDistribution.isMiktex()) {
+            if (!options.latexDistribution.isMiktex(runConfig.project)) {
                 val mainFile = options.mainFile.resolve()
                 // Only if default, because the user could have changed it after creating the run config but before running
                 if (mainFile != null && options.outputPath.getOrCreateOutputPath(mainFile, project) != mainFile.parent) {
