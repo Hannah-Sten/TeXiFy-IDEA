@@ -6,7 +6,6 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
-import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
@@ -47,7 +46,7 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper>
                     }
 
                     override fun onSuccess() {
-                        val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree
+                        val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) ?: return
                         val model = tree.model as DefaultTreeModel
                         val root = model.root as DefaultMutableTreeNode
                         val libraryNode = LibraryMutableTreeNode(library.identifier, library.displayName)
