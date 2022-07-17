@@ -146,8 +146,17 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 == Tools
 * VCS integration including Git
 * Terminal window
-* link:Tools[Detexify]
+* link:Tools#remote-libraries[Access Remote Libraries]
+* link:Tools#detexify[Detexify]
 * https://github.com/dkandalov/live-plugin[Extend TeXiFy functionality with custom scripts]
+* link:Menu-entries#Word-counting-tool[Word counting tool]
+* link:Menu-entries#file-templates[Customizable file templates for .tex, .sty, .cls and .bib files]
+* link:++Menu-entries#table-creation-wizard++[Table Creation Wizard]
+* link:++Menu-entries#insert-graphic-wizard++[Graphic Insertion Wizard]
+* link:++Menu-entries#insert-dummy-text-wizard++[Dummy Text (Lorem Ipsum) Wizard]
+* link:++Menu-entries#clear-aux-files++[Menu button to delete generated auxiliary files]
+* Crash reporting dialog
+* File creation dialog
 
 == UI
 * link:Symbol-view[Symbol tool window]
@@ -157,16 +166,6 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#customize-color-scheme[Custom color scheme]
 * https://www.jetbrains.com/help/idea/text-direction.html[RTL/bidirectional support]
 * link:UI#Icons[Fancy icons that fit in with the IntelliJ style]
-
-== Utilities
-* link:Menu-entries#Word-counting-tool[Word counting tool]
-* link:Menu-entries#file-templates[Customizable file templates for .tex, .sty, .cls and .bib files]
-* link:++Menu-entries#table-creation-wizard++[Table Creation Wizard]
-* link:++Menu-entries#insert-graphic-wizard++[Graphic Insertion Wizard]
-* link:++Menu-entries#insert-dummy-text-wizard++[Dummy Text (Lorem Ipsum) Wizard]
-* link:++Menu-entries#clear-aux-files++[Menu button to delete generated auxiliary files]
-* Crash reporting dialog
-* File creation dialog
 
 == Settings and preferences
 === Global settings
