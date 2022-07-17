@@ -58,7 +58,7 @@ object MendeleyAuthenticator {
     val authorizationServer: NettyApplicationEngine = embeddedServer(Netty, port = port) {
         routing {
             get("/") {
-                this.call.respondText("You are now logged in to Mendeley.")
+                this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
                 authenticationCode = call.parameters["code"]
                 serverRunning = false
                 this.application.dispose()
@@ -113,13 +113,19 @@ object MendeleyAuthenticator {
                 append("refresh_token", PasswordSafe.instance.getPassword(refreshTokenAttributes)!!)
                 append("redirect_uri", "http://localhost:$port/")
             }) {
-            basicAuth(Mendeley.id, Mendeley.secret)
+            basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())
         }.body()
 
+        println(MendeleyCredentials.secret)
         val (tokenCredentials, refreshTokenCredentials) = token.getCredentials()
 
         return BearerTokens(tokenCredentials.password.toString(), refreshTokenCredentials.password.toString())
     }
+
+    /**
+     * Decipher the Mendeley secret...
+     */
+    private fun String.decipher() = toCharArray().map { it.minus(12) }.joinToString("")
 
     /**
      * Data class to deserialize Mendeley's response with the access token.
