@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.file.BibtexFile
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.files.bibtexIdsInFileSet
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.files.referencedFiles
 
 /**
  * @author Sten Wessel

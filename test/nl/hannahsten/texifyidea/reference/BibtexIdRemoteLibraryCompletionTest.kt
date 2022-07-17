@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.remotelibraries.state.LibraryState
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 
 class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/completion/cite/library"
     }
@@ -99,6 +100,6 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
         myFixture.complete(CompletionType.BASIC)
 
         myFixture.checkResultByFile("$path/before.tex", "$path/after.tex", true)
-        myFixture.checkResultByFile("$path/bibtex_before.bib","$path/bibtex_after.bib", true)
+        myFixture.checkResultByFile("$path/bibtex_before.bib", "$path/bibtex_after.bib", true)
     }
 }

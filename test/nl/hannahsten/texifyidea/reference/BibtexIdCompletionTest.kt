@@ -3,11 +3,6 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import io.mockk.*
-import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
-import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
-import nl.hannahsten.texifyidea.remotelibraries.state.LibraryState
-import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import org.junit.Test
 
 class BibtexIdCompletionTest : BasePlatformTestCase() {

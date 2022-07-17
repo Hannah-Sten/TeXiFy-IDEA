@@ -5,7 +5,6 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
-import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.util.CredentialAttributes
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
 
@@ -33,7 +32,6 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
             }
         }
     }
-
 
     companion object {
 
