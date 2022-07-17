@@ -116,7 +116,6 @@ object MendeleyAuthenticator {
             basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())
         }.body()
 
-        println(MendeleyCredentials.secret)
         val (tokenCredentials, refreshTokenCredentials) = token.getCredentials()
 
         return BearerTokens(tokenCredentials.password.toString(), refreshTokenCredentials.password.toString())
