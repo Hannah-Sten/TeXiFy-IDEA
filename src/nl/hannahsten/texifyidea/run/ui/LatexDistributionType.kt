@@ -19,9 +19,8 @@ enum class LatexDistributionType(val displayName: String) {
     DOCKER_MIKTEX("Dockerized MiKTeX"),
     PROJECT_SDK("Use project SDK");
 
-    fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
-
-    fun isTexlive() = this == TEXLIVE || this == WSL_TEXLIVE
+    private fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
+    fun isMiktex(project: Project) = this == MIKTEX || this == DOCKER_MIKTEX || (this == PROJECT_SDK && LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType()?.isMiktex() == true)
 
     fun isAvailable(project: Project) = LatexSdkUtil.isAvailable(this, project)
 
