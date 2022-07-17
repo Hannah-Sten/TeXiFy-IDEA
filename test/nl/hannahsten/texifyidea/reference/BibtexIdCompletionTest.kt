@@ -3,6 +3,11 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.*
+import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
+import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
+import nl.hannahsten.texifyidea.remotelibraries.state.LibraryState
+import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import org.junit.Test
 
 class BibtexIdCompletionTest : BasePlatformTestCase() {
@@ -54,12 +59,6 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(result?.contains("Burow2016") == true)
     }
 
-    private fun runCompletion() {
-        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
-        // when
-        myFixture.complete(CompletionType.BASIC)
-    }
-
     @Test
     fun testCompleteBibtexWithCorrectCase() {
         // Using the following failed sometimes
@@ -81,5 +80,37 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(documentation!!.contains("Code Pointer Integrity"))
         assertTrue(documentation.contains("Evans"))
         assertTrue(documentation.contains("have been known for decades"))
+    }
+
+    @Test
+    fun testCiteFromLibraryCompletion() {
+
+        val remotebib = """
+            @book{newey_how_2017,
+                address = {London},
+                title = {How to build a car},
+                isbn = {9780008196806},
+                language = {eng},
+                publisher = {HarperCollins Publishers},
+                author = {Newey, Adrian},
+                year = {2017},
+            }
+        """.trimIndent()
+
+        mockkObject(RemoteLibraryManager)
+        every { RemoteLibraryManager.getInstance().getLibraries() } returns mutableMapOf("aaa" to LibraryState("mocked", ZoteroLibrary::class.java, BibtexEntryListConverter().fromString(remotebib)))
+
+        myFixture.configureByFiles("library/${getTestName(false)}_before.tex", "library/bibtex_before.bib")
+
+        myFixture.complete(CompletionType.BASIC)
+
+        myFixture.checkResultByFile("library/${getTestName(false)}_before.tex", "library/${getTestName(false)}_after.tex", true)
+        myFixture.checkResultByFile("library/bibtex_before.bib","library/bibtex_after.bib", true)
+    }
+
+    private fun runCompletion() {
+        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
+        // when
+        myFixture.complete(CompletionType.BASIC)
     }
 }

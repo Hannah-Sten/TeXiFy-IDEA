@@ -27,7 +27,7 @@ class SyncLibraryAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val libraries = RemoteBibLibraryFactory.fromStorage(e.getData(TexifyDataKeys.LIBRARY_IDENTIFIER))?.let { listOf(it) }
-            ?: RemoteLibraryManager.getInstance().libraries
+            ?: RemoteLibraryManager.getInstance().getLibraries()
                 .map {
                     RemoteBibLibraryFactory.fromStorage(it.key)
                 }

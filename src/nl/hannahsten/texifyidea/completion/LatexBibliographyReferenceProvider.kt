@@ -19,7 +19,8 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val localEntries = parameters.originalFile.findBibtexItems()
-        val remoteEntries = RemoteLibraryManager.getInstance().libraries
+        // Add the remote entries to the autocompletion, only adding the entries that do not exist in the local bibliography yet.
+        val remoteEntries = RemoteLibraryManager.getInstance().getLibraries()
             .flatMap { it.value.entries }
             .toSet()
             // Filter ids that are already included in the local bib entries.

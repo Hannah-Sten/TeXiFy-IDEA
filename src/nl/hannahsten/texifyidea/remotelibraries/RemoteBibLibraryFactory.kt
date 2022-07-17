@@ -17,7 +17,7 @@ object RemoteBibLibraryFactory {
      * Create a remote library from the unique identifier and the display name. Reads from the password safe if needed.
      */
     fun fromStorage(identifier: String?): RemoteBibLibrary? {
-        val libraryState = RemoteLibraryManager.getInstance().libraries[identifier ?: return null] ?: return null
+        val libraryState = RemoteLibraryManager.getInstance().getLibraries()[identifier ?: return null] ?: return null
         return when (libraryState.libraryType.simpleName) {
             ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, libraryState.displayName)
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, libraryState.displayName)
@@ -49,7 +49,7 @@ object RemoteBibLibraryFactory {
         fun candidate() = "a" + sha(Random.nextInt(100, 10000).toString()).toHex()
 
         var cand = candidate()
-        while (cand in RemoteLibraryManager.getInstance().libraries.keys) {
+        while (cand in RemoteLibraryManager.getInstance().getLibraries().keys) {
             cand = candidate()
         }
 
