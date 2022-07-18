@@ -4,6 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
+import nl.hannahsten.texifyidea.testutils.toSystemNewLine
 import nl.hannahsten.texifyidea.util.childrenOfType
 
 class LibraryStateConverterTest : BasePlatformTestCase() {
@@ -53,7 +54,7 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
             )
         )
 
-        assertEquals(xmlString, result)
+        assertEquals(xmlString.toSystemNewLine(), result?.toSystemNewLine())
     }
 
     fun testFromString() {
