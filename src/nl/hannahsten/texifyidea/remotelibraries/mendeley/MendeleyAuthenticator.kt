@@ -19,7 +19,6 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import nl.hannahsten.texifyidea.remotelibraries.Mendeley
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.refreshTokenAttributes
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.tokenAttributes
 
@@ -95,7 +94,7 @@ object MendeleyAuthenticator {
                     append("code", it)
                     append("redirect_uri", redirectUrl)
                 }) {
-                basicAuth(Mendeley.id, Mendeley.secret)
+                basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())
             }.body()
 
             token.getCredentials().first
