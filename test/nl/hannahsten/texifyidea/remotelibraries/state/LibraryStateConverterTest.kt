@@ -36,6 +36,7 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
            }</bibtex>
           </a1234>
         </LinkedHashMap>
+        
         """.trimIndent()
 
     fun testToString() {
