@@ -65,7 +65,14 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper>
                     }
                 })
         }
+
+        onFinish()
     }
+
+    /**
+     * Override this method to do something after the library has been added.
+     */
+    open fun onFinish() = Unit
 
     /**
      * Create the dialog that handles the logging in of the user.

@@ -24,6 +24,13 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
         return AddMendeleyDialogWrapper(project)
     }
 
+    /**
+     * Reset the authorization server when the library is added, to prepare for the next time we want to add a library.
+     */
+    override fun onFinish() {
+        MendeleyAuthenticator.reset()
+    }
+
     class AddMendeleyDialogWrapper(
         val project: Project,
     ) : AddLibDialogWrapper(MendeleyLibrary.NAME) {
@@ -32,7 +39,7 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
 
         init {
             init()
-            if (!MendeleyAuthenticator.serverRunning) MendeleyAuthenticator.authorizationServer.start(false)
+//            if (!MendeleyAuthenticator.serverRunning) MendeleyAuthenticator.createAuthenticationServer()
         }
 
         override fun createCenterPanel(): JComponent {

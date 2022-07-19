@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.action.library
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.treeStructure.Tree
+import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.ui.remotelibraries.findLibraryNode
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
@@ -13,6 +14,7 @@ class RemoveLibraryAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val libraryKey = e.getData(TexifyDataKeys.LIBRARY_IDENTIFIER) ?: return
+//        RemoteBibLibraryFactory.fromStorage(libraryKey)?.destroy()
         RemoteLibraryManager.getInstance().removeLibraryByKey(libraryKey)
 
         val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree

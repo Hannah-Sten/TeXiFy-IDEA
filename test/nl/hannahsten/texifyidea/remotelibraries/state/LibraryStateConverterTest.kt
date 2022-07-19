@@ -35,7 +35,6 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
            }</bibtex>
           </a1234>
         </LinkedHashMap>
-        
         """.trimIndent()
 
     fun testToString() {
@@ -53,7 +52,7 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
             )
         )
 
-        assertEquals(xmlString, result)
+        assertEquals(xmlString.trim(), result?.trim())
     }
 
     fun testFromString() {
@@ -63,6 +62,6 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
 
         val result = LibraryStateConverter().fromString(xmlString)
 
-        assertEquals(mapOf(identifier to LibraryState(displayName, ZoteroLibrary::class.java, entries)).toString(), result.toString())
+        assertEquals(mapOf(identifier to LibraryState(displayName, ZoteroLibrary::class.java, entries)).toString().trim(), result.toString().trim())
     }
 }

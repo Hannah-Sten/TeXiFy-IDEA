@@ -31,12 +31,20 @@ import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.tokenAttribut
  */
 object MendeleyAuthenticator {
 
+    init {
+        createAuthenticationServer()
+    }
+
     private const val port = 8080
 
     private const val redirectPath = "/"
 
     private const val redirectUrl = "http://localhost:$port$redirectPath"
 
+    /**
+     * See [Mendeley documentation](https://dev.mendeley.com/reference/topics/authorization_auth_code.html) for explanations
+     * about these parameters.
+     */
     private val authorizationParameters: String = Parameters.build {
         append("client_id", MendeleyCredentials.id)
         append("redirect_uri", redirectUrl)
@@ -46,27 +54,32 @@ object MendeleyAuthenticator {
 
     val authorizationUrl = "https://api.mendeley.com/oauth/authorize?$authorizationParameters"
 
-    var serverRunning = false
+    /**
+     * This server is a var because a stopped server cannot be restarted, so a new server is created before every
+     * authentication attempt.
+     *
+     * @see [createAuthenticationServer]
+     */
+    lateinit var authenticationServer: NettyApplicationEngine
 
+    /**
+     * Authentication code that can be exchanged for an access token.
+     */
     private var authenticationCode: String? = null
 
     /**
-     * Server that listens on the redirect url of the authorization request. Displays login confirmation to the user and
+     * Create a server that listens on the redirect url of the authorization request. Displays login confirmation to the user and
      * gets the authorization code from the response.
      */
-    val authorizationServer: NettyApplicationEngine = embeddedServer(Netty, port = port) {
-        routing {
-            get("/") {
-                this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
-                authenticationCode = call.parameters["code"]
-                serverRunning = false
-                this.application.dispose()
+    private fun createAuthenticationServer() {
+        authenticationServer = embeddedServer(Netty, port = port) {
+            routing {
+                get("/") {
+                    this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
+                    authenticationCode = call.parameters["code"]
+                }
             }
-        }
-    }.apply {
-        environment.monitor.subscribe(ApplicationStarted) {
-            serverRunning = true
-        }
+        }.start(false)
     }
 
     /**
@@ -118,6 +131,14 @@ object MendeleyAuthenticator {
         val (tokenCredentials, refreshTokenCredentials) = token.getCredentials()
 
         return BearerTokens(tokenCredentials.password.toString(), refreshTokenCredentials.password.toString())
+    }
+
+    /**
+     * Destroy and recreate the authentication server.
+     */
+    fun reset() {
+        authenticationServer.stop()
+        createAuthenticationServer()
     }
 
     /**
