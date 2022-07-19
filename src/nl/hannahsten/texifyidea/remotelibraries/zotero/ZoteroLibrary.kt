@@ -33,6 +33,10 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
         }
     }
 
+    override fun destroyCredentials() {
+        PasswordSafe.instance.set(CredentialAttributes.Zotero.userAttributes, null)
+    }
+
     companion object {
 
         const val VERSION = 3

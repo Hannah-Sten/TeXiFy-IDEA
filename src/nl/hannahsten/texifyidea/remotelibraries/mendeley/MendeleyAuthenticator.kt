@@ -117,12 +117,13 @@ object MendeleyAuthenticator {
     /**
      * Use the refresh token to renew the access token.
      */
-    suspend fun refreshAccessToken(): BearerTokens {
+    suspend fun refreshAccessToken(): BearerTokens? {
+        val refreshToken = PasswordSafe.instance.getPassword(refreshTokenAttributes) ?: return null
         val token: AccessTokenInfo = authenticationClient.submitForm(
             url = "https://api.mendeley.com/oauth/token",
             formParameters = Parameters.build {
                 append("grant_type", "refresh_token")
-                append("refresh_token", PasswordSafe.instance.getPassword(refreshTokenAttributes)!!)
+                append("refresh_token", refreshToken)
                 append("redirect_uri", "http://localhost:$port/")
             }) {
             basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())

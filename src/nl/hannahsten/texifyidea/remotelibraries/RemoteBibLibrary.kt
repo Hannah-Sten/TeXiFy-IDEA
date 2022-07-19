@@ -25,4 +25,11 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
      * Get the bib items from the remote library in bibtex format.
      */
     abstract suspend fun getBibtexString(): String
+
+    /**
+     * Remove any credentials from the password safe.
+     *
+     * Use `PasswordSafe.instance.set(key, null)` to remove credentials for `key` from the password safe.
+     */
+    abstract fun destroyCredentials()
 }

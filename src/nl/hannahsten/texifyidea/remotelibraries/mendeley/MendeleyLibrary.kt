@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.remotelibraries.mendeley
 
 import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
@@ -27,10 +26,9 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
                 bearer {
                     // Attempt to load the access token from memory.
                     loadTokens {
-                        BearerTokens(
-                            PasswordSafe.instance.getPassword(Mendeley.tokenAttributes)!!,
-                            PasswordSafe.instance.getPassword(Mendeley.refreshTokenAttributes)!!
-                        )
+                        val token = PasswordSafe.instance.getPassword(Mendeley.tokenAttributes) ?: return@loadTokens null
+                        val refreshToken = PasswordSafe.instance.getPassword(Mendeley.refreshTokenAttributes) ?: return@loadTokens null
+                        BearerTokens(token, refreshToken)
                     }
                     // If the access token was not in memory or was expired, refresh it using the refreshtoken.
                     refreshTokens {
@@ -52,6 +50,11 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
                 header("Accept", "application/x-bibtex")
             }
         }
+    }
+
+    override fun destroyCredentials() {
+        PasswordSafe.instance.set(Mendeley.tokenAttributes, null)
+        PasswordSafe.instance.set(Mendeley.refreshTokenAttributes, null)
     }
 
     companion object {

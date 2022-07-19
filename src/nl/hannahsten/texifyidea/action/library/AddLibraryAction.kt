@@ -46,9 +46,12 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper>
                     }
 
                     override fun onSuccess() {
+                        // Only add the node if we successfully retrieve the bib items, and there are bib items to show.
+                        if (bibItems.isEmpty()) return
                         val tree = e.getData(TexifyDataKeys.LIBRARY_TREE) ?: return
                         val model = tree.model as DefaultTreeModel
                         val root = model.root as DefaultMutableTreeNode
+
                         val libraryNode = LibraryMutableTreeNode(library.identifier, library.displayName)
                         bibItems.forEach { bib ->
                             val entryElement = BibtexStructureViewEntryElement(bib)
