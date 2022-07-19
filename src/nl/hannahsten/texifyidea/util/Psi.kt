@@ -205,6 +205,7 @@ fun PsiElement.nextSiblingIgnoreWhitespace(): PsiElement? {
 
 /**
  * Finds the next sibling of the element that has the given type.
+ * If the element has the given type, it is returned directly.
  *
  * @return The first following sibling of the given type, or `null` when the sibling couldn't be found.
  */
