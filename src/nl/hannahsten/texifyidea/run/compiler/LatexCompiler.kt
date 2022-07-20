@@ -319,12 +319,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         )
 
         if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
-            var wslCommand = GeneralCommandLine(command).commandLineString;
+            var wslCommand = GeneralCommandLine(command).commandLineString
 
             // Custom compiler arguments specified by the user
             runConfig.compilerArguments?.let { arguments ->
                 ParametersListUtil.parse(arguments)
-                        .forEach { wslCommand += " ${it}" }
+                        .forEach { wslCommand += " $it" }
             }
 
             wslCommand += " ${mainFile.path.toPath(runConfig)}"
