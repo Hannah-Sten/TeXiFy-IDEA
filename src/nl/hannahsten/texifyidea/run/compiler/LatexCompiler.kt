@@ -319,7 +319,17 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         )
 
         if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
-            command = mutableListOf("bash", "-ic", GeneralCommandLine(command).commandLineString)
+            var wslCommand = GeneralCommandLine(command).commandLineString
+
+            // Custom compiler arguments specified by the user
+            runConfig.compilerArguments?.let { arguments ->
+                ParametersListUtil.parse(arguments)
+                        .forEach { wslCommand += " $it" }
+            }
+
+            wslCommand += " ${mainFile.path.toPath(runConfig)}"
+
+            return mutableListOf("bash", "-ic", wslCommand)
         }
 
         if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
@@ -329,15 +339,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->
             ParametersListUtil.parse(arguments)
-                .forEach { command.add(it) }
+                    .forEach { command.add(it) }
         }
 
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
-            command[command.size - 1] = command.last() + " ${mainFile.path.toPath(runConfig)}"
-        }
-        else {
-            command.add(mainFile.name)
-        }
+        command.add(mainFile.name)
 
         return command
     }
