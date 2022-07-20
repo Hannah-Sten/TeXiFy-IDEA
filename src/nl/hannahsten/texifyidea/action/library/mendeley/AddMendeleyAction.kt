@@ -2,13 +2,13 @@ package nl.hannahsten.texifyidea.action.library.mendeley
 
 import com.intellij.openapi.project.Project
 import com.intellij.ui.jcef.JBCefBrowser
-import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
-import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.action.library.AddLibraryAction
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
+import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyAuthenticator
 import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyLibrary
-import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
+import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
 import javax.swing.JComponent
 
 class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.AddMendeleyDialogWrapper>() {
@@ -39,7 +39,6 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
 
         init {
             init()
-//            if (!MendeleyAuthenticator.serverRunning) MendeleyAuthenticator.createAuthenticationServer()
         }
 
         override fun createCenterPanel(): JComponent {
