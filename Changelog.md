@@ -7,9 +7,11 @@
 
 ### Bug fixes
 * Fix false positive warning about escaping characters when using the blkarray package. (#2504)
+* Fix custom compiler arguments when using WSL. (#2543)
 * Fix false positive inspection warnings related to ellipsis and hashes. (#2516)
 * Fix check if Sumatra is installed. (#2528)
 * Fix default working directory for bibtex when using miktex (#2532)
+* Fix inspection false positives related to \def redefinitions. (#2544)
 * Fix crashes. (#2515)
 
-Thanks to @daniil-berg for contributing to this release!
+Thanks to @daniil-berg and @dpvdberg for contributing to this release!
