@@ -3,12 +3,14 @@ package nl.hannahsten.texifyidea.action.library
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
+import nl.hannahsten.texifyidea.RemoteLibraryRequestTeXception
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
@@ -43,9 +45,16 @@ class SyncLibraryAction : AnAction() {
 
             override fun run(indicator: ProgressIndicator) {
                 runBlocking {
-                    expandedPaths = tree.getExpandedDescendants(TreePath(tree.model.root)) ?: return@runBlocking
-                    bibItems = library.getCollection()
-                    RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+                    try {
+                        expandedPaths = tree.getExpandedDescendants(TreePath(tree.model.root)) ?: return@runBlocking
+                        bibItems = library.getCollection()
+                        RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+                    }
+                    catch (exception: RemoteLibraryRequestTeXception) {
+                        exception.showNotification(e.project!!)
+                        // Apparently this is the way to cancel the task (and thus to avoid going into the onSuccess).
+                        throw ProcessCanceledException(exception)
+                    }
                 }
             }
 

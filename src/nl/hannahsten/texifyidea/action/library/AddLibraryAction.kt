@@ -2,11 +2,13 @@ package nl.hannahsten.texifyidea.action.library
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.runBlocking
+import nl.hannahsten.texifyidea.RemoteLibraryRequestTeXception
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
@@ -38,10 +40,17 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper>
 
                     override fun run(indicator: ProgressIndicator) {
                         runBlocking {
-                            // Cannot be destructured directly.
-                            val (libraryT, bibItemsT) = createLibrary(dialogWrapper, e.project!!) ?: return@runBlocking
-                            library = libraryT
-                            bibItems = bibItemsT
+                            try {
+                                // Cannot be destructured directly.
+                                val (libraryT, bibItemsT) = createLibrary(dialogWrapper, e.project!!) ?: return@runBlocking
+                                library = libraryT
+                                bibItems = bibItemsT
+                            }
+                            catch (exception: RemoteLibraryRequestTeXception) {
+                                exception.showNotification(e.project!!)
+                                // Apparently this is the way to cancel the task (and thus to avoid going into the onSuccess).
+                                throw ProcessCanceledException(exception)
+                            }
                         }
                     }
 

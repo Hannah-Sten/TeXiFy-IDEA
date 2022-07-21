@@ -6,6 +6,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
@@ -39,7 +40,7 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
         }
     }
 
-    override suspend fun getBibtexString(): String {
+    override suspend fun getBibtexString(): Pair<HttpResponse, String> {
         MendeleyAuthenticator.getAccessToken()
         return client.get(urlString = "https://api.mendeley.com/documents") {
             header("Accept", "application/x-bibtex")

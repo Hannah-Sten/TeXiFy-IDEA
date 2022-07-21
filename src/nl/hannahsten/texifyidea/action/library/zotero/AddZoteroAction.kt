@@ -5,12 +5,12 @@ import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
-import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
-import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.action.library.AddLibraryAction
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
+import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Zotero
 import javax.swing.JComponent
 
@@ -42,7 +42,7 @@ class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoter
         override fun createCenterPanel(): JComponent {
             return panel {
                 row("User ID:") {
-                    textField().bindText({ userID }, { userID = it })
+                    textField().bindText({ userID }, { userID = it }).focused()
                     contextHelp("You can find your user ID in Zotero Settings > Feeds/API.")
                 }
                 row("User API key:") {

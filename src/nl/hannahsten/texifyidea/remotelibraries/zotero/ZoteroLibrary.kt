@@ -4,6 +4,7 @@ import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
@@ -13,13 +14,12 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
 
     private val client by lazy { HttpClient(CIO) }
 
-    override suspend fun getBibtexString(): String {
+    override suspend fun getBibtexString(): Pair<HttpResponse, String> {
         val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)
-        return if (credentials?.userName == null || credentials.password == null) ""
-        else client.get("$BASE_URL/users/${credentials.userName}/items") {
+        return client.get("$BASE_URL/users/${credentials?.userName}/items") {
             headers {
                 append("Zotero-API-version", VERSION.toString())
-                append("Zotero-API-key", credentials.password.toString())
+                append("Zotero-API-key", credentials?.password.toString())
             }
             parameter("format", "bibtex")
             parameter("limit", PAGINATION_LIMIT)
@@ -27,7 +27,7 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
             client.get(it) {
                 headers {
                     append("Zotero-API-version", VERSION.toString())
-                    append("Zotero-API-key", credentials.password.toString())
+                    append("Zotero-API-key", credentials?.password.toString())
                 }
             }
         }

@@ -15,17 +15,20 @@ fun String.parseLinkHeader(): Map<String, String> {
 
 /**
  * Use the Link header to handle a paginated response, building any subsequent request from [nextPageRequest].
+ *
+ * @return a Pair with the [HttpResponse] of the last executed request and the complete body.
+ *  The last response can be used to handle failing requests appropriately.
  */
-suspend fun HttpResponse.paginateViaLinkHeader(nextPageRequest: suspend (String) -> HttpResponse): String {
+suspend fun HttpResponse.paginateViaLinkHeader(nextPageRequest: suspend (String) -> HttpResponse): Pair<HttpResponse, String> {
     val resultString = StringBuilder().append(body<String>())
 
     var lastResponse = this
     while (lastResponse.hasNextPage()) {
-        lastResponse = lastResponse.getNextPage(nextPageRequest) ?: return resultString.toString()
+        lastResponse = lastResponse.getNextPage(nextPageRequest) ?: return Pair(lastResponse, resultString.toString())
         resultString.append(lastResponse.body<String>())
     }
 
-    return resultString.toString()
+    return Pair(lastResponse, resultString.toString())
 }
 
 /**
