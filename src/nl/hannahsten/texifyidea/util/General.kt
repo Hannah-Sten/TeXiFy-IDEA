@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.credentialStore.CredentialAttributes
-import com.intellij.credentialStore.generateServiceName
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
@@ -87,5 +85,3 @@ fun TextRange.toIntRange() = startOffset..endOffset
  * Easy access to [java.util.regex.Matcher.matches].
  */
 fun Pattern.matches(sequence: CharSequence?) = if (sequence != null) matcher(sequence).matches() else false
-
-fun createCredentialsAttributes(key: String): CredentialAttributes = CredentialAttributes(generateServiceName("TeXiFy", key))

@@ -27,7 +27,7 @@ import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.tokenAttribut
  * - Get authentication code token by letting the user log in via a browser.
  * - Exchange the authentication code for an access token, store this access token and the refresh token so we can make
  *   future requests on behalf of the user.
- * - On a future request
+ * - On a future request, use the access token if it is still valid, otherwise use the refresh token to get a new access token.
  */
 object MendeleyAuthenticator {
 
@@ -60,7 +60,7 @@ object MendeleyAuthenticator {
      *
      * @see [createAuthenticationServer]
      */
-    lateinit var authenticationServer: NettyApplicationEngine
+    private lateinit var authenticationServer: NettyApplicationEngine
 
     /**
      * Authentication code that can be exchanged for an access token.
@@ -150,7 +150,6 @@ object MendeleyAuthenticator {
     /**
      * Data class to deserialize Mendeley's response with the access token.
      */
-    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     @Serializable
     data class AccessTokenInfo(
         @SerialName("access_token") val accessToken: String,
