@@ -16,6 +16,7 @@
     extends("entry")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
     implements("entry")="com.intellij.psi.PsiNameIdentifierOwner"
     implements("id")="com.intellij.psi.PsiNameIdentifierOwner"
+
 }
 
 bibtexFile ::= (entry | comment)*
@@ -23,7 +24,7 @@ bibtexFile ::= (entry | comment)*
 entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) ((id SEPARATOR)? entry_content | preamble) comment* endtry comment* SEPARATOR? {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStub"
-    methods=[getReferences getTitle getAuthors getYear getIdentifier getNameIdentifier getAbstract getTagContent getName setName]
+    methods=[getReferences getTitle getAuthors getYear getIdentifier getNameIdentifier getAbstract getTagContent getName setName toString]
 }
 
 entry_content ::= tag (SEPARATOR tag)* SEPARATOR? { pin=1 }

@@ -6,6 +6,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id("org.jetbrains.intellij") version "1.7.0"
     kotlin("jvm") version("1.7.0")
+    kotlin("plugin.serialization") version("1.7.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -84,6 +85,15 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
 
+    // Http requests
+    implementation("io.ktor:ktor-client-core:2.0.2")
+    implementation("io.ktor:ktor-client-cio:2.0.2")
+    implementation("io.ktor:ktor-client-auth:2.0.2")
+    implementation("io.ktor:ktor-client-content-negotiation:2.0.2")
+    implementation("io.ktor:ktor-server-core:2.0.2")
+    implementation("io.ktor:ktor-server-netty:2.0.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.2")
+
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.4")
 
@@ -155,7 +165,6 @@ intellij {
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
     version.set("2021.3.2")
-//    version.set("221.3427.89-EAP-SNAPSHOT")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE

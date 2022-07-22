@@ -17,8 +17,8 @@ import com.intellij.psi.tree.IElementType;
 
 public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> implements BibtexEntry {
 
-  public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType<?, ?> nodeType) {
-    super(stub, nodeType);
+  public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
   }
 
   public BibtexEntryImpl(@NotNull ASTNode node) {
@@ -123,6 +123,11 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
   @Override
   public PsiElement setName(@NotNull @NonNls String name) {
     return BibtexPsiImplUtil.setName(this, name);
+  }
+
+  @Override
+  public String toString() {
+    return BibtexPsiImplUtil.toString(this);
   }
 
 }
