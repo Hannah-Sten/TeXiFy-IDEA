@@ -79,9 +79,7 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
 
         if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
             val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
-            if (proc.exitValue() != 0) {
-                Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
-            }
+            Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
             return Pair(output, proc.exitValue())
         }
         else {
