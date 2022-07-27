@@ -115,7 +115,7 @@ optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)* COMMA?) | o
 // Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
 // Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both
 // a key and a value.
-required_param ::= OPEN_BRACE (strict_keyval_pair (COMMA strict_keyval_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=1 }
+required_param ::= <<remap_aftergroup_openbrace OPEN_BRACE>> (strict_keyval_pair (COMMA strict_keyval_pair)* | required_param_content*) CLOSE_BRACE { pin=3 }
 
 picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 

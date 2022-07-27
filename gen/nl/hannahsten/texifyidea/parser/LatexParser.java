@@ -882,20 +882,19 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACE (strict_keyval_pair (COMMA strict_keyval_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE)
+  // <<remap_aftergroup_openbrace OPEN_BRACE>> (strict_keyval_pair (COMMA strict_keyval_pair)* | required_param_content*) CLOSE_BRACE
   public static boolean required_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param")) return false;
-    if (!nextTokenIs(b, OPEN_BRACE)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, REQUIRED_PARAM, null);
-    r = consumeToken(b, OPEN_BRACE);
-    p = r; // pin = 1
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, REQUIRED_PARAM, "<required param>");
+    r = remap_aftergroup_openbrace(b, l + 1, OPEN_BRACE_parser_);
     r = r && required_param_1(b, l + 1);
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+    r = r && consumeToken(b, CLOSE_BRACE);
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
-  // strict_keyval_pair (COMMA strict_keyval_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE
+  // strict_keyval_pair (COMMA strict_keyval_pair)* | required_param_content*
   private static boolean required_param_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_1")) return false;
     boolean r;
@@ -906,14 +905,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // strict_keyval_pair (COMMA strict_keyval_pair)* CLOSE_BRACE
+  // strict_keyval_pair (COMMA strict_keyval_pair)*
   private static boolean required_param_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = strict_keyval_pair(b, l + 1);
     r = r && required_param_1_0_1(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BRACE);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -940,24 +938,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // required_param_content* CLOSE_BRACE
+  // required_param_content*
   private static boolean required_param_1_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_1_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = required_param_1_1_0(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BRACE);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // required_param_content*
-  private static boolean required_param_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "required_param_1_1_0")) return false;
     while (true) {
       int c = current_position_(b);
       if (!required_param_content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "required_param_1_1_0", c)) break;
+      if (!empty_element_parsed_guard_(b, "required_param_1_1", c)) break;
     }
     return true;
   }
@@ -1010,4 +997,5 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return true;
   }
 
+  static final Parser OPEN_BRACE_parser_ = (b, l) -> consumeToken(b, OPEN_BRACE);
 }

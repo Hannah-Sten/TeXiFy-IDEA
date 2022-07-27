@@ -231,4 +231,17 @@ class LatexParserTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
+
+    fun `test aftergroup`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \protected\def\xvcenter{%
+                \hbox\bgroup${'$'}\everyvbox{\everyvbox{}\aftergroup\m@th\aftergroup${'$'}\aftergroup\egroup}%
+            \vcenter
+            }
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }
