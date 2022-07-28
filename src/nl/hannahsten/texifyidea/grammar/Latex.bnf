@@ -134,7 +134,9 @@ angle_param_content ::= raw_text | magic_comment | comment | environment | pseud
 
 strict_keyval_pair ::= keyval_key EQUALS keyval_value?
 keyval_pair ::= keyval_key (EQUALS keyval_value?)?
-keyval_key ::= keyval_content+ {
+
+// Keys in a key/val list are typically no commands and don't need to be references
+keyval_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+ {
     methods=[toString]
 }
 keyval_value ::= keyval_content+ {

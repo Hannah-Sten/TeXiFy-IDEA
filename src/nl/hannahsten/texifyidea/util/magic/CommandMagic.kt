@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
+import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
@@ -305,13 +305,21 @@ object CommandMagic {
             NEWTHEOREM,
             NEWDOCUMENTENVIRONMENT,
             PROVIDEDOCUMENTENVIRONMENT,
-            DECLAREDOCUMENTENVIRONMENT
+            DECLAREDOCUMENTENVIRONMENT,
+            NEWTCOLORBOX,
+            DECLARETCOLORBOX,
+            NEWTCOLORBOX_,
+            PROVIDETCOLORBOX,
     ).map { it.cmd }
 
     /**
      * All commands that define or redefine other environments, whether it exists or not.
      */
-    val environmentRedefinitions = hashSetOf(RENEWENVIRONMENT.cmd)
+    val environmentRedefinitions = hashSetOf(
+        RENEWENVIRONMENT.cmd,
+        RENEWTCOLORBOX.cmd,
+        RENEWTCOLORBOX_.cmd,
+    )
 
     /**
      * All commands that define stuff like classes, environments, and definitions.

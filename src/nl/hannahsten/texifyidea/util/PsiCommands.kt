@@ -216,9 +216,9 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
         return if (found.size == 1) found.first() else null
     }
 
-    val parent = PsiTreeUtil.getParentOfType(this, LatexNoMathContent::class.java)
-    val sibling = PsiTreeUtil.getNextSiblingOfType(parent, LatexNoMathContent::class.java)
-    return PsiTreeUtil.findChildOfType(sibling, LatexCommands::class.java)
+    // This is just a bit of guesswork about the parser structure.
+    // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
+    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class)
 }
 
 /**

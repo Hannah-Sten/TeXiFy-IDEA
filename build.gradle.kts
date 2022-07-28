@@ -4,8 +4,9 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.6.0"
-    kotlin("jvm") version("1.6.20")
+    id("org.jetbrains.intellij") version "1.7.0"
+    kotlin("jvm") version("1.7.0")
+    kotlin("plugin.serialization") version("1.7.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -24,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.19-alpha.1"
+version = "0.7.20-alpha.3"
 
 repositories {
     mavenCentral()
@@ -47,9 +48,6 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=all")
@@ -58,9 +56,6 @@ tasks.compileKotlin {
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
-
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=all")
@@ -89,6 +84,15 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
+
+    // Http requests
+    implementation("io.ktor:ktor-client-core:2.0.2")
+    implementation("io.ktor:ktor-client-cio:2.0.2")
+    implementation("io.ktor:ktor-client-auth:2.0.2")
+    implementation("io.ktor:ktor-client-content-negotiation:2.0.2")
+    implementation("io.ktor:ktor-server-core:2.0.2")
+    implementation("io.ktor:ktor-server-netty:2.0.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.2")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:3.8.5")
@@ -150,7 +154,7 @@ intellij {
     pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0")) // , "com.jetbrains.hackathon.indices.viewer:1.13")
+    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.20"))
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
@@ -160,8 +164,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("222-EAP-SNAPSHOT")
-//    version.set("221.3427.89-EAP-SNAPSHOT")
+    version.set("2022.2")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
@@ -209,4 +212,8 @@ tasks.jacocoTestReport {
 
 ktlint {
     verbose.set(true)
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

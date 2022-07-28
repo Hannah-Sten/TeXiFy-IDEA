@@ -10,8 +10,8 @@ class EquationPreviewToolWindow {
 
     private val previewForm = PreviewForm()
 
-    val content: JPanel
-        get() = previewForm.panel!!
+    val content: JPanel?
+        get() = previewForm.panel
 
     val form: PreviewForm
         get() = previewForm

@@ -1,23 +1,23 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.StubBasedPsiElementBase;
-import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub;
-import nl.hannahsten.texifyidea.psi.*;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
+import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub;
+import nl.hannahsten.texifyidea.psi.LatexMagicComment;
+import nl.hannahsten.texifyidea.psi.LatexVisitor;
+import org.jetbrains.annotations.NotNull;
+
+import static nl.hannahsten.texifyidea.psi.LatexTypes.MAGIC_COMMENT_TOKEN;
 
 public class LatexMagicCommentImpl extends StubBasedPsiElementBase<LatexMagicCommentStub> implements LatexMagicComment {
 
-  public LatexMagicCommentImpl(@NotNull LatexMagicCommentStub stub, @NotNull IStubElementType<?, ?> nodeType) {
-    super(stub, nodeType);
+  public LatexMagicCommentImpl(@NotNull LatexMagicCommentStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
   }
 
   public LatexMagicCommentImpl(@NotNull ASTNode node) {

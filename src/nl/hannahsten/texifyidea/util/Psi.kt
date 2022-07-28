@@ -205,6 +205,7 @@ fun PsiElement.nextSiblingIgnoreWhitespace(): PsiElement? {
 
 /**
  * Finds the next sibling of the element that has the given type.
+ * If the element has the given type, it is returned directly.
  *
  * @return The first following sibling of the given type, or `null` when the sibling couldn't be found.
  */
@@ -412,7 +413,9 @@ fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequenc
 /**
  * Get a sequence of all parents of this element.
  */
-fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.parent }
+fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) {
+    it.parent?.run { if (!isValid) null else this }
+}
 
 /**
  * Adds the pattern condition to this psi element pattern.

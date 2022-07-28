@@ -11,18 +11,14 @@ import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
 import com.intellij.openapi.diagnostic.SubmittedReportInfo
 import com.intellij.openapi.extensions.PluginId
-import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.awt.Component
 import java.io.UnsupportedEncodingException
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
-import java.net.UnknownHostException
+import java.net.*
 
 /**
  * Send error report to GitHub issue tracker.
@@ -31,7 +27,6 @@ import java.net.UnknownHostException
  */
 class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
-    @Suppress("DialogTitleCapitalization")
     override fun getReportActionText() = "Report to TeXiFy-IDEA issue tracker"
 
     override fun submit(
@@ -55,16 +50,18 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
             JBPopupFactory.getInstance().createMessage("")
                 .showInCenterOf(parentComponent)
-            val result = showOkCancelDialog(
-                "Update TeXiFy",
-                "Please update your current version ($currentVersion) of TeXiFy to the latest version (${latestVersion.version}) before submitting,\n" +
-                    "to check if the error is already fixed. Go to Settings > Plugins to update.\n" +
-                    if (currentIdeaVersion < requiredIdeaVersion) "You first need to update your current IDE version ($currentIdeaVersion) to $requiredIdeaVersion or newer.\n" else "",
-                "Cancel Submit", // Sort of the wrong way around, but it suggests to cancel this way
-                "Submit Anyway"
-            )
 
-            if (result == Messages.OK) return false
+            val message = "Please update your current version ($currentVersion) of TeXiFy to the latest version (${latestVersion.version}) before submitting,\n" +
+                    "to check if the error is already fixed. Go to Settings > Plugins to update.\n" +
+                    if (currentIdeaVersion < requiredIdeaVersion) "You first need to update your current IDE version ($currentIdeaVersion) to $requiredIdeaVersion or newer.\n" else ""
+
+            val result = MessageDialogBuilder.okCancel("Update TeXiFy", message)
+                .yesText("Cancel Submit") // Sort of the wrong way around, but it suggests to cancel this way
+                .noText("Submit Anyway")
+                .ask(parentComponent)
+
+            // If the user cancels, don't submit
+            return !result
         }
 
         submit(events, additionalInfo, consumer)
@@ -135,7 +132,12 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
                 connectTimeout = 1000
                 readTimeout = 1000
 
-                val inputString: String = inputStream.reader().use { it.readText() }
+                val inputString: String = try {
+                    inputStream.reader().use { it.readText() }
+                }
+                catch (e: SocketTimeoutException) {
+                    return latestVersionCached
+                }
                 latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
                     .category
                     ?.maxByOrNull { it.version }

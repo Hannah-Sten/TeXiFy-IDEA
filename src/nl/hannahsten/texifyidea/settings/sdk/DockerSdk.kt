@@ -5,6 +5,7 @@ import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogBuilder
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
@@ -35,6 +36,9 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
     }
 
     override fun suggestHomePaths(): MutableCollection<String> {
+        // Windows is not supported for now
+        if (!SystemInfo.isLinux) return mutableListOf()
+
         // There's not really a path with 'sources' for docker except the location of images, but that's OS-dependent
         // and we only need to be able to execute the 'docker' executable anyway
         return "which docker".runCommand()?.let { output -> mutableListOf(

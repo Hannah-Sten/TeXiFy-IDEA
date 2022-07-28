@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.18</strong></p>
+        <p><strong>Beta 0.7.19</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.18! This release improves your life with better autocompletion, an autocompile-on-save option, performance improvements and much more.
+            Welcome to TeXiFy IDEA 0.7.19! This release features improved glossary entries support by @fberlakovich and an inspection to detect incorrect quote typesetting by @multimeric, as well as some performance improvements and bug fixes.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,28 +55,26 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Replace non-ascii characters when generating a label name. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2360">#2360</a>)</li>
-            <li> Improve performance of inspections and formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2344">#2344</a>)</li>
-            <li> Add setting to choose custom image name for the Docker SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2381">#2381</a>)</li>
-            <li> Add setting to do automatic compilation only after a document save. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2383">#2383</a>)</li>
-            <li> Disable some autocompletion related to inline math in verbatim environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2362">#2362</a>)</li>
-            <li> Add command line arguments for makeindex run config. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2363">#2363</a>)</li>
-            <li> Add file completion for the bibsource field. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2382">#2382</a>)</li>
-            <li> Improve latex3 syntax highlighting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2366">#2366</a>)</li>
-            <li> Improve completion in itemize. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2368">#2368</a>)</li>
+            <li> Add autocompletion and reference resolving for glossary entries. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2388">#2388</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2447">#2447</a>)</li>
+            <li> Add inspection to detect incorrect quotes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2420">#2420</a>)</li>
+            <li> Improve performance of the inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2446">#2446</a>)</li>
+            <li> Improve performance of the formatter. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2448">#2448</a>)</li>
+            <li> Pythontex environments and commands are now treated as verbatim. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2462">#2462</a>)</li>
+            <li> Support non-IntelliJ IDEs also for package-file based indexes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2457">#2457</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix false positive inspection when using cleveref with varioref. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2361">#2361</a>)</li>
-            <li> Fix macro resolving for auxiliary path of run config. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2365">#2365</a>)</li>
-            <li> Fix parse error on partial environment definitions using \pretitle \and \posttitle. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2372">#2372</a>)</li>
-            <li> Fix bug in text detection for Grazie inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2375">#2375</a>)</li>
-            <li> Support \def to \newcommand quickfix with braced definition. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2384">#2384</a>)</li>
-            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2384">#2384</a>)</li>
+            <li> Fix word count tool. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2465">#2465</a>)</li>
+            <li> Fix incorrect import from other plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2491">#2491</a>)</li>
+            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2427">#2427</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2437">#2437</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2491">#2491</a>)</li>
         </ul>
+        <br>
+        <p>
+        Thanks to @fberlakovich, @golmschenk and @multimeric for contributing to this release!
+        </p>
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.

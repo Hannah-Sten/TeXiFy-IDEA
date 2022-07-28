@@ -85,6 +85,10 @@ public class BibtexPsiImplUtil {
         return BibtexEntryUtilKt.getTagContent(element, tagName);
     }
 
+    public static String toString(@NotNull BibtexEntry element) {
+        return element.getText();
+    }
+
     /*
      * BibtexId
      */

@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.isTestProject
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
@@ -27,8 +28,9 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         }
 
         // Add source files
-        val roots = LatexSdkUtil.getSdkSourceRoots(project).toMutableSet()
+        val roots = LatexSdkUtil.getSdkSourceRoots(project) { sdk, homePath -> sdk.getDefaultSourcesPath(homePath) }.toMutableSet()
         // Check if we possibly need to extract files first
+        Log.debug("Indexing source roots $roots")
         for (root in roots) {
             if (root.path.contains("MiKTeX", ignoreCase = true) && !extractedFiles) {
                 try {
@@ -42,7 +44,9 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         }
 
         // Add style files (used in e.g. LatexExternalPackageInclusionIndex)
-        roots.addAll(LatexSdkUtil.getSdkStyleFileRoots(project))
+        // Unfortunately, since .sty is a LaTeX file type, these will all be parsed, which will take an enormous amount of time.
+        // Note that using project-independent getAdditionalRootsToIndex does not fix this
+        roots.addAll(LatexSdkUtil.getSdkSourceRoots(project) { sdkType, homePath -> sdkType.getDefaultStyleFilesPath(homePath) })
 
         return roots
     }
