@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.util.isTestProject
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
-import org.codehaus.plexus.logging.console.ConsoleLoggerManager
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -60,7 +59,6 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
      */
     private fun extractMiktexFiles(root: VirtualFile): Boolean {
         val txArchiver = TarXZUnArchiver()
-        txArchiver.enableLogging(ConsoleLoggerManager().also { it.initialize() }.getLoggerForComponent("noop"))
         File(root.path).list { _, name -> name.endsWith("tar.xz") }?.forEach { zipName ->
             txArchiver.sourceFile = File(root.path, zipName)
             // Note that by keeping the target path the same for everything, some packages will install in source/latex and some in source/latex/latex depending on how they were zipped
@@ -82,7 +80,6 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
             txArchiver.extract()
         }
         val bz2Archiver = TarBZip2UnArchiver()
-        bz2Archiver.enableLogging(ConsoleLoggerManager().also { it.initialize() }.getLoggerForComponent("noop"))
         File(root.path).list { _, name -> name.endsWith("tar.bz2") }?.forEach { zipName ->
             bz2Archiver.sourceFile = File(root.path, zipName)
             bz2Archiver.destDirectory = File(root.path, "latex")
