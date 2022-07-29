@@ -202,9 +202,9 @@ class LatexDocumentationProvider : DocumentationProvider {
         }
         else {
             if (TexliveSdk.isAvailable) {
-                lines.map {
+                lines.mapNotNull {
                     // Line consists of: name version path optional file description
-                    it.split("\t")[2]
+                    it.split("\t").getOrNull(2)
                 }
             }
             else {
