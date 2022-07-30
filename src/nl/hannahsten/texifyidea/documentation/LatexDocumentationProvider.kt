@@ -107,7 +107,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         // Link to package docs
         originalElement ?: return null
-        val urls = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as Dependend).dependency) else getUrlFor(element, originalElement)
+        val urls = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as? Dependend)?.dependency) else getUrlFor(element, originalElement)
 
         if (docString?.isNotBlank() == true && !urls.isNullOrEmpty()) {
             docString += "<br/>"
@@ -164,7 +164,9 @@ class LatexDocumentationProvider : DocumentationProvider {
         psiElement: PsiElement?
     ): PsiElement? = null
 
-    private fun runTexdoc(pkg: LatexPackage): List<String> {
+    private fun runTexdoc(pkg: LatexPackage?): List<String> {
+        if (pkg == null) return emptyList()
+
         // base/lt... files are documented in source2e.pdf
         val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
