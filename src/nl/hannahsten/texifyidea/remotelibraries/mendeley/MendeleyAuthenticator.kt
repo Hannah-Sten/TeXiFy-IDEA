@@ -13,7 +13,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import io.ktor.server.jetty.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
@@ -60,7 +60,7 @@ object MendeleyAuthenticator {
      *
      * @see [createAuthenticationServer]
      */
-    private lateinit var authenticationServer: NettyApplicationEngine
+    private lateinit var authenticationServer: JettyApplicationEngine
 
     /**
      * Authentication code that can be exchanged for an access token.
@@ -72,7 +72,7 @@ object MendeleyAuthenticator {
      * gets the authorization code from the response.
      */
     private fun createAuthenticationServer() {
-        authenticationServer = embeddedServer(Netty, port = port) {
+        authenticationServer = embeddedServer(Jetty, port = port) {
             routing {
                 get("/") {
                     this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
