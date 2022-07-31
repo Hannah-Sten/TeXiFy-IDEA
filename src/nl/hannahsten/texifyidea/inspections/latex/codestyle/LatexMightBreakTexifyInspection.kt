@@ -45,7 +45,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "This might break TeXiFy functionality",
+                            "Redefining ${newCommand?.name ?: "this command"} might break TeXiFy functionality",
                             null as LocalQuickFix?,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly

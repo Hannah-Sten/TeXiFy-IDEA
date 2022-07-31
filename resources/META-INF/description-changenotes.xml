@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.17</strong></p>
+        <p><strong>Beta 0.7.19</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.17! This release adds the option to disable indentation of the document environment, and adds custom folding region magic comments, as well has some nice bug fixes.
+            Welcome to TeXiFy IDEA 0.7.19! This release features improved glossary entries support by @fberlakovich and an inspection to detect incorrect quote typesetting by @multimeric, as well as some performance improvements and bug fixes.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,23 +55,26 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add option to disable indentation of the document environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2347">#2347</a>)</li>
-            <li> Add magic comments for custom folding regions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2349">#2349</a>)</li>
+            <li> Add autocompletion and reference resolving for glossary entries. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2388">#2388</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2447">#2447</a>)</li>
+            <li> Add inspection to detect incorrect quotes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2420">#2420</a>)</li>
+            <li> Improve performance of the inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2446">#2446</a>)</li>
+            <li> Improve performance of the formatter. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2448">#2448</a>)</li>
+            <li> Pythontex environments and commands are now treated as verbatim. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2462">#2462</a>)</li>
+            <li> Support non-IntelliJ IDEs also for package-file based indexes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2457">#2457</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix package documentation urls not showing in documentation popup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2336">#2336</a>)</li>
-            <li> Make the latexindent action work on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2319">#2319</a>)</li>
-            <li> Also check MiKTeX version for default unicode support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2343">#2343</a>)</li>
-            <li> Improve user feedback when main file is not present for makeindex run config. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2350">#2350</a>)</li>
-            <li> Performance improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2309">#2309</a>)</li>
-            <li> Fix incorrect result when using 'apply all fixes' for left/right brackets inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2324">#2324</a>)</li>
-            <li> Improve internal logging. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2301">#2301</a>)</li>
-            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2315">#2315</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2337">#2337</a>)</li>
+            <li> Fix word count tool. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2465">#2465</a>)</li>
+            <li> Fix incorrect import from other plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2491">#2491</a>)</li>
+            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2427">#2427</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2437">#2437</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2491">#2491</a>)</li>
         </ul>
+        <br>
+        <p>
+        Thanks to @fberlakovich, @golmschenk and @multimeric for contributing to this release!
+        </p>
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.

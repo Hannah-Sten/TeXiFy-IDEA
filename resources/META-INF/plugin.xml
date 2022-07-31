@@ -85,6 +85,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Other inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
+        <applicationService serviceImplementation="nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager"/>
     </extensions>
 
     <extensionPoints>

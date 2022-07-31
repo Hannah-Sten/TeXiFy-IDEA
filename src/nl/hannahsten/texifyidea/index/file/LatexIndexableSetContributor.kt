@@ -4,11 +4,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.isTestProject
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
-import org.codehaus.plexus.logging.console.ConsoleLoggerManager
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -27,8 +27,9 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         }
 
         // Add source files
-        val roots = LatexSdkUtil.getSdkSourceRoots(project).toMutableSet()
+        val roots = LatexSdkUtil.getSdkSourceRoots(project) { sdk, homePath -> sdk.getDefaultSourcesPath(homePath) }.toMutableSet()
         // Check if we possibly need to extract files first
+        Log.debug("Indexing source roots $roots")
         for (root in roots) {
             if (root.path.contains("MiKTeX", ignoreCase = true) && !extractedFiles) {
                 try {
@@ -42,7 +43,9 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         }
 
         // Add style files (used in e.g. LatexExternalPackageInclusionIndex)
-        roots.addAll(LatexSdkUtil.getSdkStyleFileRoots(project))
+        // Unfortunately, since .sty is a LaTeX file type, these will all be parsed, which will take an enormous amount of time.
+        // Note that using project-independent getAdditionalRootsToIndex does not fix this
+        roots.addAll(LatexSdkUtil.getSdkSourceRoots(project) { sdkType, homePath -> sdkType.getDefaultStyleFilesPath(homePath) })
 
         return roots
     }
@@ -56,7 +59,6 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
      */
     private fun extractMiktexFiles(root: VirtualFile): Boolean {
         val txArchiver = TarXZUnArchiver()
-        txArchiver.enableLogging(ConsoleLoggerManager().also { it.initialize() }.getLoggerForComponent("noop"))
         File(root.path).list { _, name -> name.endsWith("tar.xz") }?.forEach { zipName ->
             txArchiver.sourceFile = File(root.path, zipName)
             // Note that by keeping the target path the same for everything, some packages will install in source/latex and some in source/latex/latex depending on how they were zipped
@@ -78,7 +80,6 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
             txArchiver.extract()
         }
         val bz2Archiver = TarBZip2UnArchiver()
-        bz2Archiver.enableLogging(ConsoleLoggerManager().also { it.initialize() }.getLoggerForComponent("noop"))
         File(root.path).list { _, name -> name.endsWith("tar.bz2") }?.forEach { zipName ->
             bz2Archiver.sourceFile = File(root.path, zipName)
             bz2Archiver.destDirectory = File(root.path, "latex")

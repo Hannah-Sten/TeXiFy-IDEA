@@ -13,9 +13,26 @@ import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
  * This method will try to find a file when the 'import' package is used, which means that including files have to be searched for import paths.
+ *
+ * Note that this method cannot use other methods that rely on the fileset, because this method is used in building the fileset.
  */
 fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
-    // Use references to get filenames, take care not to resolve the references because this method is called during resolving them so that would be a loop
+    // Check if import commands are used (do this now, to only search for import paths when needed)
+    val allRelativeImportCommands = LatexIncludesIndex.getCommandsByNames(
+        CommandMagic.relativeImportCommands,
+        command.project,
+        GlobalSearchScope.projectScope(command.project)
+    )
+    val allAbsoluteImportCommands = LatexIncludesIndex.getCommandsByNames(
+        CommandMagic.absoluteImportCommands,
+        command.project,
+        GlobalSearchScope.projectScope(command.project)
+    )
+    if (allAbsoluteImportCommands.isEmpty() && allRelativeImportCommands.isEmpty()) {
+        return null
+    }
+
+    // Use references to get filenames, take care not to resolve the references because this method is called during resolving them so that would be a loop. This line will take a very long time for large projects, as it has to do a lot of recursive navigation in the psi tree in order to get the text required for building the reference keys.
     val references = command.references.filterIsInstance<InputFileReference>()
 
     getParentDirectoryByImportPaths(command).forEach { parentDir ->
@@ -36,21 +53,6 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
  * When the 'import' package is used, get all possible parent directories where a file included by the current command could hide.
  */
 fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
-    // Check if import commands are used (do this now, to only search for import paths when needed)
-    val allRelativeImportCommands = LatexIncludesIndex.getCommandsByNames(
-        CommandMagic.relativeImportCommands,
-        command.project,
-        GlobalSearchScope.projectScope(command.project)
-    )
-    val allAbsoluteImportCommands = LatexIncludesIndex.getCommandsByNames(
-        CommandMagic.absoluteImportCommands,
-        command.project,
-        GlobalSearchScope.projectScope(command.project)
-    )
-    if (allAbsoluteImportCommands.isEmpty() && allRelativeImportCommands.isEmpty()) {
-        return emptyList()
-    }
-
     checkForAbsolutePath(command)?.let { return listOf(it) }
 
     val relativeSearchPaths = mutableListOf<String>()

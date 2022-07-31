@@ -54,12 +54,6 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(result?.contains("Burow2016") == true)
     }
 
-    private fun runCompletion() {
-        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
-        // when
-        myFixture.complete(CompletionType.BASIC)
-    }
-
     @Test
     fun testCompleteBibtexWithCorrectCase() {
         // Using the following failed sometimes
@@ -81,5 +75,11 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(documentation!!.contains("Code Pointer Integrity"))
         assertTrue(documentation.contains("Evans"))
         assertTrue(documentation.contains("have been known for decades"))
+    }
+
+    private fun runCompletion() {
+        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
+        // when
+        myFixture.complete(CompletionType.BASIC)
     }
 }

@@ -109,7 +109,9 @@ class InputFileReference(
             }
         }
 
-        val processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
+        var processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
+        // Leading and trailing whitespaces seem to be ignored, at least it holds for \include-like commands
+        processedKey = processedKey.trim()
 
         var targetFile: VirtualFile? = null
 

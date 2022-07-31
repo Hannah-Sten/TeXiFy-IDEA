@@ -216,13 +216,13 @@ object PackageUtils {
         initial: T
     ): T {
         for (cmd in commands) {
-            if (cmd.commandToken.text !in packageCommands) {
+            if (cmd.name !in packageCommands) {
                 continue
             }
 
             // Just skip conditionally included packages, because it is too expensive to determine whether
             // they are really included or not
-            if (cmd.parent.firstParentOfType(LatexCommands::class)?.name == "\\" + LatexGenericRegularCommand.ONLYIFSTANDALONE.command) {
+            if (cmd.parent?.firstParentOfType(LatexCommands::class)?.name == "\\" + LatexGenericRegularCommand.ONLYIFSTANDALONE.command) {
                 continue
             }
 

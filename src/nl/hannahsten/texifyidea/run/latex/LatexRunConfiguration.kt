@@ -391,7 +391,7 @@ class LatexRunConfiguration constructor(
         bibtexRunConfiguration.setSuggestedName()
 
         // On non-MiKTeX systems, add bibinputs for bibtex to work
-        if (!latexDistribution.isMiktex()) {
+        if (!latexDistribution.isMiktex(project)) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
                 // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
@@ -529,7 +529,7 @@ class LatexRunConfiguration constructor(
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return if (latexDistribution.isMiktex()) {
+        return if (latexDistribution.isMiktex(project)) {
             auxilPath.getAndCreatePath()
         }
         else {
@@ -576,6 +576,7 @@ class LatexRunConfiguration constructor(
      */
     fun getMainFileContentRoot(): VirtualFile? {
         if (mainFile == null) return null
+        if (!project.isInitialized) return null
         return runReadAction {
             return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         }

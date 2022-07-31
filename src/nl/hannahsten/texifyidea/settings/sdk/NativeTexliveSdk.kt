@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.projectRoots.Sdk
+import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.runCommand
 
 /**
@@ -30,16 +31,10 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
     }
 
     override fun suggestHomePaths(): MutableCollection<String> {
-        // Note that suggested paths appear under "Detected SDK's" when adding an SDK
-        val results = mutableSetOf<String>()
-        val path = "which pdflatex".runCommand()
-
-        // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
-        if (!path.isNullOrEmpty() && !path.contains("x86_64-linux")) {
-            results.add(path.substringBefore("/pdflatex"))
-        }
-        results.add(suggestHomePath())
-        return results
+        return TexliveSdk().suggestHomePaths().plus(suggestHomePath())
+            // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
+            .filter { path -> !path.containsAny(setOf("x86_64-linux", "universal-darwin")) }
+            .toMutableSet()
     }
 
     override fun isValidSdkHome(path: String): Boolean {

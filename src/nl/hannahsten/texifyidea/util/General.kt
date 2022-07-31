@@ -12,6 +12,10 @@ import java.util.regex.Pattern
 val Boolean.int: Int
     get() = if (this) 1 else 0
 
+// Copied from grazie utils
+fun Boolean?.orTrue() = this ?: true
+fun Boolean?.orFalse() = this ?: false
+
 /**
  * Creates a pair of two objects, analogous to [to].
  */

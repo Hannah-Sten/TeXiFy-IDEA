@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
+import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -56,7 +57,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             customRule { parent, _, right ->
                 // Lowercase to also catch \STATE from algorithmic
-                if (right.node?.psi?.text?.lowercase(Locale.getDefault()) in setOf(
+                if (right.node?.psi?.firstChildOfType(LatexCommands::class)?.name?.lowercase(Locale.getDefault()) in setOf(
                         "\\state",
                         "\\statex"
                     ) && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {
@@ -92,8 +93,13 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             // Make sure the number of new lines before a sectioning command is as much as the user specified in the settings.
             // BUG OR FEATURE? Does not work for a command that immediately follows \begin{document}.
             customRule { _, _, right ->
+                // Because getting the full text from a node is relatively expensive, we first use a condition which is necessary (but not sufficient) as an early exit.
+                val commandName = right.node?.psi?.firstChildOfType(LatexCommands::class)?.name
+                if (commandName !in LatexCodeStyleSettings.blankLinesOptions.values) return@customRule null
+
+                val rightText = right.node?.text
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
-                    if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*}")) == true &&
+                    if (rightText?.matches(Regex("\\\\${it.value.trimStart('\\')}\\{.*}")) == true &&
                         !CommandMagic.definitions.contains(right.node?.psi?.parentOfType(LatexCommands::class)?.name)) {
                         return@customRule createSpacing(
                             minSpaces = 0,

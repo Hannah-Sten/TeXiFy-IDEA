@@ -9,19 +9,48 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
-import nl.hannahsten.texifyidea.lang.commands.*
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import java.util.*
+import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.shrink
 import java.util.regex.Pattern
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableList
+import kotlin.collections.addAll
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.contains
+import kotlin.collections.emptyList
+import kotlin.collections.firstOrNull
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.getOrDefault
+import kotlin.collections.indices
+import kotlin.collections.isNotEmpty
+import kotlin.collections.joinToString
+import kotlin.collections.lastOrNull
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mapNotNull
+import kotlin.collections.mutableListOf
+import kotlin.collections.set
+import kotlin.collections.setOf
+import kotlin.collections.toTypedArray
 
 /**
  * Get the references for this command.
@@ -218,8 +247,21 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
     return element
 }
 
-fun keyValContentToString(element: LatexKeyvalKey): String =
-    keyValContentToString(element.keyvalContentList)
+fun keyValKeyToString(element: LatexKeyvalKey): String {
+    // This is ugly, but element.children returns only composite children and other querying methods are recursive
+    val result = ArrayList<PsiElement>()
+    var psiChild = element.firstChild
+    while (psiChild != null) {
+        result.add(psiChild)
+        psiChild = psiChild.getNextSibling()
+    }
+    return result.joinToString(separator = "") {
+        when (it) {
+            is LatexGroup -> it.content?.text ?: ""
+            else -> it.text
+        }
+    }
+}
 
 fun keyValContentToString(list: List<LatexKeyvalContent>): String =
     list.joinToString(separator = "") {

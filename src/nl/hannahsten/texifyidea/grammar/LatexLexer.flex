@@ -85,6 +85,8 @@ NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline
  // These can contain unescaped % for example
  | \\url | \\path | \\href
+ // PythonTex Python code commands
+ | \\py | \\pyb | \\pyc | \\pys | \\pyv
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
 PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 
@@ -100,6 +102,11 @@ LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,-]+
 // Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
 ANY_CHAR=[^]
+
+// Exclude some characters from possible verbatim delimiters. This is only a workaround because some things are impossible with our lexer.
+// As an example, consider the case when \verb is redefined to be a non-verbatim command, then the lexer will find all sorts of wrong delimiters, and can apparently bring the parser into an infinite loop (not sure how).
+// IMPORTANT: these characters need to be included in the exlusive INLINE_VERBATIM_START state
+VERBATIM_DELIMITER=[^}\\\]\[]
 
 // Algorithmicx
 // Currently we just use the begin..end structure for formatting, so there is no need to disinguish between separate constructs
@@ -137,11 +144,15 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 <INLINE_VERBATIM_START> {
     // Experimental syntax of \lstinline: \lstinline{verbatim}
-    {OPEN_BRACE}        { yypopState(); verbatim_delimiter = "}"; yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
+    {OPEN_BRACE}         { yypopState(); verbatim_delimiter = "}"; yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
     // lstinline can have optional arguments, and using [ as verbatim delimiter is not exactly very readable
-    {OPEN_BRACKET}      { yypopState(); yypushState(INLINE_VERBATIM_OPTIONAL_ARG); verbatimOptionalArgumentBracketsCount = 1; return OPEN_BRACKET; }
-    {ANY_CHAR}          { yypopState(); verbatim_delimiter = yytext().toString(); yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
-    [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+    {OPEN_BRACKET}       { yypopState(); yypushState(INLINE_VERBATIM_OPTIONAL_ARG); verbatimOptionalArgumentBracketsCount = 1; return OPEN_BRACKET; }
+    {VERBATIM_DELIMITER} { yypopState(); verbatim_delimiter = yytext().toString(); yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
+    // Some characters need to be specified explicitly, see comment on VERBATIM_DELIMITER
+    {CLOSE_BRACE}        { yypopState(); return CLOSE_BRACE; }
+    {CLOSE_BRACKET}      { yypopState(); return CLOSE_BRACKET; }
+    \\                   { yypopState(); return BACKSLASH; }
+    [^]                  { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 
 <INLINE_VERBATIM_OPTIONAL_ARG> {
