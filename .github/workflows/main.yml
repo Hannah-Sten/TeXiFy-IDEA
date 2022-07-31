@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
           # todo caching results is not working?
       - name: Qodana
-        uses: JetBrains/qodana-action@v5.1.0
+        uses: JetBrains/qodana-action@v2022.1.1
         with:
           additional-cache-hash: "v1"
           use-caches: false
