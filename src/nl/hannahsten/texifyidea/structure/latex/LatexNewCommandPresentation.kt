@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.nextCommand
@@ -29,7 +31,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
         // Get command name.
         val required = newCommand.requiredParameters
-        val command = if (required.size > 0) {
+        val command = if (required.isNotEmpty()) {
             required.first()
         }
         else {
@@ -39,15 +41,12 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
         this.newCommandName = command ?: "" + suffix
 
-        // Get value.
-        locationString = if (required.size > 1) {
-            when (newCommand.commandToken.text) {
-                "\\newcommand" -> required[1]
-                "\\NewDocumentCommand" -> required[2]
-                else -> ""
-            }
+        // Get the definition to show in place of the location string.
+        locationString = when {
+            newCommand.commandToken.text == "\\" + LatexNewDefinitionCommand.NEWCOMMAND.command && required.size >= 2 -> required[1]
+            newCommand.commandToken.text == "\\" + LatexXparseCommand.NEWDOCUMENTCOMMAND.command && required.size >= 3 -> required[2]
+            else -> ""
         }
-        else ""
     }
 
     override fun getPresentableText() = newCommandName
