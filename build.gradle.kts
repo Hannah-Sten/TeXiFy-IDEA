@@ -89,7 +89,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:2.0.3")
     implementation("io.ktor:ktor-client-content-negotiation:2.0.3")
     implementation("io.ktor:ktor-server-core:2.0.3")
-    implementation("io.ktor:ktor-server-netty:2.0.3")
+    implementation("io.ktor:ktor-server-jetty:2.0.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.3")
 
     // Comparing versions
