@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.19</strong></p>
+        <p><strong>Beta 0.7.20</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.19! This release features improved glossary entries support by @fberlakovich and an inspection to detect incorrect quote typesetting by @multimeric, as well as some performance improvements and bug fixes.
+            Welcome to TeXiFy IDEA 0.7.20! This release features a brand new bibtex reference manager tool window, many bug fixes and contributions from @daniil-berg and @dpvdberg.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,25 +55,27 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add autocompletion and reference resolving for glossary entries. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2388">#2388</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2447">#2447</a>)</li>
-            <li> Add inspection to detect incorrect quotes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2420">#2420</a>)</li>
-            <li> Improve performance of the inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2446">#2446</a>)</li>
-            <li> Improve performance of the formatter. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2448">#2448</a>)</li>
-            <li> Pythontex environments and commands are now treated as verbatim. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2462">#2462</a>)</li>
-            <li> Support non-IntelliJ IDEs also for package-file based indexes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2457">#2457</a>)</li>
+            <li> Add support for bibtex reference managers Mendeley and Zotero. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2539">#2539</a>)</li>
+            <li> Improved autocompletion initialization performance. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2517">#2517</a>)</li>
+            <li> Improve inspection performance when the import package is used. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2540">#2540</a>)</li>
+            <li> Resolve symlinks when suggesting home paths for TeX Live SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2547">#2547</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix word count tool. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2465">#2465</a>)</li>
-            <li> Fix incorrect import from other plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2491">#2491</a>)</li>
-            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2427">#2427</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2437">#2437</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2491">#2491</a>)</li>
+            <li> Fix false positive warning about escaping characters when using the blkarray package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2504">#2504</a>)</li>
+            <li> Fix custom compiler arguments when using WSL. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2543">#2543</a>)</li>
+            <li> Fix false positive inspection warnings related to ellipsis and hashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2516">#2516</a>)</li>
+            <li> Fix check if Sumatra is installed. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2528">#2528</a>)</li>
+            <li> Fix default working directory for bibtex when using miktex (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2532">#2532</a>)</li>
+            <li> Fix inspection false positives related to \def redefinitions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2544">#2544</a>)</li>
+            <li> Fix crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2515">#2515</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2552">#2552</a>)</li>
         </ul>
         <br>
         <p>
-        Thanks to @fberlakovich, @golmschenk and @multimeric for contributing to this release!
+        Thanks to @daniil-berg and @dpvdberg for contributing to this release!
         </p>
         <br>
         <p>
