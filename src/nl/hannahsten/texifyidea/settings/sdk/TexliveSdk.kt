@@ -73,7 +73,9 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
                 // Let's just assume that there is only one /bin/ in this path
                 val index = resolvedPath.findLastAnyOf(setOf(File.separator + "bin" + File.separator))?.first ?: (resolvedPath.length - 1)
-                results.add(resolvedPath.substring(0, index))
+                if (index > 0) {
+                    results.add(resolvedPath.substring(0, index))
+                }
             }
         }
 
