@@ -25,7 +25,7 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): CodeStyleConfigurable {
         return object : CodeStyleAbstractConfigurable(settings, originalSettings, configurableDisplayName) {
 
-            override fun createPanel(settings: CodeStyleSettings?): CodeStyleAbstractPanel {
+            override fun createPanel(settings: CodeStyleSettings): CodeStyleAbstractPanel {
                 val language = LatexLanguage
 
                 return object : TabbedLanguageCodeStylePanel(language, currentSettings, settings) {

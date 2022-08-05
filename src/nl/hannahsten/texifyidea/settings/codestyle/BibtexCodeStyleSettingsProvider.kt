@@ -17,7 +17,7 @@ class BibtexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): CodeStyleConfigurable {
         return object : CodeStyleAbstractConfigurable(settings, originalSettings, configurableDisplayName) {
 
-            override fun createPanel(settings: CodeStyleSettings?): CodeStyleAbstractPanel {
+            override fun createPanel(settings: CodeStyleSettings): CodeStyleAbstractPanel {
                 val language = BibtexLanguage
 
                 return object : TabbedLanguageCodeStylePanel(language, currentSettings, settings) {

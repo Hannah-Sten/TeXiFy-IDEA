@@ -95,7 +95,7 @@ fun Project.hasLatexModule(): Boolean {
 /**
  * True if we are probably in a unit test.
  */
-fun Project.isTestProject() = name.contains("_temp_")
+fun Project.isTestProject() = name.contains("_temp_") || basePath?.contains("unitTest") == true
 
 /**
  * Finds all section marker commands (as defined in [CommandMagic.sectionMarkers]) in the project.

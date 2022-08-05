@@ -50,7 +50,7 @@ class LatexProjectGenerator :
 
         // This behaviour was inspired by the Julia plugin, see
         // https://github.com/JuliaEditorSupport/julia-intellij/blob/master/src/org/ice1000/julia/lang/module/julia-projects.kt
-        val modifiableModel: ModifiableRootModel = ModifiableModelsProvider.SERVICE.getInstance().getModuleModifiableModel(module)
+        val modifiableModel: ModifiableRootModel = ModifiableModelsProvider.getInstance().getModuleModifiableModel(module)
 
         val rootModel = module.rootManager.modifiableModel
 
@@ -83,7 +83,7 @@ class LatexProjectGenerator :
 
             rootModel.commit()
 
-            ModifiableModelsProvider.SERVICE.getInstance().commitModuleModifiableModel(modifiableModel)
+            ModifiableModelsProvider.getInstance().commitModuleModifiableModel(modifiableModel)
         }
     }
 }
