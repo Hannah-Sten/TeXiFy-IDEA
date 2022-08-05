@@ -65,6 +65,8 @@ tasks.compileTestKotlin {
 dependencies {
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
+    implementation(files("lib/JavaDDE.dll"))
+    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.1")
