@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
-import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -13,7 +12,6 @@ import com.intellij.ui.SearchTextField
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.WrapLayout
-import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -40,12 +38,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     // Non-idea has no concept of modules so we need to use some other criterion based on the project
-    override fun isApplicable(project: Project) = if (ApplicationNamesInfo.getInstance().scriptName == "idea") {
-        project.hasLatexModule()
-    }
-    else {
-        project.allFiles(LatexFileType).isNotEmpty()
-    }
+    override fun isApplicable(project: Project) = project.isLatexProject()
 
     /**
      * The swing contents of the symbol tool window.

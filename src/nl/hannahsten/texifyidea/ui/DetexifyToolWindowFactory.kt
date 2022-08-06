@@ -1,14 +1,11 @@
 package nl.hannahsten.texifyidea.ui
 
-import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.jcef.JBCefBrowser
-import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.allFiles
-import nl.hannahsten.texifyidea.util.hasLatexModule
+import nl.hannahsten.texifyidea.util.isLatexProject
 
 class DetexifyToolWindowFactory : ToolWindowFactory {
 
@@ -19,13 +16,7 @@ class DetexifyToolWindowFactory : ToolWindowFactory {
     }
 
     // Non-idea has no concept of modules so we need to use some other criterion based on the project
-    override fun isApplicable(project: Project) =
-        if (ApplicationNamesInfo.getInstance().scriptName == "idea") {
-        project.hasLatexModule()
-    }
-    else {
-        project.allFiles(LatexFileType).isNotEmpty()
-    }
+    override fun isApplicable(project: Project) = project.isLatexProject()
 
     class DetexifyToolWindow {
 
