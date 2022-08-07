@@ -71,4 +71,18 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
         testGlossaryReferenceCompletion("glspl")
         testGlossaryReferenceCompletion("Gls")
     }
+
+    @Test
+    fun testExternalGlossaryCompletion() {
+        // given
+        myFixture.configureByFiles("LoadExternalGlossary.tex", "glossar.tex")
+
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(2, result.size)
+        assertTrue(result.any { l -> l.lookupString == "aslr" })
+        assertTrue(result.any { l -> l.lookupString == "maths" })
+    }
 }
