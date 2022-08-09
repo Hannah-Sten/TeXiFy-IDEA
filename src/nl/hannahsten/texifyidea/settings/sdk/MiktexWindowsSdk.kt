@@ -4,6 +4,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.runCommand
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.nio.file.InvalidPathException
@@ -50,11 +51,24 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
     }
 
     override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
+        val path = Paths.get(homePath, "source").toString()
         return try {
             // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
-            LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
+            LocalFileSystem.getInstance().findFileByPath(path)
         }
         catch (ignored: InvalidPathException) {
+            Log.debug("Invalid path $path when looking for LaTeX sources")
+            null
+        }
+    }
+
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
+        val path = Paths.get(homePath, "tex", "latex").toString()
+        return try {
+            LocalFileSystem.getInstance().findFileByPath(path)
+        }
+        catch (ignored: InvalidPathException) {
+            Log.debug("Invalid path $path when looking for LaTeX style files")
             null
         }
     }
