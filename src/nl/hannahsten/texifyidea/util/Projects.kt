@@ -98,9 +98,9 @@ fun Project.hasLatexModule(): Boolean {
  * Best guess at whether this project can be considered a project containing significant LaTeX things.
  */
 fun Project.isLatexProject(): Boolean {
-    return hasLatexModule()
-            || getLatexRunConfigurations().isNotEmpty()
-            || (ApplicationNamesInfo.getInstance().scriptName != "idea" && allFiles(LatexFileType).isNotEmpty())
+    return hasLatexModule() ||
+            getLatexRunConfigurations().isNotEmpty() ||
+            (ApplicationNamesInfo.getInstance().scriptName != "idea" && allFiles(LatexFileType).isNotEmpty())
 }
 
 /**
