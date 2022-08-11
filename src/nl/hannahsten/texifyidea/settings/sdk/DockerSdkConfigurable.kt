@@ -5,6 +5,7 @@ import com.intellij.openapi.projectRoots.AdditionalDataConfigurable
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.JComponent
@@ -25,7 +26,17 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
     private lateinit var imageName: ComboBox<String>
 
     override fun createComponent(): JComponent {
-        imageName = ComboBox(DockerSdk.getAvailableImages().toTypedArray())
+        val images = DockerSdk.getAvailableImages()
+        imageName = ComboBox(images.toTypedArray())
+
+        if (images.isEmpty()) {
+            // Check if Docker is up and running
+            val (output, exitCode) = runCommandWithExitCode("docker", "image", "ls", returnExceptionMessage = true)
+            if (exitCode != 0) {
+                return JBLabel("Error: $output")
+            }
+        }
+
         val selected = (sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName
         if (selected != null) {
             imageName.selectedItem = selected
@@ -38,7 +49,7 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
         }
 
         // Set width
-        val longestString = DockerSdk.getAvailableImages().maxByOrNull { it.length } ?: "miktex:latest"
+        val longestString = images.maxByOrNull { it.length } ?: "miktex:latest"
         val width = imageName.getFontMetrics(imageName.font)
             .stringWidth(longestString)
         imageName.preferredSize = Dimension(width, imageName.preferredSize.height)
