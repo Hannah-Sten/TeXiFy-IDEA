@@ -72,14 +72,18 @@ object MendeleyAuthenticator {
      * gets the authorization code from the response.
      */
     private fun createAuthenticationServer() {
-        authenticationServer = embeddedServer(Jetty, port = port) {
-            routing {
-                get("/") {
-                    this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
-                    authenticationCode = call.parameters["code"]
+        try {
+            authenticationServer = embeddedServer(Jetty, port = port) {
+                routing {
+                    get("/") {
+                        this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
+                        authenticationCode = call.parameters["code"]
+                    }
                 }
-            }
-        }.start(false)
+            }.start(false)
+        } catch (e: Exception) {
+            throw Exception("Something went wrong when initializing the Jetty Server", e)
+        }
     }
 
     /**
