@@ -42,9 +42,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.20</strong></p>
+        <p><strong>Beta 0.7.21</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.20! This release features a brand new bibtex reference manager tool window, many bug fixes and contributions from @daniil-berg and @dpvdberg.
+            Welcome to TeXiFy IDEA 0.7.21! This release just fixes a few bugs introduced with the new features in the last release.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,27 +55,23 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add support for bibtex reference managers Mendeley and Zotero. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2539">#2539</a>)</li>
-            <li> Improved autocompletion initialization performance. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2517">#2517</a>)</li>
-            <li> Improve inspection performance when the import package is used. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2540">#2540</a>)</li>
-            <li> Resolve symlinks when suggesting home paths for TeX Live SDK. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2547">#2547</a>)</li>
+            <li> Add \loadglsentries. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2579">#2579</a>)</li>
+            <li> Index package files also for MiKTeX on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2581">#2581</a>)</li>
+            <li> Improve tool window visibility. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2577">#2577</a>)</li>
+            <li> Improve autocompletion performance. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2584">#2584</a>)</li>
+            <li> Improve user feedback when selecting Docker images. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2587">#2587</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix false positive warning about escaping characters when using the blkarray package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2504">#2504</a>)</li>
-            <li> Fix custom compiler arguments when using WSL. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2543">#2543</a>)</li>
-            <li> Fix false positive inspection warnings related to ellipsis and hashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2516">#2516</a>)</li>
-            <li> Fix check if Sumatra is installed. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2528">#2528</a>)</li>
-            <li> Fix default working directory for bibtex when using miktex (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2532">#2532</a>)</li>
-            <li> Fix inspection false positives related to \def redefinitions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2544">#2544</a>)</li>
-            <li> Fix crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2515">#2515</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2552">#2552</a>)</li>
+            <li> Fix docker image list refresh. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2570">#2570</a>)</li>
+            <li> Fix crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2562">#2562</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2567">#2567</a>)</li>
         </ul>
         <br>
         <p>
-        Thanks to @daniil-berg and @dpvdberg for contributing to this release!
+        Thanks to @fberlakovich for contributing to this release!
         </p>
         <br>
         <p>
