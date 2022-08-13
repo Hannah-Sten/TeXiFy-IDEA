@@ -56,7 +56,7 @@ enum class LatexBiblatexCommand(
     AVOLCITE("avolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     AVOLCITE_CAPITALIZED("Avolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     FULLCITE("fullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
-    FOOTFULLCITE("footcullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FOOTFULLCITE("footfullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     BIBLATEX_NOCITE("nocite", "key".asRequired(), dependency = BIBLATEX),
     NOTECITE("notecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     NOTECITE_CAPITALIZED("Notecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
