@@ -21,8 +21,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.refreshTokenAttributes
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.tokenAttributes
-import java.util.*
-import kotlin.properties.Delegates
 
 /**
  * Authorization via OAuth:
