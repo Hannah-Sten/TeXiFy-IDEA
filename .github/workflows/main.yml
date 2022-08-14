@@ -17,10 +17,7 @@ jobs:
           fetch-depth: 2
           # todo caching results is not working?
       - name: Qodana
-        uses: JetBrains/qodana-action@v2022.1.1
-        with:
-          additional-cache-hash: "v2"
-          use-caches: false
+        uses: JetBrains/qodana-action@v2022.2.1
       # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
