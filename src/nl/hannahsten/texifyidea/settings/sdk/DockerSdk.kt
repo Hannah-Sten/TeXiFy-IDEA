@@ -20,14 +20,13 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
     companion object {
 
         val isAvailable: Boolean by lazy {
-            availableImages.any { it.contains("miktex") }
+            getAvailableImages().any { it.contains("miktex") }
         }
 
-        val availableImages: List<String> by lazy {
+        fun getAvailableImages(): List<String> =
             runCommand("docker", "image", "ls", "--format", "table {{.Repository}}:{{.Tag}}")?.split('\n')
                 ?.drop(1) // header
                 ?.filter { it.isNotBlank() } ?: emptyList()
-        }
     }
 
     override fun suggestHomePath(): String {

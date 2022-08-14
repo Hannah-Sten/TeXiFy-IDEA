@@ -37,6 +37,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                 }
                 catch (e: ArchiverException) {
                     // Ignore permission errors, nothing we can do about that
+                    Log.debug("Exception when trying to extract MiKTeX source files: ${e.message}")
                     return mutableSetOf()
                 }
             }
@@ -67,12 +68,14 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
             // If the user has e.g. a MiKTeX admin install, we do not have rights to extract zips
             if (!Files.isWritable(Path.of(root.path))) {
                 extractedFiles = true
+                Log.debug("MiKTeX installation path ${root.path} is not writable, cannot extract sources")
                 return false
             }
 
             // Try to create if not exists
             if (!destination.exists() && !destination.mkdir()) {
                 extractedFiles = true
+                Log.debug("Could not create destination directory ${destination.absolutePath}")
                 return false
             }
 

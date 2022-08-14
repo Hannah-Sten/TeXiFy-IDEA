@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 2
           # todo caching results is not working?
       - name: Qodana
         uses: JetBrains/qodana-action@v2022.1.1

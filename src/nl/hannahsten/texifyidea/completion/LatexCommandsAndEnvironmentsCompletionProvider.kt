@@ -43,6 +43,9 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
     companion object {
 
+        /** Cache for commands which are indexed and which should be added to the autocompletion. */
+        val indexedCommands = mutableSetOf<LookupElementBuilder>()
+
         /** Whether TeX Live is available at all, in which case it could be that all packages from texlive-full are in the index. */
         val isTexliveAvailable = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
     }
@@ -90,6 +93,11 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
      * Add all indexed commands to the autocompletion.
      */
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
+        // Use cache if available
+        if (indexedCommands.isNotEmpty()) {
+            result.addAllElements(indexedCommands)
+            return
+        }
         val project = parameters.editor.project ?: return
 
         // If using texlive, filter on commands which are in packages included in the project
@@ -97,7 +105,6 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         // completion would be flooded with duplicate commands from packages that nobody uses.
         // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
         // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
-
         val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(LatexPackage.DEFAULT)
 
         val lookupElementBuilders = mutableSetOf<LookupElementBuilder>()
@@ -129,6 +136,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                         }.forEach { lookupElementBuilders.add(it) }
                 }
         }
+        indexedCommands.addAll(lookupElementBuilders)
         result.addAllElements(lookupElementBuilders)
     }
 

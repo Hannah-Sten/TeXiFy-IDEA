@@ -1,0 +1,22 @@
+%! Author = felixl
+%! Date = 04/08/2022
+
+% Preamble
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{glossaries}
+\loadglsentries{glossar.tex}
+
+\newglossaryentry{maths}
+{
+    name=mathematics,
+    description={Mathematics is what mathematicians do}
+}
+
+% Document
+\begin{document}
+
+    \gls{<caret>}
+
+\end{document}
