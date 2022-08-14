@@ -21,6 +21,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.refreshTokenAttributes
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.tokenAttributes
+import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Authorization via OAuth:
@@ -65,6 +67,8 @@ object MendeleyAuthenticator {
      */
     private lateinit var authenticationServer: JettyApplicationEngine
 
+    var isUserAuthenticationFinished = false
+
     /**
      * Authentication code that can be exchanged for an access token.
      */
@@ -76,10 +80,12 @@ object MendeleyAuthenticator {
      */
     private fun createAuthenticationServer() {
         try {
+            isUserAuthenticationFinished = false
             authenticationServer = embeddedServer(Jetty, port = port) {
                 routing {
                     get("/") {
                         this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
+                        isUserAuthenticationFinished = true
                         authenticationCode = call.parameters["code"]
                     }
                 }

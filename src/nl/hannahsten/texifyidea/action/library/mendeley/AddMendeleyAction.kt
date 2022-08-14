@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.action.library.mendeley
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.jcef.JBCefBrowser
 import nl.hannahsten.texifyidea.action.library.AddLibraryAction
 import nl.hannahsten.texifyidea.psi.BibtexEntry
@@ -43,6 +44,11 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
 
         override fun createCenterPanel(): JComponent {
             return browser.component
+        }
+
+        override fun doValidate(): ValidationInfo? {
+            return if (MendeleyAuthenticator.isUserAuthenticationFinished) null
+            else ValidationInfo("You are not yet logged in to Mendeley")
         }
     }
 }
