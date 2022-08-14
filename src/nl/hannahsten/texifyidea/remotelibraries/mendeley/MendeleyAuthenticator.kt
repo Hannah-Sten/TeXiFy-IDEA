@@ -35,7 +35,10 @@ object MendeleyAuthenticator {
         createAuthenticationServer()
     }
 
-    private const val port = 8080
+    /**
+     * The port is fixed by Mendeley, so we choose a port that hopefully no one has anything running on.
+     */
+    private const val port = 59473
 
     private const val redirectPath = "/"
 
@@ -81,7 +84,8 @@ object MendeleyAuthenticator {
                     }
                 }
             }.start(false)
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             throw Exception("Something went wrong when initializing the Jetty Server", e)
         }
     }

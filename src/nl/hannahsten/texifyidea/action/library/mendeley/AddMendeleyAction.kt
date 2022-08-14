@@ -35,17 +35,10 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
         val project: Project,
     ) : AddLibDialogWrapper(MendeleyLibrary.NAME) {
 
-        private val browser = try { JBCefBrowser(MendeleyAuthenticator.authorizationUrl) }
-        catch (e: Exception) {
-            throw Exception("Could not create Mendeley log in browser", e)
-        }
+        private val browser = JBCefBrowser(MendeleyAuthenticator.authorizationUrl)
 
         init {
-            try {
-                init()
-            } catch (e: Exception) {
-                throw Exception("Something went wrong in init{} block", e)
-            }
+            init()
         }
 
         override fun createCenterPanel(): JComponent {
