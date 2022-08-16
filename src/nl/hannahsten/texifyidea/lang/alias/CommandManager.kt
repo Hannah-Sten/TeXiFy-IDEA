@@ -12,30 +12,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
-import kotlin.collections.Collection
-import kotlin.collections.Iterable
-import kotlin.collections.Iterator
-import kotlin.collections.MutableIterator
-import kotlin.collections.MutableMap
-import kotlin.collections.Set
-import kotlin.collections.asSequence
-import kotlin.collections.associateWith
-import kotlin.collections.contains
-import kotlin.collections.emptySet
-import kotlin.collections.filter
-import kotlin.collections.first
-import kotlin.collections.flatMap
-import kotlin.collections.forEach
-import kotlin.collections.getOrNull
-import kotlin.collections.intersect
-import kotlin.collections.isNotEmpty
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.mutableSetOf
 import kotlin.collections.set
-import kotlin.collections.toMutableMap
-import kotlin.collections.toSet
 
 /**
  * Manages all available LaTeX commands and their aliases.
