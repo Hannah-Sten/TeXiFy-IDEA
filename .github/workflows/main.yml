@@ -3,19 +3,18 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    branches: [ master, kover ]
+    branches: [ master ]
   pull_request:
     types: [opened, synchronize, closed]
 
 jobs:
   qodana:
-    name: Run Qodana
+    name: Qodana
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
-          # todo caching results is not working?
       - name: Qodana
         uses: JetBrains/qodana-action@v2022.2.1
       # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
