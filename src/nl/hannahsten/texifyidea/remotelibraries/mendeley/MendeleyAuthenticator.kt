@@ -35,7 +35,10 @@ object MendeleyAuthenticator {
         createAuthenticationServer()
     }
 
-    private const val port = 8080
+    /**
+     * The port is fixed by Mendeley, so we choose a port that hopefully no one has anything running on.
+     */
+    private const val port = 59473
 
     private const val redirectPath = "/"
 
@@ -62,6 +65,8 @@ object MendeleyAuthenticator {
      */
     private lateinit var authenticationServer: JettyApplicationEngine
 
+    var isUserAuthenticationFinished = false
+
     /**
      * Authentication code that can be exchanged for an access token.
      */
@@ -72,14 +77,21 @@ object MendeleyAuthenticator {
      * gets the authorization code from the response.
      */
     private fun createAuthenticationServer() {
-        authenticationServer = embeddedServer(Jetty, port = port) {
-            routing {
-                get("/") {
-                    this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
-                    authenticationCode = call.parameters["code"]
+        try {
+            isUserAuthenticationFinished = false
+            authenticationServer = embeddedServer(Jetty, port = port) {
+                routing {
+                    get("/") {
+                        this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
+                        isUserAuthenticationFinished = true
+                        authenticationCode = call.parameters["code"]
+                    }
                 }
-            }
-        }.start(false)
+            }.start(false)
+        }
+        catch (e: Exception) {
+            throw Exception("Something went wrong when initializing the Jetty Server", e)
+        }
     }
 
     /**

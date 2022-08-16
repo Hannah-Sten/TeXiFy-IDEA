@@ -5,10 +5,10 @@ object MendeleyCredentials {
     /**
      * TeXiFy id to communicate with Mendeley.
      */
-    const val id = "13058"
+    const val id = "13334"
 
     /**
      * TeXiFy secret to communicate with Mendeley.
      */
-    const val secret = "\u0084BA\\U\u0086sTWx`MpuMT"
+    const val secret = "xBa\u0083o\u0082VvmSx`qes?"
 }
