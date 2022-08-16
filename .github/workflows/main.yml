@@ -14,10 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Qodana
         uses: JetBrains/qodana-action@v2022.2.1
-      # https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/validation-cicd.html#example-setup-for-github-actions
+      # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
         if: always()
@@ -31,6 +31,8 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
     - uses: actions/setup-java@v1
       with:
         java-version: '11'

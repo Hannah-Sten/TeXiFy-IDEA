@@ -18,7 +18,6 @@ plugins {
     id("de.undercouch.download") version "5.1.0"
 
     // Test coverage
-    jacoco
     id("org.jetbrains.kotlinx.kover") version "0.4.2"
 
     // Linting
@@ -197,18 +196,6 @@ tasks.test {
         events(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
         exceptionFormat = TestExceptionFormat.FULL
     }
-}
-
-// Test coverage reporting
-tasks.jacocoTestReport {
-    // Enable xml for codecov
-    reports {
-        html.required.set(true)
-        xml.required.set(true)
-        xml.outputLocation.set(file("$buildDir/reports/jacoco/test/jacocoTestReport.xml"))
-    }
-
-    sourceSets(project.sourceSets.getByName("main"))
 }
 
 ktlint {
