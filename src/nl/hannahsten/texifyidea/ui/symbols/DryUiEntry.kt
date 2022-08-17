@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 /**
  * @author Hannah Schellekens
  */
-open class DryUiEntry(
+class DryUiEntry(
         override val description: String,
         override val generatedLatex: String,
         override val fileName: String,

@@ -8,7 +8,23 @@ on:
     types: [opened, synchronize, closed]
 
 jobs:
-  build:
+  qodana:
+    name: Qodana
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Qodana
+        uses: JetBrains/qodana-action@v2022.2.1
+      # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
+      - name: Upload SARIF report to GitHub
+        # Also upload report if quality gate fails
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -25,7 +41,10 @@ jobs:
         chmod +x gradlew
         ./gradlew ktlintCheck
     - name: Run tests
-      run: ./gradlew check jacocoTestReport
+      run: ./gradlew check koverReport
     - name: Upload coverage report
       if: success() && matrix.os == 'ubuntu-latest'
-      run: bash <(curl -s https://codecov.io/bash)
+      run: |
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov -t ${CODECOV_TOKEN}

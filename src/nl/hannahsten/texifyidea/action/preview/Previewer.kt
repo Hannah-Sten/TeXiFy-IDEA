@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.ui.PreviewForm
 
 /**
  * Can compile LaTeX into a preview image.
