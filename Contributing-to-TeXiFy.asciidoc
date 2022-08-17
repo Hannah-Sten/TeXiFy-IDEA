@@ -150,10 +150,13 @@ See https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html?from=jetbra
 
 == Qodana
 
-Run analysis:
+View reported results in GitHub: Security > Code Scanning analysis.
+
+Run analysis locally:
 ----
-docker run --rm -it -v /home/thomas/GitRepos/TeXiFy-IDEA/:/data/project/ -p 8080:8080 jetbrains/qodana-jvm --show-report --cache-dir=/tmp/qodana-cache
+docker run --rm -it -v /path/to/TeXiFy-IDEA/:/data/project/ -p 8080:8080 jetbrains/qodana-jvm --show-report --cache-dir=/tmp/qodana-cache
 ----
+
 View report downloaded from GH Actions:
 ----
 docker run -it --rm -p 8000:80 -v $(pwd)/report:/usr/share/nginx/html nginx
