@@ -12,11 +12,14 @@ class LatexUndefinedCommandInspectionTest : TexifyInspectionTestBase(LatexUndefi
     }
 
     fun testDefinedCommand() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \documentclass{article}
             \newcommand{\floep}{\grq}
             \floep
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 }

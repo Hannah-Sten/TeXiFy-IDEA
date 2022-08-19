@@ -78,7 +78,8 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
                         key = line.split(" ").first().asKey(),
                         value = line.trim().split(" ").drop(1).joinToString(" ").let {
                             if (it.isEmpty()) null else it
-                        })
+                        }
+                    )
                 }
                 // Fill up contents of the existing key.
                 // Each newline is considered a space.

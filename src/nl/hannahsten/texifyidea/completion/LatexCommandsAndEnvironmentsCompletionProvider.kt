@@ -269,10 +269,10 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                 }
 
                 (if (optional.size == 2) "[args]" else "") +
-                        if (requiredParameterCount == 1) "{param}"
-                        // Number the required parameters so a toSet call won't merge them. This way the
-                        // user can keep them apart as well.
-                        else (1..requiredParameterCount).joinToString("") { "{param$it}" }
+                    if (requiredParameterCount == 1) "{param}"
+                    // Number the required parameters so a toSet call won't merge them. This way the
+                    // user can keep them apart as well.
+                    else (1..requiredParameterCount).joinToString("") { "{param$it}" }
             }
 
             "\\DeclarePairedDelimiter" -> "{param}"

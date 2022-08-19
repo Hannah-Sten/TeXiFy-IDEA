@@ -14,8 +14,8 @@ object Clipboard {
     @JvmStatic
     fun extractHtmlFromClipboard(clipboardContents: String): String? {
         return clipboardContents.indexOf("<html", ignoreCase = true)
-                .takeIf { it >= 0 }
-                ?.let { clipboardContents.substring(it) }
+            .takeIf { it >= 0 }
+            ?.let { clipboardContents.substring(it) }
     }
 
     /**
@@ -25,8 +25,8 @@ object Clipboard {
      */
     @JvmStatic
     fun extractHtmlFragmentFromClipboard(clipboardContents: String) = clipboardContents
-            .split("<!--StartFragment-->")
-            .getOrNull(1)
-            ?.split("<!--EndFragment-->")
-            ?.first()
+        .split("<!--StartFragment-->")
+        .getOrNull(1)
+        ?.split("<!--EndFragment-->")
+        ?.first()
 }

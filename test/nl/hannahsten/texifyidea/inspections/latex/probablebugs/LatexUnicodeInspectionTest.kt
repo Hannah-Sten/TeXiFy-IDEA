@@ -18,11 +18,14 @@ class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
     fun `test support by loaded packages`() {
         setUnicodeSupport(false)
 
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \usepackage[utf8]{inputenc}
             \usepackage[T1]{fontenc}
             î
-""".trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
@@ -52,9 +55,12 @@ class InsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
     fun `test with loaded packages`() {
         setUnicodeSupport()
 
-        myFixture.configureByText(LatexFileType, "\\usepackage[utf8]{inputenc}\n" +
+        myFixture.configureByText(
+            LatexFileType,
+            "\\usepackage[utf8]{inputenc}\n" +
                 "            \\usepackage[T1]{fontenc}\n" +
-                "\$<error descr=\"Unsupported non-ASCII character\">î</error>\$")
+                "\$<error descr=\"Unsupported non-ASCII character\">î</error>\$"
+        )
         myFixture.checkHighlighting()
     }
 
@@ -71,11 +77,15 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
     fun `test include packages quick fix`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("\nî", """
+        testNamedQuickFix(
+            "\nî",
+            """
             \usepackage[utf8]{inputenc}
             \usepackage[T1]{fontenc}
-            î""".trimIndent(),
-                "Include Unicode support packages", 2)
+            î
+            """.trimIndent(),
+            "Include Unicode support packages", 2
+        )
     }
 
     @Suppress("NonAsciiCharacters")

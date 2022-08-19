@@ -45,10 +45,12 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                                 .withInsertHandler(LatexReferenceInsertHandler())
                                 .withTypeText(
                                     containing.name + ": " +
-                                            (1 + StringUtil.offsetToLineNumber(
+                                        (
+                                            1 + StringUtil.offsetToLineNumber(
                                                 containing.text,
                                                 bibtexEntry.getTextOffset()
-                                            )),
+                                            )
+                                            ),
                                     true
                                 )
                                 .withIcon(TexifyIcons.DOT_BIB)
@@ -75,12 +77,12 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                         .withInsertHandler(LatexReferenceInsertHandler())
                         .withTypeText(
                             labelingCommand.containingFile.name + ":" +
-                                    (
-                                            1 + StringUtil.offsetToLineNumber(
-                                                labelingCommand.containingFile.text,
-                                                labelingCommand.textOffset
-                                            )
-                                            ),
+                                (
+                                    1 + StringUtil.offsetToLineNumber(
+                                        labelingCommand.containingFile.text,
+                                        labelingCommand.textOffset
+                                    )
+                                    ),
                             true
                         )
                         .withIcon(TexifyIcons.DOT_LABEL)

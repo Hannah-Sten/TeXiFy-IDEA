@@ -7,12 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SIUNITX
  * @author Hannah Schellekens
  */
 enum class LatexSiunitxCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = false,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = false,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     ANG("ang", "options".asOptional(), "angle".asRequired(), dependency = SIUNITX),

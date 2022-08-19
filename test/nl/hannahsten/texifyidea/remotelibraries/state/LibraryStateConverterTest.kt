@@ -37,7 +37,7 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
           </a1234>
         </LinkedHashMap>
         
-        """.trimIndent()
+    """.trimIndent()
 
     fun testToString() {
         myFixture.configureByText(BibtexFileType, bibString)

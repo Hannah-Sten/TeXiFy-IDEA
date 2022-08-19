@@ -150,7 +150,7 @@ enum class BibtexDefaultEntryType(
     BOOKINBOOK(
         "bookinbook",
         "This type is similar to @inbook but intended for works originally published as a\n" +
-                "stand-alone book.",
+            "stand-alone book.",
         arrayOf(AUTHOR, TITLE, BOOKTITLE, DATE),
         arrayOf(BOOKAUTHOR, EDITOR, EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, BOOKSUBTITLE, BOOKTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
@@ -270,7 +270,7 @@ enum class BibtexDefaultEntryType(
     REFERENCE(
         "reference",
         "A single-volume work of reference such as an encyclopedia or a dictionary. This is a\n" +
-                "more specific variant of the generic @collection entry type",
+            "more specific variant of the generic @collection entry type",
         arrayOf(EDITOR, TITLE, DATE),
         arrayOf(EDITORA, EDITORB, EDITORC, TRANSLATOR, ANNOTATOR, COMMENTATOR, INTRODUCTION, FOREWORD, AFTERWORD, SUBTITLE, TITLEADDON, MAINTITLE, MAINSUBTITLE, MAINTITLEADDON, LANGUAGE, ORIGLANGUAGE, VOLUME, PART, EDITION, VOLUMES, SERIES, NUMBER, NOTE, PUBLISHER, LOCATION, ISBN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
@@ -299,7 +299,7 @@ enum class BibtexDefaultEntryType(
     SOFTWARE(
         "software",
         "Computer software. The standard styles will treat this entry type as an alias for\n" +
-                "@misc.",
+            "@misc.",
         arrayOf(TITLE, DATE),
         arrayOf(AUTHOR, EDITOR, YEAR, SUBTITLE, TITLEADDON, LANGUAGE, HOWPUBLISHED, TYPE, VERSION, NOTE, ORGANISATION, LOCATION, MONTH, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX
@@ -335,7 +335,7 @@ enum class BibtexDefaultEntryType(
     MASTERSTHESIS(
         "mastersthesis",
         "Similar to @thesis except that the type field is optional and defaults to the\n" +
-                "localised term ‘Master’s thesis’. You may still use the type field to override that.",
+            "localised term ‘Master’s thesis’. You may still use the type field to override that.",
         arrayOf(AUTHOR, TITLE, INSTITUTION, DATE),
         arrayOf(YEAR, SUBTITLE, TITLEADDON, LANGUAGE, NOTE, LOCATION, MONTH, ISBN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE, TYPE),
         BIBLATEX
@@ -343,7 +343,7 @@ enum class BibtexDefaultEntryType(
     BIBLATEX_PHDTHESIS(
         "phdthesis",
         "Similar to @thesis except that the type field is optional and defaults to the\n" +
-                "localised term ‘PhD thesis’. You may still use the type field to override that.",
+            "localised term ‘PhD thesis’. You may still use the type field to override that.",
         arrayOf(AUTHOR, TITLE, INSTITUTION, DATE),
         arrayOf(YEAR, SUBTITLE, TITLEADDON, LANGUAGE, NOTE, LOCATION, MONTH, ISBN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE, TYPE),
         BIBLATEX
@@ -351,7 +351,7 @@ enum class BibtexDefaultEntryType(
     BIBLATEX_TECHREPORT(
         "techreport",
         "Similar to @report except that the type field is optional and defaults to the\n" +
-                "localised term ‘technical report’. You may still use the type field to override that.",
+            "localised term ‘technical report’. You may still use the type field to override that.",
         arrayOf(AUTHOR, TITLE, TYPE, INSTITUTION, DATE),
         arrayOf(YEAR, SUBTITLE, TITLEADDON, LANGUAGE, NUMBER, VERSION, NOTE, LOCATION, MONTH, ISRN, CHAPTER, PAGES, PAGETOTAL, ADDENDUM, PUBSTATE, DOI, EPRINT, EPRINTCLASS, EPRINTTYPE, URL, URLDATE),
         BIBLATEX

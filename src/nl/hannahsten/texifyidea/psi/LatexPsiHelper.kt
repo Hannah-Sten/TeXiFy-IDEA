@@ -96,9 +96,11 @@ class LatexPsiHelper(private val project: Project) {
             if (command is LatexCommands) {
                 // For commands insert an optional parameter right after the command name (in case the command has a
                 // star, insert the parameter after the start)
-                command.addAfter(createLatexOptionalParam(),
+                command.addAfter(
+                    createLatexOptionalParam(),
                     command.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == STAR }
-                        ?: command.commandToken)
+                        ?: command.commandToken
+                )
             }
             else {
                 // Otherwise assume that the command belongs to an environment and insert the optional parameter after
@@ -136,7 +138,8 @@ class LatexPsiHelper(private val project: Project) {
                 existing.keyvalValue?.delete()
                 existing.addAfter(
                     pair.keyvalValue!!,
-                    existing.childrenOfType<LeafPsiElement>().first { it.elementType == EQUALS })
+                    existing.childrenOfType<LeafPsiElement>().first { it.elementType == EQUALS }
+                )
                 existing
             }
             else {

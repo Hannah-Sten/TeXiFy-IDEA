@@ -60,7 +60,8 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 if (right.node?.psi?.firstChildOfType(LatexCommands::class)?.name?.lowercase(Locale.getDefault()) in setOf(
                         "\\state",
                         "\\statex"
-                    ) && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true) {
+                    ) && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true
+                ) {
                     return@customRule Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
                 }
 
@@ -100,7 +101,8 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 val rightText = right.node?.text
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
                     if (rightText?.matches(Regex("\\\\${it.value.trimStart('\\')}\\{.*}")) == true &&
-                        !CommandMagic.definitions.contains(right.node?.psi?.parentOfType(LatexCommands::class)?.name)) {
+                        !CommandMagic.definitions.contains(right.node?.psi?.parentOfType(LatexCommands::class)?.name)
+                    ) {
                         return@customRule createSpacing(
                             minSpaces = 0,
                             maxSpaces = Int.MAX_VALUE,

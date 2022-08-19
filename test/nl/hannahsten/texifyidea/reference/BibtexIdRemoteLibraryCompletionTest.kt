@@ -24,7 +24,8 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
      * Complete item from remote bib, and add it to the bib file.
      */
     fun testCiteFromLibraryCompletionWithBib() {
-        completionWithRemoteBib("""
+        completionWithRemoteBib(
+            """
             @book{gardner_knots_2014,
                 address = {New York : Washington, DC},
                 edition = {New edition},
@@ -39,14 +40,16 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
                 year = {2014},
                 keywords = {MATHEMATICS / General, Mathematical recreations},
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     /**
      * Complete item from remote bib, and add it to the currently empty bib file.
      */
     fun testCiteFromLibraryCompletion() {
-        completionWithRemoteBib("""
+        completionWithRemoteBib(
+            """
             @book{newey_how_2017,
                 address = {London},
                 title = {How to build a car},
@@ -56,7 +59,8 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
                 author = {Newey, Adrian},
                 year = {2017},
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     /**
@@ -64,7 +68,8 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
      * from the local bib (we can't check this) and it should not be added to the local bib again (this is what we check).
      */
     fun testCiteFromLibraryAlreadyLocal() {
-        completionWithRemoteBib("""
+        completionWithRemoteBib(
+            """
             @book{newey_how_2017,
                 address = {London},
                 title = {How to build a car},
@@ -74,7 +79,8 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
                 author = {Newey, Adrian},
                 year = {2017},
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     /**

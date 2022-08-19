@@ -62,14 +62,16 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
         }
 
         return commandsInFile.filter { allKnownCommands.getOrDefault(it.name, emptyList()).intersect(includedPackages).isEmpty() }
-            .map { command -> manager.createProblemDescriptor(
-                command,
-                "Command ${command.name} is not defined",
-                allKnownCommands.getOrDefault(command.name, emptyList()).map { ImportPackageFix(it) }.toTypedArray(),
-                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                isOntheFly,
-            false
-            ) }
+            .map { command ->
+                manager.createProblemDescriptor(
+                    command,
+                    "Command ${command.name} is not defined",
+                    allKnownCommands.getOrDefault(command.name, emptyList()).map { ImportPackageFix(it) }.toTypedArray(),
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                    isOntheFly,
+                    false
+                )
+            }
     }
 
     private class ImportPackageFix(val dependency: LatexPackage) : LocalQuickFix {

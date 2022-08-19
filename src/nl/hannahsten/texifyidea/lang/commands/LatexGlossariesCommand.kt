@@ -52,11 +52,13 @@ enum class LatexGlossariesCommand(
     GLSPLURALUPPER("Glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
 
     LOADGLSENTRIES(
-        "loadglsentries", RequiredFileArgument(
+        "loadglsentries",
+        RequiredFileArgument(
             "glossariesfile",
             isAbsolutePathSupported = true,
             commaSeparatesArguments = false
-        ), dependency = LatexPackage.GLOSSARIES
+        ),
+        dependency = LatexPackage.GLOSSARIES
     );
 
     companion object {

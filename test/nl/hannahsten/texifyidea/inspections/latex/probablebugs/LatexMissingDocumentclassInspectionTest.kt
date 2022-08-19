@@ -14,12 +14,12 @@ class LatexMissingDocumentclassInspectionTest : TexifyInspectionTestBase(LatexMi
     fun `test warning`() = testHighlighting("""<error descr="Document doesn't contain a \documentclass command.">\usepackage{amsmath}</error>""")
 
     fun `test quick fix`() = testQuickFix(
-            before = """
+        before = """
                 \usepackage{amsmath}
-            """.trimIndent(),
-            after = """
+        """.trimIndent(),
+        after = """
                 \documentclass{article}
                 \usepackage{amsmath}
-            """.trimIndent()
+        """.trimIndent()
     )
 }

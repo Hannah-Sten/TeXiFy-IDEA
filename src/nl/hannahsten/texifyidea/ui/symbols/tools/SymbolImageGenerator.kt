@@ -26,7 +26,8 @@ fun generateSymbolImages(symbolDirectory: String, skipExisting: Boolean = true) 
         println("Generating images for symbol " + symbol.command?.commandWithSlash)
 
         if (skipExisting && File("$symbolDirectory/${symbol.fileName}").exists() &&
-                File("$symbolDirectory/${symbol.fileName}").exists()) {
+            File("$symbolDirectory/${symbol.fileName}").exists()
+        ) {
             println("> Skipping")
             return@forEach
         }
@@ -52,22 +53,22 @@ private fun SymbolUiEntry.generateImages(symbolDirectory: String) {
  * Converts the tex file to a png image.
  */
 private fun convertToImage(
-        symbol: SymbolUiEntry,
-        theme: Theme,
-        symbolDirectory: String,
-        latexFileName: String = "texify-symbol.tex",
-        auxilDirectory: String = "auxil"
+    symbol: SymbolUiEntry,
+    theme: Theme,
+    symbolDirectory: String,
+    latexFileName: String = "texify-symbol.tex",
+    auxilDirectory: String = "auxil"
 ) {
     // Create pdf.
     ProcessBuilder(
-            "pdflatex", "-job-name=texify-symbol", "-aux-directory=\"$auxilDirectory\"", latexFileName
+        "pdflatex", "-job-name=texify-symbol", "-aux-directory=\"$auxilDirectory\"", latexFileName
     ).directory(File(symbolDirectory)).start().waitFor(6, TimeUnit.SECONDS)
 
     // Convert pdf to image.
     val imageName = if (theme == Theme.DARK) symbol.fileNameDark else symbol.fileName
     ProcessBuilder(
-            "magick", "convert", "-density", DENSITY.toString(), "-quality", QUALITY.toString(), "texify-symbol.pdf",
-            imageName
+        "magick", "convert", "-density", DENSITY.toString(), "-quality", QUALITY.toString(), "texify-symbol.pdf",
+        imageName
     ).directory(File(symbolDirectory)).start().waitFor(6, TimeUnit.SECONDS)
 
     // Delete leftover pdf.

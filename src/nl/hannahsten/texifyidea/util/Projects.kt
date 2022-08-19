@@ -91,7 +91,7 @@ fun Project.currentTextEditor(): TextEditor? {
  */
 fun Project.hasLatexModule(): Boolean {
     return ModuleManager.getInstance(this).modules
-            .any { it.moduleTypeName == LatexModuleType.ID }
+        .any { it.moduleTypeName == LatexModuleType.ID }
 }
 
 /**
@@ -99,8 +99,8 @@ fun Project.hasLatexModule(): Boolean {
  */
 fun Project.isLatexProject(): Boolean {
     return hasLatexModule() ||
-            getLatexRunConfigurations().isNotEmpty() ||
-            (ApplicationNamesInfo.getInstance().scriptName != "idea" && allFiles(LatexFileType).isNotEmpty())
+        getLatexRunConfigurations().isNotEmpty() ||
+        (ApplicationNamesInfo.getInstance().scriptName != "idea" && allFiles(LatexFileType).isNotEmpty())
 }
 
 /**

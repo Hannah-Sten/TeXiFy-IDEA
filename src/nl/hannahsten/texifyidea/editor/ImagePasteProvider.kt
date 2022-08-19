@@ -55,7 +55,7 @@ open class ImagePasteProvider : PasteProvider {
 
         val transferable = dataContext.getData(PasteAction.TRANSFERABLE_PROVIDER)?.produce() ?: return false
         return SaveImageFromClipboardDialog.supportsImage(transferable) ||
-                transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
+            transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)

@@ -86,7 +86,7 @@ fun String.getFileExtension(): String = if (this.contains(".")) FileUtil.FILE_BO
  */
 fun Module.createExcludedDir(path: String) {
     ModuleRootManager.getInstance(this).modifiableModel.addContentEntry(path)
-            .addExcludeFolder(path)
+        .addExcludeFolder(path)
 }
 
 /**
@@ -131,7 +131,7 @@ fun createFile(fileName: String, contents: String): File {
  * Get a(n external) file by its absolute path.
  */
 fun getExternalFile(path: String): VirtualFile? =
-        LocalFileSystem.getInstance().findFileByPath(path)
+    LocalFileSystem.getInstance().findFileByPath(path)
 
 /**
  * Converts the absolute path to a relative path.
@@ -166,12 +166,12 @@ fun Transferable.extractFile() = extractFiles()?.firstOrNull()
  * @return The relative path, relative to all source roots. `null` when no relative path could be found.
  */
 fun ProjectRootManager.relativizePath(absoluteFilePath: String): String? = contentSourceRoots.asSequence()
-        .map { it to absoluteFilePath.toRelativePath(it.path) }
-        .firstOrNull { (contentRoot, relativePath) ->
-            // Make sure to convert to the right file when multiple files exist in the content
-            // roots with the same name. Also convert to [File]s to normalize path names.
-            val original = File(absoluteFilePath)
-            val candidate = File("${contentRoot.path}/$relativePath")
-            candidate.absolutePath == original.absolutePath
-        }
-        ?.second
+    .map { it to absoluteFilePath.toRelativePath(it.path) }
+    .firstOrNull { (contentRoot, relativePath) ->
+        // Make sure to convert to the right file when multiple files exist in the content
+        // roots with the same name. Also convert to [File]s to normalize path names.
+        val original = File(absoluteFilePath)
+        val candidate = File("${contentRoot.path}/$relativePath")
+        candidate.absolutePath == original.absolutePath
+    }
+    ?.second

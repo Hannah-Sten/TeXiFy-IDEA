@@ -86,8 +86,8 @@ open class TablePasteProvider : PasteProvider {
         }
 
         return TableCreationDialogWrapper(
-                columnTypes,
-                TableCreationTableModel(content, header)
+            columnTypes,
+            TableCreationTableModel(content, header)
         )
     }
 
@@ -113,8 +113,8 @@ open class TablePasteProvider : PasteProvider {
         }
 
         return prefix
-                .append(text())
-                .append(suffix.toString())
-                .toString()
+            .append(text())
+            .append(suffix.toString())
+            .toString()
     }
 }

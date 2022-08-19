@@ -176,10 +176,10 @@ fun String.formatAsFilePath(): String {
  */
 fun String.formatAsLabel(): String {
     return this.let { Normalizer.normalize(it, Normalizer.Form.NFKD) }
-            .replace(" ", "-")
-            .removeAll("%", "~", "#", "\\", ",")
-            .replace("[^\\x00-\\x7F]".toRegex(), "")
-            .lowercase(Locale.getDefault())
+        .replace(" ", "-")
+        .removeAll("%", "~", "#", "\\", ",")
+        .replace("[^\\x00-\\x7F]".toRegex(), "")
+        .lowercase(Locale.getDefault())
 }
 
 /**

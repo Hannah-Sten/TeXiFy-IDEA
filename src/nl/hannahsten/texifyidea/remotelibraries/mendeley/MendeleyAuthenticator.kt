@@ -100,9 +100,11 @@ object MendeleyAuthenticator {
     private val authenticationClient by lazy {
         HttpClient(CIO) {
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                    }
+                )
             }
         }
     }
@@ -118,7 +120,8 @@ object MendeleyAuthenticator {
                     append("grant_type", "authorization_code")
                     append("code", it)
                     append("redirect_uri", redirectUrl)
-                }) {
+                }
+            ) {
                 basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())
             }.body()
 
@@ -137,7 +140,8 @@ object MendeleyAuthenticator {
                 append("grant_type", "refresh_token")
                 append("refresh_token", refreshToken)
                 append("redirect_uri", "http://localhost:$port/")
-            }) {
+            }
+        ) {
             basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())
         }.body()
 

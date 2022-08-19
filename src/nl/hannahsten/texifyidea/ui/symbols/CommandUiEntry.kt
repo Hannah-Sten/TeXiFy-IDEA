@@ -37,9 +37,11 @@ class CommandUiEntry(
 
     override val imageLatex = customImageLatex ?: command.commandWithSlash
 
-    override val description = customDescription ?: (command.identifier
-        .lowercase(Locale.getDefault())
-        .replace("_", " ") + if (command.isMathMode) " (math)" else "")
+    override val description = customDescription ?: (
+        command.identifier
+            .lowercase(Locale.getDefault())
+            .replace("_", " ") + if (command.isMathMode) " (math)" else ""
+        )
 
     override val isMathSymbol = command.isMathMode
 }

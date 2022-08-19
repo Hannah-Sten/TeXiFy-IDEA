@@ -415,8 +415,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
         val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
-                ExternalPdfViewers.getExternalPdfViewers() +
-                listOf(InternalPdfViewer.NONE)
+            ExternalPdfViewers.getExternalPdfViewers() +
+            listOf(InternalPdfViewer.NONE)
 
         val viewerField = ComboBox(viewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")

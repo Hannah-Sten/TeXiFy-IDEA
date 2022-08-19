@@ -37,7 +37,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
         // Thus, whenever someone fiddles with this, we turn off the inspection to prevent false positives.
         file.commandsInFileSet().any { it.name == "\\mathtoolsset" && it.requiredParameter(0)?.contains("centercolon") == true }
     }
-    ) {
+) {
 
     private data class Pattern(val regex: String, val command: String)
 

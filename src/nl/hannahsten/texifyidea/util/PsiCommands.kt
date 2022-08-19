@@ -44,8 +44,10 @@ fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Colo
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
-        (this.name in CommandMagic.commandDefinitionsAndRedefinitions || this.name in CommandMagic.commandRedefinitions ||
-                this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions)
+    (
+        this.name in CommandMagic.commandDefinitionsAndRedefinitions || this.name in CommandMagic.commandRedefinitions ||
+            this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions
+        )
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
@@ -131,8 +133,8 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
 fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
     // Find all pre-defined commands that define `this` command.
     val optionalArgIndices = LatexRegularCommand[
-            name?.substring(1)
-                ?: return null
+        name?.substring(1)
+            ?: return null
     ]
         // Find the index of their optional argument named [argument].
         ?.map {

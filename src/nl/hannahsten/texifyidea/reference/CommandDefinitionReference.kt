@@ -29,7 +29,8 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
         // Don't resolve to a definition when you are in a \newcommand,
         // and if this element is the element that is being defined
         if (element.parentsOfType<LatexCommands>().any { it.name in definitionsAndRedefinitions } &&
-            element.parent.firstParentOfType(LatexCommands::class)?.parameterList?.firstOrNull() == element.firstParentOfType(LatexParameter::class)) {
+            element.parent.firstParentOfType(LatexCommands::class)?.parameterList?.firstOrNull() == element.firstParentOfType(LatexParameter::class)
+        ) {
             return emptyArray()
         }
         else {

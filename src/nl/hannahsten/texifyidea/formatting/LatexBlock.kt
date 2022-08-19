@@ -141,17 +141,21 @@ class LatexBlock(
 
     override fun getIndent(): Indent? {
         val shouldIndentDocumentEnvironment = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
-        val shouldIndentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT && ((myNode.psi as LatexEnvironmentContent)
-            .firstParentOfType(LatexEnvironment::class)
-            ?.firstChildOfType(LatexBeginCommand::class)
-            ?.firstChildOfType(LatexParameterText::class)?.text != "document" || shouldIndentDocumentEnvironment)
+        val shouldIndentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT && (
+            (myNode.psi as LatexEnvironmentContent)
+                .firstParentOfType(LatexEnvironment::class)
+                ?.firstChildOfType(LatexBeginCommand::class)
+                ?.firstChildOfType(LatexParameterText::class)?.text != "document" || shouldIndentDocumentEnvironment
+            )
 
         if (shouldIndentEnvironment || myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
             // Fix for leading comments inside an environment, because somehow they are not placed inside environments.
             // Note that this does not help to insert the indentation, but at least the indent is not removed
             // when formatting.
-            (myNode.elementType === LatexTypes.COMMENT_TOKEN &&
-                myNode.treeParent?.elementType === LatexTypes.ENVIRONMENT)
+            (
+                myNode.elementType === LatexTypes.COMMENT_TOKEN &&
+                    myNode.treeParent?.elementType === LatexTypes.ENVIRONMENT
+                )
         ) {
             return Indent.getNormalIndent(true)
         }
@@ -169,10 +173,14 @@ class LatexBlock(
             myNode.elementType === LatexTypes.OPTIONAL_PARAM_CONTENT ||
             myNode.elementType === LatexTypes.STRICT_KEYVAL_PAIR ||
             myNode.elementType === LatexTypes.KEYVAL_PAIR ||
-            (myNode.elementType !== LatexTypes.CLOSE_BRACE &&
-                    myNode.treeParent?.elementType === LatexTypes.GROUP) ||
-            (myNode.elementType !== LatexTypes.CLOSE_BRACE &&
-                    myNode.treeParent?.elementType === LatexTypes.PARAMETER_GROUP)
+            (
+                myNode.elementType !== LatexTypes.CLOSE_BRACE &&
+                    myNode.treeParent?.elementType === LatexTypes.GROUP
+                ) ||
+            (
+                myNode.elementType !== LatexTypes.CLOSE_BRACE &&
+                    myNode.treeParent?.elementType === LatexTypes.PARAMETER_GROUP
+                )
         ) {
             return Indent.getNormalIndent(false)
         }

@@ -18,17 +18,22 @@ class LatexTypedHandlerTest : BasePlatformTestCase() {
     }
 
     fun testVerbatim() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{verbatim}
                 <caret>
             \end{verbatim}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.type("$")
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \begin{verbatim}
                 $<caret>
             \end{verbatim}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun testDisplayMath() {
@@ -40,10 +45,12 @@ class LatexTypedHandlerTest : BasePlatformTestCase() {
     fun testDisplayMath2() {
         myFixture.configureByText(LatexFileType, "\\[<caret>\\]")
         myFixture.type("\n")
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \[
                 <caret>
             \]
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

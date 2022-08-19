@@ -9,12 +9,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.STMARYRD
  * @author Hannah Schellekens
  */
 enum class LatexArrowCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = true,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = true,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     NOT_RIGHT_ARROW("nrightarrow", dependency = AMSSYMB, display = "↛", collapse = true),

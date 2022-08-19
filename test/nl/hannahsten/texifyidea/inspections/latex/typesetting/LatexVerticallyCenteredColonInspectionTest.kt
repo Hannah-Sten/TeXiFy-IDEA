@@ -6,10 +6,12 @@ class LatexVerticallyCenteredColonInspectionTest : TexifyInspectionTestBase(Late
 
     fun `test warning`() = testHighlighting("""\[ a <warning descr="Colon is vertically uncentered">:=</warning> b \]""")
 
-    fun `test no warning with setting enabled`() = testHighlighting("""
+    fun `test no warning with setting enabled`() = testHighlighting(
+        """
             \mathtoolsset{centercolon=true}
             \[ a := b \]
-        """.trimIndent())
+        """.trimIndent()
+    )
 
     fun `test warning lookahead`() = testHighlighting("""\[ a <warning descr="Colon is vertically uncentered">:\approx</warning>\infty \]""")
 
@@ -17,12 +19,14 @@ class LatexVerticallyCenteredColonInspectionTest : TexifyInspectionTestBase(Late
 
     fun `test warning spaces`() = testHighlighting("""\[ a <warning descr="Colon is vertically uncentered">: :  =</warning> b \]""")
 
-    fun `test no warning newline`() = testHighlighting("""
+    fun `test no warning newline`() = testHighlighting(
+        """
             \[
                 a : 
                  = b
             \]
-        """.trimIndent())
+        """.trimIndent()
+    )
 
     fun `test no warning outside math mode`() = testHighlighting("""a := b \[ a : b \]""")
 

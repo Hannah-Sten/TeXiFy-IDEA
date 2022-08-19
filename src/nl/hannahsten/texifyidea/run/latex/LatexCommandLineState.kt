@@ -244,7 +244,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }
         else if (runConfig.pdfViewer is ExternalPdfViewer ||
-                 runConfig.pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)) {
+            runConfig.pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)
+        ) {
             ViewerForwardSearch(runConfig.pdfViewer ?: InternalPdfViewer.NONE).execute(handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {

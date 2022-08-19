@@ -100,7 +100,7 @@ internal class LatexQuoteInspectionTest : TexifyInspectionTestBase(LatexQuoteIns
             \usepackage{csquotes}
             \MakeOuterQuote{"}
             Specifying of "algorithms"
-            """.trimIndent()
+        """.trimIndent()
         myFixture.configureByText(
             LatexFileType, original
         )

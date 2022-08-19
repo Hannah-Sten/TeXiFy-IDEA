@@ -15,7 +15,9 @@ class MagicCommentPsiTest : BasePlatformTestCase() {
     }
 
     fun `test get magic comment for file`() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             %!compiler = xelatex
             \documentclass{article}
 
@@ -23,7 +25,8 @@ class MagicCommentPsiTest : BasePlatformTestCase() {
             \begin{document}
                 ...
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         val magic = myFixture.file.magicComment()
         assertEquals(arrayListOf("compiler = xelatex"), magic.toCommentString())
     }
