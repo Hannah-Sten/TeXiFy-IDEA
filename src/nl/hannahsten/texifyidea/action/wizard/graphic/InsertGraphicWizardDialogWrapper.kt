@@ -12,19 +12,17 @@ import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.addKeyReleasedListener
+import nl.hannahsten.texifyidea.util.addLabeledComponent
 import nl.hannahsten.texifyidea.util.addTextChangeListener
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.setInputFilter
-import nl.hannahsten.texifyidea.util.*
 import java.awt.Dimension
 import java.util.*
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JTextField
-import kotlin.collections.LinkedHashMap
 
 /**
  * @author Hannah Schellekens
@@ -36,11 +34,13 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
      */
     private val txtGraphicFile = TextFieldWithBrowseButton().apply {
         text = initialFilePath
-        addBrowseFolderListener(TextBrowseFolderListener(
+        addBrowseFolderListener(
+            TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                        .withFileFilter { vf -> vf.extension?.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions }
-                        .withTitle("Select graphics file...")
-        ))
+                    .withFileFilter { vf -> vf.extension?.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions }
+                    .withTitle("Select graphics file...")
+            )
+        )
     }
 
     /**
@@ -135,23 +135,23 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
      * The check boxes for the figure locations.
      */
     private val checkPosition = FigureLocation.values().asSequence()
-            .map { location ->
-                location.symbol to JBCheckBox(location.description).apply {
-                    addActionListener { event ->
-                        val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
-                        // Add symbol if selected.
-                        if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
-                            txtPosition.text = txtPosition.text + location.symbol
-                        }
-                        // Remove if deselected.
-                        else {
-                            txtPosition.text = txtPosition.text.replace(location.symbol, "")
-                        }
+        .map { location ->
+            location.symbol to JBCheckBox(location.description).apply {
+                addActionListener { event ->
+                    val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
+                    // Add symbol if selected.
+                    if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
+                        txtPosition.text = txtPosition.text + location.symbol
+                    }
+                    // Remove if deselected.
+                    else {
+                        txtPosition.text = txtPosition.text.replace(location.symbol, "")
                     }
                 }
             }
-            // Use linked hash map to preserve order.
-            .toMap(LinkedHashMap())
+        }
+        // Use linked hash map to preserve order.
+        .toMap(LinkedHashMap())
 
     init {
         super.init()
@@ -162,18 +162,18 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
      * Get the data that has been entered into the UI.
      */
     fun extractData() = InsertGraphicData(
-            filePath = txtGraphicFile.text.trim(),
-            relativePath = checkRelativePath.isSelected,
-            options = txtCustomOptions.text.trim(),
-            center = checkCenterHorizontally.isSelected,
-            placeInFigure = checkPlaceInFigure.isSelected,
-            captionLocation = whenFigure { cboxCaptionLocation.selectedItem as CaptionLocation },
-            caption = whenFigure { txtLongCaption.text.trim() },
-            shortCaption = whenFigure { txtShortCaption.text.trim() },
-            label = whenFigure { txtLabel.text.trim() },
-            positions = whenFigure {
-                txtPosition.text.trim().mapNotNull { FigureLocation.bySymbol(it.toString()) }
-            }
+        filePath = txtGraphicFile.text.trim(),
+        relativePath = checkRelativePath.isSelected,
+        options = txtCustomOptions.text.trim(),
+        center = checkCenterHorizontally.isSelected,
+        placeInFigure = checkPlaceInFigure.isSelected,
+        captionLocation = whenFigure { cboxCaptionLocation.selectedItem as CaptionLocation },
+        caption = whenFigure { txtLongCaption.text.trim() },
+        shortCaption = whenFigure { txtShortCaption.text.trim() },
+        label = whenFigure { txtLabel.text.trim() },
+        positions = whenFigure {
+            txtPosition.text.trim().mapNotNull { FigureLocation.bySymbol(it.toString()) }
+        }
     )
 
     /**
@@ -264,7 +264,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         // Update
         if (txtCustomOptions.text.contains("$fieldName=")) {
             txtCustomOptions.text = txtCustomOptions.text
-                    .replace(Regex("$fieldName=[^,]*"), Regex.escapeReplacement("$fieldName=$text"))
+                .replace(Regex("$fieldName=[^,]*"), Regex.escapeReplacement("$fieldName=$text"))
         }
         // Nothing yet, set width property.
         else if (txtCustomOptions.text.isBlank()) {

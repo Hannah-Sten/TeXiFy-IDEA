@@ -79,7 +79,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
      */
     protected open fun PsiElement.isSuppressed(): Boolean {
         return magicComment()?.containsPair("suppress", inspectionId) == true ||
-                allParentMagicComments().containsPair("suppress", inspectionId)
+            allParentMagicComments().containsPair("suppress", inspectionId)
     }
 
     override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {

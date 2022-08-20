@@ -35,19 +35,19 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         file.commandsInFile("\\text").asSequence()
-                .filter { it.inMathContext() }
-                .filter { it.requiredParameter(0)?.trim() in AFFECTED_COMMANDS }
-                .forEach { affectedTextCommand ->
-                    descriptors.add(
-                            manager.createProblemDescriptor(
-                                    affectedTextCommand,
-                                    "Use math function instead of \\text",
-                                    MathFunctionFix(SmartPointerManager.createPointer(affectedTextCommand)),
-                                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                    isOntheFly
-                            )
+            .filter { it.inMathContext() }
+            .filter { it.requiredParameter(0)?.trim() in AFFECTED_COMMANDS }
+            .forEach { affectedTextCommand ->
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        affectedTextCommand,
+                        "Use math function instead of \\text",
+                        MathFunctionFix(SmartPointerManager.createPointer(affectedTextCommand)),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly
                     )
-                }
+                )
+            }
 
         return descriptors
     }
@@ -70,7 +70,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
     companion object {
 
         private val AFFECTED_COMMANDS = CommandMagic.slashlessMathOperators.asSequence()
-                .map { it.command }
-                .toSet()
+            .map { it.command }
+            .toSet()
     }
 }

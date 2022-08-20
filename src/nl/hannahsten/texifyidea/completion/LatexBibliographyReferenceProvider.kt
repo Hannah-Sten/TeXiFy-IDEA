@@ -27,12 +27,12 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
             .filter { it.id !in localEntries.filterIsInstance<BibtexEntry>().map { bib -> bib.id } }
 
         val lookupItems = localEntries.mapNotNull { bibtexEntry ->
-                when (bibtexEntry) {
-                    is BibtexEntry -> createLookupElementFromBibtexEntry(bibtexEntry)
-                    is LatexCommands -> createLookupElementFromLatexCommand(bibtexEntry)
-                    else -> null
-                }
+            when (bibtexEntry) {
+                is BibtexEntry -> createLookupElementFromBibtexEntry(bibtexEntry)
+                is LatexCommands -> createLookupElementFromLatexCommand(bibtexEntry)
+                else -> null
             }
+        }
 
         val lookupItemsFromRemote = remoteEntries.map { createLookupElementFromBibtexEntry(it, true) }
 

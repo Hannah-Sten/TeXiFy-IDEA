@@ -89,10 +89,11 @@ class LatexSectionIndentTest : BasePlatformTestCase() {
 
     fun testEnterHandlerSectionIndent() {
         val file = myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
             \section{test}
                 Isn't<caret>
-        """.trimIndent()
+            """.trimIndent()
         )
         CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_SECTIONS = true
         myFixture.type('\n')
@@ -101,18 +102,19 @@ class LatexSectionIndentTest : BasePlatformTestCase() {
             \section{test}
                 Isn't
                 <caret>
-        """.trimIndent()
+            """.trimIndent()
         )
     }
 
     fun testEnterHandlerSectionIndentInMiddle() {
         val file = myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
             \section{test}
                 Text.
                 Isn't<caret>
             \section{two}
-        """.trimIndent()
+            """.trimIndent()
         )
         CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_SECTIONS = true
         myFixture.type('\n')
@@ -123,18 +125,19 @@ class LatexSectionIndentTest : BasePlatformTestCase() {
                 Isn't
                 <caret>
             \section{two}
-        """.trimIndent()
+            """.trimIndent()
         )
     }
 
     fun testEnterHandlerSubsection() {
         val file = myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
             \section{test}
                 \subsection{sub}
                     Isn't $\xi$<caret>
             \section{two}
-        """.trimIndent()
+            """.trimIndent()
         )
         CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_SECTIONS = true
         myFixture.type('\n')
@@ -145,7 +148,7 @@ class LatexSectionIndentTest : BasePlatformTestCase() {
                     Isn't $\xi$
                     <caret>
             \section{two}
-        """.trimIndent()
+            """.trimIndent()
         )
     }
 }

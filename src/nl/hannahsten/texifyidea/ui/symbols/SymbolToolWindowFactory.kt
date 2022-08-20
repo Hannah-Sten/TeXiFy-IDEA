@@ -93,7 +93,8 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
                     JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
                 ).apply {
                     border = EmptyBorder(0, 0, 0, 0)
-                }, BorderLayout.CENTER
+                },
+                BorderLayout.CENTER
             )
         }
 
@@ -144,10 +145,10 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             btnSymbols.forEach { (category, symbolMap) ->
                 symbolMap.forEach { (symbol, button) ->
                     button.isVisible =
-                            // Selected category must match.
+                        // Selected category must match.
                         (selectedCategory == category || selectedCategory == SymbolCategory.ALL) &&
-                                // When a query is typed, must match as well.
-                                (query.isBlank() || symbol.queryString(category).contains(query))
+                        // When a query is typed, must match as well.
+                        (query.isBlank() || symbol.queryString(category).contains(query))
                 }
             }
         }

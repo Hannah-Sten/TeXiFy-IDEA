@@ -9,12 +9,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.WASYSYM
  * @author Hannah Schellekens
  */
 enum class LatexTextSymbolCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = false,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = false,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     CUT_LEFT_ON_LINE("Cutleft", dependency = MARVOSYM),

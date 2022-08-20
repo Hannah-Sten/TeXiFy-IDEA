@@ -142,7 +142,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      * make the mapping from command etc. to ProblemDescriptor
      */
     private fun createProblemDescriptor(desc: LabelDescriptor, isOntheFly: Boolean, manager: InspectionManager):
-            ProblemDescriptor {
+        ProblemDescriptor {
         return manager.createProblemDescriptor(
             desc.element,
             desc.textRange,

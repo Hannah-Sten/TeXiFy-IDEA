@@ -102,7 +102,7 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
     val environment = element.firstParentOfType(LatexEnvironment::class)
     // If we want to rename a label
     if (CommandMagic.reference.contains(command?.name) || element.project.getLabelDefinitionCommands()
-            .contains(command?.name)
+        .contains(command?.name)
     ) {
         // Get a new psi element for the complete label command (\label included),
         // because if we replace the complete command instead of just the normal text

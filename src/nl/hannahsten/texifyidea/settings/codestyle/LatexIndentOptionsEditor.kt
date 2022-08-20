@@ -32,8 +32,8 @@ class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider)
         val isModified = super.isModified(settings, options)
         val latexSettings = settings?.getCustomSettings(LatexCodeStyleSettings::class.java) ?: return false
         return isModified ||
-                IndentOptionsEditor.isFieldModified(sectionIndents, latexSettings.INDENT_SECTIONS) ||
-                IndentOptionsEditor.isFieldModified(documentIndent, latexSettings.INDENT_DOCUMENT_ENVIRONMENT)
+            IndentOptionsEditor.isFieldModified(sectionIndents, latexSettings.INDENT_SECTIONS) ||
+            IndentOptionsEditor.isFieldModified(documentIndent, latexSettings.INDENT_DOCUMENT_ENVIRONMENT)
     }
 
     override fun apply(settings: CodeStyleSettings?, options: CommonCodeStyleSettings.IndentOptions?) {

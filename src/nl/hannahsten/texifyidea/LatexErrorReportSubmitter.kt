@@ -52,8 +52,8 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
                 .showInCenterOf(parentComponent)
 
             val message = "Please update your current version ($currentVersion) of TeXiFy to the latest version (${latestVersion.version}) before submitting,\n" +
-                    "to check if the error is already fixed. Go to Settings > Plugins to update.\n" +
-                    if (currentIdeaVersion < requiredIdeaVersion) "You first need to update your current IDE version ($currentIdeaVersion) to $requiredIdeaVersion or newer.\n" else ""
+                "to check if the error is already fixed. Go to Settings > Plugins to update.\n" +
+                if (currentIdeaVersion < requiredIdeaVersion) "You first need to update your current IDE version ($currentIdeaVersion) to $requiredIdeaVersion or newer.\n" else ""
 
             val result = MessageDialogBuilder.okCancel("Update TeXiFy", message)
                 .yesText("Cancel Submit") // Sort of the wrong way around, but it suggests to cancel this way

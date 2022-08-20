@@ -26,7 +26,8 @@ object LatexEnvironmentProvider {
 
         val usesTexlive = LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable
         val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(
-            LatexPackage.DEFAULT)
+            LatexPackage.DEFAULT
+        )
 
         result.addAllElements(
             FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.id, project)
@@ -34,8 +35,8 @@ object LatexEnvironmentProvider {
                     Environment.lookupInIndex(envText, project)
                         .filter { if (usesTexlive) it.dependency in packagesInProject else true }
                         .map { env ->
-                        createEnvironmentLookupElement(env)
-                    }
+                            createEnvironmentLookupElement(env)
+                        }
                 }
         )
     }

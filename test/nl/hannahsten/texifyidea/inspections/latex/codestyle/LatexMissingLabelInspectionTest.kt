@@ -63,7 +63,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                     \caption{Some text \label{fig:figure-caption-label}}
                 \end{figure}
             \end{document}
-            """.trimIndent()
+        """.trimIndent()
     )
 
     fun `test missing section label no warnings (custom label command)`() {
@@ -139,7 +139,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 \begin{lstlisting}[label={label with spaces}]
                 \end{lstlisting}
             \end{document}
-            """.trimIndent()
+        """.trimIndent()
     )
 
     fun `test listings label no warnings`() = testHighlighting(
@@ -152,7 +152,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 \begin{lstlisting}[label={label with spaces}]
                 \end{lstlisting}
             \end{document}
-            """.trimIndent()
+        """.trimIndent()
     )
 
     fun `test exam parts`() = testHighlighting(
@@ -166,7 +166,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                     \end{parts}
                 \end{questions}
             \end{document}
-            """.trimIndent()
+        """.trimIndent()
     )
 
     fun `test quick fix in listings with no other parameters`() = testQuickFix(
@@ -224,13 +224,13 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         before = """
                 \section{one}
                 \section{two}
-            """.trimIndent(),
+        """.trimIndent(),
         after = """
                 \section{one}\label{sec:one}
                 
                 
                 \section{two}\label{sec:two}
-            """.trimIndent(),
+        """.trimIndent(),
         quickFixName = "Add label for this command",
         numberOfFixes = 4
     )
@@ -245,7 +245,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 
                 \lstinputlisting[label={lst:inputlisting with spaces}]{some/file}
             \end{document}
-            """.trimIndent()
+        """.trimIndent()
     )
 
     fun `test lstinputlistings label no warnings`() = testHighlighting(
@@ -256,7 +256,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
                 
                 \lstinputlisting[label={lst:inputlisting with spaces}]{some/file}
             \end{document}
-            """.trimIndent()
+        """.trimIndent()
     )
 
     fun `test quick fix in lstinputlistings with other parameters`() = testQuickFix(

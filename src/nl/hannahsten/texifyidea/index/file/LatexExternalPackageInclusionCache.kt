@@ -29,11 +29,14 @@ object LatexExternalPackageInclusionCache {
 
         // Get direct children from the index
         FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.id, project).forEach { indexKey ->
-            FileBasedIndex.getInstance().processValues(LatexExternalPackageInclusionIndex.id, indexKey, null, { file, _ ->
-                val key = LatexPackage(file.name.removeFileExtension())
-                directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
-                true
-            }, GlobalSearchScope.everythingScope(project))
+            FileBasedIndex.getInstance().processValues(
+                LatexExternalPackageInclusionIndex.id, indexKey, null, { file, _ ->
+                    val key = LatexPackage(file.name.removeFileExtension())
+                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
+                    true
+                },
+                GlobalSearchScope.everythingScope(project)
+            )
         }
 
         // Do some DFS for indirect inclusions

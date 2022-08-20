@@ -16,12 +16,12 @@ import org.jetbrains.concurrency.runAsync
  * Execute a forward search with the selected viewer after the compilation is done.
  */
 class OpenViewerListener(
-        private val viewer: PdfViewer,
-        val runConfig: LatexRunConfiguration,
-        private val sourceFilePath: String,
-        val line: Int,
-        val project: Project,
-        val focusAllowed: Boolean = true
+    private val viewer: PdfViewer,
+    val runConfig: LatexRunConfiguration,
+    private val sourceFilePath: String,
+    val line: Int,
+    val project: Project,
+    val focusAllowed: Boolean = true
 ) :
     ProcessListener {
 

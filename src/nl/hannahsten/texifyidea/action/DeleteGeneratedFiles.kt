@@ -41,7 +41,7 @@ class DeleteGeneratedFiles : AnAction() {
 
         val result = showOkCancelDialog(
             "Delete Auxiliary and Output Files",
-        "Do you really want to delete all files in LaTeX output directories, " +
+            "Do you really want to delete all files in LaTeX output directories, " +
                 "and all auxiliary and generated files? \n" +
                 "All files in the following output directories will be deleted: \n" +
                 customOutput.mapNotNull { it?.path }.joinToString { "  $it\n" } +

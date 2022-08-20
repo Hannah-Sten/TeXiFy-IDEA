@@ -42,10 +42,13 @@ class LatexPathCompletionWithCommandExpansion : BasePlatformTestCase() {
     fun `test expansion in path completion`() {
         // For this use case you would usually use \graphicspath, but just to test that it also works for other use cases
         // than subfiles.
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\img}{images}
             \includegraphics{\img/p<caret>}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val result = myFixture.complete(CompletionType.BASIC)
 

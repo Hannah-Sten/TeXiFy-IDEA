@@ -15,49 +15,60 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
     }
 
     fun `test at start of environment`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             \begin{document}
                 Lorem ipsum dolor sit <caret>amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 Lorem ipsum dolor sit amet, consectetur 
                 adipiscing elit, sed do eiusmod tempor 
                 incididunt ut labore et dolore magna aliqua. 
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test after begin section with new line`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             \section{hallo}
             Lorem <caret>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \section{hallo}
             Lorem ipsum dolor sit amet, consectetur 
             adipiscing elit, sed do eiusmod tempor 
             incididunt ut labore et dolore magna aliqua. 
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test after begin section without new line`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             \section{hallo} Lorem <caret>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \section{hallo} Lorem ipsum dolor sit amet, 
             consectetur adipiscing elit, sed do eiusmod 
             tempor incididunt ut labore et dolore magna 
             aliqua. 
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test lorem ipsum paragraph`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
             Duis aute iru<caret>re dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
             Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             Lorem ipsum dolor sit amet, consectetur
             adipiscing elit, sed do eiusmod tempor 
             incididunt ut labore et dolore magna aliqua. Ut 
@@ -68,11 +79,13 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
             dolore eu fugiat nulla pariatur. Excepteur sint 
             occaecat cupidatat non proident, sunt in culpa 
             qui officia deserunt mollit anim id est laborum.
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test paragraph that was good`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             Lorem ipsum dolor sit amet, consectetur
             adipiscing elit, sed do eiusmod tempor NEW WORDS HERE
             incididunt ut labore et dolore magna aliqua. Ut 
@@ -83,7 +96,8 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
             dolore eu fugiat nulla pariatur. Excepteur sint 
             occaecat cupidatat non proident, sunt in culpa 
             qui officia deserunt mollit anim id est laborum.
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             Lorem ipsum dolor sit amet, consectetur 
             adipiscing elit, sed do eiusmod tempor NEW 
             WORDS HERE incididunt ut labore et dolore magna
@@ -94,31 +108,37 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
             dolore eu fugiat nulla pariatur. Excepteur sint
             occaecat cupidatat non proident, sunt in culpa 
             qui officia deserunt mollit anim id est laborum.
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test paragraph separated by blank lines`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore ma<caret>gna aliqua. 
 
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             Lorem ipsum dolor sit amet, consectetur
             adipiscing elit, sed do eiusmod tempor 
             incididunt ut labore et dolore magna aliqua. 
 
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test paragraph separated by environment`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore ma<caret>gna aliqua. 
             \begin{center}
                 bla
             \end{center}
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             Lorem ipsum dolor sit amet, consectetur 
             adipiscing elit, sed do eiusmod tempor 
             incididunt ut labore et dolore magna aliqua.
@@ -126,17 +146,20 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
                 bla
             \end{center}
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test paragraph separated by display math`() {
-        testFillParagraph("""
+        testFillParagraph(
+            """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore ma<caret>gna aliqua. 
             \[
                 \sum_{i=1}^\infty \frac{e^i}{i!}
             \]
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             Lorem ipsum dolor sit amet, consectetur
             adipiscing elit, sed do eiusmod tempor 
             incididunt ut labore et dolore magna aliqua. 
@@ -144,7 +167,8 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
                 \sum_{i=1}^\infty \frac{e^i}{i!}
             \]
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     private fun testFillParagraph(input: String, expectedOutput: String) {

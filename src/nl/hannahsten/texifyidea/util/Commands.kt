@@ -49,8 +49,8 @@ fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): Str
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
         val commandExpansion = LatexCommandsIndex.getCommandsByNames(file ?: return null, *CommandMagic.commandDefinitionsAndRedefinitions.toTypedArray())
-                .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
-                ?.getRequiredArgumentValueByName("def")
+            .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
+            ?.getRequiredArgumentValueByName("def")
         text = text.replace(command.text, commandExpansion ?: command.text)
     }
     return text

@@ -18,9 +18,9 @@ class CommandDefinitionFilter : Filter {
             true
         }
         else !(
-                treeElement.commandName == "\\newcommand" ||
-                        treeElement.commandName in CommandMagic.mathCommandDefinitions ||
-                        treeElement.presentation is LatexOtherCommandPresentation
+            treeElement.commandName == "\\newcommand" ||
+                treeElement.commandName in CommandMagic.mathCommandDefinitions ||
+                treeElement.presentation is LatexOtherCommandPresentation
             )
     }
 

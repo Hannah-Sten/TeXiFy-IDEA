@@ -64,8 +64,10 @@ open class InsertDummyTextAction : AnAction() {
 
         // When itemize/enumerate/description is selected the level can be selected as well when larger than 1.
         val type = data.blindtextType
-        if ((type == DummyTextData.BlindtextType.ITEMIZE || type == DummyTextData.BlindtextType.ENUMERATE ||
-                    type == DummyTextData.BlindtextType.DESCRIPTION) && data.blindtextLevel > 1
+        if ((
+            type == DummyTextData.BlindtextType.ITEMIZE || type == DummyTextData.BlindtextType.ENUMERATE ||
+                type == DummyTextData.BlindtextType.DESCRIPTION
+            ) && data.blindtextLevel > 1
         ) {
             val command = "\\" + type.commandNoSlash.replace("list", "listlist[${data.blindtextLevel}]")
             insertAtCaretAndMove(command)

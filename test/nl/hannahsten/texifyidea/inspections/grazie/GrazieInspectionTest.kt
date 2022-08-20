@@ -52,7 +52,8 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     fun testSentenceStart() {
         myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
                \subsubsection{Something}
                 The hardware requirements 
             """.trimIndent()
@@ -63,7 +64,9 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     fun testGerman() {
         GrazieRemote.download(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{document}
                 Das ist eine Function ${'$'} f${'$'}.
                 Nur zum Testen.

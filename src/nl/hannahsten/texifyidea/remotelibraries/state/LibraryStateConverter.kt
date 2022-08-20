@@ -32,11 +32,14 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
     override fun toString(value: Map<String, LibraryState>): String? {
         val module = JacksonXmlModule()
 
-        module.addSerializer(BibItems::class.java, object : JsonSerializer<BibItems>() {
-            override fun serialize(p0: BibItems, p1: JsonGenerator, p2: SerializerProvider) {
-                runReadAction { p1.writeString(BibtexEntryListConverter().toString(p0.items)) }
+        module.addSerializer(
+            BibItems::class.java,
+            object : JsonSerializer<BibItems>() {
+                override fun serialize(p0: BibItems, p1: JsonGenerator, p2: SerializerProvider) {
+                    runReadAction { p1.writeString(BibtexEntryListConverter().toString(p0.items)) }
+                }
             }
-        })
+        )
 
         return XmlMapper(module)
             .writerWithDefaultPrettyPrinter()
@@ -46,11 +49,14 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
     override fun fromString(value: String): Map<String, LibraryState> {
         val module = JacksonXmlModule()
 
-        module.addDeserializer(BibItems::class.java, object : JsonDeserializer<BibItems>() {
-            override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems {
+        module.addDeserializer(
+            BibItems::class.java,
+            object : JsonDeserializer<BibItems>() {
+                override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems {
                     return runReadAction { BibItems(BibtexEntryListConverter().fromString(p0.text)) }
+                }
             }
-        })
+        )
 
         return XmlMapper(module)
             .readValue<Map<String, LibraryWrapper>>(value)

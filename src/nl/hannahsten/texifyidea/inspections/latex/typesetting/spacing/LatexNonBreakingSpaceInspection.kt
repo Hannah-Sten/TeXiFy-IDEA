@@ -70,9 +70,9 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
             // Get the NORMAL_TEXT in front of the command.
             val sibling = command.prevSibling
-                    ?: command.parent?.prevSibling
-                    ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
-                    ?: continue
+                ?: command.parent?.prevSibling
+                ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
+                ?: continue
 
             // When sibling is whitespace, it's obviously bad news.
             if (sibling is PsiWhiteSpace) {

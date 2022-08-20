@@ -46,9 +46,9 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
                     ProgressManager.checkCanceled()
                     if (pattern.accepts(element)) {
                         fun hasMathParentBeforeTextParent() = PsiTreeUtil.collectParents(
-                                element,
-                                LatexMathContent::class.java,
-                                false
+                            element,
+                            LatexMathContent::class.java,
+                            false
                         ) { it is LatexCommands && it.name == "\\text" }.size > 0
 
                         fun descriptorAlreadyExists() = descriptors.firstOrNull {
@@ -57,13 +57,13 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
 
                         if (element.text in SLASHLESS_MATH_OPERATORS && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
                             descriptors.add(
-                                    manager.createProblemDescriptor(
-                                            element,
-                                            "Non-escaped math operator",
-                                            EscapeMathOperatorFix(),
-                                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                            isOntheFly
-                                    )
+                                manager.createProblemDescriptor(
+                                    element,
+                                    "Non-escaped math operator",
+                                    EscapeMathOperatorFix(),
+                                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                                    isOntheFly
+                                )
                             )
                         }
                     }
@@ -92,7 +92,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
     companion object {
 
         private val SLASHLESS_MATH_OPERATORS = CommandMagic.slashlessMathOperators.asSequence()
-                .map { it.command }
-                .toSet()
+            .map { it.command }
+            .toSet()
     }
 }

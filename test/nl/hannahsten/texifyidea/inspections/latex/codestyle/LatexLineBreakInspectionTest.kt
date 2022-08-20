@@ -37,7 +37,7 @@ This e<weak_warning descr="Sentence does not start on a new line">tc. is missing
         after = """
                 I end.
                 a sentence.
-            """.trimIndent(),
+        """.trimIndent(),
         numberOfFixes = 2,
         selectedFix = 1
     )

@@ -16,10 +16,12 @@ class BibtexCompletionTest : BasePlatformTestCase() {
     fun testPreamble() {
         myFixture.configureByText(BibtexFileType, """@prea<caret>""")
         myFixture.complete(CompletionType.BASIC)
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             @preamble{
                 ""
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

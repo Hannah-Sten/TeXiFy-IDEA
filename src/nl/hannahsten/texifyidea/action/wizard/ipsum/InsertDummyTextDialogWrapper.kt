@@ -191,8 +191,8 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
 
     private fun updateUi() {
         intBlindLevel.isEnabled = cboxBlindType.item == DummyTextData.BlindtextType.ITEMIZE ||
-                cboxBlindType.item == DummyTextData.BlindtextType.DESCRIPTION ||
-                cboxBlindType.item == DummyTextData.BlindtextType.ENUMERATE
+            cboxBlindType.item == DummyTextData.BlindtextType.DESCRIPTION ||
+            cboxBlindType.item == DummyTextData.BlindtextType.ENUMERATE
 
         intBlindRepetitions.isEnabled = cboxBlindType.item == DummyTextData.BlindtextType.PARAGRAPH
         intBlindParagraphs.isEnabled = cboxBlindType.item == DummyTextData.BlindtextType.PARAGRAPH

@@ -99,7 +99,8 @@ object LatexElementColorProvider : ElementColorProvider {
             // first parameter of a color definition command. If not, we can not find the
             // color (and return null in the end).
             if (colorName.contains('!') || colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
-                    .contains(colorName)) {
+                .contains(colorName)
+            ) {
 
                 val colorDefinitionCommand =
                     colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
@@ -221,8 +222,11 @@ object LatexElementColorProvider : ElementColorProvider {
     private fun fromHsbString(hsbText: String): Color {
         val hsb = hsbText.split(",").map { it.trim() }
         return hsb.map { it.toFloat().projectOnto(0..1) }
-            .let { Color.getHSBColor(
-                it[0], it[1], it[2]) }
+            .let {
+                Color.getHSBColor(
+                    it[0], it[1], it[2]
+                )
+            }
     }
 
     /**

@@ -70,11 +70,11 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.checkHighlighting()
     }
 
-     fun testBibtexReference() {
-         val name = getTestName(false) + ".tex"
-         myFixture.configureByFiles(name, "references.bib")
-         myFixture.checkHighlighting()
-     }
+    fun testBibtexReference() {
+        val name = getTestName(false) + ".tex"
+        myFixture.configureByFiles(name, "references.bib")
+        myFixture.checkHighlighting()
+    }
 
     fun testFigureReferencedCustomCommandOptionalParameter() {
         myFixture.configureByText(
