@@ -31,7 +31,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
-          ref: ${{ FIXED_GITHUB_REF }}
+          ref: $FIXED_GITHUB_REF
   test:
     runs-on: ${{ matrix.os }}
     strategy:
