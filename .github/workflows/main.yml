@@ -34,6 +34,7 @@ jobs:
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
           ref: $FIXED_GITHUB_REF
+          sha: $GITHUB_SHA
   test:
     runs-on: ${{ matrix.os }}
     strategy:
