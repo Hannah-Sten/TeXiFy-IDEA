@@ -19,6 +19,10 @@ jobs:
       - name: Update GITHUB_REF
         id: update-github-ref
         run: echo ::set-output name=fixed_github_ref::$([[ ! "$GITHUB_REF" =~ \/refs\/(heads|pull|tags)\/.* ]] && echo "/refs/heads/$GITHUB_REF" || echo $GITHUB_REF)
+      - name: Debug result
+        run: | 
+          echo ${{ steps.update-github-ref.outputs.fixed_github_ref }}
+          echo $GITHUB_REF
       - name: Qodana
         uses: JetBrains/qodana-action@v2022.2.1
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
