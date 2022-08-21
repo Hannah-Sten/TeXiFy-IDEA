@@ -286,6 +286,25 @@ fun Int?.ifPositiveAddTwo(): Int =
         myFixture.checkResult(expected2)
     }
 
+    fun `test enter handler for unindented document`() {
+        val text = """
+            \begin{document}
+            Don't indent this if turned off.<caret>
+            \end{document}
+        """.trimIndent()
+        val file = myFixture.configureByText(LatexFileType, text)
+        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT = false
+        myFixture.type("\nDon't indent this either")
+
+        val expected = """
+            \begin{document}
+            Don't indent this if turned off.
+            Don't indent this either<caret>
+            \end{document}
+        """.trimIndent()
+        myFixture.checkResult(expected)
+    }
+
     fun testComments() {
         // Wanted to test line breaking, but not sure how to enable it in test
         val text = """
