@@ -19,13 +19,15 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
  * Technically, this is not a typed handler, but it's easier to find this way.
  */
 object LatexEnterHandler {
+
     fun getChildAttributes(newChildIndex: Int, node: ASTNode, subBlocks: MutableList<Block>): ChildAttributes {
-        val shouldIndentDocumentEnvironment = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
+        val shouldIndentDocumentEnvironment =
+            CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
         val shouldIndentEnvironment = node.elementType === LatexTypes.ENVIRONMENT && (
-                (node.psi as? LatexEnvironment)
-                    ?.firstChildOfType(LatexBeginCommand::class)
-                    ?.firstChildOfType(LatexParameterText::class)?.text != "document" || shouldIndentDocumentEnvironment
-                )
+            (node.psi as? LatexEnvironment)
+                ?.firstChildOfType(LatexBeginCommand::class)
+                ?.firstChildOfType(LatexParameterText::class)?.text != "document" || shouldIndentDocumentEnvironment
+            )
 
         val type = node.elementType
         if (type === LatexTypes.DISPLAY_MATH || shouldIndentEnvironment) {
