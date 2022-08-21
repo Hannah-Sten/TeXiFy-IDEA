@@ -20,7 +20,7 @@ jobs:
       # Workaround for https://github.com/github/codeql-action/issues/796
       - name: Update GITHUB_REF
         run: |
-          echo $GITHUB_REF > $FIXED_GITHUB_REF
+          echo $GITHUB_REF >> $FIXED_GITHUB_REF
           if [[ ! "$GITHUB_REF" =~ ^\/refs\/heads\/.*$ ]]; then
            echo "/refs/heads/$GITHUB_REF" >> "$FIXED_GITHUB_REF"
           fi
