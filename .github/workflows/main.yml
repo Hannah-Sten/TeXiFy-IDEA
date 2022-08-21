@@ -17,13 +17,8 @@ jobs:
           fetch-depth: 0
       # Workaround for https://github.com/github/codeql-action/issues/796
       - name: Update GITHUB_REF
-        run: |
-          if [[ ! "$GITHUB_REF" =~ ^\/refs\/heads\/.*$ ]]
-          then
-            export FIXED_GITHUB_REF="/refs/heads/$GITHUB_REF"
-          else
-            export FIXED_GITHUB_REF=$GITHUB_REF
-          fi
+        id: update-github-ref
+        run: echo ::set-output name=fixed_github_ref::$([[ ! "$GITHUB_REF" =~ ^\/refs\/heads\/.*$ ]] && echo "/refs/heads/$GITHUB_REF" || echo $GITHUB_REF)
       - name: Qodana
         uses: JetBrains/qodana-action@v2022.2.1
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
@@ -33,7 +28,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
-          ref: ${{ env.FIXED_GITHUB_REF }}
+          ref: ${{ steps.update-github-ref.outputs.fixed_github_ref }}
           sha: ${{ github.sha }}
   test:
     runs-on: ${{ matrix.os }}
