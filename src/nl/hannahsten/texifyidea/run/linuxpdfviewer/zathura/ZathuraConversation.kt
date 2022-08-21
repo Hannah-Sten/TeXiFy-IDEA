@@ -25,7 +25,7 @@ object ZathuraConversation : ViewerConversation() {
             val path = PathManager.getBinPath()
             val name = ApplicationNamesInfo.getInstance().scriptName
             val command =
-                """zathura --synctex-forward="$line:1:$sourceFilePath" --synctex-editor-command="$path/$name.sh --line %{line} $sourceFilePath" $pdfPathGuess"""
+                """zathura --synctex-forward="$line:1:$sourceFilePath" --synctex-editor-command="$path/$name.sh --line %{line} %{input}" $pdfPathGuess"""
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
         else {
