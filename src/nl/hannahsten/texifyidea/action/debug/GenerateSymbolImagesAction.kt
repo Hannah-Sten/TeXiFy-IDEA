@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.toastInfo
 /**
  * @author Hannah Schellekens
  */
+@Suppress("ComponentNotRegistered", "unused") // Only for development purposes.
 open class GenerateSymbolImagesAction : AnAction(
     "Generate Symbol Images",
     "(Development) Generates the symbol images for the symbol view",
@@ -21,7 +22,7 @@ open class GenerateSymbolImagesAction : AnAction(
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
 
         val fileDescriptor = FileChooserDescriptor(false, true, false, false, false, false)
-            .withTitle("Select symbols folder...")
+            .withTitle("Select Symbols Folder...")
 
         FileChooser.chooseFile(fileDescriptor, project, null) {
             generateSymbolImages(it.path)

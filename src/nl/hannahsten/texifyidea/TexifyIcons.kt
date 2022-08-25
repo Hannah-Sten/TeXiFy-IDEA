@@ -497,9 +497,6 @@ object TexifyIcons {
 
     /**
      * Get a variation on the tex icon if applicable.
-     *
-     * @param smaller
-     *              `true` for a small icon, `false` for a regular sized icon.
      */
     private infix fun Icon.or(icon: Icon): Icon {
         val calendar = Calendar.getInstance()

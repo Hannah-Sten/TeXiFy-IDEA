@@ -11,6 +11,7 @@ open class LatexCommandsIndex : StringStubIndexExtension<LatexCommands>() {
 
     companion object : IndexCommandsUtilBase(IndexKeys.COMMANDS_KEY)
 
+    @Suppress("RedundantCompanionReference") // Avoid type checking issues
     override fun getKey() = Companion.key()
 
     override fun getVersion() = LatexParserDefinition.FILE.stubVersion

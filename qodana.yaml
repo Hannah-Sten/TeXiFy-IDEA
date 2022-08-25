@@ -3,12 +3,14 @@ linter: jetbrains/qodana-jvm:latest
 profile:
   name: qodana.recommended
 exclude:
-  - name: XmlUnusedNamespaceDeclaration
-  - name: XmlHighlighting
+  - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag
   - name: HtmlRequiredLangAttribute
+  - name: UnstableApiUsage
   - name: unused
-  - name: EditorConfigUnusedDeclaration
+  - name: UnusedSymbol
+  - name: XmlHighlighting
+  - name: XmlUnusedNamespaceDeclaration
   - name: All
     paths:
       - gen

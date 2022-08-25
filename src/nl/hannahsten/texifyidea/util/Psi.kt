@@ -445,8 +445,7 @@ fun <Psi : PsiElement> PsiElementPattern.Capture<Psi>.withPattern(
  *
  * `CHILD C.indexOfChildByType(PARENT) = 2`.
  *
- * @param parent
- *          The parent of the children to get the index of.
+ * @receiver The parent of the children to get the index of.
  * @return The index of this element in the child list, ignoring children of a different type, or `null` when the parent
  *          could not be found, or when no child could be found that matches `this`.
  */

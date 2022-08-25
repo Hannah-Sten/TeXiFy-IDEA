@@ -9,7 +9,7 @@ import java.util.regex.Pattern
  * A required file argument with a given name and a pattern that matches
  * corresponding file names.
  * Ignores case: everything will be converted to lower case.
- * Type will be [nl.hannahsten.texifyidea.lang.Argument.Type.NORMAL].
+ * Type will be [nl.hannahsten.texifyidea.lang.commands.Argument.Type.NORMAL].
  *
  * @param name
  * The name of the required argument.

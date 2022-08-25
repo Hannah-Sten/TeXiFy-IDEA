@@ -3,15 +3,13 @@ package nl.hannahsten.texifyidea.lang
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
-import java.util.*
 
 /**
  * @author Sten Wessel
  */
 enum class LatexMathEnvironment(
     val environmentName: String,
-    vararg val arguments: Argument,
-    val initialContents: String? = null
+    vararg val arguments: Argument
 ) {
 
     /*

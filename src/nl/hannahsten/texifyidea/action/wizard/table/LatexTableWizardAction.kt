@@ -48,7 +48,7 @@ class LatexTableWizardAction : AnAction() {
                 project,
                 "Insert Table",
                 "LaTeX",
-                Runnable { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
+                { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
                 file.psiFile(project)
             )
         }

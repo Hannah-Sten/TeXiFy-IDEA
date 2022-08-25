@@ -38,7 +38,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
                     .withFileFilter { vf -> vf.extension?.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions }
-                    .withTitle("Select graphics file...")
+                    .withTitle("Select Graphics File...")
             )
         )
     }
@@ -46,7 +46,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Insert a relative file path if checked, absolute if unchecked.
      */
-    private val checkRelativePath = JBCheckBox("convert to relative path", true)
+    private val checkRelativePath = JBCheckBox("Convert to relative path", true)
 
     /**
      * The width option for the graphic. Not necessarily a number. Whatever is in here will get put
@@ -155,7 +155,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
 
     init {
         super.init()
-        title = "Insert graphic"
+        title = "Insert Graphic"
     }
 
     /**
