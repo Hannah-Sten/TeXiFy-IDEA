@@ -140,6 +140,22 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
         myFixture.checkHighlighting(true, false, false, false)
     }
 
+    fun `test unescaped _ character triggers no warning in math`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \begin{equation}
+                    \begin{array}{cc}
+                        \theta_1 & \theta_2 \\
+                        \theta_3 & \theta_4
+                    \end{array}
+                    \label{eq:my-equation}
+                \end{equation}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
     fun `test unescaped _ character quick fix`() {
         testQuickFix(
             """
