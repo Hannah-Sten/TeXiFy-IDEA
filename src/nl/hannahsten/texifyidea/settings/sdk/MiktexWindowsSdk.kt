@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.nio.file.InvalidPathException
 import java.nio.file.Paths
@@ -34,8 +35,8 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
     override fun suggestHomePaths(): MutableCollection<String> {
         val results = mutableSetOf<String>()
-        val paths = "where pdflatex".runCommand()
-        if (paths != null && !paths.contains("Could not find")) { // Full output is INFO: Could not find files for the given pattern(s).
+        val (paths, exitCode) = runCommandWithExitCode("where", "pdflatex")
+        if (paths != null && exitCode == 0) {
             paths.split("\r\n").forEach { path ->
                 if (path.isBlank()) return@forEach
                 val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: (path.length - 1)
