@@ -10,7 +10,6 @@ import com.intellij.ui.table.TableView
 import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.settings.TexifyConventionsSchemesPanel
 import java.awt.BorderLayout
 import java.awt.Component
 import javax.swing.JComponent

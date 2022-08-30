@@ -33,11 +33,8 @@ class RunMakeindexListener(
 
             // Only create new one if there is none yet
             val runConfigSettingsList =
-                if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
+                latexRunConfig.makeindexRunConfigs.ifEmpty {
                     generateIndexConfigs()
-                }
-                else {
-                    latexRunConfig.makeindexRunConfigs
                 }
 
             // Run all run configurations

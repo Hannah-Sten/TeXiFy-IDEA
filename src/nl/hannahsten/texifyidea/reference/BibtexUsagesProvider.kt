@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.BibtexTypes
 
 class BibtexUsagesProvider : FindUsagesProvider {
 
-    override fun getWordsScanner(): WordsScanner? {
+    override fun getWordsScanner(): WordsScanner {
         return DefaultWordsScanner(
             BibtexLexerAdapter(),
             // Identifiers.

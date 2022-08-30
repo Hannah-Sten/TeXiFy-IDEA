@@ -57,9 +57,9 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         val offset = editor?.caretModel?.offset ?: return null
         val element = file?.findElementAt(offset) ?: return null
         // Also check one position back, because we want it to trigger in \section{a}<caret>
-        return element as? T ?: element.parentOfType<T>()
+        return element as? T ?: element.parentOfType()
             ?: file.findElementAt(max(0, offset - 1)) as? T
-            ?: file.findElementAt(max(0, offset - 1))?.parentOfType<T>()
+            ?: file.findElementAt(max(0, offset - 1))?.parentOfType()
     }
 
     protected fun getUniqueLabelName(base: String, prefix: String, file: PsiFile): LabelWithPrefix {

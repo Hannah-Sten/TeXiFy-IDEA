@@ -21,7 +21,7 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
 
     init {
         DialogBuilder().apply {
-            setTitle("Create new file")
+            setTitle("Create New File")
             val panel = JPanel()
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
@@ -37,7 +37,7 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             pathField.addBrowseFolderListener(
                 TextBrowseFolderListener(
                     FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Select folder of new file")
+                        .withTitle("Select Folder of New File")
                 )
             )
 

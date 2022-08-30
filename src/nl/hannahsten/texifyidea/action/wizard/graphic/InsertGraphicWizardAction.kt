@@ -12,9 +12,11 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.files.relativizePath
+import nl.hannahsten.texifyidea.util.files.removeFileExtension
 import java.io.File
-import java.util.*
 
 /**
  * Action that shows a dialog with a graphic insertion wizard, and inserts the graphic as latex at the location of the

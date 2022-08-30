@@ -7,20 +7,18 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.SmartPointerManager
-import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.psi.*
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyLineOptionsInspection
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.get
+import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 
@@ -173,7 +171,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
             }
 
             // Whenever met at correct closure
-            if (char == close && nested <= 0) {
+            if (char == close) {
                 closeOffset = current
                 break
             }

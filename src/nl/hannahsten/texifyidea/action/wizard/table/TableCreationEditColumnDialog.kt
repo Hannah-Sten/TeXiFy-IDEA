@@ -60,10 +60,10 @@ class TableCreationEditColumnDialog(
             }
 
             if (columnName.isBlank()) {
-                title("Add column")
+                title("Add Column")
             }
             else {
-                title("Edit column")
+                title("Edit Column")
             }
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {

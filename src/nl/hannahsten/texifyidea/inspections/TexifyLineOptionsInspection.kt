@@ -30,7 +30,7 @@ abstract class TexifyLineOptionsInspection(val title: String) : TexifyInspection
     protected val lines: List<String>
         get() = txtaOptions.text.trim().split("\n").asSequence()
             .map { it.trim() }
-            .filter { !it.isBlank() }
+            .filter { it.isNotBlank() }
             .toList()
 
     override fun createOptionsPanel(): JComponent {

@@ -37,7 +37,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 
     /**
      * Get all the items in the index in the given file set.
-     * Consider using [PsiFile.commandsInFileSet] where applicable.
+     * Consider using [nl.hannahsten.texifyidea.util.files.commandsInFileSet] where applicable.
      *
      * @param baseFile
      *          The file from which to look.
@@ -66,7 +66,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 
     /**
      * Get all the items in the index in the given file set, as well as the files where those items are.
-     * Consider using [PsiFile.commandsAndFilesInFileSet] where applicable.
+     * Consider using [nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet] where applicable.
      *
      * @param baseFile The file from which to look.
      * @return List of pairs consisting of a file and the items in that file.

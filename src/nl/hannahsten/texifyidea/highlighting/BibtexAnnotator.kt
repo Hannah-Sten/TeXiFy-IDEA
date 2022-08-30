@@ -50,7 +50,7 @@ open class BibtexAnnotator : Annotator {
      */
     private fun annotate(key: BibtexKey, holder: AnnotationHolder) {
         val entry = key.parentOfType(BibtexEntry::class) ?: return
-        val token = entry.tokenType()?.lowercase(Locale.getDefault())
+        val token = entry.tokenType().lowercase(Locale.getDefault())
         if (token == "@string") {
             return
         }

@@ -77,7 +77,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
                     addValue(
                         key = line.split(" ").first().asKey(),
                         value = line.trim().split(" ").drop(1).joinToString(" ").let {
-                            if (it.isEmpty()) null else it
+                            it.ifEmpty { null }
                         }
                     )
                 }

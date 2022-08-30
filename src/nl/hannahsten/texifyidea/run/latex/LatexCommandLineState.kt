@@ -229,7 +229,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     }
                 }
             }
-            else if (!containsPlaceholder) {
+            else {
                 // If no placeholder was used, assume the path is the final argument
                 commandList += runConfig.outputFilePath
             }

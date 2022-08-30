@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.lang.commands
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BLINDTEXT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LIPSUM
 
 /**
  * @author Hannah Schellekens

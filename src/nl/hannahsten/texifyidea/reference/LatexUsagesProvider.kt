@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 
 class LatexUsagesProvider : FindUsagesProvider {
 
-    override fun getWordsScanner(): WordsScanner? {
+    override fun getWordsScanner(): WordsScanner {
         return DefaultWordsScanner(
             LatexLexerAdapter(),
             // Identifiers.

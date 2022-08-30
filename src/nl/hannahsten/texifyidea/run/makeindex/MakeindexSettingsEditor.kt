@@ -49,7 +49,7 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
             layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Program
-            val programField = ComboBox<MakeindexProgram>(MakeindexProgram.values())
+            val programField = ComboBox(MakeindexProgram.values())
             makeindexProgram = LabeledComponent.create(programField, "Index program")
             add(makeindexProgram)
 
@@ -57,7 +57,7 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose the main .tex file", ".tex")
+                        FileTypeDescriptor("Choose the Main .tex File", ".tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
                     )
                 )
@@ -73,7 +73,7 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
                         FileChooserDescriptor(false, true, false, false, false, false)
-                            .withTitle("Choose the directory where the index (.idx) file will be generated")
+                            .withTitle("Choose the Directory Where the Index .idx File Will Be Generated")
                     )
                 )
             }

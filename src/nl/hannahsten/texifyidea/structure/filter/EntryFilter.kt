@@ -18,7 +18,7 @@ object EntryFilter : Filter {
             return true
         }
 
-        val name = treeElement.entry.tokenName()?.lowercase(Locale.getDefault())
+        val name = treeElement.entry.tokenName().lowercase(Locale.getDefault())
         return name == "string" || name == "preamble"
     }
 
@@ -30,7 +30,7 @@ object EntryFilter : Filter {
 
         override fun getText() = "Show Entries"
 
-        override fun getDescription() = "Show Entries"
+        override fun getDescription() = "Show entries"
 
         override fun getIcon() = PlatformIcons.ANNOTATION_TYPE_ICON
     }

@@ -253,7 +253,7 @@ fun keyValKeyToString(element: LatexKeyvalKey): String {
     var psiChild = element.firstChild
     while (psiChild != null) {
         result.add(psiChild)
-        psiChild = psiChild.getNextSibling()
+        psiChild = psiChild.nextSibling
     }
     return result.joinToString(separator = "") {
         when (it) {

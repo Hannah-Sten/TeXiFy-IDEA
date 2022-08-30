@@ -18,19 +18,19 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
 
     private val entryPresentation: PresentationData = object : PresentationData() {
 
-        override fun getLocationString() = when (entry.tokenName()?.lowercase(Locale.getDefault())) {
+        override fun getLocationString() = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "string" -> entry.tags().first().content?.text.orEmpty()
             "preamble" -> ""
             else -> entry.tokenName()
         }
 
-        override fun getPresentableText() = when (entry.tokenName()?.lowercase(Locale.getDefault())) {
+        override fun getPresentableText() = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "preamble" -> "preamble"
             "string" -> entry.tags().firstOrNull()?.keyName()
             else -> entry.identifier()
         } ?: ""
 
-        override fun getIcon(b: Boolean) = when (entry.tokenName()?.lowercase(Locale.getDefault())) {
+        override fun getIcon(b: Boolean) = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "string" -> TexifyIcons.STRING
             "preamble" -> PlatformIcons.PROPERTY_ICON
             else -> PlatformIcons.ANNOTATION_TYPE_ICON

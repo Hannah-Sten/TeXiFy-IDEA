@@ -48,14 +48,14 @@ class RunConfigurationSelectionDialog(
             // Icon and gap (= 24) + max size of the configuration names
             val maxWidth = 24 + (
                 settings.asSequence().map { fontMetrics.stringWidth(it.configuration.name) }.maxOrNull()
-                    ?: fontMetrics.stringWidth("m") * 30
+                    ?: (fontMetrics.stringWidth("m") * 30)
                 )
 
             minimumSize = Dimension(maxWidth, preferredSize.height)
         }
     }
 
-    override fun createCenterPanel(): JComponent? {
+    override fun createCenterPanel(): JComponent {
         list = JBList(settings).apply {
             selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
 

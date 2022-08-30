@@ -31,7 +31,9 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
         return LatexCommandsIndex.getCommandsByNames(file, *sectioningCommands())
             .sortedBy { it.textOffset }
             .zipWithNext()
-            .filter { (first, second) -> first.commandName() in commandToForbiddenPredecessors[second.commandName()] ?: error("Unexpected command") }
+            .filter { (first, second) ->
+                first.commandName() in (commandToForbiddenPredecessors[second.commandName()] ?: error("Unexpected command"))
+            }
             .map {
                 manager.createProblemDescriptor(
                     it.second,

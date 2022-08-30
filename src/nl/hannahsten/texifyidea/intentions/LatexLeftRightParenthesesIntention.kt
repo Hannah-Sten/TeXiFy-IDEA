@@ -99,7 +99,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
             }
 
             // Whenever met at correct closure
-            if (char == close && nested <= 0) {
+            if (char == close) {
                 closeOffset = current
                 break
             }
@@ -153,7 +153,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
             }
 
             // Whenever met at correct closure
-            if (char == open && nested <= 0) {
+            if (char == open) {
                 openOffset = current
                 break
             }
