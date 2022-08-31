@@ -188,7 +188,7 @@ private fun getSpacesPerCell(
     relativeIndices: List<List<Int>>,
     contentLinesWithoutRules: MutableList<String>
 ): List<List<Int>> {
-    val nrLevels = relativeIndices.map { it.size }.maxOrNull() ?: 0
+    val nrLevels = relativeIndices.maxOfOrNull { it.size } ?: 0
 
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.

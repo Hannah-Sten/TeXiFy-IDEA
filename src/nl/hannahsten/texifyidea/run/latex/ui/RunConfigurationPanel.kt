@@ -66,7 +66,7 @@ class RunConfigurationPanel(
             }
 
             setRemoveAction {
-                configurations.removeAll(list.selectedValuesList)
+                configurations.removeAll(list.selectedValuesList.toSet())
                 configurationChanged()
             }
         }

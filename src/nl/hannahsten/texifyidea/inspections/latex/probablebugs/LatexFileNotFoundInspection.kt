@@ -76,10 +76,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         }
 
         // Find expected extension
-        val extension = if (fileName.getFileExtension().isNotEmpty()) {
-            fileName.getFileExtension()
-        }
-        else {
+        val extension = fileName.getFileExtension().ifEmpty {
             reference.defaultExtension
         }
 

@@ -52,11 +52,10 @@ interface Environment : Dependend, Described {
             )
 
             // See LatexCommand#lookUpInIndex()
-            val filteredEnvs = envs.distinctBy { listOf(it.environmentName, it.dependency, it.context, it.description).plus(it.arguments) }
+            return envs.distinctBy { listOf(it.environmentName, it.dependency, it.context, it.description).plus(it.arguments) }
                 .groupBy { listOf(it.environmentName, it.dependency, it.context) }
                 .mapValues { it.value.maxByOrNull { cmd -> cmd.description }!! }
                 .values.toSet()
-            return filteredEnvs
         }
 
         fun extractArgumentsFromDocs(docs: String): Array<Argument> {

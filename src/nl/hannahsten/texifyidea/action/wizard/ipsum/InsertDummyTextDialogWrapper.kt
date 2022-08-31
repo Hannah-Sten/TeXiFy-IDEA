@@ -160,7 +160,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
 
     init {
         super.init()
-        title = "Insert dummy text"
+        title = "Insert Dummy Text"
     }
 
     /**

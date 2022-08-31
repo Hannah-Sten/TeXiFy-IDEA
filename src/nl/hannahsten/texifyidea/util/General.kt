@@ -22,26 +22,6 @@ fun Boolean?.orFalse() = this ?: false
 infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
 
 /**
- * Prints the object in default string presentation to the console.
- */
-fun Any.print() = print(this)
-
-/**
- * Prints the object in default string presentation to the console including line feed.
- */
-fun Any.println() = println(this)
-
-/**
- * Prints `message: OBJECT` to the console.
- */
-infix fun Any.debug(message: Any) = print("$message: $this")
-
-/**
- * Prints `message: OBJECT` to the console including line feed.
- */
-infix fun Any.debugln(message: Any) = println("$message: $this")
-
-/**
  * Executes the given run write action.
  */
 fun runWriteAction(writeAction: () -> Unit) {

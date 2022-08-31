@@ -33,7 +33,7 @@ class LabelFilter : Filter {
 
         override fun getText(): String = "Show Labels"
 
-        override fun getDescription(): String = "Show Labels"
+        override fun getDescription(): String = "Show labels"
 
         override fun getIcon(): Icon = TexifyIcons.DOT_LABEL
 

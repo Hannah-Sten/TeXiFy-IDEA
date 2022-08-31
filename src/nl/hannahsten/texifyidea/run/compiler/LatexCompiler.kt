@@ -318,7 +318,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             dockerAuxilDir
         }
 
-        var command = createCommand(
+        val command = createCommand(
             runConfig,
             auxilPath,
             outputPath,

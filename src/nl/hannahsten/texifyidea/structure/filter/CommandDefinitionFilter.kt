@@ -37,7 +37,7 @@ class CommandDefinitionFilter : Filter {
 
         override fun getText() = "Show Command Definitions"
 
-        override fun getDescription() = "Show Command Definitions"
+        override fun getDescription() = "Show command definitions"
 
         override fun getIcon() = TexifyIcons.DOT_COMMAND
     }

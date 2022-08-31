@@ -33,6 +33,6 @@ open class LatexRedundantParInspection : TexifyRegexInspection(
 
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         val elt = element.containingFile.findElementAt(matcher.end()) as? LeafPsiElement
-        return super.checkContext(matcher, element) && elt?.elementType != LatexTypes.COMMAND_TOKEN ?: true
+        return super.checkContext(matcher, element) && elt?.elementType != (LatexTypes.COMMAND_TOKEN ?: true)
     }
 }

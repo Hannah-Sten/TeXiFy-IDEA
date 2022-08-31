@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.file.StyleFileType
  * Key: Package name, as it appears in a \RequirePackage-like statement
  * Value: not used. Could possibly be used for metadata about the inclusion (like optional parameters).
  *
- * See [nl.hannahsten.texifyidea.inspections.latex.LatexMissingImportInspection].
+ * See [nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexMissingImportInspection].
  */
 class LatexExternalPackageInclusionIndex : FileBasedIndexExtension<String, String>() {
 

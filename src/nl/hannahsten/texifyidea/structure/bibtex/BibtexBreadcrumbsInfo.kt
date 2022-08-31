@@ -22,14 +22,14 @@ open class BibtexBreadcrumbsInfo : BreadcrumbsProvider {
     override fun getElementInfo(element: PsiElement) = when (element) {
         is BibtexEntry -> {
             val token = element.tokenType()
-            val identifier = when (token?.lowercase(Locale.getDefault())) {
+            val identifier = when (token.lowercase(Locale.getDefault())) {
                 "@preamble" -> ""
                 "@string" -> element.firstChildOfType(BibtexKey::class)?.text
                 else -> element.firstChildOfType(BibtexId::class)?.text?.substringEnd(1)
             } ?: ""
 
             if (identifier.isEmpty()) {
-                "$token"
+                token
             }
             else {
                 "$token($identifier)"

@@ -75,10 +75,7 @@ fun PsiElement.extractLabelName(referencingFileSetCommands: Collection<LatexComm
                     referencingFileSetCommands
                         // Don't think there can be multiple, at least I wouldn't know what prefix it would use
                         .firstOrNull { it.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash }
-                        ?.parameterList
-                        ?.mapNotNull { it.optionalParam }
-                        // Assume it's the first optional parameter if there is one
-                        ?.firstOrNull()
+                        ?.parameterList?.firstNotNullOfOrNull { it.optionalParam }
                         ?.text?.trim('[', ']')
                         ?.let { prefix = it }
                 }

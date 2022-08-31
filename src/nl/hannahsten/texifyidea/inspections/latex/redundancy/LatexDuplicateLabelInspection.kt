@@ -78,7 +78,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(env: LatexEnvironment): LabelDescriptor? {
         val label =
-            env.beginCommand.optionalParameterMap.entries.firstOrNull() { e -> e.key.toString() == "label" }?.value
+            env.beginCommand.optionalParameterMap.entries.firstOrNull { e -> e.key.toString() == "label" }?.value
                 ?: return null
         val labelString = label.toString()
         return LabelDescriptor(env, labelString, TextRange.from(label.startOffset - env.startOffset, label.textLength))
@@ -89,7 +89,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(cmd: LatexCommands): LabelDescriptor? {
         val label =
-            cmd.optionalParameterMap.entries.firstOrNull() { e -> e.key.toString() == "label" }?.value ?: return null
+            cmd.optionalParameterMap.entries.firstOrNull { e -> e.key.toString() == "label" }?.value ?: return null
         val labelString = label.toString()
         return LabelDescriptor(cmd, labelString, TextRange.from(label.startOffset - cmd.startOffset, label.textLength))
     }
@@ -102,8 +102,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
             latexParameter.text
         }
         val toIgnore = parameterStrings.indexOf("{$searched}")
-        return parameterStrings.subList(0, max(0, toIgnore)).map { it.length }
-            .sum()
+        return parameterStrings.subList(0, max(0, toIgnore)).sumOf { it.length }
     }
 
     /**

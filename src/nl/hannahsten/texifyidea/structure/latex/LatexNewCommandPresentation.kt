@@ -39,7 +39,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
             newCommand.nextCommand()?.commandToken?.text
         }
 
-        this.newCommandName = command ?: "" + suffix
+        this.newCommandName = command ?: ("" + suffix)
 
         // Get the definition to show in place of the location string.
         locationString = when {

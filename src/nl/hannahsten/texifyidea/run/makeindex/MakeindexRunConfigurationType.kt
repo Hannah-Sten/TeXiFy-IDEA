@@ -13,7 +13,7 @@ class MakeindexRunConfigurationType : ConfigurationType {
 
     override fun getIcon(): Icon = TexifyIcons.BUILD
 
-    override fun getConfigurationTypeDescription() = "makeindex run configuration"
+    override fun getConfigurationTypeDescription() = "Makeindex run configuration"
 
     override fun getId() = "MAKEINDEX_RUN_CONFIGURATION"
 

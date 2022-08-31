@@ -27,7 +27,7 @@ import javax.swing.*
  *
  * @author Abby Berkers
  */
-open class TableCreationDialogWrapper(
+class TableCreationDialogWrapper(
     initialColumnTypes: List<ColumnType>? = null,
     initialTableModel: TableCreationTableModel? = null
 ) : DialogWrapper(true) {
@@ -255,7 +255,7 @@ open class TableCreationDialogWrapper(
     }
 
     private fun getEditColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Edit column header", addText(IconUtil.getEditIcon(), "C")) {
+        return object : AnActionButton("Edit Column Header", addText(IconUtil.getEditIcon(), "C")) {
 
             override fun isEnabled() = table.columnCount > 0
 

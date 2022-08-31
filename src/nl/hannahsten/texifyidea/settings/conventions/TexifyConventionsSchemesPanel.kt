@@ -1,10 +1,8 @@
-package nl.hannahsten.texifyidea.settings
+package nl.hannahsten.texifyidea.settings.conventions
 
 import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
 import com.intellij.application.options.schemes.SimpleSchemesPanel
-import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
-import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
 import javax.naming.OperationNotSupportedException
 
 /**

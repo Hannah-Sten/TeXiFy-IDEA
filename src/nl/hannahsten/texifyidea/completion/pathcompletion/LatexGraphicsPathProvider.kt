@@ -96,7 +96,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     private fun LatexCommands.getGraphicsPaths(): List<String> {
         if (name != "\\graphicspath") return emptyList()
-        return parameterList.mapNotNull { it.requiredParam }.first()
+        return parameterList.firstNotNullOf { it.requiredParam }
             // Each graphics path is in a group.
             .childrenOfType(LatexNormalText::class)
             .map { it.text }

@@ -26,7 +26,7 @@ open class ConfigureInverseSearchAction : AnAction(
 
     override fun actionPerformed(e: AnActionEvent) {
         DialogBuilder().apply {
-            setTitle("Configure inverse search")
+            setTitle("Configure Inverse Search")
             setCenterPanel(
                 JLabel(
                     "<html>To enable inverse search (from PDF to source file), the inverse search setting in SumatraPDF must be changed.<br/>" +

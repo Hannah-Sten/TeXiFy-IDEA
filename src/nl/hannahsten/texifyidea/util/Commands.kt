@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -33,7 +32,7 @@ fun Project.findCommandDefinitions(): Collection<LatexCommands> {
  */
 fun getIncludeCommands(): Set<String> {
     return LatexRegularCommand.values()
-        .filter { command -> command.arguments.any { it is RequiredFileArgument || it is RequiredPicturePathArgument } }
+        .filter { command -> command.arguments.any { it is RequiredFileArgument } }
         .map { "\\" + it.command }
         .toSet()
 }
