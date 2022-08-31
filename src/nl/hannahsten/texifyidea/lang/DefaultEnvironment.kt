@@ -27,7 +27,7 @@ enum class DefaultEnvironment(
     // Vanilla LaTeX
     ABSTRACT(environmentName = "abstract"),
     ALLTT(environmentName = "alltt"),
-    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols"))),
+    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols")), context = Context.MATH),
     CENTER(environmentName = "center"),
     DESCRIPTION(environmentName = "description", initialContents = "\\item "),
     DISPLAYMATH(environmentName = "displaymath", context = Context.MATH),
