@@ -27,7 +27,7 @@ import java.net.*
  */
 class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
-    override fun getReportActionText() = "Report to TeXiFy-IDEA issue tracker"
+    override fun getReportActionText() = "Report to TeXiFy-IDEA Issue Tracker"
 
     override fun submit(
         events: Array<out IdeaLoggingEvent>,

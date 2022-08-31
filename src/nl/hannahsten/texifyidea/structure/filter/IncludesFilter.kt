@@ -32,7 +32,7 @@ class IncludesFilter : Filter {
 
         override fun getText() = "Show Includes"
 
-        override fun getDescription() = "Show Includes"
+        override fun getDescription() = "Show includes"
 
         override fun getIcon() = TexifyIcons.DOT_INCLUDE
     }

@@ -27,6 +27,7 @@ object StringFilter : Filter {
 
     override fun getPresentation() = object : ActionPresentation {
 
+        @Suppress("DialogTitleCapitalization")
         override fun getText() = "Show @string"
 
         override fun getDescription() = "Show @string"

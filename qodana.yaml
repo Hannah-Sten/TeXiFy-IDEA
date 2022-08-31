@@ -6,6 +6,7 @@ exclude:
   - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag
   - name: HtmlRequiredLangAttribute
+  - name: MemberVisibilityCanBePrivate
   - name: UnstableApiUsage
   - name: unused
   - name: UnusedSymbol

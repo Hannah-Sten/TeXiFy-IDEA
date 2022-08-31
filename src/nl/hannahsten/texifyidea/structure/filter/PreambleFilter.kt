@@ -27,6 +27,7 @@ object PreambleFilter : Filter {
 
     override fun getPresentation() = object : ActionPresentation {
 
+        @Suppress("DialogTitleCapitalization")
         override fun getText() = "Show @preamble"
 
         override fun getDescription() = "Show @preamble"

@@ -29,7 +29,7 @@ open class BibtexBreadcrumbsInfo : BreadcrumbsProvider {
             } ?: ""
 
             if (identifier.isEmpty()) {
-                "$token"
+                token
             }
             else {
                 "$token($identifier)"
