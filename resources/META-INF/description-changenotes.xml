@@ -37,7 +37,7 @@
             welcome on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA">plugin's GitHub page</a>.
             If you want to directly chat with us, take a peek at the project's
             <a href="https://gitter.im/TeXiFy-IDEA">gitter</a>.
-            If you like the project, please <a href="https://www.paypal.me/HannahSchellekens">donate</a> to support ongoing development.
+            If you like the project, please <a href="https://www.paypal.me/HannahSchellekens">donate</a> to support ongoing development!
         </p>
     ]]></description>
 
@@ -68,10 +68,10 @@
             <li> Fix some issues in Mendeley remote library setup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2601">#2601</a>)</li>
             <li> Bug fixes and internal improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2607">#2607</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2625">#2625</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2638">#2638</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2642">#2642</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2654">#2654</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2655">#2655</a>)</li>
         </ul>
-        <br>
-        <p>
-        Thanks to @fberlakovich for contributing to this release!
-        </p>
+<!--        <br>-->
+<!--        <p>-->
+<!--        Thanks to @fberlakovich for contributing to this release!-->
+<!--        </p>-->
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
