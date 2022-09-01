@@ -37,14 +37,15 @@
             welcome on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA">plugin's GitHub page</a>.
             If you want to directly chat with us, take a peek at the project's
             <a href="https://gitter.im/TeXiFy-IDEA">gitter</a>.
+            If you like the project, please <a href="https://www.paypal.me/HannahSchellekens">donate</a> to support ongoing development!
         </p>
     ]]></description>
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.21</strong></p>
+        <p><strong>Beta 0.7.22</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.21! This release just fixes a few bugs introduced with the new features in the last release.
+            Welcome to TeXiFy IDEA 0.7.22! This release fixes a few bugs in recently added features, while some time was spent on internal improvements.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -55,24 +56,22 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Add \loadglsentries. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2579">#2579</a>)</li>
-            <li> Index package files also for MiKTeX on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2581">#2581</a>)</li>
-            <li> Improve tool window visibility. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2577">#2577</a>)</li>
-            <li> Improve autocompletion performance. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2584">#2584</a>)</li>
-            <li> Improve user feedback when selecting Docker images. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2587">#2587</a>)</li>
+            <li> Use correct indent after enter in a document environment with indent disabled. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2624">#2624</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix docker image list refresh. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2570">#2570</a>)</li>
-            <li> Fix crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2562">#2562</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2567">#2567</a>)</li>
+            <li> Fix MiKTeX on Windows SDK home path check in case of a non-English system language. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2651">#2651</a>)</li>
+            <li> Fix Zathura inverse search for multiple files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2626">#2626</a>)</li>
+            <li> Fix some issues in Mendeley remote library setup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2601">#2601</a>)</li>
+            <li> Bug fixes and internal improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2607">#2607</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2625">#2625</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2638">#2638</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2642">#2642</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2654">#2654</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2655">#2655</a>)</li>
         </ul>
-        <br>
-        <p>
-        Thanks to @fberlakovich for contributing to this release!
-        </p>
+<!--        <br>-->
+<!--        <p>-->
+<!--        Thanks to @fberlakovich for contributing to this release!-->
+<!--        </p>-->
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
