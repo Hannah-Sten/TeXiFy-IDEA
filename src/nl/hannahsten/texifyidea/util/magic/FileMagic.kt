@@ -12,19 +12,19 @@ object FileMagic {
     val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
 
     val automaticExtensions = mapOf(
-            INCLUDE.cmd to LatexFileType.defaultExtension,
-            BIBLIOGRAPHY.cmd to BibtexFileType.defaultExtension
+        INCLUDE.cmd to LatexFileType.defaultExtension,
+        BIBLIOGRAPHY.cmd to BibtexFileType.defaultExtension
     )
 
     /**
      * All possible file types.
      */
     val fileTypes = setOf(
-            LatexFileType,
-            StyleFileType,
-            ClassFileType,
-            BibtexFileType,
-            TikzFileType
+        LatexFileType,
+        StyleFileType,
+        ClassFileType,
+        BibtexFileType,
+        TikzFileType
     )
 
     /**

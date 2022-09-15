@@ -18,7 +18,7 @@ object PreambleFilter : Filter {
             return true
         }
 
-        return treeElement.entry.tokenName()?.lowercase(Locale.getDefault()) != "preamble"
+        return treeElement.entry.tokenName().lowercase(Locale.getDefault()) != "preamble"
     }
 
     override fun isReverted() = true
@@ -27,6 +27,7 @@ object PreambleFilter : Filter {
 
     override fun getPresentation() = object : ActionPresentation {
 
+        @Suppress("DialogTitleCapitalization")
         override fun getText() = "Show @preamble"
 
         override fun getDescription() = "Show @preamble"

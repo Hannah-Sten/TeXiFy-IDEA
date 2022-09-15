@@ -33,10 +33,10 @@ import javax.swing.text.JTextComponent
 fun toast(project: Project, type: MessageType, htmlMessage: String) {
     val statusBar = WindowManager.getInstance().getStatusBar(project)
     JBPopupFactory.getInstance()
-            .createHtmlTextBalloonBuilder(htmlMessage, type, null)
-            .setFadeoutTime(7500)
-            .createBalloon()
-            .show(RelativePoint.getCenterOf(statusBar.component), Balloon.Position.above)
+        .createHtmlTextBalloonBuilder(htmlMessage, type, null)
+        .setFadeoutTime(7500)
+        .createBalloon()
+        .show(RelativePoint.getCenterOf(statusBar.component), Balloon.Position.above)
 }
 
 /**
@@ -150,10 +150,10 @@ fun JTextComponent.setInputFilter(allowedCharacters: Set<Char>) = addKeyTypedLis
  *          The fixed label width, or `null` to use the label's inherent size.
  */
 fun JPanel.addLabeledComponent(
-        component: JComponent,
-        description: String,
-        labelWidth: Int? = null,
-        leftPadding: Int = 16
+    component: JComponent,
+    description: String,
+    labelWidth: Int? = null,
+    leftPadding: Int = 16
 ): JPanel {
     // Uses a border layout with West for the label and Center for the control itself.
     // East is reserved for suffix elements.

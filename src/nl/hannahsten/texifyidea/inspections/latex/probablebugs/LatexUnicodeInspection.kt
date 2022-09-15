@@ -235,15 +235,15 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val mods = n.substring(matcher.end()).split("".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
             val diacritics = (mods.indices)
-                    // Modifiers in reversed order
-                    .map { mods[mods.size - 1 - it] }
-                    .mapNotNull {
-                        @Suppress("USELESS_CAST")
-                        if (inMathMode)
-                            Diacritic.Math.fromUnicode(it) as? Diacritic
-                        else
-                            Diacritic.Normal.fromUnicode(it) as? Diacritic
-                    }
+                // Modifiers in reversed order
+                .map { mods[mods.size - 1 - it] }
+                .mapNotNull {
+                    @Suppress("USELESS_CAST")
+                    if (inMathMode)
+                        Diacritic.Math.fromUnicode(it) as? Diacritic
+                    else
+                        Diacritic.Normal.fromUnicode(it) as? Diacritic
+                }
 
             return Diacritic.buildChain(base, diacritics)
         }

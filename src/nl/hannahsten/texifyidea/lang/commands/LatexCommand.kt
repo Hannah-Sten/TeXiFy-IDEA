@@ -51,35 +51,38 @@ interface LatexCommand : Described, Dependend {
             val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
 
             // Look up in index
-            FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
-                val dependency = LatexPackage.create(file)
-                // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
-                // Basically this means we add the indexed docs to the known command
-                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
-                val cmd = if (defaultcmds.isNotEmpty()) {
-                    val defaultCommand = defaultcmds.first()
-                    object : LatexCommand {
-                        override val command = cmdWithoutSlash
-                        override val display = defaultCommand.display
-                        override val arguments = defaultCommand.arguments
-                        override val description = format(value)
-                        override val dependency = dependency
-                        override val isMathMode = defaultCommand.isMathMode
+            FileBasedIndex.getInstance().processValues(
+                LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
+                    val dependency = LatexPackage.create(file)
+                    // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
+                    // Basically this means we add the indexed docs to the known command
+                    val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
+                    val cmd = if (defaultcmds.isNotEmpty()) {
+                        val defaultCommand = defaultcmds.first()
+                        object : LatexCommand {
+                            override val command = cmdWithoutSlash
+                            override val display = defaultCommand.display
+                            override val arguments = defaultCommand.arguments
+                            override val description = format(value)
+                            override val dependency = dependency
+                            override val isMathMode = defaultCommand.isMathMode
+                        }
                     }
-                }
-                else {
-                    object : LatexCommand {
-                        override val command = cmdWithoutSlash
-                        override val display: String? = null
-                        override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
-                        override val description = format(value)
-                        override val dependency = dependency
-                        override val isMathMode = false
+                    else {
+                        object : LatexCommand {
+                            override val command = cmdWithoutSlash
+                            override val display: String? = null
+                            override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
+                            override val description = format(value)
+                            override val dependency = dependency
+                            override val isMathMode = false
+                        }
                     }
-                }
-                cmds.add(cmd)
-                true
-            }, GlobalSearchScope.everythingScope(project))
+                    cmds.add(cmd)
+                    true
+                },
+                GlobalSearchScope.everythingScope(project)
+            )
 
             // Now we might have duplicates, some of which might differ only in description.
             // Of those, we just want to take any command which doesn't have an empty description if it exists

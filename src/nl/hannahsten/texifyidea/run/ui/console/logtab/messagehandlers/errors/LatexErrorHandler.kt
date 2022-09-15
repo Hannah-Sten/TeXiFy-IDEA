@@ -40,10 +40,9 @@ object LatexErrorHandler : LatexMessageHandler(
                 }
 
                 // Process a found error message (e.g. remove "LaTeX Error:")
-                val processedMessage = messageProcessors.mapNotNull { p ->
+                val processedMessage = messageProcessors.firstNotNullOfOrNull { p ->
                     if (p.regex.any { r -> r.containsMatchIn(message) }) p.postProcess(p.process(message)) else null
-                }
-                    .firstOrNull() ?: message
+                } ?: message
                     .replace("<inserted text>", "")
                     .replace("<to be read again>", "")
 

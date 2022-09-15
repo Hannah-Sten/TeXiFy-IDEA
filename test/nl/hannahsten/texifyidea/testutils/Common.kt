@@ -55,3 +55,5 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
         every { TexliveSdk.version } returns 2017
     }
 }
+
+fun String.toSystemNewLine() = replace(Regex("\n|\r\n"), System.lineSeparator())

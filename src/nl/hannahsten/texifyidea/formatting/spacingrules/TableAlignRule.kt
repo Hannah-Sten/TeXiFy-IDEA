@@ -25,7 +25,7 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
     if (left.node?.text?.endsWith("\\&") == true) return null
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject)
+        ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject)
     ) return null
 
     return createSpacing(
@@ -188,7 +188,7 @@ private fun getSpacesPerCell(
     relativeIndices: List<List<Int>>,
     contentLinesWithoutRules: MutableList<String>
 ): List<List<Int>> {
-    val nrLevels = relativeIndices.map { it.size }.maxOrNull() ?: 0
+    val nrLevels = relativeIndices.maxOfOrNull { it.size } ?: 0
 
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.
@@ -246,10 +246,14 @@ private fun getSpacesForRightBlock(
             if (absoluteIndices[level] == rightElementOffset) {
                 // For very long lines, it's a lot more readable to start & on a new line instead of inserting a whole bunch of spaces
                 // Make sure not to only put the \\ on a new line
-                val didPreviousCellGetNewline = if (level == 0) true else (relativeIndices.getOrNull(i)?.getOrNull(level - 1)
-                    ?: 0) > LINE_LENGTH
-                if ((relativeIndices.getOrNull(i)?.getOrNull(level)
-                        ?: 0) > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
+                val didPreviousCellGetNewline = if (level == 0) true else (
+                    relativeIndices.getOrNull(i)?.getOrNull(level - 1)
+                        ?: 0
+                    ) > LINE_LENGTH
+                if ((
+                    relativeIndices.getOrNull(i)?.getOrNull(level)
+                        ?: 0
+                    ) > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
                 ) return -1
                 return spacesPerCell.getOrNull(min(i, spacesPerCell.size - 1))?.getOrNull(level)
             }

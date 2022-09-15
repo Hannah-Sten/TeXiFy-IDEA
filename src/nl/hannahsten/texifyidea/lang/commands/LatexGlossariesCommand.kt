@@ -49,7 +49,17 @@ enum class LatexGlossariesCommand(
     GLS("gls", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
     GLSUPPER("Gls", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
     GLSPLURAL("glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
-    GLSPLURALUPPER("Glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES);
+    GLSPLURALUPPER("Glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
+
+    LOADGLSENTRIES(
+        "loadglsentries",
+        RequiredFileArgument(
+            "glossariesfile",
+            isAbsolutePathSupported = true,
+            commaSeparatesArguments = false
+        ),
+        dependency = LatexPackage.GLOSSARIES
+    );
 
     companion object {
 

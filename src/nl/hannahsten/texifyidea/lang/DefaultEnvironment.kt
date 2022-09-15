@@ -16,18 +16,18 @@ import java.util.*
  * @author Hannah Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-        override val environmentName: String,
-        override val initialContents: String = "",
-        override val context: Context = Context.NORMAL,
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override vararg val arguments: Argument,
-        override val description: String = ""
+    override val environmentName: String,
+    override val initialContents: String = "",
+    override val context: Context = Context.NORMAL,
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override vararg val arguments: Argument,
+    override val description: String = ""
 ) : Environment {
 
     // Vanilla LaTeX
     ABSTRACT(environmentName = "abstract"),
     ALLTT(environmentName = "alltt"),
-    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols"))),
+    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols")), context = Context.MATH),
     CENTER(environmentName = "center"),
     DESCRIPTION(environmentName = "description", initialContents = "\\item "),
     DISPLAYMATH(environmentName = "displaymath", context = Context.MATH),

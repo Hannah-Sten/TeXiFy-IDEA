@@ -7,9 +7,9 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
  * @author Hannah Schellekens
  */
 enum class FigureLocation(
-        val symbol: String,
-        override val description: String,
-        val requiredPackage: LatexPackage? = null
+    val symbol: String,
+    override val description: String,
+    val requiredPackage: LatexPackage? = null
 ) : Described {
 
     TOP("t", "top"),

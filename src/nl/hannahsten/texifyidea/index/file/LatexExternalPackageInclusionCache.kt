@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
@@ -22,17 +23,20 @@ object LatexExternalPackageInclusionCache {
      */
     @Synchronized
     fun getAllPackageInclusions(project: Project): Map<LatexPackage, Set<LatexPackage>> {
-        if (cache.isNotEmpty()) return cache
+        if (cache.isNotEmpty() || DumbService.isDumb(project)) return cache
 
         val directChildren = mutableMapOf<LatexPackage, MutableSet<LatexPackage>>()
 
         // Get direct children from the index
         FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.id, project).forEach { indexKey ->
-            FileBasedIndex.getInstance().processValues(LatexExternalPackageInclusionIndex.id, indexKey, null, { file, _ ->
-                val key = LatexPackage(file.name.removeFileExtension())
-                directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
-                true
-            }, GlobalSearchScope.everythingScope(project))
+            FileBasedIndex.getInstance().processValues(
+                LatexExternalPackageInclusionIndex.id, indexKey, null, { file, _ ->
+                    val key = LatexPackage(file.name.removeFileExtension())
+                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
+                    true
+                },
+                GlobalSearchScope.everythingScope(project)
+            )
         }
 
         // Do some DFS for indirect inclusions

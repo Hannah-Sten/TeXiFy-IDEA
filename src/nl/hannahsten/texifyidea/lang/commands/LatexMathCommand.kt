@@ -14,7 +14,7 @@ object LatexMathCommand {
     val UNCATEGORIZED_STMARYRD_SYMBOLS: Set<LatexCommand> = LatexUncategorizedStmaryrdSymbols.values().toSet()
 
     val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
-            GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS
+        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS
 
     private val lookup = HashMap<String, MutableSet<LatexCommand>>()
     private val lookupDisplay = HashMap<String, MutableSet<LatexCommand>>()

@@ -31,13 +31,13 @@ class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
 
         if (!hasDocumentEnvironment) {
             return listOf(
-                    manager.createProblemDescriptor(
-                            documentClass,
-                            displayName,
-                            true,
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly
-                    )
+                manager.createProblemDescriptor(
+                    documentClass,
+                    displayName,
+                    true,
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                    isOntheFly
+                )
             )
         }
         return emptyList()

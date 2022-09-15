@@ -38,7 +38,8 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
     @Test
     fun `test simple optional parameters map with whitespaces`() {
         // given
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             \begin{document}
                 \lstinputlisting[param1    = value1  , param2=value2]{some/file}
@@ -63,7 +64,8 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
     @Test
     fun `test multiple optional parameters map`() {
         // given
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             \begin{document}
                 \lstinputlisting[param1=value1][param2=value2,param3]{some/file}
@@ -89,7 +91,8 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
     @Test
     fun `test grouped optional parameters map`() {
         // given
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             \begin{document}
                 \lstinputlisting[param1={value11,value12},param2=value2,{param3,param4}=value3,onlykey,param5={x=y},param6={ with space }{parts}]{some/file}
@@ -118,7 +121,8 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
     @Test
     fun `test grouped key optional parameters map`() {
         // given
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             \begin{document}
                 \lstinputlisting[{param1}=value1,param2=value2]{some/file}

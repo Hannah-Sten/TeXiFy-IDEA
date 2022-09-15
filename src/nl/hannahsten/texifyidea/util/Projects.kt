@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
@@ -13,6 +14,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
@@ -90,7 +92,16 @@ fun Project.currentTextEditor(): TextEditor? {
  */
 fun Project.hasLatexModule(): Boolean {
     return ModuleManager.getInstance(this).modules
-            .any { it.moduleTypeName == LatexModuleType.ID }
+        .any { it.moduleTypeName == LatexModuleType.ID }
+}
+
+/**
+ * Best guess at whether this project can be considered a project containing significant LaTeX things.
+ */
+fun Project.isLatexProject(): Boolean {
+    return hasLatexModule() ||
+        getLatexRunConfigurations().isNotEmpty() ||
+        (ApplicationNamesInfo.getInstance().scriptName != "idea" && allFiles(LatexFileType).isNotEmpty())
 }
 
 /**

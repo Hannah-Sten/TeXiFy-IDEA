@@ -145,8 +145,8 @@ object PackageUtils {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
                 if (conflicts.contains(pack) && file.includedPackages().toSet()
-                        .intersect(conflicts)
-                        .isNotEmpty()
+                    .intersect(conflicts)
+                    .isNotEmpty()
                 ) {
                     return false
                 }

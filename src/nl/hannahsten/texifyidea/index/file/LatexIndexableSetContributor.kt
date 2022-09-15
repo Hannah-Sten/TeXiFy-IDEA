@@ -5,11 +5,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.isTestProject
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
-import org.codehaus.plexus.logging.console.ConsoleLoggerManager
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -30,6 +30,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         // Add source files
         val roots = LatexSdkUtil.getSdkSourceRoots(project) { sdk, homePath -> sdk.getDefaultSourcesPath(homePath) }.toMutableSet()
         // Check if we possibly need to extract files first
+        Log.debug("Indexing source roots $roots")
         for (root in roots) {
             if (root.path.contains("MiKTeX", ignoreCase = true) && !extractedFiles) {
                 try {
@@ -37,6 +38,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                 }
                 catch (e: ArchiverException) {
                     // Ignore permission errors, nothing we can do about that
+                    Log.debug("Exception when trying to extract MiKTeX source files: ${e.message}")
                     return mutableSetOf()
                 }
             }
@@ -59,7 +61,6 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
      */
     private fun extractMiktexFiles(root: VirtualFile): Boolean {
         val txArchiver = TarXZUnArchiver()
-        txArchiver.enableLogging(ConsoleLoggerManager().also { it.initialize() }.getLoggerForComponent("noop"))
         File(root.path).list { _, name -> name.endsWith("tar.xz") }?.forEach { zipName ->
             txArchiver.sourceFile = File(root.path, zipName)
             // Note that by keeping the target path the same for everything, some packages will install in source/latex and some in source/latex/latex depending on how they were zipped
@@ -68,12 +69,14 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
             // If the user has e.g. a MiKTeX admin install, we do not have rights to extract zips
             if (!Files.isWritable(Path.of(root.path))) {
                 extractedFiles = true
+                Log.debug("MiKTeX installation path ${root.path} is not writable, cannot extract sources")
                 return false
             }
 
             // Try to create if not exists
             if (!destination.exists() && !destination.mkdir()) {
                 extractedFiles = true
+                Log.debug("Could not create destination directory ${destination.absolutePath}")
                 return false
             }
 
@@ -81,7 +84,6 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
             txArchiver.extract()
         }
         val bz2Archiver = TarBZip2UnArchiver()
-        bz2Archiver.enableLogging(ConsoleLoggerManager().also { it.initialize() }.getLoggerForComponent("noop"))
         File(root.path).list { _, name -> name.endsWith("tar.bz2") }?.forEach { zipName ->
             bz2Archiver.sourceFile = File(root.path, zipName)
             bz2Archiver.destDirectory = File(root.path, "latex")

@@ -4,8 +4,6 @@ import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
-import com.intellij.packageDependencies.ui.PackageDependenciesNode
-import com.intellij.ui.ColoredTreeCellRenderer
 import nl.hannahsten.texifyidea.util.magic.IconMagic
 import java.util.*
 
@@ -39,9 +37,5 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
 
     override fun decorate(projectViewNode: ProjectViewNode<*>, presentationData: PresentationData) {
         setIcon(projectViewNode, presentationData)
-    }
-
-    override fun decorate(packageDependenciesNode: PackageDependenciesNode, coloredTreeCellRenderer: ColoredTreeCellRenderer) {
-        // Do nothing.
     }
 }

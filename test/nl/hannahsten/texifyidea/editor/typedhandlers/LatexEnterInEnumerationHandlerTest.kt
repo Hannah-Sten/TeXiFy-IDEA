@@ -6,22 +6,29 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
 
     fun testItemize() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{itemize}
                 \item <caret>
             \end{itemize}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.type("\n")
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \begin{itemize}
                 \item 
                 \item <caret>
             \end{itemize}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test nested enumeration with prefix`() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{enumerate}
                 \item foo
                 \item[whoo] bar
@@ -30,9 +37,11 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
                     \item[barfoo:]
                 \end{labeling} <caret>
             \end{enumerate}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.type("\n")
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \begin{enumerate}
                 \item foo
                 \item[whoo] bar
@@ -42,6 +51,7 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
                 \end{labeling} 
                 \item[whoo] 
             \end{enumerate}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

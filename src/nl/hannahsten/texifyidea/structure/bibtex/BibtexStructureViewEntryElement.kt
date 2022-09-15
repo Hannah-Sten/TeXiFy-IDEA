@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.structure.bibtex
 
+import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
-import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
 import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -16,21 +16,21 @@ import java.util.*
  */
 open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureViewTreeElement, SortableTreeElement {
 
-    private val entryPresentation: ItemPresentation = object : ItemPresentation {
+    private val entryPresentation: PresentationData = object : PresentationData() {
 
-        override fun getLocationString() = when (entry.tokenName()?.lowercase(Locale.getDefault())) {
+        override fun getLocationString() = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "string" -> entry.tags().first().content?.text.orEmpty()
             "preamble" -> ""
             else -> entry.tokenName()
         }
 
-        override fun getPresentableText() = when (entry.tokenName()?.lowercase(Locale.getDefault())) {
+        override fun getPresentableText() = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "preamble" -> "preamble"
             "string" -> entry.tags().firstOrNull()?.keyName()
             else -> entry.identifier()
         } ?: ""
 
-        override fun getIcon(b: Boolean) = when (entry.tokenName()?.lowercase(Locale.getDefault())) {
+        override fun getIcon(b: Boolean) = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "string" -> TexifyIcons.STRING
             "preamble" -> PlatformIcons.PROPERTY_ICON
             else -> PlatformIcons.ANNOTATION_TYPE_ICON

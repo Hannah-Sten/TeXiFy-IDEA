@@ -13,7 +13,7 @@ import java.io.File
 private val EP_NAME = ExtensionPointName<ExternalPdfViewer>("nl.rubensten.texifyidea.pdfViewer")
 
 /**
- * Interface that defines a pdf viewer so we can use both [InternalPdfViewer]s and [ExternalPdfViewer]s interchangeably.
+ * Interface that defines a pdf viewer so we can use both [nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer]s and [ExternalPdfViewer]s interchangeably.
  */
 interface PdfViewer : Executable {
 

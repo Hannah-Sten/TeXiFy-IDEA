@@ -7,24 +7,24 @@ package nl.hannahsten.texifyidea.action.wizard.table
  */
 data class TableInformation(
 
-        /**
-         * Contains all information about the contents of the table.
-         * That is, the column names and the table entries.
-         */
-        val tableModel: TableCreationTableModel,
+    /**
+     * Contains all information about the contents of the table.
+     * That is, the column names and the table entries.
+     */
+    val tableModel: TableCreationTableModel,
 
-        /**
-         * Contains the type of each column.
-         */
-        val columnTypes: List<ColumnType>,
+    /**
+     * Contains the type of each column.
+     */
+    val columnTypes: List<ColumnType>,
 
-        /**
-         * Contains the caption to go along with the table.
-         */
-        val caption: String,
+    /**
+     * Contains the caption to go along with the table.
+     */
+    val caption: String,
 
-        /**
-         * Contains the label that is to be used to reference the table.
-         */
-        val label: String
+    /**
+     * Contains the label that is to be used to reference the table.
+     */
+    val label: String
 )

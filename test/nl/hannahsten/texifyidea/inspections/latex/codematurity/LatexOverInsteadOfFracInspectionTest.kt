@@ -9,22 +9,22 @@ class LatexOverInsteadOfFracInspectionTest : TexifyInspectionTestBase(LatexOverI
     fun `test frac no warning`() = testHighlighting("""$\frac{1}{2}$""")
 
     fun `test quick fix`() = testQuickFix(
-            before = """$1\over 2$""",
-            after = """$\frac{1}{2}$""".trimMargin()
+        before = """$1\over 2$""",
+        after = """$\frac{1}{2}$""".trimMargin()
     )
 
     fun `test quick fix without space`() = testQuickFix(
-            before = """$1\over2$""",
-            after = """$\frac{1}{2}$""".trimMargin()
+        before = """$1\over2$""",
+        after = """$\frac{1}{2}$""".trimMargin()
     )
 
     fun `test quick fix without numerator and denominator`() = testQuickFix(
-            before = """$\over$""",
-            after = """$\frac{}{}$"""
+        before = """$\over$""",
+        after = """$\frac{}{}$"""
     )
 
     fun `test quick fix in formula`() = testQuickFix(
-            before = """${'$'}x = {1\over2} + y$""",
-            after = """${'$'}x = {\frac{1}{2}} + y$""".trimMargin()
+        before = """${'$'}x = {1\over2} + y$""",
+        after = """${'$'}x = {\frac{1}{2}} + y$""".trimMargin()
     )
 }

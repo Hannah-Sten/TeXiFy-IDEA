@@ -20,14 +20,13 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
     companion object {
 
         val isAvailable: Boolean by lazy {
-            availableImages.any { it.contains("miktex") }
+            getAvailableImages().any { it.contains("miktex") }
         }
 
-        val availableImages: List<String> by lazy {
+        fun getAvailableImages(): List<String> =
             runCommand("docker", "image", "ls", "--format", "table {{.Repository}}:{{.Tag}}")?.split('\n')
                 ?.drop(1) // header
                 ?.filter { it.isNotBlank() } ?: emptyList()
-        }
     }
 
     override fun suggestHomePath(): String {
@@ -41,9 +40,11 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
 
         // There's not really a path with 'sources' for docker except the location of images, but that's OS-dependent
         // and we only need to be able to execute the 'docker' executable anyway
-        return "which docker".runCommand()?.let { output -> mutableListOf(
-            output.split("/").dropLast(1).joinToString("/")
-        ) } ?: mutableListOf()
+        return "which docker".runCommand()?.let { output ->
+            mutableListOf(
+                output.split("/").dropLast(1).joinToString("/")
+            )
+        } ?: mutableListOf()
     }
 
     override fun isValidSdkHome(path: String): Boolean {

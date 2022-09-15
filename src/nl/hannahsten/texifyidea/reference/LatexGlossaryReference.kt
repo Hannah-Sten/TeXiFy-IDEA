@@ -10,7 +10,8 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
  * This reference allows refactoring of glossary entries. A glossary reference command (e.g. \gls) references the label
  * parameter of a glossary entry command (e.g. \newglossaryentry).
  */
-class LatexGlossaryReference(element: LatexParameterText) : PsiReferenceBase<LatexParameterText>(element),
+class LatexGlossaryReference(element: LatexParameterText) :
+    PsiReferenceBase<LatexParameterText>(element),
     PsiPolyVariantReference {
 
     init {

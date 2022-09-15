@@ -18,15 +18,13 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
-open class CommandUiEntry(
-        command: LatexCommand,
-        generatedLatex: String? = null,
-        customFileName: String? = null,
-        customDescription: String? = null,
-        customImageLatex: String? = null
+class CommandUiEntry(
+    override val command: LatexCommand,
+    generatedLatex: String? = null,
+    customFileName: String? = null,
+    customDescription: String? = null,
+    customImageLatex: String? = null
 ) : SymbolUiEntry {
-
-    override val command: LatexCommand? = command
 
     override val generatedLatex: String = generatedLatex ?: command.commandWithSlash
 
@@ -39,9 +37,11 @@ open class CommandUiEntry(
 
     override val imageLatex = customImageLatex ?: command.commandWithSlash
 
-    override val description = customDescription ?: command.identifier
-        .lowercase(Locale.getDefault())
-        .replace("_", " ") + if (command.isMathMode) " (math)" else ""
+    override val description = customDescription ?: (
+        command.identifier
+            .lowercase(Locale.getDefault())
+            .replace("_", " ") + if (command.isMathMode) " (math)" else ""
+        )
 
     override val isMathSymbol = command.isMathMode
 }

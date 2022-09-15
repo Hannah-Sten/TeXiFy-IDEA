@@ -2,13 +2,17 @@ package nl.hannahsten.texifyidea.lang.alias
 
 import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.requiredParameters
 import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
+import kotlin.collections.set
 
 /**
  * Manages all available LaTeX commands and their aliases.

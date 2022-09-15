@@ -7,12 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
  * @author Hannah Schellekens
  */
 enum class LatexGreekCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = true,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = true,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     ALPHA("alpha", display = "α", collapse = true),

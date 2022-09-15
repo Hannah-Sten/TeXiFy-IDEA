@@ -152,7 +152,7 @@ class LatexCompileMessageTreeView(
     }
 
     inner class FilterBibtexAction(val project: Project) :
-        ToggleAction("Show bibtex messages by latexmk", "", TexifyIcons.DOT_BIB), DumbAware {
+        ToggleAction("Show Bibtex Messages by Latexmk", "", TexifyIcons.DOT_BIB), DumbAware {
 
         override fun isSelected(e: AnActionEvent): Boolean = config().showBibtexWarnings
 

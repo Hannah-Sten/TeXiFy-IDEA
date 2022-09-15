@@ -44,8 +44,10 @@ fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Colo
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
-        (this.name in CommandMagic.commandDefinitionsAndRedefinitions || this.name in CommandMagic.commandRedefinitions ||
-                this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions)
+    (
+        this.name in CommandMagic.commandDefinitionsAndRedefinitions || this.name in CommandMagic.commandRedefinitions ||
+            this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions
+        )
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
@@ -131,8 +133,8 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
 fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
     // Find all pre-defined commands that define `this` command.
     val optionalArgIndices = LatexRegularCommand[
-            name?.substring(1)
-                ?: return null
+        name?.substring(1)
+            ?: return null
     ]
         // Find the index of their optional argument named [argument].
         ?.map {
@@ -216,9 +218,9 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
         return if (found.size == 1) found.first() else null
     }
 
-    val parent = PsiTreeUtil.getParentOfType(this, LatexNoMathContent::class.java)
-    val sibling = PsiTreeUtil.getNextSiblingOfType(parent, LatexNoMathContent::class.java)
-    return PsiTreeUtil.findChildOfType(sibling, LatexCommands::class.java)
+    // This is just a bit of guesswork about the parser structure.
+    // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
+    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class)
 }
 
 /**

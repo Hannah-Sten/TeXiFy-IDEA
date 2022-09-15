@@ -1,0 +1,20 @@
+version: "1.0"
+linter: jetbrains/qodana-jvm:latest
+profile:
+  name: qodana.recommended
+exclude:
+  - name: EditorConfigUnusedDeclaration
+  - name: HtmlDeprecatedTag
+  - name: HtmlRequiredLangAttribute
+  - name: MemberVisibilityCanBePrivate
+  - name: UnstableApiUsage
+  - name: unused
+  - name: UnusedSymbol
+  - name: XmlHighlighting
+  - name: XmlUnusedNamespaceDeclaration
+  - name: All
+    paths:
+      - gen
+      - .github
+      - results
+      - build

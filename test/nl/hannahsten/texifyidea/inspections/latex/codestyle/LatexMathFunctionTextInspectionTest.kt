@@ -12,15 +12,16 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
 
     fun testWarning() {
         MATH_FUNCTIONS.forEach {
-            myFixture.configureByText(LatexFileType,
-                    """
+            myFixture.configureByText(
+                LatexFileType,
+                """
                         $<warning descr="Use math function instead of \text">\text{$it}(3, 4)</warning>$
                         \(<warning descr="Use math function instead of \text">\text{$it   }(12)</warning>\)
                         \[<warning descr="Use math function instead of \text">\text{  $it}</warning>   text\]
                         \begin{equation}
                             <warning descr="Use math function instead of \text">\text{  $it    }</warning>
                         \end{equation}
-                    """.trimIndent()
+                """.trimIndent()
             )
             myFixture.checkHighlighting()
         }
@@ -28,29 +29,32 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
 
     fun testNoWarning() {
         MATH_FUNCTIONS.forEach {
-            myFixture.configureByText(LatexFileType,
-                    """
+            myFixture.configureByText(
+                LatexFileType,
+                """
                         \text{$it}
                         \text{$it   }
                         \text{  $it}
                         \begin{nonmathenv}
                             \text{  $it    }
                         \end{nonmathenv}
-                    """.trimIndent()
+                """.trimIndent()
             )
             myFixture.checkHighlighting()
         }
 
-        myFixture.configureByText(LatexFileType,
-                """Just some random min text max or \[max(3,4)\] or even \[ \text{nomath} \]"""
+        myFixture.configureByText(
+            LatexFileType,
+            """Just some random min text max or \[max(3,4)\] or even \[ \text{nomath} \]"""
         )
         myFixture.checkHighlighting()
     }
 
     fun testQuickFix() {
         MATH_FUNCTIONS.forEach {
-            myFixture.configureByText(LatexFileType,
-                    """$ Test \text{$it } (3, 4) $ text max"""
+            myFixture.configureByText(
+                LatexFileType,
+                """$ Test \text{$it } (3, 4) $ text max"""
             )
 
             val quickFixes = myFixture.getAllQuickFixes()
@@ -60,7 +64,7 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
             }
 
             myFixture.checkResult(
-                    """$ Test \$it (3, 4) $ text max"""
+                """$ Test \$it (3, 4) $ text max"""
             )
         }
     }

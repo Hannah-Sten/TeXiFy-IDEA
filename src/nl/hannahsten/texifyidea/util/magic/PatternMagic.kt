@@ -58,11 +58,11 @@ object PatternMagic {
      * Abbreviations not detected by [PatternMagic.abbreviation].
      */
     val unRegexableAbbreviations = listOf(
-            "et al."
+        "et al."
     )
 
     /** [abbreviation]s that are missing a normal space (or a non-breaking space) */
-    val abbreviationWithoutNormalSpace = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s])")!!
+    val abbreviationWithoutNormalSpace = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.\\s)")!!
 
     /**
      * Matches all comments, starting with % and ending with a newline.
@@ -121,10 +121,10 @@ object PatternMagic {
      * Matches the begin and end commands of the cases and split environments.
      */
     val casesOrSplitCommands = Regex(
-            "((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
-                    "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
-                    "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
-                    "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))"
+        "((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
+            "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
+            "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
+            "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))"
     )
 
     /**

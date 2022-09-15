@@ -30,10 +30,10 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  * @param defaultExtension Default extension of the command in which this reference is.
  */
 class InputFileReference(
-        element: LatexCommands,
-        val range: TextRange,
-        val extensions: Set<String>,
-        val defaultExtension: String
+    element: LatexCommands,
+    val range: TextRange,
+    val extensions: Set<String>,
+    val defaultExtension: String
 ) : PsiReferenceBase<LatexCommands>(element) {
 
     init {
@@ -91,9 +91,9 @@ class InputFileReference(
             if (path.endsWith("//")) {
                 LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
                     searchPaths.addAll(
-                            parent.allChildDirectories()
-                                    .filter { it.isDirectory }
-                                    .map { it.path }
+                        parent.allChildDirectories()
+                            .filter { it.isDirectory }
+                            .map { it.path }
                     )
                 }
             }
@@ -111,7 +111,9 @@ class InputFileReference(
 //            }
         }
 
-        val processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
+        var processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
+        // Leading and trailing whitespaces seem to be ignored, at least it holds for \include-like commands
+        processedKey = processedKey.trim()
 
         var targetFile: VirtualFile? = null
 
@@ -152,9 +154,8 @@ class InputFileReference(
         // Look for packages/files elsewhere using the kpsewhich command.
         if (targetFile == null && lookForInstalledPackages) {
             targetFile = element.getFileNameWithExtensions(processedKey)
-                    .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
-                    .mapNotNull { getExternalFile(it) }
-                    .firstOrNull()
+                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
+                .firstNotNullOfOrNull { getExternalFile(it) }
         }
 
         if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
@@ -223,7 +224,7 @@ class InputFileReference(
         // Recall that \ is a file separator on Windows
         val newText = if (elementNameIsJustFilename) {
             oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
-                    ?.let { "\\" + it } ?: default
+                ?.let { "\\" + it } ?: default
         }
         else {
             default

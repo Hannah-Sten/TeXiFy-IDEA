@@ -49,7 +49,7 @@ interface SymbolUiEntry : Described {
 
     /**
      * The latex used to generate the image.
-      */
+     */
     val imageLatex: String
 
     /**

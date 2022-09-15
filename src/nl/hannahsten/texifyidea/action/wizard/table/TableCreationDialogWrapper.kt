@@ -15,7 +15,9 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.util.addLabeledComponent
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
@@ -25,9 +27,9 @@ import javax.swing.*
  *
  * @author Abby Berkers
  */
-open class TableCreationDialogWrapper(
-        initialColumnTypes: List<ColumnType>? = null,
-        initialTableModel: TableCreationTableModel? = null
+class TableCreationDialogWrapper(
+    initialColumnTypes: List<ColumnType>? = null,
+    initialTableModel: TableCreationTableModel? = null
 ) : DialogWrapper(true) {
 
     /**
@@ -68,7 +70,7 @@ open class TableCreationDialogWrapper(
     init {
         // Initialise the dialog, otherwise it shows as a line (i.e., infinitely small) and without any of the elements.
         init()
-        title = "Insert table"
+        title = "Insert Table"
     }
 
     /**
@@ -111,33 +113,38 @@ open class TableCreationDialogWrapper(
         add(createTablePanelContainer(), BorderLayout.CENTER)
 
         // Create labels.
-        add(JPanel(VerticalLayout(8)).apply {
-            addLabeledComponent(txtCaption, "Caption:", labelWidth = 64, leftPadding = 0)
-            addLabeledComponent(txtReference, "Label:", labelWidth = 64, leftPadding = 0)
-        }, BorderLayout.SOUTH)
+        add(
+            JPanel(VerticalLayout(8)).apply {
+                addLabeledComponent(txtCaption, "Caption:", labelWidth = 64, leftPadding = 0)
+                addLabeledComponent(txtReference, "Label:", labelWidth = 64, leftPadding = 0)
+            },
+            BorderLayout.SOUTH
+        )
     }
 
     /**
      * Generates table and the toolbaar buttons.
      */
     private fun createToolbarDecorator() = ToolbarDecorator.createDecorator(table)
-            .setAddAction {
-                TableCreationEditColumnDialog(
-                        { title, columnType, _ -> addTableColumn(title, columnType) },
-                        tableModel.columnCount
-                )
-            }
-            .setAddActionName("Add Column")
-            .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
-            .addExtraAction(getRemoveColumnActionButton())
-            .addExtraAction(getEditColumnActionButton())
-            .addExtraAction(getAddRowActionButton())
-            .addExtraAction(getRemoveRowActionButton().apply {
+        .setAddAction {
+            TableCreationEditColumnDialog(
+                { title, columnType, _ -> addTableColumn(title, columnType) },
+                tableModel.columnCount
+            )
+        }
+        .setAddActionName("Add Column")
+        .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
+        .addExtraAction(getRemoveColumnActionButton())
+        .addExtraAction(getEditColumnActionButton())
+        .addExtraAction(getAddRowActionButton())
+        .addExtraAction(
+            getRemoveRowActionButton().apply {
                 shortcut = ShortcutSet {
                     arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null))
                 }
-            })
-            .createPanel()
+            }
+        )
+        .createPanel()
 
     /**
      * Panel containing the table and its controls.
@@ -189,7 +196,7 @@ open class TableCreationDialogWrapper(
 
                 // When we're in the last column of the last row, add a new row before calling the usual action.
                 if (table.selectionModel.leadSelectionIndex == table.rowCount - 1 &&
-                        table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1
+                    table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1
                 ) {
                     tableModel.addEmptyRow()
                 }
@@ -239,26 +246,26 @@ open class TableCreationDialogWrapper(
      */
     override fun doValidate(): ValidationInfo? {
         tableInformation = TableInformation(
-                tableModel,
-                columnTypes,
-                txtCaption.text.trim(),
-                txtReference.text.trim()
+            tableModel,
+            columnTypes,
+            txtCaption.text.trim(),
+            txtReference.text.trim()
         )
         return null
     }
 
     private fun getEditColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Edit column header", addText(IconUtil.getEditIcon(), "C")) {
+        return object : AnActionButton("Edit Column Header", addText(IconUtil.getEditIcon(), "C")) {
 
             override fun isEnabled() = table.columnCount > 0
 
             override fun actionPerformed(e: AnActionEvent) {
                 if (table.selectedColumn >= 0) {
                     TableCreationEditColumnDialog(
-                            { title, columnType, columnIndex -> editTableColumn(title, columnType, columnIndex) },
-                            table.selectedColumn,
-                            table.getColumnName(table.selectedColumn),
-                            columnTypes[table.selectedColumn]
+                        { title, columnType, columnIndex -> editTableColumn(title, columnType, columnIndex) },
+                        table.selectedColumn,
+                        table.getColumnName(table.selectedColumn),
+                        columnTypes[table.selectedColumn]
                     )
                 }
             }

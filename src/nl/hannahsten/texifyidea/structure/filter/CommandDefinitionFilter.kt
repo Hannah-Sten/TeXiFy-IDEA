@@ -18,9 +18,9 @@ class CommandDefinitionFilter : Filter {
             true
         }
         else !(
-                treeElement.commandName == "\\newcommand" ||
-                        treeElement.commandName in CommandMagic.mathCommandDefinitions ||
-                        treeElement.presentation is LatexOtherCommandPresentation
+            treeElement.commandName == "\\newcommand" ||
+                treeElement.commandName in CommandMagic.mathCommandDefinitions ||
+                treeElement.presentation is LatexOtherCommandPresentation
             )
     }
 
@@ -37,7 +37,7 @@ class CommandDefinitionFilter : Filter {
 
         override fun getText() = "Show Command Definitions"
 
-        override fun getDescription() = "Show Command Definitions"
+        override fun getDescription() = "Show command definitions"
 
         override fun getIcon() = TexifyIcons.DOT_COMMAND
     }

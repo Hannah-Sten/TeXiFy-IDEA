@@ -32,22 +32,22 @@ import javax.swing.border.EmptyBorder
  */
 class SaveImageFromClipboardDialog(
 
-        /**
-         * The current project.
-         */
-        val project: Project,
+    /**
+     * The current project.
+     */
+    val project: Project,
 
-        /**
-         * The transferable data from the clipboard.
-         * Must support the image data flavor [DataFlavor.imageFlavor].
-         */
-        private val transferable: Transferable,
+    /**
+     * The transferable data from the clipboard.
+     * Must support the image data flavor [DataFlavor.imageFlavor].
+     */
+    private val transferable: Transferable,
 
-        /**
-         * The function to execute when the dialog is succesfully closed.
-         * Does not execute when cancelled.
-         */
-        onOkFunction: (SaveImageFromClipboardDialog) -> Unit
+    /**
+     * The function to execute when the dialog is succesfully closed.
+     * Does not execute when cancelled.
+     */
+    onOkFunction: (SaveImageFromClipboardDialog) -> Unit
 ) : DialogWrapper(true) {
 
     companion object {
@@ -233,13 +233,16 @@ class SaveImageFromClipboardDialog(
     /**
      * Adds the panel that shows information about the pasted image.
      */
-    private fun JPanel.addImageMetaPanel() = add(JPanel(BorderLayout(16, 16)).apply {
-        border = EmptyBorder(16, 16, 16, 16)
+    private fun JPanel.addImageMetaPanel() = add(
+        JPanel(BorderLayout(16, 16)).apply {
+            border = EmptyBorder(16, 16, 16, 16)
 
-        add(imgPreview, BorderLayout.WEST)
+            add(imgPreview, BorderLayout.WEST)
 
-        // Info labels.
-        add(JBLabel("""<html>
+            // Info labels.
+            add(
+                JBLabel(
+                    """<html>
             <table>
                 <tr>
                     <td><b>Size:</b> </td>
@@ -254,8 +257,11 @@ class SaveImageFromClipboardDialog(
                     <td>${imageName ?: "unknown"}</td>
                 </tr>
             </table>
-        </html>"""))
-    })
+        </html>"""
+                )
+            )
+        }
+    )
 
     /**
      * Adds the user input controls to enter the image information.

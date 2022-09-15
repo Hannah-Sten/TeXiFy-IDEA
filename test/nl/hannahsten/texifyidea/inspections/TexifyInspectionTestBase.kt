@@ -53,7 +53,7 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
 
         // Find the fix all problems in this file intention for this inspection.
         val fixAllIntention = myFixture.getAvailableIntention(
-                InspectionsBundle.message("fix.all.inspection.problems.in.file", quickFixName)
+            InspectionsBundle.message("fix.all.inspection.problems.in.file", quickFixName)
         ) ?: return
         myFixture.launchAction(fixAllIntention)
 

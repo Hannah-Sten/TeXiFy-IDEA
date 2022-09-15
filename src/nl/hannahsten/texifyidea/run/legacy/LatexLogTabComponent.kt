@@ -30,7 +30,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
 //        startedProcess.addProcessListener(LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView), this)
     }
 
-    override fun getTabTitle() = "Log messages"
+    override fun getTabTitle() = "Log Messages"
 
     override fun dispose() {}
 
@@ -40,7 +40,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
 
     override fun getToolbarContextComponent(): JComponent? = null
 
-    override fun getToolbarPlace(): String? = "top"
+    override fun getToolbarPlace(): String = "top"
 
     override fun getSearchComponent(): JComponent? = null
 

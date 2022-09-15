@@ -6,7 +6,6 @@ import com.intellij.openapi.util.io.FileUtil
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.ui.PreviewForm
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File

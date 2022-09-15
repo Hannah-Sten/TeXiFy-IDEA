@@ -4,8 +4,9 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.7.0"
+    id("org.jetbrains.intellij") version "1.8.0"
     kotlin("jvm") version("1.7.0")
+    kotlin("plugin.serialization") version("1.7.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -14,17 +15,17 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.0.2"
+    id("de.undercouch.download") version "5.1.0"
 
     // Test coverage
-    jacoco
+    id("org.jetbrains.kotlinx.kover") version "0.5.1"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
+    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 }
 
 group = "nl.hannahsten"
-version = "0.8.0-beta.10"
+version = "0.8.0-beta.11"
 
 repositories {
     mavenCentral()
@@ -69,23 +70,32 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.1")
-    implementation("org.slf4j:slf4j-simple:2.0.0-alpha6")
+    implementation("org.slf4j:slf4j-simple:2.0.0-alpha7")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.2.7")
+    implementation("org.codehaus.plexus:plexus-archiver:4.4.0")
 
     // Parsing json
-    implementation("com.beust:klaxon:5.5")
+    implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.3")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+
+    // Http requests
+    implementation("io.ktor:ktor-client-core:2.0.3")
+    implementation("io.ktor:ktor-client-cio:2.0.3")
+    implementation("io.ktor:ktor-client-auth:2.0.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.0.3")
+    implementation("io.ktor:ktor-server-core:2.0.3")
+    implementation("io.ktor:ktor-server-jetty:2.0.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.3")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:3.8.4")
+    implementation("org.apache.maven:maven-artifact:3.8.6")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
@@ -94,20 +104,20 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.8.2")
+    testImplementation("org.junit.platform:junit-platform-runner:1.9.0")
 
     // just in case
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("io.mockk:mockk:1.12.5")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -145,7 +155,7 @@ intellij {
 
     // todo support pdf viewer plugin
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.20"))
+    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.22"))
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
@@ -155,8 +165,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2021.3.2")
-//    version.set("221.3427.89-EAP-SNAPSHOT")
+    version.set("2022.2")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
@@ -188,18 +197,6 @@ tasks.test {
         events(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
         exceptionFormat = TestExceptionFormat.FULL
     }
-}
-
-// Test coverage reporting
-tasks.jacocoTestReport {
-    // Enable xml for codecov
-    reports {
-        html.required.set(true)
-        xml.required.set(true)
-        xml.outputLocation.set(file("$buildDir/reports/jacoco/test/jacocoTestReport.xml"))
-    }
-
-    sourceSets(project.sourceSets.getByName("main"))
 }
 
 ktlint {

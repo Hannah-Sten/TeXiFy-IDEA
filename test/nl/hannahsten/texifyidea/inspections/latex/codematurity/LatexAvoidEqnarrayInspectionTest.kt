@@ -4,36 +4,42 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexAvoidEqnarrayInspectionTest : TexifyInspectionTestBase(LatexAvoidEqnarrayInspection()) {
 
-    fun `test eqnarray warning`() = testHighlighting("""
+    fun `test eqnarray warning`() = testHighlighting(
+        """
         \begin{<warning descr="Avoid using the 'eqnarray' environment">eqnarray</warning>}
             x
         \end{eqnarray}
-    """.trimIndent())
+        """.trimIndent()
+    )
 
-    fun `test eqnarray star warning`() = testHighlighting("""
+    fun `test eqnarray star warning`() = testHighlighting(
+        """
         \begin{<warning descr="Avoid using the 'eqnarray*' environment">eqnarray*</warning>}
             x
         \end{eqnarray*}
-    """.trimIndent())
+        """.trimIndent()
+    )
 
-    fun `test no warning for other math environment`() = testHighlighting("""
+    fun `test no warning for other math environment`() = testHighlighting(
+        """
         \begin{align}
             x
         \end{align}
-    """.trimIndent())
+        """.trimIndent()
+    )
 
     fun `test quick fix`() = testQuickFix(
-            before = """
+        before = """
                 \usepackage{amsmath}
                 \begin{eqnarray*}
                     x
                 \end{eqnarray*}
-            """.trimIndent(),
-            after = """
+        """.trimIndent(),
+        after = """
                 \usepackage{amsmath}
                 \begin{align*}
                     x
                 \end{align*}
-            """.trimIndent()
+        """.trimIndent()
     )
 }

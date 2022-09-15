@@ -1,6 +1,5 @@
 [*.{kt,kts}]
-# Enable indent once ktlint supports continuation indent again.
-disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,import-ordering,keyword-spacing,indent
+disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,import-ordering,keyword-spacing
 insert_final_newline = false
 
 ij_kotlin_else_on_new_line = true
