@@ -206,6 +206,10 @@ abstract class TexifyRegexInspection(
 
             val groups = groupFetcher(matcher)
             val textRange = highlightRange(matcher)
+            val startOffset = if (textRange.startOffset < 0) 0 else textRange.startOffset
+            val endOffset = if (textRange.endOffset > file.textLength) file.textLength else textRange.endOffset
+            val textRangeFixed = TextRange(startOffset, endOffset)
+
             val range = replacementRange(matcher)
             val error = errorMessage(matcher)
             val quickFix = quickFixName(matcher)
@@ -220,7 +224,7 @@ abstract class TexifyRegexInspection(
             descriptors.add(
                 manager.createProblemDescriptor(
                     file,
-                    textRange,
+                    textRangeFixed,
                     error,
                     highlight,
                     true,
