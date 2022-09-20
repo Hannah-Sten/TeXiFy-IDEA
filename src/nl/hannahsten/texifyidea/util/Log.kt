@@ -26,4 +26,6 @@ object Log {
     fun warn(message: String) = logger.warn("$prefix $message")
 
     fun debug(message: String) = logger.debug("$prefix $message")
+
+    fun error(message: String) = logger.error("$prefix $message")
 }
