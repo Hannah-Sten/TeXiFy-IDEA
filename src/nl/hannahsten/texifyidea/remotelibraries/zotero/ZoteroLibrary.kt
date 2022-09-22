@@ -8,6 +8,7 @@ import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
+import nl.hannahsten.texifyidea.util.toURIWithProxy
 
 class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") :
     RemoteBibLibrary(identifier, displayName) {
@@ -40,7 +41,7 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
     companion object {
 
         const val VERSION = 3
-        const val BASE_URL = "https://api.zotero.org"
+        val BASE_URL = "https://api.zotero.org".toURIWithProxy()
         const val PAGINATION_LIMIT = 50
         const val NAME = "Zotero"
     }

@@ -15,6 +15,7 @@ import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
+import nl.hannahsten.texifyidea.util.toURIWithProxy
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.awt.Component
 import java.io.UnsupportedEncodingException
@@ -100,7 +101,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             return false
         }
 
-        BrowserUtil.browse(builder.toString())
+        BrowserUtil.browse(builder.toString().toURIWithProxy())
         consumer.consume(
             SubmittedReportInfo(
                 null,
@@ -115,7 +116,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
         private const val ISSUE_URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&template=crash_report.md&title="
 
-        private const val JETBRAINS_API_URL = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
+        private val JETBRAINS_API_URL = "https://plugins.jetbrains.com/plugins/list?pluginId=9473".toURIWithProxy()
 
         private const val ENCODING = "UTF-8"
 

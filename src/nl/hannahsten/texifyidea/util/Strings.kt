@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.TextRange
+import com.intellij.util.net.HttpConfigurable
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import java.io.File
@@ -247,3 +248,8 @@ inline fun String.encloseWhen(prefix: String = "", suffix: String = "", predicat
         append(suffix)
     }
 }
+
+/**
+ * Add proxy information, if any.
+ */
+fun String.toURIWithProxy() = HttpConfigurable.getInstance().openConnection(this).url.toString()

@@ -21,6 +21,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.refreshTokenAttributes
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.tokenAttributes
+import nl.hannahsten.texifyidea.util.toURIWithProxy
 
 /**
  * Authorization via OAuth:
@@ -55,7 +56,7 @@ object MendeleyAuthenticator {
         append("scope", "all")
     }.formUrlEncode()
 
-    val authorizationUrl = "https://api.mendeley.com/oauth/authorize?$authorizationParameters"
+    val authorizationUrl = "https://api.mendeley.com/oauth/authorize?$authorizationParameters".toURIWithProxy()
 
     /**
      * This server is a var because a stopped server cannot be restarted, so a new server is created before every
@@ -115,7 +116,7 @@ object MendeleyAuthenticator {
     suspend fun getAccessToken(): Credentials? {
         return PasswordSafe.instance.get(tokenAttributes) ?: authenticationCode?.let {
             val token: AccessTokenInfo = authenticationClient.submitForm(
-                url = "https://api.mendeley.com/oauth/token",
+                url = "https://api.mendeley.com/oauth/token".toURIWithProxy(),
                 formParameters = Parameters.build {
                     append("grant_type", "authorization_code")
                     append("code", it)
@@ -135,7 +136,7 @@ object MendeleyAuthenticator {
     suspend fun refreshAccessToken(): BearerTokens? {
         val refreshToken = PasswordSafe.instance.getPassword(refreshTokenAttributes) ?: return null
         val token: AccessTokenInfo = authenticationClient.submitForm(
-            url = "https://api.mendeley.com/oauth/token",
+            url = "https://api.mendeley.com/oauth/token".toURIWithProxy(),
             formParameters = Parameters.build {
                 append("grant_type", "refresh_token")
                 append("refresh_token", refreshToken)
