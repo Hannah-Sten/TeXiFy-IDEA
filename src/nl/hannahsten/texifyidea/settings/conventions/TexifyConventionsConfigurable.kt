@@ -5,7 +5,7 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.ToolbarDecorator
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.TableView
 import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
@@ -133,16 +133,16 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         val centerPanel = panel {
             row {
                 label("Maximum section size (characters)")
-                maxSectionSize(grow)
+                maxSectionSize
             }
 
-            titledRow("Labels") {
-                row {
+            indent {
+                group("Labels") {
                     ToolbarDecorator.createDecorator(labelConventionsTable)
                         .disableAddAction()
                         .disableRemoveAction()
                         .disableUpDownActions()
-                        .createPanel()(grow)
+                        .createPanel()
                 }
             }
         }

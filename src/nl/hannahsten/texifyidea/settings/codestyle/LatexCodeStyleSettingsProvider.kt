@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
  */
 class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
-    override fun createCustomSettings(settings: CodeStyleSettings?) = settings?.let { LatexCodeStyleSettings(it) }
+    override fun createCustomSettings(settings: CodeStyleSettings) = settings.let { LatexCodeStyleSettings(it) }
 
     override fun getConfigurableDisplayName() = LatexLanguage.displayName
 
