@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.BibtexLanguage
 
 class BibtexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
-    override fun createCustomSettings(settings: CodeStyleSettings) = settings.let { BibtexCodeStyleSettings(it) }
+    override fun createCustomSettings(settings: CodeStyleSettings) = BibtexCodeStyleSettings(settings)
 
     override fun getConfigurableDisplayName() = BibtexLanguage.displayName
 
