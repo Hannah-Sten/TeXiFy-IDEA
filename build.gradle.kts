@@ -150,6 +150,11 @@ tasks.buildSearchableOptions {
     jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 }
 
+// Required to run pluginVerifier
+// tasks.patchPluginXml {
+//    sinceBuild.set("223")
+// }
+
 intellij {
     pluginName.set("TeXiFy-IDEA")
 

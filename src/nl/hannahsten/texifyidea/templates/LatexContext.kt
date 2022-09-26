@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.templates
 
-import com.intellij.codeInsight.template.EverywhereContextType
 import com.intellij.codeInsight.template.TemplateActionContext
 import com.intellij.codeInsight.template.TemplateContextType
 import nl.hannahsten.texifyidea.file.LatexFile
@@ -13,21 +12,17 @@ import nl.hannahsten.texifyidea.util.inVerbatim
  *
  * @author Abby Berkers
  */
-open class LatexContext(
-    id: String,
-    name: String,
-    baseContextType: Class<out TemplateContextType>
-) : TemplateContextType(id, name, baseContextType) {
+open class LatexContext(name: String) : TemplateContextType(name) {
 
     override fun isInContext(context: TemplateActionContext): Boolean = context.file is LatexFile
 
-    class Generic : LatexContext("LATEX", "LaTeX", EverywhereContextType::class.java) {
+    class Generic : LatexContext("LaTeX") {
 
         override fun isInContext(context: TemplateActionContext): Boolean =
             context.file is LatexFile && context.file.findElementAt(context.startOffset)?.inVerbatim() == false
     }
 
-    open class LatexMathContext : LatexContext("LATEX_MATH", "Math", Generic::class.java) {
+    open class LatexMathContext : LatexContext("Math") {
 
         override fun isInContext(context: TemplateActionContext): Boolean =
             context.file is LatexFile && context.file.findElementAt(context.startOffset)?.inMathContext() == true
