@@ -43,10 +43,6 @@ public class LatexPsiImplUtil {
         return LatexCommandsImplUtilKt.keyValKeyToString(element);
     }
 
-    public static String toString(@NotNull LatexKeyvalValue element) {
-        return LatexCommandsImplUtilKt.keyValContentToString(element);
-    }
-
     public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexCommands element) {
         return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
     }

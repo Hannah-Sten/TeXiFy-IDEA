@@ -7,10 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface LatexKeyvalContent extends PsiElement {
 
-  @Nullable
-  LatexParameterGroup getParameterGroup();
-
-  @Nullable
-  LatexParameterText getParameterText();
+  @NotNull
+  LatexOptionalParamContent getOptionalParamContent();
 
 }

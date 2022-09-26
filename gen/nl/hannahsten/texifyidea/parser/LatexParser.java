@@ -1,17 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
-
-import static com.intellij.lang.WhitespacesBinders.GREEDY_LEFT_BINDER;
-import static com.intellij.lang.WhitespacesBinders.GREEDY_RIGHT_BINDER;
-import static nl.hannahsten.texifyidea.psi.LatexParserUtil.*;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+import static nl.hannahsten.texifyidea.psi.LatexParserUtil.*;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.PsiParser;
+import com.intellij.lang.LightPsiParser;
+import static com.intellij.lang.WhitespacesBinders.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -63,7 +62,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | parameter_group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
   public static boolean angle_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "angle_param_content")) return false;
     boolean r;
@@ -76,7 +75,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
     if (!r) r = commands(b, l + 1);
-    if (!r) r = group(b, l + 1);
+    if (!r) r = parameter_group(b, l + 1);
     if (!r) r = parameter_text(b, l + 1);
     if (!r) r = consumeToken(b, BACKSLASH);
     if (!r) r = consumeToken(b, COMMA);
@@ -321,18 +320,6 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // parameter_text | parameter_group
-  public static boolean keyval_content(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "keyval_content")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, KEYVAL_CONTENT, "<keyval content>");
-    r = parameter_text(b, l + 1);
-    if (!r) r = parameter_group(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
   // (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+
   public static boolean keyval_key(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_key")) return false;
@@ -401,15 +388,15 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // keyval_content+
+  // optional_param_content+
   public static boolean keyval_value(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_value")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, KEYVAL_VALUE, "<keyval value>");
-    r = keyval_content(b, l + 1);
+    r = optional_param_content(b, l + 1);
     while (r) {
       int c = current_position_(b);
-      if (!keyval_content(b, l + 1)) break;
+      if (!optional_param_content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "keyval_value", c)) break;
     }
     exit_section_(b, l, m, r, false, null);
@@ -601,7 +588,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | parameter_group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
   public static boolean optional_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_content")) return false;
     boolean r;
@@ -614,7 +601,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
     if (!r) r = commands(b, l + 1);
-    if (!r) r = group(b, l + 1);
+    if (!r) r = parameter_group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
     if (!r) r = parameter_text(b, l + 1);
@@ -739,7 +726,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | parameter_group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
   public static boolean picture_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "picture_param_content")) return false;
     boolean r;
@@ -752,7 +739,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
     if (!r) r = commands(b, l + 1);
-    if (!r) r = group(b, l + 1);
+    if (!r) r = parameter_group(b, l + 1);
     if (!r) r = parameter_text(b, l + 1);
     if (!r) r = consumeToken(b, BACKSLASH);
     if (!r) r = consumeToken(b, COMMA);
@@ -963,7 +950,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | parameter_group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
   public static boolean required_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_content")) return false;
     boolean r;
@@ -975,7 +962,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = pseudocode_block(b, l + 1);
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
-    if (!r) r = group(b, l + 1);
+    if (!r) r = parameter_group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
     if (!r) r = parameter_text(b, l + 1);

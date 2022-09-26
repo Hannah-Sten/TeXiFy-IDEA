@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface LatexKeyvalValue extends PsiElement {
 
   @NotNull
-  List<LatexKeyvalContent> getKeyvalContentList();
+  List<LatexOptionalParamContent> getOptionalParamContentList();
 
 }

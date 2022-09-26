@@ -262,15 +262,3 @@ fun keyValKeyToString(element: LatexKeyvalKey): String {
         }
     }
 }
-
-fun keyValContentToString(list: List<LatexKeyvalContent>): String =
-    list.joinToString(separator = "") {
-        when {
-            it.parameterText != null -> it.parameterText!!.text
-            it.parameterGroup != null -> it.parameterGroup!!.parameterGroupText!!.text
-            else -> ""
-        }
-    }
-
-fun keyValContentToString(element: LatexKeyvalValue): String =
-    keyValContentToString(element.keyvalContentList)

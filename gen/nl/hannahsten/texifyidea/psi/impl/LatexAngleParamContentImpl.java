@@ -47,12 +47,6 @@ public class LatexAngleParamContentImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
-  public LatexGroup getGroup() {
-    return PsiTreeUtil.getChildOfType(this, LatexGroup.class);
-  }
-
-  @Override
-  @Nullable
   public LatexMagicComment getMagicComment() {
     return PsiTreeUtil.getChildOfType(this, LatexMagicComment.class);
   }
@@ -61,6 +55,12 @@ public class LatexAngleParamContentImpl extends ASTWrapperPsiElement implements 
   @Nullable
   public LatexMathEnvironment getMathEnvironment() {
     return PsiTreeUtil.getChildOfType(this, LatexMathEnvironment.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexParameterGroup getParameterGroup() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterGroup.class);
   }
 
   @Override

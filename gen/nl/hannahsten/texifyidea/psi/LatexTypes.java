@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType;
@@ -23,7 +23,6 @@ public interface LatexTypes {
   IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
-  IElementType KEYVAL_CONTENT = new LatexElementType("KEYVAL_CONTENT");
   IElementType KEYVAL_KEY = new LatexElementType("KEYVAL_KEY");
   IElementType KEYVAL_PAIR = new LatexElementType("KEYVAL_PAIR");
   IElementType KEYVAL_VALUE = new LatexElementType("KEYVAL_VALUE");
@@ -120,9 +119,6 @@ public interface LatexTypes {
       else if (type == INLINE_MATH) {
         return new LatexInlineMathImpl(node);
       }
-      else if (type == KEYVAL_CONTENT) {
-        return new LatexKeyvalContentImpl(node);
-      }
       else if (type == KEYVAL_KEY) {
         return new LatexKeyvalKeyImpl(node);
       }
@@ -185,7 +181,8 @@ public interface LatexTypes {
       }
       else if (type == REQUIRED_PARAM_CONTENT) {
         return new LatexRequiredParamContentImpl(node);
-      } else if (type == STRICT_KEYVAL_PAIR) {
+      }
+      else if (type == STRICT_KEYVAL_PAIR) {
         return new LatexStrictKeyvalPairImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);

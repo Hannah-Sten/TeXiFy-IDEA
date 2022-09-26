@@ -102,7 +102,7 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
 
         // setOptionalParameter should create an appropriate optionaArgument node with label={text} in it
         val parameterText =
-            parameter.keyvalValue?.keyvalContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
+            parameter.keyvalValue?.optionalParamContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
                 ?: throw AssertionError("parameter created by setOptionalParameter does not have the right structure")
         // Move the caret onto the label
         editor.caretModel.moveToOffset(parameterText.textOffset + label.prefix.length + 1)
