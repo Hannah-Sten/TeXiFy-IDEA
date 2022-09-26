@@ -151,9 +151,9 @@ tasks.buildSearchableOptions {
 }
 
 // Required to run pluginVerifier
-//tasks.patchPluginXml {
+// tasks.patchPluginXml {
 //    sinceBuild.set("223")
-//}
+// }
 
 intellij {
     pluginName.set("TeXiFy-IDEA")
