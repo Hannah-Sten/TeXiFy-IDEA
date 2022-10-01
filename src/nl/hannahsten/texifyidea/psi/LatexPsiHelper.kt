@@ -144,7 +144,9 @@ class LatexPsiHelper(private val project: Project) {
                 existing
             }
             else {
-                if (closeBracket.treeParent != optionalParam) Log.error("Close bracket is not a child of the optional parameter for ${command.text}, name=$name, value=$value")
+                if (closeBracket.treeParent != optionalParam.node) {
+                    Log.error("Close bracket is not a child of the optional parameter for ${command.text}, name=$name, value=$value")
+                }
                 val comma = createFromText(",").firstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
                 optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
