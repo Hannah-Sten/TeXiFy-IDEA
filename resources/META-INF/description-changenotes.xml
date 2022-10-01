@@ -43,9 +43,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.22</strong></p>
+        <p><strong>Beta 0.7.23</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.22! This release fixes a few bugs in recently added features, while some time was spent on internal improvements.
+            Welcome to TeXiFy IDEA 0.7.23! This release ensures compatibility for IDEA 2022.3.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -56,17 +56,14 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Use correct indent after enter in a document environment with indent disabled. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2624">#2624</a>)</li>
+            <li> Compatibility for IDEA 2022.3. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2682">#2682</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix MiKTeX on Windows SDK home path check in case of a non-English system language. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2651">#2651</a>)</li>
-            <li> Fix Zathura inverse search for multiple files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2626">#2626</a>)</li>
-            <li> Fix some issues in Mendeley remote library setup. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2601">#2601</a>)</li>
-            <li> Bug fixes and internal improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2607">#2607</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2625">#2625</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2638">#2638</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2642">#2642</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2654">#2654</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2655">#2655</a>)</li>
+            <li> Fix some exceptions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2678">#2678</a>)</li>
         </ul>
 <!--        <br>-->
 <!--        <p>-->
