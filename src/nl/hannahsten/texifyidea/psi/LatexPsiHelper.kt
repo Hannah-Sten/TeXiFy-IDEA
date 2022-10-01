@@ -8,6 +8,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.findFirstChild
 import nl.hannahsten.texifyidea.util.firstChildOfType
@@ -114,7 +115,7 @@ class LatexPsiHelper(private val project: Project) {
     }
 
     /**
-     * Set the value of the optional parameter with the givevn key name. If the the parameter already exists,
+     * Set the value of the optional parameter with the given key name. If the parameter already exists,
      * its value is changed. If no key with the given name exists yet, a new one is created with the given value.
      *
      * @param name The name of the parameter to change
@@ -143,6 +144,9 @@ class LatexPsiHelper(private val project: Project) {
                 existing
             }
             else {
+                if (closeBracket.treeParent != optionalParam.node) {
+                    Log.error("Close bracket is not a child of the optional parameter for ${command.text}, name=$name, value=$value")
+                }
                 val comma = createFromText(",").firstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
                 optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
