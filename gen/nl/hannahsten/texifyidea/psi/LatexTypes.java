@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType;
@@ -185,7 +185,8 @@ public interface LatexTypes {
       }
       else if (type == REQUIRED_PARAM_CONTENT) {
         return new LatexRequiredParamContentImpl(node);
-      } else if (type == STRICT_KEYVAL_PAIR) {
+      }
+      else if (type == STRICT_KEYVAL_PAIR) {
         return new LatexStrictKeyvalPairImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);

@@ -61,6 +61,13 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testMatchingParens() {
+        myFixture.configureByText(
+            LatexFileType, """a (in this case) . aa"""
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testGerman() {
         GrazieRemote.download(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
