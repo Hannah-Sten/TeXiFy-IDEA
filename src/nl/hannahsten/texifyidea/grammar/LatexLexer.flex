@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.grammar;
 
 import java.util.*;
 
-import com.intellij.lexer.FlexLexer;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic;
 
@@ -82,9 +80,15 @@ LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage)
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
-VERBATIM_COMMAND=\\verb | \\verb\* | \\directlua | \\luaexec | \\lstinline
- // These can contain unescaped % for example
- | \\url | \\path | \\href
+
+// Verbatim commands which will be delimited by the same character
+// \path from the 'path' package
+PLAIN_VERBATIM_COMMAND=\\verb | \\verb\* | \\path
+
+// Verbatim commands which can also have normal optional/required parameters (or a same-character delimiter)
+VERBATIM_COMMAND=\\directlua | \\luaexec | \\lstinline
+ // These can contain unescaped % for example.
+ | \\url | \\href
  // PythonTex Python code commands
  | \\py | \\pyb | \\pyc | \\pys | \\pyv
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
@@ -106,7 +110,7 @@ ANY_CHAR=[^]
 // Exclude some characters from possible verbatim delimiters. This is only a workaround because some things are impossible with our lexer.
 // As an example, consider the case when \verb is redefined to be a non-verbatim command, then the lexer will find all sorts of wrong delimiters, and can apparently bring the parser into an infinite loop (not sure how).
 // IMPORTANT: these characters need to be included in the exlusive INLINE_VERBATIM_START state
-VERBATIM_DELIMITER=[^}\\\]\[]
+VERBATIM_DELIMITER=[^}\\\]\[\(]
 
 // Algorithmicx
 // Currently we just use the begin..end structure for formatting, so there is no need to disinguish between separate constructs
@@ -122,7 +126,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
-%xstates INLINE_VERBATIM_START INLINE_VERBATIM
+%xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
@@ -140,9 +144,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
  */
 
 // Use a separate state to start verbatim, to be able to return a command token for \verb
-{VERBATIM_COMMAND}        { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
+{PLAIN_VERBATIM_COMMAND}  { yypushState(INLINE_VERBATIM_PLAIN_START); return COMMAND_TOKEN; }
+{VERBATIM_COMMAND}        { yypushState(INLINE_VERBATIM_NORMAL_START); return COMMAND_TOKEN; }
 
-<INLINE_VERBATIM_START> {
+// This is like INLINE_VERBATIM_START, but because lstinline supports normal optional/required parameters instead of two of the same delimiters,
+// it is a separate state so that other verbatim commands are unlikely to be picked up incorrectly
+<INLINE_VERBATIM_NORMAL_START> {
     // Experimental syntax of \lstinline: \lstinline{verbatim}
     {OPEN_BRACE}         { yypopState(); verbatim_delimiter = "}"; yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
     // lstinline can have optional arguments, and using [ as verbatim delimiter is not exactly very readable
@@ -151,6 +158,21 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     // Some characters need to be specified explicitly, see comment on VERBATIM_DELIMITER
     {CLOSE_BRACE}        { yypopState(); return CLOSE_BRACE; }
     {CLOSE_BRACKET}      { yypopState(); return CLOSE_BRACKET; }
+    {OPEN_PAREN}         { yypopState(); return OPEN_PAREN; }
+    \\                   { yypopState(); return BACKSLASH; }
+    [^]                  { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+}
+
+<INLINE_VERBATIM_PLAIN_START> {
+    // These two are indicators of the command being not actually a verbatim command, for these type of commands
+    // Example: when \path from TikZ is used it should not be interpreted as a verbatim command
+    {OPEN_BRACE}         { yypopState(); return OPEN_BRACE; }
+    {OPEN_BRACKET}       { yypopState(); return OPEN_BRACKET; }
+    {VERBATIM_DELIMITER} { yypopState(); verbatim_delimiter = yytext().toString(); yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
+    // Some characters need to be specified explicitly, see comment on VERBATIM_DELIMITER
+    {CLOSE_BRACE}        { yypopState(); return CLOSE_BRACE; }
+    {CLOSE_BRACKET}      { yypopState(); return CLOSE_BRACKET; }
+    {OPEN_PAREN}         { yypopState(); return OPEN_PAREN; }
     \\                   { yypopState(); return BACKSLASH; }
     [^]                  { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
@@ -159,10 +181,10 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     // Count brackets to know when we exited the optional argument
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET; }
     {CLOSE_BRACKET}     {
-        verbatimOptionalArgumentBracketsCount--;
-        if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(INLINE_VERBATIM_START); }
-        return CLOSE_BRACKET;
-    }
+            verbatimOptionalArgumentBracketsCount--;
+            if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(INLINE_VERBATIM_PLAIN_START); }
+            return CLOSE_BRACKET;
+        }
 }
 
 <INLINE_VERBATIM> {
