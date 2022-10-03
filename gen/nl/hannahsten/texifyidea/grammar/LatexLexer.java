@@ -2,6 +2,7 @@
 
 package nl.hannahsten.texifyidea.grammar;
 
+import com.intellij.lexer.FlexLexer;
 import java.util.*;
 
 import com.intellij.psi.tree.IElementType;
