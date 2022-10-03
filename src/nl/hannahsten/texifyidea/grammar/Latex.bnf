@@ -159,7 +159,7 @@ parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }
 // Be sure to capture the whitespace before and after the actual content as groups are meant to capture
 // *everything* inside them.
 // This element is needed instead of parameter_text in order to avoid parse errors for various other tokens that do not appear in parameter_text because they are not usually part of the reference
-parameter_group_text ::= (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
+parameter_group_text ::= (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_PAREN | CLOSE_PAREN)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
 
 comment ::= COMMENT_TOKEN
 

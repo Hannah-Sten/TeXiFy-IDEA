@@ -1,16 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static nl.hannahsten.texifyidea.psi.LatexParserUtil.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
-import static com.intellij.lang.WhitespacesBinders.*;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.WhitespacesBinders.GREEDY_LEFT_BINDER;
+import static com.intellij.lang.WhitespacesBinders.GREEDY_RIGHT_BINDER;
+import static nl.hannahsten.texifyidea.psi.LatexParserUtil.*;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -642,7 +643,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)*
+  // (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_PAREN | CLOSE_PAREN)*
   public static boolean parameter_group_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_group_text")) return false;
     Marker m = enter_section_(b, l, _NONE_, PARAMETER_GROUP_TEXT, "<parameter group text>");
@@ -656,7 +657,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
+  // parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_PAREN | CLOSE_PAREN
   private static boolean parameter_group_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_group_text_0")) return false;
     boolean r;
@@ -666,6 +667,8 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, EQUALS);
     if (!r) r = consumeToken(b, OPEN_BRACKET);
     if (!r) r = consumeToken(b, CLOSE_BRACKET);
+    if (!r) r = consumeToken(b, OPEN_PAREN);
+    if (!r) r = consumeToken(b, CLOSE_PAREN);
     return r;
   }
 
