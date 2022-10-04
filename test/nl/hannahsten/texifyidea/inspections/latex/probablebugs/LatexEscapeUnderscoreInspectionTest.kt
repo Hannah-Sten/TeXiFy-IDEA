@@ -170,4 +170,31 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
             """.trimIndent()
         )
     }
+
+    fun `test unescaped _ character warnings in block environment`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            This block is not in math context.
+            \begin{block}{block title}
+                a<warning descr="Escape character \ expected">_</warning> underscore
+            \end{block}
+            
+            The block inside the equation (and thus the contents sf the equation) are in math context.
+            \begin{equation*}
+                \B{A} =
+                \begin{blockarray}{ccccc}
+                    & 1 & 2 & & m \\
+                  \begin{block}{c(cccc)}
+                    1 & a_{1,1} & a_{1,2} & \cdots & a_{1,m} \\
+                    2 & a_{2,1} & a_{2,2} & \cdots & a_{2,m} \\
+                    & \vdots  & \vdots  & \ddots & \vdots \\
+                    n & a_{n,1} & a_{n,2} & \cdots & a_{n,m} \\
+                  \end{block}
+                \end{blockarray}
+            \end{equation*}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(true, false, false, false)
+    }
 }
