@@ -1527,7 +1527,7 @@ public class LatexLexer implements FlexLexer {
           case 129: break;
           case 48: 
             { verbatimOptionalArgumentBracketsCount--;
-            if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(INLINE_VERBATIM_PLAIN_START); }
+            if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(INLINE_VERBATIM_NORMAL_START); }
             return CLOSE_BRACKET;
             } 
             // fall through
