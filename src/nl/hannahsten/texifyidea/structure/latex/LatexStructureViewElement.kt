@@ -117,7 +117,6 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val currentIndex = order(current(sections) ?: continue)
             val nextIndex = order(currentCmd)
 
-            // Same level.
             when {
                 currentIndex == nextIndex -> registerSameLevel(sections, child, currentCmd, treeElements, numbering)
                 nextIndex > currentIndex -> registerDeeper(sections, child, numbering)
@@ -188,15 +187,16 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val indexInsert = order(currentCmd)
         while (!sections.isEmpty()) {
             pop(sections)
-            val index = order(current(sections) ?: continue)
+            val index = current(sections)?.let { order(it) }
 
-            if (index == indexInsert) {
-                registerSameLevel(sections, child, currentCmd, treeElements, numbering)
+            if (index != null && indexInsert > index) {
+                registerDeeper(sections, child, numbering)
                 break
             }
-
-            if (indexInsert > index) {
-                registerDeeper(sections, child, numbering)
+            // Avoid that an element is not added at all by adding it one level up anyway.
+            // If index is null, that means that the tree currently only has elements with a higher order.
+            else {
+                registerSameLevel(sections, child, currentCmd, treeElements, numbering)
                 break
             }
         }
@@ -220,7 +220,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         treeElements: MutableList<TreeElement>,
         numbering: SectionNumbering
     ) {
-        sections.removeFirst()
+        sections.pollFirst()
         val parent = sections.peekFirst()
         parent?.addChild(child)
         sections.addFirst(child)
