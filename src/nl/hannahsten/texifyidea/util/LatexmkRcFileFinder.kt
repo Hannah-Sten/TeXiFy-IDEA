@@ -37,12 +37,12 @@ object LatexmkRcFileFinder {
 
         // 2
         paths += listOf(
-            System.getenv("XDG_CONFIG_HOME")?.let{ Path(it, "latexmk", "latexmkrc").toString() },
-            System.getenv("HOME")?.let{ Path(it, ".latexmkrc").toString() },
-            System.getenv("USERPROFILE")?.let{ Path(it, ".latexmkrc").toString() },
-            System.getenv("HOME")?.let{ Path(it, ".config", ".latexmkrc").toString() },
+            System.getenv("XDG_CONFIG_HOME")?.let { Path(it, "latexmk", "latexmkrc").toString() },
+            System.getenv("HOME")?.let { Path(it, ".latexmkrc").toString() },
+            System.getenv("USERPROFILE")?.let { Path(it, ".latexmkrc").toString() },
+            System.getenv("HOME")?.let { Path(it, ".config", ".latexmkrc").toString() },
         )
-        
+
         paths.filterNotNull()
             .forEach {
                 LocalFileSystem.getInstance().findFileByIoFile(File(it))?.let { file ->
