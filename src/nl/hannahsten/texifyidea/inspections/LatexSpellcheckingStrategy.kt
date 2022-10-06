@@ -39,10 +39,10 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
 
         val argument = getArgument(psiElement)
         if (
-            argument == null
-            && psiElement.elementType == LatexTypes.NORMAL_TEXT_WORD
+            argument == null &&
+            psiElement.elementType == LatexTypes.NORMAL_TEXT_WORD &&
             // Exclude text in parameters by default, unless we know it contains text (e.g. \section)
-            && !psiElement.hasParent(LatexParameterText::class)
+            !psiElement.hasParent(LatexParameterText::class)
         ) {
             return TEXT_TOKENIZER
         }
