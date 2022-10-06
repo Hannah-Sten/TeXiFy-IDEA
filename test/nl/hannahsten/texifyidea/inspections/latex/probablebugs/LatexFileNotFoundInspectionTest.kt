@@ -146,4 +146,9 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //        myFixture.configureByFiles("subfiles/dir1/subfile1.tex", "subfiles/main.tex", "subfiles/dir1/dir2/subfile2.tex", "subfiles/dir1/text1.tex", "subfiles/dir1/dir2/text2.tex")
 //        myFixture.checkHighlighting()
 //    }
+
+    fun testLatexmkrc() {
+        myFixture.configureByFiles("latexmkrc/main.tex", "latexmkrc/.latexmkrc", "latexmkrc/subdir1/mypackage2.sty")
+        myFixture.checkHighlighting()
+    }
 }
