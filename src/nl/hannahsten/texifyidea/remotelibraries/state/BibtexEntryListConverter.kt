@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.remotelibraries.state
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.util.xmlb.Converter
 import nl.hannahsten.texifyidea.file.BibtexFileType
@@ -18,9 +21,18 @@ class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
     }
 
     override fun fromString(value: String): List<BibtexEntry> {
-        return PsiFileFactory.getInstance(ProjectManager.getInstance().defaultProject)
-            .createFileFromText("DUMMY.bib", BibtexFileType, value)
-            .childrenOfType<BibtexEntry>()
-            .toList()
+        val project = ProjectManager.getInstance().defaultProject
+        val file = PsiFileFactory.getInstance(project).createFileFromText("DUMMY.bib", BibtexFileType, value)
+
+        if (file.children.any { it is PsiErrorElement }) {
+            Notification(
+                "LaTeX",
+                "Library could not be parsed completely",
+                "Some bib elements might be missing in the imported library. Check the exported bib file from your library for any mistakes by opening it with TeXiFy.",
+                NotificationType.WARNING
+            ).notify(project)
+        }
+
+        return file.childrenOfType<BibtexEntry>().toList()
     }
 }
