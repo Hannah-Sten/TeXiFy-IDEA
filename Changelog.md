@@ -7,3 +7,5 @@
 ### Bug fixes
 * Fix false positive Grazie inspection on parentheses. (#2692)
 * Fix missing parent sections in structure view when starting with a sublevel. (#2693)
+* Fix math environment check for in particular blkarray. (#2697)
+* Fix spellcheck in command parameters. (#2699)
