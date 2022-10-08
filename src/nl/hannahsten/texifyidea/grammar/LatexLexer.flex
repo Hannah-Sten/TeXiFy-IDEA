@@ -102,6 +102,7 @@ MAGIC_COMMENT_TOKEN="%"{MAGIC_COMMENT_PREFIX}[^\r\n]*
 
 MAGIC_COMMENT_LEXER_SWITCH="%"{MAGIC_COMMENT_PREFIX} {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
 LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
+ENDINPUT=\\endinput
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
 NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,-]+
@@ -479,11 +480,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
 
+{LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
+{ENDINPUT}              { yypushState(OFF); return COMMAND_TOKEN; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
-{LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
 {MAGIC_COMMENT_TOKEN}   { return MAGIC_COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
