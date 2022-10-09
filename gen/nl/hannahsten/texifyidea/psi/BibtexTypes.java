@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.psi.impl.*;
 public interface BibtexTypes {
 
   IElementType BRACED_STRING = new BibtexElementType("BRACED_STRING");
+  IElementType BRACED_VERBATIM = new BibtexElementType("BRACED_VERBATIM");
   IElementType COMMENT = new BibtexElementType("COMMENT");
   IElementType CONTENT = new BibtexElementType("CONTENT");
   IElementType DEFINED_STRING = new BibtexElementType("DEFINED_STRING");
@@ -21,6 +22,8 @@ public interface BibtexTypes {
   IElementType NORMAL_TEXT = new BibtexElementType("NORMAL_TEXT");
   IElementType PREAMBLE = new BibtexElementType("PREAMBLE");
   IElementType QUOTED_STRING = new BibtexElementType("QUOTED_STRING");
+  IElementType QUOTED_VERBATIM = new BibtexElementType("QUOTED_VERBATIM");
+  IElementType RAW_TEXT = new BibtexElementType("RAW_TEXT");
   IElementType STRING = new BibtexElementType("STRING");
   IElementType TAG = new BibtexElementType("TAG");
   IElementType TYPE = new BibtexElementType("TYPE");
@@ -37,14 +40,19 @@ public interface BibtexTypes {
   IElementType OPEN_BRACE = new BibtexTokenType("OPEN_BRACE");
   IElementType OPEN_PARENTHESIS = new BibtexTokenType("OPEN_PARENTHESIS");
   IElementType QUOTES = new BibtexTokenType("QUOTES");
+  IElementType RAW_TEXT_TOKEN = new BibtexTokenType("RAW_TEXT");
   IElementType SEPARATOR = new BibtexTokenType("SEPARATOR");
   IElementType TYPE_TOKEN = new BibtexTokenType("TYPE_TOKEN");
+  IElementType VERBATIM_IDENTIFIER = new BibtexTokenType("VERBATIM_IDENTIFIER");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
       if (type == BRACED_STRING) {
         return new BibtexBracedStringImpl(node);
+      }
+      else if (type == BRACED_VERBATIM) {
+        return new BibtexBracedVerbatimImpl(node);
       }
       else if (type == COMMENT) {
         return new BibtexCommentImpl(node);
@@ -78,6 +86,12 @@ public interface BibtexTypes {
       }
       else if (type == QUOTED_STRING) {
         return new BibtexQuotedStringImpl(node);
+      }
+      else if (type == QUOTED_VERBATIM) {
+        return new BibtexQuotedVerbatimImpl(node);
+      }
+      else if (type == RAW_TEXT) {
+        return new BibtexRawTextImpl(node);
       }
       else if (type == STRING) {
         return new BibtexStringImpl(node);

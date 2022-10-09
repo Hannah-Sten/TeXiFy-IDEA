@@ -11,6 +11,9 @@ public interface BibtexId extends PsiNameIdentifierOwner {
   @NotNull
   List<BibtexComment> getCommentList();
 
+  @NotNull
+  BibtexKey getKey();
+
   PsiElement getNameIdentifier();
 
   String getName();

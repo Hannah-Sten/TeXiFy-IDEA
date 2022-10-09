@@ -28,6 +28,12 @@ public class BibtexContentImpl extends ASTWrapperPsiElement implements BibtexCon
   }
 
   @Override
+  @Nullable
+  public BibtexKey getKey() {
+    return PsiTreeUtil.getChildOfType(this, BibtexKey.class);
+  }
+
+  @Override
   @NotNull
   public List<BibtexString> getStringList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexString.class);
