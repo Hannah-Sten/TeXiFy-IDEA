@@ -175,7 +175,7 @@ ANY_CHAR=[^]
 
 // "Quoted text" in an entry where all characters are allowed.
 <XXQUOTED_VERBATIM> {
-    {CLOSE_BRACE}       { yypopState(); verbatim = false; return CLOSE_BRACE; }
+    {QUOTES}       { yypopState(); verbatim = false; return END_QUOTES; }
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
 }
 
