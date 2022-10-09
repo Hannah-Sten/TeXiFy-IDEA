@@ -27,8 +27,8 @@ class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
         if (file.children.any { it is PsiErrorElement }) {
             Notification(
                 "LaTeX",
-                "Library could not be parsed completely",
-                "Some bib elements might be missing in the imported library. Check the exported bib file from your library for any mistakes by opening it with TeXiFy.",
+                "Library could not be imported completely",
+                "Some bib elements might be missing in the imported library. See the TeXiFy wiki for more information.",
                 NotificationType.WARNING
             ).notify(project)
         }
