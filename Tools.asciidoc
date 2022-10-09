@@ -50,6 +50,12 @@ When nothing is selected, all libraries will be removed.
 Currently a library configuration can only be edited by removing and re-adding it.
 
 
+=== [[library-error]]What to do when importing the library fails
+When you get a notification that the library could not be imported completely, the bib file exported by the remote library contains some element that could not be parsed by TeXiFy.
+You can export the bib file yourself and open it with TeXiFy to see where the parse error is.
+If you can reference the faulty item and compilation works fine then link:https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose[let us know] about the parse error.
+When possible, edit the information in the remote library to circumvent the parse error and try again.
+
 == [[detexify]]Detexify
 
 _Since b0.7.3_
