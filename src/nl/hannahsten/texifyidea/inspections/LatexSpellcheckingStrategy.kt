@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.commands.Argument.Type
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.hasParent
 
 /**
@@ -37,11 +38,16 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         }
 
         val argument = getArgument(psiElement)
-        if (argument == null && psiElement.elementType == LatexTypes.NORMAL_TEXT) {
+        if (
+            argument == null &&
+            psiElement.elementType == LatexTypes.NORMAL_TEXT_WORD &&
+            // Exclude text in parameters by default, unless we know it contains text (e.g. \section)
+            !psiElement.hasParent(LatexParameterText::class)
+        ) {
             return TEXT_TOKENIZER
         }
 
-        if (argument == null || argument.type == Type.TEXT) {
+        if (argument?.type == Type.TEXT) {
             return TEXT_TOKENIZER
         }
 
@@ -58,13 +64,17 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         return elt != null
     }
 
+    /**
+     * Get the argument (with type) from TeXiFy knowledge that corresponds with the current psi element.
+     */
     private fun getArgument(leaf: LeafPsiElement): Argument? {
         val parent = PsiTreeUtil.getParentOfType(leaf, LatexCommands::class.java) ?: return null
 
         val arguments = getArguments(parent.commandToken.text.substring(1)) ?: return null
 
         val realParams = parent.requiredParameters
-        val parameterIndex = realParams.indexOf(leaf.text)
+        // Note that a leaf may be only part of a parameter
+        val parameterIndex = realParams.indexOf(leaf.firstParentOfType(LatexParameterText::class)?.text)
         return if (parameterIndex < 0 || parameterIndex >= arguments.size) {
             null
         }
