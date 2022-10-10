@@ -60,6 +60,7 @@ It uses pdflatex by default, but you can use an other compiler as well.
 When you use a `latexmkrc` file (see the man page of latexmk for information) then TeXiFy will only add `output-format`, `-auxil-directory` and `-output-directory` command line arguments, because otherwise your options in your latexmkrc file would be overwritten.
 You can still of course add additional command line arguments in the run configuration, including the location of the latexmkrc file with the `-r` flag.
 If you want to tell TeXiFy to use the output format of your latexmkrc, make sure the `DEFAULT` output format is selected.
+TeXiFy will also read additions to the TEXINPUTS environment variable from your latexmkrc file, assuming you add it with the syntax like `ensure_path('TEXINPUTS', 'subdir1//');`.
 
 ==== Tip: compiling automatically when IntelliJ loses focus
 When you add the flag `-pvc` it watches the files and recompiles automatically on saved changes (in IntelliJ a save is

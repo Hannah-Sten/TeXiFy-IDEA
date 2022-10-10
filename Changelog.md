@@ -3,6 +3,9 @@
 
 ### Additions
 * Add support for IDEA 2022.3. (#2683, #2682)
+* Also search latexmkrc files for additions to TEXINPUTS. (#2700)
+* Stop parsing LaTeX after \endinput. (#2702)
+* Parse urls in bibtex as verbatim text. (#2703)
 
 ### Bug fixes
 * Fix false positive Grazie inspection on parentheses. (#2692)
