@@ -6,7 +6,9 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 class BibtexParserTest : BasePlatformTestCase() {
 
     fun testUrl() {
-        myFixture.configureByText(BibtexFileType, """
+        myFixture.configureByText(
+            BibtexFileType,
+            """
             @book{Friedman2015a,
                 title = {{Chronomorphic Programs : Using Runtime Diversity to Prevent Code Reuse Attacks}},
                 year = {2015},
@@ -17,7 +19,8 @@ class BibtexParserTest : BasePlatformTestCase() {
                 isbn = {9781612083810},
                 keywords = {- cyber defense, are repeatedly changing or, attack tool cannot accumulate, brop, enough information about the, moving, program, s memory layout to, self-modifying code, so that even a, software diversity, succeed}
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 }
