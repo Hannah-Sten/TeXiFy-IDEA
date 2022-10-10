@@ -11,10 +11,7 @@ import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
@@ -26,43 +23,22 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.shrink
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.MutableList
-import kotlin.collections.addAll
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.contains
-import kotlin.collections.emptyList
-import kotlin.collections.firstOrNull
-import kotlin.collections.flatMap
-import kotlin.collections.forEach
-import kotlin.collections.getOrDefault
-import kotlin.collections.indices
-import kotlin.collections.isNotEmpty
-import kotlin.collections.joinToString
-import kotlin.collections.lastOrNull
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.mutableListOf
 import kotlin.collections.set
-import kotlin.collections.setOf
-import kotlin.collections.toTypedArray
 
 /**
  * Get the references for this command.
  */
 fun getReferences(element: LatexCommands): Array<PsiReference> {
-    val firstParam = readFirstParam(element)
+    val requiredParameters = getRequiredParameters(element)
+    val firstParam = requiredParameters.getOrNull(0)
 
     val references = mutableListOf<PsiReference>()
 
     // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
     if (element.project.getLabelReferenceCommands().contains(element.commandToken.text) && firstParam != null) {
-        references.addAll(extractLabelReferences(element, firstParam))
+        references.addAll(extractLabelReferences(element, requiredParameters))
     }
 
     // If it is a reference to a file
@@ -136,26 +112,30 @@ private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference>
 }
 
 /**
- * Create label references from the command parameter given.
+ * Create label references from the command parameter given, assuming it is a known command with label referencing parameters.
  */
-fun extractLabelReferences(element: LatexCommands, firstParam: LatexRequiredParam): List<PsiReference> {
-    val subParamRanges = extractSubParameterRanges(firstParam)
-    val references: MutableList<PsiReference> = ArrayList()
-    for (range in subParamRanges) {
-        references.add(
-            LatexLabelReference(
-                element, range.shiftRight(firstParam.textOffset - element.textOffset)
-            )
-        )
-    }
-    return references
+fun extractLabelReferences(element: LatexCommands, requiredParameters: List<LatexRequiredParam>): List<PsiReference> {
+    // Assume that any possible label reference is a required parameter
+    val defaultParameter = requiredParameters.getOrNull(0) ?: return emptyList()
+
+    // Find the command parameters which are a label reference
+    val test = (LatexCommand.lookup(element.name)
+        ?.firstOrNull()
+        ?.arguments
+        ?.withIndex()
+        ?.filter { it.value.type == Argument.Type.LABEL }
+        // Use the known parameter indices to match with the actual parameters
+        ?.mapNotNull { requiredParameters.getOrNull(it.index) }
+        ?.ifEmpty { listOf(defaultParameter) }
+        ?: listOf(defaultParameter))
+        .flatMap { param -> extractSubParameterRanges(param).map { range -> LatexLabelReference(element, range.shiftRight(param.textOffset - element.textOffset)) } }
+    return test
 }
 
-fun readFirstParam(element: LatexCommands): LatexRequiredParam? {
+fun getRequiredParameters(element: LatexCommands): List<LatexRequiredParam> {
     return ApplicationManager.getApplication().runReadAction(
         Computable {
-            val params: List<LatexRequiredParam> = element.requiredParameters()
-            if (params.isEmpty()) null else params[0]
+            element.requiredParameters()
         }
     )
 }
