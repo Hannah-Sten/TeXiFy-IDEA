@@ -119,17 +119,25 @@ fun extractLabelReferences(element: LatexCommands, requiredParameters: List<Late
     val defaultParameter = requiredParameters.getOrNull(0) ?: return emptyList()
 
     // Find the command parameters which are a label reference
-    val test = (LatexCommand.lookup(element.name)
-        ?.firstOrNull()
-        ?.arguments
-        ?.withIndex()
-        ?.filter { it.value.type == Argument.Type.LABEL }
-        // Use the known parameter indices to match with the actual parameters
-        ?.mapNotNull { requiredParameters.getOrNull(it.index) }
-        ?.ifEmpty { listOf(defaultParameter) }
-        ?: listOf(defaultParameter))
-        .flatMap { param -> extractSubParameterRanges(param).map { range -> LatexLabelReference(element, range.shiftRight(param.textOffset - element.textOffset)) } }
-    return test
+    return (
+        LatexCommand.lookup(element.name)
+            ?.firstOrNull()
+            ?.arguments
+            ?.withIndex()
+            ?.filter { it.value.type == Argument.Type.LABEL }
+            // Use the known parameter indices to match with the actual parameters
+            ?.mapNotNull { requiredParameters.getOrNull(it.index) }
+            ?.ifEmpty { listOf(defaultParameter) }
+            ?: listOf(defaultParameter)
+        )
+        .flatMap { param ->
+            extractSubParameterRanges(param).map { range ->
+                LatexLabelReference(
+                    element,
+                    range.shiftRight(param.textOffset - element.textOffset)
+                )
+            }
+        }
 }
 
 fun getRequiredParameters(element: LatexCommands): List<LatexRequiredParam> {
