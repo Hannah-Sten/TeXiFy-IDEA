@@ -34,6 +34,12 @@ public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
   }
 
   @Override
+  @NotNull
+  public BibtexKey getKey() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexKey.class));
+  }
+
+  @Override
   public PsiElement getNameIdentifier() {
     return BibtexPsiImplUtil.getNameIdentifier(this);
   }

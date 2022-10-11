@@ -10,16 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
-import com.intellij.psi.PsiReference;
 
-public class BibtexDefinedStringImpl extends ASTWrapperPsiElement implements BibtexDefinedString {
+public class BibtexBracedVerbatimImpl extends ASTWrapperPsiElement implements BibtexBracedVerbatim {
 
-  public BibtexDefinedStringImpl(@NotNull ASTNode node) {
+  public BibtexBracedVerbatimImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {
-    visitor.visitDefinedString(this);
+    visitor.visitBracedVerbatim(this);
   }
 
   @Override
@@ -30,13 +29,8 @@ public class BibtexDefinedStringImpl extends ASTWrapperPsiElement implements Bib
 
   @Override
   @NotNull
-  public BibtexKey getKey() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexKey.class));
-  }
-
-  @Override
-  public PsiReference getReference() {
-    return BibtexPsiImplUtil.getReference(this);
+  public List<BibtexRawText> getRawTextList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexRawText.class);
   }
 
 }

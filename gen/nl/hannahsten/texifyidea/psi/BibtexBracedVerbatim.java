@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BibtexContent extends PsiElement {
-
-  @Nullable
-  BibtexKey getKey();
+public interface BibtexBracedVerbatim extends PsiElement {
 
   @NotNull
-  List<BibtexString> getStringList();
+  List<BibtexRawText> getRawTextList();
 
 }

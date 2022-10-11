@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BibtexContent extends PsiElement {
-
-  @Nullable
-  BibtexKey getKey();
-
-  @NotNull
-  List<BibtexString> getStringList();
+public interface BibtexRawText extends PsiElement {
 
 }
