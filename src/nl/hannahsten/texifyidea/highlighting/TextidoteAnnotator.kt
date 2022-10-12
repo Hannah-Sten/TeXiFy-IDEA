@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 
@@ -48,7 +49,11 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
     }
 
     override fun doAnnotate(collectedInfo: TextidoteAnnotatorInitialInfo): TextidoteAnnotationResult {
-        val arguments = "--check en --output singleline --no-color"
+        if (!TexifySettings.getInstance().enableTextidote) {
+            return TextidoteAnnotationResult(emptyList(), collectedInfo.document)
+        }
+
+        val arguments = TexifySettings.getInstance().textidoteOptions
         val command = listOf("textidote") + ParametersListUtil.parse(arguments) + listOf(collectedInfo.fileName)
         val (output, exitCode) = runCommandWithExitCode(
             *command.toTypedArray(),
@@ -105,7 +110,6 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
                 .range(TextRange(lineStartOffset1 + warning.startColumn - 1, lineStartOffset2 + warning.endColumn - 1))
                 .create()
         }
-
 
         super.apply(file, annotationResult, holder)
     }

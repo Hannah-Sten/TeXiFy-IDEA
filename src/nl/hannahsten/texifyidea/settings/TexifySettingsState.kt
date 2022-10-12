@@ -14,6 +14,8 @@ data class TexifySettingsState(
     var continuousPreview: Boolean = false,
     var includeBackslashInSelection: Boolean = false,
     var showPackagesInStructureView: Boolean = false,
+    var enableTextidote: Boolean = false,
+    var textidoteOptions: String = "--check en --output singleline --no-color",
     var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
     var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
     var pdfViewer: InternalPdfViewer = InternalPdfViewer.firstAvailable()
