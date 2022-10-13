@@ -303,6 +303,7 @@ Issues which have influence on the typeset result.
 * link:Typesetting-issues#high-commands[Enclose high commands with `\leftX..\rightX`]
 * link:Typesetting-issues#citation-before-interpunction[Citations must be placed before interpunction]
 * link:Typesetting-issues#incorrect-quotes[Incorrectly typeset quotation marks]
+* link:Typesetting-issues#Textidote[Issues reported by the external Textidote linter]
 
 ===== Spacing
 Typesetting issues related to incorrect spacing.
