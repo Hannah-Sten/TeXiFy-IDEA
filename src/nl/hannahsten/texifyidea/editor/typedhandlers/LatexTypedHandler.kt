@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.CodeInsightSettings
+import com.intellij.codeInsight.editorActions.TabOutScopesTracker
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
@@ -73,6 +74,8 @@ class LatexTypedHandler : TypedHandlerDelegate() {
                     editor.document.insertString(
                         editor.caretModel.offset, c.toString()
                     )
+                    // Use CodeInsightSettings.getInstance().TAB_EXITS_BRACKETS_AND_QUOTES
+                    TabOutScopesTracker.getInstance().registerEmptyScope(editor, editor.caretModel.offset)
                     return Result.STOP
                 }
             }
