@@ -5,8 +5,8 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import java.io.File
 import kotlin.io.path.Path
 
@@ -131,7 +131,7 @@ object LatexmkRcFileFinder {
     private fun getTexinputsVariableNoCache(someFile: PsiFile?, runConfig: LatexRunConfiguration?): String? {
         systemLatexmkRcFile?.let { return getTexinputs(it) }
         if (runConfig != null) {
-            getLocalLatexmkRcFile(runConfig.compilerArguments, runConfig.mainFile?.parent?.path)?.let { return getTexinputs(it) }
+            getLocalLatexmkRcFile(runConfig.options.compilerArguments, runConfig.options.mainFile.resolve()?.parent?.path)?.let { return getTexinputs(it) }
         }
         // File could be anywhere if run configurations are not used, but searching the whole project could be too expensive
         someFile?.virtualFile?.parent?.let { parentDir ->
