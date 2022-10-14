@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface BibtexPreamble extends PsiElement {
 
+  @Nullable
+  BibtexKey getKey();
+
   @NotNull
   List<BibtexQuotedString> getQuotedStringList();
 

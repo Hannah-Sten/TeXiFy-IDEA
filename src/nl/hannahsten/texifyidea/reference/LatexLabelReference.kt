@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 
 /**
- * A reference to a label, used only for autocompletion. For the real referencing, see [LatexLabelParameterReference].
+ * A reference to a label, used only for autocompletion (together with LatexCommandsImplUtil#extractLabelReferences). For the real referencing, see [LatexLabelParameterReference].
  *
  * @author Hannah Schellekens, Sten Wessel
  */

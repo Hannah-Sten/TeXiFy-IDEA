@@ -62,7 +62,7 @@ fun PsiElement.extractLabelName(referencingFileSetCommands: Collection<LatexComm
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
             if (CommandMagic.labelAsParameter.contains(name)) {
-                optionalParameterMap.toStringMap()["label"]!!
+                optionalParameterMap.toStringMap()["label"] ?: ""
             }
             else {
                 // For now just take the first label name (which may be multiple for user defined commands)

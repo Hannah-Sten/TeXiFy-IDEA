@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface BibtexContent extends PsiElement {
 
+  @Nullable
+  BibtexKey getKey();
+
   @NotNull
   List<BibtexString> getStringList();
 

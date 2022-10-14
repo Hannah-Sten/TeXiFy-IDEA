@@ -28,6 +28,12 @@ public class BibtexPreambleImpl extends ASTWrapperPsiElement implements BibtexPr
   }
 
   @Override
+  @Nullable
+  public BibtexKey getKey() {
+    return PsiTreeUtil.getChildOfType(this, BibtexKey.class);
+  }
+
+  @Override
   @NotNull
   public List<BibtexQuotedString> getQuotedStringList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexQuotedString.class);

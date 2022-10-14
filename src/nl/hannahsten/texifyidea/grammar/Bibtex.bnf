@@ -17,6 +17,10 @@
     implements("entry")="com.intellij.psi.PsiNameIdentifierOwner"
     implements("id")="com.intellij.psi.PsiNameIdentifierOwner"
 
+    tokens = [
+        RAW_TEXT_TOKEN='RAW_TEXT'
+    ]
+
 }
 
 bibtexFile ::= (entry | comment)*
@@ -33,9 +37,9 @@ endtry ::= SEPARATOR? comment* (CLOSE_BRACE | CLOSE_PARENTHESIS)
 
 type ::= TYPE_TOKEN
 
-preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
+preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | key
 
-id ::= comment* IDENTIFIER comment* {
+id ::= comment* key comment* {
     methods=[getNameIdentifier getName setName delete]
 }
 
@@ -44,20 +48,28 @@ tag ::= comment* key comment* ASSIGNMENT comment* content comment* {
     methods=[getReferences]
 }
 
-key ::= IDENTIFIER
+key ::= VERBATIM_IDENTIFIER | IDENTIFIER
 
-content ::= (string (CONCATENATE string)+) | string | NUMBER | IDENTIFIER
+content ::= (string (CONCATENATE string)+) | string | NUMBER | key
 
-string ::= defined_string | quoted_string | braced_string
+string ::= defined_string | quoted_verbatim | braced_verbatim | quoted_string | braced_string
 
-defined_string ::= IDENTIFIER {
+defined_string ::= key {
     methods=[getReference]
 }
 
 quoted_string ::= QUOTES normal_text? END_QUOTES { pin=1 }
 
+// pin=3 because it would get in the way of the quoted string otherwise.
+quoted_verbatim ::= QUOTES raw_text* END_QUOTES { pin=3 }
+
 braced_string ::= OPEN_BRACE normal_text* CLOSE_BRACE { pin=1 }
+
+// pin=3 because it would get in the way of the braced string otherwise.
+braced_verbatim ::= OPEN_BRACE raw_text* CLOSE_BRACE { pin=3 }
 
 comment ::= COMMENT_TOKEN
 
 normal_text ::= NORMAL_TEXT_WORD+
+
+raw_text ::= RAW_TEXT_TOKEN+

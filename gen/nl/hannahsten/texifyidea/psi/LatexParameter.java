@@ -1,10 +1,11 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.LiteralTextEscaper;
+import java.util.List;
+import org.jetbrains.annotations.*;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLanguageInjectionHost;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.psi.LiteralTextEscaper;
 
 public interface LatexParameter extends PsiLanguageInjectionHost {
 
@@ -24,7 +25,6 @@ public interface LatexParameter extends PsiLanguageInjectionHost {
 
   PsiLanguageInjectionHost updateText(@NotNull String text);
 
-  @NotNull
-  LiteralTextEscaper<LatexParameter> createLiteralTextEscaper();
+  @NotNull LiteralTextEscaper<LatexParameter> createLiteralTextEscaper();
 
 }

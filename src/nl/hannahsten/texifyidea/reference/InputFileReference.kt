@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.includedPackages
@@ -84,6 +85,8 @@ class InputFileReference(
             ?.options?.environmentVariables
             ?.envs
             ?.getOrDefault("TEXINPUTS", null)
+            ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
+
         if (texInputPath != null) {
             val path = texInputPath.trimEnd(':')
             searchPaths.add(path.trimEnd('/'))

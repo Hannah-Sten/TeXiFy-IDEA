@@ -47,12 +47,12 @@ open class BibtexSyntaxHighlighter : SyntaxHighlighterBase() {
         BibtexTypes.OPEN_BRACE, BibtexTypes.CLOSE_BRACE, BibtexTypes.OPEN_PARENTHESIS -> BRACES_KEYS
         BibtexTypes.COMMENT, BibtexTypes.COMMENT_TOKEN -> COMMENT_KEYS
         BibtexTypes.CONCATENATE -> CONCATENATION_KEYS
-        BibtexTypes.IDENTIFIER -> IDENTIFIER_KEYS
+        BibtexTypes.IDENTIFIER, BibtexTypes.VERBATIM_IDENTIFIER -> IDENTIFIER_KEYS
         BibtexTypes.KEY -> KEY_KEYS
         BibtexTypes.NUMBER -> NUMBER_KEYS
         BibtexTypes.TYPE_TOKEN -> TYPE_TOKEN_KEYS
-        BibtexTypes.STRING, BibtexTypes.QUOTED_STRING -> STRING_KEYS
-        BibtexTypes.CONTENT, BibtexTypes.BRACED_STRING -> VALUE_KEYS
+        BibtexTypes.STRING, BibtexTypes.QUOTED_STRING, BibtexTypes.QUOTED_VERBATIM -> STRING_KEYS
+        BibtexTypes.CONTENT, BibtexTypes.BRACED_STRING, BibtexTypes.BRACED_VERBATIM -> VALUE_KEYS
         else -> EMPTY_KEYS
     }
 }

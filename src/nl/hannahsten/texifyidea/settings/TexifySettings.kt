@@ -35,6 +35,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var continuousPreview = false
     var includeBackslashInSelection = false
     var showPackagesInStructureView = false
+    var enableTextidote = false
+    var textidoteOptions = "--check en --output singleline --no-color"
     var automaticQuoteReplacement = QuoteReplacement.NONE
 
     override fun getState(): TexifySettingsState {
@@ -48,6 +50,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             continuousPreview = continuousPreview,
             includeBackslashInSelection = includeBackslashInSelection,
             showPackagesInStructureView = showPackagesInStructureView,
+            enableTextidote = enableTextidote,
+            textidoteOptions = textidoteOptions,
             automaticQuoteReplacement = automaticQuoteReplacement,
         )
     }
@@ -62,6 +66,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         continuousPreview = state.continuousPreview
         includeBackslashInSelection = state.includeBackslashInSelection
         showPackagesInStructureView = state.showPackagesInStructureView
+        enableTextidote = state.enableTextidote
+        textidoteOptions = state.textidoteOptions
         automaticQuoteReplacement = state.automaticQuoteReplacement
     }
 }

@@ -95,13 +95,13 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
                 // At this point, the inputStream is finished so we can safely get the output without blocking
                 output = proc.getOutput()
                 exitValue = proc.exitValue()
-                Log.info("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
+                Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
             }
             Pair(output, exitValue)
         }
     }
     catch (e: IOException) {
-        Log.info(e.message ?: "Unknown IOException occurred")
+        Log.debug(e.message ?: "Unknown IOException occurred")
         if (!returnExceptionMessage) {
             Pair(null, -1) // Don't print the stacktrace because that is confusing.
         }
@@ -110,7 +110,7 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
         }
     }
     catch (e: ProcessNotCreatedException) {
-        Log.info(e.message ?: "Unknown ProcessNotCreatedException occurred")
+        Log.debug(e.message ?: "Unknown ProcessNotCreatedException occurred")
         // e.g. if the command is just trying if a program can be run or not, and it's not the case
         if (!returnExceptionMessage) {
             Pair(null, -1)

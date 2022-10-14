@@ -3,9 +3,9 @@
         <defaultLiveTemplates file="liveTemplates/LaTeX" hidden="false"/>
         <defaultLiveTemplates file="liveTemplates/Surround" hidden="false"/>
 
-        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic"/>
-        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
-        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic" contextId="LATEX" />
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext" contextId="LATEX_MATH" baseContextId="LATEX" />
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext" contextId="BIBTEX" />
 
         <liveTemplateMacro implementation="nl.hannahsten.texifyidea.templates.macros.LatexFormatAsLabelMacro"/>
 

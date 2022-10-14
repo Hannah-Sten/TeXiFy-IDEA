@@ -4,6 +4,7 @@ package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
@@ -15,6 +16,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import java.awt.Color
@@ -88,9 +90,9 @@ object CommandMagic {
     /**
      * All commands that represent a reference to a label, excluding user defined commands.
      */
-    val labelReferenceWithoutCustomCommands = hashSetOf(
-        REF, EQREF, NAMEREF, AUTOREF, FULLREF, PAGEREF, VREF, AUTOREF_CAPITAL, CREF, CREF_CAPITAL, LABELCREF, CPAGEREF
-    ).map { it.cmd }.toSet()
+    val labelReferenceWithoutCustomCommands = LatexRegularCommand.ALL
+        .filter { cmd -> cmd.arguments.any { it.type == Argument.Type.LABEL } }
+        .map { it.cmd }.toSet()
 
     /**
      * All commands that represent a reference to a bibliography entry/item.

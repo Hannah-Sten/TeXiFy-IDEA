@@ -35,6 +35,12 @@ public class BibtexStringImpl extends ASTWrapperPsiElement implements BibtexStri
 
   @Override
   @Nullable
+  public BibtexBracedVerbatim getBracedVerbatim() {
+    return PsiTreeUtil.getChildOfType(this, BibtexBracedVerbatim.class);
+  }
+
+  @Override
+  @Nullable
   public BibtexDefinedString getDefinedString() {
     return PsiTreeUtil.getChildOfType(this, BibtexDefinedString.class);
   }
@@ -43,6 +49,12 @@ public class BibtexStringImpl extends ASTWrapperPsiElement implements BibtexStri
   @Nullable
   public BibtexQuotedString getQuotedString() {
     return PsiTreeUtil.getChildOfType(this, BibtexQuotedString.class);
+  }
+
+  @Override
+  @Nullable
+  public BibtexQuotedVerbatim getQuotedVerbatim() {
+    return PsiTreeUtil.getChildOfType(this, BibtexQuotedVerbatim.class);
   }
 
 }

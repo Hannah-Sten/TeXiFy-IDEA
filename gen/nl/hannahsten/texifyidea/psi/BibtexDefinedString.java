@@ -8,6 +8,9 @@ import com.intellij.psi.PsiReference;
 
 public interface BibtexDefinedString extends PsiElement {
 
+  @NotNull
+  BibtexKey getKey();
+
   PsiReference getReference();
 
 }

@@ -8,12 +8,15 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.isContext
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.requiredParameters
 
 /**
- * Provide syntax highlighting.
+ * Provide syntax highlighting for composite elements.
  *
  * @author Hannah Schellekens
  */

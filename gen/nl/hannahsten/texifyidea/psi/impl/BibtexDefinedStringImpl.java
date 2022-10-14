@@ -29,6 +29,12 @@ public class BibtexDefinedStringImpl extends ASTWrapperPsiElement implements Bib
   }
 
   @Override
+  @NotNull
+  public BibtexKey getKey() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexKey.class));
+  }
+
+  @Override
   public PsiReference getReference() {
     return BibtexPsiImplUtil.getReference(this);
   }

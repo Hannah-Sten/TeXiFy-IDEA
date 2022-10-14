@@ -5,7 +5,9 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.ToolbarDecorator
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.RightGap
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.table.TableView
 import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
@@ -129,20 +131,27 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         labelConventionsTable = createConventionsTable()
 
-        maxSectionSize = JBIntSpinner(4000, 1, Integer.MAX_VALUE)
         val centerPanel = panel {
             row {
                 label("Maximum section size (characters)")
-                maxSectionSize(grow)
+                spinner(1..Integer.MAX_VALUE, 500).apply {
+                    maxSectionSize = component
+                    component.number = 4000
+                }
             }
 
-            titledRow("Labels") {
+            group("Labels") {
                 row {
-                    ToolbarDecorator.createDecorator(labelConventionsTable)
-                        .disableAddAction()
-                        .disableRemoveAction()
-                        .disableUpDownActions()
-                        .createPanel()(grow)
+                    cell(
+                        ToolbarDecorator.createDecorator(labelConventionsTable)
+                            .disableAddAction()
+                            .disableRemoveAction()
+                            .disableUpDownActions()
+                            .createPanel()
+                    )
+                        .resizableColumn()
+                        .gap(RightGap.SMALL)
+                        .horizontalAlign(HorizontalAlign.FILL)
                 }
             }
         }

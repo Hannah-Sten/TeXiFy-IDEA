@@ -130,8 +130,8 @@ enum class DefaultEnvironment(
     // other
     ALGORITHM("algorithm"),
     ALGORITHMIC("algorithmic", dependency = ALGORITHMICX),
-    BLOCKARRAY(environmentName = "blockarray", context = Context.MATH, dependency = LatexPackage.BLKARRAY),
-    BLOCK(environmentName = "block", context = Context.MATH, dependency = LatexPackage.BLKARRAY),
+    BLOCKARRAY(environmentName = "blockarray", dependency = LatexPackage.BLKARRAY),
+    BLOCK(environmentName = "block", dependency = LatexPackage.BLKARRAY),
     GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = LatexPackage.COMMENT),
     LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),

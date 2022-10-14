@@ -35,6 +35,11 @@ abstract class Argument @JvmOverloads protected constructor(val name: String, va
         FILE,
 
         /**
+         * Reference to a label.
+         */
+        LABEL,
+
+        /**
          * Text contents.
          */
         TEXT,

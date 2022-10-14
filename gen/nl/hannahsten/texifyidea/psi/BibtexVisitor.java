@@ -12,6 +12,10 @@ public class BibtexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBracedVerbatim(@NotNull BibtexBracedVerbatim o) {
+    visitPsiElement(o);
+  }
+
   public void visitComment(@NotNull BibtexComment o) {
     visitPsiElement(o);
   }
@@ -53,6 +57,14 @@ public class BibtexVisitor extends PsiElementVisitor {
   }
 
   public void visitQuotedString(@NotNull BibtexQuotedString o) {
+    visitPsiElement(o);
+  }
+
+  public void visitQuotedVerbatim(@NotNull BibtexQuotedVerbatim o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRawText(@NotNull BibtexRawText o) {
     visitPsiElement(o);
   }
 

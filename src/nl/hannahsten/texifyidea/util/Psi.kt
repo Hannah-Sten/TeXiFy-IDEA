@@ -122,10 +122,20 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
-    return hasParent(LatexMathContent::class) || hasParent(LatexDisplayMath::class) || inDirectEnvironmentContext(
-        Environment.Context.MATH
-    )
+    // Do the cheap tests first.
+    return inDirectMathContext()
+        // Check if any of the parents are in math context, because the direct environment might not be explicitly
+        // defined as math context.
+        || parents().any { it.inDirectMathContext() }
 }
+
+/**
+ * Checks if the psi element is in a direct math context or not.
+ */
+fun PsiElement.inDirectMathContext(): Boolean =
+    hasParent(LatexMathContent::class)
+        || hasParent(LatexDisplayMath::class)
+        || inDirectEnvironmentContext(Environment.Context.MATH)
 
 /**
  * Returns the outer math environment.
@@ -398,6 +408,7 @@ fun PsiElement.remove(removeLeadingWhiteSpace: Boolean = true) {
     }
     parent.node.removeChild(node)
 }
+
 /**
  * Get a sequence of all the parents of this PsiElement with the given type.
  */

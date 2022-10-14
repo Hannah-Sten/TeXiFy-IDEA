@@ -11,9 +11,15 @@ public interface BibtexString extends PsiElement {
   BibtexBracedString getBracedString();
 
   @Nullable
+  BibtexBracedVerbatim getBracedVerbatim();
+
+  @Nullable
   BibtexDefinedString getDefinedString();
 
   @Nullable
   BibtexQuotedString getQuotedString();
+
+  @Nullable
+  BibtexQuotedVerbatim getQuotedVerbatim();
 
 }

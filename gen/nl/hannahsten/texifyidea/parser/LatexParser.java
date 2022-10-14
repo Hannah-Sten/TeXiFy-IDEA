@@ -1,17 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
-
-import static com.intellij.lang.WhitespacesBinders.GREEDY_LEFT_BINDER;
-import static com.intellij.lang.WhitespacesBinders.GREEDY_RIGHT_BINDER;
-import static nl.hannahsten.texifyidea.psi.LatexParserUtil.*;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+import static nl.hannahsten.texifyidea.psi.LatexParserUtil.*;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.PsiParser;
+import com.intellij.lang.LightPsiParser;
+import static com.intellij.lang.WhitespacesBinders.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -465,7 +464,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
-  //     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
+  //     normal_text | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -479,17 +478,17 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
     if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
+    if (!r) r = normal_text(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
     if (!r) r = consumeToken(b, OPEN_BRACKET);
     if (!r) r = consumeToken(b, CLOSE_BRACKET);
-    if (!r) r = normal_text(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | DASH)+
+  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | DASH)+
   public static boolean normal_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text")) return false;
     boolean r;
@@ -504,7 +503,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | DASH
+  // NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | DASH
   private static boolean normal_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text_0")) return false;
     boolean r;
@@ -514,6 +513,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, QUOTATION_MARK);
     if (!r) r = consumeToken(b, OPEN_ANGLE_BRACKET);
     if (!r) r = consumeToken(b, CLOSE_ANGLE_BRACKET);
+    if (!r) r = consumeToken(b, OPEN_PAREN);
+    if (!r) r = consumeToken(b, CLOSE_PAREN);
+    if (!r) r = consumeToken(b, OPEN_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_BRACKET);
     if (!r) r = consumeToken(b, PIPE);
     if (!r) r = consumeToken(b, EXCLAMATION_MARK);
     if (!r) r = consumeToken(b, BACKSLASH);
