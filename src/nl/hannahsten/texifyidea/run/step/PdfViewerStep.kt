@@ -118,7 +118,15 @@ class PdfViewerStep internal constructor(
 
             row("PDF file:") {
                 val textFieldBuilder = textFieldWithBrowseButton(
-                    getter = { state.pdfFilePath.pathWithMacro ?: getDefaultPdfFilePathWithMacro().resolvedPath!! },
+                    getter = {
+                        val path = state.pdfFilePath.pathWithMacro
+                        // If using default, setter will not be called
+                        if (path == null) {
+                            val default = getDefaultPdfFilePathWithMacro().resolvedPath!!
+                            state.pdfFilePath = LatexRunConfigurationPathOption(default, default)
+                        }
+                        state.pdfFilePath.pathWithMacro!!
+                     },
                     setter = {
                         // We have to get the data context in the setter, any data component will do
                         val anyDataComponent = viewerEditor.component
