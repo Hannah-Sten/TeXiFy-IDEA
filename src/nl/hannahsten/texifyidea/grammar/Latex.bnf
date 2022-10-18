@@ -141,7 +141,7 @@ keyval_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | P
 keyval_value ::= keyval_content+ {
     methods=[toString]
 }
-keyval_content ::= parameter_text | parameter_group
+keyval_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
 
 
 // The lowest level of a parameter must have the getReferences etc. implemented

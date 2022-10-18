@@ -29,6 +29,18 @@ public class LatexKeyvalContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @Nullable
+  public LatexCommands getCommands() {
+    return PsiTreeUtil.getChildOfType(this, LatexCommands.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexMathEnvironment getMathEnvironment() {
+    return PsiTreeUtil.getChildOfType(this, LatexMathEnvironment.class);
+  }
+
+  @Override
+  @Nullable
   public LatexParameterGroup getParameterGroup() {
     return PsiTreeUtil.getChildOfType(this, LatexParameterGroup.class);
   }
