@@ -10,6 +10,8 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
 import com.intellij.util.ProcessingContext
+import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
@@ -231,8 +233,6 @@ fun PsiElement.nextLeafIgnoreWhitespace(): PsiElement? {
     return null
 }
 
-
-
 /**
  * Finds the next sibling of the element that has the given type.
  * If the element has the given type, it is returned directly.
@@ -310,6 +310,8 @@ inline fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -
 fun PsiElement.isComment(): Boolean {
     return this is PsiComment || inDirectEnvironmentContext(Environment.Context.COMMENT)
 }
+
+fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == BibtexLanguage
 
 /**
  * Checks if the element is in a direct environment.
