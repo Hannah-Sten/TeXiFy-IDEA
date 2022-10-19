@@ -102,6 +102,11 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
         for (warning in annotationResult.warnings) {
             val document = annotationResult.document
 
+            // Don't show obsolete warnings out of range
+            if (warning.endLine > document.lineCount) {
+                continue
+            }
+
             // In Textidote, everything is 1-based, and here everyting is 0-based
             val lineStartOffset1 = document.getLineStartOffset(warning.startLine - 1)
             val lineStartOffset2 = document.getLineStartOffset(warning.endLine - 1)

@@ -56,6 +56,20 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun `test environment parameters`() {
+        """
+            \begin{enumerate*}[label=(\roman*)]
+                \item item1
+                \item item2
+            \end{enumerate*}
+        """.trimIndent() `should be reformatted to` """
+            \begin{enumerate*}[label=(\roman*)]
+                \item item1
+                \item item2
+            \end{enumerate*}
+        """.trimIndent()
+    }
+
     fun `test leading comment in environment`() {
         """
             \begin{document}

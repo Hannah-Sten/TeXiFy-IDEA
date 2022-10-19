@@ -320,13 +320,19 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // parameter_text | parameter_group
+  // parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
   public static boolean keyval_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, KEYVAL_CONTENT, "<keyval content>");
     r = parameter_text(b, l + 1);
     if (!r) r = parameter_group(b, l + 1);
+    if (!r) r = consumeToken(b, OPEN_PAREN);
+    if (!r) r = consumeToken(b, CLOSE_PAREN);
+    if (!r) r = consumeToken(b, OPEN_ANGLE_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_ANGLE_BRACKET);
+    if (!r) r = commands(b, l + 1);
+    if (!r) r = math_environment(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -463,8 +469,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
-  //     normal_text | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -479,10 +484,6 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
     if (!r) r = normal_text(b, l + 1);
-    if (!r) r = consumeToken(b, OPEN_PAREN);
-    if (!r) r = consumeToken(b, CLOSE_PAREN);
-    if (!r) r = consumeToken(b, OPEN_BRACKET);
-    if (!r) r = consumeToken(b, CLOSE_BRACKET);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
