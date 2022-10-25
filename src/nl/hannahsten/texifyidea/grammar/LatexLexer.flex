@@ -454,6 +454,10 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {PARTIAL_DEFINITION_COMMAND}                   { yypushState(PARTIAL_DEFINITION); preambleOptionBracesCount = -1; return COMMAND_TOKEN; } // -1 because the { is not included in the regex
 \<\{                   { yypushState(PARTIAL_DEFINITION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
 >\{                    { yypushState(PARTIAL_DEFINITION); preambleOptionBracesCount = 0; return OPEN_BRACE; }
+// Unfortunately, some packages decided that it's a good idea to use angular brackets as parameters, which can lead to the case where an angular parameter is followed by a required parameter, such that we have the >{...} structure again but now with a completely different meaning.
+// In order to support inline math in the required parameter, we need to detect we are not in a tabular preamble, which is doable but a lot of overhead.
+// Instead, since angular bracket parameters are rare and are mostly just beamer overlay parameters and a few TikZ cases, we hardcode a regex for those instead so that the above rules will not match.
+\<[\d\-,\+]+>          { return NORMAL_TEXT_WORD; }
 
 // In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line
