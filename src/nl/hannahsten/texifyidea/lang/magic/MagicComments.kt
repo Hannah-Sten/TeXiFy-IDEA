@@ -151,7 +151,7 @@ fun PsiElement.magicCommentLookup(
  */
 fun PsiElement.forwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?) = magicCommentLookup(
     initial,
-    PsiElement::nextSiblingIgnoreWhitespace,
+    PsiElement::nextLeafIgnoreWhitespace,
     reversed = false
 )
 

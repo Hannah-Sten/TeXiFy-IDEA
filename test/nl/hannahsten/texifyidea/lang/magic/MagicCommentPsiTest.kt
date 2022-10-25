@@ -30,4 +30,17 @@ class MagicCommentPsiTest : BasePlatformTestCase() {
         val magic = myFixture.file.magicComment()
         assertEquals(arrayListOf("compiler = xelatex"), magic.toCommentString())
     }
+
+    fun `test get multiple magic comments for file`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            %! suppress = NonBreakingSpace
+            %! suppress = UnresolvedReference
+            I \ref{nolabel}
+            """.trimIndent()
+        )
+        val magic = myFixture.file.magicComment()
+        assertEquals(arrayListOf("suppress = NonBreakingSpace", "suppress = UnresolvedReference"), magic.toCommentString())
+    }
 }
