@@ -15,4 +15,7 @@
 * Fix missing parent sections in structure view when starting with a sublevel. (#2693)
 * Fix math environment check for in particular blkarray. (#2697)
 * Fix spellcheck in command parameters. (#2699)
+* Fix formatting issue with environment parameters. (#2715)
+* Fix ignored file-level inspection suppressions. (#2718)
+* Fix TeXiFy shortcuts being applied in non-LaTeX files. (#2718)
 * Fix crashes. (#2708)
