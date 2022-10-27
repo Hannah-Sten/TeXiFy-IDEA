@@ -95,7 +95,7 @@ class SumatraConversation : ViewerConversation() {
         catch (e: TeXception) {
             // Added checks when sumatraPath doesn't exist (not a directory), so Windows popup error doesn't appear
             val (pathAvailable, workingDir) = isSumatraPathAvailable(sumatraPath)
-            if (isSumatraAvailable || pathAvailable){
+            if (isSumatraAvailable || pathAvailable) {
                 runCommand("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = workingDir)
             }
         }
