@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import nl.hannahsten.texifyidea.util.runCommand
+import java.io.File
 
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
@@ -34,6 +35,19 @@ val isSumatraAvailable: Boolean by lazy {
     true
 }
 
+/**
+ * Checks if Sumatra can be found in a global PATH or in a directory (with sumatraCustomPath)
+ * Verifies that sumatraCustomPath is a directory, non-null and non-empty before checking in the directory for Sumatra.
+ */
+private fun isSumatraPathAvailable(sumatraCustomPath: String? = null): Pair<Boolean, File?> {
+    var workingDir: File? = null
+    if (!sumatraCustomPath.isNullOrEmpty() && File(sumatraCustomPath).isDirectory) {
+        workingDir = File(sumatraCustomPath)
+    }
+
+    return Pair(runCommandWithExitCode("where", "SumatraPDF", workingDirectory = workingDir).second == 0, workingDir)
+}
+
 private fun isSumatraInstalled(): Boolean {
     // Try some SumatraPDF registry keys
     // For some reason this first one isn't always present anymore, it used to be
@@ -43,7 +57,7 @@ private fun isSumatraInstalled(): Boolean {
     if (regQuery1 || regQuery2) return true
 
     // Try if Sumatra is in PATH
-    return runCommandWithExitCode("start", "SumatraPDF").second == 0
+    return isSumatraPathAvailable().first
 }
 
 /**
@@ -79,12 +93,11 @@ class SumatraConversation : ViewerConversation() {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
-            // In case the user provided a custom path to SumatraPDF, add it to the path before executing
-            val processBuilder = ProcessBuilder("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath)
-            if (sumatraPath != null) {
-                processBuilder.environment()["Path"] = sumatraPath
+            // Added checks when sumatraPath doesn't exist (not a directory), so Windows popup error doesn't appear
+            val (pathAvailable, workingDir) = isSumatraPathAvailable(sumatraPath)
+            if (isSumatraAvailable || pathAvailable) {
+                runCommand("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = workingDir)
             }
-            processBuilder.start()
         }
     }
 
