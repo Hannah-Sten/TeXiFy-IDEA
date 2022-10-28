@@ -81,10 +81,6 @@ class LatexParserTest : BasePlatformTestCase() {
             Similar but with different commands:
             \pretitle{\begin{center}\fontsize{18bp}{18bp}\selectfont}
             \posttitle{\par\end{center}}
-            
-            \begin{frame}
-                \only<1>{${'$'}a_1}
-            \end{frame}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
