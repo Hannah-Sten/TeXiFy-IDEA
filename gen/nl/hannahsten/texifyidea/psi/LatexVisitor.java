@@ -9,14 +9,6 @@ import com.intellij.psi.PsiLanguageInjectionHost;
 
 public class LatexVisitor extends PsiElementVisitor {
 
-  public void visitAngleParam(@NotNull LatexAngleParam o) {
-    visitPsiElement(o);
-  }
-
-  public void visitAngleParamContent(@NotNull LatexAngleParamContent o) {
-    visitPsiElement(o);
-  }
-
   public void visitBeginCommand(@NotNull LatexBeginCommand o) {
     visitCommandWithParams(o);
   }
