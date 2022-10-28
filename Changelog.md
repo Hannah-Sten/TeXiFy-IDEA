@@ -11,6 +11,7 @@
 * Exit inline math with tab. (#2709)
 
 ### Bug fixes
+* Fix SumatraPDF detection for portable installation in PATH. (#2732)
 * Fix false positive Grazie inspection on parentheses. (#2692)
 * Fix missing parent sections in structure view when starting with a sublevel. (#2693)
 * Fix math environment check for in particular blkarray. (#2697)
@@ -19,3 +20,5 @@
 * Fix ignored file-level inspection suppressions. (#2718)
 * Fix TeXiFy shortcuts being applied in non-LaTeX files. (#2718)
 * Fix crashes. (#2708)
+
+Thanks to @MisterDeenis for contributing to this release!
