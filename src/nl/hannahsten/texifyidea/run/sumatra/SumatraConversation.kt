@@ -16,7 +16,8 @@ import java.io.File
  * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
  * install SumatraPDF while running TeXiFy.
  */
-object SumatraAvailabilityChecker{
+object SumatraAvailabilityChecker {
+
     private var isSumatraAvailable: Boolean = false
 
     private val isSumatraAvailableInit: Boolean by lazy {
@@ -42,7 +43,7 @@ object SumatraAvailabilityChecker{
         isSumatraAvailable = isSumatraAvailableInit
     }
 
-    fun getSumatraAvailability(): Boolean{
+    fun getSumatraAvailability(): Boolean {
         return isSumatraAvailable
     }
 
@@ -58,7 +59,7 @@ object SumatraAvailabilityChecker{
 
         val availabilityParams = Pair(runCommandWithExitCode("where", "SumatraPDF", workingDirectory = workingDir).second == 0, workingDir)
 
-        if (assignNewAvailability && !isSumatraAvailableInit){
+        if (assignNewAvailability && !isSumatraAvailableInit) {
             isSumatraAvailable = availabilityParams.first
         }
 
@@ -74,7 +75,7 @@ object SumatraAvailabilityChecker{
         if (regQuery1 || regQuery2) return true
 
         // Try if Sumatra is in PATH
-        return isSumatraPathAvailable(sumatraCustomPath=null, assignNewAvailability=false).first
+        return isSumatraPathAvailable(sumatraCustomPath = null, assignNewAvailability = false).first
     }
 }
 
