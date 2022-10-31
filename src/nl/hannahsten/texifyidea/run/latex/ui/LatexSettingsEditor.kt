@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.options.ConfigurationException
@@ -14,6 +15,7 @@ import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.components.fields.ExtendableTextField
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -26,10 +28,10 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.awt.event.ItemEvent
-import javax.swing.JComponent
-import javax.swing.JPanel
+import javax.swing.*
 
 /**
  * @author Sten Wessel
@@ -378,10 +380,47 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compilerPath)
     }
 
+    private fun updatePdfViewerComboBox() {
+        val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
+            ExternalPdfViewers.getExternalPdfViewers() +
+            listOf(InternalPdfViewer.NONE)
+
+        pdfViewer.component = ComboBox(viewers.toTypedArray())
+        pdfViewer.updateUI()
+    }
+
     /**
      * Optional custom path for SumatraPDF.
      */
     private fun addSumatraPathField(panel: JPanel) {
+        class PathInputVerifier : InputVerifier() {
+
+            @Deprecated("Deprecated in Java")
+            override fun shouldYieldFocus(input: JComponent?): Boolean {
+                if (!verify(input)) {
+                    DialogBuilder().apply {
+                        setTitle("SumatraPDF Custom Path Invalid")
+                        setCenterPanel(
+                            JLabel(
+                                "<html>Custom Path given in run configuration of SumatraPDF doesn't contain SumatraPDF.exe. Input a valid path or leave it empty.</html>",
+                                AllIcons.General.WarningDialog,
+                                SwingConstants.LEADING
+                            )
+                        )
+                        show()
+                    }
+                }
+
+                updatePdfViewerComboBox()
+
+                return true
+            }
+
+            override fun verify(input: JComponent?): Boolean {
+                return SumatraAvailabilityChecker.isSumatraPathAvailable((input as ExtendableTextField).text).first
+            }
+        }
+
         if (SystemInfo.isWindows) {
             enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
             panel.add(enableSumatraPath)
@@ -404,7 +443,15 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 }
             }
 
-            enableSumatraPath.addItemListener { e -> sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
+            sumatraPath.textField.inputVerifier = PathInputVerifier()
+
+            enableSumatraPath.addItemListener { e ->
+                if (e.stateChange != ItemEvent.SELECTED) {
+                    SumatraAvailabilityChecker.isSumatraPathAvailable("")
+                    updatePdfViewerComboBox()
+                }
+                sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED
+            }
 
             panel.add(sumatraPath)
         }

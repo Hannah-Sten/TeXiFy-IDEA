@@ -6,8 +6,8 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.skim.SkimConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.zathura.ZathuraConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.run.sumatra.SumatraConversation
-import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.runCommand
 
 /**
@@ -30,7 +30,7 @@ enum class InternalPdfViewer(
     SUMATRA("sumatra", "Sumatra", SumatraConversation()),
     NONE("", "No PDF viewer", null);
 
-    override fun isAvailable(): Boolean = availability[this] ?: false
+    override fun isAvailable(): Boolean = availability()[this] ?: false
 
     /**
      * Check if the viewer is installed and available from the path.
@@ -41,7 +41,7 @@ enum class InternalPdfViewer(
             true
         }
         else if (SystemInfo.isWindows && this == SUMATRA) {
-            isSumatraAvailable
+            SumatraAvailabilityChecker.getSumatraAvailability()
         }
         // Only support Evince and Okular on Linux, although they can be installed on other systems like Mac.
         else if (SystemInfo.isLinux) {
@@ -64,8 +64,8 @@ enum class InternalPdfViewer(
 
     companion object {
 
-        private val availability: Map<InternalPdfViewer, Boolean> by lazy {
-            values().associateWith {
+        private fun availability(): Map<InternalPdfViewer, Boolean> {
+            return values().associateWith {
                 it.checkAvailability()
             }
         }

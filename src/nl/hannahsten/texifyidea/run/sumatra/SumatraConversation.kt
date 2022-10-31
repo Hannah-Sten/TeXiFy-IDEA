@@ -16,48 +16,66 @@ import java.io.File
  * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
  * install SumatraPDF while running TeXiFy.
  */
-val isSumatraAvailable: Boolean by lazy {
-    if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
+object SumatraAvailabilityChecker{
+    private var isSumatraAvailable: Boolean = false
 
-    // Try if native bindings are available
-    try {
-        DDEClientConversation()
-    }
-    catch (e: UnsatisfiedLinkError) {
-        Log.info("Native library DLLs could not be found.")
-        return@lazy false
-    }
-    catch (e: NoClassDefFoundError) {
-        Log.info("Native library DLLs could not be found.")
-        return@lazy false
-    }
+    private val isSumatraAvailableInit: Boolean by lazy {
+        if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
 
-    true
-}
+        // Try if native bindings are available
+        try {
+            DDEClientConversation()
+        }
+        catch (e: UnsatisfiedLinkError) {
+            Log.info("Native library DLLs could not be found.")
+            return@lazy false
+        }
+        catch (e: NoClassDefFoundError) {
+            Log.info("Native library DLLs could not be found.")
+            return@lazy false
+        }
 
-/**
- * Checks if Sumatra can be found in a global PATH or in a directory (with sumatraCustomPath)
- * Verifies that sumatraCustomPath is a directory, non-null and non-empty before checking in the directory for Sumatra.
- */
-private fun isSumatraPathAvailable(sumatraCustomPath: String? = null): Pair<Boolean, File?> {
-    var workingDir: File? = null
-    if (!sumatraCustomPath.isNullOrEmpty() && File(sumatraCustomPath).isDirectory) {
-        workingDir = File(sumatraCustomPath)
+        true
     }
 
-    return Pair(runCommandWithExitCode("where", "SumatraPDF", workingDirectory = workingDir).second == 0, workingDir)
-}
+    init {
+        isSumatraAvailable = isSumatraAvailableInit
+    }
 
-private fun isSumatraInstalled(): Boolean {
-    // Try some SumatraPDF registry keys
-    // For some reason this first one isn't always present anymore, it used to be
-    val regQuery1 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe", "/ve")?.startsWith("ERROR:") == false
-    val regQuery2 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf", "/ve")?.startsWith("ERROR:") == false
+    fun getSumatraAvailability(): Boolean{
+        return isSumatraAvailable
+    }
 
-    if (regQuery1 || regQuery2) return true
+    /**
+     * Checks if Sumatra can be found in a global PATH or in a directory (with sumatraCustomPath)
+     * Verifies that sumatraCustomPath is a directory, non-null and non-empty before checking in the directory for Sumatra.
+     */
+    fun isSumatraPathAvailable(sumatraCustomPath: String? = null, assignNewAvailability: Boolean = true): Pair<Boolean, File?> {
+        var workingDir: File? = null
+        if (!sumatraCustomPath.isNullOrEmpty() && File(sumatraCustomPath).isDirectory) {
+            workingDir = File(sumatraCustomPath)
+        }
 
-    // Try if Sumatra is in PATH
-    return isSumatraPathAvailable().first
+        val availabilityParams = Pair(runCommandWithExitCode("where", "SumatraPDF", workingDirectory = workingDir).second == 0, workingDir)
+
+        if (assignNewAvailability && !isSumatraAvailableInit){
+            isSumatraAvailable = availabilityParams.first
+        }
+
+        return availabilityParams
+    }
+
+    private fun isSumatraInstalled(): Boolean {
+        // Try some SumatraPDF registry keys
+        // For some reason this first one isn't always present anymore, it used to be
+        val regQuery1 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe", "/ve")?.startsWith("ERROR:") == false
+        val regQuery2 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf", "/ve")?.startsWith("ERROR:") == false
+
+        if (regQuery1 || regQuery2) return true
+
+        // Try if Sumatra is in PATH
+        return isSumatraPathAvailable(sumatraCustomPath=null, assignNewAvailability=false).first
+    }
 }
 
 /**
@@ -75,7 +93,7 @@ class SumatraConversation : ViewerConversation() {
     private var conversation: DDEClientConversation? = null
 
     init {
-        if (isSumatraAvailable) {
+        if (SumatraAvailabilityChecker.getSumatraAvailability()) {
             try {
                 conversation = DDEClientConversation()
             }
@@ -94,8 +112,8 @@ class SumatraConversation : ViewerConversation() {
         }
         catch (e: TeXception) {
             // Added checks when sumatraPath doesn't exist (not a directory), so Windows popup error doesn't appear
-            val (pathAvailable, workingDir) = isSumatraPathAvailable(sumatraPath)
-            if (isSumatraAvailable || pathAvailable) {
+            val (_, workingDir) = SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath)
+            if (SumatraAvailabilityChecker.getSumatraAvailability()) {
                 runCommand("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = workingDir)
             }
         }

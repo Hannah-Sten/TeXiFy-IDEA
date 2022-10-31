@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.ui.DialogBuilder
-import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -67,6 +67,6 @@ open class ConfigureInverseSearchAction : AnAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = isSumatraAvailable
+        e.presentation.isEnabledAndVisible = SumatraAvailabilityChecker.getSumatraAvailability()
     }
 }

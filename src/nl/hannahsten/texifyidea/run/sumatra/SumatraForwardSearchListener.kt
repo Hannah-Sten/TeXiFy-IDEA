@@ -30,7 +30,7 @@ class SumatraForwardSearchListener(
 
     override fun processTerminated(event: ProcessEvent) {
         // First check if the user provided a custom path to SumatraPDF, if not, check if it is installed
-        if (event.exitCode == 0 && (runConfig.sumatraPath != null || isSumatraAvailable)) {
+        if (event.exitCode == 0 && (runConfig.sumatraPath != null || SumatraAvailabilityChecker.getSumatraAvailability())) {
             try {
                 SumatraConversation().openFile(runConfig.outputFilePath, sumatraPath = runConfig.sumatraPath)
             }
