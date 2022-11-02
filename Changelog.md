@@ -19,6 +19,7 @@
 * Fix formatting issue with environment parameters. (#2715)
 * Fix ignored file-level inspection suppressions. (#2718)
 * Fix TeXiFy shortcuts being applied in non-LaTeX files. (#2718)
+* Fix inline math in required parameters after angular bracket parameter. (#2728)
 * Fix crashes. (#2708)
 
 Thanks to @MisterDeenis for contributing to this release!
