@@ -43,26 +43,25 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
          *
          * The next commands has the same or higher level as the given one,
          * meaning that a \section will stop only  on \section and higher.
+         *
+         * This was written to require that a chpter or section command be passed
+         *
+         * As previously written, this would just match the first and second matching sections, but now
+         * it will search ahead to find the first equal or bigger section, or EOF, whichever comes first
          */
         fun findNextSection(command: LatexCommands): PsiElement? {
             // Scan all commands.
-            val commands = command.containingFile.commandsInFile().toList()
+            var commands = command.containingFile.commandsInFile().toList()
+            commands = commands.subList(commands.indexOf(command) + 1, commands.size)
 
-            for (i in commands.indices) {
-                val cmd = commands[i]
+            val indexOfCurrent = SECTION_NAMES.indexOf(command.name)
 
-                val indexOfCurrent = SECTION_NAMES.indexOf(cmd.name)
-                if (indexOfCurrent < 0) {
-                    continue
-                }
+            for (j in commands.indices) {
+                val next = commands[j]
 
-                for (j in i + 1 until commands.size) {
-                    val next = commands[j]
-
-                    val indexOfNext = SECTION_NAMES.indexOf(next.name)
-                    if (indexOfNext in 0..indexOfCurrent) {
-                        return commands[j]
-                    }
+                val indexOfNext = SECTION_NAMES.indexOf(next.name)
+                if (indexOfNext in 0..indexOfCurrent) {
+                    return commands[j]
                 }
             }
 
@@ -182,8 +181,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
-            val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
-                .newFileFullPath ?: return
+            val filePath =
+                CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
+                    .newFileFullPath ?: return
 
             runWriteAction {
                 val createdFile = createFile("$filePath.tex", text)
