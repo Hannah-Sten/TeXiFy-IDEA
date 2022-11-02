@@ -56,12 +56,12 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                     continue
                 }
 
-                if (cmd == command && i + 1 < commands.size) {
-                    val next = commands[i + 1]
+                for (j in i + 1 until commands.size) {
+                    val next = commands[j]
 
                     val indexOfNext = SECTION_NAMES.indexOf(next.name)
                     if (indexOfNext in 0..indexOfCurrent) {
-                        return commands[i + 1]
+                        return commands[j]
                     }
                 }
             }
