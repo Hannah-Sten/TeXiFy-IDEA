@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
  * @author jojo2357
  */
 class LatexInlineInclude : InlineActionHandler() {
+
     override fun isEnabledForLanguage(l: Language?): Boolean {
         return l == LatexLanguage
     }
@@ -33,7 +34,7 @@ class LatexInlineInclude : InlineActionHandler() {
     }
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
-        //TODO add dialog to allow choosing whether or not to delete definition, select scope, etc.
+        // TODO add dialog to allow choosing whether or not to delete definition, select scope, etc.
         val inlineFile = element as LatexFile
 
         val tempreferences =
@@ -65,6 +66,5 @@ class LatexInlineInclude : InlineActionHandler() {
                 }, "Inline File", "Texify")
             }
         }
-
     }
 }
