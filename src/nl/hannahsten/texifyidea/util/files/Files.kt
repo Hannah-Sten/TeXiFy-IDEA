@@ -122,11 +122,14 @@ fun createFile(fileName: String, contents: String): File {
 fun getUniqueFileName(fileName: String, directory: String? = null): String {
     var count = 0
     var currentFileName = fileName
-    while (File(
-            (if (directory != null) {
-                directory + File.separator
-            }
-            else "") + currentFileName
+    while (
+        File(
+            (
+                if (directory != null) {
+                    directory + File.separator
+                }
+                else ""
+                ) + currentFileName
         ).exists()
     ) {
         val extension = "." + FileUtilRt.getExtension(currentFileName)
