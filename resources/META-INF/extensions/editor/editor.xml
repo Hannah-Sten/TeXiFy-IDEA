@@ -40,6 +40,7 @@
         <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
         <vfs.asyncListener implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileVfsListener"/>
 
+        <inlineActionHandler implementation="nl.hannahsten.texifyidea.refactoring.LatexInlineInclude"/>
     </extensions>
 
     <xi:include href="/META-INF/extensions/editor/colors.xml" xpointer="xpointer(/idea-plugin/*)"/>
