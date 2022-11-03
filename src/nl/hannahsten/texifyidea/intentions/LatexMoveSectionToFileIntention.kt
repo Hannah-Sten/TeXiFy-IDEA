@@ -83,13 +83,15 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         // Execute write actions.
         ApplicationManager.getApplication().runWriteAction {
             CommandProcessor.getInstance().executeCommand(project, {
-                //Create file...but not on fs yet
+                // Create file...but not on fs yet
                 val fileFactory = PsiFileFactory.getInstance(project)
                 val newfile = fileFactory.createFileFromText(
                     getUniqueFileName(
                         fileName.appendExtension("tex"),
                         Path.of(filePath).parent.pathString
-                    ), LatexFileType, text
+                    ),
+                    LatexFileType,
+                    text
                 )
 
                 val projectRootManager = ProjectRootManager.getInstance(project)
@@ -130,7 +132,7 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
                     i += 1
                 }
 
-                //Actually create the file on fs
+                // Actually create the file on fs
                 val thing = PsiManager.getInstance(project).findDirectory(resultDir)?.add(newfile)
 
                 // back to your regularly scheduled programming
