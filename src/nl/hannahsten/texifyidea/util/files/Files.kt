@@ -77,7 +77,8 @@ fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replace
 /**
  * Returns the extension of given filename
  */
-fun String.getFileExtension(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
+fun String.getFileExtension(): String =
+    if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
 
 /**
  * Creates a project directory at `path` which will be marked as excluded.
@@ -106,9 +107,28 @@ fun Document.psiFile(project: Project): PsiFile? = PsiDocumentManager.getInstanc
  * @return The created file.
  */
 fun createFile(fileName: String, contents: String): File {
+    val currentFileName = getUniqueFileName(fileName)
+
+    return File(currentFileName).apply {
+        createNewFile()
+        LocalFileSystem.getInstance().refresh(true)
+        writeText(contents, StandardCharsets.UTF_8)
+    }
+}
+
+/**
+ * Returns the name first non-conflicting filename with the provided base name
+ */
+fun getUniqueFileName(fileName: String, directory: String? = null): String {
     var count = 0
     var currentFileName = fileName
-    while (File(currentFileName).exists()) {
+    while (File(
+            (if (directory != null) {
+                directory + File.separator
+            }
+            else "") + currentFileName
+        ).exists()
+    ) {
         val extension = "." + FileUtilRt.getExtension(currentFileName)
         var stripped = currentFileName.substring(0, currentFileName.length - extension.length)
 
@@ -119,12 +139,7 @@ fun createFile(fileName: String, contents: String): File {
 
         currentFileName = stripped + (++count) + extension
     }
-
-    return File(currentFileName).apply {
-        createNewFile()
-        LocalFileSystem.getInstance().refresh(true)
-        writeText(contents, StandardCharsets.UTF_8)
-    }
+    return currentFileName
 }
 
 /**
