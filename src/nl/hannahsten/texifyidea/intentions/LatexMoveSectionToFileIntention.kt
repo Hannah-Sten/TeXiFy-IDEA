@@ -89,7 +89,7 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
                 val fileFactory = PsiFileFactory.getInstance(project)
                 val newfile = fileFactory.createFileFromText(
                     getUniqueFileName(
-                        fileName.appendExtension("tex"),
+                        Path.of(filePath).fileName.toString().appendExtension("tex"),
                         Path.of(filePath).parent.pathString
                     ),
                     LatexFileType,
