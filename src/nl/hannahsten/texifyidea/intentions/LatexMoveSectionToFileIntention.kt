@@ -76,9 +76,11 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
         // Display a dialog to ask for the location and name of the new file.
-        val filePath =
+        val filePath = if (project.isTestProject().not()) {
             CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
                 .newFileFullPath ?: return
+        }
+        else file.containingDirectory?.virtualFile?.canonicalPath + File.separator + fileName
 
         // Execute write actions.
         ApplicationManager.getApplication().runWriteAction {
@@ -114,22 +116,26 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
                 val dirs = relativePath.split("/".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray()
-                var i = 0
-                if (dirs[0].isEmpty()) i = 1
+
                 var resultDir: VirtualFile = bestRoot
-                while (i < dirs.size) {
-                    val subdir = resultDir.findChild(dirs[i])
-                    if (subdir != null) {
-                        if (!subdir.isDirectory) {
-                            throw IOException("Expected resultDir, but got non-resultDir: " + subdir.path)
+                if (dirs.isNotEmpty()) {
+                    var i = 0
+                    if (dirs[0].isEmpty()) i = 1
+
+                    while (i < dirs.size) {
+                        val subdir = resultDir.findChild(dirs[i])
+                        if (subdir != null) {
+                            if (!subdir.isDirectory) {
+                                throw IOException("Expected resultDir, but got non-resultDir: " + subdir.path)
+                            }
                         }
+                        if (subdir != null) {
+                            resultDir = subdir
+                        }
+                        else
+                            throw Exception("Could not locate directory")
+                        i += 1
                     }
-                    if (subdir != null) {
-                        resultDir = subdir
-                    }
-                    else
-                        throw Exception("Could not locate directory")
-                    i += 1
                 }
 
                 // Actually create the file on fs
