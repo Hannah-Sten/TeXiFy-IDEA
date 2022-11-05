@@ -13,7 +13,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
-import nl.hannahsten.texifyidea.file.LatexFile
+import com.intellij.psi.impl.source.PsiFileImpl
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.FileMagic
@@ -129,18 +129,19 @@ fun createFile(fileName: String, contents: String): File {
  * Needs to be wrapped in a writable environment
  *
  * @param project The project this is for
- * @param filePath The absolute path of the file to create. File extension will be .tex no matter what
+ * @param filePath The absolute path of the file to create. File extension provided later
  * @param text The text to add to the file
  * @param root The root path of the project? Could possibly be replaced
+ * @param extension The desired file extension **without** a dot, tex by default
  *
  * @return Returns the name of the file that was created without folder names, and with the extension
  */
-fun writeToFileUndoable(project: Project, filePath: String, text: String, root: String): String {
+fun writeToFileUndoable(project: Project, filePath: String, text: String, root: String, extension: String = "tex"): String {
     // Create file...but not on fs yet
     val fileFactory = PsiFileFactory.getInstance(project)
     val newfile = fileFactory.createFileFromText(
         getUniqueFileName(
-            Path.of(filePath).fileName.toString().appendExtension("tex"),
+            Path.of(filePath).fileName.toString().appendExtension(extension),
             Path.of(filePath).parent.pathString
         ),
         LatexFileType,
@@ -192,8 +193,8 @@ fun writeToFileUndoable(project: Project, filePath: String, text: String, root: 
     // Actually create the file on fs
     val thing = PsiManager.getInstance(project).findDirectory(resultDir)?.add(newfile)
 
-    // back to your regularly scheduled programming
-    return (thing as LatexFile).virtualFile.path
+    // back to your regularly scheduled programming. Does not cast to LatexFile because virtualFile inherits from PsiFileImpl
+    return (thing as PsiFileImpl).virtualFile.path
         .replace(File.separator, "/")
         .replace("$root/", "")
 }
