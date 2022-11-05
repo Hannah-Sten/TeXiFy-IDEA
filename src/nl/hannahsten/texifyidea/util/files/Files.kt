@@ -137,12 +137,15 @@ fun createFile(fileName: String, contents: String): File {
  * @return Returns the name of the file that was created without folder names, and with the extension
  */
 fun writeToFileUndoable(project: Project, filePath: String, text: String, root: String, extension: String = "tex"): String {
+    val filenameNoExtension = Path.of(filePath).fileName.toString()
+    val filepathNoFilename = Path.of(filePath).parent.pathString
+
     // Create file...but not on fs yet
     val fileFactory = PsiFileFactory.getInstance(project)
     val newfile = fileFactory.createFileFromText(
         getUniqueFileName(
-            Path.of(filePath).fileName.toString().appendExtension(extension),
-            Path.of(filePath).parent.pathString
+            filenameNoExtension.appendExtension(extension),
+            filepathNoFilename
         ),
         LatexFileType,
         text
@@ -156,8 +159,8 @@ fun writeToFileUndoable(project: Project, filePath: String, text: String, root: 
     var bestRoot: VirtualFile? = null
     for (testFile in allRoots) {
         val rootPath = testFile.path
-        if (root.startsWith(rootPath)) {
-            relativePath = root.substring(rootPath.length)
+        if (filepathNoFilename.startsWith(rootPath)) {
+            relativePath = filepathNoFilename.substring(rootPath.length)
             bestRoot = testFile
             break
         }
@@ -175,17 +178,16 @@ fun writeToFileUndoable(project: Project, filePath: String, text: String, root: 
         if (dirs[0].isEmpty()) i = 1
 
         while (i < dirs.size) {
-            val subdir = resultDir.findChild(dirs[i])
+            var subdir = resultDir.findChild(dirs[i])
             if (subdir != null) {
                 if (!subdir.isDirectory) {
                     throw IOException("Expected resultDir, but got non-resultDir: " + subdir.path)
                 }
             }
-            if (subdir != null) {
-                resultDir = subdir
+            else {
+                subdir = resultDir.createChildDirectory(LocalFileSystem.getInstance(), dirs[i])
             }
-            else
-                throw Exception("Could not locate directory")
+            resultDir = subdir
             i += 1
         }
     }
