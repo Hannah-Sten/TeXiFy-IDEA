@@ -130,10 +130,10 @@ fun createFile(fileName: String, contents: String): File {
  *
  * @param project The project this is for
  * @param filePath The absolute path of the file to create. File extension will be .tex no matter what
- * @param test The text to add to the file
+ * @param text The text to add to the file
  * @param root The root path of the project? Could possibly be replaced
  *
- * @return Returns the name of the file that was created without folder names
+ * @return Returns the name of the file that was created without folder names, and with the extension
  */
 fun writeToFileUndoable(project: Project, filePath: String, text: String, root: String): String {
     // Create file...but not on fs yet
