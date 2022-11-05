@@ -11,13 +11,20 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiManager
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
+import java.io.IOException
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
 import java.util.regex.Pattern
+import kotlin.io.path.pathString
 
 /**
  * @author Hannah Schellekens
@@ -114,6 +121,81 @@ fun createFile(fileName: String, contents: String): File {
         LocalFileSystem.getInstance().refresh(true)
         writeText(contents, StandardCharsets.UTF_8)
     }
+}
+
+/**
+ * This writes to a file without using java.io.File
+ *
+ * Needs to be wrapped in a writable environment
+ *
+ * @param project The project this is for
+ * @param filePath The absolute path of the file to create. File extension will be .tex no matter what
+ * @param test The text to add to the file
+ * @param root The root path of the project? Could possibly be replaced
+ *
+ * @return Returns the name of the file that was created without folder names
+ */
+fun writeToFileUndoable(project: Project, filePath: String, text: String, root: String): String {
+    // Create file...but not on fs yet
+    val fileFactory = PsiFileFactory.getInstance(project)
+    val newfile = fileFactory.createFileFromText(
+        getUniqueFileName(
+            Path.of(filePath).fileName.toString().appendExtension("tex"),
+            Path.of(filePath).parent.pathString
+        ),
+        LatexFileType,
+        text
+    )
+
+    val projectRootManager = ProjectRootManager.getInstance(project)
+    val allRoots = projectRootManager.contentRoots + projectRootManager.contentSourceRoots
+
+    // The following is going to resolve the PsiDirectory that we need to add the new file to.
+    var relativePath = ""
+    var bestRoot: VirtualFile? = null
+    for (testFile in allRoots) {
+        val rootPath = testFile.path
+        if (root.startsWith(rootPath)) {
+            relativePath = root.substring(rootPath.length)
+            bestRoot = testFile
+            break
+        }
+    }
+    if (bestRoot == null) {
+        throw IOException("Can't find '$root' among roots")
+    }
+
+    val dirs = relativePath.split("/".toRegex()).dropLastWhile { it.isEmpty() }
+        .toTypedArray()
+
+    var resultDir: VirtualFile = bestRoot
+    if (dirs.isNotEmpty()) {
+        var i = 0
+        if (dirs[0].isEmpty()) i = 1
+
+        while (i < dirs.size) {
+            val subdir = resultDir.findChild(dirs[i])
+            if (subdir != null) {
+                if (!subdir.isDirectory) {
+                    throw IOException("Expected resultDir, but got non-resultDir: " + subdir.path)
+                }
+            }
+            if (subdir != null) {
+                resultDir = subdir
+            }
+            else
+                throw Exception("Could not locate directory")
+            i += 1
+        }
+    }
+
+    // Actually create the file on fs
+    val thing = PsiManager.getInstance(project).findDirectory(resultDir)?.add(newfile)
+
+    // back to your regularly scheduled programming
+    return (thing as LatexFile).virtualFile.path
+        .replace(File.separator, "/")
+        .replace("$root/", "")
 }
 
 /**
