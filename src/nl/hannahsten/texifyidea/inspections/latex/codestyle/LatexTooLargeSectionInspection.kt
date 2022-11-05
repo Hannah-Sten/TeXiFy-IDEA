@@ -21,8 +21,8 @@ import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsMa
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import java.io.File
 import java.util.*
 
@@ -187,7 +187,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                     .newFileFullPath ?: return
 
             runWriteAction {
-                val createdFile = createFile("$filePath.tex", text)
+                val createdFile = File(writeToFileUndoable(project, filePath, text, root))
                 document.deleteString(startIndex, endIndex)
                 LocalFileSystem.getInstance().refresh(true)
                 val fileNameRelativeToRoot = createdFile.absolutePath
