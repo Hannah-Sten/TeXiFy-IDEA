@@ -23,7 +23,6 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
-import java.io.File
 import java.util.*
 
 /**
@@ -187,14 +186,11 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                     .newFileFullPath ?: return
 
             runWriteAction {
-                val createdFile = File(writeToFileUndoable(project, filePath, text, root))
+                val fn = writeToFileUndoable(project, filePath, text, root)
                 document.deleteString(startIndex, endIndex)
                 LocalFileSystem.getInstance().refresh(true)
-                val fileNameRelativeToRoot = createdFile.absolutePath
-                    .replace(File.separator, "/")
-                    .replace("$root/", "")
                 val indent = cmd.findIndentation()
-                document.insertString(startIndex, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
+                document.insertString(startIndex, "\n$indent\\input{${fn.dropLast(4)}}\n\n")
             }
         }
     }
