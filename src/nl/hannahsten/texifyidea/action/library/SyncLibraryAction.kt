@@ -26,9 +26,16 @@ import javax.swing.tree.TreePath
 
 class SyncLibraryAction : AnAction() {
 
+    /**
+     * Synchronize the libraries that are selected in the library tree view. When there is no library selected - or the
+     * user doesn't have the library tool window open - synchronize all the libraries.
+     */
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val libraries = RemoteBibLibraryFactory.fromStorage(e.getData(TexifyDataKeys.LIBRARY_IDENTIFIER))?.let { listOf(it) }
+        val libraries = RemoteBibLibraryFactory
+            .fromStorage(e.getData(TexifyDataKeys.LIBRARY_IDENTIFIER))
+            ?.let { listOf(it) }
+            // Fallback to synchronizing all the libraries.
             ?: RemoteLibraryManager.getInstance().getLibraries()
                 .map {
                     RemoteBibLibraryFactory.fromStorage(it.key)
@@ -41,14 +48,15 @@ class SyncLibraryAction : AnAction() {
         ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Syncing ${library.displayName}...") {
             lateinit var bibItems: List<BibtexEntry>
             lateinit var expandedPaths: Enumeration<TreePath>
-            val tree by lazy { e.getData(TexifyDataKeys.LIBRARY_TREE) as Tree }
+            val tree: Tree? by lazy { e.getData(TexifyDataKeys.LIBRARY_TREE) }
 
             override fun run(indicator: ProgressIndicator) {
                 runBlocking {
                     try {
-                        expandedPaths = tree.getExpandedDescendants(TreePath(tree.model.root)) ?: return@runBlocking
                         bibItems = library.getCollection()
                         RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+                        expandedPaths =
+                            tree?.let { it.getExpandedDescendants(TreePath(it.model.root)) } ?: return@runBlocking
                     }
                     catch (exception: RemoteLibraryRequestTeXception) {
                         exception.showNotification(e.project!!)
@@ -59,40 +67,44 @@ class SyncLibraryAction : AnAction() {
             }
 
             override fun onSuccess() {
-                ProgressManager.getInstance().run(object : Backgroundable(project, "Updating tree...") {
-                    override fun run(indicator: ProgressIndicator) {
-                        runReadAction {
-                            val model = tree.model as DefaultTreeModel
-                            val root = model.root as? DefaultMutableTreeNode ?: return@runReadAction
-                            val libraryNode: LibraryMutableTreeNode = tree.findLibraryNode(library.identifier)
-                                ?: LibraryMutableTreeNode(library.identifier, library.displayName)
-                            libraryNode.children().asSequence()
-                                .map { it as DefaultMutableTreeNode }
-                                .filter { (it.userObject as BibtexStructureViewEntryElement).entry.identifier !in bibItems.map { bib -> bib.identifier } }
-                                .forEach { libraryNode.remove(it) }
+                // If the tree is null the user hasn't opened the library tool window yet, so there is no tree to update.
+                // The tree will be drawn with the updated library elements once the user opens the tool window.
+                tree?.let {
+                    ProgressManager.getInstance().run(object : Backgroundable(project, "Updating tree...") {
+                        override fun run(indicator: ProgressIndicator) {
+                            runReadAction {
+                                val model = it.model as DefaultTreeModel
+                                val root = model.root as? DefaultMutableTreeNode ?: return@runReadAction
+                                val libraryNode: LibraryMutableTreeNode = it.findLibraryNode(library.identifier)
+                                    ?: LibraryMutableTreeNode(library.identifier, library.displayName)
+                                libraryNode.children().asSequence()
+                                    .map { it as DefaultMutableTreeNode }
+                                    .filter { (it.userObject as BibtexStructureViewEntryElement).entry.identifier !in bibItems.map { bib -> bib.identifier } }
+                                    .forEach { libraryNode.remove(it) }
 
-                            val itemsInLib = libraryNode.children().asSequence()
-                                .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.identifier }
-                                .toList()
-                            bibItems.forEach { bib ->
-                                if (bib.identifier !in itemsInLib) {
-                                    val entryElement = BibtexStructureViewEntryElement(bib)
-                                    val entryNode = DefaultMutableTreeNode(entryElement)
-                                    libraryNode.add(entryNode)
+                                val itemsInLib = libraryNode.children().asSequence()
+                                    .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.identifier }
+                                    .toList()
+                                bibItems.forEach { bib ->
+                                    if (bib.identifier !in itemsInLib) {
+                                        val entryElement = BibtexStructureViewEntryElement(bib)
+                                        val entryNode = DefaultMutableTreeNode(entryElement)
+                                        libraryNode.add(entryNode)
 
-                                    // Each bib item has tags that show information, e.g., the author.
-                                    entryElement.children.forEach {
-                                        entryNode.add(DefaultMutableTreeNode(it))
+                                        // Each bib item has tags that show information, e.g., the author.
+                                        entryElement.children.forEach {
+                                            entryNode.add(DefaultMutableTreeNode(it))
+                                        }
                                     }
                                 }
-                            }
 
-                            if (!root.children().contains(libraryNode)) root.add(libraryNode)
-                            model.nodeStructureChanged(root)
-                            expandedPaths.asIterator().forEach { tree.expandPath(it) }
+                                if (!root.children().contains(libraryNode)) root.add(libraryNode)
+                                model.nodeStructureChanged(root)
+                                expandedPaths.asIterator().forEach(it::expandPath)
+                            }
                         }
-                    }
-                })
+                    })
+                }
             }
         })
     }
