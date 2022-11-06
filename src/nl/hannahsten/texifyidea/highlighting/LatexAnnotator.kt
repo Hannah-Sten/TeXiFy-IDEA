@@ -125,8 +125,10 @@ open class LatexAnnotator : Annotator {
                 .create()
 
             if (element.name == "\\text" || element.name == "\\intertext") {
+                // Avoid creating an Annotation without calling the create() method
+                val range = element.requiredParameters().firstOrNull() ?: continue
                 annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(element.requiredParameters().firstOrNull() ?: continue)
+                    .range(range)
                     .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
                     .create()
             }
