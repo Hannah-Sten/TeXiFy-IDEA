@@ -14,7 +14,6 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 import java.awt.datatransfer.DataFlavor
-import java.util.*
 
 /**
  * Pastes html and applies text(bf|it)
@@ -39,6 +38,13 @@ open class StyledTextPasteProvider : PasteProvider {
         "ol" to "\\end{enumerate}\n",
         "ul" to "\\end{itemize}\n",
         "li" to "\n",
+        "a" to "}"
+    )
+
+    val specialOpeningTags = hashMapOf<String, (Element) -> String>(
+        "a" to { element ->
+            "\\href{" + element.attributes()["href"] + "}{"
+        }
     )
 
     override fun performPaste(dataContext: DataContext) {
@@ -110,7 +116,7 @@ open class StyledTextPasteProvider : PasteProvider {
     }
 
     private fun Element.getPrefix(): String {
-        return openingTags[tagName()] ?: ""
+        return specialOpeningTags[tagName()]?.invoke(this) ?: openingTags[tagName()] ?: ""
     }
 
     private fun Element.getPostfix(): String {
