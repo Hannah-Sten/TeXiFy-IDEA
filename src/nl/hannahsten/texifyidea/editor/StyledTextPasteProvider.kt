@@ -23,11 +23,28 @@ import java.util.*
  */
 open class StyledTextPasteProvider : PasteProvider {
 
+    val openingTags = hashMapOf(
+        "i" to "\\textit{",
+        "b" to "\\textbf{",
+        "u" to "\\underline{",
+        "ol" to "\\begin{enumerate}\n",
+        "ul" to "\\begin{itemize}\n",
+        "li" to "\\item ",
+    )
+
+    val closingTags = hashMapOf(
+        "i" to "}",
+        "b" to "}",
+        "u" to "}",
+        "ol" to "\\end{enumerate}\n",
+        "ul" to "\\end{itemize}\n",
+        "li" to "\n",
+    )
+
     override fun performPaste(dataContext: DataContext) {
         val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return
         val clipboardHtml = dataContext.transferableHtml() ?: return
-        Log.info("Attempting to paste $clipboardHtml")
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
 
         val tableTextToInsert = Jsoup.parse(html).parseText()
@@ -43,10 +60,8 @@ open class StyledTextPasteProvider : PasteProvider {
         if (ShiftTracker.isShiftPressed()) return false
 
         val pasteData = dataContext.transferableHtml() ?: return false
-        return pasteData.contains("<i>", ignoreCase = true) || pasteData.contains(
-            "<b>",
-            ignoreCase = true
-        ) || pasteData.contains("<u>", ignoreCase = true)
+        Log.warn("Attempting to paste $pasteData")
+        return openingTags.keys.any { pasteData.contains("<$it>") } && closingTags.keys.any { pasteData.contains("<$it>") }
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
@@ -71,13 +86,15 @@ open class StyledTextPasteProvider : PasteProvider {
                     out.append(node.text())
                 else if (node is Element) {
                     out.append(node.getPrefix()).append(node.text()).append(node.getPostfix())
-                } else
+                }
+                else
                     throw IllegalStateException("Did not plan for " + node.javaClass.name + " please implement a case for this")
             }
             else {
                 if (node is Element) {
                     out.append(node.getPrefix()).append(node.childNodes().parseToString()).append(node.getPostfix())
-                } else
+                }
+                else
                     out.append(node.childNodes().parseToString())
             }
         }
@@ -93,21 +110,10 @@ open class StyledTextPasteProvider : PasteProvider {
     }
 
     private fun Element.getPrefix(): String {
-        return when {
-            tagName() == "i" -> "\\textit{"
-            tagName() == "b" -> "\\textbf{"
-            tagName() == "u" -> "\\underline{"
-            else -> {""}
-        }
+        return openingTags[tagName()] ?: ""
     }
 
     private fun Element.getPostfix(): String {
-        return when {
-            tagName() == "i" -> "}"
-            tagName() == "b" -> "}"
-            tagName() == "u" -> "}"
-            else -> {""}
-        }
+        return closingTags[tagName()] ?: ""
     }
-
 }
