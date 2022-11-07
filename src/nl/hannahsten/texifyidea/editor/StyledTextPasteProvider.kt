@@ -29,6 +29,7 @@ open class StyledTextPasteProvider : PasteProvider {
         "ol" to "\\begin{enumerate}\n",
         "ul" to "\\begin{itemize}\n",
         "li" to "\\item ",
+        "br" to "\n",
     )
 
     val closingTags = hashMapOf(
@@ -38,13 +39,39 @@ open class StyledTextPasteProvider : PasteProvider {
         "ol" to "\\end{enumerate}\n",
         "ul" to "\\end{itemize}\n",
         "li" to "\n",
-        "a" to "}"
+        "a" to "}",
+        "br" to "",
     )
 
     val specialOpeningTags = hashMapOf<String, (Element) -> String>(
         "a" to { element ->
-            "\\href{" + element.attributes()["href"] + "}{"
+            if (element.hasAttr("href"))
+                if (element.attr("href").startsWith("#"))
+                    "\\hyperlink{" + element.attr("href").replace(Regex("^#"), "") + "}{"
+                else
+                    "\\href{" + element.attr("href") + "}{"
+            else if (element.hasAttr("name"))
+                "\\hypertarget{" + element.attr("name") + "}{"
+            else
+                ""
         }
+    )
+
+    val specialClosingTags = hashMapOf<String, (Element) -> String>(
+        "a" to { element ->
+            if (element.hasAttr("href"))
+                "}"
+            else if (element.hasAttr("name"))
+                "}"
+            else
+                ""
+        }
+    )
+
+    val escapeChars = hashMapOf<String, String>(
+        "%" to "\\%",
+        "&" to "\\&",
+        "_" to "\\_",
     )
 
     override fun performPaste(dataContext: DataContext) {
@@ -83,22 +110,54 @@ open class StyledTextPasteProvider : PasteProvider {
         else null
     }
 
+    private fun escapeText(stringin: String) : String {
+        var out = stringin
+
+        escapeChars.forEach { out = out.replace(it.key, it.value)}
+
+        return out
+    }
+
     private fun List<org.jsoup.nodes.Node>.parseToString(): String {
         val out = StringBuilder()
 
         for (node in this) {
             if (node.childNodeSize() == 0) {
                 if (node is TextNode)
-                    out.append(node.text())
+                    out.append(escapeText(node.text()))
                 else if (node is Element) {
-                    out.append(node.getPrefix()).append(node.text()).append(node.getPostfix())
+                    val environ =
+                        when {
+                            node.attr("align") == "center" -> "center"
+                            node.attr("align") == "left" -> "flushleft"
+                            node.attr("align") == "right" -> "flushright"
+                            //latex doesnt have native support here
+                            //node.attr("align") == "justify" ->
+                            else -> ""
+                        }
+                    if (environ != "") {
+                        out.append("\\begin{$environ}").append(node.getPrefix()).append(escapeText(node.text())).append(node.getPostfix()).append("\\end{$environ}")
+                    } else
+                        out.append(node.getPrefix()).append(escapeText(node.text())).append(node.getPostfix())
                 }
                 else
                     throw IllegalStateException("Did not plan for " + node.javaClass.name + " please implement a case for this")
             }
             else {
                 if (node is Element) {
-                    out.append(node.getPrefix()).append(node.childNodes().parseToString()).append(node.getPostfix())
+                    val environ =
+                        when {
+                            node.attr("align") == "center" -> "center"
+                            node.attr("align") == "left" -> "flushleft"
+                            node.attr("align") == "right" -> "flushright"
+                            //latex doesnt have native support here
+                            //node.attr("align") == "justify" ->
+                            else -> ""
+                        }
+                    if (environ != "") {
+                        out.append("\\begin{$environ}").append(node.getPrefix()).append(node.childNodes().parseToString()).append(node.getPostfix()).append("\\end{$environ}")
+                    } else
+                        out.append(node.getPrefix()).append(node.childNodes().parseToString()).append(node.getPostfix())
                 }
                 else
                     out.append(node.childNodes().parseToString())
@@ -120,6 +179,6 @@ open class StyledTextPasteProvider : PasteProvider {
     }
 
     private fun Element.getPostfix(): String {
-        return closingTags[tagName()] ?: ""
+        return specialClosingTags[tagName()]?.invoke(this) ?: closingTags[tagName()] ?: ""
     }
 }
