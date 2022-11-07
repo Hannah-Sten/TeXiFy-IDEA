@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.intentions
 
+import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -9,10 +11,10 @@ import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import java.io.File
 
 /**
@@ -64,18 +66,21 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
         // Display a dialog to ask for the location and name of the new file.
-        val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
-            .newFileFullPath ?: return
+        val filePath = if (project.isTestProject().not()) {
+            CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
+                .newFileFullPath ?: return
+        }
+        else file.containingDirectory?.virtualFile?.canonicalPath + File.separator + fileName
 
         // Execute write actions.
         runWriteAction {
-            val createdFile = createFile("$filePath.tex", text)
-            document.deleteString(start, end)
-            val fileNameRelativeToRoot = createdFile.absolutePath
-                .replace(File.separator, "/")
-                .replace("$root/", "")
-            val indent = sectionCommand.findIndentation()
-            document.insertString(start, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
+            CommandProcessor.getInstance().executeCommand(project, {
+                val createdFile = writeToFileUndoable(project, filePath, text, root)
+
+                document.deleteString(start, end)
+                val indent = sectionCommand.findIndentation()
+                document.insertString(start, "\n$indent\\input{${createdFile.dropLast(4)}}\n\n")
+            }, "Move Section to File", "Texify", UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
         }
     }
 }

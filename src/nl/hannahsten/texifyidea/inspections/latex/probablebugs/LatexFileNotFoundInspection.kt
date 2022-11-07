@@ -13,12 +13,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.createFile
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.getFileExtension
+import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import java.io.File
 import java.util.*
 
 /**
@@ -110,19 +106,12 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
             // Display a dialog to ask for the location and name of the new file.
             // By default, all inclusion paths are relative to the main file
-            val newFilePath = CreateFileDialog(file.findRootFile().containingDirectory?.virtualFile?.canonicalPath, filePath.formatAsFilePath())
+            val newFilePath = CreateFileDialog(root, filePath.replace("$root/", "").formatAsFilePath())
                 .newFileFullPath ?: return
 
             runWriteAction {
                 val expandedFilePath = expandCommandsOnce(newFilePath, file.project, file) ?: newFilePath
-                createFile("$expandedFilePath.$extension", "")
-
-                // Update LaTeX command parameter with chosen filename.
-                // We can safely add the extension since illegal extensions are removed later.
-                // We add the extension for consistency with the file name auto completion, which also adds the extension.
-                var fileNameRelativeToRoot = "$newFilePath.$extension"
-                    .replace(File.separator, "/")
-                    .replace("$root/", "")
+                var fileNameRelativeToRoot = writeToFileUndoable(project, expandedFilePath, "", root, extension)
 
                 val command = (cmd as? LatexCommands)?.name
                 if (command in CommandMagic.illegalExtensions) {

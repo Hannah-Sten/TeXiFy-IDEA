@@ -6,9 +6,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
-import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.removeIndents
 import org.intellij.lang.annotations.Language
 import java.io.File
@@ -58,11 +58,11 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         @Language("RegExp")
         // Note that we do not override the user-specified filename to be LaTeX-like.
         // Path of virtual file always contains '/' as file separators.
-        val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath
+        val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
         // Execute write actions.
         runWriteAction {
-            val createdFile = createFile("$filePath.tex", text.toString())
+            val createdFile = File(writeToFileUndoable(project, filePath, text.toString(), root))
 
             for ((start, end) in offsets.reversed()) {
                 document.deleteString(start, end)

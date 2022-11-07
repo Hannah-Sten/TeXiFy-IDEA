@@ -11,13 +11,20 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiManager
+import com.intellij.psi.impl.source.PsiFileImpl
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
+import java.io.IOException
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
 import java.util.regex.Pattern
+import kotlin.io.path.pathString
 
 /**
  * @author Hannah Schellekens
@@ -77,7 +84,8 @@ fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replace
 /**
  * Returns the extension of given filename
  */
-fun String.getFileExtension(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
+fun String.getFileExtension(): String =
+    if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
 
 /**
  * Creates a project directory at `path` which will be marked as excluded.
@@ -106,9 +114,112 @@ fun Document.psiFile(project: Project): PsiFile? = PsiDocumentManager.getInstanc
  * @return The created file.
  */
 fun createFile(fileName: String, contents: String): File {
+    val currentFileName = getUniqueFileName(fileName)
+
+    return File(currentFileName).apply {
+        createNewFile()
+        LocalFileSystem.getInstance().refresh(true)
+        writeText(contents, StandardCharsets.UTF_8)
+    }
+}
+
+/**
+ * This writes to a file without using java.io.File
+ *
+ * Needs to be wrapped in a writable environment
+ *
+ * @param project The project this is for
+ * @param filePath The absolute path of the file to create. File extension provided later
+ * @param text The text to add to the file
+ * @param root The root path of the project? Could possibly be replaced
+ * @param extension The desired file extension **without** a dot, tex by default
+ *
+ * @return Returns the name of the file that was created without folder names, and with the extension
+ */
+fun writeToFileUndoable(project: Project, filePath: String, text: String, root: String, extension: String = "tex"): String {
+    val filenameNoExtension = Path.of(filePath).fileName.toString()
+    val filepathNoFilename = Path.of(filePath).parent.pathString
+
+    // for windows
+    val filepathNoFilenameForwardSeperators = filepathNoFilename.replace("\\", "/")
+
+    // Create file...but not on fs yet
+    val fileFactory = PsiFileFactory.getInstance(project)
+    val newfile = fileFactory.createFileFromText(
+        getUniqueFileName(
+            filenameNoExtension.appendExtension(extension),
+            filepathNoFilename
+        ),
+        LatexFileType,
+        text
+    )
+
+    val projectRootManager = ProjectRootManager.getInstance(project)
+    val allRoots = projectRootManager.contentRoots + projectRootManager.contentSourceRoots
+
+    // The following is going to resolve the PsiDirectory that we need to add the new file to.
+    var relativePath = ""
+    var bestRoot: VirtualFile? = null
+    for (testFile in allRoots) {
+        val rootPath = testFile.path
+        if (filepathNoFilenameForwardSeperators.startsWith(rootPath)) {
+            relativePath = filepathNoFilenameForwardSeperators.substring(rootPath.length)
+            bestRoot = testFile
+            break
+        }
+    }
+    if (bestRoot == null) {
+        throw IOException("Can't find '$root' among roots")
+    }
+
+    val dirs = relativePath.split("/".toRegex()).dropLastWhile { it.isEmpty() }
+        .toTypedArray()
+
+    var resultDir: VirtualFile = bestRoot
+    if (dirs.isNotEmpty()) {
+        var i = 0
+        if (dirs[0].isEmpty()) i = 1
+
+        while (i < dirs.size) {
+            var subdir = resultDir.findChild(dirs[i])
+            if (subdir != null) {
+                if (!subdir.isDirectory) {
+                    throw IOException("Expected resultDir, but got non-resultDir: " + subdir.path)
+                }
+            }
+            else {
+                subdir = resultDir.createChildDirectory(LocalFileSystem.getInstance(), dirs[i])
+            }
+            resultDir = subdir
+            i += 1
+        }
+    }
+
+    // Actually create the file on fs
+    val thing = PsiManager.getInstance(project).findDirectory(resultDir)?.add(newfile)
+
+    // back to your regularly scheduled programming. Does not cast to LatexFile because virtualFile inherits from PsiFileImpl
+    return (thing as PsiFileImpl).virtualFile.path
+        .replace(File.separator, "/")
+        .replace("$root/", "")
+}
+
+/**
+ * Returns the name first non-conflicting filename with the provided base name
+ */
+fun getUniqueFileName(fileName: String, directory: String? = null): String {
     var count = 0
     var currentFileName = fileName
-    while (File(currentFileName).exists()) {
+    while (
+        File(
+            (
+                if (directory != null) {
+                    directory + File.separator
+                }
+                else ""
+                ) + currentFileName
+        ).exists()
+    ) {
         val extension = "." + FileUtilRt.getExtension(currentFileName)
         var stripped = currentFileName.substring(0, currentFileName.length - extension.length)
 
@@ -119,12 +230,7 @@ fun createFile(fileName: String, contents: String): File {
 
         currentFileName = stripped + (++count) + extension
     }
-
-    return File(currentFileName).apply {
-        createNewFile()
-        LocalFileSystem.getInstance().refresh(true)
-        writeText(contents, StandardCharsets.UTF_8)
-    }
+    return currentFileName
 }
 
 /**
