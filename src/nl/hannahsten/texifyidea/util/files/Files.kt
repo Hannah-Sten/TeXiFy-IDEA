@@ -140,6 +140,9 @@ fun writeToFileUndoable(project: Project, filePath: String, text: String, root: 
     val filenameNoExtension = Path.of(filePath).fileName.toString()
     val filepathNoFilename = Path.of(filePath).parent.pathString
 
+    // for windows
+    val filepathNoFilenameForwardSeperators = filepathNoFilename.replace("\\", "/")
+
     // Create file...but not on fs yet
     val fileFactory = PsiFileFactory.getInstance(project)
     val newfile = fileFactory.createFileFromText(
@@ -159,8 +162,8 @@ fun writeToFileUndoable(project: Project, filePath: String, text: String, root: 
     var bestRoot: VirtualFile? = null
     for (testFile in allRoots) {
         val rootPath = testFile.path
-        if (filepathNoFilename.startsWith(rootPath)) {
-            relativePath = filepathNoFilename.substring(rootPath.length)
+        if (filepathNoFilenameForwardSeperators.startsWith(rootPath)) {
+            relativePath = filepathNoFilenameForwardSeperators.substring(rootPath.length)
             bestRoot = testFile
             break
         }
