@@ -13,6 +13,13 @@ import com.intellij.usageView.UsageInfo
 import com.intellij.usageView.UsageViewDescriptor
 import nl.hannahsten.texifyidea.file.LatexFile
 
+/**
+ * Recieves settings and a target and performs the requested refactoring
+ *
+ * @see com.intellij.refactoring.inline.InlineMethodProcessor
+ *
+ * @author jojo2357
+ */
 class LatexInlineFileProcessor(
     myProject: Project,
     private val inlineFile: LatexFile,
@@ -44,6 +51,7 @@ class LatexInlineFileProcessor(
             // else error case
         }
         else if (usages.isNotEmpty()) {
+
             ApplicationManager.getApplication().runWriteAction {
                 CommandProcessor.getInstance().executeCommand(myProject, {
                     for (replaceUsage in usages) {
@@ -57,6 +65,11 @@ class LatexInlineFileProcessor(
         }
     }
 
+    /**
+     * Does the lifting by...replacing usages with the entirety of the file to be inlined
+     *
+     * @param psiElement The element to remove and replace with the contents of the file
+     */
     private fun replaceUsage(psiElement: PsiElement) {
         val root = psiElement.replace(
             inlineFile.children[0]

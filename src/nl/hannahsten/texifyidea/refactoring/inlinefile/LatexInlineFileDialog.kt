@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.refactoring.inlinefile
 
-import com.intellij.java.refactoring.JavaRefactoringBundle
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts.DialogTitle
 import com.intellij.psi.PsiElement
@@ -12,13 +11,21 @@ import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.inline.InlineOptionsDialog
 import nl.hannahsten.texifyidea.file.LatexFile
 
+/**
+ * Creates an inline file dialog to select what to refactor. Parts have been borrowed from the java inline method dialog
+ *
+ * @see com.intellij.refactoring.inline.InlineMethodDialog
+ *
+ * @author jojo2357
+ */
 class LatexInlineFileDialog(
     project: Project?,
     private val myFile: LatexFile,
     private val myReference: PsiElement?,
     myInvokedOnReference: Boolean,
-    ) :
+) :
     InlineOptionsDialog(project, true, myFile) {
+
     public val myOccurrencesNumber: Int
 
     init {
@@ -30,7 +37,7 @@ class LatexInlineFileDialog(
     }
 
     override fun getNumberOfOccurrences(nameIdentifierOwner: PsiNameIdentifierOwner?): Int {
-        val tempreferences =  ReferencesSearch.search(nameIdentifierOwner as PsiElement).findAll().asSequence()
+        val tempreferences = ReferencesSearch.search(nameIdentifierOwner as PsiElement).findAll().asSequence()
 
         return tempreferences
             .distinct()
@@ -86,6 +93,7 @@ class LatexInlineFileDialog(
     }
 
     companion object {
+
         val refactoringName: @DialogTitle String
             get() = "Inline File"
     }

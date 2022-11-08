@@ -15,9 +15,8 @@ import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 
-
 /**
- * Allows for inlining an include command
+ * Allows for inlining an include command. Does not do the inlining itself.
  *
  * @author jojo2357
  */
@@ -43,21 +42,21 @@ class LatexInlineFileHandler : InlineActionHandler() {
         return out
     }
 
-    /*override fun canInlineElementInEditor(element: PsiElement, editor: Editor): Boolean {
-        getElementAtCaret(editor)
-        return true
-    }*/
-
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
+        // Resolve the file to be inlined
         val inlineFile: LatexFile = when (element) {
+            // If we tried to inline the file in file view, or the argument in `input`
             is LatexFile -> element
-            is LatexCommandsImpl -> (element.containingFile.parent?.findFile(
-                if ((element as LatexCommandsImpl).requiredParameters[0].matches(
-                        "\\.\\w{3}$".toRegex()
-                    )
-                ) (element as LatexCommandsImpl).requiredParameters[0]
-                else (element as LatexCommandsImpl).requiredParameters[0] + ".tex"
-            ) ?: return) as LatexFile
+            // If we tried to inline the `input` command
+            is LatexCommandsImpl -> (
+                element.containingFile.parent?.findFile(
+                    if ((element as LatexCommandsImpl).requiredParameters[0].matches(
+                            "\\.\\w{3}$".toRegex()
+                        )
+                    ) (element as LatexCommandsImpl).requiredParameters[0]
+                    else (element as LatexCommandsImpl).requiredParameters[0] + ".tex"
+                ) ?: return
+                ) as LatexFile
 
             else -> return
         }
@@ -87,6 +86,9 @@ class LatexInlineFileHandler : InlineActionHandler() {
         }
     }
 
+    /**
+     * Resolves the command that the inlining was called on. If called from file view then expected return is null
+     */
     private fun getReference(
         element: PsiElement,
         editor: Editor?
