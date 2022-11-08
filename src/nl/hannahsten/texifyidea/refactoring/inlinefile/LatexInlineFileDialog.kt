@@ -1,0 +1,94 @@
+package nl.hannahsten.texifyidea.refactoring.inlinefile
+
+import com.intellij.java.refactoring.JavaRefactoringBundle
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsContexts.DialogTitle
+import com.intellij.psi.*
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.searches.ReferencesSearch
+import com.intellij.refactoring.JavaRefactoringSettings
+import com.intellij.refactoring.RefactoringBundle
+import com.intellij.refactoring.inline.InlineOptionsDialog
+import com.intellij.refactoring.inline.InlineOptionsWithSearchSettingsDialog
+import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
+
+class LatexInlineFileDialog(
+    project: Project?,
+    private val myFile: LatexFile,
+    private val myReference: PsiElement?,
+    myInvokedOnReference: Boolean,
+    ) :
+    InlineOptionsDialog(project, true, myFile) {
+    public val myOccurrencesNumber: Int
+
+    init {
+        super.myInvokedOnReference = myInvokedOnReference
+
+        myOccurrencesNumber = getNumberOfOccurrences(myFile)
+        title = refactoringName
+        init()
+    }
+
+    override fun getNumberOfOccurrences(nameIdentifierOwner: PsiNameIdentifierOwner?): Int {
+        val tempreferences =  ReferencesSearch.search(nameIdentifierOwner as PsiElement).findAll().asSequence()
+
+        return tempreferences
+            .distinct()
+            .toList().size
+    }
+
+    override fun allowInlineAll(): Boolean {
+        return true
+    }
+
+    override fun getNameLabelText(): String {
+        return if (myOccurrencesNumber > -1) "File " + myFile.name + " has " + myOccurrencesNumber + " ocurrences"
+        else "File " + myFile.name
+    }
+
+    override fun getBorderTitle(): String {
+        return RefactoringBundle.message("inline.method.border.title")
+    }
+
+    override fun getInlineThisText(): String {
+        return "Inline this and keep the file"
+    }
+
+    override fun getInlineAllText(): String {
+        return RefactoringBundle.message(if (myFile.isWritable) "all.invocations.and.remove.the.method" else "all.invocations.in.project")
+    }
+
+    override fun getKeepTheDeclarationText(): String {
+        return if (myFile.isWritable) JavaRefactoringBundle.message("all.invocations.keep.the.method") else super.getKeepTheDeclarationText()
+    }
+
+    public override fun doAction() {
+        //super.doAction()
+        invokeRefactoring(
+            LatexInlineFileProcessor(
+                project, myFile, GlobalSearchScope.projectScope(myProject), myReference, isInlineThisOnly, isKeepTheDeclaration
+            )
+        )
+        val settings = JavaRefactoringSettings.getInstance()
+        if (myRbInlineThisOnly.isEnabled && myRbInlineAll.isEnabled) {
+            settings.INLINE_METHOD_THIS = isInlineThisOnly
+        }
+        if (myKeepTheDeclaration != null && myKeepTheDeclaration!!.isEnabled) {
+            settings.INLINE_METHOD_KEEP = isKeepTheDeclaration
+        }
+    }
+
+    override fun isInlineThis(): Boolean {
+        return JavaRefactoringSettings.getInstance().INLINE_METHOD_THIS
+    }
+
+    override fun isKeepTheDeclarationByDefault(): Boolean {
+        return JavaRefactoringSettings.getInstance().INLINE_METHOD_KEEP
+    }
+
+    companion object {
+        val refactoringName: @DialogTitle String
+            get() = "Inline File"
+    }
+}
