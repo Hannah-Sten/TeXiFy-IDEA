@@ -26,7 +26,7 @@ class LatexInlineFileDialog(
 ) :
     InlineOptionsDialog(project, true, myFile) {
 
-    public val myOccurrencesNumber: Int
+    val myOccurrencesNumber: Int
 
     init {
         super.myInvokedOnReference = myInvokedOnReference
