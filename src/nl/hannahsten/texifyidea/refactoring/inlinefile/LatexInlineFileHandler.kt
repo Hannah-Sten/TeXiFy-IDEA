@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.PsiElementBase
+import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
@@ -33,7 +34,6 @@ class LatexInlineFileHandler : InlineActionHandler() {
             }
 
             is LatexCommandsImpl -> {
-                Log.warn("Hello")
                 ((element as LatexCommandsImpl).getName() == "\\input" && (element as PsiElementBase).canNavigateToSource())
             }
 
@@ -51,11 +51,23 @@ class LatexInlineFileHandler : InlineActionHandler() {
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         val inlineFile: LatexFile = when (element) {
             is LatexFile -> element
-            is LatexCommandsImpl -> (element.containingFile.parent?.findFile( if ((element as LatexCommandsImpl).requiredParameters[0].matches("\\.\\w{3}$".toRegex())) (element as LatexCommandsImpl).requiredParameters[0] else (element as LatexCommandsImpl).requiredParameters[0] + ".tex") ?: return) as LatexFile
+            is LatexCommandsImpl -> (element.containingFile.parent?.findFile(
+                if ((element as LatexCommandsImpl).requiredParameters[0].matches(
+                        "\\.\\w{3}$".toRegex()
+                    )
+                ) (element as LatexCommandsImpl).requiredParameters[0]
+                else (element as LatexCommandsImpl).requiredParameters[0] + ".tex"
+            ) ?: return) as LatexFile
+
             else -> return
         }
 
-        val dialog = LatexInlineFileDialog(project, inlineFile, if (element is LatexCommandsImpl) element else null, editor != null)
+        val dialog = LatexInlineFileDialog(
+            project,
+            inlineFile,
+            getReference(element, editor),
+            editor != null
+        )
 
         if (dialog.myOccurrencesNumber > 0) {
             if (ApplicationManager.getApplication().isUnitTestMode) {
@@ -73,5 +85,24 @@ class LatexInlineFileHandler : InlineActionHandler() {
         else {
             // TODO No ocurrences, what to do?
         }
+    }
+
+    private fun getReference(
+        element: PsiElement,
+        editor: Editor?
+    ): PsiElement? {
+        return if (element is LatexCommandsImpl)
+            element
+        else if (editor != null) {
+            if (getElementAtCaret(editor)?.parent?.parent?.parent is LatexCommandsImpl)
+                getElementAtCaret(editor)?.parent?.parent?.parent
+            else if (getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent is LatexCommandsImpl)
+                getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent
+            else {
+                Log.warn("Could not find the command element")
+                null
+            }
+        }
+        else null
     }
 }

@@ -3,15 +3,14 @@ package nl.hannahsten.texifyidea.refactoring.inlinefile
 import com.intellij.java.refactoring.JavaRefactoringBundle
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts.DialogTitle
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.JavaRefactoringSettings
 import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.inline.InlineOptionsDialog
-import com.intellij.refactoring.inline.InlineOptionsWithSearchSettingsDialog
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 
 class LatexInlineFileDialog(
     project: Project?,
@@ -56,15 +55,14 @@ class LatexInlineFileDialog(
     }
 
     override fun getInlineAllText(): String {
-        return RefactoringBundle.message(if (myFile.isWritable) "all.invocations.and.remove.the.method" else "all.invocations.in.project")
+        return if (myFile.isWritable) "Inline all and remove the file" else "All invocations in project"
     }
 
     override fun getKeepTheDeclarationText(): String {
-        return if (myFile.isWritable) JavaRefactoringBundle.message("all.invocations.keep.the.method") else super.getKeepTheDeclarationText()
+        return if (myFile.isWritable) "Inline all and keep the file" else super.getKeepTheDeclarationText()
     }
 
     public override fun doAction() {
-        //super.doAction()
         invokeRefactoring(
             LatexInlineFileProcessor(
                 project, myFile, GlobalSearchScope.projectScope(myProject), myReference, isInlineThisOnly, isKeepTheDeclaration
@@ -90,5 +88,9 @@ class LatexInlineFileDialog(
     companion object {
         val refactoringName: @DialogTitle String
             get() = "Inline File"
+    }
+
+    override fun hasHelpAction(): Boolean {
+        return false
     }
 }
