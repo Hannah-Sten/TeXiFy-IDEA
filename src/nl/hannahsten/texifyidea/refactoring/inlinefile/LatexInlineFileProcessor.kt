@@ -27,7 +27,7 @@ class LatexInlineFileProcessor(
     }
 
     override fun findUsages(): Array<UsageInfo> {
-        val tempreferences =  ReferencesSearch.search(inlineFile, myScope).findAll().asSequence()
+        val tempreferences = ReferencesSearch.search(inlineFile, myScope).findAll().asSequence()
 
         return tempreferences
             .distinct()
@@ -41,10 +41,9 @@ class LatexInlineFileProcessor(
         if (isInlineThisOnly) {
             if (originalReference != null)
                 replaceUsage(originalReference)
-            else
-                //error case
-                ;
-        } else if (usages.isNotEmpty()) {
+            // else error case
+        }
+        else if (usages.isNotEmpty()) {
             ApplicationManager.getApplication().runWriteAction {
                 CommandProcessor.getInstance().executeCommand(myProject, {
                     for (replaceUsage in usages) {

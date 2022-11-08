@@ -6,7 +6,7 @@ import com.intellij.usageView.UsageViewBundle
 import com.intellij.usageView.UsageViewDescriptor
 import nl.hannahsten.texifyidea.file.LatexFile
 
-class LatexInlineFileDescriptor(private val myElement: PsiElement): UsageViewDescriptor {
+class LatexInlineFileDescriptor(private val myElement: PsiElement) : UsageViewDescriptor {
 
     override fun getElements(): Array<PsiElement> {
         return arrayOf(myElement)
