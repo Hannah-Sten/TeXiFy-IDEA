@@ -9,15 +9,15 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.PsiElementBase
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Allows for inlining an include command. Does not do the inlining itself.
@@ -72,7 +72,6 @@ class LatexInlineFileHandler : InlineActionHandler() {
 /**
  * This is static only so that the unit tests can use it, and also since it can be static
  */
-@Suppress("USELESS_CAST")
 fun canInlineLatexElement(element: PsiElement?): Boolean {
     val out = when (element) {
         is LatexFile -> {
@@ -80,8 +79,7 @@ fun canInlineLatexElement(element: PsiElement?): Boolean {
         }
 
         is LatexCommands -> {
-            CommandMagic.includeOnlyExtensions
-            ((element as LatexCommands).name == "\\input" && (element as PsiElementBase).canNavigateToSource())
+            (element.references.filterIsInstance<InputFileReference>().isNotEmpty())
         }
 
         else -> true
@@ -94,14 +92,13 @@ fun resolveInlineFile(element: PsiElement) = when (element) {
     // If we tried to inline the file in file view, or the argument in `input`
     is LatexFile -> element
     // If the caret was on the `input` command
-    is LatexCommands -> element.containingFile.parent?.findFile(
-        // Guess that the first param is our file
-        if (element.requiredParameters[0].matches(
-                ".*\\.\\w{3}$".toRegex()
-            )
-        ) element.requiredParameters[0]
-        else element.requiredParameters[0] + ".tex"
-    ) as? LatexFile
+    is LatexCommands -> {
+        val ifr = element.references.filterIsInstance<InputFileReference>()[0]
+
+        element.containingFile.parent?.findFile(
+            ifr.key.appendExtension(ifr.defaultExtension)
+        ) as? LatexFile
+    }
 
     else -> null
 }
