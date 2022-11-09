@@ -63,6 +63,7 @@ class LatexInlineFileHandler : InlineActionHandler() {
 /**
  * This is static only so that the unit tests can use it, and also since it can be static
  */
+@Suppress("USELESS_CAST")
 fun canInlineLatexElement(element: PsiElement?): Boolean {
     val out = when (element) {
         is LatexFile -> {
@@ -84,11 +85,11 @@ fun resolveInlineFile(element: PsiElement) = when (element) {
     is LatexFile -> element
     // If we tried to inline the `input` command
     is LatexCommandsImpl -> element.containingFile.parent?.findFile(
-        if ((element as LatexCommandsImpl).requiredParameters[0].matches(
+        if (element.requiredParameters[0].matches(
                 ".*\\.\\w{3}$".toRegex()
             )
-        ) (element as LatexCommandsImpl).requiredParameters[0]
-        else (element as LatexCommandsImpl).requiredParameters[0] + ".tex"
+        ) element.requiredParameters[0]
+        else element.requiredParameters[0] + ".tex"
     ) as? LatexFile
 
     else -> null
