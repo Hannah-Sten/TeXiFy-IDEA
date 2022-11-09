@@ -4,7 +4,7 @@ package nl.hannahsten.texifyidea.refactoring
 import com.intellij.codeInsight.TargetElementUtil
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.CharsetToolkit
-import com.intellij.psi.*
+import com.intellij.psi.PsiFileFactory
 import com.intellij.refactoring.BaseRefactoringProcessor.ConflictsInTestsException
 import com.intellij.refactoring.MockInlineMethodOptions
 import com.intellij.refactoring.inline.InlineOptions
@@ -19,8 +19,9 @@ import org.jetbrains.annotations.NonNls
 import java.io.File
 
 class InlineFileTest : LightPlatformCodeInsightTestCase() {
+
     init {
-        myTestDataPath  = "test/resources/refactoring/inline/"
+        myTestDataPath = "test/resources/refactoring/inline/"
     }
 
     private val inlineFile = "filetoinline.tex"
@@ -48,20 +49,27 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
     private fun doTestInlineThisOnly(numTests: Int? = null) {
         if (numTests == null) {
             @NonNls val fileName = configure()
-            performAction(object : MockInlineMethodOptions() {
-                override fun isInlineThisOnly(): Boolean {
-                    return true
-                }
-            }, false)
-            checkResultByFile("$fileName.after")
-        } else {
-            for (testIndex in 1 .. numTests) {
-                @NonNls val fileName = configure(testIndex)
-                performAction(object : MockInlineMethodOptions() {
+            performAction(
+                object : MockInlineMethodOptions() {
                     override fun isInlineThisOnly(): Boolean {
                         return true
                     }
-                }, false)
+                },
+                false
+            )
+            checkResultByFile("$fileName.after")
+        }
+        else {
+            for (testIndex in 1..numTests) {
+                @NonNls val fileName = configure(testIndex)
+                performAction(
+                    object : MockInlineMethodOptions() {
+                        override fun isInlineThisOnly(): Boolean {
+                            return true
+                        }
+                    },
+                    false
+                )
                 checkResultByFile("$fileName.after")
             }
         }
@@ -72,8 +80,9 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
             @NonNls val fileName = configure()
             performAction()
             checkResultByFile(null, "$fileName.after", true)
-        } else {
-            for (testIndex in 1 .. numTests) {
+        }
+        else {
+            for (testIndex in 1..numTests) {
                 @NonNls val fileName = configure(testIndex)
                 performAction()
                 checkResultByFile(null, "$fileName.after", true)
@@ -96,7 +105,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
         @NonNls val fileName = getTestName(false) + (testIndex ?: "") + ".tex"
         configureByFile(fileName)
         TestCase.assertTrue(file.parent != null)
-        if (file.parent?.children?.any { it.containingFile.name == inlineFile} == false) {
+        if (file.parent?.children?.any { it.containingFile.name == inlineFile } == false) {
             val ioFile = File(testDataPath + inlineFile)
             checkCaseSensitiveFS(testDataPath + inlineFile, ioFile)
             val fileText = FileUtilRt.loadFile(ioFile, CharsetToolkit.UTF8, true)
