@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.refactoring.inlinefile
 
 import com.intellij.lang.Language
 import com.intellij.lang.refactoring.InlineActionHandler
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -11,9 +13,11 @@ import com.intellij.psi.impl.PsiElementBase
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Allows for inlining an include command. Does not do the inlining itself.
@@ -55,7 +59,7 @@ class LatexInlineFileHandler : InlineActionHandler() {
             }
         }
         else {
-            // TODO No ocurrences, what to do?
+            Notification("LaTeX", "No usages found", "Could not find any usages for ${inlineFile.name}", NotificationType.ERROR).notify(project)
         }
     }
 }
@@ -71,6 +75,7 @@ fun canInlineLatexElement(element: PsiElement?): Boolean {
         }
 
         is LatexCommandsImpl -> {
+            CommandMagic.includeOnlyExtensions
             ((element as LatexCommandsImpl).getName() == "\\input" && (element as PsiElementBase).canNavigateToSource())
         }
 
@@ -83,7 +88,7 @@ fun canInlineLatexElement(element: PsiElement?): Boolean {
 fun resolveInlineFile(element: PsiElement) = when (element) {
     // If we tried to inline the file in file view, or the argument in `input`
     is LatexFile -> element
-    // If we tried to inline the `input` command
+    // If the caret was on the `input` command
     is LatexCommandsImpl -> element.containingFile.parent?.findFile(
         if (element.requiredParameters[0].matches(
                 ".*\\.\\w{3}$".toRegex()
@@ -102,15 +107,16 @@ fun getReference(
     element: PsiElement,
     editor: Editor?
 ): PsiElement? {
-    return if (element is LatexCommandsImpl)
+    return if (element is LatexCommands)
         element
     else if (editor != null) {
+        // val ref: LatexCommands? = getElementAtCaret(editor)?.firstParentOfType(LatexCommands::javaClass)
         if (getElementAtCaret(editor)?.parent?.parent?.parent is LatexCommandsImpl)
             getElementAtCaret(editor)?.parent?.parent?.parent
         else if (getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent is LatexCommandsImpl)
             getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent
         else {
-            Log.warn("Could not find the command element")
+            Log.warn("Could not find the command element for " + element.text)
             null
         }
     }
