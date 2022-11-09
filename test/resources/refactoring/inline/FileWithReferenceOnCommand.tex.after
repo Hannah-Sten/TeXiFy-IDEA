@@ -1,0 +1,14 @@
+\documentclass[11pt]{article}
+
+\begin{document}
+
+    \section{An existent file}
+    Here is an equation
+    \begin{equation}
+        testcases passed = 0
+    \end{equation}
+    
+    \subsection{Consider the following}
+        \textbf{FOLLOWING}
+
+\end{document}

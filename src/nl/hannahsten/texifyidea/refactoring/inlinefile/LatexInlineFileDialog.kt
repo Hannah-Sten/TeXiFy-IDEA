@@ -72,7 +72,7 @@ class LatexInlineFileDialog(
     public override fun doAction() {
         invokeRefactoring(
             LatexInlineFileProcessor(
-                project, myFile, GlobalSearchScope.projectScope(myProject), myReference, isInlineThisOnly, isKeepTheDeclaration
+                project, myFile, myReference, isInlineThisOnly, isKeepTheDeclaration, GlobalSearchScope.projectScope(myProject)
             )
         )
         val settings = JavaRefactoringSettings.getInstance()

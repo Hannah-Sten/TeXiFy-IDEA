@@ -23,10 +23,10 @@ import nl.hannahsten.texifyidea.file.LatexFile
 class LatexInlineFileProcessor(
     myProject: Project,
     private val inlineFile: LatexFile,
-    private val myScope: SearchScope = GlobalSearchScope.projectScope(myProject),
     private val originalReference: PsiElement?,
     private val isInlineThisOnly: Boolean,
-    private val isKeepTheDeclaration: Boolean
+    private val isKeepTheDeclaration: Boolean,
+    private val myScope: SearchScope = GlobalSearchScope.projectScope(myProject)
 ) : BaseRefactoringProcessor(myProject) {
 
     override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptor {

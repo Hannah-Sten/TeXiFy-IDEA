@@ -44,22 +44,7 @@ class LatexInlineFileHandler : InlineActionHandler() {
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         // Resolve the file to be inlined
-        val inlineFile: LatexFile = when (element) {
-            // If we tried to inline the file in file view, or the argument in `input`
-            is LatexFile -> element
-            // If we tried to inline the `input` command
-            is LatexCommandsImpl -> (
-                element.containingFile.parent?.findFile(
-                    if ((element as LatexCommandsImpl).requiredParameters[0].matches(
-                            "\\.\\w{3}$".toRegex()
-                        )
-                    ) (element as LatexCommandsImpl).requiredParameters[0]
-                    else (element as LatexCommandsImpl).requiredParameters[0] + ".tex"
-                ) ?: return
-                ) as LatexFile
-
-            else -> return
-        }
+        val inlineFile: LatexFile = resolveInlineFile(element) ?: return
 
         val dialog = LatexInlineFileDialog(
             project,
@@ -85,26 +70,41 @@ class LatexInlineFileHandler : InlineActionHandler() {
             // TODO No ocurrences, what to do?
         }
     }
+}
 
-    /**
-     * Resolves the command that the inlining was called on. If called from file view then expected return is null
-     */
-    private fun getReference(
-        element: PsiElement,
-        editor: Editor?
-    ): PsiElement? {
-        return if (element is LatexCommandsImpl)
-            element
-        else if (editor != null) {
-            if (getElementAtCaret(editor)?.parent?.parent?.parent is LatexCommandsImpl)
-                getElementAtCaret(editor)?.parent?.parent?.parent
-            else if (getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent is LatexCommandsImpl)
-                getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent
-            else {
-                Log.warn("Could not find the command element")
-                null
-            }
+fun resolveInlineFile(element: PsiElement) = when (element) {
+    // If we tried to inline the file in file view, or the argument in `input`
+    is LatexFile -> element
+    // If we tried to inline the `input` command
+    is LatexCommandsImpl -> element.containingFile.parent?.findFile(
+        if ((element as LatexCommandsImpl).requiredParameters[0].matches(
+                ".*\\.\\w{3}$".toRegex()
+            )
+        ) (element as LatexCommandsImpl).requiredParameters[0]
+        else (element as LatexCommandsImpl).requiredParameters[0] + ".tex"
+    ) as? LatexFile
+
+    else -> null
+}
+
+/**
+ * Resolves the command that the inlining was called on. If called from file view then expected return is null
+ */
+fun getReference(
+    element: PsiElement,
+    editor: Editor?
+): PsiElement? {
+    return if (element is LatexCommandsImpl)
+        element
+    else if (editor != null) {
+        if (getElementAtCaret(editor)?.parent?.parent?.parent is LatexCommandsImpl)
+            getElementAtCaret(editor)?.parent?.parent?.parent
+        else if (getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent is LatexCommandsImpl)
+            getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent
+        else {
+            Log.warn("Could not find the command element")
+            null
         }
-        else null
     }
+    else null
 }
