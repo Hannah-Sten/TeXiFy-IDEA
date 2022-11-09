@@ -14,9 +14,9 @@ import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
@@ -59,7 +59,12 @@ class LatexInlineFileHandler : InlineActionHandler() {
             }
         }
         else {
-            Notification("LaTeX", "No usages found", "Could not find any usages for ${inlineFile.name}", NotificationType.ERROR).notify(project)
+            Notification(
+                "LaTeX",
+                "No usages found",
+                "Could not find any usages for ${inlineFile.name}",
+                NotificationType.ERROR
+            ).notify(project)
         }
     }
 }
@@ -74,9 +79,9 @@ fun canInlineLatexElement(element: PsiElement?): Boolean {
             element.containingFile.isLatexFile()
         }
 
-        is LatexCommandsImpl -> {
+        is LatexCommands -> {
             CommandMagic.includeOnlyExtensions
-            ((element as LatexCommandsImpl).getName() == "\\input" && (element as PsiElementBase).canNavigateToSource())
+            ((element as LatexCommands).name == "\\input" && (element as PsiElementBase).canNavigateToSource())
         }
 
         else -> true
@@ -89,7 +94,8 @@ fun resolveInlineFile(element: PsiElement) = when (element) {
     // If we tried to inline the file in file view, or the argument in `input`
     is LatexFile -> element
     // If the caret was on the `input` command
-    is LatexCommandsImpl -> element.containingFile.parent?.findFile(
+    is LatexCommands -> element.containingFile.parent?.findFile(
+        // Guess that the first param is our file
         if (element.requiredParameters[0].matches(
                 ".*\\.\\w{3}$".toRegex()
             )
@@ -110,11 +116,9 @@ fun getReference(
     return if (element is LatexCommands)
         element
     else if (editor != null) {
-        // val ref: LatexCommands? = getElementAtCaret(editor)?.firstParentOfType(LatexCommands::javaClass)
-        if (getElementAtCaret(editor)?.parent?.parent?.parent is LatexCommandsImpl)
-            getElementAtCaret(editor)?.parent?.parent?.parent
-        else if (getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent is LatexCommandsImpl)
-            getElementAtCaret(editor)?.parent?.parent?.parent?.parent?.parent
+        val ref: LatexCommands? = getElementAtCaret(editor)?.firstParentOfType(LatexCommands::class)
+        if (ref != null)
+            ref
         else {
             Log.warn("Could not find the command element for " + element.text)
             null
