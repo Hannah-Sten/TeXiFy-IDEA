@@ -27,19 +27,7 @@ class LatexInlineFileHandler : InlineActionHandler() {
     }
 
     override fun canInlineElement(element: PsiElement?): Boolean {
-        val out = when (element) {
-            is LatexFile -> {
-                element.containingFile.isLatexFile()
-            }
-
-            is LatexCommandsImpl -> {
-                ((element as LatexCommandsImpl).getName() == "\\input" && (element as PsiElementBase).canNavigateToSource())
-            }
-
-            else -> true
-        }
-
-        return out
+        return canInlineLatexElement(element)
     }
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
@@ -70,6 +58,25 @@ class LatexInlineFileHandler : InlineActionHandler() {
             // TODO No ocurrences, what to do?
         }
     }
+}
+
+/**
+ * This is static only so that the unit tests can use it, and also since it can be static
+ */
+fun canInlineLatexElement(element: PsiElement?): Boolean {
+    val out = when (element) {
+        is LatexFile -> {
+            element.containingFile.isLatexFile()
+        }
+
+        is LatexCommandsImpl -> {
+            ((element as LatexCommandsImpl).getName() == "\\input" && (element as PsiElementBase).canNavigateToSource())
+        }
+
+        else -> true
+    }
+
+    return out
 }
 
 fun resolveInlineFile(element: PsiElement) = when (element) {

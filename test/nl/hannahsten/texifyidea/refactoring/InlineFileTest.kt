@@ -12,6 +12,7 @@ import com.intellij.testFramework.LightPlatformCodeInsightTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileProcessor
+import nl.hannahsten.texifyidea.refactoring.inlinefile.canInlineLatexElement
 import nl.hannahsten.texifyidea.refactoring.inlinefile.getReference
 import nl.hannahsten.texifyidea.refactoring.inlinefile.resolveInlineFile
 import nl.hannahsten.texifyidea.util.runWriteAction
@@ -32,6 +33,14 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
 
     fun testFileWithNoReference() {
         doTestAssertBadReturn()
+    }
+
+    fun testFileWithNoCommand() {
+        doTestAssertBadReturn()
+    }
+
+    fun testFileWithIncompleteInput() {
+        doTestAssertBadReturn(2)
     }
 
     fun testFileWithMultReference() {
@@ -90,15 +99,29 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
         }
     }
 
-    private fun doTestAssertBadReturn() {
-        @NonNls val fileName = configure()
-        ConflictsInTestsException.withIgnoredConflicts<RuntimeException> {
-            performAction(
-                MockInlineMethodOptions(),
-                true
-            )
+    private fun doTestAssertBadReturn(numTests: Int? = null) {
+        if (numTests == null) {
+            @NonNls val fileName = configure()
+            ConflictsInTestsException.withIgnoredConflicts<RuntimeException> {
+                performAction(
+                    MockInlineMethodOptions(),
+                    true
+                )
+            }
+            checkResultByFile("$fileName.after")
         }
-        checkResultByFile("$fileName.after")
+        else {
+            for (testIndex in 1..numTests) {
+                @NonNls val fileName = configure(testIndex)
+                ConflictsInTestsException.withIgnoredConflicts<RuntimeException> {
+                    performAction(
+                        MockInlineMethodOptions(),
+                        true
+                    )
+                }
+                checkResultByFile("$fileName.after")
+            }
+        }
     }
 
     private fun configure(testIndex: Int? = null): String {
@@ -140,14 +163,16 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
 
         val inlineFile = resolveInlineFile(element)
 
+        val canInlineElement = canInlineLatexElement(element)
+
         if (assertBadReturn) {
-            assertTrue("Bad returns not found", inlineFile == null)
+            assertTrue("Bad returns not found", inlineFile == null || !canInlineElement)
         }
         else {
-            assertFalse("Bad returns found", inlineFile == null)
+            assertFalse("Bad returns found", inlineFile == null || !canInlineElement)
         }
 
-        if (inlineFile == null)
+        if (inlineFile == null || !canInlineElement)
             return
 
         val ref = getReference(element, editor)
