@@ -13,9 +13,9 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "montly"
+      interval: "monthly"
 
   - package-ecosystem: "pip"
     directory: "/scripts"
     schedule:
-      interval: "montly"
+      interval: "monthly"
