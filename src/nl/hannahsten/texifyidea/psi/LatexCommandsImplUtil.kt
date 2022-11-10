@@ -222,7 +222,9 @@ fun hasLabel(element: LatexCommands): Boolean {
 }
 
 fun setName(element: LatexCommands, newName: String): PsiElement {
-    val newText = element.text.replace(element.name ?: return element, newName)
+    var newText = element.text.replace(element.name ?: return element, newName)
+    if (!newText.startsWith("\\"))
+        newText = "\\" + newText
     val newElement = LatexPsiHelper(element.project).createFromText(newText).firstChild
     val oldNode = element.node
     val newNode = newElement.node
