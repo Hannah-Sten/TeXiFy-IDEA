@@ -48,7 +48,7 @@ class LatexInlineFileProcessor(
         if (isInlineThisOnly) {
             if (originalReference != null)
                 replaceUsage(originalReference)
-            if (!ApplicationManager.getApplication().isUnitTestMode)
+            else if (!ApplicationManager.getApplication().isUnitTestMode)
                 throw IllegalStateException("Inline this requested with no original reference (" + usages.size + ")")
             // else we are probably trying to elicit no response because this is illegal
         }
