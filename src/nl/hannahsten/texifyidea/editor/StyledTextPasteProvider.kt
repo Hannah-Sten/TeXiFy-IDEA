@@ -20,7 +20,7 @@ import java.awt.datatransfer.DataFlavor
  *
  * @author jojo2357
  */
-open class StyledTextPasteProvider : PasteProvider {
+class StyledTextPasteProvider : PasteProvider {
 
     val openingTags = hashMapOf(
         "i" to "\\textit{",
@@ -72,6 +72,7 @@ open class StyledTextPasteProvider : PasteProvider {
         "%" to "\\%",
         "&" to "\\&",
         "_" to "\\_",
+        "−" to "-"
     )
 
     override fun performPaste(dataContext: DataContext) {
