@@ -214,7 +214,7 @@ open class LatexAnnotator : Annotator {
      * Annotates the contents of the given parameter with the given style.
      */
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
-        val content = parameter.firstChildOfType(LatexContent::class) ?: return
+        val content = parameter.firstChildOfType(LatexContent::class) ?: parameter.firstChildOfType(LatexRequiredParamContent::class) ?: return
         this.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(content)
             .textAttributes(style)
