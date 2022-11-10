@@ -243,21 +243,5 @@ open class LatexAnnotator : Annotator {
             }
             // else not a format command
         }
-
-        /*if (textStyles.contains(parameter.firstParentOfType(LatexCommands::class)?.commandToken?.text ?: "")) {
-            parameter.childrenOfType(LeafPsiElement::class)
-                .filter { it.elementType.index == 195.toShort() }
-                .map{it as PsiElement}.forEach {
-                    this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(it)
-                    .textAttributes(style)
-                    .create()
-                }
-        } else {
-            this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(content)
-                .textAttributes(style)
-                .create()
-        }*/
     }
 }
