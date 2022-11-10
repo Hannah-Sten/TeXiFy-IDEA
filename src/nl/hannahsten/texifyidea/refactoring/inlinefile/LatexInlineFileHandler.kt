@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.firstParentOfType
 
@@ -95,9 +94,7 @@ fun resolveInlineFile(element: PsiElement) = when (element) {
     is LatexCommands -> {
         val ifr = element.references.filterIsInstance<InputFileReference>()[0]
 
-        element.containingFile.parent?.findFile(
-            ifr.key.appendExtension(ifr.defaultExtension)
-        ) as? LatexFile
+        ifr.resolve(false) as? LatexFile
     }
 
     else -> null
