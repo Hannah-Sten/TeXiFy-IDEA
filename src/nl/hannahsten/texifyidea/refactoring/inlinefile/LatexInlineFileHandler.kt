@@ -92,9 +92,7 @@ fun resolveInlineFile(element: PsiElement) = when (element) {
     is LatexFile -> element
     // If the caret was on the `input` command
     is LatexCommands -> {
-        val ifr = element.references.filterIsInstance<InputFileReference>()[0]
-
-        ifr.resolve(false) as? LatexFile
+        element.references.filterIsInstance<InputFileReference>()[0].resolve(false) as? LatexFile
     }
 
     else -> null
