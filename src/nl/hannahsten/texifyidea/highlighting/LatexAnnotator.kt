@@ -6,14 +6,13 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.firstChildOfType
-import nl.hannahsten.texifyidea.util.isContext
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.magic.CommandMagic.textStyles
 
 /**
  * Provide syntax highlighting for composite elements.
@@ -213,11 +212,52 @@ open class LatexAnnotator : Annotator {
     /**
      * Annotates the contents of the given parameter with the given style.
      */
+    @Suppress("USELESS_CAST")
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
-        val content = parameter.firstChildOfType(LatexContent::class) ?: parameter.firstChildOfType(LatexRequiredParamContent::class) ?: return
-        this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(content)
-            .textAttributes(style)
-            .create()
+        val firstContentChild = parameter.firstChildOfType(LatexContent::class)
+        val firstParamChild = parameter.firstChildOfType(LatexRequiredParamContent::class)
+
+        if (firstContentChild != null) {
+            this.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(firstContentChild)
+                .textAttributes(style)
+                .create()
+        }
+        else if (firstParamChild != null) {
+            // If this is a format command
+            if (textStyles.contains(parameter.firstParentOfType(LatexCommands::class)?.commandToken?.text ?: "")) {
+                parameter.childrenOfType(LeafPsiElement::class)
+                    // Take out only NORMAL_TEXT_WORD
+                    .filter {
+                        it.elementType.index == 195.toShort()
+                    }
+                    .map {
+                        it as PsiElement
+                    }
+                    .forEach {
+                        this.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                            .range(it)
+                            .textAttributes(style)
+                            .create()
+                    }
+            }
+            // else not a format command
+        }
+
+        /*if (textStyles.contains(parameter.firstParentOfType(LatexCommands::class)?.commandToken?.text ?: "")) {
+            parameter.childrenOfType(LeafPsiElement::class)
+                .filter { it.elementType.index == 195.toShort() }
+                .map{it as PsiElement}.forEach {
+                    this.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(it)
+                    .textAttributes(style)
+                    .create()
+                }
+        } else {
+            this.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(content)
+                .textAttributes(style)
+                .create()
+        }*/
     }
 }
