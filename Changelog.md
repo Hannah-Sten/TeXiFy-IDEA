@@ -4,6 +4,7 @@
 * Enable synchronizing remote libraries without opening the tool window. (#2749)
 * Support undoing 'move se(le)ction to file' actions. (#2739)
 * Add 'inline included file' action. (#2741)
+* Ensure renamed commands start with a backslash. (#2756)
 
 ### Bug fixes
 * Fix incorrect section contents moved to file. (#2739)
