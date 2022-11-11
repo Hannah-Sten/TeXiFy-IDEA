@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.actions.PasteAction
 import nl.hannahsten.texifyidea.action.insert.InsertStyledText
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.PandocUtil
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import org.jsoup.Jsoup
@@ -94,7 +95,7 @@ class StyledTextPasteProvider : PasteProvider {
         "}" to "\\}",
         "^" to "\\^",
         "~" to "\\~",
-        "\\" to "\\textbackslash",
+        "\\" to "\\textbackslash ",
         "−" to "-"
     )
 
@@ -197,7 +198,14 @@ class StyledTextPasteProvider : PasteProvider {
      * Creates the Table Creation Dialog filled in with the data from the clipboard.
      */
     private fun Document.parseText(): String {
-        return select("body")[0].childNodes().parseToString()
+        return if (PandocUtil.isPandocInPath) {
+            val out = PandocUtil.translateHtml(this.html())
+            if (out.isNullOrEmpty())
+                select("body")[0].childNodes().parseToString()
+            else
+                out
+        } else
+            select("body")[0].childNodes().parseToString()
     }
 
     private fun Element.getPrefix(): String {
