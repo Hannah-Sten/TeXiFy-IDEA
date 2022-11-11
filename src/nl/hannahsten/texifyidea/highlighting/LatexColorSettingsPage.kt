@@ -134,12 +134,12 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |    Also, some text styles:
                 |    \textbf{<styleBold>Bold</styleBold>}
                 |    \textit{<styleItalic>Italic</styleItalic>}
-                |    \underline{<styleUnderline>Underline</styleUnderline>}
-                |    \sout{<styleStrikethrough>Strikethrough</styleStrikethrough>}
-                |    \textsc{<styleSmallCapitals>SMALL CAPITALS</styleSmallCapitals>}
                 |    \overline{<styleOverline>Overline</styleOverline>}
-                |    \texttt{<styleTypewriter>Typewriter</styleTypewriter>}
                 |    \textsl{<styleSlanted>Slanted</styleSlanted>}
+                |    \textsc{<styleSmallCapitals>SMALL CAPITALS</styleSmallCapitals>}
+                |    \sout{<styleStrikethrough>Strikethrough</styleStrikethrough>}
+                |    \texttt{<styleTypewriter>Typewriter</styleTypewriter>}
+                |    \underline{<styleUnderline>Underline</styleUnderline>}
                 |
                 |    \section{Conclusions}\label{<labelDefinition>sec:conclusions</labelDefinition>}
                 |    We worked hard, and achieved very little. Or did we?
