@@ -84,7 +84,7 @@ class StyledTextPasteProvider : PasteProvider {
         }
     )
 
-    val escapeChars = hashMapOf<String, String>(
+    val escapeChars = hashMapOf(
         "%" to "\\%",
         "&" to "\\&",
         "_" to "\\_",
@@ -128,10 +128,10 @@ class StyledTextPasteProvider : PasteProvider {
         else null
     }
 
-    private fun escapeText(stringin: String) : String {
+    private fun escapeText(stringin: String): String {
         var out = stringin
 
-        escapeChars.forEach { out = out.replace(it.key, it.value)}
+        escapeChars.forEach { out = out.replace(it.key, it.value) }
 
         return out
     }
@@ -149,13 +149,14 @@ class StyledTextPasteProvider : PasteProvider {
                             node.attr("align") == "center" -> "center"
                             node.attr("align") == "left" -> "flushleft"
                             node.attr("align") == "right" -> "flushright"
-                            //latex doesnt have native support here
-                            //node.attr("align") == "justify" ->
+                            // latex doesnt have native support here
+                            // node.attr("align") == "justify" ->
                             else -> ""
                         }
                     if (environ != "") {
                         out.append("\\begin{$environ}").append(node.getPrefix()).append(escapeText(node.text())).append(node.getPostfix()).append("\\end{$environ}")
-                    } else
+                    }
+                    else
                         out.append(node.getPrefix()).append(escapeText(node.text())).append(node.getPostfix())
                 }
                 else
@@ -168,13 +169,14 @@ class StyledTextPasteProvider : PasteProvider {
                             node.attr("align") == "center" -> "center"
                             node.attr("align") == "left" -> "flushleft"
                             node.attr("align") == "right" -> "flushright"
-                            //latex doesnt have native support here
-                            //node.attr("align") == "justify" ->
+                            // latex doesnt have native support here
+                            // node.attr("align") == "justify" ->
                             else -> ""
                         }
                     if (environ != "") {
                         out.append("\\begin{$environ}").append(node.getPrefix()).append(node.childNodes().parseToString()).append(node.getPostfix()).append("\\end{$environ}")
-                    } else
+                    }
+                    else
                         out.append(node.getPrefix()).append(node.childNodes().parseToString()).append(node.getPostfix())
                 }
                 else
