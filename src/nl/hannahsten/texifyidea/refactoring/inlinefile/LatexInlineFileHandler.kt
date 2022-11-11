@@ -72,7 +72,7 @@ class LatexInlineFileHandler : InlineActionHandler() {
  * This is static only so that the unit tests can use it, and also since it can be static
  */
 fun canInlineLatexElement(element: PsiElement?): Boolean {
-    val out = when (element) {
+    return when (element) {
         is LatexFile -> {
             element.containingFile.isLatexFile()
         }
@@ -81,10 +81,8 @@ fun canInlineLatexElement(element: PsiElement?): Boolean {
             (element.references.filterIsInstance<InputFileReference>().isNotEmpty())
         }
 
-        else -> true
+        else -> false
     }
-
-    return out
 }
 
 fun resolveInlineFile(element: PsiElement) = when (element) {
