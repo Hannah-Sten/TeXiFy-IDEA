@@ -11,12 +11,10 @@ import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.BaseRefactoringProcessor
 import com.intellij.usageView.UsageInfo
 import com.intellij.usageView.UsageViewDescriptor
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexKeyvalPair
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.definitionCommand
+import nl.hannahsten.texifyidea.util.firstChildOfType
 
 /**
  * Recieves settings and a target and performs the requested refactoring
@@ -53,7 +51,11 @@ class LatexInlineCommandProcessor(
     override fun performRefactoring(usages: Array<out UsageInfo>) {
         if (isInlineThisOnly) {
             if (originalReference != null)
-                replaceUsage(originalReference)
+                ApplicationManager.getApplication().runWriteAction {
+                    CommandProcessor.getInstance().executeCommand(myProject, {
+                        replaceUsage(originalReference)
+                    }, commandName, "Texify")
+                }
             else if (!ApplicationManager.getApplication().isUnitTestMode)
                 throw IllegalStateException("Inline this requested with no original reference (" + usages.size + ")")
             // else we are probably trying to elicit no response because this is illegal
@@ -61,11 +63,12 @@ class LatexInlineCommandProcessor(
         else if (usages.isNotEmpty()) {
             ApplicationManager.getApplication().runWriteAction {
                 CommandProcessor.getInstance().executeCommand(myProject, {
+                    var allSuccessfull = true
                     for (replaceUsage in usages) {
                         val replacereference = replaceUsage.element ?: continue
-                        replaceUsage(replacereference)
+                        allSuccessfull = allSuccessfull && replaceUsage(replacereference)
                     }
-                    if (!isKeepTheDeclaration)
+                    if (!isKeepTheDeclaration && allSuccessfull)
                         inlineCommand.delete()
                 }, commandName, "Texify")
             }
@@ -77,45 +80,48 @@ class LatexInlineCommandProcessor(
      *
      * @param psiElement The element to remove and replace with the contents of the file
      */
-    private fun replaceUsage(psiElement: PsiElement) {
-        val calledRequiredArgs = psiElement.childrenOfType(LatexRequiredParamContent::class).toList()
-        val calledOptionalArgs = psiElement.childrenOfType(LatexKeyvalPair::class).toList()
+    private fun replaceUsage(psiElement: PsiElement): Boolean{
+        val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf<String>()
+        val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
-        val parentOptionalArgs = inlineCommand.childrenOfType(LatexKeyvalPair::class).toList()
+        val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
         if (calledOptionalArgs.size > 1)
-            return // error case
+            return false// error case
 
         if (parentOptionalArgs.size > 2)
-            return // error case
+            return false// error case
 
-        val defaultParam = if (parentOptionalArgs.size == 2) parentOptionalArgs[1].text else null
+        val defaultParam = if (parentOptionalArgs.size == 2) parentOptionalArgs[1] else null
         val offsetIndex = if (defaultParam == null) 1 else 2
-        val numArgs = if (parentOptionalArgs.size >= 1) Integer.parseInt(parentOptionalArgs[0].text) else 0
+        val numArgs = if (parentOptionalArgs.size >= 1) Integer.parseInt(parentOptionalArgs[0]) else 0
 
         val regex = "(?<!\\\\)#(\\d)".toRegex()
-        val functionString = inlineCommand.lastChild.childrenOfType(LatexRequiredParamContent::class)
-            .fold("") { out, some -> out + some.text }
+        val functionString = (inlineCommand as LatexCommandWithParams).parameterList.lastOrNull()?.requiredParam?.children
+            ?.fold("") { out, some -> out + some.text } ?: return false
         val totalTehxt = regex.findAll(functionString).iterator().asSequence().toSet()
         val expectedArgs = totalTehxt.maxOf { Integer.parseInt(it.value.substring(1)) }
 
         if (expectedArgs > numArgs)
-            return
+            return false
 
         var outText = functionString
 
-        for (i in offsetIndex..expectedArgs) {
-            outText = outText.replace("#$i", calledRequiredArgs[i - offsetIndex].text)
+        for (i in calledRequiredArgs.indices) {
+            outText = outText.replace("#${i + offsetIndex}", calledRequiredArgs[i])
         }
 
         if (defaultParam != null) {
             if (calledOptionalArgs.size == 1)
-                outText = outText.replace("#1", calledOptionalArgs[0].text)
+                outText = outText.replace("#1", calledOptionalArgs[0])
             else
                 outText = outText.replace("#1", defaultParam)
         }
 
-        psiElement.replace(LatexPsiHelper(psiElement.project).createFromText(outText))
+        val tempFile = LatexPsiHelper(psiElement.project).createFromText(outText)
+        psiElement.replace(tempFile)
+
+        return true
     }
 
     override fun getCommandName(): String {
