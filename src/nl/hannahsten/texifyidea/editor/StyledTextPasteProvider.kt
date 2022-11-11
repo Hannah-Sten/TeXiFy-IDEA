@@ -89,6 +89,12 @@ class StyledTextPasteProvider : PasteProvider {
         "&" to "\\&",
         "_" to "\\_",
         "#" to "\\#",
+        "$" to "\\$",
+        "{" to "\\{",
+        "}" to "\\}",
+        "^" to "\\^",
+        "~" to "\\~",
+        "\\" to "\\textbackslash",
         "−" to "-"
     )
 
