@@ -35,12 +35,13 @@ class LatexInlineCommandHandler : InlineActionHandler() {
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         // Resolve the file to be inlined
         val inlineCommand: LatexCommands = resolveInlineCommandDefinition(element) ?: return
+        val myReference = getReference(element, editor)
 
         val dialog = LatexInlineCommandDialog(
             project,
             inlineCommand,
-            getReference(element, editor),
-            editor != null
+            myReference,
+            editor != null && inlineCommand.firstChildOfType(LatexCommands::class) != myReference
         )
 
         if (dialog.myOccurrencesNumber > 0) {
