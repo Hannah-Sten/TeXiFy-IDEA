@@ -224,9 +224,8 @@ open class LatexAnnotator : Annotator {
         }
         else if (firstParamChild != null) {
             parameter.childrenOfType(LeafPsiElement::class)
-                // Take out only NORMAL_TEXT_WORD
                 .filter {
-                    it.elementType.index == 195.toShort()
+                    it.elementType == LatexTypes.NORMAL_TEXT_WORD
                 }
                 .map {
                     it as PsiElement
