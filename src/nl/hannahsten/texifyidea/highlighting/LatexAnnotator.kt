@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.CommandMagic.textStyles
 
 /**
  * Provide syntax highlighting for composite elements.
@@ -224,24 +223,20 @@ open class LatexAnnotator : Annotator {
                 .create()
         }
         else if (firstParamChild != null) {
-            // If this is a format command
-            if (textStyles.contains(parameter.firstParentOfType(LatexCommands::class)?.commandToken?.text ?: "")) {
-                parameter.childrenOfType(LeafPsiElement::class)
-                    // Take out only NORMAL_TEXT_WORD
-                    .filter {
-                        it.elementType.index == 195.toShort()
-                    }
-                    .map {
-                        it as PsiElement
-                    }
-                    .forEach {
-                        this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                            .range(it)
-                            .textAttributes(style)
-                            .create()
-                    }
-            }
-            // else not a format command
+            parameter.childrenOfType(LeafPsiElement::class)
+                // Take out only NORMAL_TEXT_WORD
+                .filter {
+                    it.elementType.index == 195.toShort()
+                }
+                .map {
+                    it as PsiElement
+                }
+                .forEach {
+                    this.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(it)
+                        .textAttributes(style)
+                        .create()
+                }
         }
     }
 }
