@@ -88,7 +88,7 @@ dependencies {
     // Http requests
     implementation("io.ktor:ktor-client-core:2.0.3")
     implementation("io.ktor:ktor-client-cio:2.0.3")
-    implementation("io.ktor:ktor-client-auth:2.0.3")
+    implementation("io.ktor:ktor-client-auth:2.1.3")
     implementation("io.ktor:ktor-client-content-negotiation:2.0.3")
     implementation("io.ktor:ktor-server-core:2.0.3")
     implementation("io.ktor:ktor-server-jetty:2.0.3")
