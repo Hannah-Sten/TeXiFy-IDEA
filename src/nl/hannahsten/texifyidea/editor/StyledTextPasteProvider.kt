@@ -26,21 +26,37 @@ class StyledTextPasteProvider : PasteProvider {
         "i" to "\\textit{",
         "b" to "\\textbf{",
         "u" to "\\underline{",
+        "p" to "",
         "ol" to "\\begin{enumerate}\n",
         "ul" to "\\begin{itemize}\n",
         "li" to "\\item ",
         "br" to "\n",
+        "sup" to "\\textsuperscript{",
+        "sub" to "\\textsubscript{",
+        "h1" to "\\chapter*{",
+        "h2" to "\\section*{",
+        "h3" to "\\subsection*{",
+        "h4" to "\\subsubsection*{",
+        "h5" to "\\subsubsubsection*{",
     )
 
     val closingTags = hashMapOf(
         "i" to "}",
         "b" to "}",
         "u" to "}",
+        "p" to "\n\\par\n",
         "ol" to "\\end{enumerate}\n",
         "ul" to "\\end{itemize}\n",
         "li" to "\n",
         "a" to "}",
         "br" to "",
+        "sup" to "}",
+        "sub" to "}",
+        "h1" to "}\n",
+        "h2" to "}\n",
+        "h3" to "}\n",
+        "h4" to "}\n",
+        "h5" to "}\n",
     )
 
     val specialOpeningTags = hashMapOf<String, (Element) -> String>(
@@ -49,7 +65,7 @@ class StyledTextPasteProvider : PasteProvider {
                 if (element.attr("href").startsWith("#"))
                     "\\hyperlink{" + element.attr("href").replace(Regex("^#"), "") + "}{"
                 else
-                    "\\href{" + element.attr("href") + "}{"
+                    "\\href{" + escapeText(element.attr("href")) + "}{"
             else if (element.hasAttr("name"))
                 "\\hypertarget{" + element.attr("name") + "}{"
             else
@@ -72,8 +88,19 @@ class StyledTextPasteProvider : PasteProvider {
         "%" to "\\%",
         "&" to "\\&",
         "_" to "\\_",
+        "#" to "\\#",
         "−" to "-"
     )
+
+    override fun isPastePossible(dataContext: DataContext): Boolean {
+        val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
+        if (file.isLatexFile().not()) return false
+        if (ShiftTracker.isShiftPressed()) return false
+
+        val pasteData = dataContext.transferableHtml() ?: return false
+        Log.warn("Attempting to paste $pasteData")
+        return openingTags.keys.any { pasteData.contains("<$it>") } && closingTags.keys.any { pasteData.contains("<$it>") }
+    }
 
     override fun performPaste(dataContext: DataContext) {
         val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
@@ -86,16 +113,6 @@ class StyledTextPasteProvider : PasteProvider {
         val editor = dataContext.getData(PlatformDataKeys.PROJECT)?.currentTextEditor() ?: return
 
         InsertStyledText(tableTextToInsert).actionPerformed(file, project, editor)
-    }
-
-    override fun isPastePossible(dataContext: DataContext): Boolean {
-        val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
-        if (file.isLatexFile().not()) return false
-        if (ShiftTracker.isShiftPressed()) return false
-
-        val pasteData = dataContext.transferableHtml() ?: return false
-        Log.warn("Attempting to paste $pasteData")
-        return openingTags.keys.any { pasteData.contains("<$it>") } && closingTags.keys.any { pasteData.contains("<$it>") }
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
@@ -176,6 +193,8 @@ class StyledTextPasteProvider : PasteProvider {
     }
 
     private fun Element.getPrefix(): String {
+        if (specialOpeningTags[tagName()] == null && openingTags[tagName()] == null)
+            Log.warn("Couldnt find a home for " + tagName())
         return specialOpeningTags[tagName()]?.invoke(this) ?: openingTags[tagName()] ?: ""
     }
 
