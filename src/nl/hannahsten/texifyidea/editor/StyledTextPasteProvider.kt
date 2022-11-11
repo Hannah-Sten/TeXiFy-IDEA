@@ -204,7 +204,8 @@ class StyledTextPasteProvider : PasteProvider {
                 select("body")[0].childNodes().parseToString()
             else
                 out
-        } else
+        }
+        else
             select("body")[0].childNodes().parseToString()
     }
 

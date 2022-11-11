@@ -7,6 +7,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 object PandocUtil {
+
     val isPandocInPath: Boolean by lazy {
         "pandoc -v".runCommandWithExitCode().second == 0
     }
@@ -46,6 +47,7 @@ object PandocUtil {
                 Log.debug(e.message ?: "Unknown ProcessNotCreatedException occurred")
                 return null
             }
-        } else null
+        }
+        else null
     }
 }
