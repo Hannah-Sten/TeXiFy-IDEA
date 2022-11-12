@@ -101,8 +101,8 @@ class LatexInlineCommandHandler : InlineActionHandler() {
             val thisCommandDefinitions = candiateUserCommands.filter {
                 LatexCommandsAndEnvironmentsCompletionProvider.getDefinitionName(it) == (element as LatexCommands).name
             }
-            if (thisCommandDefinitions.size != 1)
-                Log.warn("Did not find a singleton definition, found " + thisCommandDefinitions.size)
+
+            // There may be an issue where it picks the wrong definition when there are multiple redefinitions
             return thisCommandDefinitions.firstOrNull()
         }
 

@@ -12,9 +12,7 @@ import com.intellij.refactoring.BaseRefactoringProcessor
 import com.intellij.usageView.UsageInfo
 import com.intellij.usageView.UsageViewDescriptor
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.definitionCommand
-import nl.hannahsten.texifyidea.util.firstChildOfType
 
 /**
  * Recieves settings and a target and performs the requested refactoring
@@ -80,17 +78,17 @@ class LatexInlineCommandProcessor(
      *
      * @param psiElement The element to remove and replace with the contents of the file
      */
-    private fun replaceUsage(psiElement: PsiElement): Boolean{
+    private fun replaceUsage(psiElement: PsiElement): Boolean {
         val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf<String>()
         val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
         val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
         if (calledOptionalArgs.size > 1)
-            return false// error case
+            return false // error case
 
         if (parentOptionalArgs.size > 2)
-            return false// error case
+            return false // error case
 
         val defaultParam = if (parentOptionalArgs.size == 2) parentOptionalArgs[1] else null
         val offsetIndex = if (defaultParam == null) 1 else 2
