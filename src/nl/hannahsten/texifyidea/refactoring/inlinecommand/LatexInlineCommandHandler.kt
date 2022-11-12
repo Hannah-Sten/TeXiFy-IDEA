@@ -77,6 +77,10 @@ class LatexInlineCommandHandler : InlineActionHandler() {
                 return false
             }
 
+            // we will not be dealing with commands that have a map of options
+            if (element.optionalParameterMap.any { it.key != null && it.value != null })
+                return false
+
             val file = element.containingFile
             val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
 
@@ -87,6 +91,7 @@ class LatexInlineCommandHandler : InlineActionHandler() {
             val canInline = candiateUserCommands.any {
                 LatexCommandsAndEnvironmentsCompletionProvider.getDefinitionName(it) == element.name
             }
+
             return canInline
         }
 

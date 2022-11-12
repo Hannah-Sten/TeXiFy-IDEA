@@ -117,7 +117,7 @@ class LatexInlineCommandProcessor(
         }
 
         val tempFile = LatexPsiHelper(psiElement.project).createFromText(outText)
-        psiElement.replace(tempFile)
+        psiElement.replace(tempFile.firstChild)
 
         return true
     }
