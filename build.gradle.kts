@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.serialization") version("1.7.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.43.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -88,8 +88,8 @@ dependencies {
     // Http requests
     implementation("io.ktor:ktor-client-core:2.0.3")
     implementation("io.ktor:ktor-client-cio:2.0.3")
-    implementation("io.ktor:ktor-client-auth:2.0.3")
-    implementation("io.ktor:ktor-client-content-negotiation:2.0.3")
+    implementation("io.ktor:ktor-client-auth:2.1.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.1.3")
     implementation("io.ktor:ktor-server-core:2.0.3")
     implementation("io.ktor:ktor-server-jetty:2.0.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.3")
@@ -107,7 +107,7 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
@@ -117,7 +117,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation("io.mockk:mockk:1.13.2")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
