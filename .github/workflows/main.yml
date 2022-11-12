@@ -15,11 +15,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      # Workaround for https://github.com/github/codeql-action/issues/796
-      # This will prepend refs/heads/ if the branch name does not start with refs/
-      - name: Update GITHUB_REF
-        id: update-github-ref
-        run: echo ::set-output name=fixed_github_ref::$([[ "$GITHUB_REF" =~ refs\/(heads|pull|tags)\/.* ]] && echo $GITHUB_REF || echo "refs/heads/$GITHUB_REF")
       - name: Qodana
         uses: JetBrains/qodana-action@v2022.2.3
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
@@ -29,8 +24,6 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
-          ref: ${{ steps.update-github-ref.outputs.fixed_github_ref }}
-          sha: ${{ github.sha }}
   test:
     runs-on: ${{ matrix.os }}
     strategy:
