@@ -14,7 +14,13 @@ object PandocUtil {
 
     fun translateHtml(htmlIn: String, isStandalone: Boolean = false): Pair<String?, String>? {
         return if (isPandocInPath) {
-            val commands = arrayOf("pandoc", "-f", "html", "-t", "latex") + if (isStandalone) arrayOf("--standalone") else arrayOf()
+            val commands = arrayOf(
+                "pandoc",
+                "-f",
+                "html",
+                "-t",
+                "latex"
+            ) + if (isStandalone) arrayOf("--standalone") else arrayOf()
             Log.debug("Executing in ${GeneralCommandLine().commandLineString}")
             try {
                 val proc = GeneralCommandLine(*commands)
@@ -27,12 +33,14 @@ object PandocUtil {
                 bufferedWriter.close()
 
                 if (proc.waitFor(3, TimeUnit.SECONDS)) {
-                    val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+                    val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader()
+                        .readText().trim()
                     Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
                     return sanitizeOutput(output, isStandalone)
                 }
                 else {
-                    val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+                    val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader()
+                        .readText().trim()
                     proc.destroy()
                     proc.waitFor()
                     Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
@@ -51,11 +59,13 @@ object PandocUtil {
         else null
     }
 
-    private fun sanitizeOutput(rawOutput: String, hasDefinitions: Boolean = false): Pair<String?, String>{
+    private fun sanitizeOutput(rawOutput: String, hasDefinitions: Boolean = false): Pair<String?, String> {
         if (!hasDefinitions)
             return Pair(null, rawOutput)
         else {
-            val basicSplit = rawOutput.replace("\\end{document}", "").replace("\\\\documentclass\\[\\s*]\\{article}".toRegex(), "").split("\\begin{document}")
+            val basicSplit =
+                rawOutput.replace("\\end{document}", "").replace("\\\\documentclass\\[\\s*]\\{article}".toRegex(), "")
+                    .split("\\begin{document}")
             return Pair(basicSplit[0], basicSplit[1])
         }
     }

@@ -56,11 +56,12 @@ object PackageUtils {
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
 
         // check if already imported
-        if (commands.filter { it.name == commandName }.fold (false) { acc, it ->
-                acc || it.firstChildOfType(
+        if (commands.filter { it.name == commandName }.fold(false) { acc, it ->
+            acc || it.firstChildOfType(
                     LatexRequiredParamContent::class
                 )?.text == packageName
-            })
+        }
+        )
             return
 
         var last: LatexCommands? = null
@@ -114,7 +115,8 @@ object PackageUtils {
         // Avoid 'Write access is allowed inside write-action only' exception
         runWriteAction {
             // Avoid "Attempt to modify PSI for non-committed Document"
-            PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
+            PsiDocumentManager.getInstance(file.project)
+                .doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
             PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
             if (anchorAfter != null) {
                 val anchorBefore = anchorAfter.node.treeNext
@@ -183,7 +185,7 @@ object PackageUtils {
             prependNewLine = true
         }
 
-        var command = packageName
+        val command = packageName
 
         val newNode = LatexPsiHelper(file.project).createFromText(command)
 
@@ -191,7 +193,8 @@ object PackageUtils {
         // Avoid 'Write access is allowed inside write-action only' exception
         runWriteAction {
             // Avoid "Attempt to modify PSI for non-committed Document"
-            PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
+            PsiDocumentManager.getInstance(file.project)
+                .doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
             PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
             if (anchorAfter != null) {
                 val anchorBefore = anchorAfter.node.treeNext
@@ -371,8 +374,17 @@ fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexP
 /**
  * See [includedPackages].
  */
-fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
-    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
-        .map { LatexPackage(it) }
-    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
+fun includedPackages(
+    commands: Collection<LatexCommands>,
+    project: Project,
+    onlyDirectInclusions: Boolean = false
+): List<LatexPackage> {
+    val directIncludes =
+        PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
+            .map { LatexPackage(it) }
+    return if (onlyDirectInclusions) directIncludes
+    else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(
+        directIncludes,
+        project
+    ).toList()
 }

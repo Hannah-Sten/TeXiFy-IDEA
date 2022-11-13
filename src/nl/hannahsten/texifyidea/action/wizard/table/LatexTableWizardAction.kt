@@ -33,22 +33,10 @@ class LatexTableWizardAction : AnAction() {
 
             // Get the table information from the dialog, and convert it to latex.
             val tableTextToInsert = convertTableToLatex(dialogWrapper.tableInformation, indent)
-            
+
             return tableTextToInsert
-
-            /*// Use an insert action to insert the table.
-            InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
-
-            // Insert the booktabs package.
-            WriteCommandAction.runWriteCommandAction(
-                project,
-                "Insert Table",
-                "LaTeX",
-                { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
-                file.psiFile(project)
-            )*/
         }
-        
+
         return ""
     }
 
@@ -75,7 +63,11 @@ class LatexTableWizardAction : AnAction() {
      * @param tabIndent
      *          The continuation indent.
      */
-    private fun convertTableToLatex(tableInformation: TableInformation, lineIndent: String, tabIndent: String = "    "): String {
+    private fun convertTableToLatex(
+        tableInformation: TableInformation,
+        lineIndent: String,
+        tabIndent: String = "    "
+    ): String {
         /**
          * Local function to process the contents of the table, i.e. the header text and table entries. The indentation
          * is the same throughout the table contents.
@@ -89,18 +81,19 @@ class LatexTableWizardAction : AnAction() {
                         postfix = " \\\\\n$indent\\midrule\n"
                     ) { "\\textbf{$it}" }
 
-                val rows = tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
-                    (row as Vector<*>).joinToString(
-                        prefix = indent,
-                        separator = " & ",
-                        postfix = " \\\\"
-                    ) {
-                        // Enclose with $ if the type of this column is math.
-                        val index = row.indexOf(it)
-                        val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
-                        encloseWith + it.toString() + encloseWith
+                val rows =
+                    tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
+                        (row as Vector<*>).joinToString(
+                            prefix = indent,
+                            separator = " & ",
+                            postfix = " \\\\"
+                        ) {
+                            // Enclose with $ if the type of this column is math.
+                            val index = row.indexOf(it)
+                            val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
+                            encloseWith + it.toString() + encloseWith
+                        }
                     }
-                }
                 headers + rows
             }
         }

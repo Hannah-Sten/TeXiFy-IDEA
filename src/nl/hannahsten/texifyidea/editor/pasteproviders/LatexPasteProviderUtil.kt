@@ -116,7 +116,8 @@ fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext)
 private fun handleElement(element: Element, out: StringBuilder, project: Project, dataContext: DataContext) {
     if (hasSpecialHandler(element)) {
         out.append(childHandlers[element.tagName()]?.translateHtml(element, dataContext))
-    } else {
+    }
+    else {
         val environ = getCentering(element)
         if (environ != "") {
             out.append("\\begin{$environ}")
@@ -166,4 +167,5 @@ private fun escapeText(stringin: String): String {
     return out
 }
 
-fun htmlTextIsFormatable(htmlIn: String): Boolean = openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
+fun htmlTextIsFormatable(htmlIn: String): Boolean =
+    openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }

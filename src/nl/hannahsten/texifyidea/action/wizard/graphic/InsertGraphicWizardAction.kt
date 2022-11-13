@@ -51,7 +51,7 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
     /**
      * Opens and handles the graphic insertion wizard.
      */
-    fun getActionString(file: VirtualFile, project: Project): String{
+    fun getActionString(file: VirtualFile, project: Project): String {
         val editor = project.currentTextEditor() ?: return ""
         val document = editor.editor.document
 

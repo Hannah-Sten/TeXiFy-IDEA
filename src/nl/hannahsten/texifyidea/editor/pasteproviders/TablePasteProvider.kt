@@ -12,13 +12,17 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Node
 import java.util.*
 
-class TablePasteProvider: LatexPasteProvider {
+class TablePasteProvider : LatexPasteProvider {
+
     override fun translateHtml(htmlIn: Node, dataContext: DataContext): String {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return ""
-        return LatexTableWizardAction().executeAction(dataContext.getData(PlatformDataKeys.PROJECT) ?: return "", htmlIn.ownerDocument()?.toTableDialogWrapper(
-            project,
-            dataContext
-        ) ?: return "")
+        return LatexTableWizardAction().executeAction(
+            dataContext.getData(PlatformDataKeys.PROJECT) ?: return "",
+            htmlIn.ownerDocument()?.toTableDialogWrapper(
+                project,
+                dataContext
+            ) ?: return ""
+        )
     }
 
     /**
@@ -55,5 +59,4 @@ class TablePasteProvider: LatexPasteProvider {
             TableCreationTableModel(content, header)
         )
     }
-
 }
