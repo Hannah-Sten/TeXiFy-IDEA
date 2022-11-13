@@ -48,6 +48,28 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         editor.editor.insertGraphic(project, graphicData, indent)
     }
 
+    /**
+     * Opens and handles the graphic insertion wizard.
+     */
+    fun getActionString(file: VirtualFile, project: Project): String{
+        val editor = project.currentTextEditor() ?: return ""
+        val document = editor.editor.document
+
+        // Get the indentation from the current line.
+        val indent = document.lineIndentationByOffset(editor.editor.caretOffset())
+
+        // Create the dialog.
+        val dialogWrapper = InsertGraphicWizardDialogWrapper(initialFilePath = initialFile?.absolutePath ?: "")
+
+        // If the user pressed OK, do stuff.
+        if (!dialogWrapper.showAndGet()) return ""
+
+        // Handle result.
+        val graphicData = dialogWrapper.extractData()
+        file.psiFile(project)?.let { graphicData.importPackages(it) }
+        return buildGraphicString(project, graphicData, indent)
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT) ?: return
@@ -63,6 +85,15 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
     }
 
     private fun Editor.insertGraphic(project: Project, data: InsertGraphicData, indent: String, tab: String = "    ") {
+        insertAtCaretAndMove(buildGraphicString(project, data, indent, tab))
+    }
+
+    fun buildGraphicString(
+        project: Project,
+        data: InsertGraphicData,
+        indent: String,
+        tab: String = "    "
+    ): String {
         // Only the graphics (non-centered).
         val toInsert = if (data.center.not() && data.placeInFigure.not()) {
             data.includeCommand(project)
@@ -78,7 +109,7 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         // Insert figure.
         else data.figure(project, indent, tab)
 
-        insertAtCaretAndMove(toInsert)
+        return toInsert
     }
 
     private fun InsertGraphicData.figure(project: Project, indent: String, tab: String) = buildString {

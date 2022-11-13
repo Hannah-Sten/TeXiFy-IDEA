@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
@@ -53,6 +54,14 @@ object PackageUtils {
         val commands = file.commandsInFile()
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
+
+        // check if already imported
+        if (commands.filter { it.name == commandName }.fold (false) { acc, it ->
+                acc || it.firstChildOfType(
+                    LatexRequiredParamContent::class
+                )?.text == packageName
+            })
+            return
 
         var last: LatexCommands? = null
         for (cmd in commands) {

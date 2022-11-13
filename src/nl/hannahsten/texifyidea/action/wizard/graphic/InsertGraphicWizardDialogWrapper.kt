@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.util.addTextChangeListener
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.setInputFilter
 import java.awt.Dimension
+import java.io.File
 import java.util.*
 import javax.swing.Box
 import javax.swing.BoxLayout
@@ -121,7 +122,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Contains the label for the figure.
      */
-    private val txtLabel = JBTextField("fig:")
+    private val txtLabel = JBTextField("fig:" + File(initialFilePath).nameWithoutExtension)
 
     /**
      * Contains the positioning symbols.

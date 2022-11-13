@@ -9,11 +9,8 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.ImageUtil
 import nl.hannahsten.texifyidea.ui.ImagePanel
-import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import nl.hannahsten.texifyidea.util.formatAsFileName
-import org.apache.commons.io.FilenameUtils
-import org.jsoup.Jsoup
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Image
@@ -61,7 +58,14 @@ class SaveImageFromWebDialog(
             // is a resource folder.
             resourceFolder = ProjectRootManager.getInstance(project).contentSourceRoots.let { roots ->
                 roots.firstOrNull { it.nameWithoutExtension == "resources" }?.path
-                    ?: roots.firstOrNull { it.nameWithoutExtension.matches(Regex("(src|sources?)", RegexOption.IGNORE_CASE)) }?.path
+                    ?: roots.firstOrNull {
+                        it.nameWithoutExtension.matches(
+                            Regex(
+                                "(src|sources?)",
+                                RegexOption.IGNORE_CASE
+                            )
+                        )
+                    }?.path
                     ?: roots.firstOrNull()?.path ?: ""
             }
         }
@@ -101,7 +105,8 @@ class SaveImageFromWebDialog(
         val heightRatio = 1.0.coerceAtMost(300.0 / imageHeight)
         val ratio = widthRatio.coerceAtLeast(heightRatio)
 
-        val scaled = image.getScaledInstance((imageWidth * ratio).toInt(), (imageHeight * ratio).toInt(), Image.SCALE_SMOOTH)
+        val scaled =
+            image.getScaledInstance((imageWidth * ratio).toInt(), (imageHeight * ratio).toInt(), Image.SCALE_SMOOTH)
         setImage(ImageUtil.toBufferedImage(scaled))
     }
 
@@ -165,15 +170,19 @@ class SaveImageFromWebDialog(
         txtResourceFolder.text.isBlank() -> {
             ValidationInfo("You must select a destination folder.", txtResourceFolder)
         }
+
         txtImageName.text.isBlank() -> {
             ValidationInfo("You must enter an image name.")
         }
+
         txtImageName.text.trim().formatAsFileName().isBlank() -> {
             ValidationInfo("You must enter a valid image name (invalid characters).", txtImageName)
         }
+
         destinationFile()?.exists() ?: false -> {
             ValidationInfo("This file already exists", txtImageName)
         }
+
         else -> null
     }
 
