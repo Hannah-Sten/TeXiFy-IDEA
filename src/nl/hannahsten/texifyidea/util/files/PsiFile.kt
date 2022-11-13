@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
@@ -217,8 +216,10 @@ fun PsiFile.environmentsInFile(): Collection<LatexEnvironment> = LatexEnvironmen
 
 /**
  * Get the editor of the file if it is currently opened.
+ *
+ * @return null if the file is not opened.
  */
-fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
+fun PsiFile.openedEditor() = virtualFile.openedEditor(project)
 
 /**
  * Get all the definitions in the file.
