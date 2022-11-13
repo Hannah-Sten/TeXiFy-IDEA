@@ -36,7 +36,6 @@
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
         <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
-        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.TablePasteProvider"/>
         <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
         <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.StyledTextPasteProvider"/>
         <vfs.asyncListener implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileVfsListener"/>

@@ -3,16 +3,10 @@ package nl.hannahsten.texifyidea.action.wizard.table
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.action.insert.InsertTable
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import java.util.*
 
@@ -24,8 +18,8 @@ import java.util.*
  */
 class LatexTableWizardAction : AnAction() {
 
-    fun executeAction(file: VirtualFile, project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null) {
-        val editor = project.currentTextEditor() ?: return
+    fun executeAction(project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null): String {
+        val editor = project.currentTextEditor() ?: return ""
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -39,8 +33,10 @@ class LatexTableWizardAction : AnAction() {
 
             // Get the table information from the dialog, and convert it to latex.
             val tableTextToInsert = convertTableToLatex(dialogWrapper.tableInformation, indent)
+            
+            return tableTextToInsert
 
-            // Use an insert action to insert the table.
+            /*// Use an insert action to insert the table.
             InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
 
             // Insert the booktabs package.
@@ -50,14 +46,16 @@ class LatexTableWizardAction : AnAction() {
                 "LaTeX",
                 { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
                 file.psiFile(project)
-            )
+            )*/
         }
+        
+        return ""
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT) ?: return
-        executeAction(file, project)
+        executeAction(project)
     }
 
     override fun update(e: AnActionEvent) {
