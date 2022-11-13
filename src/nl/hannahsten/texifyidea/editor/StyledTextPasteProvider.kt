@@ -6,13 +6,16 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.action.insert.InsertStyledText
+import nl.hannahsten.texifyidea.editor.pasteproviders.PandocStandaloneDialog
 import nl.hannahsten.texifyidea.editor.pasteproviders.htmlTextIsFormatable
 import nl.hannahsten.texifyidea.editor.pasteproviders.parseToString
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.PackageUtils.insertPreambleText
 import nl.hannahsten.texifyidea.util.PandocUtil
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.files.psiFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.awt.datatransfer.DataFlavor
@@ -66,12 +69,22 @@ class StyledTextPasteProvider : PasteProvider {
      * Creates the Table Creation Dialog filled in with the data from the clipboard.
      */
     private fun Document.parseText(project: Project, dataContext: DataContext): String {
-        return if (false && PandocUtil.isPandocInPath) {
-            val out = PandocUtil.translateHtml(this.html())
-            if (out.isNullOrEmpty())
+        return if (PandocUtil.isPandocInPath) {
+            val isStandalone: Boolean = PandocStandaloneDialog().isAddImports ?: return ""
+
+            val out = PandocUtil.translateHtml(this.html(), isStandalone)
+
+            if (out == null)
                 parseToString(select("body")[0].childNodes(), project, dataContext)
-            else
-                out
+            else {
+                if (out.first is String)
+                    insertPreambleText(
+                        dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)
+                            ?.psiFile(dataContext.getData(PlatformDataKeys.PROJECT)!!)!!,
+                        out.first!!
+                    )
+                out.second
+            }
         }
         else
             parseToString(select("body")[0].childNodes(), project, dataContext)

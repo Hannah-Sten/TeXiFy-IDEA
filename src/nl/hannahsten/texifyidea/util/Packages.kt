@@ -131,6 +131,88 @@ object PackageUtils {
         }
     }
 
+    @JvmStatic
+    fun insertPreambleText(file: PsiFile, packageName: String) {
+
+        if (!TexifySettings.getInstance().automaticDependencyCheck) {
+            return
+        }
+
+        val commands = file.commandsInFile()
+
+        val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
+
+        var last: LatexCommands? = null
+        for (cmd in commands) {
+            if (commandName == cmd.commandToken.text) {
+                // Do not insert below the subfiles package, it should stay last
+                if (cmd.requiredParameters.contains("subfiles")) {
+                    break
+                }
+                else {
+                    last = cmd
+                }
+            }
+        }
+
+        val prependNewLine: Boolean
+        // The anchor after which the new element will be inserted
+        val anchorAfter: PsiElement?
+
+        // When there are no usepackage commands: insert below documentclass.
+        if (last == null) {
+            val classHuh = commands.asSequence()
+                .filter { cmd ->
+                    "\\documentclass" == cmd.commandToken
+                        .text || "\\LoadClass" == cmd.commandToken.text
+                }
+                .firstOrNull()
+            if (classHuh != null) {
+                anchorAfter = classHuh
+                prependNewLine = true
+            }
+            else {
+                // No other sensible location can be found
+                anchorAfter = null
+                prependNewLine = false
+            }
+        }
+        // Otherwise, insert below the lowest usepackage.
+        else {
+            anchorAfter = last
+            prependNewLine = true
+        }
+
+        var command = packageName
+
+        val newNode = LatexPsiHelper(file.project).createFromText(command)
+
+        // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
+        // Avoid 'Write access is allowed inside write-action only' exception
+        runWriteAction {
+            // Avoid "Attempt to modify PSI for non-committed Document"
+            PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
+            PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
+            if (anchorAfter != null) {
+                val anchorBefore = anchorAfter.node.treeNext
+
+                if (prependNewLine && anchorBefore != null) {
+                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild
+                    anchorAfter.parent.addBefore(newLine, anchorBefore.psi)
+                }
+
+                if (anchorBefore == null)
+                    anchorAfter.parent.add(newNode)
+                else
+                    anchorAfter.parent.addBefore(newNode, anchorBefore.psi)
+            }
+            else {
+                // Insert at beginning
+                file.addBefore(newNode, file.firstChild)
+            }
+        }
+    }
+
     /**
      * Inserts a usepackage statement for the given package in the root file of the fileset containing the given file.
      * Will not insert a new statement when the package has already been included, or when a conflicting package is already included.

@@ -12,9 +12,9 @@ object PandocUtil {
         "pandoc -v".runCommandWithExitCode().second == 0
     }
 
-    fun translateHtml(htmlIn: String): String? {
+    fun translateHtml(htmlIn: String, isStandalone: Boolean = false): Pair<String?, String>? {
         return if (isPandocInPath) {
-            val commands = arrayOf("pandoc", "-f", "html", "-t", "latex")
+            val commands = arrayOf("pandoc", "-f", "html", "-t", "latex") + if (isStandalone) arrayOf("--standalone") else arrayOf()
             Log.debug("Executing in ${GeneralCommandLine().commandLineString}")
             try {
                 val proc = GeneralCommandLine(*commands)
@@ -29,14 +29,14 @@ object PandocUtil {
                 if (proc.waitFor(3, TimeUnit.SECONDS)) {
                     val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
                     Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
-                    return output
+                    return sanitizeOutput(output, isStandalone)
                 }
                 else {
                     val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
                     proc.destroy()
                     proc.waitFor()
                     Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
-                    return output
+                    return sanitizeOutput(output, isStandalone)
                 }
             }
             catch (e: IOException) {
@@ -49,5 +49,14 @@ object PandocUtil {
             }
         }
         else null
+    }
+
+    private fun sanitizeOutput(rawOutput: String, hasDefinitions: Boolean = false): Pair<String?, String>{
+        if (!hasDefinitions)
+            return Pair(null, rawOutput)
+        else {
+            val basicSplit = rawOutput.replace("\\end{document}", "").replace("\\\\documentclass\\[\\s*]\\{article}".toRegex(), "").split("\\begin{document}")
+            return Pair(basicSplit[0], basicSplit[1])
+        }
     }
 }
