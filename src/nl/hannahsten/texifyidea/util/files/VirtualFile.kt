@@ -1,8 +1,5 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
@@ -19,16 +16,6 @@ import java.io.File
 fun VirtualFile.psiFile(project: Project): PsiFile? {
     if (!this.isValid) return null
     return PsiManager.getInstance(project).findFile(this)
-}
-
-/**
- * Get the editor of the file if it is currently opened.
- *
- * @return null if the file is not opened.
- */
-fun VirtualFile.openedEditor(project: Project): Editor? {
-    val textEditor = FileEditorManager.getInstance(project).getSelectedEditor(this) as? TextEditor
-    return textEditor?.editor
 }
 
 fun VirtualFile.findVirtualFileByAbsoluteOrRelativePath(filePath: String): VirtualFile? {
