@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.roots.ProjectRootManager
@@ -217,11 +219,24 @@ fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommand
 fun PsiFile.environmentsInFile(): Collection<LatexEnvironment> = LatexEnvironmentsIndex.getItems(this)
 
 /**
- * Get the editor of the file if it is currently opened.
+ * Get the editor of the file if it is currently opened. Note that the returned editor does not have to be a text editor,
+ * e.g., when this file is a PDF file, the editor will be a PDF editor and not a text editor.
  *
  * @return null if the file is not opened.
  */
-fun PsiFile.openedTextEditor(): TextEditor? = FileEditorManager.getInstance(project).getSelectedEditor(virtualFile) as? TextEditor
+fun PsiFile.openedEditor(): FileEditor? = FileEditorManager.getInstance(project).getSelectedEditor(virtualFile)
+
+/**
+ * Get the text editor instance of the (text) file if it is currently opened.
+ *
+ * @return null if the file is not opened in a text editor.
+ */
+fun PsiFile.openedTextEditor(): Editor? = openedEditor()?.let {
+    when (it) {
+        is TextEditor -> it.editor
+        else -> null
+    }
+}
 
 /**
  * Get all the definitions in the file.
