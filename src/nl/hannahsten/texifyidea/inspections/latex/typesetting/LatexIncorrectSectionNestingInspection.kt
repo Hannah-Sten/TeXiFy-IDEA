@@ -61,7 +61,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             val lineNumber = document.getLineNumber(offset)
             val newParentCommand = command.commandToken.text.replaceFirst("sub", "")
             val replacement = "$newParentCommand{}\n${document.lineIndentation(lineNumber)}"
-            val caret = command.containingFile.openedTextEditor()?.editor?.caretModel
+            val caret = command.containingFile.openedTextEditor()?.caretModel
             document.insertString(offset, replacement)
             caret?.moveToOffset(offset + newParentCommand.length + 1)
         }

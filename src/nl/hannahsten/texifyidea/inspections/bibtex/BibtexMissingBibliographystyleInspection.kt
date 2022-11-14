@@ -64,7 +64,7 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
             val document = file.document() ?: return
-            val editor = file.openedTextEditor()?.editor ?: return
+            val editor = file.openedTextEditor() ?: return
 
             val offset = command.endOffset()
             val indent = document.lineIndentationByOffset(offset)
