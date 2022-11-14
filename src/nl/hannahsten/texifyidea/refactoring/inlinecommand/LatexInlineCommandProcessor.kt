@@ -79,7 +79,7 @@ class LatexInlineCommandProcessor(
      * @param psiElement The element to remove and replace with the contents of the file
      */
     private fun replaceUsage(psiElement: PsiElement): Boolean {
-        val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf<String>()
+        val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf()
         val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
         val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
@@ -92,7 +92,7 @@ class LatexInlineCommandProcessor(
 
         val defaultParam = if (parentOptionalArgs.size == 2) parentOptionalArgs[1] else null
         val offsetIndex = if (defaultParam == null) 1 else 2
-        val numArgs = if (parentOptionalArgs.size >= 1) Integer.parseInt(parentOptionalArgs[0]) else 0
+        val numArgs = if (parentOptionalArgs.isNotEmpty()) Integer.parseInt(parentOptionalArgs[0]) else 0
 
         val regex = "(?<!\\\\)#(\\d)".toRegex()
         val functionString = (inlineCommand as LatexCommandWithParams).parameterList.lastOrNull()?.requiredParam?.children
@@ -110,10 +110,10 @@ class LatexInlineCommandProcessor(
         }
 
         if (defaultParam != null) {
-            if (calledOptionalArgs.size == 1)
-                outText = outText.replace("#1", calledOptionalArgs[0])
+            outText = if (calledOptionalArgs.size == 1)
+                outText.replace("#1", calledOptionalArgs[0])
             else
-                outText = outText.replace("#1", defaultParam)
+                outText.replace("#1", defaultParam)
         }
 
         val tempFile = LatexPsiHelper(psiElement.project).createFromText(outText)
