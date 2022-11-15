@@ -6,7 +6,7 @@ import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.tree.TokenSet
-import nl.hannahsten.texifyidea.BibtexLexerAdapter
+import nl.hannahsten.texifyidea.grammar.BibtexLexerAdapter
 import nl.hannahsten.texifyidea.psi.BibtexTypes
 
 class BibtexUsagesProvider : FindUsagesProvider {

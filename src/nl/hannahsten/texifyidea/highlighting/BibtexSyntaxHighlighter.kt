@@ -6,7 +6,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
-import nl.hannahsten.texifyidea.BibtexLexerAdapter
+import nl.hannahsten.texifyidea.grammar.BibtexLexerAdapter
 import nl.hannahsten.texifyidea.psi.BibtexTypes
 
 /**

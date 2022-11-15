@@ -1,7 +1,7 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
-        <lang.parserDefinition language="Bibtex" implementationClass="nl.hannahsten.texifyidea.BibtexParserDefinition"/>
+        <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.grammar.LatexParserDefinition"/>
+        <lang.parserDefinition language="Bibtex" implementationClass="nl.hannahsten.texifyidea.grammar.BibtexParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
         <lang.syntaxHighlighterFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexSyntaxHighlighterFactory"/>
         <lang.commenter language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
