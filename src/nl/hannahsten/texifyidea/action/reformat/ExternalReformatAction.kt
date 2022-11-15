@@ -12,7 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import java.util.concurrent.TimeUnit

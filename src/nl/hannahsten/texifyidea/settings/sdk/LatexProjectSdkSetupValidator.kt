@@ -11,7 +11,7 @@ import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.ui.EditorNotificationPanel
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 

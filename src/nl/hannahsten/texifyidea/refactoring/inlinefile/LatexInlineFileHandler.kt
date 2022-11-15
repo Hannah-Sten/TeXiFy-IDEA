@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference

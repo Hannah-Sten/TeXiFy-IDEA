@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StringStubIndexExtension
-import nl.hannahsten.texifyidea.LatexParserDefinition
+import nl.hannahsten.texifyidea.grammar.LatexParserDefinition
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**

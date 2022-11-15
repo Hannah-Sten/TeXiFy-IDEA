@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.remove
