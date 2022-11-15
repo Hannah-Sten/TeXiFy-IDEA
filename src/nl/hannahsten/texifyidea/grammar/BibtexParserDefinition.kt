@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.TokenType
 import com.intellij.psi.stubs.PsiFileStubImpl
 import com.intellij.psi.tree.IStubFileElementType
 import com.intellij.psi.tree.TokenSet
@@ -27,11 +26,11 @@ class BibtexParserDefinition : ParserDefinition {
 
     override fun getFileNodeType(): IStubFileElementType<*> = FILE
 
-    override fun getWhitespaceTokens(): TokenSet = WHITE_SPACES
+    override fun getWhitespaceTokens(): TokenSet = BibtexTokenSets.WHITE_SPACES
 
-    override fun getCommentTokens(): TokenSet = COMMENTS
+    override fun getCommentTokens(): TokenSet = BibtexTokenSets.COMMENTS
 
-    override fun getStringLiteralElements(): TokenSet = NORMAL_TEXT
+    override fun getStringLiteralElements(): TokenSet = BibtexTokenSets.NORMAL_TEXT
 
     override fun createElement(astNode: ASTNode): PsiElement = BibtexTypes.Factory.createElement(astNode)
 
@@ -44,9 +43,6 @@ class BibtexParserDefinition : ParserDefinition {
 
     companion object {
 
-        val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
-        val COMMENTS = TokenSet.create(BibtexTypes.COMMENT)
-        val NORMAL_TEXT = TokenSet.create(BibtexTypes.NORMAL_TEXT)
         val FILE = object : IStubFileElementType<BibtexFileStub>(
             Language.findInstance(BibtexLanguage::class.java)
         ) {
