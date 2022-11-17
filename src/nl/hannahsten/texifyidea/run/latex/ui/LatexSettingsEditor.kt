@@ -380,14 +380,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compilerPath)
     }
 
-    private fun makeObj(item: PdfViewer): Any? {
-        return object : Any() {
-            override fun toString(): String {
-                return item.displayName!!
-            }
-        }
-    }
-
     private fun updatePdfViewerComboBox() {
         val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
             ExternalPdfViewers.getExternalPdfViewers() +
