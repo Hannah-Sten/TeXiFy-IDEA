@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 interface LatexTokenSets {
 
     companion object {
+
         val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
         val COMMENTS = TokenSet.create(LatexTypes.COMMENT_TOKEN)
         val NORMAL_TEXT = TokenSet.create(LatexTypes.NORMAL_TEXT)
