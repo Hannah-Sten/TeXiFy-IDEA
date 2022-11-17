@@ -6,6 +6,7 @@ import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.runCommandWithoutReturn
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
@@ -19,6 +20,8 @@ import java.io.File
 object SumatraAvailabilityChecker {
 
     private var isSumatraAvailable: Boolean = false
+
+    private var sumatraWorkingCustomDir: File? = null
 
     private val isSumatraAvailableInit: Boolean by lazy {
         if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
@@ -47,6 +50,10 @@ object SumatraAvailabilityChecker {
         return isSumatraAvailable
     }
 
+    fun getSumatraWorkingCustomDir(): File? {
+        return sumatraWorkingCustomDir
+    }
+
     /**
      * Checks if Sumatra can be found in a global PATH or in a directory (with sumatraCustomPath)
      * Verifies that sumatraCustomPath is a directory, non-null and non-empty before checking in the directory for Sumatra.
@@ -61,6 +68,9 @@ object SumatraAvailabilityChecker {
 
         if (assignNewAvailability && !isSumatraAvailableInit) {
             isSumatraAvailable = availabilityParams.first
+            if (isSumatraAvailable && workingDir != null) {
+                sumatraWorkingCustomDir = workingDir
+            }
         }
 
         return availabilityParams
@@ -87,13 +97,13 @@ object SumatraAvailabilityChecker {
  * @author Sten Wessel
  * @since b0.4
  */
-class SumatraConversation : ViewerConversation() {
+object SumatraConversation : ViewerConversation() {
 
-    private val server = "SUMATRA"
-    private val topic = "control"
+    private const val server = "SUMATRA"
+    private const val topic = "control"
     private var conversation: DDEClientConversation? = null
 
-    init {
+    private fun openConversation() {
         if (SumatraAvailabilityChecker.getSumatraAvailability()) {
             try {
                 conversation = DDEClientConversation()
@@ -108,6 +118,7 @@ class SumatraConversation : ViewerConversation() {
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
+        openConversation()
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
@@ -115,7 +126,7 @@ class SumatraConversation : ViewerConversation() {
             // Added checks when sumatraPath doesn't exist (not a directory), so Windows popup error doesn't appear
             val (_, workingDir) = SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath)
             if (SumatraAvailabilityChecker.getSumatraAvailability()) {
-                runCommand("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = workingDir)
+                runCommandWithoutReturn("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = workingDir)
             }
         }
     }

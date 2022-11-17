@@ -32,7 +32,7 @@ class SumatraForwardSearchListener(
         // First check if the user provided a custom path to SumatraPDF, if not, check if it is installed
         if (event.exitCode == 0 && (runConfig.sumatraPath != null || SumatraAvailabilityChecker.getSumatraAvailability())) {
             try {
-                SumatraConversation().openFile(runConfig.outputFilePath, sumatraPath = runConfig.sumatraPath)
+                SumatraConversation.openFile(runConfig.outputFilePath, sumatraPath = runConfig.sumatraPath)
             }
             catch (ignored: TeXception) {
             }
@@ -68,7 +68,7 @@ class SumatraForwardSearchListener(
                     // Otherwise the person is out of luck ¯\_(ツ)_/¯
                     Thread.sleep(1250)
                     // Never focus, because forward search will work fine without focus, and the user might want to continue typing after doing forward search/compiling
-                    SumatraConversation().forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = false)
+                    SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = false)
                 }
                 catch (ignored: TeXception) {
                 }

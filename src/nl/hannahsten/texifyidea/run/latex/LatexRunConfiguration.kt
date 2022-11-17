@@ -34,6 +34,7 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.allCommands
@@ -242,6 +243,9 @@ class LatexRunConfiguration constructor(
         // Read SumatraPDF custom path
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
+        if (this.sumatraPath != null) {
+            SumatraAvailabilityChecker.isSumatraPathAvailable(this.sumatraPath)
+        }
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)

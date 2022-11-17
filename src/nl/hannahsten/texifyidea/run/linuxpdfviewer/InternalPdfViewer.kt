@@ -27,7 +27,7 @@ enum class InternalPdfViewer(
     OKULAR("okular", "Okular", OkularConversation),
     ZATHURA("zathura", "Zathura", ZathuraConversation),
     SKIM("skim", "Skim", SkimConversation),
-    SUMATRA("sumatra", "Sumatra", SumatraConversation()),
+    SUMATRA("sumatra", "Sumatra", SumatraConversation),
     NONE("", "No PDF viewer", null);
 
     override fun isAvailable(): Boolean = availability()[this] ?: false

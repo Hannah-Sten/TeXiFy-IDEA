@@ -110,3 +110,20 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
         }
     }
 }
+
+fun runCommandWithoutReturn(vararg commands: String, workingDirectory: File? = null) {
+    Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
+    try {
+        GeneralCommandLine(*commands)
+            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
+            .withWorkDirectory(workingDirectory)
+            .createProcess()
+    }
+    catch (e: IOException) {
+        Log.debug(e.message ?: "Unknown IOException occurred")
+    }
+    catch (e: ProcessNotCreatedException) {
+        Log.debug(e.message ?: "Unknown ProcessNotCreatedException occurred")
+        // e.g. if the command is just trying if a program can be run or not, and it's not the case
+    }
+}
