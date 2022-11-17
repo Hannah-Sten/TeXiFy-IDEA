@@ -67,4 +67,8 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         // Note that also these files are zipped
         return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "source").toString())
     }
+
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
+        return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "tex", "latex").toString())
+    }
 }
