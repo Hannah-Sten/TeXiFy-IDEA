@@ -46,7 +46,7 @@ open class ConfigureInverseSearchAction : AnAction(
                 // First kill Sumatra to avoid having two instances open of which only one has the correct setting
                 Runtime.getRuntime().exec("taskkill /IM SumatraPDF.exe")
 
-                var path = PathManager.getBinPath()
+                val path = PathManager.getBinPath()
                 var name = ApplicationNamesInfo.getInstance().scriptName
 
                 // If we can find a 64-bits Java, then we can start (the equivalent of) idea64.exe since that will use the 64-bits Java
