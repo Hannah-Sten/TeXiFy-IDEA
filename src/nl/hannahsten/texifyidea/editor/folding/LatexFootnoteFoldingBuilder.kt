@@ -32,9 +32,10 @@ class LatexFootnoteFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-        val environments = root.childrenOfType(LatexCommands::class).filter { it.commandToken.text == "\\footnote" }.map {
-            it.firstChildOfType(LatexRequiredParam::class)
-        }.filterNotNull()
+        val environments =
+            root.childrenOfType(LatexCommands::class).filter { it.commandToken.text == "\\footnote" }.mapNotNull {
+                it.firstChildOfType(LatexRequiredParam::class)
+            }
 
         for (environment in environments) {
             descriptors.add(FoldingDescriptor(environment.originalElement, TextRange(environment.startOffset + 1, environment.endOffset - 1)))
