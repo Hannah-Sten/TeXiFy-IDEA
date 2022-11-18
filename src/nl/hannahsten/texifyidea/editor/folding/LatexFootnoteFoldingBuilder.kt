@@ -9,7 +9,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
-import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.childrenOfType
@@ -40,7 +39,7 @@ class LatexFootnoteFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
 
         for (environment in parameters) {
-            if (environment.language == LatexLanguage && environment.endOffset - 1 > environment.startOffset + 1)
+            if (environment.endOffset - 1 > environment.startOffset + 1)
                 descriptors.add(FoldingDescriptor(environment.originalElement, TextRange(environment.startOffset + 1, environment.endOffset - 1)))
         }
 
