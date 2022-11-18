@@ -10,11 +10,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
-import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
 /**
