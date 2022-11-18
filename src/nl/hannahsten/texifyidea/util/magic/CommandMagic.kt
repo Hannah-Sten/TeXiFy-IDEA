@@ -479,6 +479,6 @@ object CommandMagic {
      *
      */
     val foldableFootnotes = listOf(
-        FOOTNOTE.cmd
+        FOOTNOTE.cmd, FOOTCITE.cmd
     )
 }
