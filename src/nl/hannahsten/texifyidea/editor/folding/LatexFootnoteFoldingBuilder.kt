@@ -9,10 +9,12 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
+import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.magic.CommandMagic.foldableFootnotes
 
 /**
  * Adds folding regions for LaTeX environments.
@@ -32,13 +34,14 @@ class LatexFootnoteFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-        val environments =
-            root.childrenOfType(LatexCommands::class).filter { it.commandToken.text == "\\footnote" }.mapNotNull {
+        val parameters =
+            root.childrenOfType(LatexCommands::class).filter { foldableFootnotes.contains(it.name) }.mapNotNull {
                 it.firstChildOfType(LatexRequiredParam::class)
             }
 
-        for (environment in environments) {
-            descriptors.add(FoldingDescriptor(environment.originalElement, TextRange(environment.startOffset + 1, environment.endOffset - 1)))
+        for (environment in parameters) {
+            if (environment.language == LatexLanguage && environment.endOffset - 1 > environment.startOffset + 1)
+                descriptors.add(FoldingDescriptor(environment.originalElement, TextRange(environment.startOffset + 1, environment.endOffset - 1)))
         }
 
         return descriptors.toTypedArray()
