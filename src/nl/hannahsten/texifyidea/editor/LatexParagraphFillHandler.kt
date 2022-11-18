@@ -62,9 +62,6 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
             val formatterTagHandler = FormatterTagHandler(CodeStyle.getSettings(file))
             val enabledRanges = formatterTagHandler.getEnabledRanges(file.node, TextRange.create(0, document.textLength))
             // Deprecated ("a temporary solution") but there doesn't seem anything to replace it yet. Used all over by IJ as well.
-
-            // todo Yann:
-            // there are some problems with the approach taken in this method. you can continue using it at your own risk :tm: but it's better to wrap text/whatever using direct string manipulations using the info from lexer/PSI instead
             EditorFacade.getInstance().doWrapLongLinesIfNecessary(
                 editor, element.project, document,
                 textRange.startOffset,
