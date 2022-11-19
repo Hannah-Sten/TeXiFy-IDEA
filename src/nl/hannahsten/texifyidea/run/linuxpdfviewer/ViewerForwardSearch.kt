@@ -5,7 +5,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.files.openedEditor
+import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
@@ -20,15 +20,17 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
      * run config.
      */
     fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment, focusAllowed: Boolean = true) {
-        // We have to find the file and line number before scheduling the forward search
-        val mainPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
-        val editor = mainPsiFile.openedEditor()
+        // We have to find the file and line number before scheduling the forward search.
+        val editor = environment.project.currentTextEditor()?.editor
 
         // Get the line number in the currently open file
         val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0
 
         // Get the currently open file to use for forward search.
-        val currentPsiFile = editor?.document?.psiFile(environment.project) ?: mainPsiFile
+        val currentPsiFile = editor?.document?.psiFile(environment.project)
+            // Get the main file from the run configuration as a fallback.
+            ?: runConfig.mainFile?.psiFile(environment.project)
+            ?: return
 
         // Set the OpenViewerListener to execute when the compilation is done.
         handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, environment.project, focusAllowed))

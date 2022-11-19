@@ -8,7 +8,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.DisplayPriority
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.ui.JBInsets
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
