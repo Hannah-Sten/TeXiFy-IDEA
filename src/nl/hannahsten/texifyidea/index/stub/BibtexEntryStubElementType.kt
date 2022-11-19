@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.impl.BibtexEntryImpl

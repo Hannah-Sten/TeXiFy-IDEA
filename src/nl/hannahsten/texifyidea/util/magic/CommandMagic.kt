@@ -350,6 +350,7 @@ object CommandMagic {
      * Commands that should not have the given file extensions.
      */
     val illegalExtensions = mapOf(
+        INPUT.cmd to listOf(".tex"),
         INCLUDE.cmd to listOf(".tex"),
         SUBFILEINCLUDE.cmd to listOf(".tex"),
         BIBLIOGRAPHY.cmd to listOf(".bib"),
