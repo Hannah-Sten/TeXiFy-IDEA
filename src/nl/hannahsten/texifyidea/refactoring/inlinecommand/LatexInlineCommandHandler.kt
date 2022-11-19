@@ -1,17 +1,10 @@
 package nl.hannahsten.texifyidea.refactoring.inlinecommand
 
-import com.intellij.lang.Language
-import com.intellij.lang.refactoring.InlineActionHandler
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
-import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.completion.LatexCommandsAndEnvironmentsCompletionProvider
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
@@ -22,14 +15,12 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
  *
  * @author jojo2357
  */
-class LatexInlineCommandHandler : InlineActionHandler() {
-
-    override fun isEnabledForLanguage(language: Language?): Boolean {
-        return language == LatexLanguage
-    }
+class LatexInlineCommandHandler : LatexInlineHandler() {
 
     override fun canInlineElement(element: PsiElement?): Boolean {
-        return canInlineLatexElement(element)
+        return canInlineLatexElement(
+            element
+        )
     }
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
@@ -44,27 +35,7 @@ class LatexInlineCommandHandler : InlineActionHandler() {
             editor != null && inlineCommand.firstChildOfType(LatexCommands::class) != myReference
         )
 
-        if (dialog.myOccurrencesNumber > 0) {
-            if (ApplicationManager.getApplication().isUnitTestMode) {
-                try {
-                    dialog.doAction()
-                }
-                finally {
-                    dialog.close(DialogWrapper.OK_EXIT_CODE, true)
-                }
-            }
-            else {
-                dialog.show()
-            }
-        }
-        else {
-            Notification(
-                "LaTeX",
-                "No usages found",
-                "Could not find any usages for ${inlineCommand.name}",
-                NotificationType.ERROR
-            ).notify(project)
-        }
+        showDialog(dialog, inlineCommand.name ?: "", project)
     }
 
     companion object {
