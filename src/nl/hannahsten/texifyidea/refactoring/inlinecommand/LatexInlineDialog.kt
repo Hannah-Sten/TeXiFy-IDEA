@@ -9,6 +9,7 @@ import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.inline.InlineOptionsDialog
 
 abstract class LatexInlineDialog(project: Project?, genericDefinition: PsiElement, invokedOnReference: Boolean) : InlineOptionsDialog(project, true, genericDefinition) {
+
     val myOccurrencesNumber: Int
 
     init {
