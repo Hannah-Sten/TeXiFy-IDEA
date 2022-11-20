@@ -7,7 +7,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 
 abstract class LatexInlineHandler : InlineActionHandler() {
 
