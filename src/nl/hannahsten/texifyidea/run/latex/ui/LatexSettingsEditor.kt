@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.options.ConfigurationException
@@ -398,29 +397,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private fun addSumatraPathField(panel: JPanel) {
         class PathInputVerifier : InputVerifier() {
 
-            @Deprecated("Deprecated in Java")
-            override fun shouldYieldFocus(input: JComponent?): Boolean {
-                if (!verify(input)) {
-                    DialogBuilder().apply {
-                        setTitle("SumatraPDF Custom Path Invalid")
-                        setCenterPanel(
-                            JLabel(
-                                "<html>Custom Path given in run configuration of SumatraPDF doesn't contain SumatraPDF.exe. Input a valid path or leave it empty.</html>",
-                                AllIcons.General.WarningDialog,
-                                SwingConstants.LEADING
-                            )
-                        )
-                        show()
-                    }
-                }
-
-                updatePdfViewerComboBox()
-
-                return true
-            }
-
             override fun verify(input: JComponent?): Boolean {
-                return SumatraAvailabilityChecker.isSumatraPathAvailable((input as ExtendableTextField).text).first
+                // This line updates the availability checker with the custom sumatra path
+                // Useful when updating the ComboBox to let the user pick Sumatra as PDFViewer when directly
+                // inputting a valid custom path (no need to save the run configuration and opening it again to change PDFViewer)
+                // InternalPdfViewer will be updated because it calls SumatraAvailabilityChecker.getSumatraAvailability()
+                SumatraAvailabilityChecker.isSumatraPathAvailable((input as ExtendableTextField).text)
+                updatePdfViewerComboBox()
+                return true
             }
         }
 

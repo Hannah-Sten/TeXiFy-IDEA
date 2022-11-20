@@ -69,7 +69,7 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null): String?
  *
  * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
  */
-fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false): Pair<String?, Int> {
+fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false): Pair<String?, Int> {
     Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
     return try {
         val proc = GeneralCommandLine(*commands)
@@ -78,12 +78,34 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             .createProcess()
 
         if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
-            val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+            var output = ""
+            if (nonBlocking) {
+                if (proc.inputStream.bufferedReader().ready()) {
+                    output += proc.inputStream.bufferedReader().readText().trim()
+                }
+                if (proc.errorStream.bufferedReader().ready()) {
+                    output += proc.errorStream.bufferedReader().readText().trim()
+                }
+            }
+            else {
+                output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+            }
             Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
             return Pair(output, proc.exitValue())
         }
         else {
-            val output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+            var output = ""
+            if (nonBlocking) {
+                if (proc.inputStream.bufferedReader().ready()) {
+                    output += proc.inputStream.bufferedReader().readText().trim()
+                }
+                if (proc.errorStream.bufferedReader().ready()) {
+                    output += proc.errorStream.bufferedReader().readText().trim()
+                }
+            }
+            else {
+                output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+            }
             proc.destroy()
             proc.waitFor()
             Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
@@ -108,22 +130,5 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
         else {
             Pair(e.message, -1)
         }
-    }
-}
-
-fun runCommandWithoutReturn(vararg commands: String, workingDirectory: File? = null) {
-    Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
-    try {
-        GeneralCommandLine(*commands)
-            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .withWorkDirectory(workingDirectory)
-            .createProcess()
-    }
-    catch (e: IOException) {
-        Log.debug(e.message ?: "Unknown IOException occurred")
-    }
-    catch (e: ProcessNotCreatedException) {
-        Log.debug(e.message ?: "Unknown ProcessNotCreatedException occurred")
-        // e.g. if the command is just trying if a program can be run or not, and it's not the case
     }
 }
