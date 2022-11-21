@@ -64,7 +64,6 @@ class StyledTextPasteProvider : PasteProvider {
         else null
     }
 
-
     /**
      * Creates the Table Creation Dialog filled in with the data from the clipboard.
      */

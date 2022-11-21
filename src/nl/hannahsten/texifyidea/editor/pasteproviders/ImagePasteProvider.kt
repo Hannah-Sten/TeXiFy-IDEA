@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage
 import java.net.URL
 import javax.imageio.ImageIO
 
-
 open class ImagePasteProvider : LatexPasteProvider {
 
     private fun pasteRawImage(project: Project, file: VirtualFile, clipboard: BufferedImage): String {
