@@ -14,7 +14,6 @@ import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.components.fields.ExtendableTextField
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -184,6 +183,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             // Apply custom SumatraPDF path if applicable
             runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
         }
+
+        runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
 
         runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable()
 
@@ -386,6 +387,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         pdfViewer.component.removeAllItems()
         for (i in viewers.indices) {
+            @Suppress("UNCHECKED_CAST")
             (pdfViewer.component as ComboBox<PdfViewer>).addItem(viewers[i])
         }
         pdfViewer.updateUI()
@@ -398,11 +400,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         class PathInputVerifier : InputVerifier() {
 
             override fun verify(input: JComponent?): Boolean {
-                // This line updates the availability checker with the custom sumatra path
-                // Useful when updating the ComboBox to let the user pick Sumatra as PDFViewer when directly
-                // inputting a valid custom path (no need to save the run configuration and opening it again to change PDFViewer)
-                // InternalPdfViewer will be updated because it calls SumatraAvailabilityChecker.getSumatraAvailability()
-                SumatraAvailabilityChecker.isSumatraPathAvailable((input as ExtendableTextField).text)
                 updatePdfViewerComboBox()
                 return true
             }
@@ -434,7 +431,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
             enableSumatraPath.addItemListener { e ->
                 if (e.stateChange != ItemEvent.SELECTED) {
-                    SumatraAvailabilityChecker.isSumatraPathAvailable("")
+                    // Removes the custom Sumatra path from SumatraAvailabilityChecker when unchecked
+                    SumatraAvailabilityChecker.isSumatraPathAvailable(null)
                     updatePdfViewerComboBox()
                 }
                 sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED

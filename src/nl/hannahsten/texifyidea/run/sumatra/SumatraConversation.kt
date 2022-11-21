@@ -34,15 +34,14 @@ object SumatraConversation : ViewerConversation() {
     /**
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
-            // Added checks when sumatraPath doesn't exist (not a directory), so Windows popup error doesn't appear
-            val (_, workingDir) = SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath)
+            // Added check when Sumatra doesn't exist (not a directory), so Windows popup error doesn't appear
             if (SumatraAvailabilityChecker.getSumatraAvailability()) {
-                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = workingDir, nonBlocking = true)
+                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = SumatraAvailabilityChecker.getSumatraWorkingCustomDir(), nonBlocking = true)
             }
         }
     }

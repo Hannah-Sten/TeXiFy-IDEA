@@ -86,6 +86,7 @@ class LatexRunConfiguration constructor(
     var compiler: LatexCompiler? = null
     var compilerPath: String? = null
     var sumatraPath: String? = null
+    var enableSumatraPath: Boolean? = false
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
@@ -201,6 +202,12 @@ class LatexRunConfiguration constructor(
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
+
+        // Updates the SumatraAvailabilityChecker with the path in sumatraPath after change.
+        // Also checks if the path leads to a correct directory containing Sumatra.
+        if (!SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second && enableSumatraPath == true) {
+            throw RuntimeConfigurationError("Run configuration is invalid: custom Sumatra path doesn't point to a valid directory")
+        }
     }
 
     @Throws(ExecutionException::class)
@@ -243,9 +250,8 @@ class LatexRunConfiguration constructor(
         // Read SumatraPDF custom path
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
-        if (this.sumatraPath != null) {
-            SumatraAvailabilityChecker.isSumatraPathAvailable(this.sumatraPath)
-        }
+        // Updates the SumatraAvailabilityChecker at startup
+        SumatraAvailabilityChecker.isSumatraPathAvailable(this.sumatraPath)
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)

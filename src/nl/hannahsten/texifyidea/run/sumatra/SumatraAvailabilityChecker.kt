@@ -53,25 +53,41 @@ object SumatraAvailabilityChecker {
     /**
      * Checks if Sumatra can be found in a global PATH or in a directory (with sumatraCustomPath)
      * Verifies that sumatraCustomPath is a directory, non-null and non-empty before checking in the directory for Sumatra.
+     * Updates sumatraWorkingCustomDir and isSumatraAvailable if assignNewAvailability is true
+     * Returns a pair, first tells if Sumatra is accessible in PATH or customPath, seconds tells if Sumatra is
+     * accessible in customPath
      */
-    fun isSumatraPathAvailable(sumatraCustomPath: String? = null, assignNewAvailability: Boolean = true): Pair<Boolean, File?> {
+    fun isSumatraPathAvailable(
+        sumatraCustomPath: String? = null,
+        assignNewAvailability: Boolean = true
+    ): Pair<Boolean, Boolean> {
         var workingDir: File? = null
         if (!sumatraCustomPath.isNullOrEmpty() && File(sumatraCustomPath).isDirectory) {
             workingDir = File(sumatraCustomPath)
         }
 
-        val availabilityParams = Pair(runCommandWithExitCode("where", "SumatraPDF", workingDirectory = workingDir).second == 0, workingDir)
+        var isCustomPathValid = false // if Sumatra is accessible in customPath
+        val whereSumatraResult = runCommandWithExitCode("where", "SumatraPDF", workingDirectory = workingDir)
+        val isSumatraInAllPath = (whereSumatraResult.second == 0) // if Sumatra is accessible in PATH or customPath
 
-        if (assignNewAvailability && !isSumatraAvailableInit) {
-            isSumatraAvailable = availabilityParams.first
-            if (isSumatraAvailable && workingDir != null) {
-                sumatraWorkingCustomDir = workingDir
-            }
+        if (workingDir != null && whereSumatraResult.first?.contains(sumatraCustomPath.toString()) == true && isSumatraInAllPath) {
+            isCustomPathValid = true
         }
 
-        return availabilityParams
+        if (assignNewAvailability) {
+            if (!isSumatraAvailableInit) {
+                isSumatraAvailable = isSumatraInAllPath
+            }
+            sumatraWorkingCustomDir = workingDir
+        }
+
+        return Pair(isSumatraInAllPath, isCustomPathValid)
     }
 
+    /**
+     * Checks at initialization if the Sumatra registry keys are registered or if Sumatra is in PATH.
+     * returns true if the Sumatra registry keys are registered or if Sumatra is in PATH.
+     */
     private fun isSumatraInstalled(): Boolean {
         // Try some SumatraPDF registry keys
         // For some reason this first one isn't always present anymore, it used to be
