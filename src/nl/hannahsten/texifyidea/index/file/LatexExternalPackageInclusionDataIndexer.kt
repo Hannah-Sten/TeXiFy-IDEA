@@ -10,7 +10,7 @@ class LatexExternalPackageInclusionDataIndexer : DataIndexer<String, String, Fil
 
     companion object {
 
-        val packageInclusionsRegex = """\\(RequirePackage|usepackage)\{(?<package>[^}]+)}""".toRegex()
+        val packageInclusionsRegex = """\\(RequirePackage|usepackage)(\[[^]]+])?\{(?<package>[^}]+)}""".toRegex()
     }
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
@@ -19,7 +19,7 @@ class LatexExternalPackageInclusionDataIndexer : DataIndexer<String, String, Fil
         packageInclusionsRegex.findAll(inputData.contentAsText).forEach {
             val packages = it.groups["package"]?.value ?: return@forEach
             for (key in packages.split(",")) {
-                result[key] = ""
+                result[key] = inputData.fileName
             }
         }
 

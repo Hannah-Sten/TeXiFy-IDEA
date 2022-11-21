@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea
+package nl.hannahsten.texifyidea.grammar
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
@@ -10,7 +10,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.TokenType
 import com.intellij.psi.stubs.PsiFileStubImpl
 import com.intellij.psi.tree.IStubFileElementType
 import com.intellij.psi.tree.TokenSet
@@ -29,11 +28,11 @@ class LatexParserDefinition : ParserDefinition {
 
     override fun getFileNodeType(): IStubFileElementType<*> = FILE
 
-    override fun getWhitespaceTokens(): TokenSet = WHITE_SPACES
+    override fun getWhitespaceTokens(): TokenSet = LatexTokenSets.WHITE_SPACES
 
-    override fun getCommentTokens(): TokenSet = COMMENTS
+    override fun getCommentTokens(): TokenSet = LatexTokenSets.COMMENTS
 
-    override fun getStringLiteralElements(): TokenSet = NORMAL_TEXT
+    override fun getStringLiteralElements(): TokenSet = LatexTokenSets.NORMAL_TEXT
 
     override fun createElement(node: ASTNode): PsiElement = LatexTypes.Factory.createElement(node)
 
@@ -46,9 +45,6 @@ class LatexParserDefinition : ParserDefinition {
 
     companion object {
 
-        val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
-        val COMMENTS = TokenSet.create(LatexTypes.COMMENT_TOKEN)
-        val NORMAL_TEXT = TokenSet.create(LatexTypes.NORMAL_TEXT)
         val FILE: IStubFileElementType<*> = object : IStubFileElementType<LatexFileStub>(
             Language.findInstance(LatexLanguage::class.java)
         ) {

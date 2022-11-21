@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.files.openedEditor
+import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.lineIndentation
 import nl.hannahsten.texifyidea.util.replaceString
 
@@ -61,7 +61,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             val lineNumber = document.getLineNumber(offset)
             val newParentCommand = command.commandToken.text.replaceFirst("sub", "")
             val replacement = "$newParentCommand{}\n${document.lineIndentation(lineNumber)}"
-            val caret = command.containingFile.openedEditor()?.caretModel
+            val caret = command.containingFile.openedTextEditor()?.caretModel
             document.insertString(offset, replacement)
             caret?.moveToOffset(offset + newParentCommand.length + 1)
         }

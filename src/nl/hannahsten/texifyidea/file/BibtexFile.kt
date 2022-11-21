@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.file
 
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.psi.FileViewProvider
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 
 /**
  * @author Hannah Schellekens

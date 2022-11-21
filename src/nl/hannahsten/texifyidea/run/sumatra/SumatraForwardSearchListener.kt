@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isRoot
-import nl.hannahsten.texifyidea.util.files.openedEditor
+import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.name
 import nl.hannahsten.texifyidea.util.parentOfType
@@ -45,7 +45,7 @@ class SumatraForwardSearchListener(
             val psiFile = runConfig.mainFile?.psiFile(executionEnvironment.project) ?: return@invokeLater
             val document = psiFile.document() ?: return@invokeLater
 
-            val editor = psiFile.openedEditor() ?: return@invokeLater
+            val editor = psiFile.openedTextEditor() ?: return@invokeLater
 
             if (document != editor.document) {
                 return@invokeLater

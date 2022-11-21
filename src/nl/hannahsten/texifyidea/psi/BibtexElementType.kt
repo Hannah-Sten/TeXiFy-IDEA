@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.tree.IElementType
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 
 /**
  * @author Hannah Schellekens

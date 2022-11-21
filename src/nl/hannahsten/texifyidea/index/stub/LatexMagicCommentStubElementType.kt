@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.LatexMagicCommentIndex
 import nl.hannahsten.texifyidea.index.indexSinkOccurrence
 import nl.hannahsten.texifyidea.psi.LatexMagicComment

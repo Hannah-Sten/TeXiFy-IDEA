@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.testFramework.ParsingTestCase
-import nl.hannahsten.texifyidea.LatexParserDefinition
+import nl.hannahsten.texifyidea.grammar.LatexParserDefinition
 
 class LatexParserToPsiTest : ParsingTestCase("", "tex", LatexParserDefinition()) {
 

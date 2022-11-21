@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea
+package nl.hannahsten.texifyidea.grammar
 
 import com.intellij.lang.Language
 
