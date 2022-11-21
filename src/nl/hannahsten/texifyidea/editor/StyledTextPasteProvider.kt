@@ -70,20 +70,25 @@ class StyledTextPasteProvider : PasteProvider {
      */
     private fun Document.parseText(project: Project, dataContext: DataContext): String {
         return if (PandocUtil.isPandocInPath) {
-            val isStandalone: Boolean = PandocStandaloneDialog().isAddImports ?: return ""
-
-            val out = PandocUtil.translateHtml(this.html(), isStandalone)
-
-            if (out == null)
+            val pandocStandaloneDialog = PandocStandaloneDialog()
+            if (pandocStandaloneDialog.abort)
                 parseToString(select("body")[0].childNodes(), project, dataContext)
             else {
-                if (out.first is String)
-                    insertPreambleText(
-                        dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)
-                            ?.psiFile(dataContext.getData(PlatformDataKeys.PROJECT)!!)!!,
-                        out.first!!
-                    )
-                out.second
+                val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return ""
+
+                val out = PandocUtil.translateHtml(this.html(), isStandalone)
+
+                if (out == null)
+                    parseToString(select("body")[0].childNodes(), project, dataContext)
+                else {
+                    if (out.first is String)
+                        insertPreambleText(
+                            dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)
+                                ?.psiFile(dataContext.getData(PlatformDataKeys.PROJECT)!!)!!,
+                            out.first!!
+                        )
+                    out.second
+                }
             }
         }
         else

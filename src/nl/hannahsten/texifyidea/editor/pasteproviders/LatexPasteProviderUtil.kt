@@ -1,8 +1,13 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.PandocUtil
+import nl.hannahsten.texifyidea.util.insertUsepackage
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
@@ -49,6 +54,10 @@ private val closingTags = hashMapOf(
     "h5" to "}\n",
 )
 
+private val tagDependencies = hashMapOf<String, LatexPackage>(
+    "a" to LatexPackage.HYPERREF
+)
+
 private val specialOpeningTags = hashMapOf<String, (Element) -> String>(
     "a" to { element ->
         if (element.hasAttr("href"))
@@ -84,7 +93,6 @@ private val escapeChars = hashMapOf(
     "}" to "\\}",
     "^" to "\\^",
     "~" to "\\~",
-    "\\" to "\\textbackslash ",
     "−" to "-"
 )
 
@@ -114,6 +122,9 @@ fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext)
 }
 
 private fun handleElement(element: Element, out: StringBuilder, project: Project, dataContext: DataContext) {
+    if (tagDependencies[element.tagName()] != null)
+        (dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile)?.insertUsepackage(tagDependencies[element.tagName()]!!)
+
     if (hasSpecialHandler(element)) {
         out.append(childHandlers[element.tagName()]?.translateHtml(element, dataContext))
     }
@@ -160,7 +171,7 @@ private fun getPostfix(element: Element): String {
 }
 
 private fun escapeText(stringin: String): String {
-    var out = stringin
+    var out = stringin.replace("\\", "\\textbackslash ")
 
     escapeChars.forEach { out = out.replace(it.key, it.value) }
 
@@ -168,4 +179,4 @@ private fun escapeText(stringin: String): String {
 }
 
 fun htmlTextIsFormatable(htmlIn: String): Boolean =
-    openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
+    (PandocUtil.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
