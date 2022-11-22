@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
-import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
@@ -237,9 +237,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
         }
         // Do nothing if the user selected that they do not want a viewer to open.
-        else if (runConfig.pdfViewer == InternalPdfViewer.NONE && runConfig.sumatraPath == null) return
+        else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
         // Sumatra does not support DVI
-        else if ((runConfig.sumatraPath != null || (runConfig.pdfViewer == InternalPdfViewer.SUMATRA && isSumatraAvailable)) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
+        else if (((runConfig.pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.getSumatraAvailability())) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }
