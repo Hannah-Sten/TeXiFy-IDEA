@@ -22,10 +22,6 @@ TeXiFy will try to detect this, and automatically compile with the right compile
 
 === Using the bibtex compiler and no extra package
 
-==== Advantages
-
-==== Disadvantages
-
 ==== Example
 
 `main.tex`
@@ -56,10 +52,6 @@ TeXiFy will try to detect this, and automatically compile with the right compile
 For a downloadable example, see https://github.com/PHPirates/bibtex-mwe
 
 === Using the biber compiler and the biblatex package
-
-==== Advantages
-
-==== Disadvantages
 
 ==== Example
 An example of using the biblatex package:
