@@ -78,7 +78,7 @@ We assume that git, IntelliJ, java and LaTeX are installed. If not, try the norm
 * Select 'Use auto-import'.
 * Thank Gradle that you're done now!
 * Check that in menu:Settings[Build, Execution, Deployment > Compiler > Kotlin Compiler] the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
-* Check that in menu:Settings[Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM] it is set to at least Java 11 (as the IntelliJ SDK requires Java 11 since september 2020).
+* Check that in menu:Settings[Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM] it is set to at least Java 17 (as the IntelliJ SDK requires Java 17 now).
 * Test it worked by executing the 'build' task in menu:Tasks[build > build].
 * You can ignore deprecation warnings in the build output.
 * If something doesn't work, try looking at the https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Troubleshooting[FAQ] first.
@@ -175,6 +175,10 @@ The IntelliJ SDK https://blog.jetbrains.com/platform/2020/09/intellij-project-mi
 === Execution failed for task ':runIde'.	Process 'command java.exe' finished with non-zero exit value 1
 
 If you get the error `Caused by: org.gradle.process.internal.ExecException: Process 'command 'C:\Users\username\.gradle\caches\modules-2\files-2.1\com.jetbrains\jbre\jbr-11_0_6-windows-x64-b765.25\jbr\bin\java.exe'' finished with non-zero exit value 1` then delete the `jbre` folder in that path.
+
+=== The server may not support the client's requested TLS protocol versions: (TLSv1.2, TLSv1.3)
+
+Please make sure you're using at least JDK 17, both as project SDK and in menu:Settings[Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM].
 
 === `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
 
