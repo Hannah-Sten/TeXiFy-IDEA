@@ -4,8 +4,11 @@
 
 Welcome to TeXiFy IDEA 0.7.25! This release has many additions by @jojo2357, enjoy!
 
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
 ### Added
-- Support undoing 'move se(le)ction to file' actions, by @jojo2357. (#2739)
+* Support undoing 'move se(le)ction to file' actions, by @jojo2357. (#2739)
 * Add 'inline included file' action, by @jojo2357. (#2741)
 * Enable synchronizing remote libraries without opening the tool window. (#2749)
 * Ensure renamed commands start with a backslash, by @jojo2357. (#2756)

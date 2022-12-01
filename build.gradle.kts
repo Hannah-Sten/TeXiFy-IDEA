@@ -173,7 +173,9 @@ changelog {
      changeNotes.set(provider {
          with(changelog) {
              renderItem(
-                 getOrNull(properties("pluginVersion")) ?: getLatest(),
+                 // It is also possible to use changes from the latest released version:
+//                  getOrNull(properties("pluginVersion")) ?: getLatest()
+                 changelog.getUnreleased(),
                  Changelog.OutputType.HTML,
              )
          }
@@ -184,7 +186,7 @@ intellij {
     pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.22"))
+    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.23"))
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
