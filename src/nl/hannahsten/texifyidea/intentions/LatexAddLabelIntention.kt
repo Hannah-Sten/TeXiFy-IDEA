@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.intentions
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.Project
@@ -16,7 +17,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
 import kotlin.math.max
 
-abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
+abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) {
 
     /**
      * This class handles the rename of a label parameter after insertion
@@ -111,4 +112,10 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
     }
 
     override fun startInWriteAction() = true
+
+    // Not clear to me why the default implementation does not work, but this avoids the "Intention preview fallback is used for action" error
+    override fun generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo {
+        invoke(project, editor, file)
+        return IntentionPreviewInfo.DIFF
+    }
 }
