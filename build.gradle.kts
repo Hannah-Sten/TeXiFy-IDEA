@@ -138,6 +138,8 @@ tasks.runIde {
 
     // Set to true to generate hprof files on unload fails
     systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
+    // Some warning asked for this to be set explicitly
+    systemProperty("idea.log.path", file("build/idea-sandbox/system/log").absolutePath)
 }
 
 tasks.test {
