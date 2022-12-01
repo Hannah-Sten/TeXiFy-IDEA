@@ -14,6 +14,7 @@
 * Fix syntax highlighting for custom color scheme, by @jojo2357. (#2761)
 * Fix unreliable forward search. (#2777)
 * Fix crashes. (#2747)
+* Fix some intention previews. (#2796)
 * Other small bug fixes and improvements. (#2776, #2774, #2765-#2773)
 
 Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
