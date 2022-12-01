@@ -82,7 +82,7 @@ dependencies {
 
     // Parsing xml
     implementation("com.fasterxml.jackson.core:jackson-core:2.14.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.3")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 
     // Http requests
