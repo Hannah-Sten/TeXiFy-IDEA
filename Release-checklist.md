@@ -7,64 +7,14 @@
 - [ ] Does it work in PyCharm?
 - [ ] Run ctan.py
 
-- [ ] Copy changelog to description-changenotes.xml, replace using regexes below
+- [ ] Add welcome text to Changelog.md
 - [ ] Update welcome text
-- [ ] Update version in build.gradle.kts
+- [ ] Update version in gradle.properties
+- [ ] run patchChangelog (ideally this would be done for the publishPlugin task, but somehow that produces an 'Unreleased' title instead of 0.x.x)
 - [ ] runIDE and check the changelog is formatted correctly
-- [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
+- [ ] Run publishPlugin
 - [ ] Merge PR
-- [ ] buildPlugin and release on GitHub, using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
+- [ ] buildPlugin and release on GitHub, tag version: v0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone
 - [ ] Update MiKTeX Docker image
 - [ ] Check performance: indexing texlive full should take around one minute, inspections on a 10k line file should take around 10 seconds, pressing enter in such a file should react within a second.
-
-Regexes to replace markdown by html:
-
-```regexp
-#(\d+)
-<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/$1">#$1</a>
-
-\*(.*)\n
-            <li>$1</li>\n
-```
-
-```html
-        <p><strong>Beta 0.6.x</strong></p>
-        <p>
-            Welcome to TeXiFy IDEA x.x.x, ...
-        <p>
-        <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
-        </p>
-        <br>
-        <p>
-            <em>Additions</em>
-        </p>
-        <ul>
-            <li> Fixed bug. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1120">#1120</a>)</li>
-            
-        </ul>
-        <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li> </li>
-        </ul>
-        <br>
-        <p>
-            <em>Bug fixes</em>
-        </p>
-        <ul>
-            <li> </li>
-        </ul>
-        <br>
-        <p>
-            Thanks to <a href="https://github.com/user">User Name</a> for contributing to this release.
-        </p>
-        <br>
-        <p>
-            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
-        </p>
-```
