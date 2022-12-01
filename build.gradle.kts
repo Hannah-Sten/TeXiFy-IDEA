@@ -173,9 +173,8 @@ changelog {
      changeNotes.set(provider {
          with(changelog) {
              renderItem(
-                 // It is also possible to use changes from the latest released version:
-//                  getOrNull(properties("pluginVersion")) ?: getLatest()
-                 changelog.getUnreleased(),
+                 // When publishing alpha versions, we want the unreleased changes to be shown, otherwise we assume that patchChangelog has been run and we need to get the latest released version (otherwise it will show 'Unreleased' as title)
+                  if (properties("pluginVersion").split("-").size != 1) changelog.getUnreleased() else getOrNull(properties("pluginVersion")) ?: getLatest(),
                  Changelog.OutputType.HTML,
              )
          }
@@ -217,7 +216,7 @@ tasks.publishPlugin {
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
+    channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
 }
 
 tasks.test {
