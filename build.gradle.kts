@@ -1,5 +1,9 @@
+
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.changelog.Changelog
+
+fun properties(key: String) = project.findProperty(key).toString()
 
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
@@ -22,10 +26,12 @@ plugins {
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+
+    id("org.jetbrains.changelog") version "2.0.0"
 }
 
 group = "nl.hannahsten"
-version = "0.7.24"
+version = properties("pluginVersion")
 
 repositories {
     mavenCentral()
@@ -152,10 +158,27 @@ tasks.buildSearchableOptions {
     jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 }
 
-// Required to run pluginVerifier
-// tasks.patchPluginXml {
-//    sinceBuild.set("223")
-// }
+// Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
+changelog {
+    groups.set(listOf("Added", "Fixed"))
+    repositoryUrl.set("https://github.com/Hannah-Sten/TeXiFy-IDEA")
+    itemPrefix.set("*")
+}
+
+ tasks.patchPluginXml {
+    // Required to run pluginVerifier
+     sinceBuild.set(properties("pluginSinceBuild"))
+
+     // Get the latest available change notes from the changelog file
+     changeNotes.set(provider {
+         with(changelog) {
+             renderItem(
+                 getOrNull(properties("pluginVersion")) ?: getLatest(),
+                 Changelog.OutputType.HTML,
+             )
+         }
+     })
+ }
 
 intellij {
     pluginName.set("TeXiFy-IDEA")
@@ -186,11 +209,13 @@ intellij {
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
 // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 tasks.publishPlugin {
+    dependsOn("patchChangelog")
+
     token.set(properties["intellijPublishToken"].toString())
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf("alpha"))
+    channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
 }
 
 tasks.test {
