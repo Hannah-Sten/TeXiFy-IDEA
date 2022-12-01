@@ -13,7 +13,7 @@ plugins {
     kotlin("plugin.serialization") version("1.7.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.43.0"
+    id("com.github.ben-manes.versions") version "0.44.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -87,12 +87,12 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.13.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.14.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.0.3")
+    implementation("io.ktor:ktor-client-core:2.1.3")
     implementation("io.ktor:ktor-client-cio:2.0.3")
     implementation("io.ktor:ktor-client-auth:2.1.3")
     implementation("io.ktor:ktor-client-content-negotiation:2.1.3")
