@@ -1,5 +1,5 @@
 version: "1.0"
-linter: jetbrains/qodana-jvm:2022.3-eap
+linter: jetbrains/qodana-jvm:latest
 profile:
   name: qodana.recommended
 failThreshold: 0

@@ -23,7 +23,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  * @author Hannah Schellekens
  */
 open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<LatexCommands>? = null) :
-    LatexAddLabelIntention() {
+    LatexAddLabelIntention("Add label to command") {
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (file?.isLatexFile() == false) {
