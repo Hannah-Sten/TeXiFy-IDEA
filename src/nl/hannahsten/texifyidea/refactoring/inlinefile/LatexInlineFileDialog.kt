@@ -28,7 +28,7 @@ class LatexInlineFileDialog(
     }
 
     override fun getNameLabelText(): String {
-        return if (myOccurrencesNumber > -1) "File " + myFile.name + " has " + myOccurrencesNumber + " ocurrences"
+        return if (getNumberOfOccurrences() > -1) "File " + myFile.name + " has " + getNumberOfOccurrences() + " ocurrences"
         else "File " + myFile.name
     }
 

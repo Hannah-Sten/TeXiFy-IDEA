@@ -28,7 +28,7 @@ class LatexInlineCommandDialog(
     }
 
     override fun getNameLabelText(): String {
-        return if (myOccurrencesNumber > -1) "Command " + myDefinition.name + " has " + myOccurrencesNumber + " ocurrences"
+        return if (getNumberOfOccurrences() > -1) "Command " + myDefinition.name + " has " + getNumberOfOccurrences() + " ocurrences"
         else "Command " + myDefinition.name
     }
 
@@ -47,14 +47,19 @@ class LatexInlineCommandDialog(
     override fun doAction() {
         invokeRefactoring(
             LatexInlineCommandProcessor(
-                project, myDefinition, myReference, isInlineThisOnly, isKeepTheDeclaration, GlobalSearchScope.projectScope(myProject)
+                project,
+                myDefinition,
+                myReference,
+                isInlineThisOnly,
+                isKeepTheDeclaration,
+                GlobalSearchScope.projectScope(myProject)
             )
         )
         updateSettingsPreferences()
     }
 
     override fun getNumberOfOccurrences(): Int {
-        return super.getNumberOfOccurrences(myDefinition.definitionCommand())
+        return if (myDefinition.definitionCommand() == null) 0 else super.getNumberOfOccurrences(myDefinition.definitionCommand())
     }
 
     companion object {

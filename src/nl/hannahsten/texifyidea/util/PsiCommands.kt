@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.completion.LatexCommandsAndEnvironmentsCompletionProvider
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
@@ -227,3 +228,12 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
  * Get all [LatexCommands] that are children (direct or indirect) of the given element.
  */
 fun PsiElement.allCommands() = childrenOfType(LatexCommands::class).toList()
+
+fun getCommandName(commands: LatexCommands): String? {
+    return when (commands.name) {
+        in CommandMagic.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> LatexCommandsAndEnvironmentsCompletionProvider.getNewCommandName(
+            commands
+        )
+        else -> LatexCommandsAndEnvironmentsCompletionProvider.getDefinitionName(commands)
+    }
+}

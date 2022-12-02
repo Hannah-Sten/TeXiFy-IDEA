@@ -32,7 +32,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
             project,
             inlineCommand,
             myReference,
-            editor != null && inlineCommand.firstChildOfType(LatexCommands::class) != myReference
+            editor != null && inlineCommand.firstChildOfType(LatexCommands::class)?.textOffset != myReference?.textOffset
         )
 
         showDialog(dialog, inlineCommand.name ?: "", project)

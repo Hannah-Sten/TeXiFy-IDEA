@@ -49,13 +49,6 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         /** Whether TeX Live is available at all, in which case it could be that all packages from texlive-full are in the index. */
         val isTexliveAvailable = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
 
-        fun getCommandName(commands: LatexCommands): String? {
-            return when (commands.name) {
-                in CommandMagic.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
-                else -> getDefinitionName(commands)
-            }
-        }
-
         fun getNewCommandName(commands: LatexCommands) = commands.forcedFirstRequiredParameterAsCommand()?.name
 
         fun getDefinitionName(commands: LatexCommands) = commands.definitionCommand()?.commandToken?.text

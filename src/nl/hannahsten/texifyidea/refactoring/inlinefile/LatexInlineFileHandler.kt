@@ -38,7 +38,7 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             editor != null
         )
 
-        if (dialog.myOccurrencesNumber > 0) {
+        if (dialog.getNumberOfOccurrences() > 0) {
             if (ApplicationManager.getApplication().isUnitTestMode) {
                 try {
                     dialog.doAction()

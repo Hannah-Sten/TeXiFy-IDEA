@@ -16,7 +16,7 @@ abstract class LatexInlineHandler : InlineActionHandler() {
         inlineElementName: String,
         project: Project
     ) {
-        if (dialog.myOccurrencesNumber > 0) {
+        if (dialog.getNumberOfOccurrences() > 0) {
             if (ApplicationManager.getApplication().isUnitTestMode) {
                 try {
                     dialog.doAction()

@@ -10,12 +10,8 @@ import com.intellij.refactoring.inline.InlineOptionsDialog
 
 abstract class LatexInlineDialog(project: Project?, genericDefinition: PsiElement, invokedOnReference: Boolean) : InlineOptionsDialog(project, true, genericDefinition) {
 
-    val myOccurrencesNumber: Int
-
     init {
         super.myInvokedOnReference = invokedOnReference
-
-        myOccurrencesNumber = getNumberOfOccurrences()
     }
 
     public abstract override fun doAction()
