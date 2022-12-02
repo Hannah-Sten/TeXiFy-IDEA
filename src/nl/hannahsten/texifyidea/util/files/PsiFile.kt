@@ -224,7 +224,9 @@ fun PsiFile.environmentsInFile(): Collection<LatexEnvironment> = LatexEnvironmen
  *
  * @return null if the file is not opened.
  */
-fun PsiFile.openedEditor(): FileEditor? = FileEditorManager.getInstance(project).getSelectedEditor(virtualFile)
+fun PsiFile.openedEditor(): FileEditor? {
+    return FileEditorManager.getInstance(project).getSelectedEditor(virtualFile ?: return null)
+}
 
 /**
  * Get the text editor instance of the (text) file if it is currently opened.

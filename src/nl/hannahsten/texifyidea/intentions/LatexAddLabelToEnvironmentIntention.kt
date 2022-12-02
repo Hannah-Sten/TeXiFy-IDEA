@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementPointer<LatexEnvironment>? = null) :
-    LatexAddLabelIntention() {
+    LatexAddLabelIntention("Add label to environment") {
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (file?.isLatexFile() == false) {

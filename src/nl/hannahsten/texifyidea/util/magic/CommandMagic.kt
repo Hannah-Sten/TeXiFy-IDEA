@@ -475,4 +475,11 @@ object CommandMagic {
         "luaexec" to false,
         "lstinline" to true
     )
+
+    /**
+     *
+     */
+    val foldableFootnotes = listOf(
+        FOOTNOTE.cmd, FOOTCITE.cmd
+    )
 }

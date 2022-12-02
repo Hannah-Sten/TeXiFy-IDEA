@@ -3,6 +3,7 @@
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEnvironmentFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexFootnoteFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEscapedSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSymbolFoldingBuilder"/>
