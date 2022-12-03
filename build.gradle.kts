@@ -25,7 +25,6 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 
     // Linting
-    // WARNING Do not update this ktlint plugin, it is unmaintained and newer versions are usually broken
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
@@ -111,7 +110,8 @@ dependencies {
     implementation("org.scilab.forge:jlatexmath:1.0.7")
 
     // Test dependencies
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.22")
+    // No version specified, it equals the kotlin version
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
@@ -122,7 +122,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.9.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.9.1")
 
     testImplementation("io.mockk:mockk:1.13.3")
 
@@ -240,4 +240,9 @@ ktlint {
 
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.useLatestVersions {
+    // Do not update this ktlint plugin, it is unmaintained and newer versions are usually broken
+    updateBlacklist = listOf("org.jlleitschuh.gradle.ktlint")
 }
