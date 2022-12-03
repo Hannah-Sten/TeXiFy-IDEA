@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.length

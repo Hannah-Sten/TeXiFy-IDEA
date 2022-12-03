@@ -7,6 +7,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
+import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.findFirstChild
