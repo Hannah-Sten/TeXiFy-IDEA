@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.lang
 
-import nl.hannahsten.texifyidea.lang.BibtexDefaultEntryField.*
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import java.util.*
 import kotlin.collections.HashMap
