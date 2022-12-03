@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
-import nl.hannahsten.texifyidea.completion.LatexCommandsAndEnvironmentsCompletionProvider
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
@@ -26,7 +25,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         // Resolve the file to be inlined
         val inlineCommand: LatexCommands = resolveInlineCommandDefinition(element) ?: return
-        val myReference = getReference(element, editor)
+        val myReference = getReference(editor)
 
         val dialog = LatexInlineCommandDialog(
             project,
@@ -60,7 +59,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
             val candiateUserCommands = cmds.filter { it.isDefinition() && !it.isEnvironmentDefinition() }
 
             val canInline = candiateUserCommands.any {
-                LatexCommandsAndEnvironmentsCompletionProvider.getDefinitionName(it) == element.name
+                it.definitionCommand()?.name == element.name
             }
 
             return canInline
@@ -75,7 +74,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
             val candiateUserCommands = cmds.filter { it.isDefinition() && !it.isEnvironmentDefinition() }
 
             val thisCommandDefinitions = candiateUserCommands.filter {
-                LatexCommandsAndEnvironmentsCompletionProvider.getDefinitionName(it) == (element as LatexCommands).name
+                it.definitionCommand()?.name == (element as LatexCommands).name
             }
 
             // There may be an issue where it picks the wrong definition when there are multiple redefinitions
@@ -86,7 +85,6 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
          * Resolves the command that the inlining was called on. If called from file view then expected return is null
          */
         fun getReference(
-            element: PsiElement,
             editor: Editor?
         ): PsiElement? {
             if (editor == null) return null

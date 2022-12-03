@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.refactoring.inlinecommand
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.NlsContexts.DialogTitle
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -64,7 +63,7 @@ class LatexInlineCommandDialog(
 
     companion object {
 
-        val refactoringName: @DialogTitle String
+        val refactoringName: String
             get() = "Inline Command"
     }
 }

@@ -11,7 +11,9 @@ import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.BaseRefactoringProcessor
 import com.intellij.usageView.UsageInfo
 import com.intellij.usageView.UsageViewDescriptor
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.definitionCommand
 
 /**
@@ -74,9 +76,9 @@ class LatexInlineCommandProcessor(
     }
 
     /**
-     * Does the lifting by...replacing usages with the entirety of the file to be inlined
+     * Does the lifting by...replacing usages with the entirety of the command to be inlined
      *
-     * @param psiElement The element to remove and replace with the contents of the file
+     * @param psiElement The element to remove and replace with the contents of the command
      */
     private fun replaceUsage(psiElement: PsiElement): Boolean {
         val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf()
@@ -94,13 +96,14 @@ class LatexInlineCommandProcessor(
         val offsetIndex = if (defaultParam == null) 1 else 2
         val numArgs = if (parentOptionalArgs.isNotEmpty()) Integer.parseInt(parentOptionalArgs[0]) else 0
 
-        val regex = "(?<!\\\\)#(\\d)".toRegex()
-        val functionString = (inlineCommand as LatexCommandWithParams).parameterList.lastOrNull()?.requiredParam?.children
-            ?.fold("") { out, some -> out + some.text } ?: return false
-        val totalTehxt = regex.findAll(functionString).iterator().asSequence().toSet()
-        val expectedArgs = totalTehxt.maxOf { Integer.parseInt(it.value.substring(1)) }
+        val commandParameterRegex = "(?<!\\\\)#(\\d)".toRegex()
 
-        if (expectedArgs > numArgs)
+        // Assume that the command should be replaced by the contents of the last required parameter
+        val functionString = (inlineCommand as LatexCommandWithParams).parameterList.lastOrNull()?.requiredParam?.requiredParamContentList?.joinToString { it.text } ?: return false
+        val parameterUsages = commandParameterRegex.findAll(functionString).toSet()
+        val actualNumberOfParameters = parameterUsages.maxOfOrNull { Integer.parseInt(it.value.substring(1)) }
+
+        if (actualNumberOfParameters != null && actualNumberOfParameters > numArgs)
             return false
 
         var outText = functionString

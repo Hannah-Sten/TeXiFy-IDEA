@@ -48,10 +48,6 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
         /** Whether TeX Live is available at all, in which case it could be that all packages from texlive-full are in the index. */
         val isTexliveAvailable = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
-
-        fun getNewCommandName(commands: LatexCommands) = commands.forcedFirstRequiredParameterAsCommand()?.name
-
-        fun getDefinitionName(commands: LatexCommands) = commands.definitionCommand()?.commandToken?.text
     }
 
     override fun addCompletions(
@@ -209,7 +205,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             if (mode !== LatexMode.MATH && cmd.name in CommandMagic.mathCommandDefinitions) {
                 continue
             }
-            val cmdName = getCommandName(cmd) ?: continue
+            val cmdName = cmd.definitionCommand()?.name ?: continue
 
             // Skip over 'private' commands containing @ symbol in normal tex source files.
             if (!file.isClassFile() && !file.isStyleFile()) {
