@@ -75,7 +75,7 @@ fun MagicComment<String, String>.assertValue(key: String, expectedValue: String?
     if (expectedValue != null) {
         assertNotNull(values, "<$magicKey> is not present as key in comment <$this>.")
         assertTrue(
-            index < values.size,
+            index < values!!.size,
             "Index <$index> is not present in value list <$values> of comment <$this>."
         )
     }

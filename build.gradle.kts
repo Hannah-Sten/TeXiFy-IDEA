@@ -5,8 +5,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.10.0"
-    kotlin("jvm") version("1.7.21")
-    kotlin("plugin.serialization") version("1.7.21")
+    kotlin("jvm") version("1.7.22")
+    kotlin("plugin.serialization") version("1.7.22")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.44.0"
@@ -104,7 +104,7 @@ dependencies {
     implementation("org.scilab.forge:jlatexmath:1.0.7")
 
     // Test dependencies
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.1.51")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.22")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
