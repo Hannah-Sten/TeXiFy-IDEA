@@ -21,6 +21,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 
     // Linting
+    // WARNING Do not update this ktlint plugin, it is unmaintained and newer versions are usually broken
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
