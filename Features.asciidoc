@@ -40,6 +40,7 @@ Also see the link:Installation[installation guide].
 * link:Features#Menu-entries[Shortcuts for styling text]
 * link:Line-commenting[Line commenting shortcut]
 * link:Refactoring[Renaming of labels and environments]
+* link:Inline-File[Inlining of files and command definitions]
 * Support for user-created document classes and packages
 * Toggle star action
 * Custom shortcuts for menu items
