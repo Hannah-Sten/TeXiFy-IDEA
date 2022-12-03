@@ -1,4 +1,3 @@
-
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
@@ -9,8 +8,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.10.0"
-    kotlin("jvm") version("1.7.22")
-    kotlin("plugin.serialization") version("1.7.22")
+    kotlin("jvm") version ("1.7.22")
+    kotlin("plugin.serialization") version ("1.7.22")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.44.0"
@@ -166,27 +165,37 @@ changelog {
     itemPrefix.set("*")
 }
 
- tasks.patchPluginXml {
+tasks.patchPluginXml {
     // Required to run pluginVerifier
-     sinceBuild.set(properties("pluginSinceBuild"))
+    sinceBuild.set(properties("pluginSinceBuild"))
 
-     // Get the latest available change notes from the changelog file
-     changeNotes.set(provider {
-         with(changelog) {
-             renderItem(
-                 // When publishing alpha versions, we want the unreleased changes to be shown, otherwise we assume that patchChangelog has been run and we need to get the latest released version (otherwise it will show 'Unreleased' as title)
-                  if (properties("pluginVersion").split("-").size != 1) changelog.getUnreleased() else getOrNull(properties("pluginVersion")) ?: getLatest(),
-                 Changelog.OutputType.HTML,
-             )
-         }
-     })
- }
+    // Get the latest available change notes from the changelog file
+    changeNotes.set(
+        provider {
+            with(changelog) {
+                renderItem(
+                    // When publishing alpha versions, we want the unreleased changes to be shown, otherwise we assume that patchChangelog has been run and we need to get the latest released version (otherwise it will show 'Unreleased' as title)
+                    if (properties("pluginVersion").split("-").size != 1) changelog.getUnreleased()
+                    else getOrNull(properties("pluginVersion")) ?: getLatest(),
+                    Changelog.OutputType.HTML,
+                )
+            }
+        }
+    )
+}
 
 intellij {
     pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.23"))
+    plugins.set(
+        listOf(
+            "tanvd.grazi",
+            "java",
+            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0",
+            "com.jetbrains.hackathon.indices.viewer:1.23"
+        )
+    )
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
