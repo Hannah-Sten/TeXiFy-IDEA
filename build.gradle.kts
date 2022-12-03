@@ -1,12 +1,15 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.changelog.Changelog
+
+fun properties(key: String) = project.findProperty(key).toString()
 
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.10.0"
-    kotlin("jvm") version("1.7.22")
-    kotlin("plugin.serialization") version("1.7.22")
+    kotlin("jvm") version ("1.7.22")
+    kotlin("plugin.serialization") version ("1.7.22")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.44.0"
@@ -21,15 +24,16 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 
     // Linting
-    // WARNING Do not update this ktlint plugin, it is unmaintained and newer versions are usually broken
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "7.3.2"
+
+    id("org.jetbrains.changelog") version "2.0.0"
 }
 
 group = "nl.hannahsten"
-version = "0.7.25-alpha.4"
+version = properties("pluginVersion")
 
 repositories {
     mavenCentral()
@@ -105,7 +109,8 @@ dependencies {
     implementation("org.scilab.forge:jlatexmath:1.0.7")
 
     // Test dependencies
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.22")
+    // No version specified, it equals the kotlin version
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
@@ -116,7 +121,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.9.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.9.1")
 
     testImplementation("io.mockk:mockk:1.13.3")
 
@@ -153,16 +158,44 @@ tasks.buildSearchableOptions {
     jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 }
 
-// Required to run pluginVerifier
-// tasks.patchPluginXml {
-//    sinceBuild.set("223")
-// }
+// Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
+changelog {
+    groups.set(listOf("Added", "Fixed"))
+    repositoryUrl.set("https://github.com/Hannah-Sten/TeXiFy-IDEA")
+    itemPrefix.set("*")
+}
+
+tasks.patchPluginXml {
+    // Required to run pluginVerifier
+    sinceBuild.set(properties("pluginSinceBuild"))
+
+    // Get the latest available change notes from the changelog file
+    changeNotes.set(
+        provider {
+            with(changelog) {
+                renderItem(
+                    // When publishing alpha versions, we want the unreleased changes to be shown, otherwise we assume that patchChangelog has been run and we need to get the latest released version (otherwise it will show 'Unreleased' as title)
+                    if (properties("pluginVersion").split("-").size != 1) changelog.getUnreleased()
+                    else getOrNull(properties("pluginVersion")) ?: getLatest(),
+                    Changelog.OutputType.HTML,
+                )
+            }
+        }
+    )
+}
 
 intellij {
     pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.22"))
+    plugins.set(
+        listOf(
+            "tanvd.grazi",
+            "java",
+            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0",
+            "com.jetbrains.hackathon.indices.viewer:1.23"
+        )
+    )
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
@@ -187,6 +220,7 @@ intellij {
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
 // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 tasks.publishPlugin {
+    dependsOn("patchChangelog")
     dependsOn("useLatestVersions")
     dependsOn("dependencyCheckAnalyze")
 
@@ -194,7 +228,7 @@ tasks.publishPlugin {
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf("alpha"))
+    channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
 }
 
 tasks.test {
@@ -215,4 +249,9 @@ ktlint {
 
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.useLatestVersions {
+    // Do not update this ktlint plugin, it is unmaintained and newer versions are usually broken
+    updateBlacklist = listOf("org.jlleitschuh.gradle.ktlint")
 }
