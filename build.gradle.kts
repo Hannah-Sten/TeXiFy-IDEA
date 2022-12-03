@@ -104,6 +104,7 @@ dependencies {
     implementation("org.scilab.forge:jlatexmath:1.0.7")
 
     // Test dependencies
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.1.51")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
