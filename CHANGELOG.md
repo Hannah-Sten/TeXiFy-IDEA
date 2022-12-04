@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for inlining user-defined commands, by @jojo2357.
 
 ### Fixed
 
