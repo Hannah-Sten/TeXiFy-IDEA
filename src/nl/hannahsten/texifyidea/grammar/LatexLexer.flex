@@ -273,9 +273,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // Switched off by a magic comment %! parser = off
 <OFF> {
+    {KNITR_END}         { yypopState(); return COMMENT_TOKEN; }
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
     {LEXER_ON_TOKEN}    { yypopState(); return COMMENT_TOKEN; }
-    {KNITR_END}         { yypopState(); return COMMENT_TOKEN; }
 }
 
 /*
