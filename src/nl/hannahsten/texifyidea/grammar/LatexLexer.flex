@@ -92,6 +92,10 @@ VERBATIM_COMMAND=\\directlua | \\luaexec | \\lstinline
  | \\url | \\href
  // PythonTex Python code commands
  | \\py | \\pyb | \\pyc | \\pys | \\pyv
+
+ KNITR_START = <<.*>>=
+ KNITR_END = @
+
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
 PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 
@@ -271,6 +275,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 <OFF> {
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
     {LEXER_ON_TOKEN}    { yypopState(); return COMMENT_TOKEN; }
+    {KNITR_END}         { yypopState(); return COMMENT_TOKEN; }
 }
 
 /*
@@ -485,6 +490,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
 
 {LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
+{KNITR_START}           { yypushState(OFF); return COMMENT_TOKEN; }
 {ENDINPUT}              { yypushState(OFF); return COMMAND_TOKEN; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
