@@ -2,9 +2,7 @@
 
 ## [Unreleased]
 
-### Added
-
-### Fixed
+This beta release contains a completely new LaTeX run configuration. However, currently is it still incompatible with the old run configuration, so that is why this is published in a separate beta channel.
 
 ## [0.7.25] - 2022-12-01
 Welcome to TeXiFy IDEA 0.7.25! This release has many additions by @jojo2357, enjoy!

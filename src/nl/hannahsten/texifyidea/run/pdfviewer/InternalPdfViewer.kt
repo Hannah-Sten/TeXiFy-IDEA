@@ -5,8 +5,8 @@ import nl.hannahsten.texifyidea.run.pdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.okular.OkularConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.skim.SkimConversation
 import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.SumatraConversation
-import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.run.pdfviewer.zathura.ZathuraConversation
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.util.runCommand
 import kotlin.reflect.full.createInstance
 
@@ -33,7 +33,7 @@ sealed class InternalPdfViewer(
      */
     fun checkAvailability(): Boolean {
         return if (SystemInfo.isWindows && this.executableName == "sumatra") {
-            isSumatraAvailable
+            SumatraAvailabilityChecker.getSumatraAvailability()
         }
         // Only support Evince and Okular on Linux, although they can be installed on other systems like Mac.
         else if (SystemInfo.isLinux) {
@@ -80,4 +80,4 @@ class Evince(override val name: String = "Evince") : InternalPdfViewer("evince",
 class Okular(override val name: String = "Okular") : InternalPdfViewer("okular", "Okular", OkularConversation)
 class Zathura(override val name: String = "Zathura") : InternalPdfViewer("zathura", "Zathura", ZathuraConversation)
 class Skim(override val name: String = "Skim") : InternalPdfViewer("skim", "Skim", SkimConversation)
-class Sumatra(override val name: String = "Sumatra") : InternalPdfViewer("sumatra", "Sumatra", SumatraConversation())
+class Sumatra(override val name: String = "Sumatra") : InternalPdfViewer("sumatra", "Sumatra", SumatraConversation)
