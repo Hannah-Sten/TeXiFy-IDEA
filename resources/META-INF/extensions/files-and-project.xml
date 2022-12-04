@@ -2,7 +2,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
         <!-- The fieldName="INSTANCE" is required since 2021.2, if not present then all tests relying on automatic file type detection based on file name will fail if run all together via gradle check, and succeed when run a single test at a time,  -->
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex;glstex" fieldName="INSTANCE" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex;glstex;Rtex" fieldName="INSTANCE" /> <!-- Rtex is Overleaf-specific extension for Rnw files -->
         <fileType implementationClass="nl.hannahsten.texifyidea.file.StyleFileType" name="LaTeX style file" language="Latex" extensions="sty;dbx;bbx;cbx" fieldName="INSTANCE" /> <!-- dbx is a Biblatex Data Model, bbx a Biblatex Style -->
         <fileType name="LaTeX style file" fileNames="biblatex.cfg;biblatex-dm.cfg" fieldName="INSTANCE" /> <!-- Biblatex configuration -->
         <fileType implementationClass="nl.hannahsten.texifyidea.file.ClassFileType" name="LaTeX class file" language="Latex" extensions="cls" fieldName="INSTANCE" />
