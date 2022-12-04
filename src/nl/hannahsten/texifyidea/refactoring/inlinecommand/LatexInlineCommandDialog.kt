@@ -1,11 +1,10 @@
-package nl.hannahsten.texifyidea.refactoring.inlinefile
+package nl.hannahsten.texifyidea.refactoring.inlinecommand
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.NlsContexts.DialogTitle
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineDialog
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.definitionCommand
 
 /**
  * Creates an inline file dialog to select what to refactor. Parts have been borrowed from the java inline method dialog
@@ -14,13 +13,13 @@ import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineDialog
  *
  * @author jojo2357
  */
-class LatexInlineFileDialog(
+class LatexInlineCommandDialog(
     project: Project?,
-    private val myFile: LatexFile,
+    private val myDefinition: LatexCommands,
     private val myReference: PsiElement?,
     invokedOnReference: Boolean,
 ) :
-    LatexInlineDialog(project, myFile, invokedOnReference) {
+    LatexInlineDialog(project, myDefinition, invokedOnReference) {
 
     init {
         title = refactoringName
@@ -28,27 +27,27 @@ class LatexInlineFileDialog(
     }
 
     override fun getNameLabelText(): String {
-        return if (getNumberOfOccurrences() > -1) "File " + myFile.name + " has " + getNumberOfOccurrences() + " ocurrences"
-        else "File " + myFile.name
+        return if (getNumberOfOccurrences() > -1) "Command " + myDefinition.name + " has " + getNumberOfOccurrences() + " ocurrences"
+        else "Command " + myDefinition.name
     }
 
     override fun getInlineThisText(): String {
-        return "Inline this and keep the file"
+        return "Inline this and keep the command"
     }
 
     override fun getInlineAllText(): String {
-        return if (myFile.isWritable) "Inline all and remove the file" else "All invocations in project"
+        return if (myDefinition.isWritable) "Inline all and remove the command" else "All invocations in project"
     }
 
     override fun getKeepTheDeclarationText(): String {
-        return if (myFile.isWritable) "Inline all and keep the file" else super.getKeepTheDeclarationText()
+        return if (myDefinition.isWritable) "Inline all and keep the command" else super.getKeepTheDeclarationText()
     }
 
     override fun doAction() {
         invokeRefactoring(
-            LatexInlineFileProcessor(
+            LatexInlineCommandProcessor(
                 project,
-                myFile,
+                myDefinition,
                 myReference,
                 isInlineThisOnly,
                 isKeepTheDeclaration,
@@ -59,12 +58,12 @@ class LatexInlineFileDialog(
     }
 
     override fun getNumberOfOccurrences(): Int {
-        return super.getNumberOfOccurrences(myFile)
+        return if (myDefinition.definitionCommand() == null) 0 else super.getNumberOfOccurrences(myDefinition.definitionCommand())
     }
 
     companion object {
 
-        val refactoringName: @DialogTitle String
-            get() = "Inline File"
+        val refactoringName: String
+            get() = "Inline Command"
     }
 }
