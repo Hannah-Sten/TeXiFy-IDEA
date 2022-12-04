@@ -182,9 +182,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         if (::sumatraPath.isInitialized) {
             // Apply custom SumatraPDF path if applicable
             runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
-        }
 
-        runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
+            runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
+        }
 
         runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable()
 
