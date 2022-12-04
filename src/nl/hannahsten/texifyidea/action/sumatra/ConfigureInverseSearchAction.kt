@@ -6,7 +6,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.ui.DialogBuilder
-import nl.hannahsten.texifyidea.run.pdfviewer.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -45,6 +46,7 @@ open class ConfigureInverseSearchAction : AnAction(
 
                 val path = PathManager.getBinPath()
                 var name = ApplicationNamesInfo.getInstance().scriptName
+                val sumatraWorkingDir = SumatraAvailabilityChecker.getSumatraWorkingCustomDir()
 
                 // If we can find a 64-bits Java, then we can start (the equivalent of) idea64.exe since that will use the 64-bits Java
                 // see issue 104 and https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/809
@@ -53,10 +55,10 @@ open class ConfigureInverseSearchAction : AnAction(
                     // We will assume that since the user is using a 64-bit IDEA that name64 exists, this is at least true for idea64.exe and pycharm64.exe on Windows
                     name += "64"
                     // We also remove an extra "" because it opens an empty IDEA instance when present
-                    Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" --line %l \\\"%f\\\"\"")
+                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, nonBlocking = true)
                 }
                 else {
-                    Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" \\\"\\\" --line %l \\\"%f\\\"\"")
+                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, nonBlocking = true)
                 }
 
                 dialogWrapper.close(0)
@@ -67,6 +69,6 @@ open class ConfigureInverseSearchAction : AnAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = isSumatraAvailable
+        e.presentation.isEnabledAndVisible = SumatraAvailabilityChecker.getSumatraAvailability()
     }
 }

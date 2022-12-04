@@ -72,7 +72,7 @@ fun Process.getOutput() = inputStream.bufferedReader().readText().trim() + error
  * @param killAfterTimeout If true, process will be killed after timeout. If false, just return output.
  * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
  */
-fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, killAfterTimeout: Boolean = true, returnExceptionMessage: Boolean = false): Pair<String?, Int> {
+fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, killAfterTimeout: Boolean = true, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false): Pair<String?, Int> {
     Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
     return try {
         val proc = GeneralCommandLine(*commands)
@@ -81,7 +81,18 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             .createProcess()
 
         if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
-            val output = proc.getOutput()
+            var output = ""
+            if (nonBlocking) {
+                if (proc.inputStream.bufferedReader().ready()) {
+                    output += proc.inputStream.bufferedReader().readText().trim()
+                }
+                if (proc.errorStream.bufferedReader().ready()) {
+                    output += proc.errorStream.bufferedReader().readText().trim()
+                }
+            }
+            else {
+                output = proc.getOutput()
+            }
             Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
             Pair(output, proc.exitValue())
         }
@@ -89,11 +100,21 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             // todo find a way to get output of alive process
             var output = ""
             var exitValue = 0
+            if (nonBlocking) {
+                if (proc.inputStream.bufferedReader().ready()) {
+                    output += proc.inputStream.bufferedReader().readText().trim()
+                }
+                if (proc.errorStream.bufferedReader().ready()) {
+                    output += proc.errorStream.bufferedReader().readText().trim()
+                }
+            }
             if (killAfterTimeout) {
                 proc.destroy()
                 proc.waitFor()
                 // At this point, the inputStream is finished so we can safely get the output without blocking
-                output = proc.getOutput()
+                if (!nonBlocking) {
+                    output = proc.getOutput()
+                }
                 exitValue = proc.exitValue()
                 Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
             }

@@ -17,6 +17,6 @@ class LatexNamesValidator : NamesValidator {
         // Unfortunately this is a global rule
         /** See [formatAsLabel] */
         // Exclude the first \ to allow renaming commands
-        return name.substring(1).toSet().intersect(setOf('%', '~', '#', '\\')).isEmpty()
+        return name.matches("^\\\\?[^%~#\\\\]+$".toRegex())
     }
 }

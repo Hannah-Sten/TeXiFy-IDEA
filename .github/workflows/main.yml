@@ -15,13 +15,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      # Workaround for https://github.com/github/codeql-action/issues/796
-      # This will prepend refs/heads/ if the branch name does not start with refs/
-      - name: Update GITHUB_REF
-        id: update-github-ref
-        run: echo ::set-output name=fixed_github_ref::$([[ "$GITHUB_REF" =~ refs\/(heads|pull|tags)\/.* ]] && echo $GITHUB_REF || echo "refs/heads/$GITHUB_REF")
-      - name: Qodana
-        uses: JetBrains/qodana-action@v2022.2.1
+      - uses: JetBrains/qodana-action@v2022.2.4
+        name: Qodana
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
@@ -29,20 +24,24 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
-          ref: ${{ steps.update-github-ref.outputs.fixed_github_ref }}
-          sha: ${{ github.sha }}
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
+    - name: configure Pagefile
+      if: matrix.os == 'windows-latest'
+      uses: al-cheb/configure-pagefile-action@v1.3
+      with:
+        minimum-size: 8GB
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
-    - uses: actions/setup-java@v1
+    - uses: actions/setup-java@v3
       with:
         java-version: '17'
+        distribution: 'zulu'
     - name: Run linting
       run: |
         chmod +x gradlew

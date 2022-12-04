@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.index.stub
 import com.intellij.openapi.project.Project
 import com.intellij.psi.stubs.*
 import com.intellij.testFramework.LightVirtualFile
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands

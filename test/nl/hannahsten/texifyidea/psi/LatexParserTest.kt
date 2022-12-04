@@ -86,6 +86,19 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testFakeArrayPreambleOptions() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            % Not a preamble option, so treat like usual           
+            \begin{frame}
+                \only<1>{<info descr="null">${'$'}<info textAttributesKey=LATEX_INLINE_MATH>a_1${'$'}</info></info>}
+            \end{frame}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(false, true, false)
+    }
+
     fun testNewEnvironmentDefinition() {
         myFixture.configureByText(
             LatexFileType,

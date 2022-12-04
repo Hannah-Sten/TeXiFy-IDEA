@@ -1,0 +1,8 @@
+\documentclass[11pt]{article}
+
+\begin{document}
+
+    \section{A nonexistent file}
+    \input{filetha<caret>tdoesnotexist}
+
+\end{document}

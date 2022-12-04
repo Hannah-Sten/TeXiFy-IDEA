@@ -8,6 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface LatexKeyvalContent extends PsiElement {
 
   @Nullable
+  LatexCommands getCommands();
+
+  @Nullable
+  LatexMathEnvironment getMathEnvironment();
+
+  @Nullable
   LatexParameterGroup getParameterGroup();
 
   @Nullable

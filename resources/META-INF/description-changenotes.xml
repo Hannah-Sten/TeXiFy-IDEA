@@ -40,13 +40,4 @@
             If you like the project, please <a href="https://www.paypal.me/HannahSchellekens">donate</a> to support ongoing development!
         </p>
     ]]></description>
-
-    <!-- Changelog -->
-    <change-notes><![CDATA[
-        <p><strong>0.8.0-beta</strong></p>
-        <p>
-        This beta release contains a completely new LaTeX run configuration.
-        However, currently is it still incompatible with the old run configuration, so that is why this is published in a separate beta channel.
-        </p>
-    ]]></change-notes>
 </idea-plugin>

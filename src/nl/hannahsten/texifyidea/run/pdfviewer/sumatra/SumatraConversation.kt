@@ -1,50 +1,11 @@
 package nl.hannahsten.texifyidea.run.pdfviewer.sumatra
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-import nl.hannahsten.texifyidea.util.runCommand
-
-/**
- * Indicates whether SumatraPDF is installed and DDE communication is enabled.
- *
- * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
- * install SumatraPDF while running TeXiFy.
- */
-val isSumatraAvailable: Boolean by lazy {
-    if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
-
-    // Try if native bindings are available
-    try {
-        DDEClientConversation()
-    }
-    catch (e: UnsatisfiedLinkError) {
-        Log.info("Native library DLLs could not be found.")
-        return@lazy false
-    }
-    catch (e: NoClassDefFoundError) {
-        Log.info("Native library DLLs could not be found.")
-        return@lazy false
-    }
-
-    true
-}
-
-private fun isSumatraInstalled(): Boolean {
-    // Try some SumatraPDF registry keys
-    // For some reason this first one isn't always present anymore, it used to be
-    val regQuery1 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe", "/ve")?.startsWith("ERROR:") == false
-    val regQuery2 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf", "/ve")?.startsWith("ERROR:") == false
-
-    if (regQuery1 || regQuery2) return true
-
-    // Try if Sumatra is in PATH
-    return runCommandWithExitCode("start", "SumatraPDF").second == 0
-}
 
 /**
  * Send commands to SumatraPDF.
@@ -54,14 +15,14 @@ private fun isSumatraInstalled(): Boolean {
  * @author Sten Wessel
  * @since b0.4
  */
-class SumatraConversation : ViewerConversation() {
+object SumatraConversation : ViewerConversation() {
 
-    private val server = "SUMATRA"
-    private val topic = "control"
+    private const val server = "SUMATRA"
+    private const val topic = "control"
     private var conversation: DDEClientConversation? = null
 
-    init {
-        if (isSumatraAvailable) {
+    private fun openConversation() {
+        if (SumatraAvailabilityChecker.getSumatraAvailability() && conversation == null) {
             try {
                 conversation = DDEClientConversation()
             }
@@ -77,17 +38,15 @@ class SumatraConversation : ViewerConversation() {
     /**
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
-            // In case the user provided a custom path to SumatraPDF, add it to the path before executing
-            val processBuilder = ProcessBuilder("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath)
-            if (sumatraPath != null) {
-                processBuilder.environment()["Path"] = sumatraPath
+            // Added check when Sumatra doesn't exist (not a directory), so Windows popup error doesn't appear
+            if (SumatraAvailabilityChecker.getSumatraAvailability()) {
+                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = SumatraAvailabilityChecker.getSumatraWorkingCustomDir(), nonBlocking = true)
             }
-            processBuilder.start()
         }
     }
 
@@ -122,6 +81,7 @@ class SumatraConversation : ViewerConversation() {
     }
 
     private fun execute(vararg commands: String) {
+        openConversation()
         try {
             conversation?.connect(server, topic)
             conversation?.execute(commands.joinToString(separator = "") { "[$it]" })

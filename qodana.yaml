@@ -2,6 +2,7 @@ version: "1.0"
 linter: jetbrains/qodana-jvm:latest
 profile:
   name: qodana.recommended
+failThreshold: 0
 exclude:
   - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag

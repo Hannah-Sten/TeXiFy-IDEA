@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CodeStyleSettings
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.psi.BibtexTypes.*
 
 fun createBibtexSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
