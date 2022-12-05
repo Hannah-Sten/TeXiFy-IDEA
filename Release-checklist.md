@@ -1,4 +1,6 @@
 - [ ] Create branch bx.x.x
+- [ ] Run useLatestVersions task
+- [ ] Run dependencyCheckAnalyze task
 - [ ] Run 'Usage of IntelliJ API not available in older IDEs' and 'Stateful extension' inspection (ctrl+alt+shift+i)
 - [ ] Increase stub version in LatexParserDefinition
 - [ ] Gradle clean, create new empty project and check that document compiles and pdf viewer is opened
