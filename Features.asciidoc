@@ -103,7 +103,7 @@ Also see the link:Installation[installation guide].
 * link:Log-messages[A clean overview of LaTeX, BibTeX and Biber warnings and errors]
 * link:Automatic-compilation[Support for automatic compilation]
 * The pdf will appear in a separate out/ directory to avoid cluttering the source directory
-* Auxiliary files will be put in a separate auxil/ directory on Windows
+* link:Auxil-directory[Auxiliary files will be put in a separate auxil/ directory]
 * Custom compiler path
 * Option to choose different output formats like PDF and DVI
 * link:Run-configurations#environment-variables[Support for TEXINPUTS and environment variables in general]
