@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
@@ -91,8 +92,9 @@ fun Project.currentTextEditor(): TextEditor? {
  * Checks if there is a LaTeX module in this project.
  */
 fun Project.hasLatexModule(): Boolean {
+    if (isDisposed) return false
     return ModuleManager.getInstance(this).modules
-        .any { it.moduleTypeName == LatexModuleType.ID }
+        .any { ModuleType.get(it).id == LatexModuleType.ID }
 }
 
 /**
