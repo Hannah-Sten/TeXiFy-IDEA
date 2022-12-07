@@ -15,7 +15,7 @@ import kotlin.io.path.Path
  */
 object LatexmkRcFileFinder {
 
-    // Note: this cannot be a lazy val because then if there is any exception, the stacktrace will not be shown but be hidden by a NoClassDefFoundError
+    // Note: this cannot be a lazy val because then if there is any exception, the stacktrace will not be shown but be hidden by a NoClassDefFoundError. This way, we will have an ExceptionInInitializerError with will have the original stacktrace as well.
     private var systemLatexmkRcFile: VirtualFile? = null
         get() {
             val paths = mutableListOf<String?>()
