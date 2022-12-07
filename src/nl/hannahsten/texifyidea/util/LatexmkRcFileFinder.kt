@@ -54,7 +54,7 @@ object LatexmkRcFileFinder {
                 }
 
             return null
-    }
+        }
 
     private val isSystemLatexmkRcFilePresent: Boolean = systemLatexmkRcFile != null
 
