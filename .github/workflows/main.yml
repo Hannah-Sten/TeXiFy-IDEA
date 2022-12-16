@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: JetBrains/qodana-action@v2022.2.4
+      - uses: JetBrains/qodana-action@main
         name: Qodana
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
       - name: Upload SARIF report to GitHub
