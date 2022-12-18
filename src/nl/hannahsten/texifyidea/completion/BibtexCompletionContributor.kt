@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*

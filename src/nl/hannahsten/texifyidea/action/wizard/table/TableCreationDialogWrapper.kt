@@ -1,11 +1,10 @@
 package nl.hannahsten.texifyidea.action.wizard.table
 
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.KeyboardShortcut
-import com.intellij.openapi.actionSystem.ShortcutSet
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AnActionButton
+import com.intellij.ui.JBColor
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
@@ -16,7 +15,6 @@ import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import java.awt.BorderLayout
-import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -134,15 +132,11 @@ class TableCreationDialogWrapper(
         }
         .setAddActionName("Add Column")
         .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
-        .addExtraAction(getRemoveColumnActionButton())
-        .addExtraAction(getEditColumnActionButton())
-        .addExtraAction(getAddRowActionButton())
+        .addExtraAction(getRemoveColumnActionButton() as AnAction)
+        .addExtraAction(getEditColumnActionButton() as AnAction)
+        .addExtraAction(getAddRowActionButton() as AnAction)
         .addExtraAction(
-            getRemoveRowActionButton().apply {
-                shortcut = ShortcutSet {
-                    arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null))
-                }
-            }
+            getRemoveRowActionButton() as AnAction
         )
         .createPanel()
 
@@ -158,7 +152,7 @@ class TableCreationDialogWrapper(
      */
     private fun createHelpText() = JBLabel().apply {
         text = "<html>Press tab to go to the next cell or row, press enter to go to the next row.</html>"
-        foreground = Color.GRAY
+        foreground = JBColor.GRAY
     }
 
     /**
@@ -269,6 +263,8 @@ class TableCreationDialogWrapper(
                     )
                 }
             }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 
@@ -280,6 +276,8 @@ class TableCreationDialogWrapper(
             override fun actionPerformed(e: AnActionEvent) {
                 tableModel.addEmptyRow()
             }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 
@@ -291,6 +289,15 @@ class TableCreationDialogWrapper(
             override fun actionPerformed(e: AnActionEvent) {
                 tableModel.removeRow(table.selectedRow)
             }
+
+            override fun getShortcut(): ShortcutSet {
+                // Not sure if this is the way to set shortcuts, should we use the keymap?
+                return ShortcutSet {
+                    arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null))
+                }
+            }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 
@@ -302,6 +309,8 @@ class TableCreationDialogWrapper(
             override fun actionPerformed(e: AnActionEvent) {
                 tableModel.removeColumn(table.selectedColumn)
             }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 }

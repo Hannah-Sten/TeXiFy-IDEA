@@ -1,7 +1,6 @@
-package nl.hannahsten.texifyidea
+package nl.hannahsten.texifyidea.grammar
 
 import com.intellij.lexer.FlexAdapter
-import nl.hannahsten.texifyidea.grammar.BibtexLexer
 
 /**
  * @author Hannah Schellekens

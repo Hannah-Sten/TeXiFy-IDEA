@@ -8,7 +8,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceO
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.*
 import com.intellij.psi.codeStyle.extractor.values.Value.VAR_KIND.RIGHT_MARGIN
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.removeHtmlTags
 

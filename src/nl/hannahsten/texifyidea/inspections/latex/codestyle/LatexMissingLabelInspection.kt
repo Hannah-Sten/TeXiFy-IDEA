@@ -152,7 +152,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             LatexAddLabelToCommandIntention(command.createSmartPointer()).invoke(
                 project,
-                command.containingFile.openedEditor(),
+                command.containingFile.openedTextEditor(),
                 command.containingFile
             )
         }
@@ -166,7 +166,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexEnvironment
             LatexAddLabelToEnvironmentIntention(command.createSmartPointer()).invoke(
                 project,
-                command.containingFile.openedEditor(),
+                command.containingFile.openedTextEditor(),
                 command.containingFile
             )
         }

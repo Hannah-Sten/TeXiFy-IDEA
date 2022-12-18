@@ -26,10 +26,10 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.awt.event.ItemEvent
-import javax.swing.JComponent
-import javax.swing.JPanel
+import javax.swing.*
 
 /**
  * @author Sten Wessel
@@ -182,6 +182,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         if (::sumatraPath.isInitialized) {
             // Apply custom SumatraPDF path if applicable
             runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
+
+            runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
         }
 
         runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable()
@@ -378,10 +380,31 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compilerPath)
     }
 
+    private fun updatePdfViewerComboBox() {
+        val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
+            ExternalPdfViewers.getExternalPdfViewers() +
+            listOf(InternalPdfViewer.NONE)
+
+        pdfViewer.component.removeAllItems()
+        for (i in viewers.indices) {
+            @Suppress("UNCHECKED_CAST")
+            (pdfViewer.component as ComboBox<PdfViewer>).addItem(viewers[i])
+        }
+        pdfViewer.updateUI()
+    }
+
     /**
      * Optional custom path for SumatraPDF.
      */
     private fun addSumatraPathField(panel: JPanel) {
+        class PathInputVerifier : InputVerifier() {
+
+            override fun verify(input: JComponent?): Boolean {
+                updatePdfViewerComboBox()
+                return true
+            }
+        }
+
         if (SystemInfo.isWindows) {
             enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
             panel.add(enableSumatraPath)
@@ -404,7 +427,16 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 }
             }
 
-            enableSumatraPath.addItemListener { e -> sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
+            sumatraPath.textField.inputVerifier = PathInputVerifier()
+
+            enableSumatraPath.addItemListener { e ->
+                if (e.stateChange != ItemEvent.SELECTED) {
+                    // Removes the custom Sumatra path from SumatraAvailabilityChecker when unchecked
+                    SumatraAvailabilityChecker.isSumatraPathAvailable(null)
+                    updatePdfViewerComboBox()
+                }
+                sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED
+            }
 
             panel.add(sumatraPath)
         }

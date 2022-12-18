@@ -11,10 +11,10 @@ import com.intellij.refactoring.inline.InlineOptions
 import com.intellij.testFramework.LightPlatformCodeInsightTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler.Companion.getReference
+import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Companion.canInlineLatexElement
+import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Companion.resolveInlineFile
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileProcessor
-import nl.hannahsten.texifyidea.refactoring.inlinefile.canInlineLatexElement
-import nl.hannahsten.texifyidea.refactoring.inlinefile.getReference
-import nl.hannahsten.texifyidea.refactoring.inlinefile.resolveInlineFile
 import nl.hannahsten.texifyidea.util.runWriteAction
 import org.jetbrains.annotations.NonNls
 import java.io.File
@@ -175,7 +175,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
         if (inlineFile == null || !canInlineElement)
             return
 
-        val ref = getReference(element, editor)
+        val ref = getReference(editor)
 
         val processor = LatexInlineFileProcessor(
             project, inlineFile, ref, options.isInlineThisOnly, !options.isKeepTheDeclaration
