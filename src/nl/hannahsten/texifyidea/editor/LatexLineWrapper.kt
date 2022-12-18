@@ -1,18 +1,14 @@
 package nl.hannahsten.texifyidea.editor
 
 import com.intellij.formatting.FormatConstants
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.DataContextWrapper
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.LanguageLineWrapPositionStrategy
-import com.intellij.openapi.editor.ex.util.EditorFacadeImpl
 import com.intellij.openapi.editor.ex.util.EditorUtil
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.util.MathUtil
 import com.intellij.util.text.CharArrayUtil
+import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import java.awt.Font
 import kotlin.math.max
 import kotlin.math.min
@@ -23,8 +19,8 @@ import kotlin.math.min
 object LatexLineWrapper {
 
     fun doWrapLongLinesIfNecessary(
-        editor: Editor, project: Project, document: Document,
-        startOffset: Int, endOffset: Int, enabledRanges: List<TextRange>, rightMargin: Int
+        editor: Editor, document: Document, startOffset: Int,
+        endOffset: Int, enabledRanges: List<TextRange>, rightMargin: Int
     ) {
         // Normalization.
         val startOffsetToUse = MathUtil.clamp(startOffset, 0, document.textLength)
@@ -39,11 +35,16 @@ object LatexLineWrapper {
             tabSize = 1
         }
         val spaceSize = EditorUtil.getSpaceWidth(Font.PLAIN, editor)
-        val shifts = listOf(0, 0)
+        val shifts = mutableListOf(0, 0)
         // shifts[0] - lines shift.
         // shift[1] - offset shift.
         var cumulativeShift = 0
-        for (line in startLine until maxLine) {
+
+        // This is a for loop from line = startLine until maxLine (but Kotlin)
+        var line = startLine - 1
+        while (line < maxLine - 1) {
+            line++
+
             val startLineOffset = document.getLineStartOffset(line)
             val endLineOffset = document.getLineEndOffset(line)
             if (!canWrapLine(
@@ -88,7 +89,7 @@ object LatexLineWrapper {
 
             // Move caret to the target position and emulate pressing <enter>.
             editor.caretModel.moveToOffset(wrapOffset)
-            emulateEnter(editor, project, shifts)
+            emulateEnter(editor, shifts)
 
             //If number of inserted symbols on new line after wrapping more or equal then symbols left on previous line
             //there was no point to wrapping it, so reverting to before wrapping version
@@ -255,25 +256,50 @@ object LatexLineWrapper {
         return if (wrapLine) result else -1
     }
 
-    private fun prepareContext(project: Project, editor: Editor): DataContext {
-        // There is a possible case that formatting is performed from project view and editor is not opened yet. The problem is that
-        // its data context doesn't contain information about project then. So, we explicitly support that here (see IDEA-72791).
-        val editorProject = editor.project
-        val context = EditorUtil.getEditorDataContext(editor)
-        return if (editorProject != null) context
-        else object : DataContextWrapper(context) {
-            override fun getRawCustomData(dataId: String): Any? {
-                return if (CommonDataKeys.PROJECT.`is`(dataId)) project else null
-            }
-        }
-    }
-
     /**
      * Different from EditorFacade, this does not actually press enter, but wraps lines manually.
-     * 
+     *
+     * @param editor       target editor
+     * @param shifts       two-elements array which is expected to be filled with the following info:
+     *                       1. The first element holds added lines number;
+     *                       2. The second element holds added symbols number;
      * @author Thomas
      */
-    fun emulateEnter(editor: Editor, project: Project, shifts: List<int>) {
-        
+    private fun emulateEnter(editor: Editor, shifts: MutableList<Int>) {
+        val caretOffset = editor.caretModel.offset
+        val document = editor.document
+        val selectionModel = editor.selectionModel
+        var startSelectionOffset = 0
+        var endSelectionOffset = 0
+        val restoreSelection = selectionModel.hasSelection()
+        if (restoreSelection) {
+            startSelectionOffset = selectionModel.selectionStart
+            endSelectionOffset = selectionModel.selectionEnd
+            selectionModel.removeSelection()
+        }
+        val textLengthBeforeWrap = document.textLength
+        val lineCountBeforeWrap = document.lineCount
+
+        // CHANGED: Just insert a newline instead of pressing enter
+        // Keep the indent, but drop any whitespace that is now handled by the newline
+        val trailingWhitespace = document.text.subSequence(caretOffset, document.textLength).takeWhile { it.isWhitespace() }
+        val indent = document.lineIndentationByOffset(caretOffset)
+        document.replaceString(caretOffset, caretOffset + trailingWhitespace.length, "\n$indent")
+        editor.caretModel.moveToOffset(caretOffset - trailingWhitespace.length + indent.length)
+
+        val symbolsDiff = document.textLength - textLengthBeforeWrap
+        if (restoreSelection) {
+            var newSelectionStart = startSelectionOffset
+            var newSelectionEnd = endSelectionOffset
+            if (startSelectionOffset >= caretOffset) {
+                newSelectionStart += symbolsDiff
+            }
+            if (endSelectionOffset >= caretOffset) {
+                newSelectionEnd += symbolsDiff
+            }
+            selectionModel.setSelection(newSelectionStart, newSelectionEnd)
+        }
+        shifts[0] = document.lineCount - lineCountBeforeWrap
+        shifts[1] = symbolsDiff
     }
 }

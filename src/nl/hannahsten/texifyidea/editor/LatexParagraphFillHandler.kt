@@ -60,12 +60,10 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
             val file = element.containingFile
             val formatterTagHandler = FormatterTagHandler(CodeStyle.getSettings(file))
             val enabledRanges = formatterTagHandler.getEnabledRanges(file.node, TextRange.create(0, document.textLength))
-            // Deprecated ("a temporary solution") but there doesn't seem anything to replace it yet. Used all over by IJ as well.
 
             // Don't simulate enter to wrap lines like EditorFacade does, as it has side effects (source: Yann)
             LatexLineWrapper.doWrapLongLinesIfNecessary(
-                editor, element.project, document,
-                textRange.startOffset,
+                editor, document, textRange.startOffset,
                 textRange.startOffset + replacementText.length + 1,
                 enabledRanges,
                 CodeStyle.getSettings(file).getRightMargin(element.language)
