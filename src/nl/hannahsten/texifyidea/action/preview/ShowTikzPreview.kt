@@ -40,13 +40,13 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
 
             preamble += "\\usepackage{tikz, pgfplots, amsmath}\n"
 
-            // Add all of the tikz libs included in related packages (via \usetikzlibrary{}) to the produced document.
+            // Add all the tikz libs included in related packages (via \usetikzlibrary{}) to the produced document.
             val tikzLibs = PackageUtils.getIncludedTikzLibraries(psiFile)
             if (tikzLibs.isNotEmpty()) {
                 userPreamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
             }
 
-            // Add all of the pgfplots libs included in related packages (via \usepgfplotslibrary{}) to the produced document.
+            // Add all the pgfplots libs included in related packages (via \usepgfplotslibrary{}) to the produced document.
             val pgfLibs = PackageUtils.getIncludedPgfLibraries(psiFile)
             if (pgfLibs.isNotEmpty()) {
                 userPreamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
@@ -70,7 +70,7 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
             currElement = currElement.parentOfType(LatexEnvironment::class)!!
         }
 
-        // Finally, decide whether or not the outermost environment is tikz.
+        // Finally, decide whether the outermost environment is tikz.
         return if (currElement.isTikz()) currElement else null
     }
 

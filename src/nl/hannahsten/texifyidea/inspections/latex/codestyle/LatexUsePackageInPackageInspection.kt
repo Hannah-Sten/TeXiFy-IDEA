@@ -9,7 +9,7 @@ class LatexUsePackageInPackageInspection : TexifyRegexInspection(
     inspectionDisplayName = "Use of \\usepackage{...} instead of \\RequirePackage{...}",
     inspectionId = "UsePackageInPackage",
     errorMessage = { "Use \\RequirePackage{...} instead of \\usepackage{...}" },
-    // The \usepackage syntax is \usepackage[<options>]{<package name>}[<version info>].
+    // The \usepackage syntax is \\usepackage[<options>]{<package name>}[<version info>].
     pattern = Pattern.compile("\\\\usepackage(\\[[^]]*])?\\{([^}]*)}(\\[[^]]*])?"),
     quickFixName = { "Replace with \\RequirePackage" },
     replacement = { matcher, _ -> "\\RequirePackage${matcher.group(1) ?: ""}{${matcher.group(2)}}${matcher.group(3) ?: ""}" },

@@ -91,8 +91,8 @@ object LatexLineWrapper {
             editor.caretModel.moveToOffset(wrapOffset)
             emulateEnter(editor, shifts)
 
-            //If number of inserted symbols on new line after wrapping more or equal then symbols left on previous line
-            //there was no point to wrapping it, so reverting to before wrapping version
+            // If number of inserted symbols on new line after wrapping more or equal then symbols left on previous line
+            // there was no point to wrapping it, so reverting to before wrapping version
             if (shifts[1] - 1 >= wrapOffset - startLineOffset) {
                 document.deleteString(wrapOffset, wrapOffset + shifts[1])
             }
@@ -104,7 +104,7 @@ object LatexLineWrapper {
             }
         }
     }
-    
+
     private fun canWrapLine(startOffset: Int, endOffset: Int, offsetShift: Int, enabledRanges: List<TextRange>): Boolean {
         for (range in enabledRanges) {
             if (range.containsOffset(startOffset - offsetShift) && range.containsOffset(endOffset - offsetShift)) return true
@@ -122,7 +122,7 @@ object LatexLineWrapper {
      * @param startLineOffset       start offset of the text line to process
      * @param endLineOffset         end offset of the text line to process
      * @param targetRangeEndOffset  target text region's end offset
-     * @return                      negative value if no wrapping should be performed for the target line;
+     * @return negative value if no wrapping should be performed for the target line;
      * preferred wrap position otherwise
      */
     private fun calculatePreferredWrapPosition(
