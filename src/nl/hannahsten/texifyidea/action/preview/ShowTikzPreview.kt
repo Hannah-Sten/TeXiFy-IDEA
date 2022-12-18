@@ -40,13 +40,13 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
 
             preamble += "\\usepackage{tikz, pgfplots, amsmath}\n"
 
-            // Add all the tikz libs included in related packages (via \usetikzlibrary{}) to the produced document.
+            // Add all the tikz libs included in related packages (via \\usetikzlibrary{}) to the produced document.
             val tikzLibs = PackageUtils.getIncludedTikzLibraries(psiFile)
             if (tikzLibs.isNotEmpty()) {
                 userPreamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
             }
 
-            // Add all the pgfplots libs included in related packages (via \usepgfplotslibrary{}) to the produced document.
+            // Add all the pgfplots libs included in related packages (via \\usepgfplotslibrary{}) to the produced document.
             val pgfLibs = PackageUtils.getIncludedPgfLibraries(psiFile)
             if (pgfLibs.isNotEmpty()) {
                 userPreamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
