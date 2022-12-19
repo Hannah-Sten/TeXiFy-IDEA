@@ -7,7 +7,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.10.0"
+    id("org.jetbrains.intellij") version "1.10.1"
     kotlin("jvm") version ("1.7.22")
     kotlin("plugin.serialization") version ("1.7.22")
 
@@ -27,7 +27,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "7.3.2"
+    id("org.owasp.dependencycheck") version "7.4.0"
 
     id("org.jetbrains.changelog") version "2.0.0"
 }
@@ -94,13 +94,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.1.3")
-    implementation("io.ktor:ktor-client-cio:2.1.3")
-    implementation("io.ktor:ktor-client-auth:2.1.3")
-    implementation("io.ktor:ktor-client-content-negotiation:2.1.3")
-    implementation("io.ktor:ktor-server-core:2.1.3")
-    implementation("io.ktor:ktor-server-jetty:2.1.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.1.3")
+    implementation("io.ktor:ktor-client-core:2.2.0")
+    implementation("io.ktor:ktor-client-cio:2.2.0")
+    implementation("io.ktor:ktor-client-auth:2.2.0")
+    implementation("io.ktor:ktor-client-content-negotiation:2.2.0")
+    implementation("io.ktor:ktor-server-core:2.2.0")
+    implementation("io.ktor:ktor-server-jetty:2.2.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.0")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-2")
