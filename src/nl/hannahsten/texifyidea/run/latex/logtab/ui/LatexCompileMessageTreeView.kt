@@ -19,8 +19,8 @@ import java.util.*
 
 class LatexCompileMessageTreeView(
     val project: Project,
-    val latexMessageList: MutableList<LatexLogMessage>,
-    val bibtexMessageList: MutableList<BibtexLogMessage>
+    private val latexMessageList: MutableList<LatexLogMessage>,
+    private val bibtexMessageList: MutableList<BibtexLogMessage>
 ) :
     NewErrorTreeViewPanel(project, null) {
 

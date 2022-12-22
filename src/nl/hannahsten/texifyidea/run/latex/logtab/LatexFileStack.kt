@@ -32,7 +32,7 @@ class LatexFileStack(
 
     override fun peek(): String? = if (isEmpty()) null else super.peek()
 
-    fun pushFile(file: String, line: String) {
+    private fun pushFile(file: String, line: String) {
         push(file)
         if (debug) logger.info("$line ---- Opening $file")
         if (file.containsAny(setOf("(", ")"))) throw TeXception("$file is probably not a valid file")

@@ -3,7 +3,7 @@ linter: jetbrains/qodana-jvm:latest
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
-exclude:
+exclude: # Some of these are valid inspections but not important or accurate enough to fail the build
   - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag
   - name: HtmlRequiredLangAttribute
@@ -19,5 +19,10 @@ exclude:
       - .github
       - results
       - build
+      - test
   - name: BooleanMethodIsAlwaysInverted
   - name: SpellCheckingInspection
+  - name: UseJBColor  # In many cases we're not defining theme-dependent colors
+  - name: HtmlDeprecatedAttribute
+  - name: LanguageDetectionInspection
+  - name: GrazieInspection

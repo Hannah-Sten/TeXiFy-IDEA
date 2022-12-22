@@ -21,7 +21,7 @@ open class InsertDummyTextAction : AnAction() {
     /**
      * Opens and handles the dummy text UI.
      */
-    fun executeAction(file: PsiFile) {
+    private fun executeAction(file: PsiFile) {
         val project = file.project
         val editor = project.currentTextEditor()?.editor ?: return
 

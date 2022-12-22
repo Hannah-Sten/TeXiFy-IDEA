@@ -24,7 +24,7 @@ import java.io.File
  *
  * @author Hannah Schellekens
  */
-class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
+class InsertGraphicWizardAction(private val initialFile: File? = null) : AnAction() {
 
     /**
      * Opens and handles the graphic insertion wizard.
