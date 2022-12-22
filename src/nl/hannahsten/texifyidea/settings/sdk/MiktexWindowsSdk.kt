@@ -76,7 +76,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
     override fun isValidSdkHome(path: String): Boolean {
         // We want the MiKTeX 2.9 folder to be selected
-        // Assume path is of the form C:\Users\username\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\pdflatex.exe
+        // Assume path is of the form C:\\Users\\username\\AppData\\Local\\Programs\\MiKTeX 2.9\\miktex\\bin\\x64\\pdflatex.exe
         val directory = LatexSdkUtil.getPdflatexParentPath(Paths.get(path, "miktex").toString())
         return LatexSdkUtil.isPdflatexPresent(directory)
     }
