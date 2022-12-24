@@ -1,62 +1,54 @@
-package nl.hannahsten.texifyidea.util;
+package nl.hannahsten.texifyidea.util
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert
+import org.junit.Test
 
 /**
  * @author Hannah Schellekens
  */
-public class TexifyUtilTest {
-
+class TexifyUtilTest {
     @Test
-    public void appendExtension() throws Exception {
-        String path = "SomePath";
-        String extension = "tex";
-        String actualResult = StringsKt.appendExtension(path, extension);
-
-        String expectedResult = "SomePath.tex";
-        assertEquals("SomePath + tex", expectedResult, actualResult);
+    fun appendExtension() {
+        val path = "SomePath"
+        val extension = "tex"
+        val actualResult = path.appendExtension(extension)
+        val expectedResult = "SomePath.tex"
+        Assert.assertEquals("SomePath + tex", expectedResult, actualResult)
     }
 
     @Test
-    public void appendExtensionEndsDot() throws Exception {
-        String path = "SomePath.";
-        String extension = "tex";
-        String actualResult = StringsKt.appendExtension(path, extension);
-
-        String expectedResult = "SomePath.tex";
-        assertEquals("SomePath. + tex", expectedResult, actualResult);
+    fun appendExtensionEndsDot() {
+        val path = "SomePath."
+        val extension = "tex"
+        val actualResult = path.appendExtension(extension)
+        val expectedResult = "SomePath.tex"
+        Assert.assertEquals("SomePath. + tex", expectedResult, actualResult)
     }
 
     @Test
-    public void appendExtensionAlreadyThere() throws Exception {
-        String path = "SomePath.tex";
-        String extension = "tex";
-        String actualResult = StringsKt.appendExtension(path, extension);
-
-        String expectedResult = "SomePath.tex";
-        assertEquals("SomePath.tex + tex", expectedResult, actualResult);
+    fun appendExtensionAlreadyThere() {
+        val path = "SomePath.tex"
+        val extension = "tex"
+        val actualResult = path.appendExtension(extension)
+        val expectedResult = "SomePath.tex"
+        Assert.assertEquals("SomePath.tex + tex", expectedResult, actualResult)
     }
 
     @Test
-    public void appendExtensionDoubleExtesion() throws Exception {
-        String path = "SomePath.tex.tex";
-        String extension = "tex";
-        String actualResult = StringsKt.appendExtension(path, extension);
-
-        String expectedResult = "SomePath.tex.tex";
-        assertEquals("SomePath.tex.tex + tex", expectedResult, actualResult);
+    fun appendExtensionDoubleExtesion() {
+        val path = "SomePath.tex.tex"
+        val extension = "tex"
+        val actualResult = path.appendExtension(extension)
+        val expectedResult = "SomePath.tex.tex"
+        Assert.assertEquals("SomePath.tex.tex + tex", expectedResult, actualResult)
     }
 
     @Test
-    public void appendExtensionCrazyCapitals() throws Exception {
-        String path = "SoMEPaTH.TEx";
-        String extension = "tEX";
-        String actualResult = StringsKt.appendExtension(path, extension);
-
-        String expectedResult = "SomePath.tex";
-        assertTrue("SoMEPaTH.TEx + tEX", actualResult.equalsIgnoreCase(expectedResult));
+    fun appendExtensionCrazyCapitals() {
+        val path = "SoMEPaTH.TEx"
+        val extension = "tEX"
+        val actualResult = path.appendExtension(extension)
+        val expectedResult = "SomePath.tex"
+        Assert.assertTrue("SoMEPaTH.TEx + tEX", actualResult.equals(expectedResult, ignoreCase = true))
     }
 }
