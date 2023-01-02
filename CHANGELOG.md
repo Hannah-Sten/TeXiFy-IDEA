@@ -3,13 +3,8 @@
 ## [Unreleased]
 
 ### Added
-
-### Fixed
-
-## [0.7.26-alpha.3] - 2022-12-07
-
-### Added
 * Add support for inlining user-defined commands, by @jojo2357.
+* Add tabularray package, by @Yodude2002.
 
 ### Fixed
 * Improve error logging.
