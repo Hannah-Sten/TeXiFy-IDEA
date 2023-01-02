@@ -8,6 +8,7 @@
 
 ### Fixed
 * Improve error logging.
+* Fix exceptions.
 
 ## [0.7.25] - 2022-12-01
 Welcome to TeXiFy IDEA 0.7.25! This release has many additions by @jojo2357, enjoy!
