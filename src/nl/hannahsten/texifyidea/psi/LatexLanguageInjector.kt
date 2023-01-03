@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.lang.Language
+import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
@@ -40,6 +41,9 @@ class LatexLanguageInjector : LanguageInjector {
 
             val language = findLanguage(languageId) ?: return
 
+            // A parser definition is required
+            if (LanguageParserDefinitions.INSTANCE.forLanguage(language) == null) return
+
             val range = host.environmentContent?.textRange?.shiftRight(-host.textOffset) ?: TextRange.EMPTY_RANGE
 
             return registrar.addPlace(language, range, null, null)
@@ -50,6 +54,7 @@ class LatexLanguageInjector : LanguageInjector {
 
             val languageId = CommandMagic.languageInjections[parent.commandToken.text.substring(1)]
             val language = findLanguage(languageId) ?: return
+            if (LanguageParserDefinitions.INSTANCE.forLanguage(language) == null) return
             val range = host.textRange
                 .shiftRight(-host.textOffset)
                 .let { TextRange(it.startOffset + 1, it.endOffset - 1) }
