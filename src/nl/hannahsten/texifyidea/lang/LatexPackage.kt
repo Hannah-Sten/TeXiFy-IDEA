@@ -75,6 +75,7 @@ open class LatexPackage @JvmOverloads constructor(
         val SPLITINDEX = LatexPackage("splitindex")
         val STMARYRD = LatexPackage("stmaryrd")
         val SUBFILES = LatexPackage("subfiles")
+        val TABULARRAY = LatexPackage("tabularray")
         val TCOLORBOX = LatexPackage("tcolorbox")
         val TEXTCOMP = LatexPackage("textcomp")
         val TIKZ = LatexPackage("tikz")
