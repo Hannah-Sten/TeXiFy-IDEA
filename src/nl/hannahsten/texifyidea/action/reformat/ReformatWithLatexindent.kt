@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.reformat
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
@@ -27,4 +28,6 @@ class ReformatWithLatexindent : ExternalReformatAction("Reformat File with Latex
     override fun processOutput(output: String, file: PsiFile, project: Project) {
         replaceLatexFileContent(output, file, project)
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

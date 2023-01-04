@@ -1,9 +1,9 @@
 version: "1.0"
 linter: jetbrains/qodana-jvm:latest
 profile:
-  name: qodana.recommended
+  path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
-exclude:
+exclude: # Some of these are valid inspections but not important or accurate enough to fail the build
   - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag
   - name: HtmlRequiredLangAttribute
@@ -19,3 +19,17 @@ exclude:
       - .github
       - results
       - build
+      - test
+      - src/nl/hannahsten/texifyidea/action/preview/PreviewForm.form
+  - name: BooleanMethodIsAlwaysInverted
+  - name: SpellCheckingInspection
+  - name: UseJBColor  # In many cases we're not defining theme-dependent colors
+  - name: HtmlDeprecatedAttribute
+  - name: LanguageDetectionInspection
+  - name: GrazieInspection
+  - name: CheckDependencyLicenses # TeXiFy violates all sorts of licenses, don't care
+  # Qodana false positives:
+  - name: EmptyMethod
+  - name: SameReturnValue
+  - name: UnusedProperty
+  - name: EditorConfigKeyCorrectness

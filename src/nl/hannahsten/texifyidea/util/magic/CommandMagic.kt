@@ -3,6 +3,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.openapi.project.Project
+import com.intellij.ui.Gray
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
@@ -19,7 +20,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
-import java.awt.Color
 
 object CommandMagic {
 
@@ -72,13 +72,13 @@ object CommandMagic {
      * The colours that each section separator has.
      */
     val sectionSeparatorColors = mapOf(
-        PART.cmd to Color(152, 152, 152),
-        CHAPTER.cmd to Color(172, 172, 172),
-        SECTION.cmd to Color(182, 182, 182),
-        SUBSECTION.cmd to Color(202, 202, 202),
-        SUBSUBSECTION.cmd to Color(212, 212, 212),
-        PARAGRAPH.cmd to Color(222, 222, 222),
-        SUBPARAGRAPH.cmd to Color(232, 232, 232)
+        PART.cmd to Gray._152,
+        CHAPTER.cmd to Gray._172,
+        SECTION.cmd to Gray._182,
+        SUBSECTION.cmd to Gray._202,
+        SUBSUBSECTION.cmd to Gray._212,
+        PARAGRAPH.cmd to Gray._222,
+        SUBPARAGRAPH.cmd to Gray._232
     )
 
     /**

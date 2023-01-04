@@ -22,7 +22,7 @@ class LatexInlineCommandDialog(
     LatexInlineDialog(project, myDefinition, invokedOnReference) {
 
     init {
-        title = refactoringName
+        title = "Inline Command"
         init()
     }
 
@@ -59,11 +59,5 @@ class LatexInlineCommandDialog(
 
     override fun getNumberOfOccurrences(): Int {
         return if (myDefinition.definitionCommand() == null) 0 else super.getNumberOfOccurrences(myDefinition.definitionCommand())
-    }
-
-    companion object {
-
-        val refactoringName: String
-            get() = "Inline Command"
     }
 }

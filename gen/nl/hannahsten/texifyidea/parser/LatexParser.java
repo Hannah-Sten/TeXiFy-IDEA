@@ -12,7 +12,6 @@ import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 import static com.intellij.lang.WhitespacesBinders.*;
 
-@SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
 
   public ASTNode parse(IElementType t, PsiBuilder b) {

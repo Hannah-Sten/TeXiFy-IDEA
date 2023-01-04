@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.wizard.ipsum
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -10,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.text.TexifyIpsumGenerator
-import java.lang.StringBuilder
 import kotlin.random.Random
 
 /**
@@ -21,7 +21,7 @@ open class InsertDummyTextAction : AnAction() {
     /**
      * Opens and handles the dummy text UI.
      */
-    fun executeAction(file: PsiFile) {
+    private fun executeAction(file: PsiFile) {
         val project = file.project
         val editor = project.currentTextEditor()?.editor ?: return
 
@@ -49,6 +49,8 @@ open class InsertDummyTextAction : AnAction() {
         val shouldDisplayMenu = file?.isLatexFile() == true
         e.presentation.isVisible = shouldDisplayMenu
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     private fun Editor.insertDummyText(file: PsiFile, data: DummyTextData, indent: String) = when (data.ipsumType) {
         DummyTextData.IpsumType.BLINDTEXT -> insertBlindtext(file, data)

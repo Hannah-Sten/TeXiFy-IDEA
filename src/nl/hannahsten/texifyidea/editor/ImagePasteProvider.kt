@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.editor
 
 import com.intellij.ide.PasteProvider
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
@@ -59,4 +60,6 @@ open class ImagePasteProvider : PasteProvider {
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 /**
  * @author Hannah Schellekens, Abby Berkers
  */
-open class LatexMathToggle : TexifyIntentionBase("Convert to other math environment") {
+open class LatexMathToggleIntention : TexifyIntentionBase("Convert to other math environment") {
 
     /**
      * Checks if the intention is available, i.e., it is inline/display math, or one of the other math environments.

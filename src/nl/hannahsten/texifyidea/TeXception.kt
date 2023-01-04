@@ -22,7 +22,7 @@ open class TeXception : RuntimeException {
 /**
  * Exceptian that is thrown to signal that a request to one of the remote libraries failed.
  */
-class RemoteLibraryRequestTeXception(private val libraryName: String, val response: HttpResponse) : TeXception() {
+class RemoteLibraryRequestTeXception(private val libraryName: String, private val response: HttpResponse) : TeXception() {
 
     /**
      * Shows a notification with information about the failed request.

@@ -1,38 +1,8 @@
-<component name="InspectionProjectProfileManager">
-  <profile version="1.0">
-    <option name="myName" value="Project Default" />
-    <inspection_tool class="HttpUrlsUsage" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="ignoredUrls">
-        <list>
-          <option value="http://localhost" />
-          <option value="http://127.0.0.1" />
-          <option value="http://www.w3.org/2000/svg" />
-          <option value="http://www.w3.org/2000/10/XMLSchema" />
-          <option value="http://www.w3.org/2001/XMLSchema" />
-          <option value="http://www.w3.org/2001/XMLSchema-instance" />
-          <option value="http://www.w3.org/2003/03/wsdl" />
-          <option value="http://json-schema.org/draft" />
-          <option value="http://java.sun.com/xml/ns/" />
-          <option value="http://xmlns.jcp.org/xml/ns/" />
-          <option value="http://javafx.com/javafx/" />
-          <option value="http://javafx.com/fxml" />
-          <option value="http://maven.apache.org/xsd/" />
-          <option value="http://maven.apache.org/POM/" />
-          <option value="http://www.springframework.org/schema/" />
-          <option value="http://www.thymeleaf.org" />
-          <option value="http://www.ibm.com/webservices/xsd" />
-          <option value="http://schemas.xmlsoap.org/" />
-          <option value="http://cxf.apache.org/schemas/" />
-          <option value="http://www.w3.org" />
-        </list>
-      </option>
-    </inspection_tool>
-    <inspection_tool class="LiftReturnOrAssignment" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
-    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
-      <option name="processCode" value="true" />
-      <option name="processLiterals" value="true" />
-      <option name="processComments" value="true" />
-    </inspection_tool>
-    <inspection_tool class="UnusedSymbol" enabled="true" level="WEAK WARNING" enabled_by_default="true" editorAttributes="NOT_USED_ELEMENT_ATTRIBUTES" />
-  </profile>
-</component>
+<profile version="1.0">
+  <option name="myName" value="Project Default" />
+  <inspection_tool class="HtmlDeprecatedTag" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="SameParameterValue" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="UnusedSymbol" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="VtlReferencesInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="XmlDeprecatedElement" enabled="false" level="WARNING" enabled_by_default="false" />
+</profile>

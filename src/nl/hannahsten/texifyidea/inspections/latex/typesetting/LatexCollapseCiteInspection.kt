@@ -7,6 +7,8 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.refactoring.suggested.endOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -52,7 +54,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     cmd,
                     "Citations can be collapsed",
-                    InspectionFix(bundle),
+                    InspectionFix(bundle.map { SmartPointerManager.createPointer(it) }),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
@@ -138,14 +140,14 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      * in this bundle have only required parameters, as cites with optional parameters should not
      * be collapsed.
      */
-    private inner class InspectionFix(val citeBundle: List<LatexCommands>) : LocalQuickFix {
+    private inner class InspectionFix(val citeBundle: List<SmartPsiElementPointer<LatexCommands>>) : LocalQuickFix {
 
         override fun getFamilyName(): String {
             return "Collapse citations"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val sortedBundle = citeBundle.sortedBy { it.textOffset }
+            val sortedBundle = citeBundle.mapNotNull { it.element }.sortedBy { it.textOffset }
             // The bundle can contain a gap when the cite commands in it surround a cite command
             // that is not in the bundle, e.g., a cite command that has an optional parameter.
             val bundleContainsGap = sortedBundle
