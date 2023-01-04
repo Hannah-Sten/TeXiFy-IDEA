@@ -20,6 +20,7 @@ interface MagicKey<Key> : Described {
      * The contents of this property contain some human-readable information about the key.
      */
     val documentation: String
+        get() = ""
 
     /**
      * Denotes which scopes the magic key can target, i.e. in which contexts the keys can be used in a useful way.

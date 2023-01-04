@@ -26,3 +26,9 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   - name: HtmlDeprecatedAttribute
   - name: LanguageDetectionInspection
   - name: GrazieInspection
+  - name: CheckDependencyLicenses # TeXiFy violates all sorts of licenses, don't care
+  # Qodana false positives:
+  - name: EmptyMethod
+  - name: SameReturnValue
+  - name: UnusedProperty
+  - name: EditorConfigKeyCorrectness

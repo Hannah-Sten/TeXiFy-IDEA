@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
-class LatexVerbatimToggle : TexifyIntentionBase("Convert to other verbatim command or environment") {
+class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verbatim command or environment") {
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {
