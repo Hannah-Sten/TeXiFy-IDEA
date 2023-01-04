@@ -7,6 +7,7 @@ import org.junit.Test
  * @author Hannah Schellekens
  */
 class TexifyUtilTest {
+
     @Test
     fun appendExtension() {
         val path = "SomePath"

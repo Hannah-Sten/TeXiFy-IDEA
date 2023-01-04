@@ -20,6 +20,7 @@ exclude: # Some of these are valid inspections but not important or accurate eno
       - results
       - build
       - test
+      - src/nl/hannahsten/texifyidea/action/preview/PreviewForm.form
   - name: BooleanMethodIsAlwaysInverted
   - name: SpellCheckingInspection
   - name: UseJBColor  # In many cases we're not defining theme-dependent colors
