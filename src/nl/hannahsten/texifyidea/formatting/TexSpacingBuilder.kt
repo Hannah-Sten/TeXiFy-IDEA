@@ -28,7 +28,6 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
     /**
      * Basic spacing builder that is based on the implementation of [SpacingBuilder].
      */
-    @Suppress("RedundantOverride") // Abstract method has to be overridden
     inner class BasicSpacingBuilder : SpacingBuilder(commonSettings), Builder {
 
         override fun getSpacing(parent: ASTBlock, left: ASTBlock, right: ASTBlock): Spacing? {

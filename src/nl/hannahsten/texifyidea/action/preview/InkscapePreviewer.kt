@@ -36,7 +36,6 @@ class InkscapePreviewer : Previewer {
                         )
                     }
                     else {
-                        @Suppress("BlockingMethodInNonBlockingContext")
                         setPreviewCodeInTemp(FileUtil.createTempDirectory("preview", null), input, project, preamble, previewForm, waitTime)
                     }
                 }

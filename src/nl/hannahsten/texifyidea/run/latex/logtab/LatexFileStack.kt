@@ -77,10 +77,10 @@ class LatexFileStack(
         // (could be improved by actually checking the length of the 'file' group instead of line length)
         // Otherwise, match the file extension to avoid matching just text in parentheses
         val fileRegex = if (line.length >= LINE_WIDTH - 1) {
-            Regex("""\((?<file>"?\.*(([/\\])*[\w-\d. :])+"?)|\)""")
+            Regex("""\((?<file>"?\.*(([/\\])*[\w-. :])+"?)|\)""")
         }
         else {
-            Regex("""\((?<file>"?\.*(([/\\])*[\w-\d. :])+\.(\w{2,10})"?)|\)""")
+            Regex("""\((?<file>"?\.*(([/\\])*[\w-. :])+\.(\w{2,10})"?)|\)""")
         }
 
         var result = fileRegex.find(line)

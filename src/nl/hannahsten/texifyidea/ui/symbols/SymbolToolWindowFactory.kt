@@ -11,6 +11,7 @@ import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.SearchTextField
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
+import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
@@ -21,7 +22,6 @@ import java.awt.FlowLayout
 import java.util.*
 import javax.swing.JButton
 import javax.swing.JPanel
-import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 
 /**
@@ -83,7 +83,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
         }
 
         init {
-            border = EmptyBorder(8, 8, 8, 8)
+            border = JBUI.Borders.empty(8)
 
             add(filterPanel(), BorderLayout.NORTH)
             add(
@@ -92,7 +92,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
                     JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
                 ).apply {
-                    border = EmptyBorder(0, 0, 0, 0)
+                    border = JBUI.Borders.empty()
                 },
                 BorderLayout.CENTER
             )

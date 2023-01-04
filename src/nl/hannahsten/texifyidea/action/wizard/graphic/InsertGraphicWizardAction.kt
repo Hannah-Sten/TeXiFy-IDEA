@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.wizard.graphic
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -61,6 +62,8 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
         val shouldDisplayMenu = file?.isLatexFile() == true
         e.presentation.isVisible = shouldDisplayMenu
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     private fun Editor.insertGraphic(project: Project, data: InsertGraphicData, indent: String, tab: String = "    ") {
         // Only the graphics (non-centered).

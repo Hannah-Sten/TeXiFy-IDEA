@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.action.sumatra
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationNamesInfo
@@ -71,4 +72,6 @@ open class ConfigureInverseSearchAction : AnAction(
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = SumatraAvailabilityChecker.getSumatraAvailability()
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

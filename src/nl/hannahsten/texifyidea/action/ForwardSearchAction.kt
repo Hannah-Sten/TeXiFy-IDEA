@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
@@ -35,4 +36,6 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = e.project?.selectedRunConfig()?.pdfViewer == viewer
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

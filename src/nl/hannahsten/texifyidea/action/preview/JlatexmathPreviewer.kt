@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
+import com.intellij.ui.Gray
+import com.intellij.ui.JBColor
+import com.intellij.util.ui.JBUI
 import org.apache.batik.dom.GenericDOMImplementation
 import org.apache.batik.svggen.SVGGeneratorContext
 import org.apache.batik.svggen.SVGGraphics2D
@@ -15,9 +18,7 @@ import org.scilab.forge.jlatexmath.TeXConstants
 import org.scilab.forge.jlatexmath.TeXFormula
 import org.scilab.forge.jlatexmath.cyrillic.CyrillicRegistration
 import org.scilab.forge.jlatexmath.greek.GreekRegistration
-import java.awt.Color
 import java.awt.Dimension
-import java.awt.Insets
 import java.io.*
 import java.nio.file.Paths
 import javax.imageio.ImageIO
@@ -69,7 +70,7 @@ class JlatexmathPreviewer : Previewer {
         val transcoderInput = TranscoderInput(FileInputStream("$tempBaseName.svg"))
         val os = FileOutputStream("$tempBaseName.png")
         val transcoderOutput = TranscoderOutput(os)
-        transcoder.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
+        transcoder.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, JBColor.WHITE)
         transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, scaledWidth)
         transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, scaledHeight)
 
@@ -95,12 +96,12 @@ class JlatexmathPreviewer : Previewer {
         DefaultTeXFont.registerAlphabet(GreekRegistration())
         val formula = TeXFormula(latex)
         val icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20f)
-        icon.insets = Insets(5, 5, 5, 5)
+        icon.insets = JBUI.insets(5)
         g2.svgCanvasSize = Dimension(icon.iconWidth, icon.iconHeight)
-        g2.color = Color.white
+        g2.color = JBColor.WHITE
         g2.fillRect(0, 0, icon.iconWidth, icon.iconHeight)
         val jl = JLabel()
-        jl.foreground = Color(0, 0, 0)
+        jl.foreground = Gray._0
         icon.paintIcon(jl, g2, 0, 0)
         val useCSS = true
         val svgs = FileOutputStream("$tempBaseName.svg")
