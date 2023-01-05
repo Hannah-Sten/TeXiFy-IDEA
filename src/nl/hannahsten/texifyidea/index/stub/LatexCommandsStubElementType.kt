@@ -43,9 +43,7 @@ class LatexCommandsStubElementType(debugName: String) :
     }
 
     // Should equal externalIdPrefix from registration in index.xml plus field name in LatexStubElementTypes
-    override fun getExternalId(): String {
-        return "texify.latex.COMMANDS"
-    }
+    override fun getExternalId() = "texify.latex." + super.toString()
 
     @Throws(IOException::class)
     override fun serialize(
