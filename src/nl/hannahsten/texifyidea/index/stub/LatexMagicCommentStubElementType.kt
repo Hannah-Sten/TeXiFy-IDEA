@@ -18,7 +18,7 @@ open class LatexMagicCommentStubElementType(debugName: String) : IStubElementTyp
         return LatexMagicCommentStubImpl(parentStub, this, psi.key().toString(), psi.value())
     }
 
-    override fun getExternalId(): String = "MAGIC_COMMENT"
+    override fun getExternalId() = "texify.latex." + super.toString()
 
     @Throws(IOException::class)
     override fun serialize(stub: LatexMagicCommentStub, dataStream: StubOutputStream) {

@@ -20,7 +20,7 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
         return LatexEnvironmentStubImpl(parentStub, this, psi.environmentName, psi.label ?: "")
     }
 
-    override fun getExternalId() = "ENVIRONMENT"
+    override fun getExternalId() = "texify.latex." + super.toString()
 
     @Throws(IOException::class)
     override fun serialize(stub: LatexEnvironmentStub, dataStream: StubOutputStream) {
