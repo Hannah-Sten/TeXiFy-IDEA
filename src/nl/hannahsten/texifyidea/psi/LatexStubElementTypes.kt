@@ -7,11 +7,11 @@ import com.intellij.psi.tree.IElementType
  */
 @Suppress("PropertyName")
 interface LatexStubElementTypes {
+
     val COMMANDS: IElementType
         get() = LatexTypes.COMMANDS
     val ENVIRONMENT: IElementType
         get() = LatexTypes.ENVIRONMENT
     val MAGIC_COMMENT: IElementType
         get() = LatexTypes.MAGIC_COMMENT
-
 }
