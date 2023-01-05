@@ -1,5 +1,3 @@
-@file:Suppress("UnusedImport")
-
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.diagnostic.RuntimeExceptionWithAttachments

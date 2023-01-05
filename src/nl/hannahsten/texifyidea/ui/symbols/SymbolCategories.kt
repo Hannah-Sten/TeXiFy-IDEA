@@ -986,7 +986,7 @@ object SymbolCategories {
      * @param requireLeftRight
      *          True if the commands should be preceded with \left and \right. False if the commands alone suffice.
      */
-    fun MutableList<SymbolUiEntry>.addLeftRight(
+    private fun MutableList<SymbolUiEntry>.addLeftRight(
         left: LatexCommand, right: LatexCommand, description: String, fileName: String, requireLeftRight: Boolean = true
     ) {
         val leftCmd = if (requireLeftRight) "\\left" else ""

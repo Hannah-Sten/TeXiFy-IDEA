@@ -8,6 +8,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.panels.HorizontalLayout
+import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.KeyAdapter
@@ -15,7 +16,6 @@ import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.text.JTextComponent
@@ -160,7 +160,7 @@ fun JPanel.addLabeledComponent(
     val pane = JPanel(BorderLayout()).apply {
         val label = JBLabel(description).apply {
             // Left padding.
-            border = EmptyBorder(0, leftPadding, 0, 0)
+            border = JBUI.Borders.emptyLeft(leftPadding)
 
             // Custom width if specified.
             labelWidth?.let {

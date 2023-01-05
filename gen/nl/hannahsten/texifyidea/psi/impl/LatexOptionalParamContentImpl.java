@@ -81,10 +81,4 @@ public class LatexOptionalParamContentImpl extends ASTWrapperPsiElement implemen
     return PsiTreeUtil.getChildOfType(this, LatexRawText.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getCommandIfnextchar() {
-    return findChildByType(COMMAND_IFNEXTCHAR);
-  }
-
 }

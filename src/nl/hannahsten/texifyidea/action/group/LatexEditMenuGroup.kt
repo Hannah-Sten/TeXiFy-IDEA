@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.group
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -14,4 +15,6 @@ open class LatexEditMenuGroup : DefaultActionGroup() {
         val file = event.getData(CommonDataKeys.PSI_FILE)
         event.presentation.isEnabledAndVisible = file?.isLatexFile() ?: false
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

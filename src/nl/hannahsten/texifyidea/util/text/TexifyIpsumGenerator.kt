@@ -39,13 +39,13 @@ open class TexifyIpsumGenerator(
      * minimum amount of paragraphs..maximum amount of paragraphs.
      * Definitive amount is randomly determined.
      */
-    val numberOfParagraphs: IntRange = 3..7,
+    private val numberOfParagraphs: IntRange = 3..7,
 
     /**
      * minimum amount of sentences in a paragraph..maximum amount of sentences in a paragraph.
      * Definitive amount is randomly determined for each paragraph.
      */
-    val numberOfSentences: IntRange = 2..20,
+    private val numberOfSentences: IntRange = 2..20,
 
     /**
      * The random object to use to generate randomness.

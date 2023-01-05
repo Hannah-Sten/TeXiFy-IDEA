@@ -5,22 +5,22 @@ package nl.hannahsten.texifyidea.lang.commands
  */
 object LatexRegularCommand {
 
-    val GENERIC: Set<LatexCommand> = LatexGenericRegularCommand.values().toSet()
-    val TEXTCOMP: Set<LatexCommand> = LatexTextcompCommand.values().toSet()
-    val EURO: Set<LatexCommand> = LatexEuroCommand.values().toSet()
-    val TEXT_SYMBOLS: Set<LatexCommand> = LatexTextSymbolCommand.values().toSet()
-    val NEW_DEFINITIONS: Set<LatexCommand> = LatexNewDefinitionCommand.values().toSet()
-    val MATHTOOLS: Set<LatexCommand> = LatexMathtoolsRegularCommand.values().toSet()
-    val XCOLOR: Set<LatexCommand> = LatexColorDefinitionCommand.values().toSet()
-    val XPARSE: Set<LatexCommand> = LatexXparseCommand.values().toSet()
-    val NATBIB: Set<LatexCommand> = LatexNatbibCommand.values().toSet()
-    val BIBLATEX: Set<LatexCommand> = LatexBiblatexCommand.values().toSet()
-    val SIUNITX: Set<LatexCommand> = LatexSiunitxCommand.values().toSet()
-    val ALGORITHMICX: Set<LatexCommand> = LatexAlgorithmicxCommand.values().toSet()
-    val IFS: Set<LatexCommand> = LatexIfCommand.values().toSet()
-    val LISTINGS: Set<LatexCommand> = LatexListingCommand.values().toSet()
-    val LOREM_IPSUM: Set<LatexCommand> = LatexLoremIpsumCommand.values().toSet()
-    val GLOSSARY: Set<LatexCommand> = LatexGlossariesCommand.values().toSet()
+    private val GENERIC: Set<LatexCommand> = LatexGenericRegularCommand.values().toSet()
+    private val TEXTCOMP: Set<LatexCommand> = LatexTextcompCommand.values().toSet()
+    private val EURO: Set<LatexCommand> = LatexEuroCommand.values().toSet()
+    private val TEXT_SYMBOLS: Set<LatexCommand> = LatexTextSymbolCommand.values().toSet()
+    private val NEW_DEFINITIONS: Set<LatexCommand> = LatexNewDefinitionCommand.values().toSet()
+    private val MATHTOOLS: Set<LatexCommand> = LatexMathtoolsRegularCommand.values().toSet()
+    private val XCOLOR: Set<LatexCommand> = LatexColorDefinitionCommand.values().toSet()
+    private val XPARSE: Set<LatexCommand> = LatexXparseCommand.values().toSet()
+    private val NATBIB: Set<LatexCommand> = LatexNatbibCommand.values().toSet()
+    private val BIBLATEX: Set<LatexCommand> = LatexBiblatexCommand.values().toSet()
+    private val SIUNITX: Set<LatexCommand> = LatexSiunitxCommand.values().toSet()
+    private val ALGORITHMICX: Set<LatexCommand> = LatexAlgorithmicxCommand.values().toSet()
+    private val IFS: Set<LatexCommand> = LatexIfCommand.values().toSet()
+    private val LISTINGS: Set<LatexCommand> = LatexListingCommand.values().toSet()
+    private val LOREM_IPSUM: Set<LatexCommand> = LatexLoremIpsumCommand.values().toSet()
+    private val GLOSSARY: Set<LatexCommand> = LatexGlossariesCommand.values().toSet()
 
     val ALL: Set<LatexCommand> = GENERIC + TEXTCOMP + EURO + TEXT_SYMBOLS + NEW_DEFINITIONS + MATHTOOLS +
         XCOLOR + XPARSE + NATBIB + BIBLATEX + SIUNITX + ALGORITHMICX + IFS + LISTINGS + LOREM_IPSUM + GLOSSARY

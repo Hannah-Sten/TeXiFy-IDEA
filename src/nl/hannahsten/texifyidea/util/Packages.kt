@@ -109,6 +109,7 @@ object PackageUtils {
             PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
             if (anchorAfter != null) {
                 val anchorBefore = anchorAfter.node.treeNext
+                @Suppress("KotlinConstantConditions")
                 if (prependNewLine) {
                     val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
                     anchorAfter.parent.node.addChild(newLine, anchorBefore)

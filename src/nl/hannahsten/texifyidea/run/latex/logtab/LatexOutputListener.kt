@@ -22,8 +22,8 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer
 class LatexOutputListener(
     val project: Project,
     val mainFile: VirtualFile?,
-    val messageList: MutableList<LatexLogMessage>,
-    val bibMessageList: MutableList<BibtexLogMessage>,
+    private val messageList: MutableList<LatexLogMessage>,
+    private val bibMessageList: MutableList<BibtexLogMessage>,
     val treeView: LatexCompileMessageTreeView
 ) : ProcessListener {
 
@@ -56,8 +56,8 @@ class LatexOutputListener(
     private var isCollectingBib = false
     private val bibtexOutputListener = BibtexOutputListener(project, mainFile, bibMessageList, treeView)
 
-    var isCollectingMessage = false
-    var currentLogMessage: LatexLogMessage? = null
+    private var isCollectingMessage = false
+    private var currentLogMessage: LatexLogMessage? = null
 
     // Stack with the filenames, where the first is the current file.
     private var fileStack = LatexFileStack()

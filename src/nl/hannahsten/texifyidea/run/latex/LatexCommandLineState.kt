@@ -23,8 +23,8 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
-import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
+import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
@@ -165,6 +165,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
 
             // Schedule the second compile only if this is the first compile
+            @Suppress("KotlinConstantConditions")
             if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
                 handler.addProcessListener(RunLatexListener(runConfig, environment))
                 return false
