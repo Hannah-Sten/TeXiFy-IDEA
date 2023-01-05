@@ -8,6 +8,7 @@
 
 ### Fixed
 * Improve error logging.
+* Fix exceptions.
 * Filter out uninjectable languages in intention.
 
 ## [0.7.25] - 2022-12-01
