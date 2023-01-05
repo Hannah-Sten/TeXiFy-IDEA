@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.application.options.CodeStyle
 import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
@@ -320,17 +320,38 @@ fun Int?.ifPositiveAddTwo(): Int =
     }
 
     fun testComments() {
-        // Wanted to test line breaking, but not sure how to enable it in test
         val text = """
-            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
+            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects<caret>
         """.trimIndent()
-        val file = myFixture.configureByText(LatexFileType, text)
-        CodeStyle.getLanguageSettings(file).RIGHT_MARGIN = 50
-        CodeStyle.getLanguageSettings(file).WRAP_ON_TYPING = CommonCodeStyleSettings.WrapOnTyping.WRAP.intValue
-//        CodeStyle.getDefaultSettings().WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN = true
-        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+        myFixture.configureByText(LatexFileType, text)
+        val settings = CodeStyle.createTestSettings(CodeStyle.getSettings(project))
+        CodeStyleSettingsManager.getInstance(project).setTemporarySettings(settings)
+//        settings.WRAP_ON_TYPING = CommonCodeStyleSettings.WrapOnTyping.WRAP.intValue
+        settings.defaultRightMargin = 50
+        settings.WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN = true
+
+        // For some reason this doesn't work, typing and using wrap on typing is the closest workaround
+        myFixture.performEditorAction("ReformatCode")
+        myFixture.type(".")
         val expected = """
-            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
+            % Calculated protections are able to develop 
+            % anxious insurances when they prick notes and relate identities and rejects.
+        """.trimIndent()
+        myFixture.checkResult(expected)
+    }
+
+    fun testUrlWrap() {
+        val text = """
+            \href{https://the-very-very-long.url}{unreasonable long <caret>}
+        """.trimIndent()
+        myFixture.configureByText(LatexFileType, text)
+        val settings = CodeStyle.createTestSettings(CodeStyle.getSettings(project))
+        CodeStyleSettingsManager.getInstance(project).setTemporarySettings(settings)
+        settings.defaultRightMargin = 30
+        settings.WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN = true
+        myFixture.type("URL")
+        val expected = """
+            \href{https://the-very-very-long.url}{unreasonable long URL}
         """.trimIndent()
         myFixture.checkResult(expected)
     }
