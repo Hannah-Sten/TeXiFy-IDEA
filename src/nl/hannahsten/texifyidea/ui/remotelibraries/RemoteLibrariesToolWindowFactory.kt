@@ -69,7 +69,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
         val libraries = RemoteLibraryManager.getInstance().getLibraries().toMap().entries
 
-        val rootNode = DefaultMutableTreeNode().apply {
+        private val rootNode = DefaultMutableTreeNode().apply {
             // Add all the bib items for each library.
             libraries.forEach { library ->
                 val libraryNode = LibraryMutableTreeNode(library.key, library.value.displayName).apply {

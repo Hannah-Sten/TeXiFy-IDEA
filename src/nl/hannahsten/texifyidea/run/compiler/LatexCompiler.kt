@@ -18,7 +18,7 @@ import java.util.*
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-@Suppress("unused", "DuplicatedCode")
+@Suppress("DuplicatedCode")
 enum class LatexCompiler(private val displayName: String, val executableName: String) {
 
     PDFLATEX("pdfLaTeX", "pdflatex") {

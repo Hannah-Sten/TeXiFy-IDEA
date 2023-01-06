@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.skim
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
@@ -20,4 +21,6 @@ class ConfigureInverseSearchAction : AnAction() {
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = InternalPdfViewer.SKIM.isAvailable()
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

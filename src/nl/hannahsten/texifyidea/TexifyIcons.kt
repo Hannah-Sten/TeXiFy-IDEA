@@ -45,7 +45,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val TIKZ_FILE_SMALLER = IconLoader.getIcon(
+    private val TIKZ_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/tikz-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -59,7 +59,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val PDF_FILE_SMALLER = IconLoader.getIcon(
+    private val PDF_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/pdf-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -73,7 +73,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val DVI_FILE_SMALLER = IconLoader.getIcon(
+    private val DVI_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/dvi-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -87,7 +87,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val BIBLIOGRAPHY_FILE_SMALLER = IconLoader.getIcon(
+    private val BIBLIOGRAPHY_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/bibliography-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -101,7 +101,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val CLASS_FILE_SMALLER = IconLoader.getIcon(
+    private val CLASS_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/class-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -115,7 +115,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val DOCUMENTED_LATEX_SOURCE_SMALLER = IconLoader.getIcon(
+    private val DOCUMENTED_LATEX_SOURCE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/doc-latex-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -129,7 +129,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val STYLE_FILE_SMALLER = IconLoader.getIcon(
+    private val STYLE_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/style-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -143,7 +143,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val FILE_SMALLER = IconLoader.getIcon(
+    private val FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -164,7 +164,7 @@ object TexifyIcons {
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val SYNCTEX_FILE_SMALLER = IconLoader.getIcon(
+    private val SYNCTEX_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/synctex-file_smaller.svg", TexifyIcons::class.java
     )
 
@@ -192,14 +192,14 @@ object TexifyIcons {
     /**
      * Copyright (c) 2017 Hannah Schellekens
      */
-    val TEXT_FILE = IconLoader.getIcon(
+    private val TEXT_FILE = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/text-file.svg", TexifyIcons::class.java
     )
 
     /**
      * Copyright (c) 2021 Hannah Schellekens
      */
-    val TEXT_FILE_SMALLER = IconLoader.getIcon(
+    private val TEXT_FILE_SMALLER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/text-file_smaller.svg", TexifyIcons::class.java
     )
 

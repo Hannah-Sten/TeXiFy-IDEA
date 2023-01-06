@@ -213,7 +213,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
      * executes without a goal in mind, `false` if the algorithm stops when the target has
      * been found.
      */
-    fun hasGoal(): Boolean {
+    private fun hasGoal(): Boolean {
         return end == null
     }
 
