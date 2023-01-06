@@ -78,12 +78,12 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.5")
+    implementation("org.slf4j:slf4j-simple:2.0.6")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.6.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.6.1")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
@@ -94,16 +94,16 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.2.1")
-    implementation("io.ktor:ktor-client-cio:2.2.0")
-    implementation("io.ktor:ktor-client-auth:2.2.1")
-    implementation("io.ktor:ktor-client-content-negotiation:2.2.0")
-    implementation("io.ktor:ktor-server-core:2.2.1")
-    implementation("io.ktor:ktor-server-jetty:2.2.0")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.0")
+    implementation("io.ktor:ktor-client-core:2.2.2")
+    implementation("io.ktor:ktor-client-cio:2.2.2")
+    implementation("io.ktor:ktor-client-auth:2.2.2")
+    implementation("io.ktor:ktor-client-content-negotiation:2.2.2")
+    implementation("io.ktor:ktor-server-core:2.2.2")
+    implementation("io.ktor:ktor-server-jetty:2.2.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.2")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-2")
+    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-3")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")

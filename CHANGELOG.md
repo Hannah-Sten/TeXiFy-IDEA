@@ -3,12 +3,19 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+* Improve performance when checking pdf viewer availability.
+
+## [0.7.26-alpha.4] - 2023-01-05
+
+### Added
 * Add support for inlining user-defined commands, by @jojo2357.
 * Add tabularray package, by @Yodude2002.
 
 ### Fixed
 * Improve error logging.
-* Improve performance when checking pdf viewer availability.
+* Fix exceptions.
 * Filter out uninjectable languages in intention.
 
 ## [0.7.25] - 2022-12-01
@@ -36,6 +43,7 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.3...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.4...HEAD
 [0.7.26-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26-alpha.3
+[0.7.26-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26-alpha.4
 [0.7.25]: https://github.com/Hannah-Sten/TeXiFy-IDEA/commits/v0.7.25
