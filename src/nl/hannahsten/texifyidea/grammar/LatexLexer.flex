@@ -88,10 +88,12 @@ PLAIN_VERBATIM_COMMAND=\\verb | \\verb\* | \\path
 
 // Verbatim commands which can also have normal optional/required parameters (or a same-character delimiter)
 VERBATIM_COMMAND=\\directlua | \\luaexec | \\lstinline
- // These can contain unescaped % for example.
- | \\url | \\href
  // PythonTex Python code commands
  | \\py | \\pyb | \\pyc | \\pys | \\pyv
+ // These can contain unescaped % for example, so also have to be treated verbatim
+URL_COMMAND=\\url | \\href
+// Here we ignore that url can have any delimiter, and that technically the braces are not part of the url
+URL_PARAMETER=\{[^}]+}|\|[^|]+\|
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
 PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 
@@ -128,7 +130,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
-%xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START
+%xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START URL_START
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
@@ -148,6 +150,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // Use a separate state to start verbatim, to be able to return a command token for \verb
 {PLAIN_VERBATIM_COMMAND}  { yypushState(INLINE_VERBATIM_PLAIN_START); return COMMAND_TOKEN; }
 {VERBATIM_COMMAND}        { yypushState(INLINE_VERBATIM_NORMAL_START); return COMMAND_TOKEN; }
+{URL_COMMAND}             { yypushState(URL_START); return COMMAND_TOKEN; }
 
 // This is like INLINE_VERBATIM_START, but because lstinline supports normal optional/required parameters instead of two of the same delimiters,
 // it is a separate state so that other verbatim commands are unlikely to be picked up incorrectly
@@ -162,6 +165,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {CLOSE_BRACKET}      { yypopState(); return CLOSE_BRACKET; }
     {OPEN_PAREN}         { yypopState(); return OPEN_PAREN; }
     \\                   { yypopState(); return BACKSLASH; }
+    [^]                  { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+}
+
+// This is like INLINE_VERBATIM_NORMAL_START, but the verbatim content has to be one token to avoid line breaking it
+<URL_START> {
+    {URL_PARAMETER}      { yypopState(); return RAW_TEXT_TOKEN; }
     [^]                  { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 
