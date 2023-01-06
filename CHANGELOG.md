@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Improve performance when checking pdf viewer availability.
 
 ## [0.7.26-alpha.4] - 2023-01-05
 
