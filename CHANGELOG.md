@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Reformat suggested file name before showing it to the user, instead of afterwards.
 
 ## [0.7.26-alpha.4] - 2023-01-05
 
