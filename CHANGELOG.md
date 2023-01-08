@@ -6,6 +6,7 @@
 
 ### Fixed
 * Reformat suggested file name before showing it to the user, instead of afterwards.
+* Improve performance when checking pdf viewer availability.
 
 ## [0.7.26-alpha.4] - 2023-01-05
 
