@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Don't wrap urls when formatting.
 
 ### Fixed
 
