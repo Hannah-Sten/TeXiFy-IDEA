@@ -13,13 +13,13 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.editor.ControlTracker
-import nl.hannahsten.texifyidea.editor.ShiftTracker
+import com.sun.jna.platform.KeyboardUtils
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import java.awt.event.KeyEvent
 
 /**
  * @author Hannah Schellekens
@@ -39,9 +39,6 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
             return Result.Continue
         }
 
-        ShiftTracker.setup(editor.contentComponent)
-        ControlTracker.setup(editor.contentComponent)
-
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset)
         if (hasValidContext(element)) {
@@ -57,7 +54,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
             }
         }
         else {
-            if (ControlTracker.isControlPressed) {
+            if (KeyboardUtils.isPressed(KeyEvent.VK_CONTROL)) {
                 editor.insertAtCaretAndMove("")
             }
         }
@@ -134,7 +131,9 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
     private fun hasValidContext(element: PsiElement?): Boolean {
-        if (!TexifySettings.getInstance().automaticItemInItemize || element == null || ShiftTracker.isShiftPressed() || ControlTracker.isControlPressed || element.inMathContext()) {
+        if (!TexifySettings.getInstance().automaticItemInItemize || element == null || KeyboardUtils.isPressed(
+                KeyEvent.VK_SHIFT) || KeyboardUtils.isPressed(
+                KeyEvent.VK_CONTROL) || element.inMathContext()) {
             return false
         }
 

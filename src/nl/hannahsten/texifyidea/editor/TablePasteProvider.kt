@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
+import com.sun.jna.platform.KeyboardUtils
 import nl.hannahsten.texifyidea.action.wizard.table.ColumnType
 import nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction
 import nl.hannahsten.texifyidea.action.wizard.table.TableCreationDialogWrapper
@@ -16,6 +17,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.awt.datatransfer.DataFlavor
+import java.awt.event.KeyEvent
 import java.util.*
 
 /**
@@ -38,7 +40,7 @@ open class TablePasteProvider : PasteProvider {
     override fun isPastePossible(dataContext: DataContext): Boolean {
         val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
         if (file.isLatexFile().not()) return false
-        if (ShiftTracker.isShiftPressed()) return false
+        if (KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) return false
 
         val pasteData = dataContext.transferableHtml() ?: return false
         return pasteData.contains("<table", ignoreCase = true)

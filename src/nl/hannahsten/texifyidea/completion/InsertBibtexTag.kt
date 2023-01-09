@@ -12,11 +12,12 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import nl.hannahsten.texifyidea.editor.ShiftTracker
+import com.sun.jna.platform.KeyboardUtils
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import java.awt.event.KeyEvent
 import java.util.*
 
 /**
@@ -25,7 +26,6 @@ import java.util.*
 open class InsertBibtexTag : EnterHandlerDelegate {
 
     override fun postProcessEnter(file: PsiFile, editor: Editor, context: DataContext): Result {
-        ShiftTracker.setup(editor.contentComponent)
         if (file.fileType != BibtexFileType) {
             return Result.Continue
         }
@@ -61,7 +61,7 @@ open class InsertBibtexTag : EnterHandlerDelegate {
      * @return `true` when in valid context, `false` when nothing should happen or when the element is `null`.
      */
     private fun hasValidContext(element: PsiElement?, editor: Editor): Boolean {
-        if (element == null || ShiftTracker.isShiftPressed()) {
+        if (element == null || KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
             return false
         }
 
