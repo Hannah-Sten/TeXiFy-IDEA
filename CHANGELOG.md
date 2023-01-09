@@ -6,6 +6,8 @@
 
 ### Fixed
 * Improve performance when checking pdf viewer availability.
+* Fix robust inline math brace matching.
+* Fix unreliable \item insertion in itemize.
 
 ## [0.7.26-alpha.4] - 2023-01-05
 
