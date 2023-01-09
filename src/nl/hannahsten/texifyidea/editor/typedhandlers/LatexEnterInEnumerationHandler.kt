@@ -131,9 +131,13 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
     private fun hasValidContext(element: PsiElement?): Boolean {
-        if (!TexifySettings.getInstance().automaticItemInItemize || element == null || KeyboardUtils.isPressed(
-                KeyEvent.VK_SHIFT) || KeyboardUtils.isPressed(
-                KeyEvent.VK_CONTROL) || element.inMathContext()) {
+        if (
+            !TexifySettings.getInstance().automaticItemInItemize ||
+            element == null ||
+            KeyboardUtils.isPressed(KeyEvent.VK_SHIFT) ||
+            KeyboardUtils.isPressed(KeyEvent.VK_CONTROL) ||
+            element.inMathContext()
+        ) {
             return false
         }
 
