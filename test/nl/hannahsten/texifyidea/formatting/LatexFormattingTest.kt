@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.application.options.CodeStyle
 import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
@@ -315,22 +314,6 @@ fun Int?.ifPositiveAddTwo(): Int =
             Don't indent this if turned off.
             Don't indent this either<caret>
             \end{document}
-        """.trimIndent()
-        myFixture.checkResult(expected)
-    }
-
-    fun testComments() {
-        // Wanted to test line breaking, but not sure how to enable it in test
-        val text = """
-            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
-        """.trimIndent()
-        val file = myFixture.configureByText(LatexFileType, text)
-        CodeStyle.getLanguageSettings(file).RIGHT_MARGIN = 50
-        CodeStyle.getLanguageSettings(file).WRAP_ON_TYPING = CommonCodeStyleSettings.WrapOnTyping.WRAP.intValue
-//        CodeStyle.getDefaultSettings().WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN = true
-        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
-        val expected = """
-            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
         """.trimIndent()
         myFixture.checkResult(expected)
     }

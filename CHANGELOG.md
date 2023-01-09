@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Don't wrap urls when formatting.
 
 ### Fixed
 * Improve performance when checking pdf viewer availability.
