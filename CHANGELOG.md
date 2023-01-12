@@ -5,9 +5,22 @@
 ### Added
 
 ### Fixed
-* Improve performance when checking pdf viewer availability.
-* Fix robust inline math brace matching.
 * Fix unreliable \item insertion in itemize.
+
+## [0.7.26-alpha.5] - 2023-01-11
+
+### Added
+* Don't wrap urls when formatting.
+* Add support for inlining user-defined commands, by @jojo2357.
+* Add tabularray package, by @Yodude2002.
+
+### Fixed
+* Improve performance when checking pdf viewer availability.
+* Improve error logging.
+* Fix exceptions.
+* Filter out uninjectable languages in intention.
+* Fix robust inline math brace matching.
+* Fix custom file name being overridden in inspection quickfix.
 
 ## [0.7.26-alpha.4] - 2023-01-05
 
@@ -45,7 +58,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.4...HEAD
-[0.7.26-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26-alpha.3
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.5...HEAD
 [0.7.26-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26-alpha.4
+[0.7.26-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26-alpha.3
+[0.7.26-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.4...v0.7.26-alpha.5
 [0.7.25]: https://github.com/Hannah-Sten/TeXiFy-IDEA/commits/v0.7.25

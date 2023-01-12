@@ -27,7 +27,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "7.4.3"
+    id("org.owasp.dependencycheck") version "7.4.4"
 
     id("org.jetbrains.changelog") version "2.0.0"
 }
@@ -117,14 +117,14 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.1")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.2")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.9.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.9.2")
 
     testImplementation("io.mockk:mockk:1.13.3")
 
