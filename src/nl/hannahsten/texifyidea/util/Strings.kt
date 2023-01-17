@@ -160,7 +160,7 @@ fun String.remove(string: String): String = this.replace(string, "")
 fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "\\")
 
 /**
- * Formats the string as a valid filepath, removing not-allowed characters, in TeX-style with - as separator. Any / or \ characters are not removed.
+ * Formats the string as a valid filepath in our recommended LaTeX style, removing not-allowed characters, in TeX-style with - as separator. Any / or \ characters are not removed.
  */
 fun String.formatAsFilePath(): String {
     val formatted = this.replace(" ", "-")

@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Don't wrap urls when formatting.
 
 ### Fixed
 * Fix unreliable \item insertion in itemize.
@@ -15,6 +16,7 @@
 * Add tabularray package, by @Yodude2002.
 
 ### Fixed
+* Reformat suggested file name before showing it to the user, instead of afterwards.
 * Improve performance when checking pdf viewer availability.
 * Improve error logging.
 * Fix exceptions.

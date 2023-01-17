@@ -17,6 +17,12 @@ class LatexTypedHandlerTest : BasePlatformTestCase() {
         myFixture.checkResult("$\\xi$<caret>")
     }
 
+    fun testRobustInlineMath() {
+        myFixture.configureByText(LatexFileType, "")
+        myFixture.type("\\(")
+        myFixture.checkResult("\\(\\)")
+    }
+
     fun testVerbatim() {
         myFixture.configureByText(
             LatexFileType,
