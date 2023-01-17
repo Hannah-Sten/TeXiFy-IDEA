@@ -26,12 +26,10 @@ sealed class InternalPdfViewer(
     override val displayType: String
         get() = "PDF Viewer"
 
-    override fun isAvailable(): Boolean = availability[this] ?: false
-
     /**
      * Check if the viewer is installed and available from the path.
      */
-    fun checkAvailability(): Boolean {
+    override fun isAvailable(): Boolean {
         return if (SystemInfo.isWindows && this.executableName == "sumatra") {
             SumatraAvailabilityChecker.getSumatraAvailability()
         }
@@ -58,7 +56,7 @@ sealed class InternalPdfViewer(
 
         private val availability: Map<InternalPdfViewer, Boolean> by lazy {
             InternalPdfViewer::class.sealedSubclasses.map { it.createInstance() }.associateWith {
-                it.checkAvailability()
+                it.isAvailable()
             }
         }
 
