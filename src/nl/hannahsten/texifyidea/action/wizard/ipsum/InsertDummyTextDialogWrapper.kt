@@ -4,14 +4,18 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.JBIntSpinner
-import com.intellij.ui.components.*
+import com.intellij.ui.components.JBTabbedPane
+import com.intellij.ui.components.JBTextField
+import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import nl.hannahsten.texifyidea.util.hbox
 import nl.hannahsten.texifyidea.util.text.Ipsum
 import java.awt.BorderLayout
 import java.awt.Dimension
-import javax.swing.*
-import javax.swing.border.EmptyBorder
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JLabel
+import javax.swing.JPanel
 import kotlin.random.Random
 
 /**
@@ -46,7 +50,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
      * Panel containing options for the blindtext package.
      */
     private val panelBlindtext = JPanel().apply {
-        border = EmptyBorder(8, 0, 8, 16)
+        border = JBUI.Borders.empty(8, 0, 8, 16)
         layout = BoxLayout(this, BoxLayout.Y_AXIS).apply {
             // Flush left.
             alignmentX = 0.0f
@@ -90,7 +94,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
      * Panel containing options for the lipsum package.
      */
     private val panelLipsum = JPanel().apply {
-        border = EmptyBorder(8, 0, 8, 16)
+        border = JBUI.Borders.empty(8, 0, 8, 16)
         layout = BoxLayout(this, BoxLayout.Y_AXIS).apply {
             // Flush left.
             alignmentX = 0.0f
@@ -139,7 +143,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
      * Panel containing options for raw text.
      */
     private val panelRaw = JPanel().apply {
-        border = EmptyBorder(8, 0, 8, 16)
+        border = JBUI.Borders.empty(8, 0, 8, 16)
         layout = BoxLayout(this, BoxLayout.Y_AXIS).apply {
             // Flush left.
             alignmentX = 0.0f

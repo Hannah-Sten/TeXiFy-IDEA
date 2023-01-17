@@ -8,6 +8,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -66,7 +68,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                             "Bibliography file '$fileName' is included multiple times",
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly,
-                            RemoveOtherCommandsFix(fileName, commands)
+                            RemoveOtherCommandsFix(fileName, commands.map { it.createSmartPointer() })
                         )
                     )
                 }
@@ -78,7 +80,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     /**
      * @author Sten Wessel
      */
-    class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<LatexCommands>) :
+    class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<SmartPsiElementPointer<LatexCommands>>) :
         LocalQuickFix {
 
         override fun getFamilyName(): String {
@@ -91,7 +93,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
             // For all commands to be fixed, remove the matching bibName
             // Handle commands by descending offset, to make sure the replaceString calls work correctly
-            for (command in commandsToFix.sortedByDescending { it.textOffset }) {
+            for (command in commandsToFix.mapNotNull { it.element }.sortedByDescending { it.textOffset }) {
                 val document = command.containingFile.document() ?: continue
                 val param = command.parameterList.first()
 

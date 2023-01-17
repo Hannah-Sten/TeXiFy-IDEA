@@ -77,7 +77,7 @@ public interface LatexTypes {
   IElementType OPEN_PAREN = new LatexTokenType("OPEN_PAREN");
   IElementType PIPE = new LatexTokenType("PIPE");
   IElementType QUOTATION_MARK = new LatexTokenType("QUOTATION_MARK");
-  IElementType RAW_TEXT_TOKEN = new LatexTokenType("RAW_TEXT");
+  IElementType RAW_TEXT_TOKEN = new LatexTokenType("RAW_TEXT_TOKEN");
   IElementType STAR = new LatexTokenType("*");
 
   class Factory {

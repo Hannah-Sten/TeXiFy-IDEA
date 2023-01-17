@@ -87,7 +87,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
 
             // Delete the ending part..
             if (next != null) {
-                document!!.deleteElement(next)
+                document?.deleteElement(next)
             }
 
             // Replace command.

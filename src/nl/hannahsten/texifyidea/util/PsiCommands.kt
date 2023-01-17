@@ -69,6 +69,11 @@ fun LatexCommands?.isEnvironmentDefinition(): Boolean = this != null && name in 
 fun LatexCommands.definitionCommand(): LatexCommands? = forcedFirstRequiredParameterAsCommand()
 
 /**
+ * Get the name of the command that is defined by `this` command.
+ */
+fun LatexCommands.definedCommandName() = definitionCommand()?.name
+
+/**
  * Checks whether the command has a star or not.
  */
 fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
@@ -97,14 +102,6 @@ fun LatexCommands.previousCommand(): LatexCommands? {
     val previous = content.previousSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
     return previous.firstChildOfType(LatexCommands::class)
-}
-
-/**
- * Get the name of the command that is defined by `this` command.
- */
-fun LatexCommands.definedCommandName() = when (name) {
-    in CommandMagic.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
-    else -> definitionCommand()?.name
 }
 
 /**

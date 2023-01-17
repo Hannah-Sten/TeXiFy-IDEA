@@ -34,7 +34,4 @@ public interface LatexNoMathContent extends PsiElement {
   @Nullable
   LatexRawText getRawText();
 
-  @Nullable
-  PsiElement getCommandIfnextchar();
-
 }

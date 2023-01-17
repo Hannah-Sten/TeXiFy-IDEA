@@ -5,6 +5,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -213,7 +214,9 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
             if (replacement == null) {
                 if (editor != null) {
-                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                    runInEdt {
+                        HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                    }
                 }
                 return
             }

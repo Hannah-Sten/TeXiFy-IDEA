@@ -57,8 +57,8 @@ class LatexOutputListener(
     private var isCollectingBib = false
     private val bibtexOutputListener = BibtexOutputListener(project, mainFile, bibMessageList)
 
-    var isCollectingMessage = false
-    var currentLogMessage: LatexLogMessage? = null
+    private var isCollectingMessage = false
+    private var currentLogMessage: LatexLogMessage? = null
 
     // Stack with the filenames, where the first is the current file.
     private var fileStack = LatexFileStack()

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.intentions
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.lang.Language
+import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -99,5 +100,8 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
         popup.showInBestPositionFor(editor)
     }
 
-    private fun injectableLanguages(): List<Injectable> = Language.getRegisteredLanguages().map { Injectable.fromLanguage(it) }
+    private fun injectableLanguages(): List<Injectable> = Language.getRegisteredLanguages()
+        // A parser definition is required for injection
+        .filter { LanguageParserDefinitions.INSTANCE.forLanguage(it) != null }
+        .map { Injectable.fromLanguage(it) }
 }

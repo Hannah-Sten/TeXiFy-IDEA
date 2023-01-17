@@ -32,7 +32,7 @@ class LatexFileStack(
 
     override fun peek(): String? = if (isEmpty()) null else super.peek()
 
-    fun pushFile(file: String, line: String) {
+    private fun pushFile(file: String, line: String) {
         push(file)
         if (debug) logger.info("$line ---- Opening $file")
         if (file.containsAny(setOf("(", ")"))) throw TeXception("$file is probably not a valid file")
@@ -77,10 +77,10 @@ class LatexFileStack(
         // (could be improved by actually checking the length of the 'file' group instead of line length)
         // Otherwise, match the file extension to avoid matching just text in parentheses
         val fileRegex = if (line.length >= LINE_WIDTH - 1) {
-            Regex("""\((?<file>"?\.*(([/\\])*[\w-\d. :])+"?)|\)""")
+            Regex("""\((?<file>"?\.*(([/\\])*[\w-. :])+"?)|\)""")
         }
         else {
-            Regex("""\((?<file>"?\.*(([/\\])*[\w-\d. :])+\.(\w{2,10})"?)|\)""")
+            Regex("""\((?<file>"?\.*(([/\\])*[\w-. :])+\.(\w{2,10})"?)|\)""")
         }
 
         var result = fileRegex.find(line)

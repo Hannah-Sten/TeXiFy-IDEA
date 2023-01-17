@@ -10,6 +10,7 @@ import java.io.File
  * We also use this extension point to define the Intellij internal pdf viewer, to make sure that
  * TeXiFy only uses it when the (optional dependency) IntelliJ PDF Viewer plugin is installed.
  */
+@Suppress("PrivatePropertyName")
 private val EP_NAME = ExtensionPointName<ExternalPdfViewer>("nl.rubensten.texifyidea.pdfViewer")
 
 /**

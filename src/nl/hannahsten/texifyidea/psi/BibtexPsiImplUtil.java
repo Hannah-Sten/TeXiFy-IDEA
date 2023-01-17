@@ -13,8 +13,8 @@ import java.util.List;
 
 /**
  * This class is used for method injection in generated classes.
- * Documentation can be found at https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md#34-implement-interface-via-method-injection.
- *
+ * Documentation can be found at <a href="https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md#34-implement-interface-via-method-injection">github.com</a>.
+ * <p>
  * Note that it has to be written in Java.
  */
 @SuppressWarnings("TypeMayBeWeakened")

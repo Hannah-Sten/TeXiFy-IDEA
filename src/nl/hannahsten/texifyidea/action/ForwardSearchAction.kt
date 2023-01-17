@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.action
 
 import com.intellij.execution.RunManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
@@ -82,4 +83,6 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
             else -> throw TeXception("Running pdf viewer $viewer is not yet implemented.")
         }
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

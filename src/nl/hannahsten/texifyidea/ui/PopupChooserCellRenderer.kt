@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.ui
 
+import com.intellij.util.ui.JBUI
 import java.awt.Component
 import javax.swing.DefaultListCellRenderer
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.ListCellRenderer
-import javax.swing.border.EmptyBorder
 
 /**
  * Custom cell renderer to be used for popup choosers.
@@ -20,7 +20,7 @@ open class PopupChooserCellRenderer : ListCellRenderer<String> {
             list, value, position,
             isSelected, hasFocus
         ) as JLabel
-        renderer.border = EmptyBorder(1, 8, 1, 1)
+        renderer.border = JBUI.Borders.empty(1, 8, 1, 1)
         return renderer
     }
 }

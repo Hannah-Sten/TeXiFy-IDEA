@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 /**
  * @author Hannah Schellekens
  */
-open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display math mode") {
+open class LatexInlineDisplayToggleIntention : TexifyIntentionBase("Toggle inline/display math mode") {
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {

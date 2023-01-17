@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.wizard.table
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -67,6 +68,8 @@ class LatexTableWizardAction : AnAction() {
         val shouldDisplayMenu = file?.isLatexFile() == true
         e.presentation.isVisible = shouldDisplayMenu
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     /**
      * Convert the table information to a latex table that can be inserted into the file.

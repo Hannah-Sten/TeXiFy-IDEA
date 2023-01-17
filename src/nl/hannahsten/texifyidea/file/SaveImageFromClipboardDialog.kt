@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.ImageUtil
+import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.ui.ImagePanel
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.addLabeledComponent
@@ -25,7 +26,6 @@ import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.BoxLayout
 import javax.swing.JPanel
-import javax.swing.border.EmptyBorder
 
 /**
  * @author Hannah Schellekens
@@ -235,7 +235,7 @@ class SaveImageFromClipboardDialog(
      */
     private fun JPanel.addImageMetaPanel() = add(
         JPanel(BorderLayout(16, 16)).apply {
-            border = EmptyBorder(16, 16, 16, 16)
+            border = JBUI.Borders.empty(16)
 
             add(imgPreview, BorderLayout.WEST)
 

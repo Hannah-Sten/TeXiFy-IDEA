@@ -4,10 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.errorTreeView.ErrorTreeElement
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -24,8 +21,8 @@ import java.util.*
  */
 class LatexCompileMessageTreeView(
     val project: Project,
-    val latexMessageList: MutableList<LatexLogMessage>,
-    val bibtexMessageList: MutableList<BibtexLogMessage>
+    private val latexMessageList: MutableList<LatexLogMessage>,
+    private val bibtexMessageList: MutableList<BibtexLogMessage>
 ) :
     NewErrorTreeViewPanel(project, null) {
 
@@ -149,6 +146,8 @@ class LatexCompileMessageTreeView(
             config().showKeywordWarnings[keyword] = state
             applyFiltersToAllMessages()
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
     inner class FilterBibtexAction(val project: Project) :
@@ -160,6 +159,8 @@ class LatexCompileMessageTreeView(
             config().showBibtexWarnings = state
             applyFiltersToAllMessages()
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
     inner class ExpandAllAction : AnAction("Expand All", "", AllIcons.Actions.Expandall), DumbAware {

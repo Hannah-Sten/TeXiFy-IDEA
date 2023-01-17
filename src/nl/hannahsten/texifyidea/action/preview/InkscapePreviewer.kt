@@ -26,7 +26,6 @@ class InkscapePreviewer : Previewer {
                 try {
                     // Snap apps are confined to the users home directory
                     if (SystemEnvironment.isInkscapeInstalledAsSnap) {
-                        @Suppress("BlockingMethodInNonBlockingContext")
                         setPreviewCodeInTemp(
                             FileUtil.createTempDirectory(File(System.getProperty("user.home")), "preview", null),
                             input,
@@ -37,7 +36,6 @@ class InkscapePreviewer : Previewer {
                         )
                     }
                     else {
-                        @Suppress("BlockingMethodInNonBlockingContext")
                         setPreviewCodeInTemp(FileUtil.createTempDirectory("preview", null), input, project, preamble, previewForm, waitTime)
                     }
                 }
