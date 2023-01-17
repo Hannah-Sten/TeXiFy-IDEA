@@ -7,7 +7,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.11.0"
+    id("org.jetbrains.intellij") version "1.12.0"
     kotlin("jvm") version ("1.7.22")
     kotlin("plugin.serialization") version ("1.7.22")
 
@@ -27,7 +27,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "7.4.4"
+    id("org.owasp.dependencycheck") version "8.0.0"
 
     id("org.jetbrains.changelog") version "2.0.0"
 }
