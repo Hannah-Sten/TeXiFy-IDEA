@@ -108,9 +108,6 @@ dependencies {
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
 
-    // KeyboardUtils
-    implementation("net.java.dev.jna:jna:5.12.1")
-
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")

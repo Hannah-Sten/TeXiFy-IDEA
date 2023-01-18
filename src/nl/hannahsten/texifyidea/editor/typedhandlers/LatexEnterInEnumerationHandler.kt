@@ -10,16 +10,15 @@ import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.intellij.openapi.editor.actions.SplitLineAction.SPLIT_LINE_KEY
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.sun.jna.platform.KeyboardUtils
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import java.awt.event.KeyEvent
 
 /**
  * @author Hannah Schellekens
@@ -41,7 +40,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
 
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset)
-        if (hasValidContext(element)) {
+        if (hasValidContext(element, context)) {
             val previousMarker = getPreviousMarker(element!!)
             if (previousMarker == null) {
                 editor.insertAtCaretAndMove("\\item ")
@@ -51,11 +50,6 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
                 val template = TemplateImpl("", "\\item[\$__Variable0\$] ", "")
                 template.addVariable(TextExpression(previousMarker.trim('[', ']')), true)
                 TemplateManager.getInstance(file.project).startTemplate(editor, template)
-            }
-        }
-        else {
-            if (KeyboardUtils.isPressed(KeyEvent.VK_CONTROL)) {
-                editor.insertAtCaretAndMove("")
             }
         }
 
@@ -130,12 +124,11 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
      *
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
-    private fun hasValidContext(element: PsiElement?): Boolean {
+    private fun hasValidContext(element: PsiElement?, context: DataContext): Boolean {
         if (
             !TexifySettings.getInstance().automaticItemInItemize ||
             element == null ||
-            KeyboardUtils.isPressed(KeyEvent.VK_SHIFT) ||
-            KeyboardUtils.isPressed(KeyEvent.VK_CONTROL) ||
+            DataManager.getInstance().loadFromDataContext(context, SPLIT_LINE_KEY) == true || // SplitLineAction means Ctrl+Enter was pressed, we decide to not insert \item in that case
             element.inMathContext()
         ) {
             return false
