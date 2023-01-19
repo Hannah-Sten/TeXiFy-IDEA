@@ -26,7 +26,6 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexTypedHandler"/>
         <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInEnumerationHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.UpDownAutoBracket"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexQuoteInsertHandler"/>

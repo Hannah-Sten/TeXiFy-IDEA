@@ -38,7 +38,6 @@ open class TablePasteProvider : PasteProvider {
     override fun isPastePossible(dataContext: DataContext): Boolean {
         val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
         if (file.isLatexFile().not()) return false
-        if (ShiftTracker.isShiftPressed()) return false
 
         val pasteData = dataContext.transferableHtml() ?: return false
         return pasteData.contains("<table", ignoreCase = true)
