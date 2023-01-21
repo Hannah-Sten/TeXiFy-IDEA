@@ -135,10 +135,10 @@ class LatexPsiHelper(private val project: Project) {
         val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == CLOSE_BRACKET }
         return if (optionalParam.keyValPairList.isNotEmpty()) {
             val existing = optionalParam.keyValPairList.find { kv -> kv.keyValKey.text == name }
-            if (existing != null && value != null) {
-                existing.keyValValue.delete()
+            if (existing != null && pair.keyValValue != null) {
+                existing.keyValValue?.delete()
                 existing.addAfter(
-                    pair.keyValKey,
+                    pair.keyValValue!!,
                     existing.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == EQUALS }
                 )
                 existing
