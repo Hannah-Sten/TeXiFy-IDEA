@@ -56,6 +56,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
             "optionalParam" to LatexSyntaxHighlighter.OPTIONAL_PARAM,
             "comment" to LatexSyntaxHighlighter.COMMENT,
             "magicComment" to LatexSyntaxHighlighter.MAGIC_COMMENT,
+            "equalsSeparator" to LatexSyntaxHighlighter.SEPARATOR_EQUALS,
             "labelDefinition" to LatexSyntaxHighlighter.LABEL_DEFINITION,
             "reference" to LatexSyntaxHighlighter.LABEL_REFERENCE,
             "bibliographyDefinition" to LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION,
@@ -84,6 +85,9 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |% Package imports.
                 |\usepackage{amsmath}
                 |\usepackage{comment}
+                |\usepackage{listings}
+                |
+                |\lstset{language<equalsSeparator>=</equalsSeparator>Kotlin}
                 |
                 |% Start document.
                 |<magicComment>%! Suppress = NonBreakingSpace</magicComment>
@@ -111,6 +115,10 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |    This is time for all good men to come to the aid of
                 |    their party!
                 |    For the end see~\ref{<reference>sec:conclusions</reference>}.
+                |    
+                |    \begin{lstlisting}[label<equalsSeparator>=</equalsSeparator>test]
+                |       println("Hello world!")
+                |    \end{lstlisting}
                 |
                 |    \paragraph*{Mathematics}
                 |    Please take a look at the value of <inlineMath>${'$'}x <inlineCommand>\times</inlineCommand>
