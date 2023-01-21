@@ -6,5 +6,5 @@ interface LatexCommandWithParams : PsiElement {
 
     val parameterList: List<LatexParameter>
     val requiredParameters: List<String>
-    val optionalParameterMap: Map<LatexKeyvalKey, LatexKeyvalValue>
+    val optionalParameterMap: Map<LatexKeyValKey, LatexKeyValValue>
 }

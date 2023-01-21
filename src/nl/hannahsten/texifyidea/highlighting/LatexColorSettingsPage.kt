@@ -20,6 +20,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
             AttributesDescriptor("Braces", LatexSyntaxHighlighter.BRACES),
             AttributesDescriptor("Brackets", LatexSyntaxHighlighter.BRACKETS),
             AttributesDescriptor("Commands//Optional parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
+            AttributesDescriptor("Commands//Equals sign in key-value pairs", LatexSyntaxHighlighter.SEPARATOR_EQUALS),
             AttributesDescriptor("Commands//Commands", LatexSyntaxHighlighter.COMMAND),
             AttributesDescriptor("Commands//Commands in inline math mode", LatexSyntaxHighlighter.COMMAND_MATH_INLINE),
             AttributesDescriptor("Commands//Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
