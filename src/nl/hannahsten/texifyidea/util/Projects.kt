@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
  * Get a project [GlobalSearchScope] for this project.
