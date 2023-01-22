@@ -11,6 +11,6 @@ public interface LatexRequiredParam extends PsiElement {
   List<LatexRequiredParamContent> getRequiredParamContentList();
 
   @NotNull
-  List<LatexStrictKeyvalPair> getStrictKeyvalPairList();
+  List<LatexStrictKeyValPair> getStrictKeyValPairList();
 
 }

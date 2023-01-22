@@ -39,19 +39,19 @@ public class LatexPsiImplUtil {
         }
     }
 
-    public static String toString(@NotNull LatexKeyvalKey element) {
+    public static String toString(@NotNull LatexKeyValKey element) {
         return LatexCommandsImplUtilKt.keyValKeyToString(element);
     }
 
-    public static String toString(@NotNull LatexKeyvalValue element) {
+    public static String toString(@NotNull LatexKeyValValue element) {
         return LatexCommandsImplUtilKt.keyValContentToString(element);
     }
 
-    public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexCommands element) {
+    public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexCommands element) {
         return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
     }
 
-    public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexBeginCommand element) {
+    public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexBeginCommand element) {
         return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
     }
 

@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexKeyvalPairs extends PsiElement {
+public interface LatexStrictKeyValPair extends LatexKeyValuePair {
 
   @NotNull
-  List<LatexKeyvalPair> getKeyvalPairList();
+  LatexKeyValKey getKeyValKey();
+
+  @Nullable
+  LatexKeyValValue getKeyValValue();
 
 }

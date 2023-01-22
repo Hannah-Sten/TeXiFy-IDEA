@@ -18,7 +18,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
     fun getLabelParameterText(command: LatexCommandWithParams): LatexParameterText {
         val optionalParameters = command.optionalParameterMap
         val labelEntry = optionalParameters.filter { pair -> pair.key.toString() == "label" }.first()
-        val contentList = labelEntry.value.keyvalContentList
+        val contentList = labelEntry.value.keyValContentList
         return contentList.firstOrNull { c -> c.parameterText != null }?.parameterText
             ?: contentList.first { c -> c.parameterGroup != null }.parameterGroup!!.parameterGroupText!!.parameterTextList.first()
     }

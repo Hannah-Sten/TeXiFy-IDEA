@@ -5,9 +5,13 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexKeyvalKey extends PsiElement {
+public interface LatexKey extends PsiElement {
 
   @NotNull
   List<LatexGroup> getGroupList();
+
+  //WARNING: toString(...) is skipped
+  //matching toString(LatexKey, ...)
+  //methods are not found in LatexPsiImplUtil
 
 }
