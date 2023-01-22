@@ -143,9 +143,9 @@ open class LatexAnnotator : Annotator {
         element.keyValValue ?: return
 
         annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(element.keyValKey.endOffset, element.keyValValue!!.startOffset))
-                .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
-                .create()
+            .range(TextRange(element.keyValKey.endOffset, element.keyValValue!!.startOffset))
+            .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
+            .create()
     }
 
     /**
