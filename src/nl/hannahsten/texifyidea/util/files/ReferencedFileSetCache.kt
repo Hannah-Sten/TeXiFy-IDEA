@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -98,7 +99,7 @@ class ReferencedFileSetCache {
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
             runBlocking {
-                launch {
+                CoroutineScope(Dispatchers.Default).launch {
                     mutex.withLock {
 
                         // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
@@ -114,9 +115,7 @@ class ReferencedFileSetCache {
                         }
 
                         if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
-                            runReadAction {
-                                updateCachesFor(file)
-                            }
+                            updateCachesFor(file)
                         }
                     }
                 }

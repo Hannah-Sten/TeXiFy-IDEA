@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
@@ -35,7 +36,7 @@ internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
     // Map root to all directly referenced files.
     val sets = HashMap<PsiFile, Set<PsiFile>>()
     for (root in roots) {
-        val referenced = root.referencedFiles(root.virtualFile) + root
+        val referenced = runReadAction { root.referencedFiles(root.virtualFile) } + root
 
         if (referenced.contains(this)) {
             return referenced + this
