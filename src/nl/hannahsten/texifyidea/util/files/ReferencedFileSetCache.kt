@@ -113,11 +113,11 @@ class ReferencedFileSetCache {
                             false
                         }
 
-                        if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
+//                        if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                             runReadAction {
                                 updateCachesFor(file)
                             }
-                        }
+//                        }
                     }
                 }
             }
