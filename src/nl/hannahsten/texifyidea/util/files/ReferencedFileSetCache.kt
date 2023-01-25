@@ -116,6 +116,7 @@ class ReferencedFileSetCache {
                         }
 
                         if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
+                            // Many different methods used in updating the cache use the psi and have to be run in a read action
                             runReadAction {
                                 updateCachesFor(file)
                             }
