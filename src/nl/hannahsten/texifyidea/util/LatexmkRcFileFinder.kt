@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -45,13 +46,19 @@ object LatexmkRcFileFinder {
                 System.getenv("HOME")?.let { Path(it, ".config", ".latexmkrc").toString() },
             )
 
-            paths.filterNotNull()
-                .forEach {
-                    LocalFileSystem.getInstance().findFileByIoFile(File(it))?.let { file ->
-                        field = file
-                        return file
+            try {
+                paths.filterNotNull()
+                    .forEach {
+                        LocalFileSystem.getInstance().findFileByIoFile(File(it))?.let { file ->
+                            field = file
+                            return file
+                        }
                     }
-                }
+            }
+            // No idea why
+            catch (e: ProcessCanceledException) {
+                return null
+            }
 
             return null
         }
