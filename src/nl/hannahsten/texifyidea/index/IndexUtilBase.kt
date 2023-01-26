@@ -117,12 +117,10 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
         if (useCache) {
-            cache[project]?.get(scope)?.let { return it.mapNotNull { pointer -> pointer.element } }
+            cache[project]?.get(scope)?.let { return runReadAction { it.mapNotNull { pointer -> pointer.element } } }
         }
         val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
-        runReadAction {
-            cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() }
-        }
+        runReadAction { cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() } }
         return result
     }
 
@@ -139,10 +137,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     private fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
         try {
-            // Reading from index has to be done from EDT
-            return runReadAction {
-                StubIndex.getElements(indexKey, name, project, scope, elementClass)
-            }
+            return runReadAction { StubIndex.getElements(indexKey, name, project, scope, elementClass) }
         }
         catch (e: RuntimeExceptionWithAttachments) {
             // Ignore, because we've seen it only four times so far (#1375, #1446, #1591, #2086) but I fail to see how this would be a bug in TeXiFy.
@@ -159,9 +154,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     private fun getKeys(project: Project): Array<String> {
         return if (!DumbService.isDumb(project)) {
-            runReadAction {
-                StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray()
-            }
+            runReadAction { StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray() }
         }
         else {
             emptyArray()
