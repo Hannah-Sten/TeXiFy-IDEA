@@ -3,9 +3,6 @@ package nl.hannahsten.texifyidea.util.files
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -99,24 +96,22 @@ class ReferencedFileSetCache {
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
             runBlocking {
-                CoroutineScope(Dispatchers.Default).launch {
-                    mutex.withLock {
+                // Do NOT use a coroutine here, because then when typing (so the caller is e.g. gutter icons, inspections, line makers etc.) somehow the following (at least the runReadAction parts) will block the UI. Note that certain user-triggered actions (think run configuration) will still lead to this blocking the UI if not run in the background explicitly
+                mutex.withLock {
+                    // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
+                    // Note that LatexIncludesIndex.getItems(file.project) may be a slow operation and should not be run on EDT
+                    val includes = LatexIncludesIndex.getItems(file.project)
+                    val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
+                        numberOfIncludes[file.project] = includes.size
+                        dropAllCaches()
+                        true
+                    }
+                    else {
+                        false
+                    }
 
-                        // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
-                        // Note that LatexIncludesIndex.getItems(file.project) may be a slow operation and should not be run on EDT
-                        val includes = LatexIncludesIndex.getItems(file.project)
-                        val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
-                            numberOfIncludes[file.project] = includes.size
-                            dropAllCaches()
-                            true
-                        }
-                        else {
-                            false
-                        }
-
-                        if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
-                            updateCachesFor(file)
-                        }
+                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
+                        updateCachesFor(file)
                     }
                 }
             }
