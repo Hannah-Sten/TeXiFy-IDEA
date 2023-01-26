@@ -7,6 +7,8 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
@@ -49,7 +51,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runConfig.outputPath.getAndCreatePath()
         }
 
-        firstRunSetup(compiler)
+        // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
+        // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable)
+        ProgressManager.getInstance().runProcessWithProgressSynchronously({ runReadAction { firstRunSetup(compiler) } }, "Generating run configuration...", false, runConfig.project)
+
         if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
             runConfig.outputPath.updateOutputSubDirs()
         }
