@@ -50,19 +50,19 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitKeyvalContent(@NotNull LatexKeyvalContent o) {
+  public void visitKeyValContent(@NotNull LatexKeyValContent o) {
     visitPsiElement(o);
   }
 
-  public void visitKeyvalKey(@NotNull LatexKeyvalKey o) {
+  public void visitKeyValKey(@NotNull LatexKeyValKey o) {
     visitPsiElement(o);
   }
 
-  public void visitKeyvalPair(@NotNull LatexKeyvalPair o) {
-    visitPsiElement(o);
+  public void visitKeyValPair(@NotNull LatexKeyValPair o) {
+    visitKeyValuePair(o);
   }
 
-  public void visitKeyvalValue(@NotNull LatexKeyvalValue o) {
+  public void visitKeyValValue(@NotNull LatexKeyValValue o) {
     visitPsiElement(o);
   }
 
@@ -138,8 +138,8 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitStrictKeyvalPair(@NotNull LatexStrictKeyvalPair o) {
-    visitPsiElement(o);
+  public void visitStrictKeyValPair(@NotNull LatexStrictKeyValPair o) {
+    visitKeyValuePair(o);
   }
 
   public void visitPsiLanguageInjectionHost(@NotNull PsiLanguageInjectionHost o) {
@@ -151,6 +151,10 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitCommandWithParams(@NotNull LatexCommandWithParams o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyValuePair(@NotNull LatexKeyValuePair o) {
     visitPsiElement(o);
   }
 
