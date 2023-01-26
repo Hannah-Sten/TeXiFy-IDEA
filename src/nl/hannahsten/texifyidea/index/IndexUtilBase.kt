@@ -117,7 +117,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
         if (useCache) {
-            cache[project]?.get(scope)?.let { return it.mapNotNull { pointer -> pointer.element } }
+            cache[project]?.get(scope)?.let { return runReadAction { it.mapNotNull { pointer -> pointer.element } } }
         }
         val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
         runReadAction { cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() } }
