@@ -76,7 +76,7 @@ class SyncLibraryAction : AnAction() {
                                 val model = it.model as DefaultTreeModel
                                 val root = model.root as? DefaultMutableTreeNode ?: return@runReadAction
                                 val libraryNode: LibraryMutableTreeNode = it.findLibraryNode(library.identifier)
-                                    ?: LibraryMutableTreeNode(library.identifier, library.displayName)
+                                    ?: LibraryMutableTreeNode(library.identifier, library.displayName, bibItems)
                                 libraryNode.children().asSequence()
                                     .map { it as DefaultMutableTreeNode }
                                     .filter { (it.userObject as BibtexStructureViewEntryElement).entry.identifier !in bibItems.map { bib -> bib.identifier } }

@@ -5,12 +5,11 @@ import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.RemoteLibraryRequestTeXception
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
-import kotlin.jvm.Throws
 
 /**
  * Remote library with a unique [identifier].
  */
-abstract class RemoteBibLibrary(open val identifier: String, open val displayName: String) {
+abstract class RemoteBibLibrary(identifier: String, displayName: String) : ExternalBibLibrary(identifier, displayName) {
 
     /**
      * Get the bib items from the remote library in bibtex format, then parse the bibtex to obtain all the bib entries.

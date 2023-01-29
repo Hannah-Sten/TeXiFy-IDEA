@@ -13,7 +13,10 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.treeStructure.Tree
+import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.remotelibraries.LocalBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
+import nl.hannahsten.texifyidea.remotelibraries.state.LibraryState
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewTagElement
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
@@ -67,13 +70,14 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
             true
         )
 
-        val libraries = RemoteLibraryManager.getInstance().getLibraries().toMap().entries
+        private val remoteLibraries = RemoteLibraryManager.getInstance().getLibraries().asTreeNodes()
+        val libraries = listOf(LocalBibLibrary().asTreeNode()) + remoteLibraries
 
         private val rootNode = DefaultMutableTreeNode().apply {
             // Add all the bib items for each library.
             libraries.forEach { library ->
-                val libraryNode = LibraryMutableTreeNode(library.key, library.value.displayName).apply {
-                    library.value.entries.forEach { entry ->
+                val libraryNode = library.apply {
+                    library.entries.forEach { entry ->
                         val entryElement = BibtexStructureViewEntryElement(entry)
                         val entryNode = DefaultMutableTreeNode(entryElement)
                         add(entryNode)
@@ -122,4 +126,9 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
     }
 }
 
-class LibraryMutableTreeNode(val identifier: String, val displayName: String) : DefaultMutableTreeNode(displayName)
+/**
+ * Tree node that represents a library. This has the data of the entries so it can be used to build its own children.
+ */
+class LibraryMutableTreeNode(val identifier: String, val displayName: String, val entries: List<BibtexEntry>) : DefaultMutableTreeNode(displayName)
+
+fun Map<String, LibraryState>.asTreeNodes(): List<LibraryMutableTreeNode> = map { (k, v) -> LibraryMutableTreeNode(k, v.displayName, v.entries) }

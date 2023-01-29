@@ -59,7 +59,7 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper>
                         val model = tree.model as DefaultTreeModel
                         val root = model.root as DefaultMutableTreeNode
 
-                        val libraryNode = LibraryMutableTreeNode(library.identifier, library.displayName)
+                        val libraryNode = LibraryMutableTreeNode(library.identifier, library.displayName, bibItems)
                         bibItems.forEach { bib ->
                             val entryElement = BibtexStructureViewEntryElement(bib)
                             val entryNode = DefaultMutableTreeNode(entryElement)
