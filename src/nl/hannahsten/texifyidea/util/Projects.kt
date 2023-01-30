@@ -14,14 +14,15 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.serviceContainer.AlreadyDisposedException
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
  * Get a project [GlobalSearchScope] for this project.
@@ -93,8 +94,13 @@ fun Project.currentTextEditor(): TextEditor? {
  */
 fun Project.hasLatexModule(): Boolean {
     if (isDisposed) return false
-    return ModuleManager.getInstance(this).modules
-        .any { ModuleType.get(it).id == LatexModuleType.ID }
+    return try {
+        ModuleManager.getInstance(this).modules
+            .any { ModuleType.get(it).id == LatexModuleType.ID }
+    }
+    catch (e: AlreadyDisposedException) {
+        false
+    }
 }
 
 /**
