@@ -14,6 +14,9 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     companion object {
 
+        /**
+         * Warning: don't retrieve the settings on class initialization (e.g. storing it in a companion object), as that is not unlikely to throw a ProcessCanceledException.
+         */
         @JvmStatic
         fun getInstance(): TexifySettings = ApplicationManager.getApplication().getService(TexifySettings::class.java)
     }
