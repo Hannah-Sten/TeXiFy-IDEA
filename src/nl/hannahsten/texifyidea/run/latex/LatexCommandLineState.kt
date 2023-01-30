@@ -121,7 +121,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     ): Boolean {
         val isAnyExternalToolNeeded = if (!runConfig.hasBeenRun) {
             // This is a relatively expensive check
-             RunExternalToolListener.getRequiredExternalTools(runConfig.mainFile, runConfig.project).isNotEmpty()
+            RunExternalToolListener.getRequiredExternalTools(runConfig.mainFile, runConfig.project).isNotEmpty()
         }
         else {
             false
