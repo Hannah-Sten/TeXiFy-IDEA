@@ -51,9 +51,16 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runConfig.outputPath.getAndCreatePath()
         }
 
-        // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
-        // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable)
-        ProgressManager.getInstance().runProcessWithProgressSynchronously({ runReadAction { firstRunSetup(compiler) } }, "Generating run configuration...", false, runConfig.project)
+        if (!runConfig.hasBeenRun) {
+            // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
+            // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable)
+            ProgressManager.getInstance().runProcessWithProgressSynchronously(
+                { runReadAction { firstRunSetup(compiler) } },
+                "Generating run configuration...",
+                false,
+                runConfig.project
+            )
+        }
 
         if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
             runConfig.outputPath.updateOutputSubDirs()
@@ -88,22 +95,22 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         return handler
     }
 
+    /**
+     * Do some long-running checks to generate the correct run configuration.
+     */
     private fun firstRunSetup(compiler: LatexCompiler) {
-        // Some initial setup
-        if (!runConfig.hasBeenRun) {
-            // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
-            // checking for bibliography commands
-            if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
-                runConfig.generateBibRunConfig()
+        // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
+        // checking for bibliography commands
+        if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
+            runConfig.generateBibRunConfig()
 
-                runConfig.bibRunConfigs.forEach {
-                    val bibSettings = it
+            runConfig.bibRunConfigs.forEach {
+                val bibSettings = it
 
-                    // Pass necessary latex run configurations settings to the bibtex run configuration.
-                    (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
-                        // Check if the aux, out, or src folder should be used as bib working dir.
-                        this.bibWorkingDir = runConfig.getAuxilDirectory()
-                    }
+                // Pass necessary latex run configurations settings to the bibtex run configuration.
+                (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
+                    // Check if the aux, out, or src folder should be used as bib working dir.
+                    this.bibWorkingDir = runConfig.getAuxilDirectory()
                 }
             }
         }
