@@ -59,9 +59,20 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
  */
 fun Project.allFiles(type: FileType): Collection<VirtualFile> {
     if (!isInitialized) return emptyList()
-    return runReadAction {
-        val scope = GlobalSearchScope.projectScope(this)
-        return@runReadAction FileTypeIndex.getFiles(type, scope)
+    try {
+        return runReadAction {
+            val scope = GlobalSearchScope.projectScope(this)
+            return@runReadAction FileTypeIndex.getFiles(type, scope)
+        }
+    }
+    catch (e: IllegalStateException) {
+        // Doesn't happen very often, and afaik there's no proper way of checking whether this index is initialized. See #2855
+        if (e.message?.contains("Index is not created for `filetypes`") == true) {
+            return emptyList()
+        }
+        else {
+            throw e
+        }
     }
 }
 
