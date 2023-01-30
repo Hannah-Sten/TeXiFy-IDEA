@@ -21,7 +21,7 @@ plugins {
     id("de.undercouch.download") version "5.3.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
