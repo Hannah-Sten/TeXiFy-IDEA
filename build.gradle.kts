@@ -8,8 +8,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.12.0"
-    kotlin("jvm") version ("1.7.22")
-    kotlin("plugin.serialization") version ("1.7.22")
+    kotlin("jvm") version ("1.8.0")
+    kotlin("plugin.serialization") version ("1.8.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.44.0"
@@ -21,7 +21,7 @@ plugins {
     id("de.undercouch.download") version "5.3.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"

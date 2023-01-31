@@ -7,7 +7,8 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
@@ -50,17 +51,27 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runConfig.outputPath.getAndCreatePath()
         }
 
-        firstRunSetup(compiler)
+        if (!runConfig.hasBeenRun) {
+            // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
+            // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable)
+            ProgressManager.getInstance().runProcessWithProgressSynchronously(
+                { runReadAction { firstRunSetup(compiler) } },
+                "Generating run configuration...",
+                false,
+                runConfig.project
+            )
+        }
+
         if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
             runConfig.outputPath.updateOutputSubDirs()
         }
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
-        val isAnyExternalToolNeeded = runExternalToolsIfNeeded(handler, mainFile, runConfig.project)
+        runExternalToolsIfNeeded(handler)
         runConfig.hasBeenRun = true
 
-        if (!isLastCompile(isMakeindexNeeded, isAnyExternalToolNeeded, handler)) return handler
+        if (!isLastCompile(isMakeindexNeeded, handler)) return handler
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
         scheduleFileCleanup(runConfig.filesToCleanUp, handler)
@@ -84,33 +95,37 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         return handler
     }
 
+    /**
+     * Do some long-running checks to generate the correct run configuration.
+     */
     private fun firstRunSetup(compiler: LatexCompiler) {
-        // Some initial setup
-        if (!runConfig.hasBeenRun) {
-            // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
-            // checking for bibliography commands
-            if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
-                runConfig.generateBibRunConfig()
+        // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
+        // checking for bibliography commands
+        if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
+            runConfig.generateBibRunConfig()
 
-                runConfig.bibRunConfigs.forEach {
-                    val bibSettings = it
+            runConfig.bibRunConfigs.forEach {
+                val bibSettings = it
 
-                    // Pass necessary latex run configurations settings to the bibtex run configuration.
-                    (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
-                        // Check if the aux, out, or src folder should be used as bib working dir.
-                        this.bibWorkingDir = runConfig.getAuxilDirectory()
-                    }
+                // Pass necessary latex run configurations settings to the bibtex run configuration.
+                (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
+                    // Check if the aux, out, or src folder should be used as bib working dir.
+                    this.bibWorkingDir = runConfig.getAuxilDirectory()
                 }
             }
         }
     }
 
     private fun runExternalToolsIfNeeded(
-        handler: KillableProcessHandler,
-        mainFile: VirtualFile,
-        project: Project
+        handler: KillableProcessHandler
     ): Boolean {
-        val isAnyExternalToolNeeded = RunExternalToolListener.getRequiredExternalTools(mainFile, project).isNotEmpty()
+        val isAnyExternalToolNeeded = if (!runConfig.hasBeenRun) {
+            // This is a relatively expensive check
+            RunExternalToolListener.getRequiredExternalTools(runConfig.mainFile, runConfig.project).isNotEmpty()
+        }
+        else {
+            false
+        }
 
         if (runConfig.isFirstRunConfig && (runConfig.externalToolRunConfigs.isNotEmpty() || isAnyExternalToolNeeded)) {
             handler.addProcessListener(RunExternalToolListener(runConfig, environment))
@@ -157,9 +172,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         return isMakeindexNeeded
     }
 
-    private fun isLastCompile(isMakeindexNeeded: Boolean, isAnyExternalToolNeeded: Boolean, handler: KillableProcessHandler): Boolean {
+    private fun isLastCompile(isMakeindexNeeded: Boolean, handler: KillableProcessHandler): Boolean {
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
-        if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && !isAnyExternalToolNeeded) {
+        if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && runConfig.externalToolRunConfigs.isEmpty()) {
             if (!runConfig.compileTwice) {
                 runConfig.isLastRunConfig = true
             }
