@@ -158,6 +158,7 @@ Run analysis locally:
 ----
 docker run --rm -it -v /path/to/TeXiFy-IDEA/:/data/project/ -p 8080:8080 jetbrains/qodana-jvm --show-report --cache-dir=/tmp/qodana-cache
 ----
+or using the CLI: `qodana scan --show-report`.
 
 View report downloaded from GH Actions:
 ----
