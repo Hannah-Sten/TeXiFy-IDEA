@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -26,9 +25,7 @@ infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
  * Executes the given run write action.
  */
 fun runWriteAction(writeAction: () -> Unit) {
-    runInEdt {
-        ApplicationManager.getApplication().runWriteAction(writeAction)
-    }
+    ApplicationManager.getApplication().runWriteAction(writeAction)
 }
 
 fun runWriteCommandAction(project: Project, writeCommandAction: () -> Unit) {
