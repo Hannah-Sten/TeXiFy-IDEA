@@ -6,7 +6,13 @@
 
 ### Fixed
 
-## [0.7.26-alpha.8] - 2023-02-01
+## [0.7.26] - 2023-02-01
+Welcome to TeXiFy IDEA 0.7.26! This release has some notable performance improvements and fixes many exceptions.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+Thanks to @jojo2357 and @Yodude2002 for contributing to this release!
 
 ### Added
 * Improve performance when starting a run configuration.
@@ -26,68 +32,7 @@
 * Fix robust inline math brace matching.
 * Fix custom file name being overridden in inspection quickfix.
 
-## [0.7.26-alpha.7] - 2023-01-26
 
-### Added
-* Don't wrap urls when formatting.
-* Add (custom) highlighting for the equals separator in key-value pairs
-* Add support for inlining user-defined commands, by @jojo2357.
-* Add tabularray package, by @Yodude2002.
-
-### Fixed
-* Fix unreliable \item insertion in itemize.
-* Reformat suggested file name before showing it to the user, instead of afterwards.
-* Improve performance when checking pdf viewer availability.
-* Improve error logging.
-* Fix exceptions.
-* Filter out uninjectable languages in intention.
-* Fix robust inline math brace matching.
-* Fix custom file name being overridden in inspection quickfix.
-
-## [0.7.26-alpha.6] - 2023-01-22
-
-### Added
-* Don't wrap urls when formatting.
-* Add (custom) highlighting for the equals separator in key-value pairs
-* Add support for inlining user-defined commands, by @jojo2357.
-* Add tabularray package, by @Yodude2002.
-
-### Fixed
-* Fix unreliable \item insertion in itemize.
-* Reformat suggested file name before showing it to the user, instead of afterwards.
-* Improve performance when checking pdf viewer availability.
-* Improve error logging.
-* Fix exceptions.
-* Filter out uninjectable languages in intention.
-* Fix robust inline math brace matching.
-* Fix custom file name being overridden in inspection quickfix.
-
-## [0.7.26-alpha.5] - 2023-01-11
-
-### Added
-* Don't wrap urls when formatting.
-* Add support for inlining user-defined commands, by @jojo2357.
-* Add tabularray package, by @Yodude2002.
-
-### Fixed
-* Reformat suggested file name before showing it to the user, instead of afterwards.
-* Improve performance when checking pdf viewer availability.
-* Improve error logging.
-* Fix exceptions.
-* Filter out uninjectable languages in intention.
-* Fix robust inline math brace matching.
-* Fix custom file name being overridden in inspection quickfix.
-
-## [0.7.26-alpha.4] - 2023-01-05
-
-### Added
-* Add support for inlining user-defined commands, by @jojo2357.
-* Add tabularray package, by @Yodude2002.
-
-### Fixed
-* Improve error logging.
-* Fix exceptions.
-* Filter out uninjectable languages in intention.
 
 ## [0.7.25] - 2022-12-01
 Welcome to TeXiFy IDEA 0.7.25! This release has many additions by @jojo2357, enjoy!
@@ -114,11 +59,6 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.8...HEAD
-[0.7.26-alpha.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.6...v0.7.26-alpha.7
-[0.7.26-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.4...v0.7.26-alpha.5
-[0.7.26-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26-alpha.3
-[0.7.26-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26-alpha.4
-[0.7.26-alpha.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.5...v0.7.26-alpha.6
-[0.7.26-alpha.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.7...v0.7.26-alpha.8
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26...HEAD
+[0.7.26]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.8...v0.7.26
 [0.7.25]: https://github.com/Hannah-Sten/TeXiFy-IDEA/commits/v0.7.25
