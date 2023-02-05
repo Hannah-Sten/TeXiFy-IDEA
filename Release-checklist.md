@@ -13,6 +13,7 @@
 - [ ] Update welcome text
 - [ ] Update version in gradle.properties
 - [ ] run patchChangelog (ideally this would be done for the publishPlugin task, but somehow that produces an 'Unreleased' title instead of 0.x.x)
+- [ ] Delete alpha versions from changelog
 - [ ] runIDE and check the changelog is formatted correctly
 - [ ] Run publishPlugin
 - [ ] Merge PR

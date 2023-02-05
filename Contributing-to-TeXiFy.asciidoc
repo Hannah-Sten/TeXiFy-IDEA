@@ -208,7 +208,7 @@ Because the official https://hub.docker.com/r/miktex/miktex[miktex/miktex] is at
 It can be updated as follows.
 * Clone the source repo https://github.com/MiKTeX/docker-miktex
 * Create a Docker run config with image tag `docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest` and run it. You might want to add `--no-cache --pull` build options.
-* Make sure that there is a valid Docker Registry for GitHub in Settings > Build, ..., > Docker > Registry, point it to `docker.pkg.github.com` and as a password provide a PAT (see https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry).
+* Make sure that there is a valid Docker Registry for GitHub in Settings > Build, ..., > Docker > Registry, use a Docker V2 registry, point it to `ghcr.io` and as a password provide a PAT (see https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry).
 * Right-click the image and click Push, provide as repository `hannah-sten/texify-idea/miktex` and tag `latest`. If it doesn't work, follow https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry
 
 == Debugging the intellij-pdf-viewer plugin with TeXiFy
