@@ -52,7 +52,8 @@ object PackageMagic {
         LatexPackage.GRAPHICX to setOf(LatexPackage.GRAPHICS),
         LatexPackage.XCOLOR to setOf(LatexPackage.COLOR),
         LatexPackage.PDFCOMMENT to setOf(LatexPackage.HYPERREF),
-        LatexPackage.ALGORITHM2E to setOf(LatexPackage.ALGPSEUDOCODE), // This is not true, but loading any of these two (incompatible) packages is sufficient as they provide the same commands (roughly)
+        LatexPackage.ALGORITHM2E to setOf(LatexPackage.ALGPSEUDOCODE), // Not true, but algorithm2e provides roughly the same commands
+        LatexPackage.NEWTXMATH to setOf(LatexPackage.AMSSYMB, LatexPackage.STMARYRD), // Not true, but newtxmath provides roughly the same commands
     )
 
     /**
