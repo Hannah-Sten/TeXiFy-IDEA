@@ -1,7 +1,8 @@
 package nl.hannahsten.texifyidea.remotelibraries
 
+import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.index.file.BibtexExternalEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
 import nl.hannahsten.texifyidea.ui.remotelibraries.LibraryMutableTreeNode
 
 class LocalBibLibrary(override val identifier: String = "local", override val displayName: String = "local") : ExternalBibLibrary(identifier, displayName) {
@@ -12,18 +13,7 @@ class LocalBibLibrary(override val identifier: String = "local", override val di
      *
      * TODO if possible, do we automatically reflect changes in bib file in tree?
      */
-    private fun getCollection(): List<BibtexEntry> = BibtexEntryListConverter().fromString(
-        """
-            @BOOK{Parker2020-bu,
-              title     = "Humble pi",
-              author    = "Parker, Matt",
-              publisher = "Penguin Books",
-              month     =  mar,
-              year      =  2020,
-              address   = "Harlow, England"
-            }
-        """.trimIndent()
-    )
+    private fun getCollection(project: Project): List<BibtexEntry> = BibtexExternalEntryIndex.getAllValues(project).toList()
 
-    fun asTreeNode() = LibraryMutableTreeNode(identifier, displayName, getCollection())
+    fun asTreeNode(project: Project) = LibraryMutableTreeNode(identifier, displayName, getCollection(project))
 }

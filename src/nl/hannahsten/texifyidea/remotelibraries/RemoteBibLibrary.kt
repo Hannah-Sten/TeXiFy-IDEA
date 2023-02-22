@@ -26,7 +26,7 @@ abstract class RemoteBibLibrary(identifier: String, displayName: String) : Exter
 
         // Reading the dummy bib file needs to happen in a place where we have read access.
         return runReadAction {
-            BibtexEntryListConverter().fromString(body)
+            BibtexEntryListConverter.fromString(body)
         }
     }
 

@@ -130,4 +130,14 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
     return BibtexPsiImplUtil.toString(this);
   }
 
+  @Override
+  public boolean equals(Object other) {
+    return BibtexPsiImplUtil.equals(this, other);
+  }
+
+  @Override
+  public int hashCode() {
+    return BibtexPsiImplUtil.hashCode(this);
+  }
+
 }

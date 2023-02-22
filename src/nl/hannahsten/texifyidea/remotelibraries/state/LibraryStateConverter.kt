@@ -36,7 +36,7 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
             BibItems::class.java,
             object : JsonSerializer<BibItems>() {
                 override fun serialize(p0: BibItems, p1: JsonGenerator, p2: SerializerProvider) {
-                    runReadAction { p1.writeString(BibtexEntryListConverter().toString(p0.items)) }
+                    runReadAction { p1.writeString(BibtexEntryListConverter.toString(p0.items)) }
                 }
             }
         )
@@ -53,7 +53,7 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
             BibItems::class.java,
             object : JsonDeserializer<BibItems>() {
                 override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems {
-                    return runReadAction { BibItems(BibtexEntryListConverter().fromString(p0.text)) }
+                    return runReadAction { BibItems(BibtexEntryListConverter.fromString(p0.text)) }
                 }
             }
         )

@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.remotelibraries.state
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFileFactory
@@ -14,10 +16,10 @@ import nl.hannahsten.texifyidea.util.childrenOfType
  * Convert from String to [BibtexEntry], and the other way around, using PSI and the parser.
  * This implies that this converter has to be used from within a thread that has read access.
  */
-class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
+object BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
 
     override fun toString(value: List<BibtexEntry>): String {
-        return value.joinToString("\n") { it.text }
+        return value.joinToString("\n") { runReadAction { it.text } }
     }
 
     override fun fromString(value: String): List<BibtexEntry> {

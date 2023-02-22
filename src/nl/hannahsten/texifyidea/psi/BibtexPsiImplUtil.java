@@ -1,7 +1,9 @@
 package nl.hannahsten.texifyidea.psi;
 
+import com.intellij.openapi.application.ActionsKt;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import kotlin.jvm.functions.Function0;
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import nl.hannahsten.texifyidea.reference.BibtexStringReference;
 import nl.hannahsten.texifyidea.util.BibtexKt;
@@ -9,7 +11,9 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class is used for method injection in generated classes.
@@ -30,6 +34,25 @@ public class BibtexPsiImplUtil {
     /*
      * BibtexEntry
      */
+
+    public static boolean equals(@NotNull BibtexEntry element, Object other) {
+        if (other == null) return false;
+        if (other instanceof BibtexEntry otherBib) {
+            return getName(element).equals(getName(otherBib)) &&
+                    getTitle(element).equals(getTitle(otherBib)) &&
+                    new HashSet<>(getAuthors(otherBib)).containsAll(getAuthors(element)) &&
+                    new HashSet<>(getAuthors(element)).containsAll(getAuthors(otherBib)) &&
+                    getYear(element).equals(getYear(otherBib)) &&
+                    getAbstract(element).equals(getAbstract(otherBib));
+        }
+        else {
+            return false;
+        }
+    }
+
+    public static int hashCode(@NotNull BibtexEntry element) {
+        return ActionsKt.runReadAction(() -> Objects.hash(element.getName(), element.getTitle(), element.getAuthors(), element.getYear(), element.getAbstract()));
+    }
 
     public static PsiReference[] getReferences(@NotNull BibtexEntry element) {
         return BibtexEntryUtilKt.getReferences(element);

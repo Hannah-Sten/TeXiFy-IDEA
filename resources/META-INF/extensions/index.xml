@@ -17,5 +17,8 @@
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex" />
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionIndex" />
         <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor" />
+
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.BibtexExternalEntryIndex"/>
+        <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.BibtexIndexableSetContributor"/>
     </extensions>
 </idea-plugin>

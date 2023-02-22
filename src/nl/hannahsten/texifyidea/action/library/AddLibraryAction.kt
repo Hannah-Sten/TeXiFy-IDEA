@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.RemoteLibraryRequestTeXception
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.remotelibraries.ExternalBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
@@ -24,7 +25,7 @@ import javax.swing.tree.DefaultTreeModel
  * To create an action to add a remote library, subclass this one and implement the abstract members. Then add that action
  * to plugin.xml.
  */
-abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper> : AnAction() {
+abstract class AddLibraryAction<Lib : ExternalBibLibrary, T : AddLibDialogWrapper> : AnAction() {
 
     /**
      * Add the elements from the library to the tree in the tool window.

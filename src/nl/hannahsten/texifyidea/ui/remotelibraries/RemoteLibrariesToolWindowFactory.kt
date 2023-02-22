@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
@@ -31,9 +32,11 @@ import javax.swing.tree.DefaultMutableTreeNode
 class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val librariesToolWindow = RemoteLibrariesToolWindowPanel(project)
-        val content = ContentFactory.getInstance().createContent(librariesToolWindow, "", false)
-        toolWindow.contentManager.addContent(content)
+        DumbService.getInstance(project).smartInvokeLater {
+            val librariesToolWindow = RemoteLibrariesToolWindowPanel(project)
+            val content = ContentFactory.getInstance().createContent(librariesToolWindow, "", false)
+            toolWindow.contentManager.addContent(content)
+        }
     }
 
     override fun isApplicable(project: Project) = project.isLatexProject()
@@ -71,7 +74,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         )
 
         private val remoteLibraries = RemoteLibraryManager.getInstance().getLibraries().asTreeNodes()
-        val libraries = listOf(LocalBibLibrary().asTreeNode()) + remoteLibraries
+        val libraries = listOf(LocalBibLibrary().asTreeNode(project)) + remoteLibraries
 
         private val rootNode = DefaultMutableTreeNode().apply {
             // Add all the bib items for each library.
