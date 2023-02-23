@@ -52,7 +52,9 @@ open class InsertEditorAction(
         // Don't touch any file content that is not related to TeXiFy
         if (file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() == false) return
 
-        runWriteAction(project) { insert(document, start, end, editor.caretModel) }
+        if (file.isWritable) {
+            runWriteAction(project) { insert(document, start, end, editor.caretModel) }
+        }
     }
 
     private fun insert(document: Document, start: Int, end: Int, caretModel: CaretModel) {
