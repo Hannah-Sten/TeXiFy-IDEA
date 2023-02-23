@@ -38,7 +38,7 @@ class BibtexExternalEntryIndex : FileBasedIndexExtension<String, BibtexEntry>() 
     override fun getVersion(): Int = 1
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return FileBasedIndex.InputFilter { file -> file.fileType is BibtexFileType }
+        return DefaultFileTypeSpecificInputFilter(BibtexFileType)
     }
 
     override fun dependsOnFileContent(): Boolean = true
