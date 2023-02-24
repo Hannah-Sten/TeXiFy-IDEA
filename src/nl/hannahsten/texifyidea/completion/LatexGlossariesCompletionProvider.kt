@@ -14,10 +14,10 @@ import nl.hannahsten.texifyidea.util.requiredParameters
 
 object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParameters>() {
 
-    private fun getOptionsMap(pairs: List<LatexStrictKeyvalPair>): LinkedHashMap<String, String> {
-        val map = HashMap<LatexKeyvalKey, LatexKeyvalValue?>()
-        pairs.forEach { p -> map[p.keyvalKey] = p.keyvalValue }
-        return pairs.associate { Pair(it.keyvalKey, it.keyvalValue) }.toStringMap()
+    private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): LinkedHashMap<String, String> {
+        val map = HashMap<LatexKeyValKey, LatexKeyValValue?>()
+        pairs.forEach { p -> map[p.keyValKey] = p.keyValValue }
+        return pairs.associate<LatexKeyValuePair, LatexKeyValKey, LatexKeyValValue?> { Pair(it.keyValKey, it.keyValValue) }.toStringMap()
     }
 
     private fun prettyPrintParameter(param: LatexRequiredParam): String {
@@ -25,7 +25,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
             param.requiredParamContentList.joinToString { c -> c.text }
         }
         else {
-            param.strictKeyvalPairList.joinToString { p -> p.text }
+            param.strictKeyValPairList.joinToString { p -> p.text }
         }
     }
 
@@ -44,7 +44,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
         result: CompletionResultSet
     ) {
         val glossaryCommands = LatexGlossaryEntryIndex.getItemsInFileSet(parameters.originalFile)
-        val lookupItems = glossaryCommands.mapNotNull { command ->
+        val lookupItems = glossaryCommands.mapNotNull { command: LatexCommands ->
             when (command.name) {
                 NEWACRONYM.cmd, NEWABBREVIATION.cmd -> {
                     val params = command.requiredParameters
@@ -56,7 +56,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                 NEWGLOSSARYENTRY.cmd -> {
                     val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
                     val options =
-                        command.requiredParameters().getOrNull(1)?.strictKeyvalPairList ?: return@mapNotNull null
+                        command.requiredParameters().getOrNull(1)?.strictKeyValPairList ?: return@mapNotNull null
                     val optionsMap = getOptionsMap(options)
                     val short = optionsMap.getOrDefault("name", "")
                     val description = optionsMap.getOrDefault("description", "")
@@ -65,7 +65,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                 LONGNEWGLOSSARYENTRY.cmd -> {
                     val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
                     val options =
-                        command.requiredParameters().getOrNull(1)?.strictKeyvalPairList ?: return@mapNotNull null
+                        command.requiredParameters().getOrNull(1)?.strictKeyValPairList ?: return@mapNotNull null
                     val optionsMap = getOptionsMap(options)
                     val description = command.requiredParameters().getOrNull(2) ?: return@mapNotNull null
                     val short = optionsMap.getOrDefault("name", "")

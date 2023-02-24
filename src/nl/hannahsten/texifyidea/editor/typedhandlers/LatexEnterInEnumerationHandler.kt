@@ -10,11 +10,10 @@ import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.intellij.openapi.editor.actions.SplitLineAction.SPLIT_LINE_KEY
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.editor.ControlTracker
-import nl.hannahsten.texifyidea.editor.ShiftTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -39,12 +38,9 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
             return Result.Continue
         }
 
-        ShiftTracker.setup(editor.contentComponent)
-        ControlTracker.setup(editor.contentComponent)
-
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset)
-        if (hasValidContext(element)) {
+        if (hasValidContext(element, context)) {
             val previousMarker = getPreviousMarker(element!!)
             if (previousMarker == null) {
                 editor.insertAtCaretAndMove("\\item ")
@@ -54,11 +50,6 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
                 val template = TemplateImpl("", "\\item[\$__Variable0\$] ", "")
                 template.addVariable(TextExpression(previousMarker.trim('[', ']')), true)
                 TemplateManager.getInstance(file.project).startTemplate(editor, template)
-            }
-        }
-        else {
-            if (ControlTracker.isControlPressed) {
-                editor.insertAtCaretAndMove("")
             }
         }
 
@@ -133,8 +124,13 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
      *
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
-    private fun hasValidContext(element: PsiElement?): Boolean {
-        if (!TexifySettings.getInstance().automaticItemInItemize || element == null || ShiftTracker.isShiftPressed() || ControlTracker.isControlPressed || element.inMathContext()) {
+    private fun hasValidContext(element: PsiElement?, context: DataContext): Boolean {
+        if (
+            !TexifySettings.getInstance().automaticItemInItemize ||
+            element == null ||
+            DataManager.getInstance().loadFromDataContext(context, SPLIT_LINE_KEY) == true || // SplitLineAction means Ctrl+Enter was pressed, we decide to not insert \item in that case
+            element.inMathContext()
+        ) {
             return false
         }
 

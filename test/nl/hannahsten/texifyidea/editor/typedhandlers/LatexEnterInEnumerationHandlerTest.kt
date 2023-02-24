@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.editor.typedhandlers
 
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 
@@ -20,6 +21,26 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
             \begin{itemize}
                 \item 
                 \item <caret>
+            \end{itemize}
+            """.trimIndent()
+        )
+    }
+
+    fun testItemizeSplitLine() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{itemize}
+                \item This sentence is <caret>broken
+            \end{itemize}
+            """.trimIndent()
+        )
+        myFixture.testAction(ActionManager.getInstance().getAction("EditorSplitLine"))
+        myFixture.checkResult(
+            """
+            \begin{itemize}
+                \item This sentence is <caret>
+                broken
             \end{itemize}
             """.trimIndent()
         )

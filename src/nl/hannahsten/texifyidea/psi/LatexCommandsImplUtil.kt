@@ -175,23 +175,23 @@ fun stripGroup(text: String): String {
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
-fun Map<LatexKeyvalKey, LatexKeyvalValue?>.toStringMap(): LinkedHashMap<String, String> {
+fun Map<LatexKeyValKey, LatexKeyValValue?>.toStringMap(): LinkedHashMap<String, String> {
     val parameterMap = LinkedHashMap<String, String>()
     this.forEach { (k, v) -> parameterMap[k.toString()] = v?.toString() ?: "" }
     return parameterMap
 }
 
-fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue?> {
+fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyValKey, LatexKeyValValue?> {
 
-    val parameterMap = LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue?>()
+    val parameterMap = LinkedHashMap<LatexKeyValKey, LatexKeyValValue?>()
     // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
     // But within a parameter, there can be different content like [name={value in group}]
     parameters.mapNotNull { it.optionalParam }
         // extract the content of each parameter element
         .flatMap { param ->
-            param.keyvalPairList
+            param.keyValPairList
         }.forEach { pair ->
-            parameterMap[pair.keyvalKey] = pair.keyvalValue
+            parameterMap[pair.keyValKey] = pair.keyValValue
         }
     return parameterMap
 }
@@ -237,7 +237,7 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
     return element
 }
 
-fun keyValKeyToString(element: LatexKeyvalKey): String {
+fun keyValKeyToString(element: LatexKeyValKey): String {
     // This is ugly, but element.children returns only composite children and other querying methods are recursive
     val result = ArrayList<PsiElement>()
     var psiChild = element.firstChild
@@ -253,7 +253,7 @@ fun keyValKeyToString(element: LatexKeyvalKey): String {
     }
 }
 
-fun keyValContentToString(list: List<LatexKeyvalContent>): String =
+fun keyValContentToString(list: List<LatexKeyValContent>): String =
     list.joinToString(separator = "") {
         when {
             it.parameterText != null -> it.parameterText!!.text
@@ -262,5 +262,5 @@ fun keyValContentToString(list: List<LatexKeyvalContent>): String =
         }
     }
 
-fun keyValContentToString(element: LatexKeyvalValue): String =
-    keyValContentToString(element.keyvalContentList)
+fun keyValContentToString(element: LatexKeyValValue): String =
+    keyValContentToString(element.keyValContentList)

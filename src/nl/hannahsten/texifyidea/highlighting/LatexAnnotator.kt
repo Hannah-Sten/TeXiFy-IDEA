@@ -7,6 +7,8 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
@@ -43,11 +45,15 @@ open class LatexAnnotator : Annotator {
                     .create()
             }
         }
-        // Optional parameters
+        // Key value pairs. Match on the common interface so we catch LatexKeyValPair and LatexStrictKeyValPair.
+        else if (psiElement is LatexKeyValuePair) {
+            annotateKeyValuePair(psiElement, annotationHolder)
+        }
+        // Optional parameters.
         else if (psiElement is LatexOptionalParam) {
             annotateOptionalParameters(psiElement, annotationHolder)
         }
-        // Commands
+        // Commands.
         else if (psiElement is LatexCommands) {
             annotateCommands(psiElement, annotationHolder)
         }
@@ -131,6 +137,15 @@ open class LatexAnnotator : Annotator {
                     .create()
             }
         }
+    }
+
+    private fun annotateKeyValuePair(element: LatexKeyValuePair, annotationHolder: AnnotationHolder) {
+        element.keyValValue ?: return
+
+        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            .range(TextRange(element.keyValKey.endOffset, element.keyValValue!!.startOffset))
+            .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
+            .create()
     }
 
     /**

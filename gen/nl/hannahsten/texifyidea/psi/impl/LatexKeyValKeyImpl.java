@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexKeyvalKeyImpl extends ASTWrapperPsiElement implements LatexKeyvalKey {
+public class LatexKeyValKeyImpl extends ASTWrapperPsiElement implements LatexKeyValKey {
 
-  public LatexKeyvalKeyImpl(@NotNull ASTNode node) {
+  public LatexKeyValKeyImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitKeyvalKey(this);
+    visitor.visitKeyValKey(this);
   }
 
   @Override

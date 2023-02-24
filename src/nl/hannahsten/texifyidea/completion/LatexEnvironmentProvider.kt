@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
 import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Kindness
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -54,6 +55,7 @@ object LatexEnvironmentProvider {
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
         LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
+            .map { it as LatexCommands }
             .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
             .map { cmd -> cmd.requiredParameter(0) }
             .filter { obj -> Objects.nonNull(obj) }

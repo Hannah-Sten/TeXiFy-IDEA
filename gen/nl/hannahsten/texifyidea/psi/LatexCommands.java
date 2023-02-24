@@ -22,7 +22,7 @@ public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithP
 
   PsiReference getReference();
 
-  LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap();
+  LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap();
 
   List<String> getRequiredParameters();
 

@@ -15,6 +15,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.serviceContainer.AlreadyDisposedException
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
@@ -59,9 +60,20 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
  */
 fun Project.allFiles(type: FileType): Collection<VirtualFile> {
     if (!isInitialized) return emptyList()
-    return runReadAction {
-        val scope = GlobalSearchScope.projectScope(this)
-        return@runReadAction FileTypeIndex.getFiles(type, scope)
+    try {
+        return runReadAction {
+            val scope = GlobalSearchScope.projectScope(this)
+            return@runReadAction FileTypeIndex.getFiles(type, scope)
+        }
+    }
+    catch (e: IllegalStateException) {
+        // Doesn't happen very often, and afaik there's no proper way of checking whether this index is initialized. See #2855
+        if (e.message?.contains("Index is not created for `filetypes`") == true) {
+            return emptyList()
+        }
+        else {
+            throw e
+        }
     }
 }
 
@@ -94,8 +106,13 @@ fun Project.currentTextEditor(): TextEditor? {
  */
 fun Project.hasLatexModule(): Boolean {
     if (isDisposed) return false
-    return ModuleManager.getInstance(this).modules
-        .any { ModuleType.get(it).id == LatexModuleType.ID }
+    return try {
+        ModuleManager.getInstance(this).modules
+            .any { ModuleType.get(it).id == LatexModuleType.ID }
+    }
+    catch (e: AlreadyDisposedException) {
+        false
+    }
 }
 
 /**
