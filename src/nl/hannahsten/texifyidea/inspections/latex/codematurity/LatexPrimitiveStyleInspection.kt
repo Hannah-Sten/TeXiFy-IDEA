@@ -5,17 +5,14 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.util.deleteElement
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.parentOfType
 import org.jetbrains.annotations.Nls
 
 /**
@@ -50,7 +47,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     command,
                     "Use of TeX primitive " + CommandMagic.stylePrimitives[index] + " is discouraged",
-                    InspectionFix(),
+                    InspectionFix(SmartPointerManager.createPointer(command)),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
@@ -59,40 +56,17 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private inner class InspectionFix : LocalQuickFix {
+    private inner class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFix {
 
         @Nls
         override fun getFamilyName(): String {
             return "Convert to LaTeX alternative"
         }
 
-        override fun applyFix(
-            project: Project,
-            descriptor: ProblemDescriptor
-        ) {
-            val element = descriptor.psiElement as? LatexCommands ?: return
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val element = oldCommand.element ?: return
 
-            // Find elements that go after the primitive.
-            val cmdIndex = CommandMagic.stylePrimitives.indexOf(element.name)
-            if (cmdIndex < 0) {
-                return
-            }
-            val content = element.parentOfType(LatexNoMathContent::class)
-            val next = content!!.nextSiblingIgnoreWhitespace()
-            val after = if (next == null) "" else next.text
-            val replacement =
-                String.format(CommandMagic.stylePrimitveReplacements[cmdIndex], after)
-            val document =
-                PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
-
-            // Delete the ending part..
-            if (next != null) {
-                document?.deleteElement(next)
-            }
-
-            // Replace command.
-            val range = element.commandToken.textRange
-            document?.replaceString(range.startOffset, range.endOffset, replacement)
+            element.setName(CommandMagic.stylePrimitiveReplacements[element.name] ?: return)
         }
     }
 }
