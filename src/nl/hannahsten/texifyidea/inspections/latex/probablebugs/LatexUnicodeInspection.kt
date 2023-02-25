@@ -110,6 +110,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                     continue
                 }
 
+                val fix = if (inMathMode) {
+                    null
+                }
+                else {
+                    InsertUnicodePackageFix()
+                }
+                val fixes = listOfNotNull(fix).toTypedArray()
+
                 descriptors.add(
                     manager.createProblemDescriptor(
                         text,
@@ -118,12 +126,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         EscapeUnicodeFix(inMathMode),
-                        if (inMathMode) {
-                            null
-                        }
-                        else {
-                            InsertUnicodePackageFix()
-                        }
+                        *fixes
                     )
                 )
             }

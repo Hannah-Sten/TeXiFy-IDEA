@@ -45,7 +45,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
     override fun getInvalidHomeMessage(path: String) = "Could not find $path/pdflatex"
 
-    override fun getVersionString(sdkHome: String?): String {
+    override fun getVersionString(sdkHome: String): String {
         // Assume pdflatex --version contains output of the form
         // pdfTeX 3.14159265-2.6-1.40.21 (TeX Live 2020/mydistro)
         val output = LatexSdkUtil.parsePdflatexOutput(runCommand("$sdkHome/pdflatex", "--version") ?: "")

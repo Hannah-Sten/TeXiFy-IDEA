@@ -61,6 +61,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 // which is what we suggest with this quickfix.
                 val dotPlusSpace = "^$sentenceEndPrefix(\\.\\s)".toRegex().find(text.text.substring(startOffset, matcher.end()))?.groups?.get(0)?.range?.shiftRight(startOffset + 1)
                 val normalSpaceFix = if (dotPlusSpace != null) LatexSpaceAfterAbbreviationInspection.NormalSpaceFix(dotPlusSpace) else null
+                val fixes = listOfNotNull(InspectionFix(), normalSpaceFix).toTypedArray()
 
                 descriptors.add(
                     manager.createProblemDescriptor(
@@ -69,7 +70,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                         "Sentence does not start on a new line",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InspectionFix(), normalSpaceFix
+                        *fixes
                     )
                 )
             }
