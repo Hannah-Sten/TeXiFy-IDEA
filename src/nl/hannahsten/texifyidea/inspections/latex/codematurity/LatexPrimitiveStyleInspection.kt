@@ -1,10 +1,12 @@
 package nl.hannahsten.texifyidea.inspections.latex.codematurity
 
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
@@ -56,17 +58,23 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private inner class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFix {
+    private inner class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFixAndIntentionActionOnPsiElement(oldCommand.element) {
 
         @Nls
         override fun getFamilyName(): String {
             return "Convert to LaTeX alternative"
         }
 
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val element = oldCommand.element ?: return
+        override fun getText(): String {
+            return oldCommand.element
+                ?.let { "Convert ${it.name} to ${CommandMagic.stylePrimitiveReplacements[it.name]}" }
+                ?: familyName
+        }
 
-            element.setName(CommandMagic.stylePrimitiveReplacements[element.name] ?: return)
+        override fun invoke(project: Project, file: PsiFile, editor: Editor?, startElement: PsiElement, endElement: PsiElement) {
+            (startElement as? LatexCommands)?.let {
+                it.setName(CommandMagic.stylePrimitiveReplacements[it.name] ?: return)
+            }
         }
     }
 }
