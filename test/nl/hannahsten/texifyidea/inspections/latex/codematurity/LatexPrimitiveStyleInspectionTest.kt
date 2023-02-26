@@ -16,23 +16,43 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
         myFixture.checkHighlighting()
     }
 
-    fun testQuickfix() {
+    fun `test simple quickfix`() {
+        testQuickFix("""{\it is italic}""", """\textit{is italic}""")
+    }
+
+    fun `test quickfix in group`() {
+        testQuickFix("""{help \it is italic}""", """help \textit{is italic}""")
+    }
+
+    fun `test bf`() {
         myFixture.configureByText(
             LatexFileType,
             """
-            {\it is italic}
+            \begin{center}
+            {\Large <warning descr="Use of TeX primitive \bf is discouraged">\bf{Instructions for formatting (S)PC list}</warning>}
+            \end{center}
+
+            The format of the text file should be as follows. \\
             """.trimIndent()
         )
+        myFixture.checkHighlighting()
+    }
 
-        val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
-        writeCommand(myFixture.project) {
-            quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
-        }
-
-        myFixture.checkResult(
+    fun `test quick fix`() {
+        testQuickFix(
             """
-            {\textit{is italic} }
+            \begin{center}
+            {\Large \bf{Instructions for formatting (S)PC list}}
+            \end{center}
+
+            The format of the text file should be as follows. \\
+            """.trimIndent(),
+            """
+            \begin{center}
+            {\Large \textbf{Instructions for formatting (S)PC list}}
+            \end{center}
+
+            The format of the text file should be as follows. \\
             """.trimIndent()
         )
     }
