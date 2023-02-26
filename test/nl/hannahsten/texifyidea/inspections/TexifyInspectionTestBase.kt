@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.application.writeAction
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand

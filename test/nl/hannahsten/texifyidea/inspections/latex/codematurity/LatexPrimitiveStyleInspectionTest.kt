@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.inspections.latex.codematurity
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiveStyleInspection()) {
 
@@ -21,7 +20,7 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
     }
 
     fun `test quickfix in group`() {
-        testQuickFix("""{help \it is italic}""", """help \textit{is italic}""")
+        testQuickFix("""{help abc \it is italic}""", """help abc \textit{is italic}""")
     }
 
     fun `test bf`() {

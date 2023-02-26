@@ -78,10 +78,12 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
             (startElement as? LatexCommands)?.let { command ->
                 command.setName(CommandMagic.stylePrimitiveReplacements[command.name] ?: return)
 
-                // Convert {\bf this is content} to \textbf{this is content}
+                // Convert {help \bf this is content} to "help \textbf{this is content}"
                 if (command.requiredParameters.isEmpty()) {
                     val commandInFile = file.findElementAt(oldCommand.range?.startOffset ?: return) ?: return
 
+                    // Find the LaTeX group surrounding this command, so we can separate its content in all the siblings
+                    // before the command and all the siblings after the command.
                     val previousTrace = mutableListOf(commandInFile)
                     while (previousTrace.last().parent != null) {
                         val parent = previousTrace.last().parent
@@ -90,19 +92,19 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
                     }
 
                     val commandInContent = previousTrace.lastOrNull { it.text == commandInFile.text }
-                    val prefixContent = commandInContent?.siblings(forward = false, withSelf = false) ?: emptySequence()
-                    val requiredParamContent = commandInContent?.siblings(forward = true, withSelf = false) ?: emptySequence()
+                    val prefixContent = commandInContent?.siblings(forward = false, withSelf = false)?.toList()
+                        ?.reversed()
+                        ?.joinToString(" ") { it.text }
+                        ?.trim() ?: ""
+                    val requiredParamContent = commandInContent?.siblings(forward = true, withSelf = false)
+                        ?.joinToString(" ") { it.text }
+                        ?.trim() ?: ""
+
+                    val newPsi = LatexPsiHelper(project).createFromText(
+                        "$prefixContent ${commandInFile.text}{$requiredParamContent}"
+                    )
+
                     val parentGroup = previousTrace.last()
-
-                    val helper = LatexPsiHelper(project)
-                    if (prefixContent.any()) {
-                        val prefixPsi = helper.createFromText(prefixContent.toList().reversed().joinToString("") { it.text })
-                        commandInFile.parent.addBefore(prefixPsi, commandInFile)
-                    }
-                    val requiredParam = helper.createRequiredParameter(requiredParamContent.joinToString("") { it.text }.trim())
-                    commandInFile.parent.add(requiredParam)
-
-                    val newPsi = commandInFile.parent.copy()
                     parentGroup.replace(newPsi)
                 }
             }
