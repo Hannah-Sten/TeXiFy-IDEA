@@ -5,6 +5,8 @@
 ### Added
 
 ### Fixed
+* Fixed false positive inspection when using newtxmath instead of amssymb, by @FWDekker.
+* Fixed exception when trying to write to a read-only file.
 
 ## [0.7.26] - 2023-02-01
 Welcome to TeXiFy IDEA 0.7.26! This release has some notable performance improvements and fixes many exceptions.
