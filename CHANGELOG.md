@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fixed exception "Cannot distinguish StubFileElementTypes".
 * Fixed false positive inspection when using newtxmath instead of amssymb, by @FWDekker.
 * Fixed exception when trying to write to a read-only file.
 
