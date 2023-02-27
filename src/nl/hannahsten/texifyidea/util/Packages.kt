@@ -45,6 +45,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
+        if (!file.isWritable) return
 
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
