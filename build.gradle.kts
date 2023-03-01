@@ -18,7 +18,7 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.3.0"
+    id("de.undercouch.download") version "5.3.1"
 
     // Test coverage
     id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
