@@ -64,7 +64,7 @@ content ::= no_math_content*
 
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | DASH | ANGLE_PARAM)+
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | ANGLE_PARAM)+
 
 environment ::= begin_command environment_content? end_command {
     pin=1
@@ -127,7 +127,7 @@ strict_key_val_pair ::= key_val_key EQUALS key_val_value?
 key_val_pair ::= key_val_key (EQUALS key_val_value?)?
 
 // Keys in a key/val list are typically no commands and don't need to be references
-key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+ {
+key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
     methods=[toString]
 }
 key_val_value ::= key_val_content+ {
@@ -141,7 +141,7 @@ key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN 
 // So, the following is like normal_text
 // This assumes that parameter text which is a reference, appears directly under param_content
 // Commands is here instead of in required_param_content because it can be part of reference text for example to a file
-parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+ {
+parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
    methods=[getReferences getReference getNameIdentifier getName setName delete]
 }
 
