@@ -44,11 +44,11 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createKeyValuePairs(parameter: String): LatexKeyvalPair {
+    private fun createKeyValuePairs(parameter: String): LatexKeyValuePair {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.keyvalPairList[0]
+        return optionalParam.keyValPairList[0]
     }
 
     /**
@@ -121,7 +121,7 @@ class LatexPsiHelper(private val project: Project) {
      * @param name The name of the parameter to change
      * @param value The new parameter value. If the value is null, the parameter will have a key only.
      */
-    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexKeyvalPair {
+    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexKeyValuePair? {
         val optionalParam = getOrCreateLabelOptionalParameters(command)
 
         val parameterText = if (value != null) {
@@ -132,30 +132,30 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val pair = createKeyValuePairs(parameterText)
-        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().first { it.elementType == CLOSE_BRACKET }
-        return if (optionalParam.keyvalPairList.isNotEmpty()) {
-            val existing = optionalParam.keyvalPairList.find { kv -> kv.keyvalKey.text == name }
-            if (existing != null && value != null) {
-                existing.keyvalValue?.delete()
+        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == CLOSE_BRACKET }
+        return if (optionalParam.keyValPairList.isNotEmpty()) {
+            val existing = optionalParam.keyValPairList.find { kv -> kv.keyValKey.text == name }
+            if (existing != null && pair.keyValValue != null) {
+                existing.keyValValue?.delete()
                 existing.addAfter(
-                    pair.keyvalValue!!,
-                    existing.childrenOfType<LeafPsiElement>().first { it.elementType == EQUALS }
+                    pair.keyValValue!!,
+                    existing.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == EQUALS }
                 )
                 existing
             }
             else {
-                if (closeBracket.treeParent != optionalParam.node) {
+                if (closeBracket?.treeParent != optionalParam.node) {
                     Log.error("Close bracket is not a child of the optional parameter for ${command.text}, name=$name, value=$value")
                 }
                 val comma = createFromText(",").firstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
                 optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
-                closeBracket.prevSibling as LatexKeyvalPair
+                closeBracket?.prevSibling as? LatexKeyValuePair
             }
         }
         else {
             optionalParam.addBefore(pair, closeBracket)
-            closeBracket.prevSibling as LatexKeyvalPair
+            closeBracket?.prevSibling as? LatexKeyValuePair
         }
     }
 

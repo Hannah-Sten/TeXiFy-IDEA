@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexStrictKeyvalPairImpl extends ASTWrapperPsiElement implements LatexStrictKeyvalPair {
+public class LatexStrictKeyValPairImpl extends ASTWrapperPsiElement implements LatexStrictKeyValPair {
 
-  public LatexStrictKeyvalPairImpl(@NotNull ASTNode node) {
+  public LatexStrictKeyValPairImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitStrictKeyvalPair(this);
+    visitor.visitStrictKeyValPair(this);
   }
 
   @Override
@@ -29,14 +29,14 @@ public class LatexStrictKeyvalPairImpl extends ASTWrapperPsiElement implements L
 
   @Override
   @NotNull
-  public LatexKeyvalKey getKeyvalKey() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexKeyvalKey.class));
+  public LatexKeyValKey getKeyValKey() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexKeyValKey.class));
   }
 
   @Override
   @Nullable
-  public LatexKeyvalValue getKeyvalValue() {
-    return PsiTreeUtil.getChildOfType(this, LatexKeyvalValue.class);
+  public LatexKeyValValue getKeyValValue() {
+    return PsiTreeUtil.getChildOfType(this, LatexKeyValValue.class);
   }
 
 }

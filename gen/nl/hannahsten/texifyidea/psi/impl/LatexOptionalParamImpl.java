@@ -29,8 +29,8 @@ public class LatexOptionalParamImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @NotNull
-  public List<LatexKeyvalPair> getKeyvalPairList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexKeyvalPair.class);
+  public List<LatexKeyValPair> getKeyValPairList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexKeyValPair.class);
   }
 
   @Override

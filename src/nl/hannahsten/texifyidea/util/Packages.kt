@@ -46,6 +46,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
+        if (!file.isWritable) return
 
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
@@ -111,25 +112,25 @@ object PackageUtils {
 
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
 
+        // Don't run in a write action, as that will produce a SideEffectsNotAllowedException for INVOKE_LATER
+
+        // Avoid "Attempt to modify PSI for non-committed Document"
         // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
-        // Avoid 'Write access is allowed inside write-action only' exception
-        runWriteAction {
-            // Avoid "Attempt to modify PSI for non-committed Document"
-            PsiDocumentManager.getInstance(file.project)
-                .doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
-            PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
-            if (anchorAfter != null) {
-                val anchorBefore = anchorAfter.node.treeNext
-                if (prependNewLine) {
-                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
-                    anchorAfter.parent.node.addChild(newLine, anchorBefore)
-                }
-                anchorAfter.parent.node.addChild(newNode, anchorBefore)
+        PsiDocumentManager.getInstance(file.project)
+            .doPostponedOperationsAndUnblockDocument(file.document() ?: return)
+        PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return)
+        if (anchorAfter != null) {
+            val anchorBefore = anchorAfter.node.treeNext
+            @Suppress("KotlinConstantConditions")
+            if (prependNewLine) {
+                val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                anchorAfter.parent.node.addChild(newLine, anchorBefore)
             }
-            else {
-                // Insert at beginning
-                file.node.addChild(newNode, file.firstChild.node)
-            }
+            anchorAfter.parent.node.addChild(newNode, anchorBefore)
+        }
+        else {
+            // Insert at beginning
+            file.node.addChild(newNode, file.firstChild.node)
         }
     }
 

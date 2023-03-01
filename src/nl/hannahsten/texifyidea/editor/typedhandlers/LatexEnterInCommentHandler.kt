@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.util.get
 class LatexEnterInCommentHandler : EnterHandlerDelegateAdapter() {
 
     // Used to enable the preprocess to tell the postprocess what to do
-    var isComment = false
+    private var isComment = false
 
     override fun preprocessEnter(
         file: PsiFile,

@@ -339,7 +339,7 @@ class LatexRunConfiguration constructor(
         // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
         // Assume the list is of the form [id 1,id 2]
-        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
+        this.bibRunConfigIds = bibRunConfigElt?.drop(1)?.dropLast(1)?.split(", ")?.toMutableSet() ?: mutableSetOf()
 
         // Read makeindex run configurations
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)

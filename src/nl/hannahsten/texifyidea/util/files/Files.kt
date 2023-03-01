@@ -13,7 +13,6 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
-import com.intellij.psi.impl.source.PsiFileImpl
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.FileMagic
@@ -198,8 +197,13 @@ fun writeToFileUndoable(project: Project, filePath: String, text: String, root: 
     // Actually create the file on fs
     val thing = PsiManager.getInstance(project).findDirectory(resultDir)?.add(newfile)
 
-    // back to your regularly scheduled programming. Does not cast to LatexFile because virtualFile inherits from PsiFileImpl
-    return (thing as PsiFileImpl).virtualFile.path
+    // This is not a common case, use as a fallback
+    if (thing !is PsiFile) {
+        return filenameNoExtension.appendExtension(extension)
+    }
+
+    // back to your regularly scheduled programming. Does not cast to LatexFile because virtualFile inherits from PsiFile
+    return thing.virtualFile.path
         .replace(File.separator, "/")
         .replace("$root/", "")
 }

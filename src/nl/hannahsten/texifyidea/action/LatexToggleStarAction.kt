@@ -32,7 +32,7 @@ class LatexToggleStarAction : EditorAction("Toggle Star", TexifyIcons.TOGGLE_STA
 
         val commands = getParentOfType(element, LatexCommands::class.java) ?: return
 
-        runWriteAction(project) { toggleStar(editor, psiFile, commands) }
+        runWriteAction(project, file) { toggleStar(editor, psiFile, commands) }
     }
 
     /**

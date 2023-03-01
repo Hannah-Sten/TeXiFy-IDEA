@@ -64,6 +64,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val INLINE_MATH = createKey("LATEX_INLINE_MATH", DefaultLanguageHighlighterColors.STRING)
         val DISPLAY_MATH = createKey("LATEX_DISPLAY_MATH", DefaultLanguageHighlighterColors.STRING)
         val STAR = createKey("LATEX_STAR", DefaultLanguageHighlighterColors.DOT)
+        val SEPARATOR_EQUALS = createKey("SEPARATOR_EQUALS", DefaultLanguageHighlighterColors.IDENTIFIER)
         val LABEL_DEFINITION = createKey("LATEX_LABEL_DEFINITION", DefaultLanguageHighlighterColors.IDENTIFIER)
         val LABEL_REFERENCE = createKey("LATEX_LABEL_REFERENCE", DefaultLanguageHighlighterColors.IDENTIFIER)
         val BIBLIOGRAPHY_DEFINITION = createKey("LATEX_BIBLIOGRAPHY_DEFINITION", LABEL_DEFINITION)

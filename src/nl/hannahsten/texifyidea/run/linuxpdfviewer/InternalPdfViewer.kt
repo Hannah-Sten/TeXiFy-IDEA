@@ -30,12 +30,10 @@ enum class InternalPdfViewer(
     SUMATRA("sumatra", "Sumatra", SumatraConversation),
     NONE("", "No PDF viewer", null);
 
-    override fun isAvailable(): Boolean = availability()[this] ?: false
-
     /**
      * Check if the viewer is installed and available from the path.
      */
-    fun checkAvailability(): Boolean {
+    override fun isAvailable(): Boolean {
         // Using no PDF viewer should always be an option.
         return if (this == NONE) {
             true
@@ -63,12 +61,6 @@ enum class InternalPdfViewer(
     override fun toString(): String = displayName
 
     companion object {
-
-        private fun availability(): Map<InternalPdfViewer, Boolean> {
-            return values().associateWith {
-                it.checkAvailability()
-            }
-        }
 
         fun availableSubset(): List<InternalPdfViewer> = values().filter { it.isAvailable() }
 

@@ -1,4 +1,4 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/Hannah-Sten/TeXiFy-IDEA/CI/master?style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/Hannah-Sten/TeXiFy-IDEA/main.yml?branch=master&style=flat-square)
 [![Version](https://img.shields.io/jetbrains/plugin/v/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 ![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/r/rating/9473-texify-idea?style=flat-square)

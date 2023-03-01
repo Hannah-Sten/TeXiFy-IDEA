@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexKeyvalPairImpl extends ASTWrapperPsiElement implements LatexKeyvalPair {
+public class LatexKeyValContentImpl extends ASTWrapperPsiElement implements LatexKeyValContent {
 
-  public LatexKeyvalPairImpl(@NotNull ASTNode node) {
+  public LatexKeyValContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitKeyvalPair(this);
+    visitor.visitKeyValContent(this);
   }
 
   @Override
@@ -28,15 +28,27 @@ public class LatexKeyvalPairImpl extends ASTWrapperPsiElement implements LatexKe
   }
 
   @Override
-  @NotNull
-  public LatexKeyvalKey getKeyvalKey() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexKeyvalKey.class));
+  @Nullable
+  public LatexCommands getCommands() {
+    return PsiTreeUtil.getChildOfType(this, LatexCommands.class);
   }
 
   @Override
   @Nullable
-  public LatexKeyvalValue getKeyvalValue() {
-    return PsiTreeUtil.getChildOfType(this, LatexKeyvalValue.class);
+  public LatexMathEnvironment getMathEnvironment() {
+    return PsiTreeUtil.getChildOfType(this, LatexMathEnvironment.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexParameterGroup getParameterGroup() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterGroup.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexParameterText getParameterText() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterText.class);
   }
 
 }

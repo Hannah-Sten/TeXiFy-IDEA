@@ -15,8 +15,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: JetBrains/qodana-action@v2022.2.4
+      - uses: JetBrains/qodana-action@main
         name: Qodana
+        with:
+          args: --baseline,qodana.sarif.json
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
@@ -47,7 +51,7 @@ jobs:
         chmod +x gradlew
         ./gradlew ktlintCheck
     - name: Run tests
-      run: ./gradlew check koverReport
+      run: ./gradlew check koverXmlReport
     - name: Upload coverage report
       if: success() && matrix.os == 'ubuntu-latest'
       run: |

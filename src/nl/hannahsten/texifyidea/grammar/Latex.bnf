@@ -33,7 +33,10 @@
     implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
     implements("parameter")="com.intellij.psi.PsiLanguageInjectionHost"
-    // See the lexer
+
+    implements("key_val_pair")="nl.hannahsten.texifyidea.psi.LatexKeyValuePair"
+    implements("strict_key_val_pair")="nl.hannahsten.texifyidea.psi.LatexKeyValuePair"
+    // Used for displaying something else than the token name in the psi tree
     tokens=[
         WHITE_SPACE='regexp:\s+'
         DISPLAY_MATH_START='\['
@@ -49,12 +52,6 @@
         AMPERSAND='&'
         NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=&]+'
         NORMAL_TEXT_CHAR='regexp:[|!"=&-]'
-        // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
-        COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
-        RAW_TEXT_TOKEN='RAW_TEXT'
-        BEGIN_PSEUDOCODE_BLOCK='BEGIN_PSEUDOCODE_BLOCK'
-        MIDDLE_PSEUDOCODE_BLOCK='MIDDLE_PSEUDOCODE_BLOCK'
-        END_PSEUDOCODE_BLOCK='END_PSEUDOCODE_BLOCK'
     ]
 }
 
@@ -109,12 +106,12 @@ parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET ( (key_val_pair  (COMMA key_val_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
 // Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
 // Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both
 // a key and a value.
-required_param ::= OPEN_BRACE (strict_keyval_pair (COMMA strict_keyval_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=1 }
+required_param ::= OPEN_BRACE (strict_key_val_pair (COMMA strict_key_val_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=1 }
 
 picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 
@@ -126,17 +123,17 @@ required_param_content ::= raw_text | magic_comment | comment | environment | ps
 // Cannot contain ( or )
 picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
 
-strict_keyval_pair ::= keyval_key EQUALS keyval_value?
-keyval_pair ::= keyval_key (EQUALS keyval_value?)?
+strict_key_val_pair ::= key_val_key EQUALS key_val_value?
+key_val_pair ::= key_val_key (EQUALS key_val_value?)?
 
 // Keys in a key/val list are typically no commands and don't need to be references
-keyval_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+ {
+key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | DASH)+ {
     methods=[toString]
 }
-keyval_value ::= keyval_content+ {
+key_val_value ::= key_val_content+ {
     methods=[toString]
 }
-keyval_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
+key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
 
 
 // The lowest level of a parameter must have the getReferences etc. implemented

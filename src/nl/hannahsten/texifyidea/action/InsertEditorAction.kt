@@ -12,7 +12,6 @@ import javax.swing.Icon
 /**
  * @author Hannah Schellekens
  */
-@Suppress("ComponentNotRegistered")
 open class InsertEditorAction(
     /**
      * The name of the action.
@@ -53,7 +52,7 @@ open class InsertEditorAction(
         // Don't touch any file content that is not related to TeXiFy
         if (file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() == false) return
 
-        runWriteAction(project) { insert(document, start, end, editor.caretModel) }
+        runWriteAction(project, file) { insert(document, start, end, editor.caretModel) }
     }
 
     private fun insert(document: Document, start: Int, end: Int, caretModel: CaretModel) {

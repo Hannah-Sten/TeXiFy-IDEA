@@ -50,9 +50,11 @@ abstract class EditorAction(val name: String, icon: Icon?) : AnAction(name, null
         return PsiManager.getInstance(project).findFile(file)
     }
 
-    protected fun runWriteAction(project: Project, writeAction: () -> Unit) {
-        ApplicationManager.getApplication().runWriteAction {
-            CommandProcessor.getInstance().executeCommand(project, writeAction, name, "Texify")
+    protected fun runWriteAction(project: Project, file: VirtualFile, writeAction: () -> Unit) {
+        if (file.isWritable) {
+            ApplicationManager.getApplication().runWriteAction {
+                CommandProcessor.getInstance().executeCommand(project, writeAction, name, "Texify")
+            }
         }
     }
 

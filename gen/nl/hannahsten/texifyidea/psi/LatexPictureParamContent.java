@@ -34,7 +34,4 @@ public interface LatexPictureParamContent extends PsiElement {
   @Nullable
   LatexRawText getRawText();
 
-  @Nullable
-  PsiElement getCommandIfnextchar();
-
 }

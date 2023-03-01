@@ -35,8 +35,8 @@ public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @NotNull
-  public List<LatexStrictKeyvalPair> getStrictKeyvalPairList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexStrictKeyvalPair.class);
+  public List<LatexStrictKeyValPair> getStrictKeyValPairList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexStrictKeyValPair.class);
   }
 
 }

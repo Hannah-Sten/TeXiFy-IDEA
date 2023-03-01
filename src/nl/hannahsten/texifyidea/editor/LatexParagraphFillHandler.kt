@@ -5,7 +5,6 @@ import com.intellij.codeInsight.editorActions.fillParagraph.ParagraphFillHandler
 import com.intellij.formatting.FormatterTagHandler
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.ex.util.EditorFacade
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.openapi.util.text.StringUtil
@@ -61,10 +60,10 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
             val file = element.containingFile
             val formatterTagHandler = FormatterTagHandler(CodeStyle.getSettings(file))
             val enabledRanges = formatterTagHandler.getEnabledRanges(file.node, TextRange.create(0, document.textLength))
-            // Deprecated ("a temporary solution") but there doesn't seem anything to replace it yet. Used all over by IJ as well.
-            EditorFacade.getInstance().doWrapLongLinesIfNecessary(
-                editor, element.project, document,
-                textRange.startOffset,
+
+            // Don't simulate enter to wrap lines like EditorFacade does, as it has side effects (source: Yann)
+            LatexLineWrapper.doWrapLongLinesIfNecessary(
+                editor, document, textRange.startOffset,
                 textRange.startOffset + replacementText.length + 1,
                 enabledRanges,
                 CodeStyle.getSettings(file).getRightMargin(element.language)

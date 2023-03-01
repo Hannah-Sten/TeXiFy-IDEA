@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexAngleParam extends PsiElement {
+public interface LatexKeyValPair extends LatexKeyValuePair {
 
   @NotNull
-  List<LatexAngleParamContent> getAngleParamContentList();
+  LatexKeyValKey getKeyValKey();
+
+  @Nullable
+  LatexKeyValValue getKeyValValue();
 
 }

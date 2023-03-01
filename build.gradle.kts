@@ -1,31 +1,39 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.changelog.Changelog
+
+fun properties(key: String) = project.findProperty(key).toString()
 
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.10.0"
-    kotlin("jvm") version("1.7.20")
-    kotlin("plugin.serialization") version("1.7.20")
+    id("org.jetbrains.intellij") version "1.12.0"
+    kotlin("jvm") version ("1.8.0")
+    kotlin("plugin.serialization") version ("1.8.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.44.0"
+    id("com.github.ben-manes.versions") version "0.45.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.1.0"
+    id("de.undercouch.download") version "5.3.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.5.1"
+    id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+
+    // Vulnerability scanning
+    id("org.owasp.dependencycheck") version "8.0.2"
+
+    id("org.jetbrains.changelog") version "2.0.0"
 }
 
 group = "nl.hannahsten"
-version = "0.7.24"
+version = properties("pluginVersion")
 
 repositories {
     mavenCentral()
@@ -69,55 +77,53 @@ dependencies {
     implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java:3.3.1")
-    implementation("org.slf4j:slf4j-simple:2.0.0-alpha7")
+    implementation("com.github.hypfvieh:dbus-java:3.3.2")
+    implementation("org.slf4j:slf4j-simple:2.0.6")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.4.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.6.1")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.14.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.1.3")
-    implementation("io.ktor:ktor-client-cio:2.0.3")
-    implementation("io.ktor:ktor-client-auth:2.1.3")
-    implementation("io.ktor:ktor-client-content-negotiation:2.1.3")
-    implementation("io.ktor:ktor-server-core:2.0.3")
-    implementation("io.ktor:ktor-server-jetty:2.0.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.3")
+    implementation("io.ktor:ktor-client-core:2.2.3")
+    implementation("io.ktor:ktor-client-cio:2.2.3")
+    implementation("io.ktor:ktor-client-auth:2.2.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.2.3")
+    implementation("io.ktor:ktor-server-core:2.2.3")
+    implementation("io.ktor:ktor-server-jetty:2.2.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.3")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:3.8.6")
+    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-4")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
 
     // Test dependencies
+    // No version specified, it equals the kotlin version
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.0")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.2")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.9.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.9.2")
 
-    // just in case
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    implementation("org.jetbrains.kotlin:kotlin-script-runtime")
-
-    testImplementation("io.mockk:mockk:1.13.2")
+    testImplementation("io.mockk:mockk:1.13.4")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -152,16 +158,44 @@ tasks.buildSearchableOptions {
     jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 }
 
-// Required to run pluginVerifier
-// tasks.patchPluginXml {
-//    sinceBuild.set("223")
-// }
+// Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
+changelog {
+    groups.set(listOf("Added", "Fixed"))
+    repositoryUrl.set("https://github.com/Hannah-Sten/TeXiFy-IDEA")
+    itemPrefix.set("*")
+}
+
+tasks.patchPluginXml {
+    // Required to run pluginVerifier
+    sinceBuild.set(properties("pluginSinceBuild"))
+
+    // Get the latest available change notes from the changelog file
+    changeNotes.set(
+        provider {
+            with(changelog) {
+                renderItem(
+                    // When publishing alpha versions, we want the unreleased changes to be shown, otherwise we assume that patchChangelog has been run and we need to get the latest released version (otherwise it will show 'Unreleased' as title)
+                    if (properties("pluginVersion").split("-").size != 1) changelog.getUnreleased()
+                    else getOrNull(properties("pluginVersion")) ?: getLatest(),
+                    Changelog.OutputType.HTML,
+                )
+            }
+        }
+    )
+}
 
 intellij {
     pluginName.set("TeXiFy-IDEA")
 
     // indices plugin doesn't work in tests
-    plugins.set(listOf("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0", "com.jetbrains.hackathon.indices.viewer:1.22"))
+    plugins.set(
+        listOf(
+            "tanvd.grazi",
+            "java",
+            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0",
+            "com.jetbrains.hackathon.indices.viewer:1.23"
+        )
+    )
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild.set(false)
@@ -186,11 +220,15 @@ intellij {
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
 // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 tasks.publishPlugin {
+    dependsOn("patchChangelog")
+    dependsOn("useLatestVersions")
+    dependsOn("dependencyCheckAnalyze")
+
     token.set(properties["intellijPublishToken"].toString())
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf("alpha"))
+    channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
 }
 
 tasks.test {
@@ -211,4 +249,9 @@ ktlint {
 
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.useLatestVersions {
+    // Do not update this ktlint plugin, it is unmaintained and newer versions are usually broken
+    updateBlacklist = listOf("org.jlleitschuh.gradle.ktlint")
 }

@@ -205,7 +205,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             if (mode !== LatexMode.MATH && cmd.name in CommandMagic.mathCommandDefinitions) {
                 continue
             }
-            val cmdName = getCommandName(cmd) ?: continue
+            val cmdName = cmd.definitionCommand()?.name ?: continue
 
             // Skip over 'private' commands containing @ symbol in normal tex source files.
             if (!file.isClassFile() && !file.isStyleFile()) {
@@ -298,15 +298,4 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             else -> ""
         }
     }
-
-    private fun getCommandName(commands: LatexCommands): String? {
-        return when (commands.name) {
-            in CommandMagic.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
-            else -> getDefinitionName(commands)
-        }
-    }
-
-    private fun getNewCommandName(commands: LatexCommands) = commands.forcedFirstRequiredParameterAsCommand()?.name
-
-    private fun getDefinitionName(commands: LatexCommands) = commands.definitionCommand()?.commandToken?.text
 }

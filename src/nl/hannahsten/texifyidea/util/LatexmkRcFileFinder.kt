@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -15,43 +16,52 @@ import kotlin.io.path.Path
  */
 object LatexmkRcFileFinder {
 
-    private val systemLatexmkRcFile: VirtualFile? by lazy {
-        val paths = mutableListOf<String?>()
-        // 1
-        if (SystemInfo.isLinux) {
-            paths += listOf(
-                "/opt/local/share/latexmk/",
-                "/usr/local/share/latexmk/",
-                "/usr/local/lib/latexmk/",
-                "/cygdrive/local/share/latexmk/"
-            ).flatMap { listOf(it + "latexMk", it + "latexmkrc") }
-        }
-        else if (SystemInfo.isWindows) {
-            paths += listOf(
-                "C:\\latexmk\\LatexMk",
-                "C:\\latexmk\\latexmkrc"
-            )
-        }
-
-        System.getenv("LATEXMKRCSYS")?.let { paths.add(it) }
-
-        // 2
-        paths += listOf(
-            System.getenv("XDG_CONFIG_HOME")?.let { Path(it, "latexmk", "latexmkrc").toString() },
-            System.getenv("HOME")?.let { Path(it, ".latexmkrc").toString() },
-            System.getenv("USERPROFILE")?.let { Path(it, ".latexmkrc").toString() },
-            System.getenv("HOME")?.let { Path(it, ".config", ".latexmkrc").toString() },
-        )
-
-        paths.filterNotNull()
-            .forEach {
-                LocalFileSystem.getInstance().findFileByIoFile(File(it))?.let { file ->
-                    return@lazy file
-                }
+    // Note: this cannot be a lazy val because then if there is any exception, the stacktrace will not be shown but be hidden by a NoClassDefFoundError. This way, we will have an ExceptionInInitializerError with will have the original stacktrace as well.
+    private var systemLatexmkRcFile: VirtualFile? = null
+        get() {
+            val paths = mutableListOf<String?>()
+            // 1
+            if (SystemInfo.isLinux) {
+                paths += listOf(
+                    "/opt/local/share/latexmk/",
+                    "/usr/local/share/latexmk/",
+                    "/usr/local/lib/latexmk/",
+                    "/cygdrive/local/share/latexmk/"
+                ).flatMap { listOf(it + "latexMk", it + "latexmkrc") }
+            }
+            else if (SystemInfo.isWindows) {
+                paths += listOf(
+                    "C:\\latexmk\\LatexMk",
+                    "C:\\latexmk\\latexmkrc"
+                )
             }
 
-        null
-    }
+            System.getenv("LATEXMKRCSYS")?.let { paths.add(it) }
+
+            // 2
+            paths += listOf(
+                System.getenv("XDG_CONFIG_HOME")?.let { Path(it, "latexmk", "latexmkrc").toString() },
+                System.getenv("HOME")?.let { Path(it, ".latexmkrc").toString() },
+                System.getenv("USERPROFILE")?.let { Path(it, ".latexmkrc").toString() },
+                System.getenv("HOME")?.let { Path(it, ".config", ".latexmkrc").toString() },
+            )
+
+            try {
+                paths.filterNotNull()
+                    .forEach {
+                        LocalFileSystem.getInstance().findFileByIoFile(File(it))?.let { file ->
+                            field = file
+                            return file
+                        }
+                    }
+            }
+            // No idea why
+            catch (e: ProcessCanceledException) {
+                return null
+            }
+
+            return null
+        }
 
     private val isSystemLatexmkRcFilePresent: Boolean = systemLatexmkRcFile != null
 

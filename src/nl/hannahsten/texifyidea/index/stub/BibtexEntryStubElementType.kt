@@ -31,7 +31,7 @@ open class BibtexEntryStubElementType(debugName: String) : IStubElementType<Bibt
         return BibtexEntryStubImpl(parentStub, this, entry.identifier, entry.authors, entry.year, entry.title)
     }
 
-    override fun getExternalId() = "ENTRY"
+    override fun getExternalId() = "texify.bibtex." + super.toString()
 
     override fun indexStub(stub: BibtexEntryStub, sink: IndexSink) {
         sink.occurrence(BibtexEntryIndex.key, stub.name ?: "")

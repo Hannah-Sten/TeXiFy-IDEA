@@ -26,9 +26,10 @@ object PatternMagic {
      * Matches the end of a sentence.
      *
      * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
+     * An English semicolon is not a sentence end, but a greek question mark is.
      */
     const val sentenceEndPrefix = "[^.A-Z][^.A-Z]"
-    val sentenceEnd = RegexPattern.compile("($sentenceEndPrefix[.?!;;] +[^%\\s])|(^\\. )")!!
+    val sentenceEnd = RegexPattern.compile("($sentenceEndPrefix[.?!;] +[^%\\s])|(^\\. )")!!
 
     /**
      * Matches all interpunction that marks the end of a sentence.

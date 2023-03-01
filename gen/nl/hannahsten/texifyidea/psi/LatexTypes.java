@@ -21,10 +21,10 @@ public interface LatexTypes {
   IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
-  IElementType KEYVAL_CONTENT = new LatexElementType("KEYVAL_CONTENT");
-  IElementType KEYVAL_KEY = new LatexElementType("KEYVAL_KEY");
-  IElementType KEYVAL_PAIR = new LatexElementType("KEYVAL_PAIR");
-  IElementType KEYVAL_VALUE = new LatexElementType("KEYVAL_VALUE");
+  IElementType KEY_VAL_CONTENT = new LatexElementType("KEY_VAL_CONTENT");
+  IElementType KEY_VAL_KEY = new LatexElementType("KEY_VAL_KEY");
+  IElementType KEY_VAL_PAIR = new LatexElementType("KEY_VAL_PAIR");
+  IElementType KEY_VAL_VALUE = new LatexElementType("KEY_VAL_VALUE");
   IElementType MAGIC_COMMENT = new LatexMagicCommentStubElementType("MAGIC_COMMENT");
   IElementType MATH_CONTENT = new LatexElementType("MATH_CONTENT");
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
@@ -43,7 +43,7 @@ public interface LatexTypes {
   IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
   IElementType REQUIRED_PARAM_CONTENT = new LatexElementType("REQUIRED_PARAM_CONTENT");
-  IElementType STRICT_KEYVAL_PAIR = new LatexElementType("STRICT_KEYVAL_PAIR");
+  IElementType STRICT_KEY_VAL_PAIR = new LatexElementType("STRICT_KEY_VAL_PAIR");
 
   IElementType AMPERSAND = new LatexTokenType("&");
   IElementType ANGLE_PARAM = new LatexTokenType("ANGLE_PARAM");
@@ -77,7 +77,7 @@ public interface LatexTypes {
   IElementType OPEN_PAREN = new LatexTokenType("OPEN_PAREN");
   IElementType PIPE = new LatexTokenType("PIPE");
   IElementType QUOTATION_MARK = new LatexTokenType("QUOTATION_MARK");
-  IElementType RAW_TEXT_TOKEN = new LatexTokenType("RAW_TEXT");
+  IElementType RAW_TEXT_TOKEN = new LatexTokenType("RAW_TEXT_TOKEN");
   IElementType STAR = new LatexTokenType("*");
 
   class Factory {
@@ -113,17 +113,17 @@ public interface LatexTypes {
       else if (type == INLINE_MATH) {
         return new LatexInlineMathImpl(node);
       }
-      else if (type == KEYVAL_CONTENT) {
-        return new LatexKeyvalContentImpl(node);
+      else if (type == KEY_VAL_CONTENT) {
+        return new LatexKeyValContentImpl(node);
       }
-      else if (type == KEYVAL_KEY) {
-        return new LatexKeyvalKeyImpl(node);
+      else if (type == KEY_VAL_KEY) {
+        return new LatexKeyValKeyImpl(node);
       }
-      else if (type == KEYVAL_PAIR) {
-        return new LatexKeyvalPairImpl(node);
+      else if (type == KEY_VAL_PAIR) {
+        return new LatexKeyValPairImpl(node);
       }
-      else if (type == KEYVAL_VALUE) {
-        return new LatexKeyvalValueImpl(node);
+      else if (type == KEY_VAL_VALUE) {
+        return new LatexKeyValValueImpl(node);
       }
       else if (type == MAGIC_COMMENT) {
         return new LatexMagicCommentImpl(node);
@@ -179,8 +179,8 @@ public interface LatexTypes {
       else if (type == REQUIRED_PARAM_CONTENT) {
         return new LatexRequiredParamContentImpl(node);
       }
-      else if (type == STRICT_KEYVAL_PAIR) {
-        return new LatexStrictKeyvalPairImpl(node);
+      else if (type == STRICT_KEY_VAL_PAIR) {
+        return new LatexStrictKeyValPairImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

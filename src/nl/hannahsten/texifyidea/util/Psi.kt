@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiComment
@@ -29,7 +30,7 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
     if (project.isDisposed || !this.isValid) return emptyList()
-    return PsiTreeUtil.findChildrenOfType(this, clazz.java)
+    return runReadAction { PsiTreeUtil.findChildrenOfType(this, clazz.java) }
 }
 
 /**
@@ -61,7 +62,8 @@ fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolea
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    for (child in this.children) {
+    val children = runReadAction { this.children }
+    for (child in children) {
         if (clazz.java.isAssignableFrom(child.javaClass)) {
             return child as? T
         }
