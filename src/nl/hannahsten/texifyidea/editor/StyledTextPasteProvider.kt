@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.editor
 
 import com.intellij.ide.PasteProvider
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
@@ -30,7 +31,6 @@ class StyledTextPasteProvider : PasteProvider {
     override fun isPastePossible(dataContext: DataContext): Boolean {
         val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
         if (file.isLatexFile().not()) return false
-        if (ShiftTracker.isShiftPressed()) return false
 
         val pasteData = dataContext.transferableHtml() ?: return false
         Log.warn("Attempting to paste $pasteData")
@@ -52,6 +52,8 @@ class StyledTextPasteProvider : PasteProvider {
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     /**
      * Extracts the HTML on clipboard if there is HTML on the clipboard.
