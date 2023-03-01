@@ -29,6 +29,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var continuousPreview: JBCheckBox? = null
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
+    private var enableExternalIndex: JBCheckBox? = null
     private var enableTextidote: JBCheckBox? = null
     private var textidoteOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
@@ -52,6 +53,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
+                    enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
                     enableTextidote = addCheckbox("Enable the Textidote linter")
                     textidoteOptions = addTextidoteOptions()
                     automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
@@ -125,6 +127,7 @@ class TexifyConfigurable : SearchableConfigurable {
             continuousPreview?.isSelected != settings.continuousPreview ||
             includeBackslashInSelection?.isSelected != settings.includeBackslashInSelection ||
             showPackagesInStructureView?.isSelected != settings.showPackagesInStructureView ||
+            enableExternalIndex?.isSelected != settings.enableExternalIndex ||
             enableTextidote?.isSelected != settings.enableTextidote ||
             textidoteOptions?.text != settings.textidoteOptions ||
             automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal
@@ -140,6 +143,7 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.continuousPreview = continuousPreview?.isSelected == true
         settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
         settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
+        settings.enableExternalIndex = enableExternalIndex?.isSelected == true
         settings.enableTextidote = enableTextidote?.isSelected == true
         settings.textidoteOptions = textidoteOptions?.text ?: ""
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
@@ -155,6 +159,7 @@ class TexifyConfigurable : SearchableConfigurable {
         continuousPreview?.isSelected = settings.continuousPreview
         includeBackslashInSelection?.isSelected = settings.includeBackslashInSelection
         showPackagesInStructureView?.isSelected = settings.showPackagesInStructureView
+        enableExternalIndex?.isSelected = settings.enableExternalIndex
         enableTextidote?.isSelected = settings.enableTextidote
         textidoteOptions?.text = settings.textidoteOptions
         automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
