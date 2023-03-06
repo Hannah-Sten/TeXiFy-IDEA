@@ -181,6 +181,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#continuous-preview[Option to enable continuous preview of math and TikZ environments]
 * link:Global-settings#backslash-selection[Option to include the backslash when selecting a LaTeX command]
 * link:Global-settings#package-structure-view[Option to show LaTeX package files in the structure view]
+* link:Global-settings#external-index[Option to disable indexing of MiKTeX/TeX Live package files]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
 
 ==== Conventions
