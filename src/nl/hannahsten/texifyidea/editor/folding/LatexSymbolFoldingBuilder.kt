@@ -9,8 +9,10 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.psi.LatexTypes.DASH
+import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.shiftRight
+import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
  * Folding symbols that are not escaped, like en dashes.
@@ -26,9 +28,16 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
         val group = FoldingGroup.newGroup("SymbolFoldingGroup")
         val file = root.containingFile
 
-        // Get all hyphens in the document
-        return file.childrenOfType<LatexNormalText>().flatMap { it.node.getChildren(TokenSet.create(DASH)).toSet() }
-            .map { FoldingDescriptor(it, it.textRange, group, getPlaceholderText(it.text)) }
+        // Fold all hyphens in the document
+        return file.childrenOfType<LatexNormalText>().flatMap { it.node.getChildren(TokenSet.create(NORMAL_TEXT_WORD)).toSet() }
+            .filter { "--" in it.text }
+            .flatMap { node ->
+                val text = node.text
+                "-{2,}".toRegex().findAll(text).map {
+                    val range = it.range.shiftRight(node.startOffset).toTextRange()
+                    FoldingDescriptor(node, range, group, getPlaceholderText(it.value))
+                }
+            }
             .toTypedArray()
     }
 

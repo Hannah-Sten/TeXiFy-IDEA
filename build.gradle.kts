@@ -18,7 +18,7 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.3.0"
+    id("de.undercouch.download") version "5.3.1"
 
     // Test coverage
     id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
@@ -83,7 +83,7 @@ dependencies {
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.6.1")
+    implementation("org.codehaus.plexus:plexus-archiver:4.6.2")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
@@ -97,10 +97,10 @@ dependencies {
     implementation("io.ktor:ktor-client-core:2.2.3")
     implementation("io.ktor:ktor-client-cio:2.2.3")
     implementation("io.ktor:ktor-client-auth:2.2.3")
-    implementation("io.ktor:ktor-client-content-negotiation:2.2.3")
-    implementation("io.ktor:ktor-server-core:2.2.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.2.4")
+    implementation("io.ktor:ktor-server-core:2.2.4")
     implementation("io.ktor:ktor-server-jetty:2.2.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-4")

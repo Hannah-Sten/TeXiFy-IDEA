@@ -1,21 +1,23 @@
 package nl.hannahsten.texifyidea.inspections.latex.codematurity
 
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.psi.util.siblings
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.util.deleteElement
+import nl.hannahsten.texifyidea.psi.LatexGroup
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.parentOfType
 import org.jetbrains.annotations.Nls
 
 /**
@@ -50,7 +52,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     command,
                     "Use of TeX primitive " + CommandMagic.stylePrimitives[index] + " is discouraged",
-                    InspectionFix(),
+                    InspectionFix(SmartPointerManager.createPointer(command)),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
@@ -59,40 +61,58 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private inner class InspectionFix : LocalQuickFix {
+    private inner class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFixAndIntentionActionOnPsiElement(oldCommand.element) {
 
         @Nls
         override fun getFamilyName(): String {
             return "Convert to LaTeX alternative"
         }
 
-        override fun applyFix(
-            project: Project,
-            descriptor: ProblemDescriptor
-        ) {
-            val element = descriptor.psiElement as? LatexCommands ?: return
+        override fun getText(): String {
+            return oldCommand.element
+                ?.let { "Convert ${it.name} to ${CommandMagic.stylePrimitiveReplacements[it.name]}" }
+                ?: familyName
+        }
 
-            // Find elements that go after the primitive.
-            val cmdIndex = CommandMagic.stylePrimitives.indexOf(element.name)
-            if (cmdIndex < 0) {
-                return
+        override fun invoke(project: Project, file: PsiFile, editor: Editor?, startElement: PsiElement, endElement: PsiElement) {
+            val command = startElement as? LatexCommands ?: return
+            val newCommandName = CommandMagic.stylePrimitiveReplacements[command.name] ?: return
+
+            // Convert {help \bf this is content} to "help \textbf{this is content}", but leave \bf{this is bold} alone.
+            if (command.requiredParameters.isEmpty()) {
+                val commandInFile = file.findElementAt(oldCommand.range?.startOffset ?: return) ?: return
+
+                // Find the LaTeX group surrounding this command, so we can separate its content in all the siblings
+                // before the command and all the siblings after the command.
+                val previousTrace = mutableListOf(commandInFile)
+                while (previousTrace.last().parent != null) {
+                    val parent = previousTrace.last().parent
+                    previousTrace.add(parent)
+                    if (parent is LatexGroup) break
+                }
+
+                val commandInContent = previousTrace.lastOrNull { it.text == commandInFile.text }
+                val prefixContent = commandInContent?.siblings(forward = false, withSelf = false)?.toList()
+                    ?.reversed()
+                    ?.joinToString(" ") { it.text }
+                    ?.trim()
+                    ?.let { if (it.isBlank()) "" else "$it " }
+                    ?: ""
+                val requiredParamContent = commandInContent?.siblings(forward = true, withSelf = false)
+                    ?.joinToString(" ") { it.text }
+                    ?.trim() ?: ""
+
+                val newPsi = LatexPsiHelper(project).createFromText(
+                    "$prefixContent$newCommandName{$requiredParamContent}"
+                ).firstChild
+
+                val parentGroup = previousTrace.last()
+                parentGroup.replace(newPsi)
             }
-            val content = element.parentOfType(LatexNoMathContent::class)
-            val next = content!!.nextSiblingIgnoreWhitespace()
-            val after = if (next == null) "" else next.text
-            val replacement =
-                String.format(CommandMagic.stylePrimitveReplacements[cmdIndex], after)
-            val document =
-                PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
-
-            // Delete the ending part..
-            if (next != null) {
-                document?.deleteElement(next)
+            // Convert \bf{this is bold} to \textbf{this is bold}
+            else {
+                command.setName(newCommandName)
             }
-
-            // Replace command.
-            val range = element.commandToken.textRange
-            document?.replaceString(range.startOffset, range.endOffset, replacement)
         }
     }
 }
