@@ -14,6 +14,7 @@ data class TexifySettingsState(
     var continuousPreview: Boolean = false,
     var includeBackslashInSelection: Boolean = false,
     var showPackagesInStructureView: Boolean = false,
+    var enableExternalIndex: Boolean = true,
     var enableTextidote: Boolean = false,
     var textidoteOptions: String = "--check en --output singleline --no-color",
     var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,

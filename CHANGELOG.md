@@ -6,6 +6,17 @@
 
 ### Fixed
 
+## [0.7.27-alpha.2] - 2023-03-06
+
+### Added
+* Add information about newtxmath by @FWDekker
+* Add an option to disable indexing of LaTeX installation.
+
+### Fixed
+* Fix an issue with dashes in referencing elements.
+* Fix a bug in "Convert to LaTeX alternative" quickfix
+* Fix exception #2928
+
 ## [0.7.26] - 2023-02-01
 Welcome to TeXiFy IDEA 0.7.26! This release has some notable performance improvements and fixes many exceptions.
 
@@ -32,8 +43,6 @@ Thanks to @jojo2357 and @Yodude2002 for contributing to this release!
 * Fix robust inline math brace matching.
 * Fix custom file name being overridden in inspection quickfix.
 
-
-
 ## [0.7.25] - 2022-12-01
 Welcome to TeXiFy IDEA 0.7.25! This release has many additions by @jojo2357, enjoy!
 
@@ -59,6 +68,7 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27-alpha.2...HEAD
+[0.7.27-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26...v0.7.27-alpha.2
 [0.7.26]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.8...v0.7.26
 [0.7.25]: https://github.com/Hannah-Sten/TeXiFy-IDEA/commits/v0.7.25
