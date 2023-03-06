@@ -86,6 +86,19 @@ _Since b0.7_
 When selected, included LaTeX packages will appear in the structure view.
 Because TeXiFy has to determine the location of every included package in order to show the file, this may take extra time to load the structure view after every reboot of IntelliJ.
 
+[#external-index]
+== Enable indexing of MiKTeX/TeX Live package files
+_Since b0.7.27_
+
+*After changing this setting, restart your IDE.*
+
+TeXiFy will try to detect MiKTeX and TeX Live installations, and index all the installed packages.
+This information will be used in various places, like autocompletion and package importing.
+The index is persistent between restarts.
+However, because a full TeX Live installation contains an enormous amount of packages, it can take a long time to index.
+If this is a problem, you can turn this feature off by deselecting this checkbox.
+
+
 [#smart-quotes]
 == Option to enable smart quote substitution
 
