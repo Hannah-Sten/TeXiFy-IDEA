@@ -23,7 +23,7 @@ class InsertStrikethroughAction : InsertEditorAction(
 
         val psiFile = PsiManager.getInstance(project).findFile(file) ?: return
 
-        runWriteAction(project) {
+        runWriteAction(project, file) {
             psiFile.insertUsepackage(ULEM)
         }
     }

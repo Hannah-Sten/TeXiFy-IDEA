@@ -28,9 +28,27 @@ class TexifyConfigurable : SearchableConfigurable {
     private var continuousPreview: JBCheckBox? = null
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
+    private var enableExternalIndex: JBCheckBox? = null
     private var enableTextidote: JBCheckBox? = null
     private var textidoteOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
+
+    /**
+     * Map UI variables to underlying setting variables
+     */
+    private val booleanSettings = listOf(
+        Pair(::automaticSecondInlineMathSymbol, settings::automaticSecondInlineMathSymbol),
+        Pair(::automaticUpDownBracket, settings::automaticUpDownBracket),
+        Pair(::automaticItemInItemize, settings::automaticItemInItemize),
+        Pair(::automaticDependencyCheck, settings::automaticDependencyCheck),
+        Pair(::autoCompile, settings::autoCompile),
+        Pair(::autoCompileOnSaveOnly, settings::autoCompileOnSaveOnly),
+        Pair(::continuousPreview, settings::continuousPreview),
+        Pair(::includeBackslashInSelection, settings::includeBackslashInSelection),
+        Pair(::showPackagesInStructureView, settings::showPackagesInStructureView),
+        Pair(::enableExternalIndex, settings::enableExternalIndex),
+        Pair(::enableTextidote, settings::enableTextidote),
+    )
 
     override fun getId() = "TexifyConfigurable"
 
@@ -51,6 +69,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
+                    enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
                     enableTextidote = addCheckbox("Enable the Textidote linter")
                     textidoteOptions = addTextidoteOptions()
                     automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
@@ -105,46 +124,23 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     override fun isModified(): Boolean {
-        return automaticSecondInlineMathSymbol?.isSelected != settings.automaticSecondInlineMathSymbol ||
-            automaticUpDownBracket?.isSelected != settings.automaticUpDownBracket ||
-            automaticItemInItemize?.isSelected != settings.automaticItemInItemize ||
-            automaticDependencyCheck?.isSelected != settings.automaticDependencyCheck ||
-            autoCompile?.isSelected != settings.autoCompile ||
-            autoCompileOnSaveOnly?.isSelected != settings.autoCompileOnSaveOnly ||
-            continuousPreview?.isSelected != settings.continuousPreview ||
-            includeBackslashInSelection?.isSelected != settings.includeBackslashInSelection ||
-            showPackagesInStructureView?.isSelected != settings.showPackagesInStructureView ||
-            enableTextidote?.isSelected != settings.enableTextidote ||
+        return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
             textidoteOptions?.text != settings.textidoteOptions ||
             automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal
     }
 
     override fun apply() {
-        settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol?.isSelected == true
-        settings.automaticUpDownBracket = automaticUpDownBracket?.isSelected == true
-        settings.automaticItemInItemize = automaticItemInItemize?.isSelected == true
-        settings.automaticDependencyCheck = automaticDependencyCheck?.isSelected == true
-        settings.autoCompile = autoCompile?.isSelected == true
-        settings.autoCompileOnSaveOnly = autoCompileOnSaveOnly?.isSelected == true
-        settings.continuousPreview = continuousPreview?.isSelected == true
-        settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
-        settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
-        settings.enableTextidote = enableTextidote?.isSelected == true
+        for (setting in booleanSettings) {
+            setting.second.set(setting.first.get()?.isSelected == true)
+        }
         settings.textidoteOptions = textidoteOptions?.text ?: ""
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
     }
 
     override fun reset() {
-        automaticSecondInlineMathSymbol?.isSelected = settings.automaticSecondInlineMathSymbol
-        automaticUpDownBracket?.isSelected = settings.automaticUpDownBracket
-        automaticItemInItemize?.isSelected = settings.automaticItemInItemize
-        automaticDependencyCheck?.isSelected = settings.automaticDependencyCheck
-        autoCompile?.isSelected = settings.autoCompile
-        autoCompileOnSaveOnly?.isSelected = settings.autoCompileOnSaveOnly
-        continuousPreview?.isSelected = settings.continuousPreview
-        includeBackslashInSelection?.isSelected = settings.includeBackslashInSelection
-        showPackagesInStructureView?.isSelected = settings.showPackagesInStructureView
-        enableTextidote?.isSelected = settings.enableTextidote
+        for (setting in booleanSettings) {
+            setting.first.get()?.isSelected = setting.second.get()
+        }
         textidoteOptions?.text = settings.textidoteOptions
         automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
     }

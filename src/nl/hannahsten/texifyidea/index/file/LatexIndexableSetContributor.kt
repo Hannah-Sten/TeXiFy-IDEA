@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.isTestProject
@@ -26,6 +27,8 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         if (ApplicationManager.getApplication().isUnitTestMode) {
             return mutableSetOf()
         }
+
+        if (!TexifySettings.getInstance().enableExternalIndex) return mutableSetOf()
 
         // Add source files
         val roots = LatexSdkUtil.getSdkSourceRoots(project) { sdk, homePath -> sdk.getDefaultSourcesPath(homePath) }.toMutableSet()

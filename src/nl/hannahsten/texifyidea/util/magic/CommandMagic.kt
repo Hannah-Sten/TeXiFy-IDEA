@@ -427,11 +427,11 @@ object CommandMagic {
     )
 
     /**
-     * The LaTeX counterparts of all [stylePrimitives] commands where %s is the content.
+     * The LaTeX counterparts of all [stylePrimitives] commands.
      */
-    val stylePrimitveReplacements = listOf(
-        "\\textrm{%s}", "\\textsf{%s}", "\\texttt{%s}", "\\textit{%s}",
-        "\\textsl{%s}", "\\textsc{%s}", "\\textbf{%s}"
+    val stylePrimitiveReplacements = mapOf(
+        RM.cmd to "\\textrm", SF.cmd to "\\textsf", TT.cmd to "\\texttt", IT.cmd to "\\textit",
+        SL.cmd to "\\textsl", SC.cmd to "\\textsc", BF.cmd to "\\textbf"
     )
 
     /**
