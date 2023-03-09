@@ -109,18 +109,20 @@ object PackageUtils {
         PsiDocumentManager.getInstance(file.project)
             .doPostponedOperationsAndUnblockDocument(file.document() ?: return)
         PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return)
-        if (anchorAfter != null) {
-            val anchorBefore = anchorAfter.node.treeNext
-            @Suppress("KotlinConstantConditions")
-            if (prependNewLine) {
-                val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
-                anchorAfter.parent.node.addChild(newLine, anchorBefore)
+        runWriteAction {
+            if (anchorAfter != null) {
+                val anchorBefore = anchorAfter.node.treeNext
+                @Suppress("KotlinConstantConditions")
+                if (prependNewLine) {
+                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                    anchorAfter.parent.node.addChild(newLine, anchorBefore)
+                }
+                anchorAfter.parent.node.addChild(newNode, anchorBefore)
             }
-            anchorAfter.parent.node.addChild(newNode, anchorBefore)
-        }
-        else {
-            // Insert at beginning
-            file.node.addChild(newNode, file.firstChild.node)
+            else {
+                // Insert at beginning
+                file.node.addChild(newNode, file.firstChild.node)
+            }
         }
     }
 
