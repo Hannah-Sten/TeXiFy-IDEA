@@ -5,6 +5,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -85,11 +87,16 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableList()
     val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
-    var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(command.containingFile.name.removeFileExtension()) } }
-
-    if (includingCommands.isEmpty() && command.name in CommandMagic.relativeImportCommands) {
-        command.containingFile.containingDirectory?.virtualFile?.findFileByRelativePath(command.requiredParameter(0) ?: "")?.let { return listOf(it) }
+    var includingCommands = allIncludeCommands.filter {
+        includeCommand ->
+        includeCommand.requiredParameters.any { it.contains(command.containingFile.name.removeFileExtension()) }
+    }.filter { includeCommand ->
+        // Only consider commands that can include LaTeX files
+        LatexCommand.lookup(includeCommand.name)?.firstOrNull()?.getArgumentsOf(RequiredFileArgument::class.java)?.any { it.supportedExtensions.contains("tex") } == true
     }
+
+    // Assume the containingFile might be a root file - if there are no includingCommands we will not search further anyway
+    val defaultParentDir = command.containingFile.containingDirectory?.virtualFile?.findFileByRelativePath(command.requiredParameter(0) ?: "")
 
     // Avoid endless loop (in case of a file inclusion loop)
     val maxDepth = allIncludeCommands.size
@@ -97,6 +104,10 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
 
     // Final paths
     val absoluteSearchDirs = mutableListOf<VirtualFile>()
+
+    if (defaultParentDir != null) {
+        absoluteSearchDirs.add(defaultParentDir)
+    }
 
     // I think it's a kind of reversed BFS
     while (includingCommands.isNotEmpty() && counter < maxDepth) {
