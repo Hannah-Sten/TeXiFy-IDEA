@@ -1,17 +1,14 @@
 package nl.hannahsten.texifyidea.highlighting
 
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
-import com.intellij.openapi.options.colors.RainbowColorSettingsPage
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.grammar.LatexLanguage
 
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexColorSettingsPage : ColorSettingsPage, RainbowColorSettingsPage {
+class LatexColorSettingsPage : ColorSettingsPage {
 
     companion object {
 
@@ -95,6 +92,7 @@ class LatexColorSettingsPage : ColorSettingsPage, RainbowColorSettingsPage {
                 |\lstset{language<equalsSeparator>=</equalsSeparator>Kotlin}
                 |
                 |\newcommand{\betterphi}{\varphi}
+                |\newcommand{\myphi}{<userDefinedCommand>\betterphi</userDefinedCommand>}
                 |
                 |% Start document.
                 |<magicComment>%! Suppress = NonBreakingSpace</magicComment>
@@ -134,7 +132,6 @@ class LatexColorSettingsPage : ColorSettingsPage, RainbowColorSettingsPage {
                 |       x <displayCommand>\times</displayCommand> <displayCommand>\frac</displayCommand>{5}{<displayCommand>\sqrt</displayCommand>{3}} = y <displayCommand>\cdot</displayCommand> <displayCommand>\max\left</displayCommand>{ 4, <displayCommand>\alpha</displayCommand>, 6 <displayCommand>\right</displayCommand>} +
                 |           <displayCommand>\sqrt</displayCommand>[<optionalParam>1234</optionalParam>]{5678}.
                 |    \]</displayMath>
-                |    and $<userDefinedCommand>\betterphi</userDefinedCommand>.
                 |
                 |    \section{More work}\label{<labelDefinition>sec:moreWork</labelDefinition>}
                 |    A much longer \LaTeXe{} example was written by Henk-Jan~\cite{<bibliographyReference>Gil:02</bibliographyReference>}. But
@@ -176,10 +173,6 @@ class LatexColorSettingsPage : ColorSettingsPage, RainbowColorSettingsPage {
         """.trimMargin()
 
     override fun getAdditionalHighlightingTagToDescriptorMap() = DEMO_TAGS
-
-    override fun isRainbowType(type: TextAttributesKey?) = type == LatexSyntaxHighlighter.USER_DEFINED_COMMAND_KEY
-
-    override fun getLanguage() = LatexLanguage
 
     override fun getAttributeDescriptors() = DESCRIPTORS
 

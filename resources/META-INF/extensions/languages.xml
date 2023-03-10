@@ -4,7 +4,6 @@
         <lang.parserDefinition language="Bibtex" implementationClass="nl.hannahsten.texifyidea.grammar.BibtexParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
         <lang.syntaxHighlighterFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexSyntaxHighlighterFactory"/>
-        <highlightVisitor implementation="nl.hannahsten.texifyidea.highlighting.LatexRainbowVisitor" />
         <lang.commenter language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
         <lang.commenter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexPairedBraceMatcher"/>

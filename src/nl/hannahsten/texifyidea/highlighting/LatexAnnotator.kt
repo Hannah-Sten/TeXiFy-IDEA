@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
@@ -176,6 +177,17 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateCommands(command: LatexCommands, annotationHolder: AnnotationHolder) {
         annotateStyle(command, annotationHolder)
+
+        // Make user-defined commands highlighting customizable
+        val allUserCommands = LatexDefinitionIndex.getItems(command.project)
+            .filter{ it.isCommandDefinition() }
+            .map { it.definedCommandName() }
+        if (command.name in allUserCommands) {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .textAttributes(LatexSyntaxHighlighter.USER_DEFINED_COMMAND_KEY)
+                .range(command.commandToken)
+                .create()
+        }
 
         // Label references.
         val style = when (command.name) {
