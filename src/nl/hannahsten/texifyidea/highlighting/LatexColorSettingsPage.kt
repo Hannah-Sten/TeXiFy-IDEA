@@ -22,7 +22,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
             AttributesDescriptor("Commands//Optional parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
             AttributesDescriptor("Commands//Equals sign in key-value pairs", LatexSyntaxHighlighter.SEPARATOR_EQUALS),
             AttributesDescriptor("Commands//Commands", LatexSyntaxHighlighter.COMMAND),
-            AttributesDescriptor("Commands//User defined commands", LatexSyntaxHighlighter.USER_DEFINED_COMMAND),// todo not sure if we need this for rainbow colors?
+            AttributesDescriptor("Commands//User defined commands", LatexSyntaxHighlighter.USER_DEFINED_COMMAND),
             AttributesDescriptor("Commands//Commands in inline math mode", LatexSyntaxHighlighter.COMMAND_MATH_INLINE),
             AttributesDescriptor("Commands//Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
             AttributesDescriptor("Commands//Stars", LatexSyntaxHighlighter.STAR),
