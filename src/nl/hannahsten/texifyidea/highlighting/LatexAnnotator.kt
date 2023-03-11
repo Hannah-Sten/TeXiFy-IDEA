@@ -180,7 +180,7 @@ open class LatexAnnotator : Annotator {
 
         // Make user-defined commands highlighting customizable
         val allUserCommands = LatexDefinitionIndex.getItems(command.project)
-            .filter{ it.isCommandDefinition() }
+            .filter { it.isCommandDefinition() }
             .map { it.definedCommandName() }
         if (command.name in allUserCommands) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
