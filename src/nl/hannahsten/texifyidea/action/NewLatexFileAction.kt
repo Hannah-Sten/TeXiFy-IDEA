@@ -32,8 +32,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE)
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE)
         builder.addKind("TikZ (.tikz)", TexifyIcons.TIKZ_FILE, OPTION_TIKZ_FILE)
-        val consumer = com.intellij.util.Consumer<PsiElement> { }
-        builder.show<PsiElement>("", null, fileCreator, consumer)
+        builder.show<PsiElement>("", null, fileCreator) {}
     }
 
     override fun create(s: String, psiDirectory: PsiDirectory): Array<PsiElement> {
