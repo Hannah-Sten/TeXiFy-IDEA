@@ -7,7 +7,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.13.0"
+    id("org.jetbrains.intellij") version "1.13.2"
     kotlin("jvm") version ("1.8.0")
     kotlin("plugin.serialization") version ("1.8.0")
 
@@ -27,7 +27,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "8.1.0"
+    id("org.owasp.dependencycheck") version "8.1.2"
 
     id("org.jetbrains.changelog") version "2.0.0"
 }
@@ -83,7 +83,7 @@ dependencies {
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.6.1")
+    implementation("org.codehaus.plexus:plexus-archiver:4.6.2")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
@@ -94,13 +94,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.2.3")
-    implementation("io.ktor:ktor-client-cio:2.2.3")
-    implementation("io.ktor:ktor-client-auth:2.2.3")
-    implementation("io.ktor:ktor-client-content-negotiation:2.2.3")
-    implementation("io.ktor:ktor-server-core:2.2.3")
-    implementation("io.ktor:ktor-server-jetty:2.2.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.3")
+    implementation("io.ktor:ktor-client-core:2.2.4")
+    implementation("io.ktor:ktor-client-cio:2.2.4")
+    implementation("io.ktor:ktor-client-auth:2.2.4")
+    implementation("io.ktor:ktor-client-content-negotiation:2.2.4")
+    implementation("io.ktor:ktor-server-core:2.2.4")
+    implementation("io.ktor:ktor-server-jetty:2.2.4")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-4")
