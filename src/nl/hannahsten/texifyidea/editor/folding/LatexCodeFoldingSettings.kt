@@ -21,7 +21,7 @@ class LatexCodeFoldingSettings : PersistentStateComponent<LatexCodeFoldingSettin
     override fun loadState(state: LatexCodeFoldingSettings) = XmlSerializerUtil.copyBean(state, this)
 
     companion object {
+
         fun getInstance(): LatexCodeFoldingSettings = service()
     }
-
 }
