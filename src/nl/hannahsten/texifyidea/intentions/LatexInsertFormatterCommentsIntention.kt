@@ -18,7 +18,7 @@ class LatexInsertFormatterCommentsIntention : TexifyIntentionBase("Insert commen
             ?.parentOfType(LatexBeginCommand::class)
             ?.environmentName()
             ?: return false
-        return EnvironmentMagic.verbatim.any { it == beginName }
+        return EnvironmentMagic.isProbablyVerbatim(beginName)
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {

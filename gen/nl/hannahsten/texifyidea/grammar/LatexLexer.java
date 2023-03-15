@@ -1546,7 +1546,7 @@ public class LatexLexer implements FlexLexer {
           case 43: 
             { yypopState();
             // toString to fix comparisons of charsequence subsequences with string
-            if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+            if (EnvironmentMagic.isProbablyVerbatim(yytext().toString())) {
                 yypushState(VERBATIM_START);
             }
             else if (yytext().toString().equals("algorithmic")) {
@@ -1603,7 +1603,7 @@ public class LatexLexer implements FlexLexer {
           case 52: 
             { // Pop current state
         yypopState();
-        if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+        if (EnvironmentMagic.isProbablyVerbatim(yytext().toString())) {
             // Pop verbatim state
             yypopState();
             return NORMAL_TEXT_WORD;
