@@ -3,12 +3,13 @@ package nl.hannahsten.texifyidea.util.files
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.refactoring.suggested.createSmartPointer
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
-import nl.hannahsten.texifyidea.util.Log
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -29,10 +30,12 @@ class ReferencedFileSetCache {
      * We use VirtualFile as key instead of PsiFile, because the file set depends on virtual files,
      * but virtual files are not project-specific (can be opened in multiple projects). See [VfsChangeListener].
      * For the same reason we do not use a CachedValue, because the CachedValuesManager is project-specific.
+     *
+     * We use SmartPsiElementPointer to avoid storing files which have become invalid, e.g. after installing a plugin which doesn't require a restart.
      */
-    private val fileSetCache = ConcurrentHashMap<VirtualFile, Set<PsiFile>>()
+    private val fileSetCache = ConcurrentHashMap<VirtualFile, Set<SmartPsiElementPointer<PsiFile>>>()
 
-    private val rootFilesCache = ConcurrentHashMap<VirtualFile, Set<PsiFile>>()
+    private val rootFilesCache = ConcurrentHashMap<VirtualFile, Set<SmartPsiElementPointer<PsiFile>>>()
 
     /**
      * The number of includes in the include index at the time the cache was last filled.
@@ -82,19 +85,19 @@ class ReferencedFileSetCache {
     private fun updateCachesFor(requestedFile: PsiFile) {
         val fileset = requestedFile.findReferencedFileSetWithoutCache()
         for (file in fileset) {
-            fileSetCache[file.virtualFile] = fileset
+            fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
         }
 
         val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
         for (file in fileset) {
-            rootFilesCache[file.virtualFile] = rootfiles
+            rootFilesCache[file.virtualFile] = rootfiles.map { it.createSmartPointer() }.toSet()
         }
     }
 
     /**
      * In a thread-safe way, get the value from the cache and if needed refresh the cache first.
      */
-    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<PsiFile>>): Set<PsiFile> {
+    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<SmartPsiElementPointer<PsiFile>>>): Set<PsiFile> {
         return if (file.virtualFile != null) {
             // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
@@ -114,20 +117,12 @@ class ReferencedFileSetCache {
                         false
                     }
 
-                    val hasInvalidFiles = cache.getOrDefault(file.virtualFile, null)?.any { !it.isValid } == true
-                    if (hasInvalidFiles) {
-                        // Files can become invalid for example after a plugin is installed which does not require a restart (e.g. Statistic/PDF Viewer), which can lead to an exception if we try to still use them.
-                        // Hopefully, having invalid files in the cache will not happen too often, as it would worsen performance. todo Maybe we can store SmartElementPointers instead?
-                        Log.warn("Found invalid file ${cache[file.virtualFile]?.first { !it.isValid }?.name}, invalidating ReferencedFileSetCache...")
-                        dropCaches(file.virtualFile)
-                    }
-
-                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged || hasInvalidFiles) {
+                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                         updateCachesFor(file)
                     }
                 }
             }
-            cache[file.virtualFile] ?: setOf(file)
+            cache[file.virtualFile]?.mapNotNull { it.element }?.toSet() ?: setOf(file)
         }
         else {
             setOf(file)
