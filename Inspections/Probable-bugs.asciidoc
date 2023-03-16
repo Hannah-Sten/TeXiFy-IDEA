@@ -182,6 +182,8 @@ Solution: set the `BIBINPUTS` path to the parent and use `\bibliography{mybib}` 
 This solution can be applied using the quickfix for this inspection.
 See https://tex.stackexchange.com/questions/406024/relative-paths-with-bibinputs
 
+[Edit March 2023] This issue might not exist anymore, perhaps it has been fixed in bibtex, so the inspection is disabled.
+
 [#undefined-command]
 == Command is not defined anywhere
 
