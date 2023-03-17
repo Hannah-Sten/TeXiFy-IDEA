@@ -70,7 +70,7 @@
                          level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexBibinputsRelativePathInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Relative path to parent is not allowed when using BIBINPUTS"
-                         enabledByDefault="true"
+                         enabledByDefault="false"
                          level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexUndefinedCommandInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Command is not defined"
