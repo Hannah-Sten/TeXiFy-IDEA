@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 /**
  * Adds folding regions for LaTeX environments.
  *
- * Enables folding of `\footnote{}`.
+ * Enables folding of comments.
  *
  * @author jojo2357
  */
