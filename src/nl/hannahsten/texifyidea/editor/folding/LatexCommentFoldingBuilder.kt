@@ -74,17 +74,33 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     parentCollapse = comment.originalElement
                 }
             }
-            if (!whitespaceLocations.any { it.startOffset == collectedTextRange.endOffset }) {
+            if (!whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset }) {
                 if (collectedTextRange.endOffset > collectedTextRange.startOffset)
                     parentCollapse?.let {
                         descriptors.add(
                             FoldingDescriptor(
-                                parentCollapse,
-                                TextRange(collectedTextRange.startOffset, collectedTextRange.endOffset)
+                                parentCollapse!!,
+                                TextRange(collectedTextRange!!.startOffset, collectedTextRange!!.endOffset)
                             )
                         )
                     }
+                parentCollapse = null
+                collectedTextRange = null
             }
+        }
+
+        if (parentCollapse != null && collectedTextRange != null) {
+            if (collectedTextRange.endOffset > collectedTextRange.startOffset)
+                parentCollapse.let {
+                    descriptors.add(
+                        FoldingDescriptor(
+                            parentCollapse!!,
+                            TextRange(collectedTextRange!!.startOffset, collectedTextRange!!.endOffset)
+                        )
+                    )
+                }
+            parentCollapse = null
+            collectedTextRange = null
         }
 
         return descriptors.toTypedArray()
