@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
+import com.intellij.codeInsight.intention.FileModifier
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
@@ -7,6 +8,7 @@ import nl.hannahsten.texifyidea.util.files.removeFileExtension
 /**
  * @author Hannah Schellekens
  */
+@FileModifier.SafeTypeForPreview
 open class LatexPackage @JvmOverloads constructor(
     val name: String,
     vararg val parameters: String = emptyArray(),
