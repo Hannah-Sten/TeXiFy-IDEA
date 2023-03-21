@@ -57,6 +57,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val BRACKETS = createKey("LATEX_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
         val OPTIONAL_PARAM = createKey("LATEX_OPTIONAL_PARAM", DefaultLanguageHighlighterColors.PARAMETER)
         val COMMAND = createKey("LATEX_COMMAND", DefaultLanguageHighlighterColors.KEYWORD)
+        val USER_DEFINED_COMMAND = createKey("LATEX_USER_DEFINED_COMMAND", DefaultLanguageHighlighterColors.KEYWORD)
         val COMMAND_MATH_INLINE = createKey("LATEX_COMMAND_MATH_INLINE", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
         val COMMAND_MATH_DISPLAY = createKey("LATEX_COMMAND_MATH_DISPLAY", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
         val COMMENT = createKey("LATEX_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
@@ -95,6 +96,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         private val BRACES_KEYS = keys(BRACES)
         private val BRACKET_KEYS = keys(BRACKETS)
         private val COMMAND_KEYS = keys(COMMAND)
+        val USER_DEFINED_COMMAND_KEY = USER_DEFINED_COMMAND
         private val COMMENT_KEYS = keys(COMMENT)
         private val MAGIC_COMMENT_KEYS = keys(MAGIC_COMMENT)
         private val INLINE_MATH_KEYS = keys(INLINE_MATH)

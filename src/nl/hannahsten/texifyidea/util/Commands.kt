@@ -23,7 +23,7 @@ import java.util.stream.Collectors
  */
 fun Project.findCommandDefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this).filter {
-        it.name in CommandMagic.commandDefinitionsAndRedefinitions
+        it.isCommandDefinition()
     }
 }
 

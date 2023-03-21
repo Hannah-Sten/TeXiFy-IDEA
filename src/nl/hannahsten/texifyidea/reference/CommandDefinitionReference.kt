@@ -5,7 +5,7 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.definitionCommand
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentsOfType
@@ -39,7 +39,7 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
                 .mapNotNull { newcommand ->
                     // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
                     // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
-                    val definedCommand = newcommand.childrenOfType<LatexCommands>().firstOrNull()
+                    val definedCommand = newcommand.definitionCommand()
 
                     if (definedCommand == null) {
                         null

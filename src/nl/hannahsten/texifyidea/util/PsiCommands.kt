@@ -45,7 +45,7 @@ fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Colo
  */
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
     (
-        this.name in CommandMagic.commandDefinitionsAndRedefinitions || this.name in CommandMagic.commandRedefinitions ||
+        this.name in CommandMagic.commandDefinitionsAndRedefinitions ||
             this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions
         )
 
