@@ -14,9 +14,7 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.util.childrenOfType
 
 /**
- * Adds folding regions for LaTeX environments.
- *
- * Enables folding of comments.
+ * Enables folding of multiple comments on successive lines.
  *
  * @author jojo2357
  */
@@ -26,11 +24,8 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun getPlaceholderText(node: ASTNode): String {
         val parsedText = node.text.trim()
-        return if (parsedText.length > 8) parsedText.substring(0, 8) + "..."
-        else parsedText.substring(
-            0,
-            parsedText.length - 1
-        )
+        return if (parsedText.length > 9) parsedText.substring(0, 8) + "..."
+        else parsedText
     }
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
@@ -53,15 +48,19 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
         var parentCollapse: PsiElement? = null
 
         for (comment in comments) {
+
+            // Initialization: start with the first comment in a possible sequence
             if (collectedTextRange == null) {
                 collectedTextRange = TextRange(comment.startOffset, comment.endOffset)
                 parentCollapse = comment.originalElement
             }
             else {
+                // If the next comment follows directly after the previous one, add it to the sequence
                 if (whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset && it.endOffset == comment.startOffset }) {
                     collectedTextRange = TextRange(collectedTextRange.startOffset, comment.endOffset)
                 }
                 else {
+                    // Otherwise, stop the sequence and fold what we have so far
                     parentCollapse?.let {
                         descriptors.add(
                             FoldingDescriptor(
@@ -74,6 +73,7 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     parentCollapse = comment.originalElement
                 }
             }
+            // todo why is this code here?
             if (!whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset }) {
                 if (collectedTextRange.endOffset > collectedTextRange.startOffset)
                     parentCollapse?.let {
@@ -89,6 +89,7 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
         }
 
+        // Fold single comments
         if (parentCollapse != null && collectedTextRange != null) {
             if (collectedTextRange.endOffset > collectedTextRange.startOffset)
                 parentCollapse.let {
