@@ -55,7 +55,7 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 parentCollapse = comment.originalElement
             }
             else {
-                // If the next comment follows directly after the previous one, add it to the sequence
+                // If the next comment follows directly after the previous one (and was broken by whitespace) add it to the sequence
                 if (whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset && it.endOffset == comment.startOffset }) {
                     collectedTextRange = TextRange(collectedTextRange.startOffset, comment.endOffset)
                 }
@@ -63,42 +63,32 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     // Otherwise, stop the sequence and fold what we have so far
                     parentCollapse?.let {
                         descriptors.add(
-                            FoldingDescriptor(
-                                parentCollapse!!,
-                                TextRange(collectedTextRange!!.startOffset, collectedTextRange!!.endOffset)
-                            )
+                            buildDescriptor(parentCollapse, collectedTextRange)
                         )
                     }
                     collectedTextRange = TextRange(comment.startOffset, comment.endOffset)
                     parentCollapse = comment.originalElement
                 }
             }
-            // todo why is this code here?
+            // if no whitespace exists at the end of this block we are building,
             if (!whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset }) {
+                // And we have accumulated at least something,
                 if (collectedTextRange.endOffset > collectedTextRange.startOffset)
+                // finish the collapse
                     parentCollapse?.let {
-                        descriptors.add(
-                            FoldingDescriptor(
-                                parentCollapse!!,
-                                TextRange(collectedTextRange!!.startOffset, collectedTextRange!!.endOffset)
-                            )
-                        )
+                        descriptors.add(buildDescriptor(parentCollapse, collectedTextRange))
                     }
+                // and discard the built objects
                 parentCollapse = null
                 collectedTextRange = null
             }
         }
 
-        // Fold single comments
+        // Fold what we were building in the event we run out of comments (aka trailing whitespace in file)
         if (parentCollapse != null && collectedTextRange != null) {
             if (collectedTextRange.endOffset > collectedTextRange.startOffset)
                 parentCollapse.let {
-                    descriptors.add(
-                        FoldingDescriptor(
-                            parentCollapse!!,
-                            TextRange(collectedTextRange!!.startOffset, collectedTextRange!!.endOffset)
-                        )
-                    )
+                    descriptors.add(buildDescriptor(parentCollapse, collectedTextRange))
                 }
             parentCollapse = null
             collectedTextRange = null
@@ -106,4 +96,12 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
         return descriptors.toTypedArray()
     }
+
+    private fun buildDescriptor(
+        parentCollapse: PsiElement?,
+        collectedTextRange: TextRange?
+    ) = FoldingDescriptor(
+        parentCollapse!!,
+        TextRange(collectedTextRange!!.startOffset, collectedTextRange.endOffset)
+    )
 }
