@@ -9,6 +9,7 @@
 ## [0.7.28-alpha.3] - 2023-03-25
 
 ### Added
+* Improve run configuration performance for TeX Live
 * Add custom highlighting for user-defined commands
 * Add setting to configure default folding of imports
 * Add \newminted code blocks as verbatim environments
