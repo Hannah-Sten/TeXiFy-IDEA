@@ -53,9 +53,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         if (!runConfig.hasBeenRun) {
             // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
-            // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable)
+            // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable) while still returning a ProcessHandler at the end of this method. Maybe it should be its own process.
             ProgressManager.getInstance().runProcessWithProgressSynchronously(
-                { runReadAction { firstRunSetup(compiler) } },
+                { firstRunSetup(compiler) },
                 "Generating run configuration...",
                 false,
                 runConfig.project
@@ -102,7 +102,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
         // checking for bibliography commands
         if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
-            runConfig.generateBibRunConfig()
+            // Generating a bib run config involves PSI access, which requires a read action.
+            runReadAction { runConfig.generateBibRunConfig() }
 
             runConfig.bibRunConfigs.forEach {
                 val bibSettings = it
@@ -110,6 +111,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 // Pass necessary latex run configurations settings to the bibtex run configuration.
                 (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
                     // Check if the aux, out, or src folder should be used as bib working dir.
+                    // This involves a synchronous refreshAndFindFileByPath, and hence cannot be done in a read action
                     this.bibWorkingDir = runConfig.getAuxilDirectory()
                 }
             }
