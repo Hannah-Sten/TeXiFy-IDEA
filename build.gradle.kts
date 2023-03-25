@@ -18,7 +18,7 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.3.1"
+    id("de.undercouch.download") version "5.4.0"
 
     // Test coverage
     id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
@@ -27,7 +27,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "8.1.2"
+    id("org.owasp.dependencycheck") version "8.2.1"
 
     id("org.jetbrains.changelog") version "2.0.0"
 }
@@ -78,20 +78,20 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.6")
+    implementation("org.slf4j:slf4j-simple:2.0.7")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.6.2")
+    implementation("org.codehaus.plexus:plexus-archiver:4.6.3")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.15.0-rc1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0-rc1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0-rc1")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.2.4")
@@ -103,7 +103,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-4")
+    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-5")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
