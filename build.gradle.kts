@@ -89,9 +89,9 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.15.0-rc1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0-rc1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0-rc1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.2.4")
@@ -249,6 +249,20 @@ ktlint {
 
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
+tasks.dependencyUpdates {
+    rejectVersionIf {
+        isNonStable(candidate.version)
+    }
 }
 
 tasks.useLatestVersions {
