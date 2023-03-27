@@ -159,7 +159,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             }
             .forEach {
                 val file = File(outPath + it)
-                if(file.mkdirs()) {
+                if (file.mkdirs()) {
                     createdDirectories.add(file)
                 }
             }
