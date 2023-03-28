@@ -62,8 +62,11 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             )
         }
 
-        if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
+        val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
             runConfig.outputPath.updateOutputSubDirs()
+        }
+        else {
+            setOf()
         }
 
         val handler = createHandler(mainFile, compiler)
@@ -74,7 +77,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
-        scheduleFileCleanup(runConfig.filesToCleanUp, handler)
+        scheduleFileCleanup(runConfig.filesToCleanUp, createdOutputDirectories, handler)
 
         return handler
     }
@@ -216,9 +219,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
     }
 
-    private fun scheduleFileCleanup(filesToCleanUp: MutableList<File>, handler: KillableProcessHandler) {
+    private fun scheduleFileCleanup(filesToCleanUp: MutableList<File>, filesToCleanUpIfEmpty: Set<File>, handler: KillableProcessHandler) {
         if (runConfig.isLastRunConfig) {
-            handler.addProcessListener(FileCleanupListener(filesToCleanUp))
+            handler.addProcessListener(FileCleanupListener(filesToCleanUp, filesToCleanUpIfEmpty))
         }
     }
 

@@ -6,6 +6,20 @@
 
 ### Fixed
 
+## [0.7.28-alpha.3] - 2023-03-25
+
+### Added
+* Improve run configuration performance for TeX Live
+* Add custom highlighting for user-defined commands
+* Add setting to configure default folding of imports
+* Add \newminted code blocks as verbatim environments
+
+### Fixed
+* Improve file set cache to fix exception #2903
+* Fix exception #2950
+* Disable obsolete LatexBibinputsRelativePathInspection
+* Fix bug when resolving \subimport
+
 ## [0.7.28-alpha.1] - 2023-03-11
 
 ### Added
@@ -82,8 +96,9 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28-alpha.1...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28-alpha.3...HEAD
 [0.7.28-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27...v0.7.28-alpha.1
+[0.7.28-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28-alpha.1...v0.7.28-alpha.3
 [0.7.27]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27-alpha.2...v0.7.27
 [0.7.27-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26...v0.7.27-alpha.2
 [0.7.26]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.8...v0.7.26

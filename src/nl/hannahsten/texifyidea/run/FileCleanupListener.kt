@@ -10,8 +10,11 @@ import java.io.File
 
 /**
  * Clean up given files after the process is done.
+ *
+ * @param filesToCleanUp Delete these files.
+ * @param filesToCleanUpIfEmpty Delete these files only if they are an empty directory.
  */
-class FileCleanupListener(private val filesToCleanUp: MutableList<File>) : ProcessListener {
+class FileCleanupListener(private val filesToCleanUp: MutableList<File>, private val filesToCleanUpIfEmpty: Set<File> = setOf()) : ProcessListener {
 
     override fun startNotified(event: ProcessEvent) {
     }
@@ -26,6 +29,13 @@ class FileCleanupListener(private val filesToCleanUp: MutableList<File>) : Proce
             }
         }
         filesToCleanUp.clear()
+
+        // Make sure to delete children first, so that we also delete directories containing only directories
+        for (file in filesToCleanUpIfEmpty.sortedDescending()) {
+            if (file.isDirectory && file.list()?.isEmpty() == true) {
+                file.delete()
+            }
+        }
     }
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {

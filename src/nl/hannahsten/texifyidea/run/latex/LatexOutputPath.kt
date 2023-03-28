@@ -4,17 +4,12 @@ import com.intellij.execution.ExecutionException
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.FileUtil
-import nl.hannahsten.texifyidea.util.files.createExcludedDir
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 
 /**
@@ -142,24 +137,33 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     }
 
     /**
-     * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems
+     * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems.
+     *
+     * @return Set of directories that were created and did not exist already.
      */
     @Throws(ExecutionException::class)
-    fun updateOutputSubDirs() {
+    fun updateOutputSubDirs(): Set<File> {
         val includeRoot = mainFile?.parent
-        val outPath = virtualFile?.path ?: return
+        val outPath = virtualFile?.path ?: return emptySet()
 
-        val files: Set<PsiFile>
-        try {
-            files = mainFile?.psiFile(project)?.referencedFileSet() ?: emptySet()
-        }
-        catch (e: IndexNotReadyException) {
-            throw ExecutionException("Please wait until the indices are built.", e)
-        }
+        // We cannot take the time to figure out the file set at this point, because it would take too long (up to 30 seconds for large projects).
+        // However, we really want the most up-to-date directory structure from the source, because compilation would fail if we miss a subdirectory, so we cannot just do this once when generating the run configuration.
+        // Therefore, creating a superset of the directories we need is probably best we can do (and maybe clean them up later)
+        val files: Set<VirtualFile> = includeRoot?.allChildDirectories() ?: emptySet()
+        val createdDirectories = mutableSetOf<File>()
 
         // Create output paths (see issue #70 on GitHub)
         files.asSequence()
-            .mapNotNull { FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.virtualFile.parent.path) }
-            .forEach { File(outPath + it).mkdirs() }
+            .mapNotNull {
+                FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.path)
+            }
+            .forEach {
+                val file = File(outPath + it)
+                if (file.mkdirs()) {
+                    createdDirectories.add(file)
+                }
+            }
+
+        return createdDirectories
     }
 }
