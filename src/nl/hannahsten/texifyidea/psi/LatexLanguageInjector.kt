@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.util.camelCase
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.remove
 import java.util.*
 
 /**
@@ -34,10 +35,17 @@ class LatexLanguageInjector : LanguageInjector {
                 host.environmentName == "lstlisting" -> {
                     host.beginCommand.optionalParameterMap.toStringMap().getOrDefault("language", null)
                 }
-                else -> {
+                host.environmentName in EnvironmentMagic.languageInjections.keys -> {
                     EnvironmentMagic.languageInjections[host.environmentName]
                 }
-            }
+                host.environmentName.endsWith("code", ignoreCase = false) -> {
+                    // Environment may have been defined with the \newminted shortcut (see minted documentation)
+                    host.environmentName.remove("code")
+                }
+                else -> {
+                    null
+                }
+            } ?: return
 
             val language = findLanguage(languageId) ?: return
 

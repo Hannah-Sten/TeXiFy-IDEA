@@ -36,6 +36,18 @@ object EnvironmentMagic {
     )
 
     /**
+     * Do a guess whether the environment is a verbatim environment.
+     * Note: used in the lexer, so it should be fast.
+     */
+    @JvmStatic
+    fun isProbablyVerbatim(environmentName: String): Boolean {
+        // It might use \newminted environments, which always end in code
+        // There are other environments that have 'code' in their name, if they are all verbatim environments is unclear
+        // See https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2847#issuecomment-1347941386
+        return verbatim.contains(environmentName) || environmentName.endsWith("code")
+    }
+
+    /**
      * Environments that always contain a certain language.
      *
      * Maps the name of the environment to the registered Language id.

@@ -10,11 +10,13 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
@@ -27,18 +29,17 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
 
     companion object {
 
-        private val includesSet = setOf("\\usepackage", "\\RequirePackage")
-        private val includesArray = includesSet.toTypedArray()
+        private val includesSet = setOf(LatexGenericRegularCommand.USEPACKAGE.cmd, LatexGenericRegularCommand.REQUIREPACKAGE.cmd)
     }
 
-    override fun isCollapsedByDefault(node: ASTNode) = true
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().collapseImports
 
     override fun getPlaceholderText(node: ASTNode) = if (node.text.contains("RequirePackage")) "\\RequirePackage{...}" else "\\usepackage{...}"
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val covered = HashSet<LatexCommands>()
-        val commands = root.allCommands().filter { it.name in includesArray }
+        val commands = root.allCommands().filter { it.name in includesSet }
 
         for (command in commands) {
             // Do not cover commands twice.

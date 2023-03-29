@@ -24,6 +24,8 @@ import nl.hannahsten.texifyidea.util.requiredParameter
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.
  * Solution: set the BIBINPUTS path to the parent and use \bibliography{mybib} instead (or use a fake subfolder and do \bibliography{fake/../../mybib}
  * See https://tex.stackexchange.com/questions/406024/relative-paths-with-bibinputs
+ *
+ * [Edit March 2023] I cannot reproduce this problem anymore, maybe it was a bug in bibtex that has been fixed?
  */
 class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
 

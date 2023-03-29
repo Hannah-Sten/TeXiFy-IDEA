@@ -9,6 +9,9 @@
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCustomFoldingBuilder"/>
         <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.folding.BibtexEntryFoldingBuilder"/>
+        <codeFoldingOptionsProvider instance="nl.hannahsten.texifyidea.editor.folding.LatexCodeFoldingOptionsProvider" />
+        <applicationService serviceImplementation="nl.hannahsten.texifyidea.editor.folding.LatexCodeFoldingSettings" />
+
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>

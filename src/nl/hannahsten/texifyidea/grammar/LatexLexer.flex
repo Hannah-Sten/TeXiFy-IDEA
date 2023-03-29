@@ -205,7 +205,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {NORMAL_TEXT_WORD}  {
             yypopState();
             // toString to fix comparisons of charsequence subsequences with string
-            if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+            if (EnvironmentMagic.isProbablyVerbatim(yytext().toString())) {
                 yypushState(VERBATIM_START);
             }
             else if (yytext().toString().equals("algorithmic")) {
@@ -257,7 +257,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {NORMAL_TEXT_WORD}  {
         // Pop current state
         yypopState();
-        if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+        if (EnvironmentMagic.isProbablyVerbatim(yytext().toString())) {
             // Pop verbatim state
             yypopState();
             return NORMAL_TEXT_WORD;

@@ -25,7 +25,7 @@ class LatexParserUtil : GeneratedParserUtilBase() {
 
             val env = beginText.subSequence(nameStart, nameEnd).toString()
 
-            if (env !in EnvironmentMagic.verbatim) return false
+            if (!EnvironmentMagic.isProbablyVerbatim(env)) return false
 
             val startIndex = builder.currentOffset
             // Exclude the last newline, so it will stay a whitespace,
