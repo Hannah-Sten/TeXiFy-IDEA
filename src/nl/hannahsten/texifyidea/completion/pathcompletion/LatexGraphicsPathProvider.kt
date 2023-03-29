@@ -96,12 +96,13 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     private fun LatexCommands.getGraphicsPaths(): List<String> {
         if (name != "\\graphicspath") return emptyList()
-        return parameterList.firstNotNullOf { it.requiredParam }
+        return parameterList.firstNotNullOfOrNull { it.requiredParam }
             // Each graphics path is in a group.
-            .childrenOfType(LatexNormalText::class)
-            .map { it.text }
+            ?.childrenOfType(LatexNormalText::class)
+            ?.map { it.text }
             // Relative paths (not starting with /) have to be appended to the directory of the file of the given command.
-            .map { if (it.startsWith('/')) it else containingFile.containingDirectory.virtualFile.path + File.separator + it }
+            ?.map { if (it.startsWith('/')) it else containingFile.containingDirectory.virtualFile.path + File.separator + it }
+            ?: emptyList()
     }
 
     override fun searchFolders(): Boolean = true
