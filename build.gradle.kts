@@ -7,7 +7,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.13.2"
+    id("org.jetbrains.intellij") version "1.13.3"
     kotlin("jvm") version ("1.8.0")
     kotlin("plugin.serialization") version ("1.8.0")
 
@@ -205,7 +205,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("231.8109-EAP-CANDIDATE-SNAPSHOT")
+    version.set("2023.1")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
