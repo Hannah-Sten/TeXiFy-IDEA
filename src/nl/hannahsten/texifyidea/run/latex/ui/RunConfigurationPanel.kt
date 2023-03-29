@@ -4,9 +4,12 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.project.Project
-import com.intellij.ui.HideableTitledPanel
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.CollapsibleRow
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
@@ -24,7 +27,8 @@ class RunConfigurationPanel(
 ) : JPanel(BorderLayout()) {
 
     private val contentPanel = JPanel(BorderLayout())
-    private val hidePanel: HideableTitledPanel
+    private val hidePanel: DialogPanel
+    private var panelGroup: CollapsibleRow? = null
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
 
     var configurations: MutableSet<RunnerAndConfigurationSettings> = mutableSetOf()
@@ -36,8 +40,16 @@ class RunConfigurationPanel(
     init {
 
         createPanel()
-        hidePanel = HideableTitledPanel(title, false).apply {
-            setContentComponent(contentPanel)
+
+        hidePanel = panel {
+            collapsibleGroup(title) {
+                row {
+                    cell(contentPanel)
+                        .align(AlignX.FILL)
+                }
+            }.also {
+                panelGroup = it
+            }
         }
         add(hidePanel, BorderLayout.CENTER)
     }
@@ -86,7 +98,7 @@ class RunConfigurationPanel(
     }
 
     private fun changeTitle(titleSuffix: String) {
-        hidePanel.title = title + titleSuffix
+        panelGroup?.setTitle(title + titleSuffix)
     }
 
     private fun configurationChanged() {

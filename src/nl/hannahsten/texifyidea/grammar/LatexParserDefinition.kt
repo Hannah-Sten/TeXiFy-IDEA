@@ -45,8 +45,9 @@ class LatexParserDefinition : ParserDefinition {
 
     companion object {
 
+        // debugName is required to let IntelliJ distinguish between this FILE and BibtexParserDefinition.FILE
         val FILE: IStubFileElementType<*> = object : IStubFileElementType<LatexFileStub>(
-            Language.findInstance(LatexLanguage::class.java)
+            "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
         ) {
             override fun getStubVersion(): Int = 56
         }
