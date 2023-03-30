@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Support @Comment comments in bibtex
 
 ### Fixed
 
