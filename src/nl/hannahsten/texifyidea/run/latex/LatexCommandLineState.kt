@@ -56,7 +56,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable) while still returning a ProcessHandler at the end of this method. Maybe it should be its own process.
             ProgressManager.getInstance().runProcessWithProgressSynchronously(
                 { firstRunSetup(compiler) },
-                "Generating run configuration...",
+                "Generating Run Configuration...",
                 false,
                 runConfig.project
             )
