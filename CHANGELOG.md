@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Support @Comment comments in bibtex
 
 ### Fixed
 * Fixed usage of IntelliJ api deprecated in 2023.1
