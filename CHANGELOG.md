@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fixed usage of IntelliJ api deprecated in 2023.1
 
 ## [0.7.28-alpha.4] - 2023-03-29
 
