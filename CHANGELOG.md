@@ -3,10 +3,12 @@
 ## [Unreleased]
 
 ### Added
+* Support @Comment comments in bibtex
 * Fold blocks of comments, by @jojo2357
 * Highlight comment environment as a comment, by @jojo2357
 
 ### Fixed
+* Fixed usage of IntelliJ api deprecated in 2023.1
 
 ## [0.7.28-alpha.4] - 2023-03-29
 
