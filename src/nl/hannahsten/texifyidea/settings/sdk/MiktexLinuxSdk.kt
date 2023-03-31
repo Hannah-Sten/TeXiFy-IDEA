@@ -49,13 +49,13 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
     override fun getInvalidHomeMessage(path: String) = "Could not find $path/pdflatex"
 
     override fun getVersionString(sdk: Sdk): String? {
-        return getVersionString(sdk.homePath)
+        return getVersionString(sdk.homePath ?: return null)
     }
 
-    override fun getVersionString(sdkHome: String?): String? {
+    override fun getVersionString(sdkHome: String): String? {
         version?.let { return version }
 
-        val executable = sdkHome?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
+        val executable = getExecutableName("pdflatex", sdkHome)
         val output = "$executable --version".runCommand() ?: ""
         version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
 

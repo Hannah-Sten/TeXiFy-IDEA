@@ -83,11 +83,11 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
     override fun getInvalidHomeMessage(path: String) = "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
 
-    override fun getVersionString(sdk: Sdk): String {
-        return getVersionString(sdk.homePath)
+    override fun getVersionString(sdk: Sdk): String? {
+        return getVersionString(sdk.homePath ?: return null)
     }
 
-    override fun getVersionString(sdkHome: String?) = "MiKTeX " + getVersion(sdkHome).toString()
+    override fun getVersionString(sdkHome: String) = "MiKTeX " + getVersion(sdkHome).toString()
 
     fun getVersion(sdkHome: String?): DefaultArtifactVersion {
         version?.let { return it }

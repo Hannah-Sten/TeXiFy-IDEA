@@ -58,6 +58,12 @@ open class LatexAnnotator : Annotator {
         else if (psiElement is LatexCommands) {
             annotateCommands(psiElement, annotationHolder)
         }
+        else if (psiElement.isComment()) {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(psiElement.textRange)
+                .textAttributes(LatexSyntaxHighlighter.COMMENT)
+                .create()
+        }
     }
 
     /**
@@ -206,6 +212,7 @@ open class LatexAnnotator : Annotator {
             in CommandMagic.bibliographyItems -> {
                 LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
             }
+
             else -> return
         }
 

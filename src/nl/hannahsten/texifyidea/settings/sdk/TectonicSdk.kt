@@ -70,7 +70,7 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
     override fun getInvalidHomeMessage(path: String) = "Please select the caches path for Tectonic"
 
     // Actually we should return the TeX Live version, but not sure how to find it
-    override fun getVersionString(sdkHome: String?): String? {
+    override fun getVersionString(sdkHome: String): String? {
         return "tectonic -V".runCommand()?.replace("Tectonic", "", ignoreCase = true)?.trim()
     }
 

@@ -69,6 +69,8 @@ ANY_CHAR=[^]
 %state XXPREAMBLE
 %state XXPREAMBLE_STRING
 
+%xstate XXCOMMENT
+%xstate XXCOMMENT_STRING
 %xstate XXQUOTED_VERBATIM
 %xstate XXBRACED_VERBATIM
 %%
@@ -86,6 +88,10 @@ ANY_CHAR=[^]
                                   else if ("@preamble".equalsIgnoreCase(sequence)) {
                                     yybegin(XXPREAMBLE);
                                   }
+                                  else if ("@comment".equalsIgnoreCase(sequence)) {
+                                    yybegin(XXCOMMENT);
+                                    return COMMENT_TOKEN;
+                                  }
                                   else {
                                     yybegin(XXAFTERTYPETOKEN);
                                   }
@@ -95,6 +101,15 @@ ANY_CHAR=[^]
 
 <XXAFTERTYPETOKEN> {
     {OPEN_BRACE}                { yybegin(XXENTRYIDENTIFIER); return OPEN_BRACE; }
+}
+
+<XXCOMMENT> {
+    {OPEN_BRACE}                { yybegin(XXCOMMENT_STRING); return COMMENT_TOKEN; }
+}
+
+<XXCOMMENT_STRING> {
+    {CLOSE_BRACE}               { yybegin(XXAFTERENTRY); return COMMENT_TOKEN; }
+    {ANY_CHAR}                  { return COMMENT_TOKEN; }
 }
 
 // Preamble: @preamble{ "some string" }
