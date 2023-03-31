@@ -55,7 +55,7 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 parentCollapse = comment.originalElement
             }
             else {
-                // If the next comment follows directly after the previous one (and was broken by whitespace) add it to the sequence
+                // If the next comment follows directly after the previous one (and was broken by whitespace) add the next comment to the sequence
                 if (whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset && it.endOffset == comment.startOffset }) {
                     collectedTextRange = TextRange(collectedTextRange.startOffset, comment.endOffset)
                 }
@@ -69,18 +69,6 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     collectedTextRange = TextRange(comment.startOffset, comment.endOffset)
                     parentCollapse = comment.originalElement
                 }
-            }
-            // if no whitespace exists at the end of this block we are building,
-            if (!whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset }) {
-                // And we have accumulated at least something,
-                if (collectedTextRange.endOffset > collectedTextRange.startOffset)
-                // finish the collapse
-                    parentCollapse?.let {
-                        descriptors.add(buildDescriptor(parentCollapse, collectedTextRange))
-                    }
-                // and discard the built objects
-                parentCollapse = null
-                collectedTextRange = null
             }
         }
 

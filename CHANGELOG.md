@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+* Fold blocks of comments, by @jojo2357
+* Highlight comment environment as a comment, by @jojo2357
 
 ### Fixed
 
