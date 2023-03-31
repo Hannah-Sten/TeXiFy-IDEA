@@ -94,8 +94,8 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
     override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
 
-    override fun getVersionString(sdkHome: String?): String {
-        return "TeX Live " + sdkHome?.split("/")?.lastOrNull { it.isNotBlank() }
+    override fun getVersionString(sdkHome: String): String {
+        return "TeX Live " + sdkHome.split("/").lastOrNull { it.isNotBlank() }
     }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
