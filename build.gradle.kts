@@ -221,9 +221,9 @@ intellij {
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
 // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 tasks.publishPlugin {
-    dependsOn("patchChangelog")
-    dependsOn("useLatestVersions")
-    dependsOn("dependencyCheckAnalyze")
+//    dependsOn("patchChangelog")
+//    dependsOn("useLatestVersions")
+//    dependsOn("dependencyCheckAnalyze")
 
     token.set(properties["intellijPublishToken"].toString())
 
