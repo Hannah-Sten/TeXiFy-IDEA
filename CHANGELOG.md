@@ -3,49 +3,33 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.7.28] - 2023-04-01
+Welcome to TeXiFy IDEA 0.7.28! This release fixes some exceptions, adds comment folding and improves run configuration performance even more.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+Thanks to @jojo2357 for contributing to this release!
+
+### Added
 * Support @Comment comments in bibtex
 * Fold blocks of comments, by @jojo2357
 * Highlight comment environment as a comment, by @jojo2357
-
-### Fixed
-* Fixed usage of IntelliJ api deprecated in 2023.1
-
-## [0.7.28-alpha.4] - 2023-03-29
-
-### Added
 * Improve run configuration performance for TeX Live
 * Add custom highlighting for user-defined commands
 * Add setting to configure default folding of imports
 * Add \newminted code blocks as verbatim environments
 
 ### Fixed
+* Fixed usage of IntelliJ api deprecated in 2023.1
 * Fixed exception "Cannot distinguish StubFileElementTypes".
 * Fix exception #2971
 * Improve file set cache to fix exception #2903
 * Fix exception #2950
 * Disable obsolete LatexBibinputsRelativePathInspection
-* Fix bug when resolving \subimport
-
-## [0.7.28-alpha.3] - 2023-03-25
-
-### Added
-* Improve run configuration performance for TeX Live
-* Add custom highlighting for user-defined commands
-* Add setting to configure default folding of imports
-* Add \newminted code blocks as verbatim environments
-
-### Fixed
-* Improve file set cache to fix exception #2903
-* Fix exception #2950
-* Disable obsolete LatexBibinputsRelativePathInspection
-* Fix bug when resolving \subimport
-
-## [0.7.28-alpha.1] - 2023-03-11
-
-### Added
-* Add custom highlighting for user-defined commands
-
-### Fixed
 * Fix bug when resolving \subimport
 
 ## [0.7.27] - 2023-03-09
@@ -116,11 +100,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28-alpha.4...HEAD
-[0.7.28-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28-alpha.1...v0.7.28-alpha.3
-[0.7.28-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27...v0.7.28-alpha.1
-[0.7.28-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28-alpha.3...v0.7.28-alpha.4
-[0.7.27]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27-alpha.2...v0.7.27
-[0.7.27-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26...v0.7.27-alpha.2
-[0.7.26]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26-alpha.8...v0.7.26
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28...HEAD
+[0.7.28]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27...v0.7.28
+[0.7.27]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26...v0.7.27
+[0.7.26]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.25...v0.7.26
 [0.7.25]: https://github.com/Hannah-Sten/TeXiFy-IDEA/commits/v0.7.25
