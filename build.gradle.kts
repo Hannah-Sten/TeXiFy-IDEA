@@ -8,7 +8,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.13.3"
-    kotlin("jvm") version ("1.8.0")
+    kotlin("jvm") version ("1.8.20")
     kotlin("plugin.serialization") version ("1.8.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
@@ -48,6 +48,15 @@ sourceSets {
     getByName("test").apply {
         java.srcDirs("test")
         resources.srcDirs("test/resources")
+    }
+}
+
+// https://kotlinlang.org/docs/whatsnew1820.html#how-to-enable-the-kotlin-k2-compiler
+kotlin {
+    sourceSets.all {
+        languageSettings {
+            languageVersion = "2.0"
+        }
     }
 }
 
