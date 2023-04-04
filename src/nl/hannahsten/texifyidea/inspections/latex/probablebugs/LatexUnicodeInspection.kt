@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -188,15 +189,41 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
             val editor = FileEditorManager.getInstance(project).selectedTextEditor
+            val replacement = getReplacementFromProblemDescriptor(descriptor)
+
+            // When no replacement is found, show error message
+            val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+            if (replacement == null) {
+                if (editor != null) {
+                    runInEdt {
+                        HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                    }
+                }
+                return
+            }
+
+            // Fill in replacement
+            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
+            document?.replaceString(range.startOffset, range.endOffset, replacement)
+        }
+
+        /**
+         * Generate the preview info explicitly because [HintManager.showErrorHint] crashes when called from the preview
+         * editor. We only perform the same check here that triggers the hint to be shown when attempting to apply the fix.
+         */
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
+            val replacement = getReplacementFromProblemDescriptor(previewDescriptor)
+            return if (replacement == null) IntentionPreviewInfo.EMPTY else IntentionPreviewInfo.DIFF
+        }
+
+        private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): String? {
+            val element = descriptor.psiElement
 
             val c = try {
                 descriptor.textRangeInElement.substring(element.text)
             }
             catch (e: IndexOutOfBoundsException) {
-                if (editor != null) {
-                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
-                }
-                return
+                return null
             }
 
             // Try to find in lookup for special command
@@ -215,21 +242,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             else {
                 findReplacement(c)
             }
-
-            // When no replacement is found, show error message
-            val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
-            if (replacement == null) {
-                if (editor != null) {
-                    runInEdt {
-                        HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
-                    }
-                }
-                return
-            }
-
-            // Fill in replacement
-            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
-            document?.replaceString(range.startOffset, range.endOffset, replacement)
+            return replacement
         }
 
         private fun findReplacement(c: String): String? {
