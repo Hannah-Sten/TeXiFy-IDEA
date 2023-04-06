@@ -3,8 +3,10 @@
 ## [Unreleased]
 
 ### Added
+* Update minimum required IntelliJ version to 2023.1
 
 ### Fixed
+* Fix equation preview TranscoderException
 
 ## [0.7.28] - 2023-04-01
 Welcome to TeXiFy IDEA 0.7.28! This release fixes some exceptions, adds comment folding and improves run configuration performance even more.
