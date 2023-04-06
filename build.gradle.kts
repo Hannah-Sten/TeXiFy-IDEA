@@ -107,6 +107,11 @@ dependencies {
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
+    // https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
+    implementation("org.apache.xmlgraphics:batik-codec:1.16") {
+        exclude("xml-apis", "xml-apis")
+        exclude("xml-apis", "xml-apis-ext")
+    }
 
     // Test dependencies
     // No version specified, it equals the kotlin version
