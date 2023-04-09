@@ -78,8 +78,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
             val command = startElement as? LatexCommands ?: return
             val newCommandName = CommandMagic.stylePrimitiveReplacements[command.name] ?: return
 
-            // Convert {help \bf this is content} to "help \textbf{this is content}", but leave \bf{this is bold} and \bf
-            // (without enclosing group or argument) alone.
+            // Convert {help \bf this is content} to "help \textbf{this is content}", but leave \bf{this is bold} alone.
             if (command.requiredParameters.isEmpty()) {
                 val commandInFile = file.findElementAt(oldCommand.range?.startOffset ?: return) ?: return
 
@@ -111,12 +110,11 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
                 if (parentGroup is LatexGroup) {
                     parentGroup.replace(newPsi)
                 }
-                // The \bf is not inside a group, so rename the command instead of trying to replace the psi group.
+                // The \bf is not inside a group, so rename the command instead.
                 else {
                     command.setName(newCommandName)
                 }
             }
-
             // Convert \bf{this is bold} to \textbf{this is bold}
             else {
                 command.setName(newCommandName)
