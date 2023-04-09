@@ -208,12 +208,11 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         }
 
         /**
-         * Generate the preview info explicitly because [HintManager.showErrorHint] crashes when called from the preview
-         * editor. We only perform the same check here that triggers the hint to be shown when attempting to apply the fix.
+         * Extend the heuristics implemented in [LocalQuickFix.generatePreview] that predict that the fix can not be applied.
          */
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             val replacement = getReplacementFromProblemDescriptor(previewDescriptor)
-            return if (replacement == null) IntentionPreviewInfo.EMPTY else IntentionPreviewInfo.DIFF
+            return if (replacement == null) IntentionPreviewInfo.EMPTY else super.generatePreview(project, previewDescriptor)
         }
 
         private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): String? {
