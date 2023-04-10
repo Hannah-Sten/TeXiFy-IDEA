@@ -19,6 +19,14 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
         testQuickFix("""{\it is italic}""", """\textit{is italic}""")
     }
 
+    fun `test empty quickfix`() {
+        testQuickFix("""\it""", """\textit""")
+    }
+
+    fun `test implicit rexuired argument quickfix`() {
+        testQuickFix("""\it test""", """\textit test""")
+    }
+
     fun `test quickfix in group`() {
         testQuickFix("""{help abc \it is italic}""", """help abc \textit{is italic}""")
     }

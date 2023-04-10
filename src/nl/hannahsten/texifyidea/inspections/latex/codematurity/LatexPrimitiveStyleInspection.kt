@@ -107,7 +107,13 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
                 ).firstChild
 
                 val parentGroup = previousTrace.last()
-                parentGroup.replace(newPsi)
+                if (parentGroup is LatexGroup) {
+                    parentGroup.replace(newPsi)
+                }
+                // The \bf is not inside a group, so rename the command instead.
+                else {
+                    command.setName(newCommandName)
+                }
             }
             // Convert \bf{this is bold} to \textbf{this is bold}
             else {
