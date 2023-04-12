@@ -126,6 +126,8 @@ A quickfix is available to add the missing `\usepackage` or `\RequirePackage` co
 For more information, see link:Automatic-package-importing[Automagically import packages of common commands].
 
 Note that if TeXiFy complains incorrectly that you did not import the package, you may need to tell TeXiFy which file is your root file, see link:Magic-comments[Magic comments].
+It could also be that you installed TeX Live via your package manager instead of via the official installer.
+In general it is better (and easier for TeXiFy) to install the official distribution, see link:Installation#texlive[Installation].
 
 == Unresolved references
 
