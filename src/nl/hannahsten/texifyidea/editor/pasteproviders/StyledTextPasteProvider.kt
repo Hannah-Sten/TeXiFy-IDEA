@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.editor
+package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import com.intellij.ide.PasteProvider
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -6,12 +6,9 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.editor.pasteproviders.PandocStandaloneDialog
-import nl.hannahsten.texifyidea.editor.pasteproviders.htmlTextIsFormattable
-import nl.hannahsten.texifyidea.editor.pasteproviders.parseToString
+import com.intellij.testFramework.utils.vfs.getDocument
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.PackageUtils.insertPreambleText
-import nl.hannahsten.texifyidea.util.PandocUtil
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -21,6 +18,7 @@ import java.awt.datatransfer.DataFlavor
 
 /**
  * Takes html from clipboard and pastes it as LaTeX.
+ * todo why is there no StyledTextPasteProvider subclassing LatexPasteProvider
  *
  * @author jojo2357
  */
@@ -42,11 +40,12 @@ class StyledTextPasteProvider : PasteProvider {
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
 
         // todo why is this about tables?
-        val tableTextToInsert = Jsoup.parse(html).parseText(project, dataContext)
+        val textToInsert = Jsoup.parse(html).parseText(project, dataContext)
 
         val editor = dataContext.getData(PlatformDataKeys.PROJECT)?.currentTextEditor() ?: return
 
-        // todo insert tableTextToInsert
+        // todo insert properly
+        file.getDocument().insertString(editor.editor.caretModel.offset, textToInsert)
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
@@ -71,7 +70,7 @@ class StyledTextPasteProvider : PasteProvider {
      */
     private fun Document.parseText(project: Project, dataContext: DataContext): String {
         val default = parseToString(select("body")[0].childNodes(), project, dataContext)
-        return if (!PandocUtil.isPandocInPath) {
+        return if (!PandocPasteProvider.isPandocInPath) {
             default
         }
         else {
@@ -83,18 +82,19 @@ class StyledTextPasteProvider : PasteProvider {
                 val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return ""
 
                 // todo what does it return?
-                val out = PandocUtil.translateHtml(this.html(), isStandalone)
+                val latexText = PandocPasteProvider(isStandalone).translateHtml(this.html())
 
-                if (out == null)
-                    default
+                if ("\\begin{document}" in latexText) {
+                    val (preamble, content) = latexText.split("\\begin{document}")
+                    insertPreambleText(
+                        dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)
+                            ?.psiFile(dataContext.getData(PlatformDataKeys.PROJECT)!!)!!,
+                        preamble
+                    )
+                    content
+                }
                 else {
-                    if (out.first is String)
-                        insertPreambleText(
-                            dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)
-                                ?.psiFile(dataContext.getData(PlatformDataKeys.PROJECT)!!)!!,
-                            out.first!!
-                        )
-                    out.second
+                    latexText
                 }
             }
         }

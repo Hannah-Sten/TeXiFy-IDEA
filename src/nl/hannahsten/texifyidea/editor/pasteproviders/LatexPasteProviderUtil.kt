@@ -6,17 +6,22 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.PandocUtil
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
 
+/**
+ * Paste providers which can handle certain html tags.
+ */
 private val childHandlers = hashMapOf(
     "table" to TablePasteProvider(),
     "img" to ImagePasteProvider(),
 )
 
+/**
+ * Map HTML tags to LaTeX
+ */
 private val openingTags = hashMapOf(
     "i" to "\\textit{",
     "b" to "\\textbf{",
@@ -96,18 +101,22 @@ private val escapeChars = hashMapOf(
     "−" to "-"
 )
 
+/**
+ * Parse given HTML nodes to LaTeX using direct hardcoded mappings.
+ */
 fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext): String {
     val out = StringBuilder()
 
     for (node in nodes) {
         if (node.childNodeSize() == 0) {
-            if (node is TextNode)
-                out.append(escapeText(node.text()))
-            else if (node is Element) {
-                handleElement(node, out, project, dataContext)
+            when (node) {
+                is TextNode -> out.append(escapeText(node.text()))
+                is Element -> {
+                    handleElement(node, out, project, dataContext)
+                }
+
+                else -> throw IllegalStateException("Did not plan for " + node.javaClass.name + " please implement a case for this")
             }
-            else
-                throw IllegalStateException("Did not plan for " + node.javaClass.name + " please implement a case for this")
         }
         else {
             if (node is Element) {
@@ -121,11 +130,15 @@ fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext)
     return out.toString()
 }
 
+/**
+ * Convert one html element to LaTeX and append to the given StringBuilder.
+ */
 private fun handleElement(element: Element, out: StringBuilder, project: Project, dataContext: DataContext) {
     if (tagDependencies[element.tagName()] != null)
         (dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile)?.insertUsepackage(tagDependencies[element.tagName()]!!)
 
     if (hasSpecialHandler(element)) {
+        // todo move childHandlers to responsibility of paste providers (isPastePossible)
         out.append(childHandlers[element.tagName()]?.translateHtml(element, dataContext))
     }
     else {
@@ -162,7 +175,7 @@ private fun hasSpecialHandler(element: Element): Boolean {
 
 private fun getPrefix(element: Element): String {
     if (specialOpeningTags[element.tagName()] == null && openingTags[element.tagName()] == null)
-        Log.warn("Couldnt find a home for " + element.tagName())
+        Log.warn("Couldn't find a home for " + element.tagName())
     return specialOpeningTags[element.tagName()]?.invoke(element) ?: openingTags[element.tagName()] ?: ""
 }
 
@@ -179,4 +192,4 @@ private fun escapeText(stringin: String): String {
 }
 
 fun htmlTextIsFormattable(htmlIn: String): Boolean =
-    (PandocUtil.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
+    (PandocPasteProvider.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }

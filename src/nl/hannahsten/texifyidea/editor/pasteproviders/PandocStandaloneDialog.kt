@@ -1,11 +1,16 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import com.intellij.openapi.ui.*
+import com.intellij.openapi.ui.DialogBuilder
+import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.refactoring.util.RadioUpDownListener
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 
+/**
+ * todo
+ */
 class PandocStandaloneDialog(var isAddImports: Boolean? = null) {
 
     var abort = false

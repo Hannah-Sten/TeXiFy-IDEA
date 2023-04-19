@@ -12,7 +12,7 @@ import java.net.URL
 import javax.imageio.ImageIO
 
 /**
- * todo pastes images?
+ * Starts the Insert Graphic wizard when pasting.
  */
 open class ImagePasteProvider : LatexPasteProvider {
 

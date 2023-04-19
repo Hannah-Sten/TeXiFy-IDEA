@@ -5,5 +5,8 @@ import org.jsoup.nodes.Node
 
 interface LatexPasteProvider {
 
+    /**
+     * Translate HTML (e.g. from a clipboard) to LaTeX.
+     */
     fun translateHtml(htmlIn: Node, dataContext: DataContext): String
 }

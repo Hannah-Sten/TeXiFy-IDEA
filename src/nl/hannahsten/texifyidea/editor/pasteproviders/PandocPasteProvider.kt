@@ -1,21 +1,27 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessNotCreatedException
+import com.intellij.openapi.actionSystem.DataContext
+import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import org.jsoup.nodes.Node
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-object PandocUtil {
+
+/**
+ * todo
+ */
+class PandocPasteProvider(val isStandalone: Boolean = false) : LatexPasteProvider {
 
     val isPandocInPath: Boolean by lazy {
         "pandoc -v".runCommandWithExitCode().second == 0
     }
 
-    /**
-     * todo Translate HTML to LaTeX?
-     */
-    fun translateHtml(htmlIn: String, isStandalone: Boolean = false): Pair<String?, String>? {
+    override fun translateHtml(htmlIn: Node, dataContext: DataContext): String {
+
         return if (isPandocInPath) {
             val commands = arrayOf(
                 "pandoc",
@@ -62,14 +68,11 @@ object PandocUtil {
         else null
     }
 
-    private fun sanitizeOutput(rawOutput: String, hasDefinitions: Boolean = false): Pair<String?, String> {
-        if (!hasDefinitions)
-            return Pair(null, rawOutput)
+    private fun sanitizeOutput(rawOutput: String, hasDefinitions: Boolean = false): String {
+        return if (!hasDefinitions)
+            rawOutput
         else {
-            val basicSplit =
-                rawOutput.replace("\\end{document}", "").replace("\\\\documentclass\\[\\s*]\\{article}".toRegex(), "")
-                    .split("\\begin{document}")
-            return Pair(basicSplit[0], basicSplit[1])
+            rawOutput.replace("\\end{document}", "").replace("\\\\documentclass\\[\\s*]\\{article}".toRegex(), "")
         }
     }
 }
