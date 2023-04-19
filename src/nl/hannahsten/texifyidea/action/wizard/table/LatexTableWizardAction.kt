@@ -33,9 +33,10 @@ class LatexTableWizardAction : AnAction() {
         if (dialogWrapper.showAndGet()) {
 
             // Get the table information from the dialog, and convert it to latex.
-            val tableTextToInsert = convertTableToLatex(dialogWrapper.tableInformation, indent)
+            return convertTableToLatex(dialogWrapper.tableInformation, indent)
 
-            return tableTextToInsert
+            // todo the code that executed the action is removed, so this executeAction does not execute an action?
+            // todo check if booktabs package is inserted correctly wherever this code moved to
         }
 
         return ""

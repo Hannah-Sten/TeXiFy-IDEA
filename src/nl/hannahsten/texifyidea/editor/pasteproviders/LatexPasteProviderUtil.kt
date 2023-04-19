@@ -178,5 +178,5 @@ private fun escapeText(stringin: String): String {
     return out
 }
 
-fun htmlTextIsFormatable(htmlIn: String): Boolean =
+fun htmlTextIsFormattable(htmlIn: String): Boolean =
     (PandocUtil.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }

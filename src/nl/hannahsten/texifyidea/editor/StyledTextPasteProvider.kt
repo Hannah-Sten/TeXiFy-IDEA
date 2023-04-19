@@ -6,12 +6,10 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.action.insert.InsertStyledText
 import nl.hannahsten.texifyidea.editor.pasteproviders.PandocStandaloneDialog
-import nl.hannahsten.texifyidea.editor.pasteproviders.htmlTextIsFormatable
+import nl.hannahsten.texifyidea.editor.pasteproviders.htmlTextIsFormattable
 import nl.hannahsten.texifyidea.editor.pasteproviders.parseToString
 import nl.hannahsten.texifyidea.util.Clipboard
-import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.PackageUtils.insertPreambleText
 import nl.hannahsten.texifyidea.util.PandocUtil
 import nl.hannahsten.texifyidea.util.currentTextEditor
@@ -22,7 +20,7 @@ import org.jsoup.nodes.Document
 import java.awt.datatransfer.DataFlavor
 
 /**
- * Pastes html and applies text(bf|it)
+ * Takes html from clipboard and pastes it as LaTeX.
  *
  * @author jojo2357
  */
@@ -33,9 +31,8 @@ class StyledTextPasteProvider : PasteProvider {
         if (file.isLatexFile().not()) return false
 
         val pasteData = dataContext.transferableHtml() ?: return false
-        Log.warn("Attempting to paste $pasteData")
 
-        return htmlTextIsFormatable(pasteData)
+        return htmlTextIsFormattable(pasteData)
     }
 
     override fun performPaste(dataContext: DataContext) {
@@ -44,11 +41,12 @@ class StyledTextPasteProvider : PasteProvider {
         val clipboardHtml = dataContext.transferableHtml() ?: return
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
 
+        // todo why is this about tables?
         val tableTextToInsert = Jsoup.parse(html).parseText(project, dataContext)
 
         val editor = dataContext.getData(PlatformDataKeys.PROJECT)?.currentTextEditor() ?: return
 
-        InsertStyledText(tableTextToInsert).actionPerformed(file, project, editor)
+        // todo insert tableTextToInsert
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
@@ -67,20 +65,28 @@ class StyledTextPasteProvider : PasteProvider {
     }
 
     /**
-     * Creates the Table Creation Dialog filled in with the data from the clipboard.
+     * Parses html to LaTeX using pandoc if available, otherwise defaults to built-in methods.
+     *
+     * @return Translated LaTeX
      */
     private fun Document.parseText(project: Project, dataContext: DataContext): String {
-        return if (PandocUtil.isPandocInPath) {
+        val default = parseToString(select("body")[0].childNodes(), project, dataContext)
+        return if (!PandocUtil.isPandocInPath) {
+            default
+        }
+        else {
+            // todo why put a dialog?
             val pandocStandaloneDialog = PandocStandaloneDialog()
             if (pandocStandaloneDialog.abort)
-                parseToString(select("body")[0].childNodes(), project, dataContext)
+                default
             else {
                 val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return ""
 
+                // todo what does it return?
                 val out = PandocUtil.translateHtml(this.html(), isStandalone)
 
                 if (out == null)
-                    parseToString(select("body")[0].childNodes(), project, dataContext)
+                    default
                 else {
                     if (out.first is String)
                         insertPreambleText(
@@ -92,7 +98,5 @@ class StyledTextPasteProvider : PasteProvider {
                 }
             }
         }
-        else
-            parseToString(select("body")[0].childNodes(), project, dataContext)
     }
 }

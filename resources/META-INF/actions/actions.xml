@@ -5,10 +5,6 @@
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile"/>
         </action>
 
-        <!-- Paste HTML Styled Text -->
-        <action id="nl.hannahsten.texifyidea.action.insert.InsertStyledText"
-                class="nl.hannahsten.texifyidea.action.insert.InsertStyledText" text="Insert Styled Text"/>
-
         <!-- LaTeX Code menu -->
         <action id="texify.ReformatLatexindent" class="nl.hannahsten.texifyidea.action.reformat.ReformatWithLatexindent" description="Run latexindent.pl" >
             <add-to-group group-id="CodeFormatGroup" anchor="after" relative-to-action="ShowReformatFileDialog" />

@@ -12,6 +12,9 @@ object PandocUtil {
         "pandoc -v".runCommandWithExitCode().second == 0
     }
 
+    /**
+     * todo Translate HTML to LaTeX?
+     */
     fun translateHtml(htmlIn: String, isStandalone: Boolean = false): Pair<String?, String>? {
         return if (isPandocInPath) {
             val commands = arrayOf(

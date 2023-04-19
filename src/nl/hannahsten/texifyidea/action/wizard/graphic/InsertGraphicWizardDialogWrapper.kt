@@ -12,11 +12,8 @@ import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
-import nl.hannahsten.texifyidea.util.addKeyReleasedListener
-import nl.hannahsten.texifyidea.util.addLabeledComponent
-import nl.hannahsten.texifyidea.util.addTextChangeListener
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import nl.hannahsten.texifyidea.util.setInputFilter
 import java.awt.Dimension
 import java.io.File
 import java.util.*
@@ -122,7 +119,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Contains the label for the figure.
      */
-    private val txtLabel = JBTextField("fig:" + File(initialFilePath).nameWithoutExtension)
+    private val txtLabel = JBTextField(("fig:" + File(initialFilePath).nameWithoutExtension).formatAsLabel())
 
     /**
      * Contains the positioning symbols.

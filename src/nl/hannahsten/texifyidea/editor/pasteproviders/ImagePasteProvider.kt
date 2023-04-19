@@ -6,12 +6,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.SaveImageFromWebDialog
-import nl.hannahsten.texifyidea.util.Log
 import org.jsoup.nodes.Node
 import java.awt.image.BufferedImage
 import java.net.URL
 import javax.imageio.ImageIO
 
+/**
+ * todo pastes images?
+ */
 open class ImagePasteProvider : LatexPasteProvider {
 
     private fun pasteRawImage(project: Project, file: VirtualFile, clipboard: BufferedImage): String {
@@ -19,7 +21,7 @@ open class ImagePasteProvider : LatexPasteProvider {
 
         SaveImageFromWebDialog(project, clipboard) {
             it.savedImage?.let { imageFile ->
-                outstring = InsertGraphicWizardAction(imageFile).getActionString(file, project)
+                outstring = InsertGraphicWizardAction(imageFile).getGraphicString(file, project)
             }
         }
 
@@ -27,8 +29,6 @@ open class ImagePasteProvider : LatexPasteProvider {
     }
 
     override fun translateHtml(htmlIn: Node, dataContext: DataContext): String {
-        Log.warn("Trying to parse an image")
-
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return ""
         val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return ""
         val url = URL(htmlIn.attr("src"))
