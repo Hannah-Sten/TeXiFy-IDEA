@@ -53,17 +53,20 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         if (!runConfig.hasBeenRun) {
             // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
-            // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable)
+            // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable) while still returning a ProcessHandler at the end of this method. Maybe it should be its own process.
             ProgressManager.getInstance().runProcessWithProgressSynchronously(
-                { runReadAction { firstRunSetup(compiler) } },
-                "Generating run configuration...",
+                { firstRunSetup(compiler) },
+                "Generating Run Configuration...",
                 false,
                 runConfig.project
             )
         }
 
-        if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
+        val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
             runConfig.outputPath.updateOutputSubDirs()
+        }
+        else {
+            setOf()
         }
 
         val handler = createHandler(mainFile, compiler)
@@ -74,7 +77,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
-        scheduleFileCleanup(runConfig.filesToCleanUp, handler)
+        scheduleFileCleanup(runConfig.filesToCleanUp, createdOutputDirectories, handler)
 
         return handler
     }
@@ -102,7 +105,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
         // checking for bibliography commands
         if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
-            runConfig.generateBibRunConfig()
+            // Generating a bib run config involves PSI access, which requires a read action.
+            runReadAction { runConfig.generateBibRunConfig() }
 
             runConfig.bibRunConfigs.forEach {
                 val bibSettings = it
@@ -110,6 +114,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 // Pass necessary latex run configurations settings to the bibtex run configuration.
                 (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
                     // Check if the aux, out, or src folder should be used as bib working dir.
+                    // This involves a synchronous refreshAndFindFileByPath, and hence cannot be done in a read action
                     this.bibWorkingDir = runConfig.getAuxilDirectory()
                 }
             }
@@ -214,9 +219,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
     }
 
-    private fun scheduleFileCleanup(filesToCleanUp: MutableList<File>, handler: KillableProcessHandler) {
+    private fun scheduleFileCleanup(filesToCleanUp: MutableList<File>, filesToCleanUpIfEmpty: Set<File>, handler: KillableProcessHandler) {
         if (runConfig.isLastRunConfig) {
-            handler.addProcessListener(FileCleanupListener(filesToCleanUp))
+            handler.addProcessListener(FileCleanupListener(filesToCleanUp, filesToCleanUpIfEmpty))
         }
     }
 

@@ -90,7 +90,7 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            % Not a preamble option, so treat like usual           
+            <info descr="null">% Not a preamble option, so treat like usual</info>
             \begin{frame}
                 \only<1>{<info descr="null">${'$'}<info textAttributesKey=LATEX_INLINE_MATH>a_1${'$'}</info></info>}
             \end{frame}

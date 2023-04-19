@@ -131,7 +131,7 @@ class TableCreationDialogWrapper(
             )
         }
         .setAddActionName("Add Column")
-        .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
+        .setAddIcon(addText(IconUtil.addIcon, "C"))
         .addExtraAction(getRemoveColumnActionButton() as AnAction)
         .addExtraAction(getEditColumnActionButton() as AnAction)
         .addExtraAction(getAddRowActionButton() as AnAction)
@@ -249,7 +249,7 @@ class TableCreationDialogWrapper(
     }
 
     private fun getEditColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Edit Column Header", addText(IconUtil.getEditIcon(), "C")) {
+        return object : AnActionButton("Edit Column Header", addText(IconUtil.editIcon, "C")) {
 
             override fun isEnabled() = table.columnCount > 0
 
@@ -269,7 +269,7 @@ class TableCreationDialogWrapper(
     }
 
     private fun getAddRowActionButton(): AnActionButton {
-        return object : AnActionButton("Add Row", addText(IconUtil.getAddIcon(), "R")) {
+        return object : AnActionButton("Add Row", addText(IconUtil.addIcon, "R")) {
 
             override fun isEnabled() = table.columnCount > 0
 
@@ -282,7 +282,7 @@ class TableCreationDialogWrapper(
     }
 
     private fun getRemoveRowActionButton(): AnActionButton {
-        return object : AnActionButton("Remove Row", addText(IconUtil.getRemoveIcon(), "R")) {
+        return object : AnActionButton("Remove Row", addText(IconUtil.removeIcon, "R")) {
 
             override fun isEnabled() = table.selectedRow > -1
 
@@ -302,7 +302,7 @@ class TableCreationDialogWrapper(
     }
 
     private fun getRemoveColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Remove Column", addText(IconUtil.getRemoveIcon(), "C")) {
+        return object : AnActionButton("Remove Column", addText(IconUtil.removeIcon, "C")) {
 
             override fun isEnabled() = table.selectedColumn > -1
 

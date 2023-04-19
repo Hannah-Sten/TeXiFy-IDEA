@@ -22,6 +22,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
             AttributesDescriptor("Commands//Optional parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
             AttributesDescriptor("Commands//Equals sign in key-value pairs", LatexSyntaxHighlighter.SEPARATOR_EQUALS),
             AttributesDescriptor("Commands//Commands", LatexSyntaxHighlighter.COMMAND),
+            AttributesDescriptor("Commands//User defined commands", LatexSyntaxHighlighter.USER_DEFINED_COMMAND),
             AttributesDescriptor("Commands//Commands in inline math mode", LatexSyntaxHighlighter.COMMAND_MATH_INLINE),
             AttributesDescriptor("Commands//Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
             AttributesDescriptor("Commands//Stars", LatexSyntaxHighlighter.STAR),
@@ -50,6 +51,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
         val DEMO_TAGS = mapOf(
             "displayCommand" to LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY,
             "inlineCommand" to LatexSyntaxHighlighter.COMMAND_MATH_INLINE,
+            "userDefinedCommand" to LatexSyntaxHighlighter.USER_DEFINED_COMMAND,
             "displayMath" to LatexSyntaxHighlighter.DISPLAY_MATH,
             "inlineMath" to LatexSyntaxHighlighter.INLINE_MATH,
             "textInMath" to LatexSyntaxHighlighter.MATH_NESTED_TEXT,
@@ -88,6 +90,9 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |\usepackage{listings}
                 |
                 |\lstset{language<equalsSeparator>=</equalsSeparator>Kotlin}
+                |
+                |\newcommand{\betterphi}{\varphi}
+                |\newcommand{\myphi}{<userDefinedCommand>\betterphi</userDefinedCommand>}
                 |
                 |% Start document.
                 |<magicComment>%! Suppress = NonBreakingSpace</magicComment>

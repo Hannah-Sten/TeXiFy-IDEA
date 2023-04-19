@@ -105,7 +105,7 @@ LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
 ENDINPUT=\\endinput
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
-NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,-]+
+NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,]+
 // Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
 ANY_CHAR=[^]
 
@@ -205,7 +205,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {NORMAL_TEXT_WORD}  {
             yypopState();
             // toString to fix comparisons of charsequence subsequences with string
-            if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+            if (EnvironmentMagic.isProbablyVerbatim(yytext().toString())) {
                 yypushState(VERBATIM_START);
             }
             else if (yytext().toString().equals("algorithmic")) {
@@ -257,7 +257,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {NORMAL_TEXT_WORD}  {
         // Pop current state
         yypopState();
-        if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+        if (EnvironmentMagic.isProbablyVerbatim(yytext().toString())) {
             // Pop verbatim state
             yypopState();
             return NORMAL_TEXT_WORD;
@@ -475,7 +475,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 ">"                     { return CLOSE_ANGLE_BRACKET; }
 "|"                     { return PIPE;}
 "!"                     { return EXCLAMATION_MARK; }
-[-]+                    { return DASH; } // Dashes of various length
 
 {OPEN_BRACKET}          { return OPEN_BRACKET; }
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }
