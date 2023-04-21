@@ -64,12 +64,16 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null): String?
     return runCommandWithExitCode(*commands, workingDirectory = workingDirectory).first
 }
 
+
+
 /**
  * See [runCommand], but also returns exit code.
  *
  * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
+ * @param nonBlocking If true, the function will not block waiting for output
+ * @param inputString If provided, this will be written to the process outputStream before starting the process.
  */
-fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false): Pair<String?, Int> {
+fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false, inputString: String = ""): Pair<String?, Int> {
     Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
     return try {
         val proc = GeneralCommandLine(*commands)
@@ -77,35 +81,20 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             .withWorkDirectory(workingDirectory)
             .createProcess()
 
+        if (inputString.isNotBlank()) {
+            proc.outputStream.bufferedWriter().apply {
+                write(inputString)
+                close()
+            }
+        }
+
         if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
-            var output = ""
-            if (nonBlocking) {
-                if (proc.inputStream.bufferedReader().ready()) {
-                    output += proc.inputStream.bufferedReader().readText().trim()
-                }
-                if (proc.errorStream.bufferedReader().ready()) {
-                    output += proc.errorStream.bufferedReader().readText().trim()
-                }
-            }
-            else {
-                output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
-            }
+            val output = readInputStream(nonBlocking, proc)
             Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
             return Pair(output, proc.exitValue())
         }
         else {
-            var output = ""
-            if (nonBlocking) {
-                if (proc.inputStream.bufferedReader().ready()) {
-                    output += proc.inputStream.bufferedReader().readText().trim()
-                }
-                if (proc.errorStream.bufferedReader().ready()) {
-                    output += proc.errorStream.bufferedReader().readText().trim()
-                }
-            }
-            else {
-                output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
-            }
+            val output = readInputStream(nonBlocking, proc)
             proc.destroy()
             proc.waitFor()
             Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
@@ -131,4 +120,23 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             Pair(e.message, -1)
         }
     }
+}
+
+/**
+ * Read input and error streams. If non-blocking, we will skip reading the streams if they are not ready.
+ */
+private fun readInputStream(nonBlocking: Boolean, proc: Process): String {
+    var output = ""
+    if (nonBlocking) {
+        if (proc.inputStream.bufferedReader().ready()) {
+            output += proc.inputStream.bufferedReader().readText().trim()
+        }
+        if (proc.errorStream.bufferedReader().ready()) {
+            output += proc.errorStream.bufferedReader().readText().trim()
+        }
+    }
+    else {
+        output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+    }
+    return output
 }

@@ -39,7 +39,6 @@ class StyledTextPasteProvider : PasteProvider {
         val clipboardHtml = dataContext.transferableHtml() ?: return
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
 
-        // todo why is this about tables?
         val textToInsert = Jsoup.parse(html).parseText(project, dataContext)
 
         val editor = dataContext.getData(PlatformDataKeys.PROJECT)?.currentTextEditor() ?: return
@@ -79,10 +78,9 @@ class StyledTextPasteProvider : PasteProvider {
             if (pandocStandaloneDialog.abort)
                 default
             else {
-                val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return ""
+                val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return default
 
-                // todo what does it return?
-                val latexText = PandocPasteProvider(isStandalone).translateHtml(this.html())
+                val latexText = PandocPasteProvider(isStandalone).translateHtml(this.html()) ?: return default
 
                 if ("\\begin{document}" in latexText) {
                     val (preamble, content) = latexText.split("\\begin{document}")
