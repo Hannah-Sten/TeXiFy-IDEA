@@ -23,6 +23,7 @@ object SumatraAvailabilityChecker {
         if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
 
         // Try if native bindings are available
+        // Note: this will not throw any exception when Sumatra is not installed
         try {
             DDEClientConversation()
         }
@@ -91,12 +92,37 @@ object SumatraAvailabilityChecker {
     private fun isSumatraInstalled(): Boolean {
         // Try some SumatraPDF registry keys
         // For some reason this first one isn't always present anymore, it used to be
-        val regQuery1 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe", "/ve")?.startsWith("ERROR:") == false
-        val regQuery2 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf", "/ve")?.startsWith("ERROR:") == false
+        val paths = listOf(
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe",
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf",
+            "HKEY_CURRENT_USER\\SOFTWARE\\Classes\\SumatraPDF.pdf",
+        )
+        for (path in paths) {
+            if (runCommand("reg", "query", path, "/ve")?.startsWith("ERROR:") == false) {
+                return true
+            }
+        }
 
-        if (regQuery1 || regQuery2) return true
+        //https://github.com/sumatrapdfreader/sumatrapdf/discussions/2855#discussioncomment-3336646
+
+        // We could also look at the values of the following reg keys to find the install path:
+        // [HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open]
+        //"Icon"="C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe"
+        //
+        //[HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open\command]
+        //@="\"C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe\" \"%1\""
 
         // Try if Sumatra is in PATH
-        return isSumatraPathAvailable(sumatraCustomPath = null, assignNewAvailability = false).first
+        val guessedPaths = listOf(
+            null,
+            "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}AppData\\Local\\SumatraPDF",
+            "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF",
+        )
+        for (path in guessedPaths) {
+            if (isSumatraPathAvailable(sumatraCustomPath = path, assignNewAvailability = false).first) {
+                return true
+            }
+        }
+        return false
     }
 }
