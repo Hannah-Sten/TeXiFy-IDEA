@@ -47,7 +47,7 @@ open class ConfigureInverseSearchAction : AnAction(
 
                 val path = PathManager.getBinPath()
                 var name = ApplicationNamesInfo.getInstance().scriptName
-                val sumatraWorkingDir = SumatraAvailabilityChecker.getSumatraWorkingCustomDir()
+                val sumatraWorkingDir = SumatraAvailabilityChecker.sumatraDirectory
 
                 // If we can find a 64-bits Java, then we can start (the equivalent of) idea64.exe since that will use the 64-bits Java
                 // see issue 104 and https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/809
@@ -70,7 +70,7 @@ open class ConfigureInverseSearchAction : AnAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = SumatraAvailabilityChecker.getSumatraAvailability()
+        e.presentation.isEnabledAndVisible = SumatraAvailabilityChecker.isSumatraAvailable
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT

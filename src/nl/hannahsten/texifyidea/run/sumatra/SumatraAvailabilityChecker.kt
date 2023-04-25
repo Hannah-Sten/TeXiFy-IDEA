@@ -15,40 +15,30 @@ import java.io.File
  */
 object SumatraAvailabilityChecker {
 
-    private var isSumatraAvailable: Boolean = false
+    var isSumatraAvailable: Boolean = isSumatraInstalledAndAvailable()
+        private set
 
-    private var sumatraWorkingCustomDir: File? = null
+    /** If we know a valid path containing SumatraPDF.exe, it will be stored here, in case as a last resort you really just want to open a Sumatra, doesn't matter which one. */
+    var sumatraDirectory: File? = null
 
-    private val isSumatraAvailableInit: Boolean by lazy {
-        if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
+    private fun isSumatraInstalledAndAvailable(): Boolean {
+        if (!SystemInfo.isWindows || !isSumatraInstalled()) return false
 
         // Try if native bindings are available
-        // Note: this will not throw any exception when Sumatra is not installed
+        // Note: this will not throw any exception when Sumatra is not installed, that will only happen when we really try to connect()
         try {
             DDEClientConversation()
         }
         catch (e: UnsatisfiedLinkError) {
             Log.info("Native library DLLs could not be found.")
-            return@lazy false
+            return false
         }
         catch (e: NoClassDefFoundError) {
             Log.info("Native library DLLs could not be found.")
-            return@lazy false
+            return false
         }
 
-        true
-    }
-
-    init {
-        isSumatraAvailable = isSumatraAvailableInit
-    }
-
-    fun getSumatraAvailability(): Boolean {
-        return isSumatraAvailable
-    }
-
-    fun getSumatraWorkingCustomDir(): File? {
-        return sumatraWorkingCustomDir
+        return true
     }
 
     /**
@@ -76,10 +66,12 @@ object SumatraAvailabilityChecker {
         }
 
         if (assignNewAvailability) {
-            if (!isSumatraAvailableInit) {
+            if (!isSumatraAvailable) {
                 isSumatraAvailable = isSumatraInAllPath
             }
-            sumatraWorkingCustomDir = workingDir
+            if (workingDir != null) {
+                sumatraDirectory = workingDir
+            }
         }
 
         return Pair(isSumatraInAllPath, isCustomPathValid)
@@ -99,6 +91,7 @@ object SumatraAvailabilityChecker {
         )
         for (path in paths) {
             if (runCommand("reg", "query", path, "/ve")?.startsWith("ERROR:") == false) {
+                // todo we still need to update the working directory?
                 return true
             }
         }
@@ -119,7 +112,7 @@ object SumatraAvailabilityChecker {
             "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF",
         )
         for (path in guessedPaths) {
-            if (isSumatraPathAvailable(sumatraCustomPath = path, assignNewAvailability = false).first) {
+            if (isSumatraPathAvailable(sumatraCustomPath = path, assignNewAvailability = true).first) {
                 return true
             }
         }
