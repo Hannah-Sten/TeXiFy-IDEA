@@ -108,14 +108,14 @@ object SumatraAvailabilityChecker {
             }
         }
 
-        //https://github.com/sumatrapdfreader/sumatrapdf/discussions/2855#discussioncomment-3336646
+        // https://github.com/sumatrapdfreader/sumatrapdf/discussions/2855#discussioncomment-3336646
 
         // We could also look at the values of the following reg keys to find the install path:
         // [HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open]
-        //"Icon"="C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe"
+        // "Icon"="C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe"
         //
-        //[HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open\command]
-        //@="\"C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe\" \"%1\""
+        // [HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open\command]
+        // @="\"C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe\" \"%1\""
 
         return false
     }
