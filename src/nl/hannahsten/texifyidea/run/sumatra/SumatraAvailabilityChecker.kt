@@ -82,6 +82,18 @@ object SumatraAvailabilityChecker {
      * returns true if the Sumatra registry keys are registered or if Sumatra is in PATH.
      */
     private fun isSumatraInstalled(): Boolean {
+        // Try if Sumatra is in PATH
+        val guessedPaths = listOf(
+            null,
+            "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}AppData\\Local\\SumatraPDF",
+            "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF",
+        )
+        for (path in guessedPaths) {
+            if (isSumatraPathAvailable(sumatraCustomPath = path, assignNewAvailability = true).first) {
+                return true
+            }
+        }
+
         // Try some SumatraPDF registry keys
         // For some reason this first one isn't always present anymore, it used to be
         val paths = listOf(
@@ -91,7 +103,7 @@ object SumatraAvailabilityChecker {
         )
         for (path in paths) {
             if (runCommand("reg", "query", path, "/ve")?.startsWith("ERROR:") == false) {
-                // todo we still need to update the working directory?
+                // To improve this, we could also update the known installation directory so that we can open Sumatra automatically
                 return true
             }
         }
@@ -105,17 +117,6 @@ object SumatraAvailabilityChecker {
         //[HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open\command]
         //@="\"C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe\" \"%1\""
 
-        // Try if Sumatra is in PATH
-        val guessedPaths = listOf(
-            null,
-            "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}AppData\\Local\\SumatraPDF",
-            "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF",
-        )
-        for (path in guessedPaths) {
-            if (isSumatraPathAvailable(sumatraCustomPath = path, assignNewAvailability = true).first) {
-                return true
-            }
-        }
         return false
     }
 }

@@ -41,7 +41,6 @@ object SumatraConversation : ViewerConversation() {
         catch (e: TeXception) {
             // Make sure Windows popup error doesn't appear and we will still open Sumatra
             if (SumatraAvailabilityChecker.isSumatraAvailable) {
-                // todo use install path
                 runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = SumatraAvailabilityChecker.sumatraDirectory, nonBlocking = true)
             }
         }
