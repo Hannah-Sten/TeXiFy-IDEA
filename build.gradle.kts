@@ -107,6 +107,11 @@ dependencies {
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
+    // https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
+    implementation("org.apache.xmlgraphics:batik-codec:1.16") {
+        exclude("xml-apis", "xml-apis")
+        exclude("xml-apis", "xml-apis-ext")
+    }
 
     // Test dependencies
     // No version specified, it equals the kotlin version
@@ -123,7 +128,7 @@ dependencies {
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.9.2")
 
-    testImplementation("io.mockk:mockk:1.13.4")
+    testImplementation("io.mockk:mockk:1.13.5")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
