@@ -204,12 +204,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             }
 
             // Fill in replacement
+            // To improve this, this should be done by replacing psi elements using LatexPsiHelper
             val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
             document?.replaceString(range.startOffset, range.endOffset, replacement)
         }
 
         /**
          * Extend the heuristics implemented in [LocalQuickFix.generatePreview] that predict that the fix can not be applied.
+         * We cannot use the automatically generated preview because in the applyFix we sometimes show a UI element, which breaks the preview
          */
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             val replacement = getReplacementFromProblemDescriptor(previewDescriptor) ?: return IntentionPreviewInfo.EMPTY
