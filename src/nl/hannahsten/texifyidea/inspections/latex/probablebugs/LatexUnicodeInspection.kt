@@ -13,6 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection.EscapeUnicodeFix
@@ -211,8 +212,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          * Extend the heuristics implemented in [LocalQuickFix.generatePreview] that predict that the fix can not be applied.
          */
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
-            val replacement = getReplacementFromProblemDescriptor(previewDescriptor)
-            return if (replacement == null) IntentionPreviewInfo.EMPTY else super.generatePreview(project, previewDescriptor)
+            val replacement = getReplacementFromProblemDescriptor(previewDescriptor) ?: return IntentionPreviewInfo.EMPTY
+            val element = previewDescriptor.psiElement
+            // We don't directly work on the document, as in a preview that is not available
+            val origText = element.text
+            val range = previewDescriptor.textRangeInElement
+            val modifiedText = origText.replaceRange(range.startOffset, range.endOffset, replacement)
+
+            return IntentionPreviewInfo.CustomDiff(LatexFileType, element.containingFile.name, origText, modifiedText)
         }
 
         private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): String? {
