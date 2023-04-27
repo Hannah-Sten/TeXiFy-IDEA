@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add inspection preview for the unicode inspection.
 
 ### Fixed
 
