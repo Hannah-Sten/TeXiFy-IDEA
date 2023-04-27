@@ -13,6 +13,8 @@ import javax.imageio.ImageIO
 
 /**
  * Starts the Insert Graphic wizard when pasting.
+ *
+ * todo we already have an ImagePasteProvider class?!
  */
 open class ImagePasteProvider : LatexPasteProvider {
 

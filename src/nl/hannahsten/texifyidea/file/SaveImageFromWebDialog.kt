@@ -24,7 +24,7 @@ import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 
 /**
- * @author Hannah Schellekens
+ * @author Hannah Schellekens todo I think this is incorrect, it's just copy paste from SaveImageFromClipboardDialog?
  */
 class SaveImageFromWebDialog(
 
