@@ -21,7 +21,7 @@ object SumatraConversation : ViewerConversation() {
     private var conversation: DDEClientConversation? = null
 
     private fun openConversation() {
-        if (SumatraAvailabilityChecker.getSumatraAvailability() && conversation == null) {
+        if (SumatraAvailabilityChecker.isSumatraAvailable && conversation == null) {
             try {
                 conversation = DDEClientConversation()
             }
@@ -39,9 +39,9 @@ object SumatraConversation : ViewerConversation() {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
-            // Added check when Sumatra doesn't exist (not a directory), so Windows popup error doesn't appear
-            if (SumatraAvailabilityChecker.getSumatraAvailability()) {
-                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = SumatraAvailabilityChecker.getSumatraWorkingCustomDir(), nonBlocking = true)
+            // Make sure Windows popup error doesn't appear and we will still open Sumatra
+            if (SumatraAvailabilityChecker.isSumatraAvailable) {
+                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = SumatraAvailabilityChecker.sumatraDirectory, nonBlocking = true)
             }
         }
     }
