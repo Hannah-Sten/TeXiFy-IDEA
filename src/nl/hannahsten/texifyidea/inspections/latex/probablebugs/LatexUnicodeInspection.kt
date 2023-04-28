@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -12,6 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection.EscapeUnicodeFix
@@ -188,15 +190,48 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
             val editor = FileEditorManager.getInstance(project).selectedTextEditor
+            val replacement = getReplacementFromProblemDescriptor(descriptor)
+
+            // When no replacement is found, show error message
+            val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+            if (replacement == null) {
+                if (editor != null) {
+                    runInEdt {
+                        HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                    }
+                }
+                return
+            }
+
+            // Fill in replacement
+            // To improve this, this should be done by replacing psi elements using LatexPsiHelper
+            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
+            document?.replaceString(range.startOffset, range.endOffset, replacement)
+        }
+
+        /**
+         * Extend the heuristics implemented in [LocalQuickFix.generatePreview] that predict that the fix can not be applied.
+         * We cannot use the automatically generated preview because in the applyFix we sometimes show a UI element, which breaks the preview
+         */
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
+            val replacement = getReplacementFromProblemDescriptor(previewDescriptor) ?: return IntentionPreviewInfo.EMPTY
+            val element = previewDescriptor.psiElement
+            // We don't directly work on the document, as in a preview that is not available
+            val origText = element.text
+            val range = previewDescriptor.textRangeInElement
+            val modifiedText = origText.replaceRange(range.startOffset, range.endOffset, replacement)
+
+            return IntentionPreviewInfo.CustomDiff(LatexFileType, element.containingFile.name, origText, modifiedText)
+        }
+
+        private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): String? {
+            val element = descriptor.psiElement
 
             val c = try {
                 descriptor.textRangeInElement.substring(element.text)
             }
             catch (e: IndexOutOfBoundsException) {
-                if (editor != null) {
-                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
-                }
-                return
+                return null
             }
 
             // Try to find in lookup for special command
@@ -215,21 +250,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             else {
                 findReplacement(c)
             }
-
-            // When no replacement is found, show error message
-            val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
-            if (replacement == null) {
-                if (editor != null) {
-                    runInEdt {
-                        HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
-                    }
-                }
-                return
-            }
-
-            // Fill in replacement
-            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
-            document?.replaceString(range.startOffset, range.endOffset, replacement)
+            return replacement
         }
 
         private fun findReplacement(c: String): String? {
