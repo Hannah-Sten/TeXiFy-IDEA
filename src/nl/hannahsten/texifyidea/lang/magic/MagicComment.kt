@@ -169,8 +169,7 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is MutableMagicComment<*, *>) return false
-        return true
+        return other is MutableMagicComment<*, *>
     }
 
     override fun hashCode(): Int {

@@ -53,7 +53,7 @@ import java.util.*
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexRunConfiguration constructor(
+class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
