@@ -4,6 +4,7 @@
 
 ### Added
 * Add inspection preview for the unicode inspection.
+* Add partial support for detecting non-global installations of SumatraPDF.
 
 ### Fixed
 
