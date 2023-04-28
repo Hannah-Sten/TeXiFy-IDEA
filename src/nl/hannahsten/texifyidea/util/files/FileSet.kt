@@ -69,7 +69,7 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> {
 /**
  * @see [BibtexEntryIndex.getIndexedEntriesInFileSet]
  */
-fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
+fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet(this)
 
 /**
  * @see [LatexCommandsIndex.getItemsInFileSet]

@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
-import nl.hannahsten.texifyidea.util.labels.findLatexCommandsLabels
 import nl.hannahsten.texifyidea.util.identifier
+import nl.hannahsten.texifyidea.util.labels.findLatexCommandsLabels
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
@@ -36,12 +36,12 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
             .toSet()
 
         // All the ids that have been defined in the bibtex file. And next a list of all names.
-        val bibtexIds = BibtexEntryIndex.getIndexedEntriesInFileSet(file)
+        val bibtexIds = BibtexEntryIndex().getIndexedEntriesInFileSet(file)
         val strings = bibtexIds.map { it.identifier() }.toList()
 
         val added = HashSet<BibtexEntry>()
         // Check the bibtexIds in the current file
-        for (bibtexEntry in BibtexEntryIndex.getIndexedEntries(file)) {
+        for (bibtexEntry in BibtexEntryIndex().getIndexedEntries(file)) {
             val idName = bibtexEntry.identifier()
 
             // Check if defined as bibitem.

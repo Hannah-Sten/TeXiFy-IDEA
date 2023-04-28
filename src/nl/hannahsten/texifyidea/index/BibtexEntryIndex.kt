@@ -14,18 +14,16 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 /**
  * @author Hannah Schellekens
  */
-object BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
+class BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
 
     /**
      * Get all the indexed [BibtexEntry]s in the project.
      */
-    @JvmStatic
     fun getIndexedEntries(project: Project) = getIndexedEntries(project, GlobalSearchScope.projectScope(project))
 
     /**
      * Get all the indexed [BibtexEntry]s in the given file.
      */
-    @JvmStatic
     fun getIndexedEntries(file: PsiFile) = getIndexedEntries(file.project, GlobalSearchScope.fileScope(file))
 
     /**
@@ -34,7 +32,6 @@ object BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
      * @param baseFile
      *          The file whose file set must be analysed for indexed ids.
      */
-    @JvmStatic
     fun getIndexedEntriesInFileSet(baseFile: PsiFile): Collection<BibtexEntry> {
         val project = baseFile.project
         val searchFiles: MutableSet<VirtualFile> = baseFile.referencedFileSet()
@@ -51,8 +48,7 @@ object BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
     /**
      * Get all the indexed [BibtexEntry]s in the given search scope.
      */
-    @JvmStatic
-    fun getIndexedEntries(project: Project, scope: GlobalSearchScope): Collection<BibtexEntry> {
+    private fun getIndexedEntries(project: Project, scope: GlobalSearchScope): Collection<BibtexEntry> {
         val commands: MutableCollection<BibtexEntry> = ArrayList()
 
         for (key in getKeys(project)) {
@@ -62,13 +58,11 @@ object BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
         return commands
     }
 
-    @JvmStatic
     fun getEntryByName(name: String, project: Project, scope: GlobalSearchScope): Collection<BibtexEntry> {
         return StubIndex.getElements(key, name, project, scope, BibtexEntry::class.java)
     }
 
-    @JvmStatic
-    fun getKeys(project: Project): Array<String> {
+    private fun getKeys(project: Project): Array<String> {
         if (DumbService.isDumb(project)) {
             return emptyArray()
         }
