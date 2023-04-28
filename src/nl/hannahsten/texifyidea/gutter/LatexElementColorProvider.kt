@@ -21,7 +21,7 @@ import kotlin.math.min
  *
  * @author Abby
  */
-object LatexElementColorProvider : ElementColorProvider {
+class LatexElementColorProvider : ElementColorProvider {
 
     /**
      * Set the color in the document based on changes in the color picker from the gutter.

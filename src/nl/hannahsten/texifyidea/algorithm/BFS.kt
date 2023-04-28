@@ -222,7 +222,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
      *
      * @author Hannah Schellekens, Dylan ter Veen
      */
-    private inner class BFSNode constructor(
+    private inner class BFSNode(
         /**
          * The original version of the node.
          */

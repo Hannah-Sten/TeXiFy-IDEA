@@ -30,7 +30,7 @@ fun delete(element: BibtexId) {
     val text = element.text ?: return
 
     val searchScope = GlobalSearchScope.fileScope(element.containingFile)
-    BibtexEntryIndex.getEntryByName(text, element.project, searchScope).forEach {
+    BibtexEntryIndex().getEntryByName(text, element.project, searchScope).forEach {
         it.remove()
     }
 }

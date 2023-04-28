@@ -275,10 +275,6 @@ open class WordCountAction : AnAction(
     private fun isWrongCommand(word: PsiElement): Boolean {
         val command = word.grandparent(7) as? LatexCommands ?: return false
 
-        if (IGNORE_COMMANDS.contains(command.name)) {
-            return true
-        }
-
-        return false
+        return IGNORE_COMMANDS.contains(command.name)
     }
 }

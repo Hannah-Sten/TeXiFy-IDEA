@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
     val commands = LatexCommandsIndex.getItems(this).findLatexCommandsLabels(this)
-    val bibtexIds = BibtexEntryIndex.getIndexedEntries(this)
+    val bibtexIds = BibtexEntryIndex().getIndexedEntries(this)
     val environments = LatexParameterLabeledEnvironmentsIndex.getItems(this)
     val parameterLabeledCommands = LatexParameterLabeledCommandsIndex.getItems(this)
     val result = ArrayList<PsiElement>(commands)
