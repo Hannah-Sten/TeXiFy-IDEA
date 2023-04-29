@@ -257,7 +257,7 @@ class LatexRunConfiguration(
         val viewerName = parent.getChildText(PDF_VIEWER)
         try {
             this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
-                ?: InternalPdfViewer.values().firstOrNull { it.isAvailable() && it.name == viewerName }
+                ?: InternalPdfViewer.values().firstOrNull { it.name == viewerName && it.isAvailable() }
                 ?: InternalPdfViewer.NONE
         }
         catch (e: IllegalArgumentException) {
