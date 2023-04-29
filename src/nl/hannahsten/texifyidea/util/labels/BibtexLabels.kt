@@ -26,7 +26,7 @@ fun PsiFile.findBibtexLabelsInFileSetAsSequence(): Sequence<String> = findBibtex
  * Finds all specified bibtex entries
  */
 fun PsiFile.findBibtexItems(): Collection<PsiElement> {
-    val bibtex = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
+    val bibtex = BibtexEntryIndex().getIndexedEntriesInFileSet(this)
     val bibitem = findBibitemCommands().toList()
     return (bibtex + bibitem)
 }

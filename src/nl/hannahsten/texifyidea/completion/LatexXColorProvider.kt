@@ -42,7 +42,7 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
             }
 
             val colorName = cmd.getRequiredArgumentValueByName("name") ?: continue
-            val color = LatexElementColorProvider.findColor(colorName, file)
+            val color = LatexElementColorProvider().findColor(colorName, file)
             val lookupElement = if (color != null) {
                 LookupElementBuilder.create(colorName).withIcon(ColorIcon(12, color))
             }

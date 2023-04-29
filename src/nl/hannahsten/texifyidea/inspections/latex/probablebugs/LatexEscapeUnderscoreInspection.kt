@@ -29,6 +29,7 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
         return super.checkContext(matcher, element)
     }
 
+    @Suppress("RedundantIf")
     private fun PsiElement.isUnderscoreAllowed(): Boolean {
         if (this.inMathContext()) return true
         if (this.firstParentOfType(LatexNormalText::class) != null) return false
