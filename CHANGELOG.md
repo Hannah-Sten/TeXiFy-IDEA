@@ -7,6 +7,7 @@
 * Add partial support for detecting non-global installations of SumatraPDF.
 
 ### Fixed
+* Fix issue with running an unsupported run configuration taken from another OS.
 
 ## [0.7.29] - 2023-04-14
 Welcome to TeXiFy IDEA 0.7.29! This release fixes the equation preview, and fully supports IntelliJ 2023.1.
