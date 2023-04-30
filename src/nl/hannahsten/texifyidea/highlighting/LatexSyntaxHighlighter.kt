@@ -34,12 +34,6 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         else if (COMMAND_TOKENS.contains(tokenType)) {
             COMMAND_KEYS
         }
-        else if (tokenType == LatexTypes.INLINE_MATH_END) {
-            INLINE_MATH_KEYS
-        }
-        else if (tokenType == LatexTypes.DISPLAY_MATH_START || tokenType == LatexTypes.DISPLAY_MATH_END) {
-            DISPLAY_MATH_KEYS
-        }
         else if (tokenType == LatexTypes.STAR) {
             STAR_KEYS
         }
