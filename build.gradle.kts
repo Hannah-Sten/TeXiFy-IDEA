@@ -91,7 +91,7 @@ dependencies {
     // Parsing xml
     implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.2.4")
