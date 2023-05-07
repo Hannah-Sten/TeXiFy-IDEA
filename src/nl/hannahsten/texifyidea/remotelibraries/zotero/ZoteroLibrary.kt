@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.remotelibraries.zotero
 import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
@@ -12,7 +13,12 @@ import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
 class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") :
     RemoteBibLibrary(identifier, displayName) {
 
-    private val client by lazy { HttpClient(CIO) }
+    private val client by lazy { HttpClient(CIO) {
+        install(HttpRequestRetry) {
+            retryOnServerErrors(maxRetries = 3)
+            exponentialDelay()
+        }
+    } }
 
     override suspend fun getBibtexString(): Pair<HttpResponse, String> {
         val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)

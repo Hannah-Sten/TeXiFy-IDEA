@@ -5,6 +5,7 @@ import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -105,6 +106,10 @@ object MendeleyAuthenticator {
                         ignoreUnknownKeys = true
                     }
                 )
+            }
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 3)
+                exponentialDelay()
             }
         }
     }

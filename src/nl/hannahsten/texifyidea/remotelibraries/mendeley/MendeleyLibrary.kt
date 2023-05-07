@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.remotelibraries.mendeley
 import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
@@ -36,6 +37,10 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
                         return@refreshTokens MendeleyAuthenticator.refreshAccessToken()
                     }
                 }
+            }
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 3)
+                exponentialDelay()
             }
         }
     }

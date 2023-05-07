@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea
 
+import arrow.resilience.Schedule
+import arrow.resilience.retry
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
@@ -15,10 +17,12 @@ import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
+import kotlinx.coroutines.runBlocking
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.awt.Component
 import java.io.UnsupportedEncodingException
 import java.net.*
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Send error report to GitHub issue tracker.
@@ -35,10 +39,14 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         parentComponent: Component,
         consumer: Consumer<in SubmittedReportInfo>
     ): Boolean {
-        // Don't do the check when there's no internet connection
+        val retrySchedule = Schedule.exponential<Throwable>(250.milliseconds)
+
         val latestVersion = try {
-            getLatestVersion()
+            runBlocking {
+                retrySchedule.retry { getLatestVersion() }
+            }
         }
+        // Don't do the check when there's no internet connection
         catch (e: UnknownHostException) {
             return true
         }
