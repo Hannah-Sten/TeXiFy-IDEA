@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.gutter
 
+import arrow.core.max
+import arrow.core.nonEmptyListOf
 import com.intellij.openapi.editor.ElementColorProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -250,9 +252,9 @@ object LatexElementColorProvider : ElementColorProvider {
     /**
      * Convert a [Color] object to a cmyk string.
      */
-    private fun Color.toCmykString(): String? {
-        val rgb = listOf(red, green, blue).map { it / 255.0 }
-        val k: Double = 1.0 - (rgb.maxOrNull() ?: return null)
+    private fun Color.toCmykString(): String {
+        val rgb = nonEmptyListOf(red, green, blue).map { it / 255.0 }
+        val k: Double = 1.0 - rgb.max()
         return rgb.map { (1.0 - it - k) / (1.0 - k) }.joinToString(", ") { it.format() } + ", $k"
     }
 

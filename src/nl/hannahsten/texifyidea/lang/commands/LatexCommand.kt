@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
+import arrow.core.NonEmptySet
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
@@ -30,7 +31,7 @@ interface LatexCommand : Described, Dependend {
          *          The command name to look up. Can start with or without `\`
          * @return The found commands, or `null` when the command doesn't exist.
          */
-        fun lookup(commandName: String?): Set<LatexCommand>? {
+        fun lookup(commandName: String?): NonEmptySet<LatexCommand>? {
             var result = commandName ?: return null
             if (result.startsWith("\\")) {
                 result = result.substring(1)

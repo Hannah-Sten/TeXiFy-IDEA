@@ -31,13 +31,7 @@ fun BibtexEntry.keys(): Collection<BibtexKey> = childrenOfType(BibtexKey::class)
 /**
  * Get the first key in the entry, or `null` when there are no keys in the entry.
  */
-fun BibtexEntry.firstKey(): BibtexKey? {
-    val keys = keys()
-    if (keys.isEmpty()) {
-        return null
-    }
-    return keys.first()
-}
+fun BibtexEntry.firstKey() = keys().firstOrNull()
 
 /**
  * Get all the names of all entry's keys.

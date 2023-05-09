@@ -1,5 +1,9 @@
 package nl.hannahsten.texifyidea.lang.commands
 
+import arrow.core.NonEmptySet
+import arrow.core.getOrNone
+import arrow.core.nonEmptySetOf
+
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
@@ -16,14 +20,14 @@ object LatexMathCommand {
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
         GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS
 
-    private val lookup = HashMap<String, MutableSet<LatexCommand>>()
-    private val lookupDisplay = HashMap<String, MutableSet<LatexCommand>>()
+    private val lookup = HashMap<String, NonEmptySet<LatexCommand>>()
+    private val lookupDisplay = HashMap<String, NonEmptySet<LatexCommand>>()
 
     init {
-        ALL.forEach {
-            lookup.getOrPut(it.command) { mutableSetOf() }.add(it)
-            if (it.display != null) {
-                lookupDisplay.putIfAbsent(it.display!!, mutableSetOf(it))?.add(it)
+        ALL.forEach { cmd ->
+            lookup[cmd.command] = lookup.getOrNone(cmd.command).fold({ nonEmptySetOf(cmd) }, { it + nonEmptySetOf(cmd) } )
+            if (cmd.display != null) {
+                lookupDisplay[cmd.display!!] = lookupDisplay.getOrNone(cmd.display!!).fold({ nonEmptySetOf(cmd) }, { it + nonEmptySetOf(cmd) } )
             }
         }
     }
@@ -32,8 +36,8 @@ object LatexMathCommand {
     fun values() = ALL
 
     @JvmStatic
-    operator fun get(command: String) = lookup[command]?.toSet()
+    operator fun get(command: String) = lookup[command]
 
     @JvmStatic
-    fun findByDisplay(display: String) = lookupDisplay[display]?.toSet()
+    fun findByDisplay(display: String) = lookupDisplay[display]
 }
