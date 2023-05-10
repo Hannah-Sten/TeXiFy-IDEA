@@ -240,10 +240,12 @@ class TableCreationDialogWrapper(
      * Every input is always valid: this will mean empty icons.
      */
     override fun doValidate(): ValidationInfo? {
-        tableInformation = tableInformation.apply { copy {
-            TableInformation.caption set txtCaption.text.trim()
-            TableInformation.label set txtReference.text.trim()
-        } }
+        tableInformation = tableInformation.apply {
+            copy {
+                TableInformation.caption set txtCaption.text.trim()
+                TableInformation.label set txtReference.text.trim()
+            }
+        }
         return null
     }
 
