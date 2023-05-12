@@ -15,39 +15,30 @@ import java.io.File
  */
 object SumatraAvailabilityChecker {
 
-    private var isSumatraAvailable: Boolean = false
+    var isSumatraAvailable: Boolean = isSumatraInstalledAndAvailable()
+        private set
 
-    private var sumatraWorkingCustomDir: File? = null
+    /** If we know a valid path containing SumatraPDF.exe, it will be stored here, in case as a last resort you really just want to open a Sumatra, doesn't matter which one. */
+    var sumatraDirectory: File? = null
 
-    private val isSumatraAvailableInit: Boolean by lazy {
-        if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
+    private fun isSumatraInstalledAndAvailable(): Boolean {
+        if (!SystemInfo.isWindows || !isSumatraInstalled()) return false
 
         // Try if native bindings are available
+        // Note: this will not throw any exception when Sumatra is not installed, that will only happen when we really try to connect()
         try {
             DDEClientConversation()
         }
         catch (e: UnsatisfiedLinkError) {
             Log.info("Native library DLLs could not be found.")
-            return@lazy false
+            return false
         }
         catch (e: NoClassDefFoundError) {
             Log.info("Native library DLLs could not be found.")
-            return@lazy false
+            return false
         }
 
-        true
-    }
-
-    init {
-        isSumatraAvailable = isSumatraAvailableInit
-    }
-
-    fun getSumatraAvailability(): Boolean {
-        return isSumatraAvailable
-    }
-
-    fun getSumatraWorkingCustomDir(): File? {
-        return sumatraWorkingCustomDir
+        return true
     }
 
     /**
@@ -75,10 +66,12 @@ object SumatraAvailabilityChecker {
         }
 
         if (assignNewAvailability) {
-            if (!isSumatraAvailableInit) {
+            if (!isSumatraAvailable) {
                 isSumatraAvailable = isSumatraInAllPath
             }
-            sumatraWorkingCustomDir = workingDir
+            if (workingDir != null) {
+                sumatraDirectory = workingDir
+            }
         }
 
         return Pair(isSumatraInAllPath, isCustomPathValid)
@@ -89,14 +82,41 @@ object SumatraAvailabilityChecker {
      * returns true if the Sumatra registry keys are registered or if Sumatra is in PATH.
      */
     private fun isSumatraInstalled(): Boolean {
+        // Try if Sumatra is in PATH
+        val guessedPaths = listOf(
+            null,
+            "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}AppData\\Local\\SumatraPDF",
+            "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF",
+        )
+        for (path in guessedPaths) {
+            if (isSumatraPathAvailable(sumatraCustomPath = path, assignNewAvailability = true).first) {
+                return true
+            }
+        }
+
         // Try some SumatraPDF registry keys
         // For some reason this first one isn't always present anymore, it used to be
-        val regQuery1 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe", "/ve")?.startsWith("ERROR:") == false
-        val regQuery2 = runCommand("reg", "query", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf", "/ve")?.startsWith("ERROR:") == false
+        val paths = listOf(
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe",
+            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\SumatraPDF.pdf",
+            "HKEY_CURRENT_USER\\SOFTWARE\\Classes\\SumatraPDF.pdf",
+        )
+        for (path in paths) {
+            if (runCommand("reg", "query", path, "/ve")?.startsWith("ERROR:") == false) {
+                // To improve this, we could also update the known installation directory so that we can open Sumatra automatically
+                return true
+            }
+        }
 
-        if (regQuery1 || regQuery2) return true
+        // https://github.com/sumatrapdfreader/sumatrapdf/discussions/2855#discussioncomment-3336646
 
-        // Try if Sumatra is in PATH
-        return isSumatraPathAvailable(sumatraCustomPath = null, assignNewAvailability = false).first
+        // We could also look at the values of the following reg keys to find the install path:
+        // [HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open]
+        // "Icon"="C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe"
+        //
+        // [HKEY_CURRENT_USER\Software\Classes\SumatraPDF.pdf\shell\open\command]
+        // @="\"C:\\Users\\K\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe\" \"%1\""
+
+        return false
     }
 }
