@@ -50,7 +50,7 @@ open class InsertEditorAction(
         val end = selection.selectionEnd
 
         // Don't touch any file content that is not related to TeXiFy
-        if (file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() == false) return
+        if (file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() != true) return
 
         runWriteAction(project, file) { insert(document, start, end, editor.caretModel) }
     }
