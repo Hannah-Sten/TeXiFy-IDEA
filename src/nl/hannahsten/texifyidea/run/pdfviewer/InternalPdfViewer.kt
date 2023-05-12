@@ -31,7 +31,7 @@ sealed class InternalPdfViewer(
      */
     override fun isAvailable(): Boolean {
         return if (SystemInfo.isWindows && this.executableName == "sumatra") {
-            SumatraAvailabilityChecker.getSumatraAvailability()
+            SumatraAvailabilityChecker.isSumatraAvailable
         }
         // Only support Evince and Okular on Linux, although they can be installed on other systems like Mac.
         else if (SystemInfo.isLinux) {
