@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
  * @author Felix Berlakovich
  */
 object BibtexEntryIndexKey {
+
     @JvmField
     val KEY = StubIndexKey.createIndexKey<String, BibtexEntry>("nl.hannahsten.texifyidea.bibtex.entry")
 }

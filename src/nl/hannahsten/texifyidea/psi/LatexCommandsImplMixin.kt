@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
  * in order to implement [getName] and [setName] correctly.
  */
 abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner {
+
     @JvmField
     var name: String? = null
 
@@ -29,7 +30,8 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         val name = getName()
         return if (name == null) {
             super.getTextOffset()
-        } else {
+        }
+        else {
             val offset = node.text.indexOf(name)
             if (offset == -1) super.getTextOffset() else node.startOffset + offset
         }
@@ -38,7 +40,8 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     override fun accept(visitor: PsiElementVisitor) {
         if (visitor is LatexVisitor) {
             accept(visitor)
-        } else {
+        }
+        else {
             super.accept(visitor)
         }
     }

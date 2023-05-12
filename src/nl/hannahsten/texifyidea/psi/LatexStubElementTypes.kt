@@ -8,7 +8,9 @@ import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType
  * Grammar-Kit cannot generate this file containing only stub element types, so we have to maintain it manually.
  */
 interface LatexStubElementTypes {
+
     companion object {
+
         @JvmField
         val COMMANDS = LatexTypes.COMMANDS as LatexCommandsStubElementType
         @JvmField
