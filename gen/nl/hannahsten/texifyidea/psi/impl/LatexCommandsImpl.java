@@ -1,24 +1,26 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin;
-import nl.hannahsten.texifyidea.psi.*;
 import com.intellij.psi.PsiReference;
-import java.util.LinkedHashMap;
-import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
+import nl.hannahsten.texifyidea.psi.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
 
 public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCommands {
 
-  public LatexCommandsImpl(@NotNull LatexCommandsStub stub, @NotNull IStubElementType type) {
+  public LatexCommandsImpl(@NotNull LatexCommandsStub stub, @NotNull IStubElementType<?, ?> type) {
     super(stub, type);
   }
 
@@ -26,7 +28,7 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
     super(node);
   }
 
-  public LatexCommandsImpl(LatexCommandsStub stub, IElementType type, ASTNode node) {
+  public LatexCommandsImpl(@Nullable LatexCommandsStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
     super(stub, type, node);
   }
 
