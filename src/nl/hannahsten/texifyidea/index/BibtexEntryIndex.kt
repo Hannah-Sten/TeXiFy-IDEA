@@ -72,5 +72,5 @@ class BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
         return ArrayUtil.toStringArray(keys)
     }
 
-    override fun getKey() = BibtexEntryIndexKey.KEY!!
+    override fun getKey() = BibtexEntryIndexKey.KEY
 }
