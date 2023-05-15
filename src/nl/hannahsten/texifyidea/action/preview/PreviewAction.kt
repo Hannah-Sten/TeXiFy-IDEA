@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -45,9 +44,11 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         val toolWindowId = name
         val toolWindowManager = ToolWindowManager.getInstance(project)
 
-        val task = RegisterToolWindowTask(toolWindowId, contentFactory = PreviewToolWindowFactory(), icon = icon)
         // Avoid adding it twice
-        val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: toolWindowManager.registerToolWindow(task)
+        val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: toolWindowManager.registerToolWindow(toolWindowId) {
+            contentFactory = PreviewToolWindowFactory()
+            icon = this@PreviewAction.icon
+        }
 
         val containingFile = element.containingFile
         val psiDocumentManager = PsiDocumentManager.getInstance(project)
