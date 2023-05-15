@@ -9,18 +9,10 @@ internal class LatexSuspiciousSectionFormattingInspectionTest : TexifyInspection
     fun `test ~ warning`() {
         myFixture.configureByText(
             LatexFileType,
-            "<warning descr=\"Suspicious formatting in \\section\">\\section{You should not use~in the title of a section}</warning>"
+            "\\section{You should not use<warning descr=\"Suspicious formatting in \\section\">~</warning>in the title of a section}"
         )
         myFixture.checkHighlighting(true, false, true, false)
     }
-
-//    fun `test ~ warning`() {
-//        myFixture.configureByText(
-//            LatexFileType,
-//            "\\section{You should not use<warning descr=\"Suspicious formatting in \\section\">~</warning>in the title of a section}"
-//        )
-//        myFixture.checkHighlighting(true, false, true, false)
-//    }
 
     fun `test no warning when optional argument is present`() {
         myFixture.configureByText(
