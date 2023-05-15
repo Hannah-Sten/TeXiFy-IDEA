@@ -95,7 +95,7 @@ object GeneralMagic {
             |    \bibliography{main}
             |
             |\end{document}
-    """.trimMargin()
+        """.trimMargin()
 
     @Language("Bibtex")
     val bibtexDemoText =

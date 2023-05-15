@@ -23,12 +23,10 @@ fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBre
  * @author Sten Wessel, Abby Berkers
  */
 fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
-
     val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
     val latexCommonSettings = settings.getCommonSettings(LatexLanguage)
 
     return rules(latexCommonSettings) {
-
         custom {
             customRule { parent, _, right ->
                 // Don't insert or remove spaces inside the text in a verbatim environment.

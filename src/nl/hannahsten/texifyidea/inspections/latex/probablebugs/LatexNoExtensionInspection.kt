@@ -37,7 +37,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
             .filter { it.name in CommandMagic.illegalExtensions }
             .filter { command ->
                 CommandMagic.illegalExtensions[command.name]!!.any {
-                    extension ->
+                        extension ->
                     command.requiredParameters.any { it.split(",").any { parameter -> parameter.endsWith(extension) } }
                 }
             }

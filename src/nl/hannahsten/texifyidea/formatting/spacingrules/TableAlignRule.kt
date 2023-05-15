@@ -19,7 +19,6 @@ const val LINE_LENGTH = 80
  * Align spaces to the right of &
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
-
     // Only add spaces after &, unless escaped
     if (left.node?.text?.endsWith("&") == false) return null
     if (left.node?.text?.endsWith("\\&") == true) return null
@@ -127,7 +126,6 @@ fun getNumberOfSpaces(
     absoluteAmpersandIndicesPerLine: List<List<Int>>,
     indent: String
 ): Int? {
-
     val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator)
         .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
         .toMutableList()

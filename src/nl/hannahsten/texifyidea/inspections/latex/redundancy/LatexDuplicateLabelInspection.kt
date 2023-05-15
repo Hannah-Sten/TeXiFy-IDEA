@@ -39,7 +39,6 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      * checks if any label is used more than once
      */
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         val duplicateLabels =
             getProblemDescriptors(file.findLatexLabelingElementsInFileSet(), isOntheFly, manager, file) {
                 when (this) {

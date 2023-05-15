@@ -80,7 +80,6 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
 }
 
 fun setName(element: LatexParameterText, name: String): PsiElement {
-
     /**
      * Build a new PSI element where [old] is replaced with [new] and replace the old PSI element
      */

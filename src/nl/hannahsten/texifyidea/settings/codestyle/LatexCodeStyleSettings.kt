@@ -19,11 +19,17 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
      */
     // JvmField is required to avoid NoSuchFieldException when referring to the field name in LatexLanguageCodeStyleSettingsProvider
     @JvmField var BLANK_LINES_BEFORE_PART: Int = 2
+
     @JvmField var BLANK_LINES_BEFORE_CHAPTER: Int = 2
+
     @JvmField var BLANK_LINES_BEFORE_SECTION: Int = 2
+
     @JvmField var BLANK_LINES_BEFORE_SUBSECTION: Int = 1
+
     @JvmField var BLANK_LINES_BEFORE_SUBSUBSECTION: Int = 1
+
     @JvmField var BLANK_LINES_BEFORE_PARAGRAPH: Int = 1
+
     @JvmField var BLANK_LINES_BEFORE_SUBPARAGRAPH: Int = 1
 
     /**
