@@ -53,7 +53,7 @@ class LatexMagicCommentCompletionTest : BasePlatformTestCase() {
             """
             %! fake sect<caret>
             Kip
-        """.trimMargin()
+            """.trimMargin()
         )
         val result = myFixture.complete(CompletionType.BASIC)
         kotlin.test.assertEquals(3, result.size)

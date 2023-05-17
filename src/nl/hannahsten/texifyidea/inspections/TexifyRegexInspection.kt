@@ -167,7 +167,6 @@ abstract class TexifyRegexInspection(
         }
 
         if (replacementRanges.isNotEmpty()) {
-
             // We cannot give one TextRange because there are multiple,
             // but it does not matter since the user won't see this anyway.
             val problemDescriptor = manager.createProblemDescriptor(

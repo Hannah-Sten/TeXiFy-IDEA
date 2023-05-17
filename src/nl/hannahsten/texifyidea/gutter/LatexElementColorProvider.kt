@@ -101,7 +101,6 @@ class LatexElementColorProvider : ElementColorProvider {
             if (colorName.contains('!') || colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
                 .contains(colorName)
             ) {
-
                 val colorDefinitionCommand =
                     colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
                 when (colorDefinitionCommand?.name?.substring(1)) {

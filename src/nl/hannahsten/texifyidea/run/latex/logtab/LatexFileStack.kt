@@ -46,7 +46,6 @@ class LatexFileStack(
      * (It works for rubber: https://github.com/tsgates/die/blob/master/bin/parse-latex-log.py)
      */
     fun update(line: String): LatexFileStack {
-
         // Lines starting with a line number seem to contain user content, as well as the next line (which could be empty
         // as well, but in that case it isn't interesting either)
         if (lineNumber.containsMatchIn(line)) {

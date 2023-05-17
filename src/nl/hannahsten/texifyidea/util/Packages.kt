@@ -238,7 +238,6 @@ object PackageUtils {
             )
 
             for (list in packages) {
-
                 if (list.isEmpty()) {
                     continue
                 }
