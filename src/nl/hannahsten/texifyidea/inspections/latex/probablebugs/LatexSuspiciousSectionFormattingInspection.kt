@@ -16,9 +16,6 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
-/**
- * @author Hannah Schellekens
- */
 open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
     private val formatting = setOf("~", "\\\\")
@@ -35,21 +32,36 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             .filter { it.name in CommandMagic.sectionMarkers }
             .filter { it.optionalParameterMap.isEmpty() }
             .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
-            .map { Pair(it, it.findTextRange() ?: TextRange(0, it.textLength)) }
-            .map { (psiElement, textRange) -> manager.createProblemDescriptor(
-                psiElement,
-                textRange,
-                "Suspicious formatting in ${psiElement.name}",
-                ProblemHighlightType.WARNING,
-                isOntheFly
-            ) }
+            .map { Pair(it, it.findTextRanges()) }
+            .flatMap { (psiElement, textRanges) ->
+                textRanges.map {
+                    manager.createProblemDescriptor(
+                        psiElement,
+                        it,
+                        "Suspicious formatting in ${psiElement.name}",
+                        ProblemHighlightType.WARNING,
+                        isOntheFly
+                    )
+                }
+            }
             .toList()
     }
 
-    private fun LatexCommands.findTextRange(): TextRange? {
-        val (startOffset, text) = requiredParameter(0)?.findAnyOf(formatting) ?: return null
-        // Start offset of the required argument, plus 1 for the opening brace ({), plus the offset of the found string.
-        val startInParent = firstChildOfType(LatexRequiredParam::class)?.startOffsetIn(this)?.plus(1)?.plus(startOffset) ?: return null
-        return TextRange(startInParent, startInParent + text.length)
+    private fun LatexCommands.findTextRanges(): List<TextRange> {
+        // Start offset of the required argument, plus 1 for the opening brace ({)
+        val requiredParameterOffset = firstChildOfType(LatexRequiredParam::class)?.startOffsetIn(this)?.plus(1)
+            ?: return emptyList()
+        val ranges = mutableSetOf<TextRange>()
+        var offsetInParam = requiredParameterOffset
+        val requiredParamText = requiredParameter(0) ?: return emptyList()
+        while (offsetInParam < requiredParamText.length) {
+            requiredParamText.findAnyOf(formatting, startIndex = offsetInParam)?.let { (offset, text) ->
+                val start = requiredParameterOffset + offset
+                val end = start + text.length
+                ranges.add(TextRange(start, end))
+                offsetInParam = end
+            } ?: break
+        }
+        return ranges.toList()
     }
 }
