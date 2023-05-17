@@ -24,7 +24,6 @@ class LatexLanguageInjector : LanguageInjector {
 
     override fun getLanguagesToInject(host: PsiLanguageInjectionHost, registrar: InjectedLanguagePlaces) {
         if (host is LatexEnvironment) {
-
             val magicComment = host.magicComment()
             val hasMagicCommentKey = magicComment.containsKey(DefaultMagicKeys.INJECT_LANGUAGE)
 

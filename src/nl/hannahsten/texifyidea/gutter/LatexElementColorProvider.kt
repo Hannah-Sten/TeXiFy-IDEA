@@ -23,7 +23,7 @@ import kotlin.math.min
  *
  * @author Abby
  */
-object LatexElementColorProvider : ElementColorProvider {
+class LatexElementColorProvider : ElementColorProvider {
 
     /**
      * Set the color in the document based on changes in the color picker from the gutter.
@@ -103,7 +103,6 @@ object LatexElementColorProvider : ElementColorProvider {
             if (colorName.contains('!') || colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
                 .contains(colorName)
             ) {
-
                 val colorDefinitionCommand =
                     colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
                 when (colorDefinitionCommand?.name?.substring(1)) {

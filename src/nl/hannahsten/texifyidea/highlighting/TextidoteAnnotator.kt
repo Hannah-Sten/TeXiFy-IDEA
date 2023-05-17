@@ -104,7 +104,6 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
     }
 
     override fun apply(file: PsiFile, annotationResult: TextidoteAnnotationResult, holder: AnnotationHolder) {
-
         for (warning in annotationResult.warnings) {
             val document = annotationResult.document
 

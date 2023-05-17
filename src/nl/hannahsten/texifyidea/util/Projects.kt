@@ -102,6 +102,10 @@ fun Project.currentTextEditor(): TextEditor? {
 
 /**
  * Checks if there is a LaTeX module in this project.
+ *
+ * Note: according to the documentation of ModuleType:
+ *     If you need to make an action enabled in presence of a specific technology only, do this by looking for required files in the project
+ *     directories, not by checking type of the current module.
  */
 fun Project.hasLatexModule(): Boolean {
     if (isDisposed) return false

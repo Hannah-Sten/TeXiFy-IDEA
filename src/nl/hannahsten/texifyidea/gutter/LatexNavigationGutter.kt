@@ -25,7 +25,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         element: PsiElement,
         result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
     ) {
-
         // Gutters should only be used with leaf elements.
         // We assume gutter icons only have to be shown for elements in required parameters
         if (element.firstChild != null || element.parentOfType(LatexRequiredParamContent::class) == null) return

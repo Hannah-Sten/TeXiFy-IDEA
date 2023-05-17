@@ -5,7 +5,6 @@ import java.util.*
 /**
  * @author Hannah Schellekens
  */
-@Suppress("PrivatePropertyName")
 private val ROMAN = TreeMap<Int, String>().apply {
     this[1000] = "M"
     this[500] = "D"

@@ -9,8 +9,7 @@ data class SimpleBibtexEntryField(override val fieldName: String, override val d
         if (this === other) return true
         if (other !is SimpleBibtexEntryField) return false
 
-        if (fieldName != other.fieldName) return false
-        return true
+        return fieldName == other.fieldName
     }
 
     override fun hashCode() = fieldName.hashCode()

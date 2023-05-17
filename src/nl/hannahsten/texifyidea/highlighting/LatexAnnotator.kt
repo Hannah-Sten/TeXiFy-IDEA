@@ -163,7 +163,7 @@ open class LatexAnnotator : Annotator {
         annotationHolder: AnnotationHolder
     ) {
         for (
-            element in optionalParamElement.optionalParamContentList
+        element in optionalParamElement.optionalParamContentList
         ) {
             if (element !is LatexOptionalParamContent) {
                 continue

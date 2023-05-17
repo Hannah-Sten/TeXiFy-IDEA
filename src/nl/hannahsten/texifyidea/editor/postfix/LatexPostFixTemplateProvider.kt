@@ -6,7 +6,7 @@ import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvid
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 
-object LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContributor() {
+class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContributor() {
 
     private val templates = mutableSetOf<PostfixTemplate>(
         LatexWrapWithGroupPostfixTemplate,

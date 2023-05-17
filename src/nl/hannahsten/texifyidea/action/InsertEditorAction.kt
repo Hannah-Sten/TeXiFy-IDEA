@@ -42,7 +42,6 @@ open class InsertEditorAction(
     private val after: String = after ?: ""
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-
         val editor = textEditor.editor
         val document = editor.document
         val selection = editor.selectionModel
@@ -50,7 +49,7 @@ open class InsertEditorAction(
         val end = selection.selectionEnd
 
         // Don't touch any file content that is not related to TeXiFy
-        if (file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() == false) return
+        if (file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() != true) return
 
         runWriteAction(project, file) { insert(document, start, end, editor.caretModel) }
     }

@@ -32,7 +32,6 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
 ) {
 
     override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
-
         val file = descriptor.psiElement.containingFile
         val document = file.document() ?: return 0
         val cite = file.findElementAt(replacementRange.last + 3)?.parentOfType(LatexCommands::class) ?: return 0

@@ -6,11 +6,9 @@ import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.psi.BibtexTypes.*
 
 fun createBibtexSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
-
     val bibtexCommonSettings = settings.getCommonSettings(BibtexLanguage)
 
     return rules(bibtexCommonSettings) {
-
         simple {
             around(ASSIGNMENT).spaces(1)
             before(SEPARATOR).spaces(0)

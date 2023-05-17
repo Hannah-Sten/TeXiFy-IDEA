@@ -39,7 +39,7 @@ enum class InternalPdfViewer(
             true
         }
         else if (SystemInfo.isWindows && this == SUMATRA) {
-            SumatraAvailabilityChecker.getSumatraAvailability()
+            SumatraAvailabilityChecker.isSumatraAvailable
         }
         // Only support Evince and Okular on Linux, although they can be installed on other systems like Mac.
         else if (SystemInfo.isLinux) {
