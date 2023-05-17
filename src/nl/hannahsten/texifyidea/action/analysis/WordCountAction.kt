@@ -117,7 +117,8 @@ open class WordCountAction : AnAction(
                         ${formatAsHtml("Characters", characters?.toString())}
                         ${formatAsHtml("Error message", errorMessage)}
                         |</table>
-                        |</html>""".trimMargin(),
+                        |</html>
+                    """.trimMargin(),
                     AllIcons.General.InformationDialog,
                     SwingConstants.LEADING
                 )

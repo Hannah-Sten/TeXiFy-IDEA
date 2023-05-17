@@ -29,7 +29,6 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
 
         // Loop through commands of file
         for (command in commands) {
-
             // There may be multiple commands with this name, just guess the first one
             val latexCommand = LatexCommand.lookup(command.name)?.firstOrNull() ?: continue
 
@@ -38,7 +37,6 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
 
             // Loop through arguments
             for (i in command.requiredParameters.indices) {
-
                 // Find the corresponding requiredArgument
                 val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull() ?: continue
 

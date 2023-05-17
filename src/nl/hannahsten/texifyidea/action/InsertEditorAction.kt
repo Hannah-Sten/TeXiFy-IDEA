@@ -42,7 +42,6 @@ open class InsertEditorAction(
     private val after: String = after ?: ""
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-
         val editor = textEditor.editor
         val document = editor.document
         val selection = editor.selectionModel

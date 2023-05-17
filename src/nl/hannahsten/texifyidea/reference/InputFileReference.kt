@@ -48,7 +48,6 @@ class InputFileReference(
          * or a full relative path (in which case we replace the whole path).
          */
         fun handleElementRename(command: LatexCommands, newElementName: String, elementNameIsJustFilename: Boolean): PsiElement {
-
             // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
             // It seems to be problematic to find the old filename we want to replace
             // Since the parameter content may be a path, but we are just given a filename, just replace the filename

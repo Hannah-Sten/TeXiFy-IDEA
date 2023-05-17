@@ -24,7 +24,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
 
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "8.2.1"
@@ -180,9 +180,12 @@ tasks.patchPluginXml {
             with(changelog) {
                 renderItem(
                     // When publishing alpha versions, we want the unreleased changes to be shown, otherwise we assume that patchChangelog has been run and we need to get the latest released version (otherwise it will show 'Unreleased' as title)
-                    if (properties("pluginVersion").split("-").size != 1) changelog.getUnreleased()
-                    else getOrNull(properties("pluginVersion")) ?: getLatest(),
-                    Changelog.OutputType.HTML,
+                    if (properties("pluginVersion").split("-").size != 1) {
+                        changelog.getUnreleased()
+                    } else {
+                        getOrNull(properties("pluginVersion")) ?: getLatest()
+                    },
+                    Changelog.OutputType.HTML
                 )
             }
         }
@@ -271,6 +274,6 @@ tasks.dependencyUpdates {
 }
 
 tasks.useLatestVersions {
-    // Do not update this ktlint plugin, it is unmaintained and newer versions are usually broken
+    // Do not update this ktlint plugin, it is mostly unmaintained and newer versions are usually either broken or introduce unwanted style changes
     updateBlacklist = listOf("org.jlleitschuh.gradle.ktlint")
 }

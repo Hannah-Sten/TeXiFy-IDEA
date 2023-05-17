@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.util.*
 class LatexTextExtractor : TextExtractor() {
 
     override fun buildTextContent(root: PsiElement, allowedDomains: MutableSet<TextContent.TextDomain>): TextContent? {
-
         if (root !is LatexContent) {
             // It is important to return null instead of TextContent, otherwise Grazie will not search higher up in the psi tree, and we will not get this function called for non-leaf elements and the above lines will not work
             return null

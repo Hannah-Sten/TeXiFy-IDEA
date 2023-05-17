@@ -41,7 +41,6 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Missing imports"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return emptyList()
         }
@@ -107,7 +106,6 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     ) {
         val commands = file.commandsInFile()
         commandLoop@ for (command in commands) {
-
             // If we are actually defining the command, then it doesn't need any dependency
             if (command.parent.firstParentOfType(LatexCommands::class).isCommandDefinition()) {
                 continue
