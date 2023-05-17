@@ -262,6 +262,9 @@ tasks.test {
 
 ktlint {
     verbose.set(true)
+    filter {
+        exclude { it.file.path.contains("generated") }
+    }
 }
 
 tasks.jar {

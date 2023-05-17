@@ -17,9 +17,13 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 
 @JvmInline value class FileName(val value: String)
+
 @JvmInline value class StartLine(val value: Int)
+
 @JvmInline value class StartColumn(val value: Int)
+
 @JvmInline value class EndLine(val value: Int)
+
 @JvmInline value class EndColumn(val value: Int)
 
 data class TextidoteAnnotatorInitialInfo(

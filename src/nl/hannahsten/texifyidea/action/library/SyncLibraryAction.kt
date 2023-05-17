@@ -52,7 +52,6 @@ class SyncLibraryAction : AnAction() {
 
             override fun run(indicator: ProgressIndicator) {
                 runBlocking {
-
                     bibItems = library.getCollection().getOrElse {
                         library.showNotification(e.project!!, it.libraryName, it.response)
                         // Apparently this is the way to cancel the task (and thus to avoid going into the onSuccess).
