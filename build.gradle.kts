@@ -21,7 +21,7 @@ plugins {
     id("de.undercouch.download") version "5.4.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.0-ALPHA"
+    id("org.jetbrains.kotlinx.kover") version "0.7.0"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
@@ -89,9 +89,9 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.15.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.15.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.1")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.0")
