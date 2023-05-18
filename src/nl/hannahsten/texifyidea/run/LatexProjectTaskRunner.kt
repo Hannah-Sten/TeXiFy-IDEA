@@ -5,8 +5,10 @@ import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.openapi.project.Project
-import com.intellij.task.*
-import nl.hannahsten.texifyidea.modules.LatexModuleType
+import com.intellij.task.ModuleBuildTask
+import com.intellij.task.ProjectTask
+import com.intellij.task.ProjectTaskContext
+import com.intellij.task.ProjectTaskRunner
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -19,7 +21,7 @@ import org.jetbrains.concurrency.Promise
 class LatexProjectTaskRunner : ProjectTaskRunner() {
 
     override fun canRun(projectTask: ProjectTask): Boolean {
-        return projectTask is ModuleBuildTask && projectTask.module.moduleTypeName == LatexModuleType.ID
+        return projectTask is ModuleBuildTask
     }
 
     override fun run(project: Project, context: ProjectTaskContext, vararg tasks: ProjectTask?): Promise<Result> {
