@@ -45,6 +45,8 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         val toolWindowManager = ToolWindowManager.getInstance(project)
 
         // Avoid adding it twice
+        // Note: the plugin verifier claims this is Internal api, but it's not:
+        // https://intellij-support.jetbrains.com/hc/en-us/community/posts/11533368171026-Registering-a-tool-window-programmatically
         val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: toolWindowManager.registerToolWindow(toolWindowId) {
             contentFactory = PreviewToolWindowFactory()
             icon = this@PreviewAction.icon
