@@ -84,6 +84,11 @@ class LatexPsiHelper(private val project: Project) {
         return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
     }
 
+    fun createOptionalParameter(content: String): LatexOptionalParam {
+        val commandText = "\\section[$content]{$content}"
+        return createFromText(commandText).firstChildOfType(LatexOptionalParam::class)!!
+    }
+
     /**
      * Returns the LatexOptionalParam node that is supposed to contain the label key for the command.
      * If no such node exists yet, a new one is created at the correct position.

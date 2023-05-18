@@ -1,14 +1,17 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.webSymbols.references.WebSymbolReferenceProvider.Companion.startOffsetIn
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -17,8 +20,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
-
-    private val formatting = setOf("~", "\\\\")
 
     override val inspectionGroup = InsightGroup.LATEX
 
@@ -40,7 +41,8 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
                         it,
                         "Suspicious formatting in ${psiElement.name}",
                         ProblemHighlightType.WARNING,
-                        isOntheFly
+                        isOntheFly,
+                        AddOptionalArgumentQuickFix()
                     )
                 }
             }
@@ -63,5 +65,23 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             } ?: break
         }
         return ranges.toList()
+    }
+
+    class AddOptionalArgumentQuickFix : LocalQuickFix {
+        override fun getFamilyName(): String {
+            return "Add optional argument without formatting"
+        }
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val command = descriptor.psiElement as LatexCommands
+            val requiredParamText = command.requiredParameter(0)
+            val optionalParamText = requiredParamText?.replace(Regex("""~|\\"""), " ") ?: return
+            val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText)
+            command.addAfter(optionalArgument, command.commandToken)
+        }
+    }
+
+    companion object {
+        val formatting = setOf("~", "\\\\")
     }
 }
