@@ -14,6 +14,14 @@ internal class LatexSuspiciousSectionFormattingInspectionTest : TexifyInspection
         myFixture.checkHighlighting(true, false, true, false)
     }
 
+    fun `test ~ warning for short section`() {
+        myFixture.configureByText(
+                LatexFileType,
+                "\\section{a<warning descr=\"Suspicious formatting in \\section\">~</warning>b}"
+        )
+        myFixture.checkHighlighting(true, false, true, false)
+    }
+
     fun `test backslash warning`() {
         myFixture.configureByText(
             LatexFileType,
@@ -30,7 +38,15 @@ internal class LatexSuspiciousSectionFormattingInspectionTest : TexifyInspection
         myFixture.checkHighlighting(true, false, true, false)
     }
 
-    fun `test no warning when optional argument is present`() {
+    fun `test no warning for ~ when optional argument is present`() {
+        myFixture.configureByText(
+                LatexFileType,
+                "\\section[Table of contents long title]{Title with explicit~formatting}"
+        )
+        myFixture.checkHighlighting(true, false, true, false)
+    }
+
+    fun `test no warning for backslash when optional argument is present`() {
         myFixture.configureByText(
             LatexFileType,
             "\\section[Table of contents long title]{Title with explicit \\\\ formatting}"
@@ -44,5 +60,6 @@ internal class LatexSuspiciousSectionFormattingInspectionTest : TexifyInspection
             "\\section{You should not use~in the title}"
         )
         testQuickFix("\\section{You should not use~in the title}", "\\section[You should not use in the title]{You should not use~in the title}")
+        myFixture.checkHighlighting(true, false, true, false)
     }
 }

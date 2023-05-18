@@ -25,7 +25,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
     override fun getDisplayName() = "Suspicious formatting in the required argument of a sectioning command"
 
-    override val inspectionId = "SuspiciousFormatSection"
+    override val inspectionId = "SuspiciousSectionFormatting"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         return file.commandsInFile()
@@ -54,7 +54,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
         val requiredParameterOffset = firstChildOfType(LatexRequiredParam::class)?.startOffsetIn(this)?.plus(1)
             ?: return emptyList()
         val ranges = mutableSetOf<TextRange>()
-        var offsetInParam = requiredParameterOffset
+        var offsetInParam = 0
         val requiredParamText = requiredParameter(0) ?: return emptyList()
         while (offsetInParam < requiredParamText.length) {
             requiredParamText.findAnyOf(formatting, startIndex = offsetInParam)?.let { (offset, text) ->
@@ -75,7 +75,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val requiredParamText = command.requiredParameter(0)
-            val optionalParamText = requiredParamText?.replace(Regex("""~|\\"""), " ") ?: return
+            val optionalParamText = requiredParamText?.replace(Regex(formatting.joinToString("", prefix = "[", postfix = "]")), " ") ?: return
             val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText)
             command.addAfter(optionalArgument, command.commandToken)
         }
