@@ -33,41 +33,26 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             .filter { it.name in CommandMagic.sectionMarkers }
             .filter { it.optionalParameterMap.isEmpty() }
             .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
-            .map { Pair(it, it.findTextRanges()) }
-            .flatMap { (psiElement, textRanges) ->
-                textRanges.map {
-                    manager.createProblemDescriptor(
-                        psiElement,
-                        it,
-                        "Suspicious formatting in ${psiElement.name}",
-                        ProblemHighlightType.WARNING,
-                        isOntheFly,
-                        AddOptionalArgumentQuickFix()
-                    )
-                }
+            .map { psiElement ->
+                val requiredParam = psiElement.firstChildOfType(LatexRequiredParam::class)
+                // Plus 1 for the opening brace.
+                val startOffset = requiredParam?.startOffsetIn(psiElement)?.plus(1) ?: 0
+                // Minus 2 for the braces surrounding the parameter.
+                val endOffset = requiredParam?.textLength?.minus(2)?.plus(startOffset) ?: psiElement.textLength
+                manager.createProblemDescriptor(
+                    psiElement,
+                    TextRange(startOffset, endOffset),
+                    "Suspicious formatting in ${psiElement.name}",
+                    ProblemHighlightType.WARNING,
+                    isOntheFly,
+                    AddOptionalArgumentQuickFix()
+                )
             }
             .toList()
     }
 
-    private fun LatexCommands.findTextRanges(): List<TextRange> {
-        // Start offset of the required argument, plus 1 for the opening brace ({)
-        val requiredParameterOffset = firstChildOfType(LatexRequiredParam::class)?.startOffsetIn(this)?.plus(1)
-            ?: return emptyList()
-        val ranges = mutableSetOf<TextRange>()
-        var offsetInParam = 0
-        val requiredParamText = requiredParameter(0) ?: return emptyList()
-        while (offsetInParam < requiredParamText.length) {
-            requiredParamText.findAnyOf(formatting, startIndex = offsetInParam)?.let { (offset, text) ->
-                val start = requiredParameterOffset + offset
-                val end = start + text.length
-                ranges.add(TextRange(start, end))
-                offsetInParam = offset + text.length
-            } ?: break
-        }
-        return ranges.toList()
-    }
-
     class AddOptionalArgumentQuickFix : LocalQuickFix {
+
         override fun getFamilyName(): String {
             return "Add optional argument without formatting"
         }
@@ -75,18 +60,21 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val requiredParamText = command.requiredParameter(0)
-            val optionalParamText = requiredParamText?.replace(Regex(formatting.joinToString("", prefix = "[", postfix = "]")), " ") ?: return
+            val optionalParamText = requiredParamText?.replace(Regex(formatting.joinToString("", prefix = "[", postfix = "]")), " ")
+                ?: return
             val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText)
 
             command.addAfter(optionalArgument, command.commandToken)
             // Create a new command and completely replace the old command so all the psi methods will recompute instead
             // of using old values from their cache.
-            val newCommand = LatexPsiHelper(project).createFromText(command.text).firstChildOfType(LatexCommands::class) ?: return
+            val newCommand = LatexPsiHelper(project).createFromText(command.text).firstChildOfType(LatexCommands::class)
+                ?: return
             command.parent.replace(newCommand)
         }
     }
 
     companion object {
+
         val formatting = setOf("~", "\\\\")
     }
 }
