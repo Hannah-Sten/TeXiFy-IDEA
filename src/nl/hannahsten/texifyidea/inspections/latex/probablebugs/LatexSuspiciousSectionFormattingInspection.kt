@@ -61,7 +61,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
                 val start = requiredParameterOffset + offset
                 val end = start + text.length
                 ranges.add(TextRange(start, end))
-                offsetInParam = end
+                offsetInParam = offset + text.length
             } ?: break
         }
         return ranges.toList()
@@ -77,7 +77,12 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             val requiredParamText = command.requiredParameter(0)
             val optionalParamText = requiredParamText?.replace(Regex(formatting.joinToString("", prefix = "[", postfix = "]")), " ") ?: return
             val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText)
+
             command.addAfter(optionalArgument, command.commandToken)
+            // Create a new command and completely replace the old command so all the psi methods will recompute instead
+            // of using old values from their cache.
+            val newCommand = LatexPsiHelper(project).createFromText(command.text).firstChildOfType(LatexCommands::class) ?: return
+            command.parent.replace(newCommand)
         }
     }
 
