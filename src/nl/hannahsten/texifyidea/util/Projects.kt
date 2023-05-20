@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -81,7 +80,7 @@ fun Project.allFiles(type: FileType): Collection<VirtualFile> {
  */
 fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     if (isDisposed) return emptyList()
-    return (RunManagerImpl.getInstanceImpl(this) as RunManager).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
+    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
 }
 
 /**

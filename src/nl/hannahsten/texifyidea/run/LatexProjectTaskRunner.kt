@@ -1,16 +1,19 @@
 package nl.hannahsten.texifyidea.run
 
+import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
+import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.project.Project
 import com.intellij.task.ModuleBuildTask
 import com.intellij.task.ProjectTask
 import com.intellij.task.ProjectTaskContext
 import com.intellij.task.ProjectTaskRunner
+import nl.hannahsten.texifyidea.modules.LatexModuleType
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
-import nl.hannahsten.texifyidea.util.isLatexProject
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 
@@ -22,7 +25,8 @@ import org.jetbrains.concurrency.Promise
 class LatexProjectTaskRunner : ProjectTaskRunner() {
 
     override fun canRun(projectTask: ProjectTask): Boolean {
-        return projectTask is ModuleBuildTask && projectTask.module.project.isLatexProject()
+        // Only run if we're only going to build LaTeX run configurations: don't interfere with other languages (e.g. maven tasks)
+        return projectTask is ModuleBuildTask && (ModuleType.get(projectTask.module).id == LatexModuleType.ID || RunManager.getInstance(projectTask.module.project).allConfigurationsList.all { it is LatexRunConfiguration })
     }
 
     override fun run(project: Project, context: ProjectTaskContext, vararg tasks: ProjectTask?): Promise<Result> {
