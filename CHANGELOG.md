@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add latexindent command line options to settings
 
 ### Fixed
 * Fix InvalidVirtualFileAccessException #2991 
