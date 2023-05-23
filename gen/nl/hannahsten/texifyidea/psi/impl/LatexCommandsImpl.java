@@ -10,7 +10,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin;
 import nl.hannahsten.texifyidea.psi.*;
-import com.intellij.psi.PsiReference;
 import java.util.LinkedHashMap;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import com.intellij.psi.stubs.IStubElementType;
@@ -50,11 +49,6 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   @NotNull
   public PsiElement getCommandToken() {
     return notNullChild(findChildByType(COMMAND_TOKEN));
-  }
-
-  @Override
-  public PsiReference getReference() {
-    return LatexPsiImplUtil.getReference(this);
   }
 
   @Override

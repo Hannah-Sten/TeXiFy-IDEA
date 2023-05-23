@@ -90,4 +90,11 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
 
         return references.toTypedArray()
     }
+
+    /**
+     * Get the reference for this command, assuming it has exactly one reference (return null otherwise).
+     */
+    override fun getReference(): PsiReference? {
+        return this.references.firstOrNull()
+    }
 }

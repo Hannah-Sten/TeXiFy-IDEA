@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
-import com.intellij.psi.PsiReference;
 import java.util.LinkedHashMap;
 
 public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithParams, StubBasedPsiElement<LatexCommandsStub> {
@@ -17,8 +16,6 @@ public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithP
 
   @NotNull
   PsiElement getCommandToken();
-
-  PsiReference getReference();
 
   LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap();
 

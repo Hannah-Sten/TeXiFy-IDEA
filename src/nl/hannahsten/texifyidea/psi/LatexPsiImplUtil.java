@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.*;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
-import nl.hannahsten.texifyidea.util.psi.LatexCommandsImplUtilKt;
+import nl.hannahsten.texifyidea.util.psi.LatexCommandsImplMixinUtilKt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -14,37 +14,20 @@ import java.util.List;
  */
 public class LatexPsiImplUtil {
 
-    /*
-     * LatexCommands
-     */
-
-    /**
-     * Get the reference for this command, assuming it has exactly one reference (return null otherwise).
-     */
-    public static PsiReference getReference(@NotNull LatexCommands element) {
-        PsiReference[] references = element.getReferences();
-        if (references.length != 1) {
-            return null;
-        }
-        else {
-            return references[0];
-        }
-    }
-
     public static String toString(@NotNull LatexKeyValKey element) {
-        return LatexCommandsImplUtilKt.keyValKeyToString(element);
+        return LatexCommandsImplMixinUtilKt.keyValKeyToString(element);
     }
 
     public static String toString(@NotNull LatexKeyValValue element) {
-        return LatexCommandsImplUtilKt.keyValContentToString(element);
+        return LatexCommandsImplMixinUtilKt.keyValContentToString(element);
     }
 
     public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexCommands element) {
-        return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
+        return LatexCommandsImplMixinUtilKt.getOptionalParameterMap(element.getParameterList());
     }
 
     public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexBeginCommand element) {
-        return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
+        return LatexCommandsImplMixinUtilKt.getOptionalParameterMap(element.getParameterList());
     }
 
 
@@ -52,11 +35,11 @@ public class LatexPsiImplUtil {
      * Generates a list of all names of all required parameters in the command.
      */
     public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
-        return LatexCommandsImplUtilKt.getRequiredParameters(element.getParameterList());
+        return LatexCommandsImplMixinUtilKt.getRequiredParameters(element.getParameterList());
     }
 
     public static List<String> getRequiredParameters(@NotNull LatexBeginCommand element) {
-        return LatexCommandsImplUtilKt.getRequiredParameters(element.getParameterList());
+        return LatexCommandsImplMixinUtilKt.getRequiredParameters(element.getParameterList());
     }
 
     /**
@@ -69,7 +52,7 @@ public class LatexPsiImplUtil {
     }
 
     public static PsiElement setName(@NotNull LatexCommands element, String name) {
-        return LatexCommandsImplUtilKt.setName(element, name);
+        return LatexCommandsImplMixinUtilKt.setName(element, name);
     }
 
     /*
