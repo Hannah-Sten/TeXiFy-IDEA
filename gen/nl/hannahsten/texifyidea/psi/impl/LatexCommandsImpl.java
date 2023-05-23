@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin;
+
 import nl.hannahsten.texifyidea.psi.*;
 import java.util.LinkedHashMap;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
