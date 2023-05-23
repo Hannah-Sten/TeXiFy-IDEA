@@ -16,6 +16,9 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.psi.nextSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.psi.previousSiblingIgnoreWhitespace
 import java.util.*
 
 /**

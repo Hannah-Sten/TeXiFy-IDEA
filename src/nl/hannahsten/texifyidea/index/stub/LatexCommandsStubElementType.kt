@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.psi.toStringMap
+import nl.hannahsten.texifyidea.util.psi.toStringMap
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.io.IOException

@@ -12,11 +12,11 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.endOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.name
+import nl.hannahsten.texifyidea.util.psi.name
 import java.util.*
 
 /**

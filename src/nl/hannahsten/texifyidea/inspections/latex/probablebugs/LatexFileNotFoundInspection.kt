@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.psi.parentsOfType
 import java.util.*
 
 /**

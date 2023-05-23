@@ -4,7 +4,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.SimpleFileReference
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.psi.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 
 fun getReferences(element: BibtexTag): Array<PsiReference> {

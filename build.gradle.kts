@@ -281,14 +281,19 @@ tasks.useLatestVersions {
 }
 
 tasks.generateLexer {
-    source.set("src/nl/hannahsten/texifyidea/grammar/LatexLexer.flex")
+    sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/LatexLexer.flex"))
     targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
     targetClass.set("LatexLexer")
 }
 
 tasks.generateParser {
-    source.set("src/nl/hannahsten/texifyidea/grammar/Latex.bnf")
+    sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
     targetRoot.set("gen")
     pathToParser.set("nl/hannahsten/texifidea/parser/LatexParser.java")
     pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
 }
+
+//tasks.compileKotlin {
+//    dependsOn(tasks.generateLexer)
+//    dependsOn(tasks.generateParser)
+//}

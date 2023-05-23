@@ -16,9 +16,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
-import nl.hannahsten.texifyidea.util.isComment
-import nl.hannahsten.texifyidea.util.name
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.psi.isComment
+import nl.hannahsten.texifyidea.util.psi.name
+import nl.hannahsten.texifyidea.util.psi.parentOfType
 
 /**
  * @author Hannah Schellekens

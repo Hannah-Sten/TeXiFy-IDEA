@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.allCommands
+import nl.hannahsten.texifyidea.util.psi.allCommands
 import java.text.Normalizer
 import java.util.*
 

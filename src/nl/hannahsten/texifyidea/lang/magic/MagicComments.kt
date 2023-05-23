@@ -8,6 +8,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.psi.*
 import java.util.*
 
 /**

@@ -20,8 +20,9 @@ import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.files.*
-import nl.hannahsten.texifyidea.util.hasStar
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.psi.hasLabel
+import nl.hannahsten.texifyidea.util.psi.hasStar
 import org.jetbrains.annotations.Nls
 import java.util.*
 

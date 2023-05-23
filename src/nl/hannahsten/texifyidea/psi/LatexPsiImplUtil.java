@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.*;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
+import nl.hannahsten.texifyidea.util.psi.LatexCommandsImplUtilKt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -18,19 +19,10 @@ public class LatexPsiImplUtil {
      */
 
     /**
-     * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexParameterText)}.
-     * For more info and an example, see {@link nl.hannahsten.texifyidea.reference.LatexLabelParameterReference}.
-     */
-    @NotNull
-    public static PsiReference[] getReferences(@NotNull LatexCommands element) {
-        return LatexCommandsImplUtilKt.getReferences(element);
-    }
-
-    /**
      * Get the reference for this command, assuming it has exactly one reference (return null otherwise).
      */
     public static PsiReference getReference(@NotNull LatexCommands element) {
-        PsiReference[] references = getReferences(element);
+        PsiReference[] references = element.getReferences();
         if (references.length != 1) {
             return null;
         }
@@ -78,13 +70,6 @@ public class LatexPsiImplUtil {
 
     public static PsiElement setName(@NotNull LatexCommands element, String name) {
         return LatexCommandsImplUtilKt.setName(element, name);
-    }
-
-    /**
-     * Checks if the command is followed by a label.
-     */
-    public static boolean hasLabel(@NotNull LatexCommands element) {
-        return LatexCommandsImplUtilKt.hasLabel(element);
     }
 
     /*

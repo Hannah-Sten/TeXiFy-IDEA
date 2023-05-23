@@ -15,6 +15,10 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
+import nl.hannahsten.texifyidea.util.psi.endOffset
+import nl.hannahsten.texifyidea.util.psi.findIndentation
+import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.psi.requiredParameter
 import java.io.File
 
 /**

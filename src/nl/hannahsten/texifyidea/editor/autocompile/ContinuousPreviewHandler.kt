@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.action.preview.ShowTikzPreview
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
+import nl.hannahsten.texifyidea.util.psi.findOuterMathEnvironment
 
 /**
  * On every added (or deleted, see [ContinuousPreviewBackspacehandler]) character, initiate a preview.

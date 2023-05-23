@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.psi.inDirectEnvironment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

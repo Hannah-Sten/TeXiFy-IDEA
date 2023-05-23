@@ -6,8 +6,8 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.firstChildOfType
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.psi.firstChildOfType
+import nl.hannahsten.texifyidea.util.psi.firstParentOfType
 
 /**
  * This reference allows refactoring of environments, by letting the text in \end resolve to the text in \begin, so the \begin is viewed as a definition and the text in \end as usage.

@@ -7,15 +7,15 @@ import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.psi.firstParentOfType
 import nl.hannahsten.texifyidea.util.isFigureLabel
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.remove
+import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.psi.remove
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.

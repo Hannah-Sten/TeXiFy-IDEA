@@ -5,9 +5,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.firstChildOfType
-import nl.hannahsten.texifyidea.util.lastChildOfType
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.psi.*
 import org.junit.Test
 
 class LatexPsiImplUtilTest : BasePlatformTestCase() {

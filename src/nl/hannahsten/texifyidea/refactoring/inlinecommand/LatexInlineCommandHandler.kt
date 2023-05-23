@@ -8,6 +8,7 @@ import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.psi.*
 
 /**
  * Allows for inlining an include command. Does not do the inlining itself.

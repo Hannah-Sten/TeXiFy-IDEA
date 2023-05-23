@@ -12,9 +12,9 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.psi.*
 
 /**
  * Provide syntax highlighting for composite elements.

@@ -14,11 +14,11 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.endOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.get
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.psi.inMathContext
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 

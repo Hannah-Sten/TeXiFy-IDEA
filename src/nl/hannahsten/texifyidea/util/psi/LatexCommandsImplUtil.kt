@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.psi
+package nl.hannahsten.texifyidea.util.psi
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.paths.WebReference
@@ -6,21 +6,14 @@ import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.*
-import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
-import nl.hannahsten.texifyidea.util.firstChildOfType
-import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.shrink
 import java.util.regex.Pattern
 import kotlin.collections.component1
@@ -28,43 +21,11 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 /**
- * Get the references for this command.
- */
-fun getReferences(element: LatexCommands): Array<PsiReference> {
-    val requiredParameters = getRequiredParameters(element)
-    val firstParam = requiredParameters.getOrNull(0)
-
-    val references = mutableListOf<PsiReference>()
-
-    // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
-    if (element.project.getLabelReferenceCommands().contains(element.commandToken.text) && firstParam != null) {
-        references.addAll(extractLabelReferences(element, requiredParameters))
-    }
-
-    // If it is a reference to a file
-    references.addAll(element.getFileArgumentsReferences())
-
-    if (CommandMagic.urls.contains(element.name) && firstParam != null) {
-        references.addAll(element.extractUrlReferences(firstParam))
-    }
-
-    // Else, we assume the command itself is important instead of its parameters,
-    // and the user is interested in the location of the command definition
-    val definitionReference = CommandDefinitionReference(element)
-    // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
-    if (definitionReference.multiResolve(false).isNotEmpty()) {
-        references.add(definitionReference)
-    }
-
-    return references.toTypedArray()
-}
-
-/**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
  *
  * Do not use this method directly, use command.references.filterIsInstance<InputFileReference>() instead.
  */
-private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
+fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     val inputFileReferences = mutableListOf<InputFileReference>()
 
     // There may be multiple commands with this name, just guess the first one
@@ -205,19 +166,6 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
     extractSubParameterRanges(firstParam)
         .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
         .toArray(emptyArray())
-
-/**
- * Checks if the command is followed by a label.
- */
-fun hasLabel(element: LatexCommands): Boolean {
-    if (CommandMagic.labelAsParameter.contains(element.name)) {
-        return getOptionalParameterMap(element.parameterList).toStringMap().containsKey("label")
-    }
-
-    // Next leaf is a command token, parent is LatexCommands
-    val labelMaybe = element.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
-    return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
-}
 
 fun setName(element: LatexCommands, newName: String): PsiElement {
     var newText = element.text.replace(element.name ?: return element, newName)

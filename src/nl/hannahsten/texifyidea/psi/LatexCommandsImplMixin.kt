@@ -5,15 +5,23 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
+import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.psi.extractLabelReferences
+import nl.hannahsten.texifyidea.util.psi.extractUrlReferences
+import nl.hannahsten.texifyidea.util.psi.getFileArgumentsReferences
+import nl.hannahsten.texifyidea.util.psi.getRequiredParameters
 
 /**
  * This class is a mixin for LatexCommandsImpl. We use a separate mixin class instead of [LatexPsiImplUtil] because we need to add an instance variable
  * in order to implement [getName] and [setName] correctly.
  */
-abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner {
+abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands {
 
     @JvmField
     var name: String? = null
@@ -48,5 +56,38 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
 
     override fun getNameIdentifier(): PsiElement? {
         return this
+    }
+
+    /**
+     * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexParameterText)}.
+     * For more info and an example, see {@link nl.hannahsten.texifyidea.reference.LatexLabelParameterReference}.
+     */
+    override fun getReferences(): Array<PsiReference> {
+        val requiredParameters = getRequiredParameters(this)
+        val firstParam = requiredParameters.getOrNull(0)
+
+        val references = mutableListOf<PsiReference>()
+
+        // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
+        if (this.project.getLabelReferenceCommands().contains(this.commandToken.text) && firstParam != null) {
+            references.addAll(extractLabelReferences(this, requiredParameters))
+        }
+
+        // If it is a reference to a file
+        references.addAll(this.getFileArgumentsReferences())
+
+        if (CommandMagic.urls.contains(this.name) && firstParam != null) {
+            references.addAll(this.extractUrlReferences(firstParam))
+        }
+
+        // Else, we assume the command itself is important instead of its parameters,
+        // and the user is interested in the location of the command definition
+        val definitionReference = CommandDefinitionReference(this)
+        // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
+        if (definitionReference.multiResolve(false).isNotEmpty()) {
+            references.add(definitionReference)
+        }
+
+        return references.toTypedArray()
     }
 }

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import org.jetbrains.annotations.Nls
 

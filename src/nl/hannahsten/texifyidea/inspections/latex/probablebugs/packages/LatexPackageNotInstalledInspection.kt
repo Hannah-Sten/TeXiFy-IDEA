@@ -21,6 +21,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.requiredParameter
 import java.util.*
 
 /**

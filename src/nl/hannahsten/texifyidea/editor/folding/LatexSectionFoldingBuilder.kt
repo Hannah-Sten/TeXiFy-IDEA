@@ -8,11 +8,11 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.psi.nextSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.psi.previousSiblingIgnoreWhitespace
 
 /**
  * Recursively folds section commands

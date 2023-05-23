@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
 import nl.hannahsten.texifyidea.util.identifier
 import nl.hannahsten.texifyidea.util.labels.findLatexCommandsLabels
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.psi.requiredParameter
 
 /**
  * @author Hannah Schellekens

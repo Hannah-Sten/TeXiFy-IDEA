@@ -14,14 +14,11 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
-    psiImplUtilClass="nl.hannahsten.texifyidea.psi.LatexPsiImplUtil"
+    psiImplUtilClass="nl.hannahsten.texifyidea.psi.LatexPsiImplUtil" // todo remove
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.LatexElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
-
-    extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
-    implements("commands")= ["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
     implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
@@ -86,7 +83,9 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getReference getOptionalParameterMap getRequiredParameters hasLabel getTextOffset getName setName]
+    methods=[getReference getOptionalParameterMap getRequiredParameters getTextOffset getName setName]
+    extends="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
+    implements=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }
 
 

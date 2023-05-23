@@ -6,7 +6,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
+import nl.hannahsten.texifyidea.util.psi.findOuterMathEnvironment
 
 /**
  * Show a preview of a LaTeX equation in a separate window.

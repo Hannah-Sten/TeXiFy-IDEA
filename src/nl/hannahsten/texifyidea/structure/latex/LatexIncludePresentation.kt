@@ -4,7 +4,7 @@ import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
-import nl.hannahsten.texifyidea.util.getIncludedFiles
+import nl.hannahsten.texifyidea.util.psi.getIncludedFiles
 
 /**
  * @author Hannah Schellekens

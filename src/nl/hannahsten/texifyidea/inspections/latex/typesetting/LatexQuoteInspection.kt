@@ -13,10 +13,10 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.psi.inMathContext
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.quotePattern
 import nl.hannahsten.texifyidea.util.replaceString
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.psi.requiredParameter
 import nl.hannahsten.texifyidea.util.toTextRange
 
 /**

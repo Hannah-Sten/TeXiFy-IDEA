@@ -16,6 +16,10 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.sentenceEndPrefix
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.inMathContext
+import nl.hannahsten.texifyidea.util.psi.isComment
+import nl.hannahsten.texifyidea.util.psi.nextSiblingIgnoreWhitespace
 import kotlin.math.min
 
 /**

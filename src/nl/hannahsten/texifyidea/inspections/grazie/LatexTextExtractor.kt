@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.endOffset
+import nl.hannahsten.texifyidea.util.psi.parents
 
 /**
  * Explains to Grazie which psi elements contain text and which don't.

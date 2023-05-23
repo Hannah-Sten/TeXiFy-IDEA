@@ -9,9 +9,9 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.findFirstChild
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.findFirstChild
+import nl.hannahsten.texifyidea.util.psi.firstChildOfType
 
 /**
  * As the IntelliJ SDK docs say, to replace or insert text it is easiest to create a dummy file,

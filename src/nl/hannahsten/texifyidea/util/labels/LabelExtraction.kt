@@ -5,11 +5,12 @@ import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.psi.firstChildOfType
 import nl.hannahsten.texifyidea.util.identifier
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.psi.requiredParameter
+import nl.hannahsten.texifyidea.util.psi.toStringMap
 
 /**
  * Extracts the label element (so the element that should be resolved to) from the PsiElement given that the PsiElement represents a label.

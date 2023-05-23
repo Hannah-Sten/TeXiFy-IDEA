@@ -5,8 +5,8 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
-import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.remove
+import nl.hannahsten.texifyidea.util.psi.firstParentOfType
+import nl.hannahsten.texifyidea.util.psi.remove
 
 fun getNameIdentifier(element: BibtexId): PsiElement {
     return element

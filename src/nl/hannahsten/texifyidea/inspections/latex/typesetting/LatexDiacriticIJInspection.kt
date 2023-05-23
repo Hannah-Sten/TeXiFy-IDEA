@@ -10,9 +10,9 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.hasParent
-import nl.hannahsten.texifyidea.util.inMathContext
-import nl.hannahsten.texifyidea.util.isComment
+import nl.hannahsten.texifyidea.util.psi.hasParent
+import nl.hannahsten.texifyidea.util.psi.inMathContext
+import nl.hannahsten.texifyidea.util.psi.isComment
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern

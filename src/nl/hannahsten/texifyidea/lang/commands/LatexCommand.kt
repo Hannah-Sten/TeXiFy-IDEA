@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.psi.inMathContext
 import nl.hannahsten.texifyidea.util.length
 import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass

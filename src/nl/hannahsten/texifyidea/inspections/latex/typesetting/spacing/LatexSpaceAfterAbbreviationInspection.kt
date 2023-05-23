@@ -12,9 +12,9 @@ import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.psi.inMathContext
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 /**

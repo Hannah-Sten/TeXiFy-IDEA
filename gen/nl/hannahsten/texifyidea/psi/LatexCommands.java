@@ -18,15 +18,11 @@ public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithP
   @NotNull
   PsiElement getCommandToken();
 
-  @NotNull PsiReference[] getReferences();
-
   PsiReference getReference();
 
   LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap();
 
   List<String> getRequiredParameters();
-
-  boolean hasLabel();
 
   int getTextOffset();
 

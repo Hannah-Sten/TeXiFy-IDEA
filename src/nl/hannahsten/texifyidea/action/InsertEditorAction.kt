@@ -6,7 +6,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.isLatexOrBibtex
+import nl.hannahsten.texifyidea.util.psi.isLatexOrBibtex
 import javax.swing.Icon
 
 /**

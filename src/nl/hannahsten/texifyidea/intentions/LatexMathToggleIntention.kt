@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.ui.PopupChooserCellRenderer
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.psi.*
 
 /**
  * @author Hannah Schellekens, Abby Berkers

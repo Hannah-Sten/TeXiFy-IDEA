@@ -7,7 +7,7 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.psi.firstParentOfType
 import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import kotlin.math.min

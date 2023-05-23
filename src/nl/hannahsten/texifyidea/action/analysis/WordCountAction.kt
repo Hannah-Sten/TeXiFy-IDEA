@@ -14,6 +14,10 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.grandparent
+import nl.hannahsten.texifyidea.util.psi.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.psi.inMathContext
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern

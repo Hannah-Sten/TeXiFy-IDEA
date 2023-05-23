@@ -12,9 +12,9 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.parentsOfType
-import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.psi.parentsOfType
+import nl.hannahsten.texifyidea.util.psi.previousSiblingIgnoreWhitespace
 import java.io.IOException
 import java.io.InputStream
 

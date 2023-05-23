@@ -5,7 +5,7 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.psi.firstChildOfType
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 
 /**

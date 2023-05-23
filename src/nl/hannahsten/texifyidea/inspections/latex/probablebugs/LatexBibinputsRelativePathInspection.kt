@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.psi.requiredParameter
 
 /**
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.

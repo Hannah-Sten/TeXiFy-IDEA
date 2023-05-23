@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.definedCommandName
+import nl.hannahsten.texifyidea.util.psi.definedCommandName
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic

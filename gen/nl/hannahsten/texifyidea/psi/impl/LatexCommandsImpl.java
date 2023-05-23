@@ -1,22 +1,20 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
+import java.util.List;
+import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+import nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin;
+import nl.hannahsten.texifyidea.psi.*;
 import com.intellij.psi.PsiReference;
+import java.util.LinkedHashMap;
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
-import nl.hannahsten.texifyidea.psi.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
 
 public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCommands {
 
@@ -55,11 +53,6 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  public @NotNull PsiReference[] getReferences() {
-    return LatexPsiImplUtil.getReferences(this);
-  }
-
-  @Override
   public PsiReference getReference() {
     return LatexPsiImplUtil.getReference(this);
   }
@@ -72,11 +65,6 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   @Override
   public List<String> getRequiredParameters() {
     return LatexPsiImplUtil.getRequiredParameters(this);
-  }
-
-  @Override
-  public boolean hasLabel() {
-    return LatexPsiImplUtil.hasLabel(this);
   }
 
   @Override

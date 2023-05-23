@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.containsKeyOrValue
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.findKeys
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.psi.inMathContext
 
 /**
  * @author Hannah Schellekens

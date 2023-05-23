@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.psi.LatexKeyValuePair
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.testutils.updateConvention
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
 

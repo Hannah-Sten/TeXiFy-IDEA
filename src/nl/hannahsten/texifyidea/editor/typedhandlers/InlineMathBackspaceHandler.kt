@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.get
-import nl.hannahsten.texifyidea.util.inVerbatim
+import nl.hannahsten.texifyidea.util.psi.inVerbatim
 import nl.hannahsten.texifyidea.util.orFalse
 
 /**

@@ -1,9 +1,12 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.util.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.nextLeaf
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
@@ -11,8 +14,10 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.lineIndentation
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.psi.*
 import kotlin.math.min
 
 /**
@@ -218,6 +223,19 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
     // This is just a bit of guesswork about the parser structure.
     // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
     return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class)
+}
+
+/**
+ * Checks if the command is followed by a label.
+ */
+fun LatexCommands.hasLabel(): Boolean {
+    if (CommandMagic.labelAsParameter.contains(this.name)) {
+        return getOptionalParameterMap(this.parameterList).toStringMap().containsKey("label")
+    }
+
+    // Next leaf is a command token, parent is LatexCommands
+    val labelMaybe = this.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
+    return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }
 
 /**
