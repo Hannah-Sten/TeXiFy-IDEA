@@ -110,7 +110,8 @@ object PackageUtils {
             .doPostponedOperationsAndUnblockDocument(file.document() ?: return)
         PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return)
         runWriteAction {
-            if (anchorAfter != null) {
+            // Avoid NPE, see #3083 (cause unknown)
+            if (anchorAfter != null && com.intellij.psi.impl.source.tree.TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
                 val anchorBefore = anchorAfter.node.treeNext
                 @Suppress("KotlinConstantConditions")
                 if (prependNewLine) {
