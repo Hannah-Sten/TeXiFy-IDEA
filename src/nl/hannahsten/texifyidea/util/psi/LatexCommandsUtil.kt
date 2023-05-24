@@ -144,7 +144,7 @@ fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
                 .indexOfFirst { arg -> arg.name == argument }
         }
     return if (optionalArgIndices.isNullOrEmpty() || optionalArgIndices.all { it == -1 }) null
-    else optionalParameterMap.keys.toList().getOrNull(min(optionalArgIndices.first(), optionalParameterMap.keys.toList().size - 1))?.text
+    else getOptionalParameterMap().keys.toList().getOrNull(min(optionalArgIndices.first(), getOptionalParameterMap().keys.toList().size - 1))?.text
 }
 
 /**
@@ -230,7 +230,7 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
  */
 fun LatexCommands.hasLabel(): Boolean {
     if (CommandMagic.labelAsParameter.contains(this.name)) {
-        return getOptionalParameterMap(this.parameterList).toStringMap().containsKey("label")
+        return getOptionalParameterMapFromParameters(this.parameterList).toStringMap().containsKey("label")
     }
 
     // Next leaf is a command token, parent is LatexCommands

@@ -255,7 +255,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional: List<String> = LinkedList(commands.optionalParameterMap.toStringMap().keys)
+                val optional: List<String> = LinkedList(commands.getOptionalParameterMap().toStringMap().keys)
                 var requiredParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {
@@ -277,7 +277,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
             "\\DeclarePairedDelimiter" -> "{param}"
             "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> {
-                val optional = commands.optionalParameterMap.toStringMap().keys.firstOrNull()
+                val optional = commands.getOptionalParameterMap().toStringMap().keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
                 }

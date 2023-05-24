@@ -79,7 +79,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(env: LatexEnvironment): LabelDescriptor? {
         val label =
-            env.beginCommand.optionalParameterMap.entries.firstOrNull { e -> e.key.toString() == "label" }?.value
+            env.beginCommand.getOptionalParameterMap().entries.firstOrNull { e -> e.key.toString() == "label" }?.value
                 ?: return null
         val labelString = label.toString()
         return LabelDescriptor(env, labelString, TextRange.from(label.startOffset - env.startOffset, label.textLength))
@@ -90,7 +90,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(cmd: LatexCommands): LabelDescriptor? {
         val label =
-            cmd.optionalParameterMap.entries.firstOrNull { e -> e.key.toString() == "label" }?.value ?: return null
+            cmd.getOptionalParameterMap().entries.firstOrNull { e -> e.key.toString() == "label" }?.value ?: return null
         val labelString = label.toString()
         return LabelDescriptor(cmd, labelString, TextRange.from(label.startOffset - cmd.startOffset, label.textLength))
     }

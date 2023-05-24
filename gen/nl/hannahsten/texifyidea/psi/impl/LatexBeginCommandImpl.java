@@ -8,11 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
-import java.util.LinkedHashMap;
 
-public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements LatexBeginCommand {
+public class LatexBeginCommandImpl extends LatexBeginCommandImplMixin implements LatexBeginCommand {
 
   public LatexBeginCommandImpl(@NotNull ASTNode node) {
     super(node);
@@ -32,11 +30,6 @@ public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements Latex
   @NotNull
   public List<LatexParameter> getParameterList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexParameter.class);
-  }
-
-  @Override
-  public LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap() {
-    return LatexPsiImplUtil.getOptionalParameterMap(this);
   }
 
   @Override

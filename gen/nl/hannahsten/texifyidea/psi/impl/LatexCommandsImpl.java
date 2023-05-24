@@ -1,18 +1,23 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import nl.hannahsten.texifyidea.psi.*;
-import java.util.LinkedHashMap;
-import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
+import nl.hannahsten.texifyidea.psi.LatexCommands;
+import nl.hannahsten.texifyidea.psi.LatexParameter;
+import nl.hannahsten.texifyidea.psi.LatexPsiImplUtil;
+import nl.hannahsten.texifyidea.psi.LatexVisitor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
+import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
 
 public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCommands {
 
@@ -48,11 +53,6 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   @NotNull
   public PsiElement getCommandToken() {
     return notNullChild(findChildByType(COMMAND_TOKEN));
-  }
-
-  @Override
-  public LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap() {
-    return LatexPsiImplUtil.getOptionalParameterMap(this);
   }
 
   @Override

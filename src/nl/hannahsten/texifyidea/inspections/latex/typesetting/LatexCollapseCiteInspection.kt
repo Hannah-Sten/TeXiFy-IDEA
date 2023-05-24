@@ -46,7 +46,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             .filter { it.name in CommandMagic.bibliographyReference }
 
         for (cmd in commands) {
-            val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
+            val bundle = cmd.findCiteBundle().filter { it.getOptionalParameterMap().isEmpty() }
             if (bundle.size < 2 || !bundle.contains(cmd)) {
                 continue
             }

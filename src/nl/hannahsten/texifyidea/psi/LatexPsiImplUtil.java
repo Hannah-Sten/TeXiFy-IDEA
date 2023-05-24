@@ -5,7 +5,6 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.util.psi.LatexCommandsImplMixinUtilKt;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -13,15 +12,6 @@ import java.util.List;
  * It has to be in Java for Grammar-Kit to be able to generate the parser classes correctly.
  */
 public class LatexPsiImplUtil {
-
-    public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexCommands element) {
-        return LatexCommandsImplMixinUtilKt.getOptionalParameterMap(element.getParameterList());
-    }
-
-    public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexBeginCommand element) {
-        return LatexCommandsImplMixinUtilKt.getOptionalParameterMap(element.getParameterList());
-    }
-
 
     /**
      * Generates a list of all names of all required parameters in the command.

@@ -91,7 +91,7 @@ class LatexPsiHelper(private val project: Project) {
     private fun getOrCreateLabelOptionalParameters(command: LatexCommandWithParams): LatexOptionalParam {
         // This is only a heuristic. We would actually need detailed information on which optional parameter is
         // supposed to hold the label key.
-        val existingParameters = command.optionalParameterMap
+        val existingParameters = command.getOptionalParameterMap()
         if (existingParameters.isEmpty()) {
             if (command is LatexCommands) {
                 // For commands insert an optional parameter right after the command name (in case the command has a

@@ -72,7 +72,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
             .filter { command -> command.requiredParameters.any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
-            .flatMap { it.optionalParameterMap.toStringMap().keys }
+            .flatMap { it.getOptionalParameterMap().toStringMap().keys }
     }
 }
 
@@ -91,7 +91,7 @@ fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): Map<String, S
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text == "\\makeindex" }
             .forEach {
-                makeindexOptions.putAll(it.optionalParameterMap.toStringMap())
+                makeindexOptions.putAll(it.getOptionalParameterMap().toStringMap())
             }
         makeindexOptions
     }

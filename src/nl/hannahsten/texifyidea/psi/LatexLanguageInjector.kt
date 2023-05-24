@@ -33,7 +33,7 @@ class LatexLanguageInjector : LanguageInjector {
                     magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
                 }
                 host.environmentName == "lstlisting" -> {
-                    host.beginCommand.optionalParameterMap.toStringMap().getOrDefault("language", null)
+                    host.beginCommand.getOptionalParameterMap().toStringMap().getOrDefault("language", null)
                 }
                 host.environmentName in EnvironmentMagic.languageInjections.keys -> {
                     EnvironmentMagic.languageInjections[host.environmentName]

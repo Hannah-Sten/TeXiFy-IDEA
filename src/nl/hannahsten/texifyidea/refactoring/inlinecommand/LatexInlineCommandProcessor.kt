@@ -82,9 +82,9 @@ class LatexInlineCommandProcessor(
      */
     private fun replaceUsage(psiElement: PsiElement): Boolean {
         val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf()
-        val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
+        val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.getOptionalParameterMap()?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
-        val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
+        val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.getOptionalParameterMap()?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
         if (calledOptionalArgs.size > 1)
             return false // error case

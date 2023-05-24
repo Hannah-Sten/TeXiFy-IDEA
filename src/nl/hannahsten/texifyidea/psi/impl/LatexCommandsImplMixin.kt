@@ -9,21 +9,20 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiImplUtil
 import nl.hannahsten.texifyidea.psi.LatexVisitor
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.extractLabelReferences
-import nl.hannahsten.texifyidea.util.psi.extractUrlReferences
-import nl.hannahsten.texifyidea.util.psi.getFileArgumentsReferences
-import nl.hannahsten.texifyidea.util.psi.getRequiredParameters
+import nl.hannahsten.texifyidea.util.psi.*
 
 /**
  * This class is a mixin for LatexCommandsImpl. We use a separate mixin class instead of [LatexPsiImplUtil] because we need to add an instance variable
  * in order to implement [getName] and [setName] correctly.
  */
-abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands {
+abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands, LatexCommandWithParams {
 
     @JvmField
     var name: String? = null
@@ -99,4 +98,6 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     override fun getReference(): PsiReference? {
         return this.references.firstOrNull()
     }
+
+    override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
 }

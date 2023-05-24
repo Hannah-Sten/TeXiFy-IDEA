@@ -235,7 +235,7 @@ object PackageUtils {
             // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
             val packages = setOf(
                 cmd.requiredParameters,
-                cmd.optionalParameterMap.toStringMap().keys.toList()
+                cmd.getOptionalParameterMap().toStringMap().keys.toList()
             )
 
             for (list in packages) {

@@ -33,7 +33,7 @@ class LatexCommandsStubElementType(debugName: String) :
         val commandToken = latexCommands.commandToken.text
         val requiredParameters = latexCommands.requiredParameters
         val optionalParameters: Map<String, String> =
-            latexCommands.optionalParameterMap.toStringMap()
+            latexCommands.getOptionalParameterMap().toStringMap()
         return LatexCommandsStubImpl(
             parent!!, this,
             commandToken,

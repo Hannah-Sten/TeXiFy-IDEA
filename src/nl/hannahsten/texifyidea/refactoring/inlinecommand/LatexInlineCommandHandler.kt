@@ -6,8 +6,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.getCommandsInFiles
 import nl.hannahsten.texifyidea.util.psi.*
 
 /**
@@ -49,7 +50,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
             }
 
             // we will not be dealing with commands that have a map of options
-            if (element.optionalParameterMap.any { it.key != null && it.value != null })
+            if (element.getOptionalParameterMap().any { it.value != null })
                 return false
 
             val file = element.containingFile

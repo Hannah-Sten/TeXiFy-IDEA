@@ -61,7 +61,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
     // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
     // We reference it because we include the preamble of that file, so it is in the file set (partially)
-    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in requiredParameters && optionalParameterMap.isNotEmpty()) {
+    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in requiredParameters && getOptionalParameterMap().isNotEmpty()) {
         val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
             inputFileReferences.add(InputFileReference(this, range.shrink(1), setOf("tex"), "tex"))
@@ -141,7 +141,7 @@ fun Map<LatexKeyValKey, LatexKeyValValue?>.toStringMap(): LinkedHashMap<String, 
     return parameterMap
 }
 
-fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyValKey, LatexKeyValValue?> {
+fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyValKey, LatexKeyValValue?> {
     val parameterMap = LinkedHashMap<LatexKeyValKey, LatexKeyValValue?>()
     // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
     // But within a parameter, there can be different content like [name={value in group}]
