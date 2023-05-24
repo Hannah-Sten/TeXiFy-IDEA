@@ -183,30 +183,3 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
     return element
 }
 
-fun keyValKeyToString(element: LatexKeyValKey): String {
-    // This is ugly, but element.children returns only composite children and other querying methods are recursive
-    val result = ArrayList<PsiElement>()
-    var psiChild = element.firstChild
-    while (psiChild != null) {
-        result.add(psiChild)
-        psiChild = psiChild.nextSibling
-    }
-    return result.joinToString(separator = "") {
-        when (it) {
-            is LatexGroup -> it.content?.text ?: ""
-            else -> it.text
-        }
-    }
-}
-
-fun keyValContentToString(list: List<LatexKeyValContent>): String =
-    list.joinToString(separator = "") {
-        when {
-            it.parameterText != null -> it.parameterText!!.text
-            it.parameterGroup != null -> it.parameterGroup!!.parameterGroupText!!.text
-            else -> ""
-        }
-    }
-
-fun keyValContentToString(element: LatexKeyValValue): String =
-    keyValContentToString(element.keyValContentList)

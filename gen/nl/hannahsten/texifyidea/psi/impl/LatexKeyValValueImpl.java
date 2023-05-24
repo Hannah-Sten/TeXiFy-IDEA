@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexKeyValValueImpl extends ASTWrapperPsiElement implements LatexKeyValValue {
+public class LatexKeyValValueImpl extends LatexKeyValValueImplMixin implements LatexKeyValValue {
 
   public LatexKeyValValueImpl(@NotNull ASTNode node) {
     super(node);
@@ -31,11 +30,6 @@ public class LatexKeyValValueImpl extends ASTWrapperPsiElement implements LatexK
   @NotNull
   public List<LatexKeyValContent> getKeyValContentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexKeyValContent.class);
-  }
-
-  @Override
-  public String toString() {
-    return LatexPsiImplUtil.toString(this);
   }
 
 }

@@ -127,10 +127,10 @@ key_val_pair ::= key_val_key (EQUALS key_val_value?)?
 
 // Keys in a key/val list are typically no commands and don't need to be references
 key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
-    methods=[toString]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValKeyImplMixin"
 }
 key_val_value ::= key_val_content+ {
-    methods=[toString]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValValueImplMixin"
 }
 key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
 

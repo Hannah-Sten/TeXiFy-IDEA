@@ -14,14 +14,6 @@ import java.util.List;
  */
 public class LatexPsiImplUtil {
 
-    public static String toString(@NotNull LatexKeyValKey element) {
-        return LatexCommandsImplMixinUtilKt.keyValKeyToString(element);
-    }
-
-    public static String toString(@NotNull LatexKeyValValue element) {
-        return LatexCommandsImplMixinUtilKt.keyValContentToString(element);
-    }
-
     public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexCommands element) {
         return LatexCommandsImplMixinUtilKt.getOptionalParameterMap(element.getParameterList());
     }
