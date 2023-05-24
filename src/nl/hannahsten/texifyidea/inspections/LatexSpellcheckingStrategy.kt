@@ -72,7 +72,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
 
         val arguments = getArguments(parent.commandToken.text.substring(1)) ?: return null
 
-        val realParams = parent.requiredParameters
+        val realParams = parent.getRequiredParameters()
         // Note that a leaf may be only part of a parameter
         val parameterIndex = realParams.indexOf(leaf.firstParentOfType(LatexParameterText::class)?.text)
         return if (parameterIndex < 0 || parameterIndex >= arguments.size) {

@@ -61,7 +61,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             }
 
             val diacritic = Diacritic.Normal.fromCommand(command.commandToken.text) ?: continue
-            if (diacritic.isTypeable && (command.requiredParameters.isNotEmpty() || getNormalTextSibling(command) != null)) {
+            if (diacritic.isTypeable && (command.getRequiredParameters().isNotEmpty() || getNormalTextSibling(command) != null)) {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         command,
@@ -94,7 +94,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
 
             val range: TextRange
             val base: String
-            val param = command.requiredParameters.getOrNull(0)
+            val param = command.getRequiredParameters().getOrNull(0)
             if (param != null) {
                 // Just a required parameter
                 range = command.textRange

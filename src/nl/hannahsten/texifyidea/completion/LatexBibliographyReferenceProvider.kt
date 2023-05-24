@@ -64,8 +64,8 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
     }
 
     private fun createLookupElementFromLatexCommand(latexCommand: LatexCommands): LookupElementBuilder? {
-        if (latexCommand.requiredParameters.isEmpty()) return null
-        return LookupElementBuilder.create(latexCommand.requiredParameters[0])
+        if (latexCommand.getRequiredParameters().isEmpty()) return null
+        return LookupElementBuilder.create(latexCommand.getRequiredParameters()[0])
             .bold()
             .withInsertHandler(LatexReferenceInsertHandler())
             .withTypeText(latexCommand.containingFile.name + ": " + (1 + StringUtil.offsetToLineNumber(latexCommand.containingFile.text, latexCommand.textOffset)), true)

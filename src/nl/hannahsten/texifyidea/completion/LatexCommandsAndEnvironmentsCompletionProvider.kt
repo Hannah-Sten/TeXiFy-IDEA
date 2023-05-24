@@ -288,7 +288,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             }
 
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
-                val paramSpecification = commands.requiredParameters.getOrNull(1)?.removeAll("null", " ") ?: ""
+                val paramSpecification = commands.getRequiredParameters().getOrNull(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
                     if (PackageMagic.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"

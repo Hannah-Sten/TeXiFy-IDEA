@@ -56,11 +56,6 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  public List<String> getRequiredParameters() {
-    return LatexPsiImplUtil.getRequiredParameters(this);
-  }
-
-  @Override
   public String getName() {
     return LatexPsiImplUtil.getName(this);
   }

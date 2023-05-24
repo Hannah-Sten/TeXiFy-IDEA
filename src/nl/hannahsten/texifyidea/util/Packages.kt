@@ -60,7 +60,7 @@ object PackageUtils {
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
                 // Do not insert below the subfiles package, it should stay last
-                if (cmd.requiredParameters.contains("subfiles")) {
+                if (cmd.getRequiredParameters().contains("subfiles")) {
                     break
                 }
                 else {
@@ -234,7 +234,7 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
             val packages = setOf(
-                cmd.requiredParameters,
+                cmd.getRequiredParameters(),
                 cmd.getOptionalParameterMap().toStringMap().keys.toList()
             )
 

@@ -10,9 +10,9 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.psi.childrenOfType
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.psi.childrenOfType
 
 /**
  * Uses the fileset cache to find all root files in the fileset.
@@ -70,7 +70,7 @@ fun PsiFile.isRoot(): Boolean {
 
     // If the file uses the subfiles documentclass, then it is a root file in the sense that all file inclusions
     // will be relative to this file. Note that it may include the preamble of a different file (using optional parameter of \documentclass)
-    fun usesSubFiles() = documentClass()?.requiredParameters?.contains(SUBFILES.name) == true
+    fun usesSubFiles() = documentClass()?.getRequiredParameters()?.contains(SUBFILES.name) == true
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
@@ -84,7 +84,7 @@ fun PsiFile.isRoot(): Boolean {
  * e.g. \mycommand{arg1,arg2}{arg3} will return [arg1, arg2, arg3].
  */
 fun LatexCommands.getAllRequiredArguments(): List<String>? {
-    val required = requiredParameters
+    val required = getRequiredParameters()
     if (required.isEmpty()) return null
     return required.flatMap { it.split(',') }
 }

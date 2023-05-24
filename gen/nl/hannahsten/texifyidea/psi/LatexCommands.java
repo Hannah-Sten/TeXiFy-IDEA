@@ -16,8 +16,6 @@ public interface LatexCommands extends PsiNameIdentifierOwner, LatexCommandWithP
   @NotNull
   PsiElement getCommandToken();
 
-  List<String> getRequiredParameters();
-
   int getTextOffset();
 
   String getName();

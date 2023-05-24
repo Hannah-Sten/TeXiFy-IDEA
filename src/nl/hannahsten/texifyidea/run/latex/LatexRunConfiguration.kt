@@ -456,7 +456,7 @@ class LatexRunConfiguration(
             // that do have one can have it in any included file
             psiFile!!.allCommands()
                 .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
-                .flatMap { command -> command.requiredParameters }
+                .flatMap { command -> command.getRequiredParameters() }
                 .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
                     val chapterMainFile = psiFile!!.findFile(filename)

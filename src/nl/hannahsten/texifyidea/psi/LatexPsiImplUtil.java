@@ -5,24 +5,11 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.util.psi.LatexCommandsImplMixinUtilKt;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
  * This class is used for method injection in generated parser classes.
  * It has to be in Java for Grammar-Kit to be able to generate the parser classes correctly.
  */
 public class LatexPsiImplUtil {
-
-    /**
-     * Generates a list of all names of all required parameters in the command.
-     */
-    public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
-        return LatexCommandsImplMixinUtilKt.getRequiredParameters(element.getParameterList());
-    }
-
-    public static List<String> getRequiredParameters(@NotNull LatexBeginCommand element) {
-        return LatexCommandsImplMixinUtilKt.getRequiredParameters(element.getParameterList());
-    }
 
     /**
      * Get the name of the command, for example \newcommand.

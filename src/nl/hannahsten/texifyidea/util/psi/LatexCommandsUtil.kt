@@ -17,7 +17,6 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentation
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.*
 import kotlin.math.min
 
 /**
@@ -124,7 +123,7 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
                 .indexOfFirst { arg -> arg.name == argument }
         }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else requiredParameters.getOrNull(min(requiredArgIndices.first(), requiredParameters.size - 1))
+    else getRequiredParameters().getOrNull(min(requiredArgIndices.first(), getRequiredParameters().size - 1))
 }
 
 /**
@@ -166,7 +165,7 @@ fun LatexCommands.isKnown(): Boolean {
 fun LatexCommands.requiredParameter(index: Int): String? {
     require(index >= 0) { "Index must not be negative" }
 
-    val parameters = requiredParameters
+    val parameters = getRequiredParameters()
     if (parameters.isEmpty() || index >= parameters.size) {
         return null
     }

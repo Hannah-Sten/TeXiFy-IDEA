@@ -61,7 +61,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
     // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
     // We reference it because we include the preamble of that file, so it is in the file set (partially)
-    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in requiredParameters && getOptionalParameterMap().isNotEmpty()) {
+    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
             inputFileReferences.add(InputFileReference(this, range.shrink(1), setOf("tex"), "tex"))
@@ -182,4 +182,3 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
     }
     return element
 }
-

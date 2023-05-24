@@ -100,4 +100,6 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     }
 
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
+
+    override fun getRequiredParameters() = getRequiredParameters(this.parameterList)
 }

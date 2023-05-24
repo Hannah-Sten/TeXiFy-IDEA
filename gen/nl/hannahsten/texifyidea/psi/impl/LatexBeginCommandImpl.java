@@ -32,9 +32,4 @@ public class LatexBeginCommandImpl extends LatexBeginCommandImplMixin implements
     return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexParameter.class);
   }
 
-  @Override
-  public List<String> getRequiredParameters() {
-    return LatexPsiImplUtil.getRequiredParameters(this);
-  }
-
 }

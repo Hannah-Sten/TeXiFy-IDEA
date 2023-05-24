@@ -10,6 +10,4 @@ public interface LatexBeginCommand extends LatexCommandWithParams {
   @NotNull
   List<LatexParameter> getParameterList();
 
-  List<String> getRequiredParameters();
-
 }

@@ -35,7 +35,7 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
         }
         else {
             return LatexDefinitionIndex.getCommandsByNames(definitionsAndRedefinitions, element.project, element.project.projectSearchScope)
-                .filter { it.requiredParameters.firstOrNull() == element.name }
+                .filter { it.getRequiredParameters().firstOrNull() == element.name }
                 .mapNotNull { newcommand ->
                     // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
                     // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand

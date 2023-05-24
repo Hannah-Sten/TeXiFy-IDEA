@@ -34,7 +34,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
             .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
-            val parameter = command.requiredParameters.firstOrNull() ?: continue
+            val parameter = command.getRequiredParameters().firstOrNull() ?: continue
             val lastSlashIndex = parameter.indexOfLast { it == '/' }
             val providedDir = parameter.removeRange(max(0, lastSlashIndex), parameter.length)
             val rootDir = file.findRootFile().containingDirectory ?: continue

@@ -71,7 +71,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
-            .filter { command -> command.requiredParameters.any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
+            .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
             .flatMap { it.getOptionalParameterMap().toStringMap().keys }
     }
 }

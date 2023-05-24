@@ -70,7 +70,7 @@ enum class LatexGlossariesCommand(
             if (!CommandMagic.glossaryEntry.contains(command.name) &&
                 !CommandMagic.glossaryReference.contains(command.name)
             ) return null
-            return command.requiredParameters[0]
+            return command.getRequiredParameters()[0]
         }
 
         /**

@@ -83,7 +83,7 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexCommandsImplMixin"
-    methods=[getRequiredParameters getTextOffset getName setName]
+    methods=[getTextOffset getName setName]
     extends="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
     implements=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }
@@ -91,7 +91,6 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
-    methods=[getRequiredParameters]
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexBeginCommandImplMixin"
 }
 

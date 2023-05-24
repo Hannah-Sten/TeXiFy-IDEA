@@ -47,7 +47,7 @@ fun getLabel(element: LatexEnvironment): String? {
             val labelCommands = CommandMagic.labelDefinitionsWithoutCustomCommands
             val labelCommand =
                 children.firstOrNull { c: LatexCommands -> labelCommands.contains(c.name) } ?: return null
-            val requiredParameters = labelCommand.requiredParameters
+            val requiredParameters = labelCommand.getRequiredParameters()
             if (requiredParameters.isEmpty()) return null
             val info = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.name, null) ?: return null
             if (!info.labelsPreviousCommand) return null

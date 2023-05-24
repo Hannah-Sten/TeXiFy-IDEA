@@ -72,8 +72,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
         val docClass = LatexCommandsIndex.getItems(element.getProject(), scope).asSequence()
-            .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.requiredParameters.isNotEmpty() }
-            .map { cmd -> cmd.requiredParameters[0] }
+            .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.getRequiredParameters().isNotEmpty() }
+            .map { cmd -> cmd.getRequiredParameters()[0] }
             .firstOrNull() ?: "article"
 
         // Fetch all commands in the active file.
@@ -100,7 +100,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                 continue
             }
 
-            if (currentCmd.requiredParameters.isEmpty()) {
+            if (currentCmd.getRequiredParameters().isEmpty()) {
                 continue
             }
 
@@ -244,8 +244,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun updateNumbering(cmd: LatexCommands, numbering: SectionNumbering) {
         val token = cmd.commandToken.text
-        val required = cmd.requiredParameters
-
+        val required = cmd.getRequiredParameters()
         if (required.size < 2) {
             return
         }

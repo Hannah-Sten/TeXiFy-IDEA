@@ -81,7 +81,7 @@ class LatexInlineCommandProcessor(
      * @param psiElement The element to remove and replace with the contents of the command
      */
     private fun replaceUsage(psiElement: PsiElement): Boolean {
-        val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf()
+        val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.getRequiredParameters() ?: listOf()
         val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.getOptionalParameterMap()?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
         val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.getOptionalParameterMap()?.keys?.toList()?.map { it.text } ?: listOf<String>()

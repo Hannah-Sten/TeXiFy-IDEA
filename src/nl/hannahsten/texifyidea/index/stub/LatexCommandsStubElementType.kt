@@ -31,7 +31,7 @@ class LatexCommandsStubElementType(debugName: String) :
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
-        val requiredParameters = latexCommands.requiredParameters
+        val requiredParameters = latexCommands.getRequiredParameters()
         val optionalParameters: Map<String, String> =
             latexCommands.getOptionalParameterMap().toStringMap()
         return LatexCommandsStubImpl(
