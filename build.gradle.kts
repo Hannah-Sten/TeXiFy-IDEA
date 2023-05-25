@@ -289,7 +289,7 @@ tasks.generateLexer {
 tasks.generateParser {
     sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
     targetRoot.set("gen")
-    pathToParser.set("nl/hannahsten/texifidea/parser/LatexParser.java")
+    pathToParser.set("nl/hannahsten/texifyidea/parser/LatexParser.java")
     pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
 }
 
