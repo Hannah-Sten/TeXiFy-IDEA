@@ -45,9 +45,9 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                         val conventionSettings = TexifyConventionsSettingsManager
                             .getInstance(label.project).getSettings()
                         conventionSettings.getLabelConvention(
-                            it.getEnvironmentName(),
-                            LabelConventionType.ENVIRONMENT
-                        ) != null &&
+                                it.getEnvironmentName(),
+                                LabelConventionType.ENVIRONMENT
+                            ) != null &&
                             !EnvironmentMagic.labelAsParameter.contains(it.getEnvironmentName())
                     }
                     ) {

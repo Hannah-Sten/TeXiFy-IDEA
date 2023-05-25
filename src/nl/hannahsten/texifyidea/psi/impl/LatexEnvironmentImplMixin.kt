@@ -12,11 +12,9 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 
 abstract class LatexEnvironmentImplMixin : LatexEnvironment, StubBasedPsiElementBase<LatexEnvironmentStub> {
 
-
     constructor(stub: LatexEnvironmentStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
     constructor(node: ASTNode) : super(node)
     constructor(stub: LatexEnvironmentStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
-
 
     override fun isValidHost(): Boolean {
         return true

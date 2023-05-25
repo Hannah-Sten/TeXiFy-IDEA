@@ -51,7 +51,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         }
     }
 
-
     /**
      * If [getReferences] returns one reference return that one, null otherwise.
      */
@@ -79,7 +78,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         return this
     }
 
-
     override fun setName(name: String): PsiElement {
         /**
          * Build a new PSI this where [old] is replaced with [new] and replace the old PSI this
@@ -102,7 +100,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         val environment = this.firstParentOfType(LatexEnvironment::class)
         // If we want to rename a label
         if (CommandMagic.reference.contains(command?.name) || this.project.getLabelDefinitionCommands()
-                .contains(command?.name)
+            .contains(command?.name)
         ) {
             // Get a new psi this for the complete label command (\label included),
             // because if we replace the complete command instead of just the normal text
@@ -160,5 +158,4 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
                 ?.remove()
         }
     }
-
 }

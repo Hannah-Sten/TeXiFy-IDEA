@@ -165,5 +165,3 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
     extractSubParameterRanges(firstParam)
         .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
         .toArray(emptyArray())
-
-

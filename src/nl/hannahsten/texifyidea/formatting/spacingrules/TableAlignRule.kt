@@ -25,9 +25,9 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
     if (left.node?.text?.endsWith("\\&") == true) return null
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
-            parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-        )
+        ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
+                parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+            )
     ) return null
 
     return createSpacing(
