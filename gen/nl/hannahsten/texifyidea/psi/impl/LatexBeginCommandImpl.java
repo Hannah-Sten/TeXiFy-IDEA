@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexBeginCommandImpl extends LatexBeginCommandImplMixin implements LatexBeginCommand {
 
-  public LatexBeginCommandImpl(@NotNull ASTNode node) {
+  public LatexBeginCommandImpl(ASTNode node) {
     super(node);
   }
 

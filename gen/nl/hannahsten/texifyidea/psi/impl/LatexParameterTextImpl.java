@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexParameterTextImpl extends LatexParameterTextImplMixin implements LatexParameterText {
 
-  public LatexParameterTextImpl(@NotNull ASTNode node) {
+  public LatexParameterTextImpl(ASTNode node) {
     super(node);
   }
 

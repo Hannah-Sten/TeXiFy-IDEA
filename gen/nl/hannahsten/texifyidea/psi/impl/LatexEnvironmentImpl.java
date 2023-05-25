@@ -9,22 +9,17 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import nl.hannahsten.texifyidea.psi.*;
-import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
+import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 
 public class LatexEnvironmentImpl extends LatexEnvironmentImplMixin implements LatexEnvironment {
 
-  public LatexEnvironmentImpl(@NotNull LatexEnvironmentStub stub, @NotNull IStubElementType<?, ?> type) {
-    super(stub, type);
-  }
-
-  public LatexEnvironmentImpl(@NotNull ASTNode node) {
+  public LatexEnvironmentImpl(ASTNode node) {
     super(node);
   }
 
-  public LatexEnvironmentImpl(@Nullable LatexEnvironmentStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
-    super(stub, type, node);
+  public LatexEnvironmentImpl(LatexEnvironmentStub stub, IStubElementType stubType) {
+    super(stub, stubType);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {

@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexKeyValKeyImpl extends LatexKeyValKeyImplMixin implements LatexKeyValKey {
 
-  public LatexKeyValKeyImpl(@NotNull ASTNode node) {
+  public LatexKeyValKeyImpl(ASTNode node) {
     super(node);
   }
 

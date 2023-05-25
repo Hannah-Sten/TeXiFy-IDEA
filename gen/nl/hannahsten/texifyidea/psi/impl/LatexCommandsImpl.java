@@ -9,22 +9,17 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import nl.hannahsten.texifyidea.psi.*;
-import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 
 public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCommands {
 
-  public LatexCommandsImpl(@NotNull LatexCommandsStub stub, @NotNull IStubElementType<?, ?> type) {
-    super(stub, type);
-  }
-
-  public LatexCommandsImpl(@NotNull ASTNode node) {
+  public LatexCommandsImpl(ASTNode node) {
     super(node);
   }
 
-  public LatexCommandsImpl(@Nullable LatexCommandsStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
-    super(stub, type, node);
+  public LatexCommandsImpl(LatexCommandsStub stub, IStubElementType stubType) {
+    super(stub, stubType);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {

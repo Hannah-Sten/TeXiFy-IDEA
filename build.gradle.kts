@@ -293,7 +293,7 @@ tasks.generateParser {
     pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
 }
 
-// tasks.compileKotlin {
-//    dependsOn(tasks.generateLexer)
-//    dependsOn(tasks.generateParser)
-// }
+ tasks.compileKotlin {
+    dependsOn(tasks.generateLexer)
+    dependsOn(tasks.generateParser)
+ }
