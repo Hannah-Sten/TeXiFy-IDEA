@@ -4,7 +4,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
@@ -167,18 +166,4 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
         .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
         .toArray(emptyArray())
 
-fun setName(element: LatexCommands, newName: String): PsiElement {
-    var newText = element.text.replace(element.getName() ?: return element, newName)
-    if (!newText.startsWith("\\"))
-        newText = "\\" + newText
-    val newElement = LatexPsiHelper(element.project).createFromText(newText).firstChild
-    val oldNode = element.node
-    val newNode = newElement.node
-    if (oldNode == null) {
-        element.parent?.node?.addChild(newNode)
-    }
-    else {
-        element.parent?.node?.replaceChild(oldNode, newNode)
-    }
-    return element
-}
+

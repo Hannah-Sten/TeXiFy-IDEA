@@ -9,10 +9,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
-import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexPsiImplUtil
-import nl.hannahsten.texifyidea.psi.LatexVisitor
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -63,6 +60,22 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     override fun getName(): String? {
         val stub = this.stub
         return if (stub != null) stub.name else this.commandToken.text
+    }
+
+    override fun setName(newName: String): PsiElement {
+        var newText = this.text.replace(getName() ?: return this, newName)
+        if (!newText.startsWith("\\"))
+            newText = "\\" + newText
+        val newElement = LatexPsiHelper(this.project).createFromText(newText).firstChild
+        val oldNode = this.node
+        val newNode = newElement.node
+        if (oldNode == null) {
+            this.parent?.node?.addChild(newNode)
+        }
+        else {
+            this.parent?.node?.replaceChild(oldNode, newNode)
+        }
+        return this
     }
 
     /**

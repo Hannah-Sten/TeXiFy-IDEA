@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.*;
-import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
-import nl.hannahsten.texifyidea.util.psi.LatexCommandsImplMixinUtilKt;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,18 +9,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class LatexPsiImplUtil {
 
-    /**
-     * Get the name of the command, for example \newcommand.
-     */
-    public static String getName(@NotNull LatexCommands element) {
-        LatexCommandsStub stub = element.getStub();
-        if (stub != null) return stub.getName();
-        return element.getCommandToken().getText();
-    }
-
-    public static PsiElement setName(@NotNull LatexCommands element, String name) {
-        return LatexCommandsImplMixinUtilKt.setName(element, name);
-    }
 
     /*
      * LatexEnvironment
