@@ -14,7 +14,6 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
-    psiImplUtilClass="nl.hannahsten.texifyidea.psi.LatexPsiImplUtil" // todo remove
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.LatexElementType"
@@ -96,7 +95,7 @@ begin_command ::= BEGIN_TOKEN STAR? parameter* {
 end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 
 parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
-    methods=[isValidHost updateText createLiteralTextEscaper]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterImplMixin"
 }
 
 // pin=3 makes sure that an optional parameter is only matched successfully when

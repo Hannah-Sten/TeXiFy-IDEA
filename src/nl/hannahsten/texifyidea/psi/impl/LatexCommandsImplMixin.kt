@@ -16,8 +16,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.psi.*
 
 /**
- * This class is a mixin for LatexCommandsImpl. We use a separate mixin class instead of [LatexPsiImplUtil] because we need to add an instance variable
- * in order to implement [getName] and [setName] correctly.
+ * This class is a mixin for LatexCommandsImpl.
  */
 abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands, LatexCommandWithParams {
 

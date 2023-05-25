@@ -139,12 +139,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             val newElement = LatexPsiHelper(this.project).createFromText(name).firstChild
             val oldNode = this.node
             val newNode = newElement.node
-            if (oldNode == null) {
-                this.parent.node.addChild(newNode)
-            }
-            else {
-                this.parent.node.replaceChild(oldNode, newNode)
-            }
+            this.parent.node.replaceChild(oldNode, newNode)
         }
         // Else, this is not renamable
 

@@ -5,7 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLanguageInjectionHost;
-import com.intellij.psi.LiteralTextEscaper;
 
 public interface LatexParameter extends PsiLanguageInjectionHost {
 
@@ -17,11 +16,5 @@ public interface LatexParameter extends PsiLanguageInjectionHost {
 
   @Nullable
   LatexRequiredParam getRequiredParam();
-
-  boolean isValidHost();
-
-  PsiLanguageInjectionHost updateText(@NotNull String text);
-
-  @NotNull LiteralTextEscaper<LatexParameter> createLiteralTextEscaper();
 
 }

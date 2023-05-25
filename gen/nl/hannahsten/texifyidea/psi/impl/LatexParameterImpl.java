@@ -8,12 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
-import com.intellij.psi.LiteralTextEscaper;
-import com.intellij.psi.PsiLanguageInjectionHost;
 
-public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexParameter {
+public class LatexParameterImpl extends LatexParameterImplMixin implements LatexParameter {
 
   public LatexParameterImpl(@NotNull ASTNode node) {
     super(node);
@@ -45,21 +42,6 @@ public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexPar
   @Nullable
   public LatexRequiredParam getRequiredParam() {
     return PsiTreeUtil.getChildOfType(this, LatexRequiredParam.class);
-  }
-
-  @Override
-  public boolean isValidHost() {
-    return LatexPsiImplUtil.isValidHost(this);
-  }
-
-  @Override
-  public PsiLanguageInjectionHost updateText(@NotNull String text) {
-    return LatexPsiImplUtil.updateText(this, text);
-  }
-
-  @Override
-  public @NotNull LiteralTextEscaper<LatexParameter> createLiteralTextEscaper() {
-    return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 
 }
