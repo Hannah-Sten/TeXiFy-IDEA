@@ -124,3 +124,8 @@ fun <T : PsiElement?> getParentOfType(
     }
     return element
 }
+
+val LatexParameterText.command: PsiElement?
+    get() {
+        return this.firstParentOfType(LatexCommands::class)?.firstChild
+    }
