@@ -16,6 +16,8 @@ import nl.hannahsten.texifyidea.lang.LatexDocumentClass
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.getLabel
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
@@ -61,7 +63,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         val labeledEnvironments =
             requireLabel.filter { c -> c.type == LabelConventionType.ENVIRONMENT }.map { it.name }.toSet()
-        file.environmentsInFile().filter { env -> labeledEnvironments.contains(env.environmentName) }
+        file.environmentsInFile().filter { env -> labeledEnvironments.contains(env.getEnvironmentName()) }
             .forEach { addEnvironmentDescriptor(it, descriptors, manager, isOntheFly) }
 
         return descriptors
@@ -105,7 +107,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>,
         manager: InspectionManager, isOntheFly: Boolean
     ): Boolean {
-        if (environment.label != null) {
+        if (environment.getLabel() != null) {
             return false
         }
 

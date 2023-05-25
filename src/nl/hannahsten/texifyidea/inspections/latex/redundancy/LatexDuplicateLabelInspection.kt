@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.labels.findBibitemCommands
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -57,7 +58,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                         }
                     }
                     is LatexEnvironment -> {
-                        if (EnvironmentMagic.labelAsParameter.contains(this.environmentName)) {
+                        if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
                             return@getProblemDescriptors getParameterLabelDescriptor(this)
                         }
 

@@ -67,7 +67,7 @@ environment ::= begin_command environment_content? end_command {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
-    methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImplMixin"
  }
 
 // There cannot be empty content in an environment, because it will break formatting related things
@@ -83,7 +83,6 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexCommandsImplMixin"
-    methods=[getTextOffset]
     extends="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
     implements=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }

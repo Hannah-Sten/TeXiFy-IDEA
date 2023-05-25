@@ -64,7 +64,7 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
     // (think non-ASCII characters in a \section command), we return null here when the element is not an identifier
     // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
     val name = element.firstParentOfType(LatexCommands::class)?.name
-    val environmentName = element.firstParentOfType(LatexEnvironment::class)?.environmentName
+    val environmentName = element.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
     if (!CommandMagic.labelReferenceWithoutCustomCommands.contains(name) &&
         !CommandMagic.labelDefinitionsWithoutCustomCommands.contains(name) &&
         !CommandMagic.bibliographyReference.contains(name) &&
@@ -110,7 +110,7 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
         replaceInCommand(command, oldLabel, name)
     }
     else if (CommandMagic.labelAsParameter.contains(command?.name) || EnvironmentMagic.labelAsParameter.contains(
-            environment?.environmentName
+            environment?.getEnvironmentName()
         )
     ) {
         val helper = LatexPsiHelper(element.project)

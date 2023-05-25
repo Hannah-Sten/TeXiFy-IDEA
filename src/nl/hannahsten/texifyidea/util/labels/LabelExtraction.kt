@@ -41,7 +41,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
             }
         }
         is LatexEnvironment -> {
-            if (EnvironmentMagic.labelAsParameter.contains(environmentName)) {
+            if (EnvironmentMagic.labelAsParameter.contains(getEnvironmentName())) {
                 getLabelParameterText(beginCommand)
             }
             else {
@@ -85,7 +85,8 @@ fun PsiElement.extractLabelName(referencingFileSetCommands: Collection<LatexComm
                 prefix + this.requiredParameter(position)
             }
         }
-        is LatexEnvironment -> this.label ?: ""
+
+        is LatexEnvironment -> this.getLabel() ?: ""
         else -> text
     }
 }

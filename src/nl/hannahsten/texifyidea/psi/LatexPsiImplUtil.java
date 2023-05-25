@@ -11,31 +11,6 @@ public class LatexPsiImplUtil {
 
 
     /*
-     * LatexEnvironment
-     */
-
-    public static String getLabel(@NotNull LatexEnvironment element) {
-        return LatexEnvironmentUtilKt.getLabel(element);
-    }
-
-    public static String getEnvironmentName(@NotNull LatexEnvironment element) {
-        return LatexEnvironmentUtilKt.getEnvironmentName(element);
-    }
-
-    public static boolean isValidHost(@NotNull LatexEnvironment element) {
-        return true;
-    }
-
-    public static PsiLanguageInjectionHost updateText(@NotNull LatexEnvironment element, @NotNull String text) {
-        return ElementManipulators.handleContentChange(element, text);
-    }
-
-    @NotNull
-    public static LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper(@NotNull LatexEnvironment element) {
-        return LiteralTextEscaper.createSimple(element);
-    }
-
-    /*
      * LatexParameterText
      */
 

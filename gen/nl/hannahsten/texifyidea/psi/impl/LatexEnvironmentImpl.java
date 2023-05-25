@@ -8,15 +8,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.StubBasedPsiElementBase;
-import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import nl.hannahsten.texifyidea.psi.*;
-import com.intellij.psi.LiteralTextEscaper;
-import com.intellij.psi.PsiLanguageInjectionHost;
+import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 
-public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironmentStub> implements LatexEnvironment {
+public class LatexEnvironmentImpl extends LatexEnvironmentImplMixin implements LatexEnvironment {
 
   public LatexEnvironmentImpl(@NotNull LatexEnvironmentStub stub, @NotNull IStubElementType<?, ?> type) {
     super(stub, type);
@@ -26,7 +23,7 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
     super(node);
   }
 
-  public LatexEnvironmentImpl(LatexEnvironmentStub stub, IElementType type, ASTNode node) {
+  public LatexEnvironmentImpl(@Nullable LatexEnvironmentStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
     super(stub, type, node);
   }
 
@@ -56,31 +53,6 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
   @Nullable
   public LatexEnvironmentContent getEnvironmentContent() {
     return PsiTreeUtil.getChildOfType(this, LatexEnvironmentContent.class);
-  }
-
-  @Override
-  public String getEnvironmentName() {
-    return LatexPsiImplUtil.getEnvironmentName(this);
-  }
-
-  @Override
-  public String getLabel() {
-    return LatexPsiImplUtil.getLabel(this);
-  }
-
-  @Override
-  public boolean isValidHost() {
-    return LatexPsiImplUtil.isValidHost(this);
-  }
-
-  @Override
-  public PsiLanguageInjectionHost updateText(@NotNull String text) {
-    return LatexPsiImplUtil.updateText(this, text);
-  }
-
-  @Override
-  public @NotNull LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
-    return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 
 }

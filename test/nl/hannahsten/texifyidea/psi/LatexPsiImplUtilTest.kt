@@ -124,7 +124,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.children.first().firstChildOfType(LatexEnvironment::class)!!
 
-        assertEquals("lst:listing", element.label)
+        assertEquals("lst:listing", element.getLabel())
     }
 
     @Test
@@ -134,7 +134,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.children.first().firstChildOfType(LatexEnvironment::class)!!
 
-        assertEquals("lst:listing", element.label)
+        assertEquals("lst:listing", element.getLabel())
     }
 
     @Test

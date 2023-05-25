@@ -32,15 +32,15 @@ class LatexLanguageInjector : LanguageInjector {
                 hasMagicCommentKey -> {
                     magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
                 }
-                host.environmentName == "lstlisting" -> {
+                host.getEnvironmentName() == "lstlisting" -> {
                     host.beginCommand.getOptionalParameterMap().toStringMap().getOrDefault("language", null)
                 }
-                host.environmentName in EnvironmentMagic.languageInjections.keys -> {
-                    EnvironmentMagic.languageInjections[host.environmentName]
+                host.getEnvironmentName() in EnvironmentMagic.languageInjections.keys -> {
+                    EnvironmentMagic.languageInjections[host.getEnvironmentName()]
                 }
-                host.environmentName.endsWith("code", ignoreCase = false) -> {
+                host.getEnvironmentName().endsWith("code", ignoreCase = false) -> {
                     // Environment may have been defined with the \newminted shortcut (see minted documentation)
-                    host.environmentName.remove("code")
+                    host.getEnvironmentName().remove("code")
                 }
                 else -> {
                     null

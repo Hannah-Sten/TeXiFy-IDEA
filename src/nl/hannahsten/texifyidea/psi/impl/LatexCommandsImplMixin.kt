@@ -69,12 +69,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         val newElement = LatexPsiHelper(this.project).createFromText(newText).firstChild
         val oldNode = this.node
         val newNode = newElement.node
-        if (oldNode == null) {
-            this.parent?.node?.addChild(newNode)
-        }
-        else {
-            this.parent?.node?.replaceChild(oldNode, newNode)
-        }
+        this.parent?.node?.replaceChild(oldNode, newNode)
         return this
     }
 

@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
-import com.intellij.psi.LiteralTextEscaper;
 
 public interface LatexEnvironment extends PsiLanguageInjectionHost, StubBasedPsiElement<LatexEnvironmentStub> {
 
@@ -19,15 +18,5 @@ public interface LatexEnvironment extends PsiLanguageInjectionHost, StubBasedPsi
 
   @Nullable
   LatexEnvironmentContent getEnvironmentContent();
-
-  String getEnvironmentName();
-
-  String getLabel();
-
-  boolean isValidHost();
-
-  PsiLanguageInjectionHost updateText(@NotNull String text);
-
-  @NotNull LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper();
 
 }
