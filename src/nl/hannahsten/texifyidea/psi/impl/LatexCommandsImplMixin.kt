@@ -59,6 +59,12 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         return this
     }
 
+
+    override fun getName(): String? {
+        val stub = this.stub
+        return if (stub != null) stub.name else this.commandToken.text
+    }
+
     /**
      * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexParameterText)}.
      * For more info and an example, see {@link nl.hannahsten.texifyidea.reference.LatexLabelParameterReference}.
@@ -77,7 +83,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         // If it is a reference to a file
         references.addAll(this.getFileArgumentsReferences())
 
-        if (CommandMagic.urls.contains(this.name) && firstParam != null) {
+        if (CommandMagic.urls.contains(this.getName()) && firstParam != null) {
             references.addAll(this.extractUrlReferences(firstParam))
         }
 

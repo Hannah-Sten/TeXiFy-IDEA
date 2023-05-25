@@ -29,7 +29,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     val inputFileReferences = mutableListOf<InputFileReference>()
 
     // There may be multiple commands with this name, just guess the first one
-    val command = LatexCommand.lookup(this.name)?.firstOrNull() ?: return emptyList()
+    val command = LatexCommand.lookup(this.getName())?.firstOrNull() ?: return emptyList()
 
     // Arguments from the LatexCommand (so the command as hardcoded in e.g. LatexRegularCommand)
     val requiredArguments = command.arguments.mapNotNull { it as? RequiredArgument }
@@ -61,7 +61,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
     // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
     // We reference it because we include the preamble of that file, so it is in the file set (partially)
-    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
+    if (getName() == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
             inputFileReferences.add(InputFileReference(this, range.shrink(1), setOf("tex"), "tex"))
@@ -80,7 +80,7 @@ fun extractLabelReferences(element: LatexCommands, requiredParameters: List<Late
 
     // Find the command parameters which are a label reference
     return (
-        LatexCommand.lookup(element.name)
+        LatexCommand.lookup(element.getName())
             ?.firstOrNull()
             ?.arguments
             ?.withIndex()
@@ -168,7 +168,7 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
         .toArray(emptyArray())
 
 fun setName(element: LatexCommands, newName: String): PsiElement {
-    var newText = element.text.replace(element.name ?: return element, newName)
+    var newText = element.text.replace(element.getName() ?: return element, newName)
     if (!newText.startsWith("\\"))
         newText = "\\" + newText
     val newElement = LatexPsiHelper(element.project).createFromText(newText).firstChild

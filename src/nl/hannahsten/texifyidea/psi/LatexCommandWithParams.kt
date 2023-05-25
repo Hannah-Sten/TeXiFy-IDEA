@@ -8,6 +8,11 @@ import com.intellij.psi.PsiElement
  */
 interface LatexCommandWithParams : PsiElement {
 
+    /**
+     * Get the name of the command, for example \newcommand, from the stub if available, otherwise default to getting the text from psi.
+     */
+//    fun getName(): String?
+
     val parameterList: List<LatexParameter>
 
     /**
