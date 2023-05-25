@@ -8,14 +8,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
-import com.intellij.extapi.psi.StubBasedPsiElementBase;
-import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import nl.hannahsten.texifyidea.psi.*;
-import com.intellij.psi.PsiReference;
+import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 
-public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> implements BibtexEntry {
+public class BibtexEntryImpl extends BibtexEntryImplMixin implements BibtexEntry {
 
   public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType<?, ?> type) {
     super(stub, type);
@@ -25,7 +23,7 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
     super(node);
   }
 
-  public BibtexEntryImpl(BibtexEntryStub stub, IElementType type, ASTNode node) {
+  public BibtexEntryImpl(@Nullable BibtexEntryStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
     super(stub, type, node);
   }
 
@@ -73,61 +71,6 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
   @NotNull
   public BibtexType getType() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexType.class));
-  }
-
-  @Override
-  public PsiReference[] getReferences() {
-    return BibtexPsiImplUtil.getReferences(this);
-  }
-
-  @Override
-  public String getTitle() {
-    return BibtexPsiImplUtil.getTitle(this);
-  }
-
-  @Override
-  public List<String> getAuthors() {
-    return BibtexPsiImplUtil.getAuthors(this);
-  }
-
-  @Override
-  public String getYear() {
-    return BibtexPsiImplUtil.getYear(this);
-  }
-
-  @Override
-  public String getIdentifier() {
-    return BibtexPsiImplUtil.getIdentifier(this);
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return BibtexPsiImplUtil.getNameIdentifier(this);
-  }
-
-  @Override
-  public String getAbstract() {
-    return BibtexPsiImplUtil.getAbstract(this);
-  }
-
-  @Override
-  public String getTagContent(String tagName) {
-    return BibtexPsiImplUtil.getTagContent(this, tagName);
-  }
-
-  @Override
-  public String getName() {
-    return BibtexPsiImplUtil.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(@NotNull @NonNls String name) {
-    return BibtexPsiImplUtil.setName(this, name);
-  }
-
-  @Override
-  public String toString() {
-    return BibtexPsiImplUtil.toString(this);
   }
 
 }

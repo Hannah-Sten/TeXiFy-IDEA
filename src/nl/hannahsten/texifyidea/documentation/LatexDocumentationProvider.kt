@@ -12,9 +12,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.parentOfType
-import nl.hannahsten.texifyidea.util.psi.parentsOfType
-import nl.hannahsten.texifyidea.util.psi.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.psi.*
 import java.io.IOException
 import java.io.InputStream
 
@@ -78,10 +76,10 @@ class LatexDocumentationProvider : DocumentationProvider {
             return "$first $last"
         }
 
-        val stringBuilder = StringBuilder("<h3>${entry.title} (${entry.year})</h3>")
-        stringBuilder.append(entry.authors.joinToString(", ") { a -> formatAuthor(a) })
+        val stringBuilder = StringBuilder("<h3>${entry.getTitle()} (${entry.getYear()})</h3>")
+        stringBuilder.append(entry.getAuthors().joinToString(", ") { a -> formatAuthor(a) })
         stringBuilder.append("<br/><br/>")
-        stringBuilder.append(entry.abstract)
+        stringBuilder.append(entry.getAbstract())
         return stringBuilder.toString()
     }
 

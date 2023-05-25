@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
-import com.intellij.psi.PsiReference;
 
 public interface BibtexEntry extends PsiNameIdentifierOwner, StubBasedPsiElement<BibtexEntryStub> {
 
@@ -28,25 +27,5 @@ public interface BibtexEntry extends PsiNameIdentifierOwner, StubBasedPsiElement
 
   @NotNull
   BibtexType getType();
-
-  PsiReference[] getReferences();
-
-  String getTitle();
-
-  List<String> getAuthors();
-
-  String getYear();
-
-  String getIdentifier();
-
-  PsiElement getNameIdentifier();
-
-  String getAbstract();
-
-  String getTagContent(String tagName);
-
-  String getName();
-
-  PsiElement setName(@NotNull @NonNls String name);
 
 }

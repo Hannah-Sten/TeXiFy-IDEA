@@ -2,14 +2,8 @@ package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import nl.hannahsten.texifyidea.reference.BibtexStringReference;
-import nl.hannahsten.texifyidea.util.BibtexKt;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class is used for method injection in generated classes.
@@ -27,67 +21,6 @@ public class BibtexPsiImplUtil {
         return new BibtexStringReference(element);
     }
 
-    /*
-     * BibtexEntry
-     */
-
-    public static PsiReference[] getReferences(@NotNull BibtexEntry element) {
-        return BibtexEntryUtilKt.getReferences(element);
-    }
-
-    public static PsiElement setName(@NotNull BibtexEntry element, @NotNull @NonNls String name) {
-        return element;
-    }
-
-    public static String getName(@NotNull BibtexEntry element) {
-        BibtexEntryStub stub = element.getStub();
-        if (stub != null) return stub.getName();
-        return element.getIdentifier();
-    }
-
-    public static String getTitle(@NotNull BibtexEntry element) {
-        BibtexEntryStub stub = element.getStub();
-        if (stub != null) return stub.getTitle();
-        return element.getTagContent("title");
-    }
-
-    public static List<String> getAuthors(@NotNull BibtexEntry element) {
-        BibtexEntryStub stub = element.getStub();
-        if (stub != null) return stub.getAuthors();
-        String authorList = element.getTagContent("author");
-        return Arrays.asList(authorList.split(" and "));
-    }
-
-    public static String getYear(@NotNull BibtexEntry element) {
-        BibtexEntryStub stub = element.getStub();
-        if (stub != null) return stub.getYear();
-
-        return element.getTagContent("year");
-    }
-
-    public static String getIdentifier(@NotNull BibtexEntry element) {
-        BibtexEntryStub stub = element.getStub();
-        if (stub != null) return stub.getIdentifier();
-        String identifier = BibtexKt.identifier(element);
-        if (identifier == null) return "";
-        return identifier;
-    }
-
-    public static PsiElement getNameIdentifier(@NotNull BibtexEntry element) {
-        return element;
-    }
-
-    public static String getAbstract(@NotNull BibtexEntry element) {
-        return element.getTagContent("abstract");
-    }
-
-    public static String getTagContent(@NotNull BibtexEntry element, String tagName) {
-        return BibtexEntryUtilKt.getTagContent(element, tagName);
-    }
-
-    public static String toString(@NotNull BibtexEntry element) {
-        return element.getText();
-    }
 
     /*
      * BibtexId

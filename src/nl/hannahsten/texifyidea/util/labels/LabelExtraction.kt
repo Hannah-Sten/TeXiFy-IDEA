@@ -5,10 +5,10 @@ import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.identifier
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.psi.firstChildOfType
+import nl.hannahsten.texifyidea.util.psi.getIdentifier
 import nl.hannahsten.texifyidea.util.psi.requiredParameter
 import nl.hannahsten.texifyidea.util.psi.toStringMap
 
@@ -60,7 +60,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
  */
 fun PsiElement.extractLabelName(referencingFileSetCommands: Collection<LatexCommands>? = null): String {
     return when (this) {
-        is BibtexEntry -> identifier() ?: ""
+        is BibtexEntry -> this.getIdentifier()
         is LatexCommands -> {
             if (CommandMagic.labelAsParameter.contains(name)) {
                 getOptionalParameterMap().toStringMap()["label"] ?: ""
