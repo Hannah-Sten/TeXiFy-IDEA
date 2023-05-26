@@ -98,6 +98,13 @@ The index is persistent between restarts.
 However, because a full TeX Live installation contains an enormous amount of packages, it can take a long time to index.
 If this is a problem, you can turn this feature off by deselecting this checkbox.
 
+== Textidote linter
+
+See link:Typesetting-issues#Textidote[Textidote]
+
+== Latexindent command line options
+
+Extra command line options to link:Code-formatting#Latexindent[Latexindent]
 
 [#smart-quotes]
 == Option to enable smart quote substitution
