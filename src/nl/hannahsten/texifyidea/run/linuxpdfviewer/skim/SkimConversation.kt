@@ -22,7 +22,6 @@ object SkimConversation : ViewerConversation() {
      * @param line Line number in the source file to navigate to in the pdf.
      */
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-
         val backgroundParameter = if (focusAllowed) "" else "-g"
 
         if (pdfPath != null) {

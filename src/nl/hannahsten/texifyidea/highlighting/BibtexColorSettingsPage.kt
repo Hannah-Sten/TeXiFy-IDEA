@@ -60,7 +60,8 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
                 |    <key>year</key> = 1997,
                 |    <key>volume</key> = -1,
                 |    <key>note</key> = <value>{to appear}</value>,
-                |}""".trimMargin()
+                |}
+        """.trimMargin()
 
     override fun getAdditionalHighlightingTagToDescriptorMap() = demoTags
 
