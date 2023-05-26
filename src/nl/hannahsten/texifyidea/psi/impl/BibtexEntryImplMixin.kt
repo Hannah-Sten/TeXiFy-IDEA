@@ -69,5 +69,4 @@ abstract class BibtexEntryImplMixin : BibtexEntry, StubBasedPsiElementBase<Bibte
     override fun toString(): String {
         return this.text
     }
-
 }

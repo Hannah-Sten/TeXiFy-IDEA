@@ -14,12 +14,4 @@ public interface BibtexId extends PsiNameIdentifierOwner {
   @NotNull
   BibtexKey getKey();
 
-  PsiElement getNameIdentifier();
-
-  String getName();
-
-  PsiElement setName(String name);
-
-  void delete();
-
 }

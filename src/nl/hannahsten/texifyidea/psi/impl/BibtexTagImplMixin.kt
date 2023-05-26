@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.util.psi.firstChildOfType
 
 abstract class BibtexTagImplMixin(node: ASTNode) : BibtexTag, ASTWrapperPsiElement(node) {
 
-
     override fun getReferences(): Array<PsiReference> {
         val key = this.firstChildOfType(BibtexKey::class)?.text ?: return emptyArray()
         if (key !in FileMagic.bibtexFileKeys) return emptyArray()
@@ -48,5 +47,4 @@ abstract class BibtexTagImplMixin(node: ASTNode) : BibtexTag, ASTWrapperPsiEleme
 
         return references.toTypedArray()
     }
-
 }

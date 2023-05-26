@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
+public class BibtexIdImpl extends BibtexIdImplMixin implements BibtexId {
 
   public BibtexIdImpl(@NotNull ASTNode node) {
     super(node);
@@ -37,26 +36,6 @@ public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
   @NotNull
   public BibtexKey getKey() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexKey.class));
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return BibtexPsiImplUtil.getNameIdentifier(this);
-  }
-
-  @Override
-  public String getName() {
-    return BibtexPsiImplUtil.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(String name) {
-    return BibtexPsiImplUtil.setName(this, name);
-  }
-
-  @Override
-  public void delete() {
-    BibtexPsiImplUtil.delete(this);
   }
 
 }

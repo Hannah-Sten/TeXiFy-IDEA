@@ -47,4 +47,3 @@ fun BibtexEntry.getTagContent(tagName: String?): String {
 
     return ""
 }
-

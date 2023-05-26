@@ -7,7 +7,6 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
-    psiImplUtilClass="nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.BibtexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.BibtexElementType"
@@ -40,7 +39,7 @@ type ::= TYPE_TOKEN
 preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | key
 
 id ::= comment* key comment* {
-    methods=[getNameIdentifier getName setName delete]
+    mixin="nl.hannahsten.texifyidea.psi.impl.BibtexIdImplMixin"
 }
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* {
