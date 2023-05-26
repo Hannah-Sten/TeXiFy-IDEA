@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import nl.hannahsten.texifyidea.reference.BibtexStringReference;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,12 +12,6 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("TypeMayBeWeakened")
 public class BibtexPsiImplUtil {
 
-    /**
-     * Get a reference to the declaration of the string variable.
-     */
-    public static PsiReference getReference(@NotNull BibtexDefinedString element) {
-        return new BibtexStringReference(element);
-    }
 
 
     /*
@@ -42,11 +34,4 @@ public class BibtexPsiImplUtil {
         BibtexIdUtilKt.delete(element);
     }
 
-    /*
-     * BibtexTag
-     */
-
-    public static PsiReference[] getReferences(@NotNull BibtexTag element) {
-        return BibtexTagUtilKt.getReferences(element);
-    }
 }

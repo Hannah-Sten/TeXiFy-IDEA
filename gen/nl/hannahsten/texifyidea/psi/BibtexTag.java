@@ -4,7 +4,6 @@ package nl.hannahsten.texifyidea.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
 
 public interface BibtexTag extends PsiElement {
 
@@ -16,7 +15,5 @@ public interface BibtexTag extends PsiElement {
 
   @NotNull
   BibtexKey getKey();
-
-  PsiReference[] getReferences();
 
 }

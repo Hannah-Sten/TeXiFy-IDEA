@@ -8,11 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
-import com.intellij.psi.PsiReference;
 
-public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
+public class BibtexTagImpl extends BibtexTagImplMixin implements BibtexTag {
 
   public BibtexTagImpl(@NotNull ASTNode node) {
     super(node);
@@ -44,11 +42,6 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
   @NotNull
   public BibtexKey getKey() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexKey.class));
-  }
-
-  @Override
-  public PsiReference[] getReferences() {
-    return BibtexPsiImplUtil.getReferences(this);
   }
 
 }

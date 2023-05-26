@@ -45,7 +45,7 @@ id ::= comment* key comment* {
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* {
     pin=2
-    methods=[getReferences]
+    mixin="nl.hannahsten.texifyidea.psi.impl.BibtexTagImplMixin"
 }
 
 key ::= VERBATIM_IDENTIFIER | IDENTIFIER
@@ -55,7 +55,7 @@ content ::= (string (CONCATENATE string)+) | string | NUMBER | key
 string ::= defined_string | quoted_verbatim | braced_verbatim | quoted_string | braced_string
 
 defined_string ::= key {
-    methods=[getReference]
+    mixin="nl.hannahsten.texifyidea.psi.impl.BibtexDefinedStringImplMixin"
 }
 
 quoted_string ::= QUOTES normal_text? END_QUOTES { pin=1 }
