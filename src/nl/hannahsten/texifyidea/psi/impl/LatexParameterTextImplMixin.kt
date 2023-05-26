@@ -30,19 +30,19 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         // NOTE When adding options here, also update getNameIdentifier below
         return when {
             this.project.getLabelReferenceCommands().contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf<PsiReference>(LatexLabelParameterReference(this))
+                arrayOf(LatexLabelParameterReference(this))
             }
             // If the command is a bibliography reference
             CommandMagic.bibliographyReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf<PsiReference>(BibtexIdReference(this))
+                arrayOf(BibtexIdReference(this))
             }
             // If the command is an \end command (references to \begin)
             this.firstParentOfType(LatexEndCommand::class) != null -> {
-                arrayOf<PsiReference>(LatexEnvironmentReference(this))
+                arrayOf(LatexEnvironmentReference(this))
             }
             // If the command is a glossary reference
             CommandMagic.glossaryReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf<PsiReference>(LatexGlossaryReference(this))
+                arrayOf(LatexGlossaryReference(this))
             }
 
             else -> {

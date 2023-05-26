@@ -242,17 +242,7 @@ fun PsiElement.nextLeafIgnoreWhitespace(): PsiElement? {
  * @return The first following sibling of the given type, or `null` when the sibling couldn't be found.
  */
 fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? {
-    var sibling: PsiElement? = this
-    while (sibling != null) {
-        if (clazz.java.isAssignableFrom(sibling::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return sibling as T
-        }
-
-        sibling = sibling.nextSibling
-    }
-
-    return null
+    return siblingOfType(clazz, PsiElement::getNextSibling)
 }
 
 /**
@@ -261,6 +251,10 @@ fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? {
  * @return The first previous sibling of the given type, or `null` when the sibling couldn't be found.
  */
 fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
+    return siblingOfType(clazz, PsiElement::getPrevSibling)
+}
+
+private fun <T : PsiElement> PsiElement.siblingOfType(clazz: KClass<T>, next: PsiElement.() -> PsiElement): T? {
     var sibling: PsiElement? = this
     while (sibling != null) {
         if (clazz.java.isAssignableFrom(sibling::class.java)) {
@@ -268,7 +262,7 @@ fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
             return sibling as T
         }
 
-        sibling = sibling.prevSibling
+        sibling = sibling.next()
     }
 
     return null

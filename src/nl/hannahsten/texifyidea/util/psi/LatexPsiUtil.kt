@@ -67,7 +67,7 @@ fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
  * @param element
  *              Either a [LatexBeginCommand] or a [LatexEndCommand]
  */
-private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexParameterText::class)?.text
+private fun beginOrEndEnvironmentName(element: PsiElement): String? = element.firstChildOfType(LatexParameterText::class)?.text
 
 /**
  * Finds the [LatexBeginCommand] that matches the end command.
