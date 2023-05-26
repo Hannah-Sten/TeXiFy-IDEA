@@ -157,11 +157,6 @@ tasks.runIde {
     systemProperty("idea.log.path", file("build/idea-sandbox/system/log").absolutePath)
 }
 
-tasks.test {
-    // https://intellij-support.jetbrains.com/hc/en-us/community/posts/4407334950290-jarFiles-is-not-set-for-PluginDescriptor
-    systemProperty("idea.force.use.core.classloader", "true")
-}
-
 // Avoid ClassNotFoundException: com.maddyhome.idea.copyright.psi.UpdateCopyrightsProvider
 tasks.buildSearchableOptions {
     jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
@@ -253,6 +248,9 @@ tasks.test {
         events(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
         exceptionFormat = TestExceptionFormat.FULL
     }
+
+    // https://intellij-support.jetbrains.com/hc/en-us/community/posts/4407334950290-jarFiles-is-not-set-for-PluginDescriptor
+    systemProperty("idea.force.use.core.classloader", "true")
 }
 
 ktlint {
