@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexTagImpl extends BibtexTagImplMixin implements BibtexTag {
 
-  public BibtexTagImpl(@NotNull ASTNode node) {
+  public BibtexTagImpl(ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexDefinedStringImpl extends BibtexDefinedStringImplMixin implements BibtexDefinedString {
 
-  public BibtexDefinedStringImpl(@NotNull ASTNode node) {
+  public BibtexDefinedStringImpl(ASTNode node) {
     super(node);
   }
 

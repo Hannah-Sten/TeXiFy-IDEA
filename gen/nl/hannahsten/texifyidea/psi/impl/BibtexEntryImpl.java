@@ -9,22 +9,17 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import nl.hannahsten.texifyidea.psi.*;
-import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
+import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 
 public class BibtexEntryImpl extends BibtexEntryImplMixin implements BibtexEntry {
 
-  public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType<?, ?> type) {
-    super(stub, type);
-  }
-
-  public BibtexEntryImpl(@NotNull ASTNode node) {
+  public BibtexEntryImpl(ASTNode node) {
     super(node);
   }
 
-  public BibtexEntryImpl(@Nullable BibtexEntryStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
-    super(stub, type, node);
+  public BibtexEntryImpl(BibtexEntryStub stub, IStubElementType stubType) {
+    super(stub, stubType);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {

@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexIdImpl extends BibtexIdImplMixin implements BibtexId {
 
-  public BibtexIdImpl(@NotNull ASTNode node) {
+  public BibtexIdImpl(ASTNode node) {
     super(node);
   }
 

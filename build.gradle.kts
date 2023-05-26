@@ -1,6 +1,8 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.grammarkit.tasks.GenerateLexerTask
+import org.jetbrains.grammarkit.tasks.GenerateParserTask
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -280,20 +282,38 @@ tasks.useLatestVersions {
     updateBlacklist = listOf("org.jlleitschuh.gradle.ktlint")
 }
 
-tasks.generateLexer {
-    sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/LatexLexer.flex"))
-    targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
-    targetClass.set("LatexLexer")
-}
+tasks {
 
-tasks.generateParser {
-    sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
-    targetRoot.set("gen")
-    pathToParser.set("nl/hannahsten/texifyidea/parser/LatexParser.java")
-    pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
-}
+    val generateLatexParserTask = register<GenerateParserTask>("generateLatexParser") {
+        sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
+        targetRoot.set("gen")
+        pathToParser.set("nl/hannahsten/texifyidea/parser/LatexParser.java")
+        pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
+    }
 
-tasks.compileKotlin {
-    dependsOn(tasks.generateLexer)
-    dependsOn(tasks.generateParser)
+    val generateBibtexParserTask = register<GenerateParserTask>("generateBibtexParser") {
+        sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Bibtex.bnf"))
+        targetRoot.set("gen")
+        pathToParser.set("nl/hannahsten/texifyidea/parser/BibtexParser.java")
+        pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
+    }
+
+    val generateLatexLexerTask = register<GenerateLexerTask>("generateLatexLexer") {
+        sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/LatexLexer.flex"))
+        targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
+        targetClass.set("LatexLexer")
+    }
+
+    val generateBibtexLexerTask = register<GenerateLexerTask>("generateBibtexLexer") {
+        sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/BibtexLexer.flex"))
+        targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
+        targetClass.set("BibtexLexer")
+    }
+
+    compileKotlin {
+        dependsOn(generateLatexParserTask)
+        dependsOn(generateBibtexParserTask)
+        dependsOn(generateLatexLexerTask)
+        dependsOn(generateBibtexLexerTask)
+    }
 }
