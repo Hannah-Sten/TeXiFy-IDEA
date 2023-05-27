@@ -25,7 +25,9 @@ jobs:
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
-          args: --baseline,qodana.sarif.json
+          args: >
+            -v ${{ github.workspace }}/gen:/data/project/gen
+            --baseline,qodana.sarif.json
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
