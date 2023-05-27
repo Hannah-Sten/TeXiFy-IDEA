@@ -308,7 +308,7 @@ tasks {
         targetClass.set("BibtexLexer")
     }
 
-    compileKotlin {
+    initializeIntelliJPlugin {
         dependsOn(generateLatexParserTask)
         dependsOn(generateBibtexParserTask)
         dependsOn(generateLatexLexerTask)
