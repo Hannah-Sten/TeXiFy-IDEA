@@ -21,7 +21,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Generate lexer/parser
-        run: ./gradlew generateLatexParserTask generateBibtexParserTask generateLatexLexerTask generateBibtexLexerTask
+        run: ./gradlew initializeIntelliJPlugin
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
