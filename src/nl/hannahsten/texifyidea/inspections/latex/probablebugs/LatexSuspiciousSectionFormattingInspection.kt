@@ -54,7 +54,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
     class AddOptionalArgumentQuickFix : LocalQuickFix {
 
         override fun getFamilyName(): String {
-            return "Add optional argument without formatting"
+            return "Fix formatting in table of contents and running head"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
@@ -69,7 +69,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             // of using old values from their cache.
             val newCommand = LatexPsiHelper(project).createFromText(command.text).firstChildOfType(LatexCommands::class)
                 ?: return
-            command.parent.replace(newCommand)
+            command.replace(newCommand)
         }
     }
 
