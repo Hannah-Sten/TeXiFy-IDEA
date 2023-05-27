@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.psi.isDefinition
+import nl.hannahsten.texifyidea.util.parser.isDefinition
 
 /**
  * Finds all the files in the project that are somehow related using includes.

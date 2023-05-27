@@ -14,8 +14,8 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
-import nl.hannahsten.texifyidea.util.psi.toStringMap
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
  * @author Hannah Schellekens

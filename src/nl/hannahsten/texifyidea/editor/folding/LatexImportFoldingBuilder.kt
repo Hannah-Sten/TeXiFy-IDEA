@@ -13,11 +13,11 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.util.psi.allCommands
-import nl.hannahsten.texifyidea.util.psi.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * Folds multiple \\usepackage or \\RequirePackage statements.

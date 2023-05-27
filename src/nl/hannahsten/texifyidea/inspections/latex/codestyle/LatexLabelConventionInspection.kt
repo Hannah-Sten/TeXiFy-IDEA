@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.psi.*
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**

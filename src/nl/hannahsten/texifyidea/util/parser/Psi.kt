@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util.psi
+package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.patterns.PatternCondition

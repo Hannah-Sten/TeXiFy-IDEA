@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.getOpenAndCloseQuotes
-import nl.hannahsten.texifyidea.util.psi.inVerbatim
+import nl.hannahsten.texifyidea.util.parser.inVerbatim
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import kotlin.math.min
 

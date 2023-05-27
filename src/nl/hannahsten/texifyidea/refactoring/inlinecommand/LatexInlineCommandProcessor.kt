@@ -14,7 +14,7 @@ import com.intellij.usageView.UsageViewDescriptor
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.psi.definitionCommand
+import nl.hannahsten.texifyidea.util.parser.definitionCommand
 
 /**
  * Recieves settings and a target and performs the requested refactoring

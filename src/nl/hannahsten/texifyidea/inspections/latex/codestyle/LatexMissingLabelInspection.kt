@@ -23,8 +23,8 @@ import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurab
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.hasLabel
-import nl.hannahsten.texifyidea.util.psi.hasStar
+import nl.hannahsten.texifyidea.util.parser.hasLabel
+import nl.hannahsten.texifyidea.util.parser.hasStar
 import org.jetbrains.annotations.Nls
 import java.util.*
 

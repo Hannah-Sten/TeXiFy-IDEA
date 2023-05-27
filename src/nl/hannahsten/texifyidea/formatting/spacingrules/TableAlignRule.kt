@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import kotlin.math.min
 
 /** At this length, we put table cells on their own line. */

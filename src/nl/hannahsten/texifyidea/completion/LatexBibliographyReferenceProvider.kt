@@ -13,9 +13,9 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.util.labels.findBibtexItems
-import nl.hannahsten.texifyidea.util.psi.getAuthors
-import nl.hannahsten.texifyidea.util.psi.getIdentifier
-import nl.hannahsten.texifyidea.util.psi.getTitle
+import nl.hannahsten.texifyidea.util.parser.getAuthors
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getTitle
 import java.util.*
 
 object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParameters>() {

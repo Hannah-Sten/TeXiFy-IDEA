@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
-import nl.hannahsten.texifyidea.util.psi.remove
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.remove
 
 abstract class BibtexIdImplMixin(node: ASTNode) : BibtexId, ASTWrapperPsiElement(node) {
 

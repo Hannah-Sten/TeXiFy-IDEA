@@ -12,8 +12,8 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.getIdentifier
-import nl.hannahsten.texifyidea.util.psi.getTagContent
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getTagContent
 import org.jetbrains.annotations.NonNls
 
 abstract class BibtexEntryImplMixin : BibtexEntry, StubBasedPsiElementBase<BibtexEntryStub> {

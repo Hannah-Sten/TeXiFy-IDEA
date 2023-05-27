@@ -9,7 +9,7 @@ import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.psi.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import java.util.*
 
 /**

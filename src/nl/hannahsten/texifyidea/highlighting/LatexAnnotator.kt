@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.*
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * Provide syntax highlighting for composite elements.

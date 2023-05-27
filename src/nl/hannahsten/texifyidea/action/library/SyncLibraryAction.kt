@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.ui.remotelibraries.LibraryMutableTreeNode
 import nl.hannahsten.texifyidea.ui.remotelibraries.findLibraryNode
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
-import nl.hannahsten.texifyidea.util.psi.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel

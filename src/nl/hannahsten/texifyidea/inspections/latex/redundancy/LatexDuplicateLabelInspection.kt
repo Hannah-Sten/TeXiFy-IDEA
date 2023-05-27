@@ -19,9 +19,9 @@ import nl.hannahsten.texifyidea.util.labels.findBibitemCommands
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.psi.isDefinitionOrRedefinition
-import nl.hannahsten.texifyidea.util.psi.parentOfType
-import nl.hannahsten.texifyidea.util.psi.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.lang.Integer.max
 import java.util.*
 

@@ -18,9 +18,9 @@ import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.psi.firstChildOfType
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
-import nl.hannahsten.texifyidea.util.psi.name
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.name
 
 class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verbatim command or environment") {
 

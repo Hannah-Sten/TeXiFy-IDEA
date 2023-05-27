@@ -10,8 +10,8 @@ import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.psi.requiredParameters
-import nl.hannahsten.texifyidea.util.psi.toStringMap
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParameters>() {
 

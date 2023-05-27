@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util.psi
+package nl.hannahsten.texifyidea.util.parser
 
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId

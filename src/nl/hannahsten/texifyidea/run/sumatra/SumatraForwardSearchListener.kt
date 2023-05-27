@@ -16,8 +16,8 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.psi.name
-import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import org.jetbrains.concurrency.runAsync
 
 /**

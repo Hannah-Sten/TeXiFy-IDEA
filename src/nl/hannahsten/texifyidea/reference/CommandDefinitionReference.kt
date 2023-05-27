@@ -5,10 +5,10 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.util.psi.definitionCommand
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.definitionCommand
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.parentsOfType
+import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import nl.hannahsten.texifyidea.util.projectSearchScope
 
 /**

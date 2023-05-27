@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
 import nl.hannahsten.texifyidea.util.labels.findLatexCommandsLabels
-import nl.hannahsten.texifyidea.util.psi.getIdentifier
-import nl.hannahsten.texifyidea.util.psi.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens

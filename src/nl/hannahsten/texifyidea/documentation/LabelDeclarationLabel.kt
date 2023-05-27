@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.documentation
 
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.psi.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens, Sten Wessel

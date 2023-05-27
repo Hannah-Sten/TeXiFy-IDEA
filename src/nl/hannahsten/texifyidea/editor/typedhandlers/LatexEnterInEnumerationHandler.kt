@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.psi.*
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * @author Hannah Schellekens

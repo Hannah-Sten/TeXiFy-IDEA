@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util.psi
+package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile

@@ -13,9 +13,9 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.psi.nextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.psi.parentOfType
-import nl.hannahsten.texifyidea.util.psi.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 import org.jetbrains.annotations.Nls
 import java.util.*
 

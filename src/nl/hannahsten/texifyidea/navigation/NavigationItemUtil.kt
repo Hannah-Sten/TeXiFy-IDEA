@@ -7,8 +7,8 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
-import nl.hannahsten.texifyidea.util.psi.forcedFirstRequiredParameterAsCommand
-import nl.hannahsten.texifyidea.util.psi.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 
 /**

@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.getCommandsInFiles
-import nl.hannahsten.texifyidea.util.psi.*
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * Allows for inlining an include command. Does not do the inlining itself.

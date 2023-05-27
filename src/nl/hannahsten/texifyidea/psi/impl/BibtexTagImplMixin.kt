@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.psi.BibtexTag
 import nl.hannahsten.texifyidea.reference.SimpleFileReference
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import nl.hannahsten.texifyidea.util.psi.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 abstract class BibtexTagImplMixin(node: ASTNode) : BibtexTag, ASTWrapperPsiElement(node) {
 

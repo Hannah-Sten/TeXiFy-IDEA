@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineHandler
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 /**
  * Allows for inlining an include command. Does not do the inlining itself.

@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.psi.*
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * @author Hannah Schellekens

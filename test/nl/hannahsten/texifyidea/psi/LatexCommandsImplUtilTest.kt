@@ -3,9 +3,9 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.psi.firstChildOfType
-import nl.hannahsten.texifyidea.util.psi.getOptionalParameterMapFromParameters
-import nl.hannahsten.texifyidea.util.psi.toStringMap
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 import org.junit.Test
 
 class LatexCommandsImplUtilTest : BasePlatformTestCase() {

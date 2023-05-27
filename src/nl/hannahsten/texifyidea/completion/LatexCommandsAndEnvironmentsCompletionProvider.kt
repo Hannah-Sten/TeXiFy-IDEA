@@ -30,7 +30,7 @@ import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
-import nl.hannahsten.texifyidea.util.psi.*
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**

@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.lang.commands.Argument.Type
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
-import nl.hannahsten.texifyidea.util.psi.hasParent
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.hasParent
 
 /**
  * @author Hannah Schellekens

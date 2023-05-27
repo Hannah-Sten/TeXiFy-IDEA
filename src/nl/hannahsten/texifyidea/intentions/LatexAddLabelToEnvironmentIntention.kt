@@ -15,8 +15,8 @@ import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsMa
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.psi.childrenOfType
-import nl.hannahsten.texifyidea.util.psi.endOffset
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.endOffset
 
 open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementPointer<LatexEnvironment>? = null) :
     LatexAddLabelIntention("Add label to environment") {

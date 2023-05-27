@@ -17,10 +17,10 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.psi.childrenOfType
-import nl.hannahsten.texifyidea.util.psi.inDirectEnvironment
-import nl.hannahsten.texifyidea.util.psi.inMathContext
-import nl.hannahsten.texifyidea.util.psi.isComment
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.util.parser.isComment
 
 /**
  * @author Sten Wessel

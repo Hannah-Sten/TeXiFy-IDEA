@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import org.jetbrains.annotations.Nls
 
 class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {

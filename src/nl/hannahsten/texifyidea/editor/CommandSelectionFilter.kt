@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 /**
  * Disable WordSelectioner (on by default) for LatexCommands, because we handle those in [LatexCommandSelectioner].

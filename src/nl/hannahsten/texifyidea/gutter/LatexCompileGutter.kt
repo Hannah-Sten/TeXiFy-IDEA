@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.psi.isEntryPoint
-import nl.hannahsten.texifyidea.util.psi.parentOfType
+import nl.hannahsten.texifyidea.util.parser.isEntryPoint
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * Puts a run-configuration icon in the gutter in front of the \begin{document} command.

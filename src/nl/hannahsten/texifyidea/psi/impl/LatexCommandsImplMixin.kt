@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.*
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * This class is a mixin for LatexCommandsImpl.

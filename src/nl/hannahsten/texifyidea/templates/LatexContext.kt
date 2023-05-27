@@ -3,8 +3,8 @@ package nl.hannahsten.texifyidea.templates
 import com.intellij.codeInsight.template.TemplateActionContext
 import com.intellij.codeInsight.template.TemplateContextType
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.util.psi.inMathContext
-import nl.hannahsten.texifyidea.util.psi.inVerbatim
+import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.util.parser.inVerbatim
 
 /**
  * Defines a LaTeX template context, used to define in which context

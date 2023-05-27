@@ -18,9 +18,9 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.psi.allCommands
+import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
-import nl.hannahsten.texifyidea.util.psi.getIncludedFiles
+import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import java.util.*

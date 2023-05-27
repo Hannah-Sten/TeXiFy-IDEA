@@ -6,8 +6,8 @@ import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.psi.getOptionalParameterMapFromParameters
-import nl.hannahsten.texifyidea.util.psi.toStringMap
+import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /*
 * LatexEnvironment

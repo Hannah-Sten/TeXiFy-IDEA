@@ -6,8 +6,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.util.Function
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.psi.firstParentOfType
-import nl.hannahsten.texifyidea.util.psi.inMathContext
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 
 class LatexPostfixExpressionSelector(private val mathOnly: Boolean = false, private val textOnly: Boolean = false) : PostfixTemplateExpressionSelector {
 

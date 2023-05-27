@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.psi.forcedFirstRequiredParameterAsCommand
-import nl.hannahsten.texifyidea.util.psi.isKnown
+import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
+import nl.hannahsten.texifyidea.util.parser.isKnown
 import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
 

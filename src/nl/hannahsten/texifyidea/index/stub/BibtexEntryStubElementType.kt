@@ -5,10 +5,10 @@ import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.impl.BibtexEntryImpl
-import nl.hannahsten.texifyidea.util.psi.getAuthors
-import nl.hannahsten.texifyidea.util.psi.getIdentifier
-import nl.hannahsten.texifyidea.util.psi.getTitle
-import nl.hannahsten.texifyidea.util.psi.getYear
+import nl.hannahsten.texifyidea.util.parser.getAuthors
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getTitle
+import nl.hannahsten.texifyidea.util.parser.getYear
 
 open class BibtexEntryStubElementType(debugName: String) : IStubElementType<BibtexEntryStub, BibtexEntry>(debugName, BibtexLanguage) {
 

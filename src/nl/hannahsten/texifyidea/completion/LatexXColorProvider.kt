@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.gutter.LatexElementColorProvider
 import nl.hannahsten.texifyidea.util.Kindness
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.getCommandsInFiles
-import nl.hannahsten.texifyidea.util.psi.getRequiredArgumentValueByName
-import nl.hannahsten.texifyidea.util.psi.isColorDefinition
+import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
+import nl.hannahsten.texifyidea.util.parser.isColorDefinition
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import java.awt.Color
 

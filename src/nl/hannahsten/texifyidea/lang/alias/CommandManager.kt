@@ -2,11 +2,11 @@ package nl.hannahsten.texifyidea.lang.alias
 
 import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.psi.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.psi.requiredParameter
-import nl.hannahsten.texifyidea.util.psi.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

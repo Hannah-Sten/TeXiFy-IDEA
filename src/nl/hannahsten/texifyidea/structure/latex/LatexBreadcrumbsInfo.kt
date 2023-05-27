@@ -5,7 +5,7 @@ import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.psi.name
+import nl.hannahsten.texifyidea.util.parser.name
 
 /**
  * @author Hannah Schellekens

@@ -5,8 +5,8 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.psi.toStringMap
-import nl.hannahsten.texifyidea.util.psi.nextCommand
+import nl.hannahsten.texifyidea.util.parser.toStringMap
+import nl.hannahsten.texifyidea.util.parser.nextCommand
 
 /**
  * @author Hannah Schellekens

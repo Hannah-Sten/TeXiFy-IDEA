@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.psi.childrenOfType
-import nl.hannahsten.texifyidea.util.psi.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import java.util.*
 
 /**

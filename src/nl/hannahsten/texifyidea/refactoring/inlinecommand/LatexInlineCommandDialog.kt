@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.psi.definitionCommand
+import nl.hannahsten.texifyidea.util.parser.definitionCommand
 
 /**
  * Creates an inline file dialog to select what to refactor. Parts have been borrowed from the java inline method dialog
