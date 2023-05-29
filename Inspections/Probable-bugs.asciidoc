@@ -193,3 +193,10 @@ This inspection complains when you use a LaTeX command that is not defined anywh
 The inspection checks files in the file set, packages and document classes.
 It is disabled by default, because many commands from packages are unknown to TeXiFy, usually because they are defined in a way that the code which searches for command definitions doesn't handle yet.
 Therefore, if you find such a command that is defined but this inspection cannot find it, please report it to the issue tracker.
+
+== Suspicious Section formatting
+
+In a `\section` title, if you use formatting like `~` or `\\`, you should provide an explicit entry for the table of contents to avoid messing up the formatting there.
+Also see the LaTeX Companion:
+
+> If you try to advise TeX on how to split the heading over a few lines using the '~' symbol so the '\' command, then side effects may result when formatting the table of contents or generating the running head. In this case the simplest solution is to repeat the heading text without the specific markup in the optional parameter of the sectioning command.
