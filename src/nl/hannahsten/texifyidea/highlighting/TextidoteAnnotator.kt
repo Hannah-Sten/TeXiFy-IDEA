@@ -39,7 +39,9 @@ data class TextidoteAnnotationResult(
 
 class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitialInfo, TextidoteAnnotationResult>() {
 
-    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): TextidoteAnnotatorInitialInfo {
+    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): TextidoteAnnotatorInitialInfo? {
+        if (file.containingDirectory == null) return null
+
         return TextidoteAnnotatorInitialInfo(
             file.virtualFile.name,
             File(file.containingDirectory.virtualFile.path),
