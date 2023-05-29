@@ -117,7 +117,6 @@ fun PsiElement.magicCommentLookup(
     next: PsiElement.() -> PsiElement?,
     reversed: Boolean = false
 ): MagicComment<String, String> {
-
     val commentLines = LinkedList<String>()
 
     // Scan (backward) through all the magic comments preceding the element.
@@ -126,7 +125,6 @@ fun PsiElement.magicCommentLookup(
     // Stop searching when an element is found that is not a magic comment or that is null
     // (the scan ends at the first element that is not a magic comment).
     while (current.containsMagicComment()) {
-
         // Only consider magic comments
         val commentText = current?.text ?: continue
         current = current.next()

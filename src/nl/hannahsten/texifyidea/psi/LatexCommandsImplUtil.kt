@@ -75,7 +75,6 @@ private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference>
 
     // Find file references within required parameters and across required parameters (think \referencing{reference1,reference2}{reference3} )
     for (i in requiredParameters().indices) {
-
         // Find the corresponding requiredArgument
         val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull { it is RequiredFileArgument } ?: continue
 
@@ -182,7 +181,6 @@ fun Map<LatexKeyValKey, LatexKeyValValue?>.toStringMap(): LinkedHashMap<String, 
 }
 
 fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyValKey, LatexKeyValValue?> {
-
     val parameterMap = LinkedHashMap<LatexKeyValKey, LatexKeyValValue?>()
     // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
     // But within a parameter, there can be different content like [name={value in group}]

@@ -1,5 +1,5 @@
 [*.{kt,kts}]
-disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,chain-wrapping,import-ordering,keyword-spacing
+ktlint_disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,argument-list-wrapping,chain-wrapping,import-ordering,keyword-spacing,trailing-comma-on-call-site,trailing-comma-on-declaration-site,multiline-if-else
 insert_final_newline = false
 
 ij_kotlin_else_on_new_line = true

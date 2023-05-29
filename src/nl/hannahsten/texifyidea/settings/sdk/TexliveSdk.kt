@@ -61,7 +61,6 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         val paths = if (SystemInfo.isWindows) "where pdflatex".runCommand() else "which pdflatex".runCommand()
         if (!paths.isNullOrEmpty()) {
             for (path in paths.split("\\s+".toRegex())) {
-
                 // Resolve symlinks
                 val resolvedPath = runCommand("readlink", "-f", path) ?: path
 

@@ -48,7 +48,6 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
         var parentCollapse: PsiElement? = null
 
         for (comment in comments) {
-
             // Initialization: start with the first comment in a possible sequence
             if (collectedTextRange == null) {
                 collectedTextRange = TextRange(comment.startOffset, comment.endOffset)

@@ -71,14 +71,12 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                 // If we found a command which is ranked lower, save the block of text inbetween
                 // Note that a section is ranked lower than a subsection
                 if (nextCommandRank <= currentCommandRank) {
-
                     // Get the location of the next folding command
                     val end = nextFoldingCommand.parentOfType(LatexNoMathContent::class)?.previousSiblingIgnoreWhitespace()
                         ?: break
 
                     // Get the text range between the current and the next folding command
                     if (end.textOffset + end.textLength - currentFoldingCommand.textOffset > 0) {
-
                         val foldingRange = TextRange(currentFoldingCommand.textOffset, end.textOffset + end.textLength)
 
                         // Add it as a folding block

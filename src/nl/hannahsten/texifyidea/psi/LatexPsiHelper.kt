@@ -94,7 +94,6 @@ class LatexPsiHelper(private val project: Project) {
      * If no such node exists yet, a new one is created at the correct position.
      */
     private fun getOrCreateLabelOptionalParameters(command: LatexCommandWithParams): LatexOptionalParam {
-
         // This is only a heuristic. We would actually need detailed information on which optional parameter is
         // supposed to hold the label key.
         val existingParameters = command.optionalParameterMap

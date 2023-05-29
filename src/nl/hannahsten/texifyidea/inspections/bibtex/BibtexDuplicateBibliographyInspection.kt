@@ -33,7 +33,6 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Same bibliography is included multiple times"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         // Chapterbib allows multiple bibliographies
         if (file.includedPackages().any { it == LatexPackage.CHAPTERBIB }) {
             return emptyList()
