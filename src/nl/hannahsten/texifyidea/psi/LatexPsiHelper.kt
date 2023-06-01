@@ -84,9 +84,9 @@ class LatexPsiHelper(private val project: Project) {
         return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
     }
 
-    fun createOptionalParameter(content: String): LatexOptionalParam {
+    fun createOptionalParameter(content: String): LatexOptionalParam? {
         val commandText = "\\section[$content]{$content}"
-        return createFromText(commandText).firstChildOfType(LatexOptionalParam::class)!!
+        return createFromText(commandText).firstChildOfType(LatexOptionalParam::class)
     }
 
     /**

@@ -62,7 +62,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             val requiredParamText = command.requiredParameter(0)
             val optionalParamText = requiredParamText?.replace(Regex(formatting.joinToString("", prefix = "[", postfix = "]")), " ")
                 ?: return
-            val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText)
+            val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText) ?: return
 
             command.addAfter(optionalArgument, command.commandToken)
             // Create a new command and completely replace the old command so all the psi methods will recompute instead
