@@ -6,14 +6,21 @@
 
 ### Fixed
 
-## [0.7.30-alpha.6] - 2023-05-26
+## [0.7.30] - 2023-06-01
+Welcome to TeXiFy IDEA 0.7.30! This release removes the LaTeX Module Type deprecated by IntelliJ, fixes some bugs and more.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+In particular, many thanks to @svensieber for reporting a critical bug in a pre-release version!
 
 ### Added
+* Add inspection to check for suspicious formatting in section-like commands
 * Add latexindent command line options to settings
 * Add inspection preview for the unicode inspection.
 * Add partial support for detecting non-global installations of SumatraPDF.
 
 ### Fixed
+* Fix Textidote exceptions #3086 and #3089
 * Fix NPE #3083
 * Fix an issue where the LaTeX Project Task Runner would override those of other languages
 * Internal improvements (#3070, #3072, #3074)
@@ -26,66 +33,6 @@
 
 ### Removed
 * Removed the LaTeX module type, as this is deprecated by IntelliJ
-
-## [0.7.30-alpha.4] - 2023-05-19
-
-### Added
-* Add inspection preview for the unicode inspection.
-* Add partial support for detecting non-global installations of SumatraPDF.
-
-### Fixed
-* Fix an issue where the LaTeX Project Task Runner would override those of other languages
-* Internal improvements (#3070, #3072, #3074)
-* Fix InvalidVirtualFileAccessException #2991
-* Disable some editor actions in non-LaTeX files
-* Disable forward search action in non-LaTeX files, by @endorh
-* Fix IndexOutOfBoundsException #3036
-* Fix FileBasedIndex getting a default project (#3049)
-* Fix issue with running an unsupported run configuration taken from another OS.
-
-### Removed
-* Removed the LaTeX module type, as this is deprecated by IntelliJ
-
-## [0.7.30-alpha.3] - 2023-05-17
-
-### Added
-* Add inspection preview for the unicode inspection.
-* Add partial support for detecting non-global installations of SumatraPDF.
-
-### Fixed
-* Internal improvements (#3070, #3072, #3074)
-* Fix InvalidVirtualFileAccessException #2991
-* Disable some editor actions in non-LaTeX files
-* Disable forward search action in non-LaTeX files, by @endorh
-* Fix IndexOutOfBoundsException #3036
-* Fix FileBasedIndex getting a default project (#3049)
-* Fix issue with running an unsupported run configuration taken from another OS.
-
-### Removed
-* Removed the LaTeX module type, as this is deprecated by IntelliJ
-
-## [0.7.30-alpha.2] - 2023-05-12
-
-### Added
-* Add inspection preview for the unicode inspection.
-* Add partial support for detecting non-global installations of SumatraPDF.
-
-### Fixed
-* Fix InvalidVirtualFileAccessException #2991
-* Disable some editor actions in non-LaTeX files
-* Disable forward search action in non-LaTeX files, by @endorh
-* Fix IndexOutOfBoundsException #3036
-* Fix FileBasedIndex getting a default project (#3049)
-* Fix issue with running an unsupported run configuration taken from another OS.
-
-## [0.7.30-alpha.1] - 2023-05-03
-
-### Added
-* Add inspection preview for the unicode inspection.
-* Add partial support for detecting non-global installations of SumatraPDF.
-
-### Fixed
-* Fix issue with running an unsupported run configuration taken from another OS.
 
 ## [0.7.29] - 2023-04-14
 Welcome to TeXiFy IDEA 0.7.29! This release fixes the equation preview, and fully supports IntelliJ 2023.1.
@@ -191,12 +138,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30-alpha.6...HEAD
-[0.7.30-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30-alpha.3...v0.7.30-alpha.4
-[0.7.30-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30-alpha.1...v0.7.30-alpha.2
-[0.7.30-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.29...v0.7.30-alpha.1
-[0.7.30-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30-alpha.2...v0.7.30-alpha.3
-[0.7.30-alpha.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30-alpha.4...v0.7.30-alpha.6
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30...HEAD
+[0.7.30]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.29...v0.7.30
 [0.7.29]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28...v0.7.29
 [0.7.28]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27...v0.7.28
 [0.7.27]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.26...v0.7.27
