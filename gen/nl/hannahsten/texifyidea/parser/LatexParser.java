@@ -477,7 +477,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACKET ( (key_val_pair  (COMMA key_val_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET
+  // OPEN_BRACKET ( (key_val_pair (COMMA key_val_pair?)+) | optional_param_content*) CLOSE_BRACKET
   public static boolean optional_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
@@ -490,7 +490,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (key_val_pair  (COMMA key_val_pair)* COMMA?) | optional_param_content*
+  // (key_val_pair (COMMA key_val_pair?)+) | optional_param_content*
   private static boolean optional_param_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1")) return false;
     boolean r;
@@ -501,44 +501,47 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // key_val_pair  (COMMA key_val_pair)* COMMA?
+  // key_val_pair (COMMA key_val_pair?)+
   private static boolean optional_param_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = key_val_pair(b, l + 1);
     r = r && optional_param_1_0_1(b, l + 1);
-    r = r && optional_param_1_0_2(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // (COMMA key_val_pair)*
+  // (COMMA key_val_pair?)+
   private static boolean optional_param_1_0_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1_0_1")) return false;
-    while (true) {
+    boolean r;
+    Marker m = enter_section_(b);
+    r = optional_param_1_0_1_0(b, l + 1);
+    while (r) {
       int c = current_position_(b);
       if (!optional_param_1_0_1_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "optional_param_1_0_1", c)) break;
     }
-    return true;
+    exit_section_(b, m, null, r);
+    return r;
   }
 
-  // COMMA key_val_pair
+  // COMMA key_val_pair?
   private static boolean optional_param_1_0_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1_0_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMA);
-    r = r && key_val_pair(b, l + 1);
+    r = r && optional_param_1_0_1_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // COMMA?
-  private static boolean optional_param_1_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "optional_param_1_0_2")) return false;
-    consumeToken(b, COMMA);
+  // key_val_pair?
+  private static boolean optional_param_1_0_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_0_1_0_1")) return false;
+    key_val_pair(b, l + 1);
     return true;
   }
 

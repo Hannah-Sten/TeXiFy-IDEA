@@ -106,7 +106,7 @@ parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET ( (key_val_pair  (COMMA key_val_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET ( (key_val_pair (COMMA key_val_pair?)+) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
 // Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
 // Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both

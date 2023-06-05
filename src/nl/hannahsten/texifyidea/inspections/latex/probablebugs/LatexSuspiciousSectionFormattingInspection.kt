@@ -31,7 +31,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
         return file.commandsInFile()
             .asSequence()
             .filter { it.name in CommandMagic.sectionMarkers }
-            .filter { it.optionalParameterMap.isEmpty() }
+            .filter { it.parameterList.mapNotNull { param -> param.optionalParam }.isEmpty() }
             .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
             .map { psiElement ->
                 val requiredParam = psiElement.firstChildOfType(LatexRequiredParam::class)

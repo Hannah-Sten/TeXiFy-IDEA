@@ -13,6 +13,14 @@ internal class LatexSuspiciousSectionFormattingInspectionTest : TexifyInspection
         myFixture.checkHighlighting(true, false, true, false)
     }
 
+    fun `test ~ warning with parenthesis`() {
+        myFixture.configureByText(
+            LatexFileType,
+            "\\paragraph{<warning descr=\"Suspicious formatting in \\paragraph\">#1 (#2)~:</warning>}"
+        )
+        myFixture.checkHighlighting(true, false, true, false)
+    }
+
     fun `test ~ warning for short section`() {
         myFixture.configureByText(
             LatexFileType,
@@ -54,20 +62,16 @@ internal class LatexSuspiciousSectionFormattingInspectionTest : TexifyInspection
     }
 
     fun `test simple quickfix for ~`() {
-        myFixture.configureByText(
-            LatexFileType,
-            "\\section{You should not use~in the title}"
-        )
         testQuickFix("\\section{You should not use~in the title}", "\\section[You should not use in the title]{You should not use~in the title}")
         myFixture.checkHighlighting(true, false, true, false)
     }
 
     fun `test simple quickfix for backslash`() {
-        myFixture.configureByText(
-            LatexFileType,
-            "\\section{You should not use~in the title}"
-        )
         testQuickFix("\\section{You should not use \\\\ in the title}", "\\section[You should not use in the title]{You should not use \\\\ in the title}")
         myFixture.checkHighlighting(true, false, true, false)
+    }
+
+    fun `test quickfix with parenthesis`() {
+        testQuickFix("\\paragraph{#1 (#2)~:}", "\\paragraph[#1 (#2) :]{#1 (#2)~:}")
     }
 }
