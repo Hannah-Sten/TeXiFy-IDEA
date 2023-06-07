@@ -36,12 +36,11 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting(true, false, false, true)
     }
 
-    // No idea why it doesn't work
-//    fun testMultilineCheckGrammar() {
-//        val testName = getTestName(false)
-//        myFixture.configureByFile("$testName.tex")
-//        myFixture.checkHighlighting(true, false, false, true)
-//    }
+    fun testMultilineCheckGrammar() {
+        val testName = getTestName(false)
+        myFixture.configureByFile("$testName.tex")
+        myFixture.checkHighlighting(true, false, false, true)
+    }
 
     fun testInlineMath() {
         myFixture.configureByText(
@@ -64,6 +63,16 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     fun testMatchingParens() {
         myFixture.configureByText(
             LatexFileType, """a (in this case) . aa"""
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testUnpairedSymbol() {
+        myFixture.configureByText(
+            LatexFileType, """
+                This is an unpaired symbol example
+                with \textit{example text}. % Error at ending bracket
+            """.trimIndent()
         )
         myFixture.checkHighlighting()
     }
