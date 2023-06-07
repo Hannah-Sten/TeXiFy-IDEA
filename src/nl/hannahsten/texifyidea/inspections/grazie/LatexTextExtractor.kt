@@ -46,33 +46,45 @@ class LatexTextExtractor : TextExtractor() {
             .filter { it.isNotInMathEnvironment() && it.isNotInSquareBrackets() }
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
-            .flatMap {
+            .flatMap { text ->
                 // I have no idea what happens here. I don't think Grazie uses the same indices and text as root.text, because it doesn't behave consistently when I move around indices, so it may appear we are ignoring too much or too little while in practice the inspections may work.
-                listOf(
-                    it.textRange.startOffset - root.startOffset,
-                    // -1 Because endOffset is exclusive, but we are working with inclusive end here
-                    it.textRange.endOffset - 1 - root.startOffset
-                )
+                var start = text.textRange.startOffset - root.startOffset
+                // If LatexNormalText starts after a newline following a command, the newline is not part of the LatexNormalText so we include it manually
+                if (setOf(' ', '\n').contains(rootText.getOrNull(start - 1))) {
+                    // We have to skip over indents to find the newline though (indents will be ignored later)
+                    start -= rootText.substring(0, start).takeLastWhile { it.isWhitespace() }.length
+                }
+
+                // -1 Because endOffset is exclusive, but we are working with inclusive end here
+                var end = text.textRange.endOffset - 1 - root.startOffset
+                // If LatexNormalText ends, for example because it is followed by a command, we do want to include the space in front of the command, since it is still typeset as a space, which is not true for the space after the command
+                // except when the space is followed by inline math, since we ignore inline math altogether (which is probably not correct) we should also ignore the space
+                if (setOf(' ', '\n').contains(rootText.getOrNull(end + 1)) && rootText.getOrNull(end + 2) != '$') {
+                    end += 1
+                }
+                listOf(start, end)
             }
             .sorted()
             .toMutableList()
             // Make sure that if the root does not start/end with normal text, that those parts are excluded
-            .also { it.add(0, 0) }
+            .also { it.add(0, -1) }
             .also { it.add(root.endOffset()) }
             // To get the ranges that we need to ignore
+            // + 1 because we want to exclude all letters _after_ the last letter that we want to keep (the ranges defined above are inclusive)
             // -1 because IntRange has inclusive end, but we want to exclude all letters _excluding_ the letter where the normal text started
-            .chunked(2) { IntRange(it[0], it[1] - 1) }
+            .chunked(2) { IntRange(it[0] + 1, it[1] - 1) }
             .filter { it.first < it.last && it.first >= 0 && it.last < rootText.length }
             .toMutableSet()
 
         // There is still a bit of a problem, because when stitching together the NormalTexts, whitespace is lost
         // so this leads Grazie to think that there is no space there, while in fact there may or may not be
 
+        // Add indents as ranges to ignore
         // Currently, GrammarChecker does not handle overlapped ranges, so we do that ourselves
-        for (range in StrategyUtils.indentIndexes(root.text, setOf(' '))) {
-            val overlapped = ranges.filter { range.overlaps(it) }
+        for (indent in StrategyUtils.indentIndexes(root.text, setOf(' '))) {
+            val overlapped = ranges.filter { indent.overlaps(it) }
             ranges.removeAll(overlapped.toSet())
-            ranges.add(range.merge(overlapped))
+            ranges.add(indent.merge(overlapped))
         }
         return ranges.sortedBy { it.first }
     }

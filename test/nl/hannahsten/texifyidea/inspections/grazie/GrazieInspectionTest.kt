@@ -95,4 +95,17 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
+
+    fun testGermanList() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \item Bietet es eine unterstützende Lösung?
+                \item Können diese Dinge durchgeführt werden?
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }
