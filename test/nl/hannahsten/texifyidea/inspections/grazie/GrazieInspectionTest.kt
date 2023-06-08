@@ -108,4 +108,16 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
+
+    fun testGermanCommandSpacing() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            Eine \textbf{Folge oder Zahlenfolge} in ${'$'}M${'$'} ist eine Abbildung
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }
