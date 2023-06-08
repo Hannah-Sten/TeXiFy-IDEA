@@ -120,4 +120,21 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
+
+    fun testTabular() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \begin{tabular}{llll}
+                    ${'$'}a${'$'}:                 & ${'$'}\mathbb{N}${'$'} & \rightarrow & ${'$'}M${'$'}     \\
+                    \multicolumn{1}{l}{} & ${'$'}n${'$'}          & \mapsto     & ${'$'}a(n)${'$'}.
+                \end{tabular}
+            
+                Ich bin über die Entwicklung sehr froh.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }
