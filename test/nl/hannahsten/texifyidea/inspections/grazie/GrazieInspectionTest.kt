@@ -69,7 +69,8 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     fun testUnpairedSymbol() {
         myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
                 This is an unpaired symbol example
                 with \textit{example text}. % Error at ending bracket
             """.trimIndent()
