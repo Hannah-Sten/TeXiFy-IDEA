@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
@@ -44,8 +43,7 @@ object PackageUtils {
      * @param parameters
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
-    @JvmStatic
-    fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
+    private fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
         if (!file.isWritable) return
 
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
@@ -55,15 +53,6 @@ object PackageUtils {
         val commands = file.commandsInFile()
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
-
-        // check if already imported
-        if (commands.filter { it.name == commandName }.fold(false) { acc, it ->
-            acc || it.firstChildOfType(
-                    LatexRequiredParamContent::class
-                )?.text == packageName
-        }
-        )
-            return
 
         var last: LatexCommands? = null
         for (cmd in commands) {
@@ -136,6 +125,9 @@ object PackageUtils {
         }
     }
 
+    /**
+     * todo this function is copy paste of the one above
+     */
     @JvmStatic
     fun insertPreambleText(file: PsiFile, packageName: String) {
 
@@ -377,17 +369,8 @@ fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexP
 /**
  * See [includedPackages].
  */
-fun includedPackages(
-    commands: Collection<LatexCommands>,
-    project: Project,
-    onlyDirectInclusions: Boolean = false
-): List<LatexPackage> {
-    val directIncludes =
-        PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
-            .map { LatexPackage(it) }
-    return if (onlyDirectInclusions) directIncludes
-    else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(
-        directIncludes,
-        project
-    ).toList()
+fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
+    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
+        .map { LatexPackage(it) }
+    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
 }

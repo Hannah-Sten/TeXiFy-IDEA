@@ -12,12 +12,12 @@ import java.net.URL
 import javax.imageio.ImageIO
 
 /**
- * Starts the Insert Graphic wizard when pasting.
- *
- * todo we already have an ImagePasteProvider class?!
+ * When there is an image inside html in the clipboard, this paste provider will start the InsertGraphicWizardAction
+ * todo this class is very similar to ImagePasteProvider but for a third type of image (embedded in html (?) )
  */
-open class ImagePasteProvider : LatexPasteProvider {
+open class ClipboardHtmlImagePasteProvider : LatexPasteProvider {
 
+    // todo this seems to duplicate the other ImagePasteProvider#pasteRawImage
     private fun pasteRawImage(project: Project, file: VirtualFile, clipboard: BufferedImage): String {
         var outstring = ""
 
@@ -30,7 +30,8 @@ open class ImagePasteProvider : LatexPasteProvider {
         return outstring
     }
 
-    override fun translateHtml(htmlIn: Node, dataContext: DataContext): String {
+    // todo this looks very much like ImagePasteProvider#performPaste
+    override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return ""
         val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return ""
         val url = URL(htmlIn.attr("src"))

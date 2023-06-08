@@ -14,7 +14,7 @@ import java.util.*
 
 class TablePasteProvider : LatexPasteProvider {
 
-    override fun translateHtml(htmlIn: Node, dataContext: DataContext): String {
+    override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return ""
         return LatexTableWizardAction().executeAction(
             dataContext.getData(PlatformDataKeys.PROJECT) ?: return "",

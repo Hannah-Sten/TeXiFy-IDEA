@@ -8,5 +8,5 @@ interface LatexPasteProvider {
     /**
      * Translate HTML (e.g. from a clipboard) to LaTeX.
      */
-    fun translateHtml(htmlIn: Node, dataContext: DataContext): String
+    fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String
 }

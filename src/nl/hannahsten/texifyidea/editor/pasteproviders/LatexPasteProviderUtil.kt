@@ -16,7 +16,7 @@ import org.jsoup.nodes.TextNode
  */
 private val childHandlers = hashMapOf(
     "table" to TablePasteProvider(),
-    "img" to ImagePasteProvider(),
+    "img" to ClipboardHtmlImagePasteProvider(),
 )
 
 /**
@@ -139,7 +139,7 @@ private fun handleElement(element: Element, out: StringBuilder, project: Project
 
     if (hasSpecialHandler(element)) {
         // todo move childHandlers to responsibility of paste providers (isPastePossible)
-        out.append(childHandlers[element.tagName()]?.translateHtml(element, dataContext))
+        out.append(childHandlers[element.tagName()]?.convertHtmlToLatex(element, dataContext))
     }
     else {
         val environ = getCentering(element)
