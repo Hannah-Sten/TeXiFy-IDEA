@@ -57,7 +57,7 @@ class LatexTextExtractor : TextExtractor() {
                 var start = text.textRange.startOffset - root.startOffset
                 // If LatexNormalText starts after a newline following a command, the newline is not part of the LatexNormalText so we include it manually to make sure that it is seen as a space between sentences
                 // NOTE: it is not allowed to start the text we send to Grazie with a newline! If we do, then Grazie will just not do anything. So we exclude the newline for the first normal text in the file.
-                if (setOf(' ', '\n').contains(rootText.getOrNull(start - 1)) && root.childrenOfType(LatexNormalText::class).first() != text
+                if (setOf(' ', '\n').contains(rootText.getOrNull(start - 1)) && root.childrenOfType(LatexNormalText::class).firstOrNull() != text
                 ) {
                     //  We have to skip over indents to find the newline though (indents will be ignored later)
                     start -= rootText.substring(0, start).takeLastWhile { it.isWhitespace() }.length
