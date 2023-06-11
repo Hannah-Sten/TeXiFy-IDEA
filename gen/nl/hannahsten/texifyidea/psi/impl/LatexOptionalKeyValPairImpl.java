@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexKeyValPairImpl extends ASTWrapperPsiElement implements LatexKeyValPair {
+public class LatexOptionalKeyValPairImpl extends ASTWrapperPsiElement implements LatexOptionalKeyValPair {
 
-  public LatexKeyValPairImpl(@NotNull ASTNode node) {
+  public LatexOptionalKeyValPairImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitKeyValPair(this);
+    visitor.visitOptionalKeyValPair(this);
   }
 
   @Override
@@ -28,15 +28,20 @@ public class LatexKeyValPairImpl extends ASTWrapperPsiElement implements LatexKe
   }
 
   @Override
-  @NotNull
-  public LatexKeyValKey getKeyValKey() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexKeyValKey.class));
-  }
-
-  @Override
   @Nullable
   public LatexKeyValValue getKeyValValue() {
     return PsiTreeUtil.getChildOfType(this, LatexKeyValValue.class);
+  }
+
+  @Override
+  @NotNull
+  public LatexOptionalKeyValKey getOptionalKeyValKey() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexOptionalKeyValKey.class));
+  }
+
+  @Override
+  public @NotNull LatexKeyValKey getKeyValKey() {
+    return LatexPsiImplUtil.getKeyValKey(this);
   }
 
 }

@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexOptionalParamImpl extends ASTWrapperPsiElement implements LatexOptionalParam {
+public class LatexOptionalKeyValKeyImpl extends ASTWrapperPsiElement implements LatexOptionalKeyValKey {
 
-  public LatexOptionalParamImpl(@NotNull ASTNode node) {
+  public LatexOptionalKeyValKeyImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitOptionalParam(this);
+    visitor.visitOptionalKeyValKey(this);
   }
 
   @Override
@@ -29,8 +29,18 @@ public class LatexOptionalParamImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @NotNull
-  public List<LatexOptionalKeyValPair> getOptionalKeyValPairList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexOptionalKeyValPair.class);
+  public List<LatexOptionalParamContent> getOptionalParamContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexOptionalParamContent.class);
+  }
+
+  @Override
+  public List<LatexGroup> getGroupList() {
+    return LatexPsiImplUtil.getGroupList(this);
+  }
+
+  @Override
+  public String toString() {
+    return LatexPsiImplUtil.toString(this);
   }
 
 }

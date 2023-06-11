@@ -318,43 +318,6 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // key_val_key (EQUALS key_val_value?)?
-  public static boolean key_val_pair(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "key_val_pair")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, KEY_VAL_PAIR, "<key val pair>");
-    r = key_val_key(b, l + 1);
-    r = r && key_val_pair_1(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // (EQUALS key_val_value?)?
-  private static boolean key_val_pair_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "key_val_pair_1")) return false;
-    key_val_pair_1_0(b, l + 1);
-    return true;
-  }
-
-  // EQUALS key_val_value?
-  private static boolean key_val_pair_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "key_val_pair_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, EQUALS);
-    r = r && key_val_pair_1_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // key_val_value?
-  private static boolean key_val_pair_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "key_val_pair_1_0_1")) return false;
-    key_val_value(b, l + 1);
-    return true;
-  }
-
-  /* ********************************************************** */
   // key_val_content+
   public static boolean key_val_value(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "key_val_value")) return false;
@@ -477,7 +440,60 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACKET ( (key_val_pair (COMMA key_val_pair?)+) | optional_param_content*) CLOSE_BRACKET
+  // optional_param_content+
+  public static boolean optional_key_val_key(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_key_val_key")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, OPTIONAL_KEY_VAL_KEY, "<optional key val key>");
+    r = optional_param_content(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!optional_param_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "optional_key_val_key", c)) break;
+    }
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // optional_key_val_key (EQUALS key_val_value?)?
+  public static boolean optional_key_val_pair(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_key_val_pair")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, OPTIONAL_KEY_VAL_PAIR, "<optional key val pair>");
+    r = optional_key_val_key(b, l + 1);
+    r = r && optional_key_val_pair_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // (EQUALS key_val_value?)?
+  private static boolean optional_key_val_pair_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_key_val_pair_1")) return false;
+    optional_key_val_pair_1_0(b, l + 1);
+    return true;
+  }
+
+  // EQUALS key_val_value?
+  private static boolean optional_key_val_pair_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_key_val_pair_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, EQUALS);
+    r = r && optional_key_val_pair_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // key_val_value?
+  private static boolean optional_key_val_pair_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_key_val_pair_1_0_1")) return false;
+    key_val_value(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // OPEN_BRACKET (optional_key_val_pair? (COMMA optional_key_val_pair?)*) CLOSE_BRACKET
   public static boolean optional_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
@@ -490,69 +506,50 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (key_val_pair (COMMA key_val_pair?)+) | optional_param_content*
+  // optional_key_val_pair? (COMMA optional_key_val_pair?)*
   private static boolean optional_param_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = optional_param_1_0(b, l + 1);
-    if (!r) r = optional_param_1_1(b, l + 1);
+    r = r && optional_param_1_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // key_val_pair (COMMA key_val_pair?)+
+  // optional_key_val_pair?
   private static boolean optional_param_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = key_val_pair(b, l + 1);
-    r = r && optional_param_1_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (COMMA key_val_pair?)+
-  private static boolean optional_param_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "optional_param_1_0_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = optional_param_1_0_1_0(b, l + 1);
-    while (r) {
-      int c = current_position_(b);
-      if (!optional_param_1_0_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "optional_param_1_0_1", c)) break;
-    }
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // COMMA key_val_pair?
-  private static boolean optional_param_1_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "optional_param_1_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
-    r = r && optional_param_1_0_1_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // key_val_pair?
-  private static boolean optional_param_1_0_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "optional_param_1_0_1_0_1")) return false;
-    key_val_pair(b, l + 1);
+    optional_key_val_pair(b, l + 1);
     return true;
   }
 
-  // optional_param_content*
+  // (COMMA optional_key_val_pair?)*
   private static boolean optional_param_1_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!optional_param_content(b, l + 1)) break;
+      if (!optional_param_1_1_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "optional_param_1_1", c)) break;
     }
+    return true;
+  }
+
+  // COMMA optional_key_val_pair?
+  private static boolean optional_param_1_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && optional_param_1_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // optional_key_val_pair?
+  private static boolean optional_param_1_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_1_0_1")) return false;
+    optional_key_val_pair(b, l + 1);
     return true;
   }
 

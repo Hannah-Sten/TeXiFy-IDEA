@@ -34,7 +34,8 @@
 
     implements("parameter")="com.intellij.psi.PsiLanguageInjectionHost"
 
-    implements("key_val_pair")="nl.hannahsten.texifyidea.psi.LatexKeyValuePair"
+    implements("optional_key_val_pair")="nl.hannahsten.texifyidea.psi.LatexKeyValuePair"
+    implements("optional_key_val_key")="nl.hannahsten.texifyidea.psi.LatexKeyValKey"
     implements("strict_key_val_pair")="nl.hannahsten.texifyidea.psi.LatexKeyValuePair"
     // Used for displaying something else than the token name in the psi tree
     tokens=[
@@ -106,7 +107,14 @@ parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET ( (key_val_pair (COMMA key_val_pair?)+) | optional_param_content*) CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET (optional_key_val_pair? (COMMA optional_key_val_pair?)*) CLOSE_BRACKET { pin=3 }
+optional_key_val_pair ::= optional_key_val_key (EQUALS key_val_value?)? {
+    methods=[getKeyValKey]
+}
+// This should not contain a comma, except when in a group. E.g., "\lstinputlisting[{param3,param4}=value3]{some/file}" is allowed
+optional_key_val_key ::= optional_param_content+ {
+    methods=[getGroupList toString]
+}
 
 // Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
 // Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both
@@ -124,7 +132,6 @@ required_param_content ::= raw_text | magic_comment | comment | environment | ps
 picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
 
 strict_key_val_pair ::= key_val_key EQUALS key_val_value?
-key_val_pair ::= key_val_key (EQUALS key_val_value?)?
 
 // Keys in a key/val list are typically no commands and don't need to be references
 key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {

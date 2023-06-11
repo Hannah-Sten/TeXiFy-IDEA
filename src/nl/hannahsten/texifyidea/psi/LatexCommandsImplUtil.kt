@@ -187,7 +187,7 @@ fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<Lat
     parameters.mapNotNull { it.optionalParam }
         // extract the content of each parameter element
         .flatMap { param ->
-            param.keyValPairList
+            param.optionalKeyValPairList
         }.forEach { pair ->
             parameterMap[pair.keyValKey] = pair.keyValValue
         }
@@ -245,6 +245,7 @@ fun keyValKeyToString(element: LatexKeyValKey): String {
     }
     return result.joinToString(separator = "") {
         when (it) {
+            is LatexOptionalParamContent -> it.group?.let { g -> g.content?.text ?: "" } ?: it.text
             is LatexGroup -> it.content?.text ?: ""
             else -> it.text
         }

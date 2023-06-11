@@ -48,7 +48,7 @@ class LatexPsiHelper(private val project: Project) {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.keyValPairList[0]
+        return optionalParam.optionalKeyValPairList[0]
     }
 
     /**
@@ -137,8 +137,8 @@ class LatexPsiHelper(private val project: Project) {
 
         val pair = createKeyValuePairs(parameterText)
         val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == CLOSE_BRACKET }
-        return if (optionalParam.keyValPairList.isNotEmpty()) {
-            val existing = optionalParam.keyValPairList.find { kv -> kv.keyValKey.text == name }
+        return if (optionalParam.optionalKeyValPairList.isNotEmpty()) {
+            val existing = optionalParam.optionalKeyValPairList.find { kv -> kv.keyValKey.text == name }
             if (existing != null && pair.keyValValue != null) {
                 existing.keyValValue?.delete()
                 existing.addAfter(

@@ -58,10 +58,6 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitKeyValPair(@NotNull LatexKeyValPair o) {
-    visitKeyValuePair(o);
-  }
-
   public void visitKeyValValue(@NotNull LatexKeyValValue o) {
     visitPsiElement(o);
   }
@@ -84,6 +80,14 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitNormalText(@NotNull LatexNormalText o) {
     visitPsiElement(o);
+  }
+
+  public void visitOptionalKeyValKey(@NotNull LatexOptionalKeyValKey o) {
+    visitKeyValKey(o);
+  }
+
+  public void visitOptionalKeyValPair(@NotNull LatexOptionalKeyValPair o) {
+    visitKeyValuePair(o);
   }
 
   public void visitOptionalParam(@NotNull LatexOptionalParam o) {

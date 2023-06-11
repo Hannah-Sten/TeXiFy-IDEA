@@ -171,9 +171,8 @@ class LatexBlock(
 
         // Indentation in groups and parameters.
         if (myNode.elementType === LatexTypes.REQUIRED_PARAM_CONTENT ||
-            myNode.elementType === LatexTypes.OPTIONAL_PARAM_CONTENT ||
             myNode.elementType === LatexTypes.STRICT_KEY_VAL_PAIR ||
-            myNode.elementType === LatexTypes.KEY_VAL_PAIR ||
+            myNode.elementType === LatexTypes.OPTIONAL_KEY_VAL_PAIR ||
             (
                 myNode.elementType !== LatexTypes.CLOSE_BRACE &&
                     myNode.treeParent?.elementType === LatexTypes.GROUP

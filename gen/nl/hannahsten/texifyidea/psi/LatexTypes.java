@@ -23,13 +23,14 @@ public interface LatexTypes {
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
   IElementType KEY_VAL_CONTENT = new LatexElementType("KEY_VAL_CONTENT");
   IElementType KEY_VAL_KEY = new LatexElementType("KEY_VAL_KEY");
-  IElementType KEY_VAL_PAIR = new LatexElementType("KEY_VAL_PAIR");
   IElementType KEY_VAL_VALUE = new LatexElementType("KEY_VAL_VALUE");
   IElementType MAGIC_COMMENT = new LatexMagicCommentStubElementType("MAGIC_COMMENT");
   IElementType MATH_CONTENT = new LatexElementType("MATH_CONTENT");
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
   IElementType NORMAL_TEXT = new LatexElementType("NORMAL_TEXT");
   IElementType NO_MATH_CONTENT = new LatexElementType("NO_MATH_CONTENT");
+  IElementType OPTIONAL_KEY_VAL_KEY = new LatexElementType("OPTIONAL_KEY_VAL_KEY");
+  IElementType OPTIONAL_KEY_VAL_PAIR = new LatexElementType("OPTIONAL_KEY_VAL_PAIR");
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
   IElementType OPTIONAL_PARAM_CONTENT = new LatexElementType("OPTIONAL_PARAM_CONTENT");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
@@ -118,9 +119,6 @@ public interface LatexTypes {
       else if (type == KEY_VAL_KEY) {
         return new LatexKeyValKeyImpl(node);
       }
-      else if (type == KEY_VAL_PAIR) {
-        return new LatexKeyValPairImpl(node);
-      }
       else if (type == KEY_VAL_VALUE) {
         return new LatexKeyValValueImpl(node);
       }
@@ -138,6 +136,12 @@ public interface LatexTypes {
       }
       else if (type == NO_MATH_CONTENT) {
         return new LatexNoMathContentImpl(node);
+      }
+      else if (type == OPTIONAL_KEY_VAL_KEY) {
+        return new LatexOptionalKeyValKeyImpl(node);
+      }
+      else if (type == OPTIONAL_KEY_VAL_PAIR) {
+        return new LatexOptionalKeyValPairImpl(node);
       }
       else if (type == OPTIONAL_PARAM) {
         return new LatexOptionalParamImpl(node);

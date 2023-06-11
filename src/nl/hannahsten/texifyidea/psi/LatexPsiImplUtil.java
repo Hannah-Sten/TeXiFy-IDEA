@@ -4,6 +4,7 @@ import com.intellij.psi.*;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -45,6 +46,19 @@ public class LatexPsiImplUtil {
 
     public static String toString(@NotNull LatexKeyValValue element) {
         return LatexCommandsImplUtilKt.keyValContentToString(element);
+    }
+
+    public static String toString(@NotNull LatexOptionalKeyValKey element) {
+        return LatexCommandsImplUtilKt.keyValKeyToString(element);
+    }
+
+    @NotNull
+    public static LatexKeyValKey getKeyValKey(@NotNull LatexOptionalKeyValPair element) {
+        return element.getOptionalKeyValKey();
+    }
+
+    public static List<LatexGroup> getGroupList(@NotNull LatexOptionalKeyValKey element) {
+        return element.getOptionalParamContentList().stream().map(LatexOptionalParamContent::getGroup).toList();
     }
 
     public static LinkedHashMap<LatexKeyValKey, LatexKeyValValue> getOptionalParameterMap(@NotNull LatexCommands element) {

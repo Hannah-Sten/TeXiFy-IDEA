@@ -5,9 +5,14 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexOptionalParam extends PsiElement {
+public interface LatexOptionalKeyValPair extends LatexKeyValuePair {
+
+  @Nullable
+  LatexKeyValValue getKeyValValue();
 
   @NotNull
-  List<LatexOptionalKeyValPair> getOptionalKeyValPairList();
+  LatexOptionalKeyValKey getOptionalKeyValKey();
+
+  @NotNull LatexKeyValKey getKeyValKey();
 
 }
