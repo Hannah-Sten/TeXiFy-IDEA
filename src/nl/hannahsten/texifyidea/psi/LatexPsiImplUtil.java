@@ -4,7 +4,6 @@ import com.intellij.psi.*;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
