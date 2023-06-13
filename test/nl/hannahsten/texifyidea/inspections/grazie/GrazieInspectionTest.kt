@@ -36,12 +36,11 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting(true, false, false, true)
     }
 
-    // No idea why it doesn't work
-//    fun testMultilineCheckGrammar() {
-//        val testName = getTestName(false)
-//        myFixture.configureByFile("$testName.tex")
-//        myFixture.checkHighlighting(true, false, false, true)
-//    }
+    fun testMultilineCheckGrammar() {
+        val testName = getTestName(false)
+        myFixture.configureByFile("$testName.tex")
+        myFixture.checkHighlighting(true, false, false, true)
+    }
 
     fun testInlineMath() {
         myFixture.configureByText(
@@ -68,6 +67,17 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testUnpairedSymbol() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                This is an unpaired symbol example
+                with \textit{example text}. % Error at ending bracket
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testGerman() {
         GrazieRemote.download(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
@@ -82,6 +92,48 @@ class GrazieInspectionTest : BasePlatformTestCase() {
                 Und hier ist ein zweiter Satz.\newline
                 Und hier ist ein dritter Satz.
             \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testGermanList() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \item Bietet es eine unterstützende Lösung?
+                \item Können diese Dinge durchgeführt werden?
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testGermanCommandSpacing() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            Eine \textbf{Folge oder Zahlenfolge} in ${'$'}M${'$'} ist eine Abbildung
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testTabular() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \begin{tabular}{llll}
+                    ${'$'}a${'$'}:                 & ${'$'}\mathbb{N}${'$'} & \rightarrow & ${'$'}M${'$'}     \\
+                    \multicolumn{1}{l}{} & ${'$'}n${'$'}          & \mapsto     & ${'$'}a(n)${'$'}.
+                \end{tabular}
+            
+                Ich bin über die Entwicklung sehr froh.
             """.trimIndent()
         )
         myFixture.checkHighlighting()

@@ -8,3 +8,4 @@ idea-flex.skeleton
 jflex-*.jar
 scripts/venv
 results/
+**/node_modules
