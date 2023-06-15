@@ -11,7 +11,7 @@ on:
 jobs:
   qodana:
     name: Qodana
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
         with:
@@ -25,7 +25,7 @@ jobs:
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
-          args: --baseline,qodana.sarif.json --source-directory,src --volume,gen
+          args: --baseline qodana.sarif.json --source-directory src
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
