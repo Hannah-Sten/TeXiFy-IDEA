@@ -19,6 +19,7 @@ jobs:
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
+          post-pr-comment: false
           args: --baseline,qodana.sarif.json
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
