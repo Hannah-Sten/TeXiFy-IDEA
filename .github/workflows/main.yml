@@ -26,6 +26,7 @@ jobs:
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
+          post-pr-comment: false
           args: >
             --baseline,qodana.sarif.json,
             --source-directory,src
