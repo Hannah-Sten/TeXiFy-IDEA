@@ -21,14 +21,13 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Generate lexer/parser
-        run: |
-          ./gradlew setupDependencies
-          ls gen/nl/hannahsten/texifyidea/
-          ls gen/nl/hannahsten/texifyidea/psi
+        run: ./gradlew setupDependencies
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
-          args: --baseline,qodana.sarif.json
+          args: |
+            --baseline,qodana.sarif.json
+            --source-directory,src
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
