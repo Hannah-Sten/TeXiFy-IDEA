@@ -11,6 +11,7 @@ on:
 jobs:
   qodana:
     name: Qodana
+    # Note: updating to ubuntu-latest may slow the build and produce a "The runner has received a shutdown signal."
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
