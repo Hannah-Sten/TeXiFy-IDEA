@@ -200,7 +200,7 @@ intellij {
         listOf(
             "tanvd.grazi",
             "java",
-            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0",
+            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
             "com.jetbrains.hackathon.indices.viewer:1.23"
         )
     )
