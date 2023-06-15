@@ -314,4 +314,8 @@ tasks {
         dependsOn(generateLatexLexerTask)
         dependsOn(generateBibtexLexerTask)
     }
+
+    runKtlintCheckOverMainSourceSet {
+        dependsOn(initializeIntelliJPlugin)
+    }
 }

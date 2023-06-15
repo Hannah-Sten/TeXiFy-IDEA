@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import com.intellij.codeInsight.intention.FileModifier.SafeFieldForPreview
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -15,13 +16,15 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
+
+    val formatting = setOf("~", "\\\\")
 
     override fun getDisplayName() = "Suspicious formatting in the required argument of a sectioning command"
 
@@ -31,7 +34,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
         return file.commandsInFile()
             .asSequence()
             .filter { it.name in CommandMagic.sectionMarkers }
-            .filter { it.optionalParameterMap.isEmpty() }
+            .filter { it.getOptionalParameterMap().isEmpty() }
             .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
             .map { psiElement ->
                 val requiredParam = psiElement.firstChildOfType(LatexRequiredParam::class)
@@ -45,13 +48,13 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
                     "Suspicious formatting in ${psiElement.name}",
                     ProblemHighlightType.WARNING,
                     isOntheFly,
-                    AddOptionalArgumentQuickFix()
+                    AddOptionalArgumentQuickFix(formatting)
                 )
             }
             .toList()
     }
 
-    class AddOptionalArgumentQuickFix : LocalQuickFix {
+    class AddOptionalArgumentQuickFix(@SafeFieldForPreview val formatting: Set<String>) : LocalQuickFix {
 
         override fun getFamilyName(): String {
             return "Fix formatting in table of contents and running head"
@@ -71,10 +74,5 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
                 ?: return
             command.replace(newCommand)
         }
-    }
-
-    companion object {
-
-        val formatting = setOf("~", "\\\\")
     }
 }
