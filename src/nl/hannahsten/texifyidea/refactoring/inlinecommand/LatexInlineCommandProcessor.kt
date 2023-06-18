@@ -14,7 +14,7 @@ import com.intellij.usageView.UsageViewDescriptor
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.definitionCommand
+import nl.hannahsten.texifyidea.util.parser.definitionCommand
 
 /**
  * Recieves settings and a target and performs the requested refactoring
@@ -81,10 +81,10 @@ class LatexInlineCommandProcessor(
      * @param psiElement The element to remove and replace with the contents of the command
      */
     private fun replaceUsage(psiElement: PsiElement): Boolean {
-        val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.requiredParameters ?: listOf()
-        val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
+        val calledRequiredArgs = (psiElement as? LatexCommandWithParams)?.getRequiredParameters() ?: listOf()
+        val calledOptionalArgs = (psiElement as? LatexCommandWithParams)?.getOptionalParameterMap()?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
-        val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.optionalParameterMap?.keys?.toList()?.map { it.text } ?: listOf<String>()
+        val parentOptionalArgs = (inlineCommand as? LatexCommandWithParams)?.getOptionalParameterMap()?.keys?.toList()?.map { it.text } ?: listOf<String>()
 
         if (calledOptionalArgs.size > 1)
             return false // error case

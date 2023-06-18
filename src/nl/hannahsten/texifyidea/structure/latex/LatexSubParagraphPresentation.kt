@@ -17,7 +17,7 @@ class LatexSubParagraphPresentation(subParagraphCommand: LatexCommands) : Editab
             throw IllegalArgumentException("command is no \\subparagraph-command")
         }
 
-        this.subParagraphName = subParagraphCommand.requiredParameters[0]
+        this.subParagraphName = subParagraphCommand.getRequiredParameters()[0]
     }
 
     override fun getPresentableText() = subParagraphName

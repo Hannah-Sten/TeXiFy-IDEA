@@ -6,6 +6,8 @@ import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.indexSinkOccurrence
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.getLabel
 import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.io.IOException
@@ -17,7 +19,7 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     }
 
     override fun createStub(psi: LatexEnvironment, parentStub: StubElement<*>): LatexEnvironmentStub {
-        return LatexEnvironmentStubImpl(parentStub, this, psi.environmentName, psi.label ?: "")
+        return LatexEnvironmentStubImpl(parentStub, this, psi.getEnvironmentName(), psi.getLabel() ?: "")
     }
 
     override fun getExternalId() = "texify.latex." + super.toString()

@@ -14,14 +14,10 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
-    psiImplUtilClass="nl.hannahsten.texifyidea.psi.LatexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.LatexElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
-
-    extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
-    implements("commands")= ["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
     implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
@@ -70,7 +66,7 @@ environment ::= begin_command environment_content? end_command {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
-    methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImplMixin"
  }
 
 // There cannot be empty content in an environment, because it will break formatting related things
@@ -85,20 +81,21 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
-    mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getReference getOptionalParameterMap getRequiredParameters hasLabel getTextOffset getName setName]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexCommandsImplMixin"
+    extends="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
+    implements=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }
 
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
-    methods=[getOptionalParameterMap getRequiredParameters]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexBeginCommandImplMixin"
 }
 
 end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 
 parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
-    methods=[isValidHost updateText createLiteralTextEscaper]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterImplMixin"
 }
 
 // pin=3 makes sure that an optional parameter is only matched successfully when
@@ -128,10 +125,10 @@ key_val_pair ::= key_val_key (EQUALS key_val_value?)?
 
 // Keys in a key/val list are typically no commands and don't need to be references
 key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
-    methods=[toString]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValKeyImplMixin"
 }
 key_val_value ::= key_val_content+ {
-    methods=[toString]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValValueImplMixin"
 }
 key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
 
@@ -142,7 +139,7 @@ key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN 
 // This assumes that parameter text which is a reference, appears directly under param_content
 // Commands is here instead of in required_param_content because it can be part of reference text for example to a file
 parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
-   methods=[getReferences getReference getNameIdentifier getName setName delete]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterTextImplMixin"
 }
 
 group ::= OPEN_BRACE content CLOSE_BRACE { pin=1 }

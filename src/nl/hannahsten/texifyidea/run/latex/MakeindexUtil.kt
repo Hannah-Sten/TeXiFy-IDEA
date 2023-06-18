@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.psi.toStringMap
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -71,8 +71,8 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
-            .filter { command -> command.requiredParameters.any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
-            .flatMap { it.optionalParameterMap.toStringMap().keys }
+            .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
+            .flatMap { it.getOptionalParameterMap().toStringMap().keys }
     }
 }
 
@@ -91,7 +91,7 @@ fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): Map<String, S
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text == "\\makeindex" }
             .forEach {
-                makeindexOptions.putAll(it.optionalParameterMap.toStringMap())
+                makeindexOptions.putAll(it.getOptionalParameterMap().toStringMap())
             }
         makeindexOptions
     }

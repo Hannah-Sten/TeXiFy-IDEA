@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.environmentName
-import nl.hannahsten.texifyidea.util.hasParent
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.environmentName
+import nl.hannahsten.texifyidea.util.parser.hasParent
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
 
 /**

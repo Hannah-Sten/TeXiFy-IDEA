@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.inVerbatim
+import nl.hannahsten.texifyidea.util.parser.inVerbatim
 import nl.hannahsten.texifyidea.util.orFalse
 
 /**

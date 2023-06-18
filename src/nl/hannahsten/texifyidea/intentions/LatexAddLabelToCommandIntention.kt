@@ -13,9 +13,9 @@ import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
-import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -53,8 +53,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
 
         // For sections we can infer a reasonable label name from the required parameter
         if (CommandMagic.sectionMarkers.contains(command.name)) {
-            val required = command.requiredParameters
-
+            val required = command.getRequiredParameters()
             // Section commands should all have a required parameter
             val labelString: String = required.getOrNull(0) ?: return
             val createdLabel = getUniqueLabelName(

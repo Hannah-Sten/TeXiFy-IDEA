@@ -8,7 +8,13 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.merge
+import nl.hannahsten.texifyidea.util.overlaps
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.parents
+import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
  * Explains to Grazie which psi elements contain text and which don't.

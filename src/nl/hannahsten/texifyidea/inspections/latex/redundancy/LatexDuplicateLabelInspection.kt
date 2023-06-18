@@ -14,11 +14,14 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.labels.findBibitemCommands
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.lang.Integer.max
 import java.util.*
 
@@ -55,7 +58,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                         }
                     }
                     is LatexEnvironment -> {
-                        if (EnvironmentMagic.labelAsParameter.contains(this.environmentName)) {
+                        if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
                             return@getProblemDescriptors getParameterLabelDescriptor(this)
                         }
 
@@ -77,7 +80,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(env: LatexEnvironment): LabelDescriptor? {
         val label =
-            env.beginCommand.optionalParameterMap.entries.firstOrNull { e -> e.key.toString() == "label" }?.value
+            env.beginCommand.getOptionalParameterMap().entries.firstOrNull { e -> e.key.toString() == "label" }?.value
                 ?: return null
         val labelString = label.toString()
         return LabelDescriptor(env, labelString, TextRange.from(label.startOffset - env.startOffset, label.textLength))
@@ -88,7 +91,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(cmd: LatexCommands): LabelDescriptor? {
         val label =
-            cmd.optionalParameterMap.entries.firstOrNull { e -> e.key.toString() == "label" }?.value ?: return null
+            cmd.getOptionalParameterMap().entries.firstOrNull { e -> e.key.toString() == "label" }?.value ?: return null
         val labelString = label.toString()
         return LabelDescriptor(cmd, labelString, TextRange.from(label.startOffset - cmd.startOffset, label.textLength))
     }

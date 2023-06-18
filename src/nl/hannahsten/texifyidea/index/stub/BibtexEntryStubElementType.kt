@@ -5,6 +5,10 @@ import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.impl.BibtexEntryImpl
+import nl.hannahsten.texifyidea.util.parser.getAuthors
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getTitle
+import nl.hannahsten.texifyidea.util.parser.getYear
 
 open class BibtexEntryStubElementType(debugName: String) : IStubElementType<BibtexEntryStub, BibtexEntry>(debugName, BibtexLanguage) {
 
@@ -28,7 +32,7 @@ open class BibtexEntryStubElementType(debugName: String) : IStubElementType<Bibt
     }
 
     override fun createStub(entry: BibtexEntry, parentStub: StubElement<*>?): BibtexEntryStub {
-        return BibtexEntryStubImpl(parentStub, this, entry.identifier, entry.authors, entry.year, entry.title)
+        return BibtexEntryStubImpl(parentStub, this, entry.getIdentifier(), entry.getAuthors(), entry.getYear(), entry.getTitle())
     }
 
     override fun getExternalId() = "texify.bibtex." + super.toString()

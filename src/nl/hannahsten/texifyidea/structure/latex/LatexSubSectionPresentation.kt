@@ -17,7 +17,7 @@ class LatexSubSectionPresentation(sectionCommand: LatexCommands) : EditableHintP
             throw IllegalArgumentException("command is no \\subsection-command")
         }
 
-        this.subSectionName = sectionCommand.requiredParameters[0]
+        this.subSectionName = sectionCommand.getRequiredParameters()[0]
     }
 
     override fun getPresentableText() = subSectionName
