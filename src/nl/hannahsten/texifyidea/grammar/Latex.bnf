@@ -104,7 +104,9 @@ parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
 optional_param ::= OPEN_BRACKET (optional_key_val_pair? (COMMA optional_key_val_pair?)*) CLOSE_BRACKET { pin=3 }
 optional_key_val_pair ::= optional_key_val_key (EQUALS key_val_value?)?
 // This should not contain a comma, except when in a group. E.g., "\lstinputlisting[{param3,param4}=value3]{some/file}" is allowed
-optional_key_val_key ::= optional_param_content+
+optional_key_val_key ::= optional_param_content+ {
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValKeyImplMixin"
+}
 
 // Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
 // Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both
