@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.psi.LatexKeyValuePair
+import nl.hannahsten.texifyidea.psi.LatexOptionalKeyValPair
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.testutils.updateConvention
@@ -217,7 +217,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """.trimIndent()
         )
         // Sometimes, errors in psi structure only show when initiating a WalkingState
-        myFixture.file.children.first().childrenOfType(LatexKeyValuePair::class)
+        myFixture.file.children.first().childrenOfType(LatexOptionalKeyValPair::class)
     }
 
     fun `test fix all missing label problems in this file`() = testQuickFixAll(

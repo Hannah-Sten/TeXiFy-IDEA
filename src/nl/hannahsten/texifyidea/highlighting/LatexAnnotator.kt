@@ -47,7 +47,7 @@ open class LatexAnnotator : Annotator {
             }
         }
         // Key value pairs. Match on the common interface so we catch LatexKeyValPair and LatexStrictKeyValPair.
-        else if (psiElement is LatexKeyValuePair) {
+        else if (psiElement is LatexOptionalKeyValPair) {
             annotateKeyValuePair(psiElement, annotationHolder)
         }
         // Optional parameters.
@@ -146,11 +146,11 @@ open class LatexAnnotator : Annotator {
         }
     }
 
-    private fun annotateKeyValuePair(element: LatexKeyValuePair, annotationHolder: AnnotationHolder) {
+    private fun annotateKeyValuePair(element: LatexOptionalKeyValPair, annotationHolder: AnnotationHolder) {
         element.keyValValue ?: return
 
         annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(TextRange(element.keyValKey.endOffset, element.keyValValue!!.startOffset))
+            .range(TextRange(element.optionalKeyValKey.endOffset, element.keyValValue!!.startOffset))
             .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
             .create()
     }

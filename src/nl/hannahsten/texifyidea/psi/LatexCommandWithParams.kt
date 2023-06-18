@@ -20,5 +20,5 @@ interface LatexCommandWithParams : PsiElement {
      */
     fun getRequiredParameters(): List<String>
 
-    fun getOptionalParameterMap(): Map<LatexKeyValKey, LatexKeyValValue?>
+    fun getOptionalParameterMap(): Map<LatexOptionalKeyValKey, LatexKeyValValue?>
 }
