@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.util.definedCommandName
+import nl.hannahsten.texifyidea.util.parser.definedCommandName
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
 import nl.hannahsten.texifyidea.util.includedPackages

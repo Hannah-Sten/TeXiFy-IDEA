@@ -10,11 +10,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
  * @author Hannah Schellekens
@@ -59,7 +60,7 @@ object PackageUtils {
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
                 // Do not insert below the subfiles package, it should stay last
-                if (cmd.requiredParameters.contains("subfiles")) {
+                if (cmd.getRequiredParameters().contains("subfiles")) {
                     break
                 }
                 else {
@@ -234,8 +235,8 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
             val packages = setOf(
-                cmd.requiredParameters,
-                cmd.optionalParameterMap.toStringMap().keys.toList()
+                cmd.getRequiredParameters(),
+                cmd.getOptionalParameterMap().toStringMap().keys.toList()
             )
 
             for (list in packages) {

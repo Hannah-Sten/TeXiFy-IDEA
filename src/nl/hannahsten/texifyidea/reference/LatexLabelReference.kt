@@ -38,7 +38,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                     if (bibtexEntry != null) {
                         val containing = bibtexEntry.containingFile
                         if (bibtexEntry is LatexCommands) {
-                            val parameters = bibtexEntry.requiredParameters
+                            val parameters = bibtexEntry.getRequiredParameters()
                             return@map LookupElementBuilder.create(parameters[0])
                                 .bold()
                                 .withInsertHandler(LatexReferenceInsertHandler())

@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import javax.swing.Icon
 
 /**

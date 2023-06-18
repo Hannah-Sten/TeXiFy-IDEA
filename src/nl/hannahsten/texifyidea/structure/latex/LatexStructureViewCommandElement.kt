@@ -6,7 +6,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.NavigationItem
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.structure.EditableHintPresentation
-import nl.hannahsten.texifyidea.util.nextCommand
+import nl.hannahsten.texifyidea.util.parser.nextCommand
 import java.util.*
 
 /**

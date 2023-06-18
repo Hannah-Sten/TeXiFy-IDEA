@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 
 class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
 
@@ -30,7 +30,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
             .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
-            val providesName = command.requiredParameters.firstOrNull()?.split("/")?.last()
+            val providesName = command.getRequiredParameters().firstOrNull()?.split("/")?.last()
             val fileName = file.name.removeSuffix(".sty")
             if (fileName != providesName) {
                 descriptors.add(
@@ -58,7 +58,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
             val providesCommand = descriptor.psiElement as LatexCommands
             val newCommandText = providesCommand.let {
                 it.text.replace(
-                    it.requiredParameters.first().split("/").last() + "}",
+                    it.getRequiredParameters().first().split("/").last() + "}",
                     it.containingFile.name.removeSuffix(".sty") + "}"
                 )
             }

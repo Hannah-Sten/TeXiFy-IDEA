@@ -37,15 +37,15 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.allCommands
+import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.hasBibliography
+import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.usesBiber
+import nl.hannahsten.texifyidea.util.parser.usesBiber
 import org.jdom.Element
 import java.io.File
 import java.util.*
@@ -456,7 +456,7 @@ class LatexRunConfiguration(
             // that do have one can have it in any included file
             psiFile!!.allCommands()
                 .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
-                .flatMap { command -> command.requiredParameters }
+                .flatMap { command -> command.getRequiredParameters() }
                 .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
                     val chapterMainFile = psiFile!!.findFile(filename)

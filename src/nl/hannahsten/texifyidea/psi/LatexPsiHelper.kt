@@ -9,9 +9,9 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.findFirstChild
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChild
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 /**
  * As the IntelliJ SDK docs say, to replace or insert text it is easiest to create a dummy file,
@@ -96,7 +96,7 @@ class LatexPsiHelper(private val project: Project) {
     private fun getOrCreateLabelOptionalParameters(command: LatexCommandWithParams): LatexOptionalParam {
         // This is only a heuristic. We would actually need detailed information on which optional parameter is
         // supposed to hold the label key.
-        val existingParameters = command.optionalParameterMap
+        val existingParameters = command.getOptionalParameterMap()
         if (existingParameters.isEmpty()) {
             if (command is LatexCommands) {
                 // For commands insert an optional parameter right after the command name (in case the command has a

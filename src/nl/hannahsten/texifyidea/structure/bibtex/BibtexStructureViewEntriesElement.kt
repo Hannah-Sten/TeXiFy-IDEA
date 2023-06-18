@@ -7,7 +7,7 @@ import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiFile
 import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 
 /**
  * Contains all the entries. Class exist to prevent auto-collapsing.
