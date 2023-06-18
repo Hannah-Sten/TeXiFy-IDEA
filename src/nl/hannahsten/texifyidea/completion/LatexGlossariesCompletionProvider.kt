@@ -8,7 +8,9 @@ import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.psi.LatexStrictKeyValPair
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
@@ -16,9 +18,7 @@ import nl.hannahsten.texifyidea.util.parser.toStringMap
 object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParameters>() {
 
     private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): LinkedHashMap<String, String> {
-        val map = HashMap<LatexKeyValKey, LatexKeyValValue?>()
-        pairs.forEach { p -> map[p.keyValKey] = p.keyValValue }
-        return pairs.associate<LatexKeyValuePair, LatexKeyValKey, LatexKeyValValue?> { Pair(it.keyValKey, it.keyValValue) }.toStringMap()
+        return pairs.associate { pair -> Pair(pair.keyValKey, pair.keyValValue) }.toStringMap()
     }
 
     private fun prettyPrintParameter(param: LatexRequiredParam): String {

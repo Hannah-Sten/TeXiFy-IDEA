@@ -34,7 +34,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
         return file.commandsInFile()
             .asSequence()
             .filter { it.name in CommandMagic.sectionMarkers }
-            .filter { it.getOptionalParameterMap().isEmpty() }
+            .filter { it.parameterList.mapNotNull { param -> param.optionalParam }.isEmpty() }
             .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
             .map { psiElement ->
                 val requiredParam = psiElement.firstChildOfType(LatexRequiredParam::class)
@@ -65,7 +65,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             val requiredParamText = command.requiredParameter(0)
             val optionalParamText = requiredParamText?.replace(Regex(formatting.joinToString("", prefix = "[", postfix = "]")), " ")
                 ?: return
-            val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText)
+            val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText) ?: return
 
             command.addAfter(optionalArgument, command.commandToken)
             // Create a new command and completely replace the old command so all the psi methods will recompute instead

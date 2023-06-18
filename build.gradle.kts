@@ -9,12 +9,12 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.13.3"
+    id("org.jetbrains.intellij") version "1.14.1"
     kotlin("jvm") version ("1.8.0")
     kotlin("plugin.serialization") version ("1.8.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.46.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -23,7 +23,7 @@ plugins {
     id("de.undercouch.download") version "5.4.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.0"
+    id("org.jetbrains.kotlinx.kover") version "0.7.1"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
@@ -31,7 +31,7 @@ plugins {
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "8.2.1"
 
-    id("org.jetbrains.changelog") version "2.0.0"
+    id("org.jetbrains.changelog") version "2.1.0"
 
     id("org.jetbrains.grammarkit") version "2022.3.1"
 }
@@ -199,7 +199,7 @@ intellij {
         listOf(
             "tanvd.grazi",
             "java",
-            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.14.0",
+            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
             "com.jetbrains.hackathon.indices.viewer:1.23"
         )
     )

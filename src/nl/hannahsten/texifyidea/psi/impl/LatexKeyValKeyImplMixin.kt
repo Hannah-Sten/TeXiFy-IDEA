@@ -4,9 +4,9 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.LatexGroup
-import nl.hannahsten.texifyidea.psi.LatexKeyValKey
+import nl.hannahsten.texifyidea.psi.LatexOptionalParamContent
 
-abstract class LatexKeyValKeyImplMixin(node: ASTNode) : LatexKeyValKey, ASTWrapperPsiElement(node) {
+abstract class LatexKeyValKeyImplMixin(node: ASTNode) : ASTWrapperPsiElement(node) {
 
     override fun toString(): String {
         // This is ugly, but element.children returns only composite children and other querying methods are recursive
@@ -18,6 +18,7 @@ abstract class LatexKeyValKeyImplMixin(node: ASTNode) : LatexKeyValKey, ASTWrapp
         }
         return result.joinToString(separator = "") {
             when (it) {
+                is LatexOptionalParamContent -> it.group?.let { g -> g.content?.text ?: "" } ?: it.text
                 is LatexGroup -> it.content?.text ?: ""
                 else -> it.text
             }

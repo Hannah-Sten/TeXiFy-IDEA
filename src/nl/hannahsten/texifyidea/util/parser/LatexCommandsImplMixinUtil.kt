@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
@@ -134,22 +135,22 @@ fun stripGroup(text: String): String {
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
-fun Map<LatexKeyValKey, LatexKeyValValue?>.toStringMap(): LinkedHashMap<String, String> {
+fun<K : PsiElement, V : PsiElement> Map<K, V?>.toStringMap(): LinkedHashMap<String, String> {
     val parameterMap = LinkedHashMap<String, String>()
     this.forEach { (k, v) -> parameterMap[k.toString()] = v?.toString() ?: "" }
     return parameterMap
 }
 
-fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyValKey, LatexKeyValValue?> {
-    val parameterMap = LinkedHashMap<LatexKeyValKey, LatexKeyValValue?>()
+fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): LinkedHashMap<LatexOptionalKeyValKey, LatexKeyValValue?> {
+    val parameterMap = LinkedHashMap<LatexOptionalKeyValKey, LatexKeyValValue?>()
     // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
     // But within a parameter, there can be different content like [name={value in group}]
     parameters.mapNotNull { it.optionalParam }
         // extract the content of each parameter element
         .flatMap { param ->
-            param.keyValPairList
+            param.optionalKeyValPairList
         }.forEach { pair ->
-            parameterMap[pair.keyValKey] = pair.keyValValue
+            parameterMap[pair.optionalKeyValKey] = pair.keyValValue
         }
     return parameterMap
 }

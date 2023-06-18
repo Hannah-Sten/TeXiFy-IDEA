@@ -129,3 +129,7 @@ val LatexParameterText.command: PsiElement?
     get() {
         return this.firstParentOfType(LatexCommands::class)?.firstChild
     }
+
+// fun LatexOptionalKeyValPair.getKeyValValue() {
+//    PsiTreeUtil.getChildOfType(this, LatexKeyValValue::class.java)
+// }
