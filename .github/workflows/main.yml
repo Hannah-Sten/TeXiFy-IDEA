@@ -27,6 +27,7 @@ jobs:
         name: Qodana
         with:
           post-pr-comment: false
+          pr-mode: false
           args: >
             --baseline,qodana.sarif.json,
             --source-directory,src
