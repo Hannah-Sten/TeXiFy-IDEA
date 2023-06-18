@@ -10,6 +10,8 @@ import nl.hannahsten.texifyidea.grammar.LatexLexerAdapter
 import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
+ * Syntax highlighting for lexer tokens (for composite elements, see [LatexAnnotator]).
+ *
  * @author Hannah Schellekens, Sten Wessel
  */
 class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
