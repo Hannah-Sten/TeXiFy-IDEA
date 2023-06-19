@@ -1,8 +1,11 @@
 package nl.hannahsten.texifyidea.documentation
 
+import arrow.core.Either
+import arrow.core.raise.either
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import nl.hannahsten.texifyidea.CommandFailure
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.Environment
@@ -11,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
+import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -45,17 +49,21 @@ class LatexDocumentationProvider : DocumentationProvider {
     }
 
     override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
+        return getUrlForElement(element).getOrNull()
+    }
+
+    private fun getUrlForElement(element: PsiElement?): Either<CommandFailure, List<String>?> = either {
         if (element !is LatexCommands) {
-            return null
+            return@either null
         }
 
         val command = LatexCommand.lookup(element)
 
-        if (command.isNullOrEmpty()) return null
+        if (command.isNullOrEmpty()) return@either null
 
         // Special case for package inclusion commands
         if (isPackageInclusionCommand(element)) {
-            val pkg = element.getRequiredParameters().getOrNull(0) ?: return null
+            val pkg = element.getRequiredParameters().getOrNull(0) ?: return@either null
             return runTexdoc(LatexPackage(pkg))
         }
 
@@ -104,24 +112,21 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         // Link to package docs
         originalElement ?: return null
-        val urls = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as? Dependend)?.dependency) else getUrlFor(element, originalElement)
+        val urlsMaybe = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as? Dependend)?.dependency) else getUrlForElement(
+            element
+        )
+        val urlsText = urlsMaybe.fold(
+            { it.output },
+            { urls -> urls?.joinToString { "<a href=\"file:///$it\">$it</a><br/>" } }
+        )
 
-        if (docString?.isNotBlank() == true && !urls.isNullOrEmpty()) {
-            docString += "<br/>"
+        // Add a line break if necessary
+        if (docString?.isNotBlank() == true && urlsText?.isNotBlank() == true) {
+            docString += "<br>"
         }
 
-        if (urls != null) {
-            for (url in urls) {
-                // Propagate the warning
-                docString += if (url.contains("install the texdoc package")) {
-                    url
-                }
-                else {
-                    "<a href=\"file:///$url\">$url</a><br/>"
-                }
-            }
-        }
-
+        docString += urlsText
+        
         if (element.previousSiblingIgnoreWhitespace() == null) {
             lookup = null
         }
@@ -164,8 +169,8 @@ class LatexDocumentationProvider : DocumentationProvider {
     /**
      * Find list of documentation urls.
      */
-    private fun runTexdoc(pkg: LatexPackage?): List<String> {
-        if (pkg == null) return emptyList()
+    private fun runTexdoc(pkg: LatexPackage?): Either<CommandFailure, List<String>> = either {
+        if (pkg == null) return@either emptyList()
 
         // base/lt... files are documented in source2e.pdf
         val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
@@ -186,28 +191,25 @@ class LatexDocumentationProvider : DocumentationProvider {
         }
         val (output, exitCode) = runCommandWithExitCode(command, returnExceptionMessage = true)
         if (exitCode != 0 || output?.isNotBlank() != true) {
-            return if (output?.contains("Cannot run program \"texdoc\"") == true) {
-                listOf("<br><i>Tip: install the texdoc package to get links to package documentation here</i>")
-            }
-            else {
-                listOf(output ?: "Could not run program 'texdoc'")
-            }
+            raise(CommandFailure(output ?: "", exitCode))
         }
 
-        val lines = output.split("\n")
+        // Assume that if there are no path delimiters in the output, the output is some sort of error message (could be in any language)
+        val validLines = output.split("\n").filter { it.containsAny(setOf("\\", "/")) }
 
-        return if (lines.getOrNull(0)?.endsWith("could not be found.") == true) {
-            emptyList()
+        if (validLines.isEmpty()) {
+            raise(CommandFailure(output, exitCode))
         }
-        else {
+
+        validLines.mapNotNull {
+            // Do some guesswork about the format
             if (TexliveSdk.isAvailable) {
-                lines.mapNotNull {
-                    // Line consists of: name version path optional file description
-                    it.split("\t").getOrNull(2)
-                }
+                // Line consists of: name version path optional file description
+                it.split("\t").getOrNull(2)
             }
             else {
-                lines
+                // mthelp seems to just output the paths itself
+                it
             }
         }
     }
