@@ -117,7 +117,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         )
         val urlsText = urlsMaybe.fold(
             { it.output },
-            { urls -> urls?.joinToString { "<a href=\"file:///$it\">$it</a><br/>" } }
+            { urls -> urls?.joinToString(separator="<br>") { "<a href=\"file:///$it\">$it</a>" } }
         )
 
         // Add a line break if necessary
@@ -126,7 +126,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         }
 
         docString += urlsText
-        
+
         if (element.previousSiblingIgnoreWhitespace() == null) {
             lookup = null
         }
@@ -175,21 +175,21 @@ class LatexDocumentationProvider : DocumentationProvider {
         // base/lt... files are documented in source2e.pdf
         val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
-        // -M to avoid texdoc asking to choose from the list
         val command = if (TexliveSdk.isAvailable) {
-            "texdoc -l -M $name"
+            // -M to avoid texdoc asking to choose from the list
+            listOf("texdoc", "-l", "-M", name)
         }
         else {
             if (SystemEnvironment.isAvailable("texdoc")) {
                 // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
-                "texdoc -l $name"
+                listOf("texdoc", "-l", name)
             }
             else {
                 // In some cases, texdoc may not be available but mthelp is
-                "mthelp -l $name"
+                listOf("mthelp", "-l", name)
             }
         }
-        val (output, exitCode) = runCommandWithExitCode(command, returnExceptionMessage = true)
+        val (output, exitCode) = runCommandWithExitCode(*command.toTypedArray(), returnExceptionMessage = true)
         if (exitCode != 0 || output?.isNotBlank() != true) {
             raise(CommandFailure(output ?: "", exitCode))
         }
@@ -201,7 +201,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             raise(CommandFailure(output, exitCode))
         }
 
-        validLines.mapNotNull {
+        validLines.toSet().mapNotNull {
             // Do some guesswork about the format
             if (TexliveSdk.isAvailable) {
                 // Line consists of: name version path optional file description
