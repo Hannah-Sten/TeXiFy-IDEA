@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterHandler
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
-import nl.hannahsten.texifyidea.util.firstChildOfType
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import java.lang.Integer.max
@@ -171,9 +171,8 @@ class LatexBlock(
 
         // Indentation in groups and parameters.
         if (myNode.elementType === LatexTypes.REQUIRED_PARAM_CONTENT ||
-            myNode.elementType === LatexTypes.OPTIONAL_PARAM_CONTENT ||
             myNode.elementType === LatexTypes.STRICT_KEY_VAL_PAIR ||
-            myNode.elementType === LatexTypes.KEY_VAL_PAIR ||
+            myNode.elementType === LatexTypes.OPTIONAL_KEY_VAL_PAIR ||
             (
                 myNode.elementType !== LatexTypes.CLOSE_BRACE &&
                     myNode.treeParent?.elementType === LatexTypes.GROUP

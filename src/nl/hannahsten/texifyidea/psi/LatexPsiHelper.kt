@@ -9,9 +9,9 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.findFirstChild
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChild
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 /**
  * As the IntelliJ SDK docs say, to replace or insert text it is easiest to create a dummy file,
@@ -44,11 +44,11 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createKeyValuePairs(parameter: String): LatexKeyValuePair {
+    private fun createKeyValuePairs(parameter: String): LatexOptionalKeyValPair {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.keyValPairList[0]
+        return optionalParam.optionalKeyValPairList[0]
     }
 
     /**
@@ -84,6 +84,11 @@ class LatexPsiHelper(private val project: Project) {
         return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
     }
 
+    fun createOptionalParameter(content: String): LatexOptionalParam? {
+        val commandText = "\\section[$content]{$content}"
+        return createFromText(commandText).firstChildOfType(LatexOptionalParam::class)
+    }
+
     /**
      * Returns the LatexOptionalParam node that is supposed to contain the label key for the command.
      * If no such node exists yet, a new one is created at the correct position.
@@ -91,7 +96,7 @@ class LatexPsiHelper(private val project: Project) {
     private fun getOrCreateLabelOptionalParameters(command: LatexCommandWithParams): LatexOptionalParam {
         // This is only a heuristic. We would actually need detailed information on which optional parameter is
         // supposed to hold the label key.
-        val existingParameters = command.optionalParameterMap
+        val existingParameters = command.getOptionalParameterMap()
         if (existingParameters.isEmpty()) {
             if (command is LatexCommands) {
                 // For commands insert an optional parameter right after the command name (in case the command has a
@@ -120,7 +125,7 @@ class LatexPsiHelper(private val project: Project) {
      * @param name The name of the parameter to change
      * @param value The new parameter value. If the value is null, the parameter will have a key only.
      */
-    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexKeyValuePair? {
+    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexOptionalKeyValPair? {
         val optionalParam = getOrCreateLabelOptionalParameters(command)
 
         val parameterText = if (value != null) {
@@ -132,8 +137,8 @@ class LatexPsiHelper(private val project: Project) {
 
         val pair = createKeyValuePairs(parameterText)
         val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == CLOSE_BRACKET }
-        return if (optionalParam.keyValPairList.isNotEmpty()) {
-            val existing = optionalParam.keyValPairList.find { kv -> kv.keyValKey.text == name }
+        return if (optionalParam.optionalKeyValPairList.isNotEmpty()) {
+            val existing = optionalParam.optionalKeyValPairList.find { kv -> kv.optionalKeyValKey.text == name }
             if (existing != null && pair.keyValValue != null) {
                 existing.keyValValue?.delete()
                 existing.addAfter(
@@ -149,12 +154,12 @@ class LatexPsiHelper(private val project: Project) {
                 val comma = createFromText(",").firstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
                 optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
-                closeBracket?.prevSibling as? LatexKeyValuePair
+                closeBracket?.prevSibling as? LatexOptionalKeyValPair
             }
         }
         else {
             optionalParam.addBefore(pair, closeBracket)
-            closeBracket?.prevSibling as? LatexKeyValuePair
+            closeBracket?.prevSibling as? LatexOptionalKeyValPair
         }
     }
 

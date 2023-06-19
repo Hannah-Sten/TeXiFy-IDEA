@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.lang.commands.Argument.Type
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.hasParent
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.hasParent
 
 /**
  * @author Hannah Schellekens
@@ -72,7 +72,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
 
         val arguments = getArguments(parent.commandToken.text.substring(1)) ?: return null
 
-        val realParams = parent.requiredParameters
+        val realParams = parent.getRequiredParameters()
         // Note that a leaf may be only part of a parameter
         val parameterIndex = realParams.indexOf(leaf.firstParentOfType(LatexParameterText::class)?.text)
         return if (parameterIndex < 0 || parameterIndex >= arguments.size) {

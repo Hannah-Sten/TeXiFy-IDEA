@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const {Octokit} = require("@octokit/rest");
 
 function getText() {
     // Attempt to find the text to replace. This is somewhat involved since we trigger on many actions.
@@ -25,12 +26,12 @@ function getText() {
 }
 
 async function setText(token, replacement) {
-    const client = github.getOctokit(token);
+    const client = new Octokit({auth: token});
 
     const event = github.context.eventName;
 
     if (event === 'issues') {
-        await client.issues.update({
+        await client.rest.issues.update({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             issue_number: github.context.payload.issue.number,
@@ -38,7 +39,7 @@ async function setText(token, replacement) {
         });
     }
     else if (event === 'issue_comment') {
-        await client.issues.updateComment({
+        await client.rest.issues.updateComment({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             comment_id: github.context.payload.comment.id,
@@ -46,7 +47,7 @@ async function setText(token, replacement) {
         });
     }
     else if (event === 'pull_request') {
-        await client.pulls.update({
+        await client.rest.pulls.update({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             pull_number: github.context.payload.pull_request.number,
@@ -54,7 +55,7 @@ async function setText(token, replacement) {
         });
     }
     else if (event === 'pull_request_review') {
-        await client.pulls.updateReview({
+        await client.rest.pulls.updateReview({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             pull_number: github.context.payload.pull_request.number,
@@ -63,7 +64,7 @@ async function setText(token, replacement) {
         });
     }
     else if (event === 'pull_request_review_comment') {
-        await client.pulls.updateReviewComment({
+        await client.rest.pulls.updateReviewComment({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             comment_id: github.context.payload.comment.id,

@@ -12,9 +12,9 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * Provide syntax highlighting for composite elements.
@@ -47,7 +47,7 @@ open class LatexAnnotator : Annotator {
             }
         }
         // Key value pairs. Match on the common interface so we catch LatexKeyValPair and LatexStrictKeyValPair.
-        else if (psiElement is LatexKeyValuePair) {
+        else if (psiElement is LatexOptionalKeyValPair) {
             annotateKeyValuePair(psiElement, annotationHolder)
         }
         // Optional parameters.
@@ -146,11 +146,11 @@ open class LatexAnnotator : Annotator {
         }
     }
 
-    private fun annotateKeyValuePair(element: LatexKeyValuePair, annotationHolder: AnnotationHolder) {
+    private fun annotateKeyValuePair(element: LatexOptionalKeyValPair, annotationHolder: AnnotationHolder) {
         element.keyValValue ?: return
 
         annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(TextRange(element.keyValKey.endOffset, element.keyValValue!!.startOffset))
+            .range(TextRange(element.optionalKeyValKey.endOffset, element.keyValValue!!.startOffset))
             .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
             .create()
     }
@@ -163,7 +163,7 @@ open class LatexAnnotator : Annotator {
         annotationHolder: AnnotationHolder
     ) {
         for (
-        element in optionalParamElement.optionalParamContentList
+        element in optionalParamElement.optionalKeyValPairList
         ) {
             if (element !is LatexOptionalParamContent) {
                 continue

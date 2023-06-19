@@ -101,7 +101,7 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
         val parameter = helper.setOptionalParameter(command, "label", "{${label.labelText}}")
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
 
-        // setOptionalParameter should create an appropriate optionaArgument node with label={text} in it
+        // setOptionalParameter should create an appropriate optionalArgument node with label={text} in it
         val parameterText =
             parameter?.keyValValue?.keyValContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
                 ?: throw AssertionError("parameter created by setOptionalParameter does not have the right structure")

@@ -49,7 +49,9 @@ data class TextidoteAnnotationResult(
 
 class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitialInfo, TextidoteAnnotationResult>() {
 
-    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): TextidoteAnnotatorInitialInfo {
+    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): TextidoteAnnotatorInitialInfo? {
+        if (file.containingDirectory == null) return null
+
         return TextidoteAnnotatorInitialInfo(
             file.virtualFile.name,
             File(file.containingDirectory.virtualFile.path),
@@ -116,13 +118,19 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
                 continue
             }
 
-            // In Textidote, everything is 1-based, and here everyting is 0-based
+            // In Textidote, everything is 1-based, and here everything is 0-based
             val lineStartOffset1 = document.getLineStartOffset(warning.startLine.value - 1)
             val lineStartOffset2 = document.getLineStartOffset(warning.endLine.value - 1)
 
-            holder.newAnnotation(HighlightSeverity.WARNING, warning.message + " (Textidote)")
-                .range(TextRange(lineStartOffset1 + warning.startColumn.value - 1, lineStartOffset2 + warning.endColumn.value - 1))
-                .create()
+            val startOffset = lineStartOffset1 + warning.startColumn.value - 1
+            val endOffset = lineStartOffset2 + warning.endColumn.value - 1
+
+            // Check if computed range falls in the document range.
+            if (startOffset < document.textLength && endOffset < document.textLength) {
+                holder.newAnnotation(HighlightSeverity.WARNING, warning.message + " (Textidote)")
+                    .range(TextRange(startOffset, endOffset))
+                    .create()
+            }
         }
 
         super.apply(file, annotationResult, holder)

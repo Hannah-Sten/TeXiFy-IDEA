@@ -12,6 +12,10 @@ import nl.hannahsten.texifyidea.psi.BibtexComment
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexTag
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.lastChildOfType
+import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 
 /**
  * I think this provides autocompletion for strings defined with @string{..} commands.

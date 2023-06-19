@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
-import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
+import nl.hannahsten.texifyidea.util.parser.findOuterMathEnvironment
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import java.util.regex.Pattern
 
