@@ -1,10 +1,14 @@
 package nl.hannahsten.texifyidea.action.library.zotero
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.raise.either
 import com.intellij.credentialStore.Credentials
 import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
+import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.action.library.AddLibraryAction
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
@@ -20,13 +24,13 @@ class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoter
         return AddZoteroDialogWrapper(project)
     }
 
-    override suspend fun createLibrary(dialogWrapper: AddZoteroDialogWrapper, project: Project): Pair<ZoteroLibrary, List<BibtexEntry>>? {
-        val library = RemoteBibLibraryFactory.create<ZoteroLibrary>(ZoteroLibrary.NAME) ?: return null
+    override suspend fun createLibrary(dialogWrapper: AddZoteroDialogWrapper, project: Project): Either<RemoteLibraryRequestFailure, Pair<ZoteroLibrary, List<BibtexEntry>>?> = either {
+        val library = RemoteBibLibraryFactory.create<ZoteroLibrary>(ZoteroLibrary.NAME) ?: return@either null
         val credentials = Credentials(dialogWrapper.userID, dialogWrapper.userApiKey)
         PasswordSafe.instance.set(Zotero.userAttributes, credentials)
-        val bibItems = library.getCollection()
+        val bibItems = library.getCollection().getOrElse { raise(it) }
         RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
-        return library to bibItems
+        library to bibItems
     }
 
     class AddZoteroDialogWrapper(val project: Project) : AddLibDialogWrapper(ZoteroLibrary.NAME) {

@@ -1,11 +1,16 @@
 package nl.hannahsten.texifyidea.remotelibraries
 
+import arrow.core.Either
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.project.Project
 import io.ktor.client.statement.*
-import nl.hannahsten.texifyidea.RemoteLibraryRequestTeXception
+import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
-import kotlin.jvm.Throws
 
 /**
  * Remote library with a unique [identifier].
@@ -15,20 +20,25 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
     /**
      * Get the bib items from the remote library in bibtex format, then parse the bibtex to obtain all the bib entries.
      *
-     * @throws RemoteLibraryRequestTeXception When the request has a non-OK status code so the user can be notified.
+     * When the request has a non-OK status code, return a failure instead.
      */
-    @Throws(RemoteLibraryRequestTeXception::class)
-    suspend fun getCollection(): List<BibtexEntry> {
+    suspend fun getCollection(): Either<RemoteLibraryRequestFailure, List<BibtexEntry>> = either {
         val (response, body) = getBibtexString()
 
-        if (response.status.value !in 200 until 300) {
-            throw RemoteLibraryRequestTeXception(displayName, response)
+        ensure(response.status.value !in 200 until 300) {
+            RemoteLibraryRequestFailure(displayName, response)
         }
 
         // Reading the dummy bib file needs to happen in a place where we have read access.
-        return runReadAction {
+        runReadAction {
             BibtexEntryListConverter().fromString(body)
         }
+    }
+
+    fun showNotification(project: Project, libraryName: String, response: HttpResponse) {
+        val title = "Could not connect to $libraryName"
+        val statusMessage = "${response.status.value}: ${response.status.description}"
+        Notification("LaTeX", title, statusMessage, NotificationType.ERROR).notify(project)
     }
 
     /**

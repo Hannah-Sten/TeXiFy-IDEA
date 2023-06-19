@@ -47,7 +47,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
 
     private fun insertPseudocodeEnd(name: String, context: InsertionContext) {
         val numberRequiredArguments = LatexCommand.lookup(name)
-            ?.firstOrNull()?.arguments
+            ?.first()?.arguments
             ?.count { it is RequiredArgument } ?: 0
 
         val templateText = List(numberRequiredArguments) {
