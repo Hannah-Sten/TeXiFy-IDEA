@@ -13,8 +13,7 @@ import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
-import java.io.IOException
-import java.io.InputStream
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
  * @author Sten Wessel
@@ -162,40 +161,40 @@ class LatexDocumentationProvider : DocumentationProvider {
         psiElement: PsiElement?
     ): PsiElement? = null
 
+    /**
+     * Find list of documentation urls.
+     */
     private fun runTexdoc(pkg: LatexPackage?): List<String> {
         if (pkg == null) return emptyList()
 
         // base/lt... files are documented in source2e.pdf
         val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
-        val stream: InputStream
-        try {
-            // -M to avoid texdoc asking to choose from the list
-            val command = if (TexliveSdk.isAvailable) {
-                "texdoc -l -M $name"
+        // -M to avoid texdoc asking to choose from the list
+        val command = if (TexliveSdk.isAvailable) {
+            "texdoc -l -M $name"
+        }
+        else {
+            if (SystemEnvironment.isAvailable("texdoc")) {
+                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
+                "texdoc -l $name"
             }
             else {
-                if (SystemEnvironment.isAvailable("texdoc")) {
-                    // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
-                    "texdoc -l $name"
-                }
-                else {
-                    // In some cases, texdoc may not be available but mthelp is
-                    "mthelp -l $name"
-                }
+                // In some cases, texdoc may not be available but mthelp is
+                "mthelp -l $name"
             }
-            stream = Runtime.getRuntime().exec(command).inputStream
         }
-        catch (e: IOException) {
-            return if (e.message?.contains("Cannot run program \"texdoc\"") == true) {
+        val (output, exitCode) = runCommandWithExitCode(command, returnExceptionMessage = true)
+        if (exitCode != 0 || output?.isNotBlank() != true) {
+            return if (output?.contains("Cannot run program \"texdoc\"") == true) {
                 listOf("<br><i>Tip: install the texdoc package to get links to package documentation here</i>")
             }
             else {
-                emptyList()
+                listOf(output ?: "Could not run program 'texdoc'")
             }
         }
 
-        val lines = stream.bufferedReader().use { it.readLines() }
+        val lines = output.split("\n")
 
         return if (lines.getOrNull(0)?.endsWith("could not be found.") == true) {
             emptyList()
