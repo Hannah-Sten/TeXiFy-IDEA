@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.action.wizard.table
 
-import arrow.optics.copy
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
@@ -240,12 +239,12 @@ class TableCreationDialogWrapper(
      * Every input is always valid: this will mean empty icons.
      */
     override fun doValidate(): ValidationInfo? {
-        tableInformation = tableInformation.apply {
-            copy {
-                TableInformation.caption set txtCaption.text.trim()
-                TableInformation.label set txtReference.text.trim()
-            }
-        }
+        tableInformation = TableInformation(
+            tableModel,
+            columnTypes,
+            txtCaption.text.trim(),
+            txtReference.text.trim()
+        )
         return null
     }
 

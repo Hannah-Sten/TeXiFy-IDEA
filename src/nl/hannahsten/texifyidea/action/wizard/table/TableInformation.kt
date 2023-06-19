@@ -1,13 +1,10 @@
 package nl.hannahsten.texifyidea.action.wizard.table
 
-import arrow.optics.optics
-
 /**
  * Stores all information about a table.
  *
  * @author Abby Berkers
  */
-@optics
 data class TableInformation(
 
     /**
@@ -30,7 +27,4 @@ data class TableInformation(
      * Contains the label that is to be used to reference the table.
      */
     val label: String
-) {
-
-    companion object
-}
+)

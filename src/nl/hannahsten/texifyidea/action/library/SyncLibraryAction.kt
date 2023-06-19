@@ -61,6 +61,7 @@ class SyncLibraryAction : AnAction() {
                     RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
                     expandedPaths =
                         tree?.let { it.getExpandedDescendants(TreePath(it.model.root)) } ?: return@runBlocking
+
                 }
             }
 
