@@ -14,7 +14,7 @@ plugins {
     kotlin("plugin.serialization") version ("1.8.20")
 
     // Used for Arrow Optics
-    id("com.google.devtools.ksp") version "1.8.20-1.0.11"
+    id("com.google.devtools.ksp") version "1.8.22-1.0.11"
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.47.0"
