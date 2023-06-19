@@ -10,8 +10,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.14.1"
-    kotlin("jvm") version ("1.8.20")
-    kotlin("plugin.serialization") version ("1.8.20")
+    kotlin("jvm") version ("1.8.0")
+    kotlin("plugin.serialization") version ("1.8.0")
 
     // Used for Arrow Optics
     id("com.google.devtools.ksp") version "1.8.20-1.0.11"
