@@ -13,12 +13,14 @@ import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
 class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") :
     RemoteBibLibrary(identifier, displayName) {
 
-    private val client by lazy { HttpClient(CIO) {
-        install(HttpRequestRetry) {
-            retryOnServerErrors(maxRetries = 3)
-            exponentialDelay()
+    private val client by lazy {
+        HttpClient(CIO) {
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 3)
+                exponentialDelay()
+            }
         }
-    } }
+    }
 
     override suspend fun getBibtexString(): Pair<HttpResponse, String> {
         val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)
