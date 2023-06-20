@@ -9,12 +9,9 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.14.1"
-    kotlin("jvm") version ("1.8.20")
-    kotlin("plugin.serialization") version ("1.8.20")
-
-    // Used for Arrow Optics
-    id("com.google.devtools.ksp") version "1.8.22-1.0.11"
+    id("org.jetbrains.intellij") version "1.13.3"
+    kotlin("jvm") version ("1.8.0")
+    kotlin("plugin.serialization") version ("1.8.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.47.0"
@@ -123,8 +120,6 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.2.0-RC")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
     implementation("io.arrow-kt:arrow-resilience:1.2.0-RC")
-    implementation("io.arrow-kt:arrow-optics:1.2.0-RC")
-    ksp("io.arrow-kt:arrow-optics-ksp-plugin:1.2.0-RC")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
