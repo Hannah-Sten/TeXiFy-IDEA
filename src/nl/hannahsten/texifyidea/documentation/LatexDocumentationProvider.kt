@@ -117,7 +117,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         )
         val urlsText = urlsMaybe.fold(
             { it.output },
-            { urls -> urls?.joinToString(separator="<br>") { "<a href=\"file:///$it\">$it</a>" } }
+            { urls -> urls?.joinToString(separator = "<br>") { "<a href=\"file:///$it\">$it</a>" } }
         )
 
         // Add a line break if necessary
