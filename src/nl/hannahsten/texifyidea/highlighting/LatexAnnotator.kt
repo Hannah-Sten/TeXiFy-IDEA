@@ -147,10 +147,10 @@ open class LatexAnnotator : Annotator {
     }
 
     private fun annotateKeyValuePair(element: LatexOptionalKeyValPair, annotationHolder: AnnotationHolder) {
-        element.keyValValue ?: return
+        val value = element.keyValValue ?: return
 
         annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(TextRange(element.optionalKeyValKey.endOffset, element.keyValValue!!.startOffset))
+            .range(TextRange(element.optionalKeyValKey.endOffset, value.startOffset))
             .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
             .create()
     }
