@@ -76,8 +76,7 @@ class LatexTableWizardAction : AnAction() {
      * Function to process the contents of the table, i.e. the header text and table entries. The indentation
      * is the same throughout the table contents.
      */
-    context(TableInformation)
-    private fun processTableContent(indent: String): String {
+    private fun TableInformation.processTableContent(indent: String): String {
         val headers = tableModel.getColumnNames()
             .joinToString(
                 prefix = "$indent\\toprule\n$indent",
@@ -108,8 +107,7 @@ class LatexTableWizardAction : AnAction() {
      * @param tabIndent
      *          The continuation indent.
      */
-    context(TableInformation)
-    private fun convertTableToLatex(lineIndent: String, tabIndent: String = "    "): String {
+    private fun TableInformation.convertTableToLatex(lineIndent: String, tabIndent: String = "    "): String {
         // The tex(t) for a table consists of three parts: the open commands, the actual content, and the closing commands
         // (this includes the caption and label).
         val openTableCommand = "\\begin{table}\n" +

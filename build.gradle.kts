@@ -62,7 +62,7 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 tasks.compileKotlin {
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = listOf("-Xjvm-default=all", "-Xcontext-receivers")
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
