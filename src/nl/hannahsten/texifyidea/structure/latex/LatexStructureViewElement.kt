@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.structure.latex
 
-import arrow.core.curried
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
@@ -25,6 +24,7 @@ import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Hannah Schellekens
@@ -124,16 +124,16 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
         }
 
-        val addCommandName = ::addFromCommand.curried()(treeElements)(commands)
-
         // Add command definitions.
-        CommandMagic.commandDefinitionsAndRedefinitions.forEach { addCommandName(it) }
+        CommandMagic.commandDefinitionsAndRedefinitions.forEach {
+            addFromCommand(treeElements, commands, it)
+        }
 
         // Add label definitions.
         addFromLabelingCommands(treeElements, commands)
 
         // Add bibitem definitions.
-        addCommandName("\\bibitem")
+        addFromCommand(treeElements, commands, "\\bibitem")
 
         return treeElements.toTypedArray()
     }
