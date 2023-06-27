@@ -11,9 +11,13 @@ import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
 
 /**
@@ -135,7 +139,7 @@ open class LatexAnnotator : Annotator {
                 .textAttributes(highlighter)
                 .create()
 
-            if (element.name == "\\text" || element.name == "\\intertext") {
+            if (element.name == TEXT.cmd || element.name == INTERTEXT.name) {
                 // Avoid creating an Annotation without calling the create() method
                 val range = element.requiredParameters().firstOrNull() ?: continue
                 annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
@@ -147,10 +151,10 @@ open class LatexAnnotator : Annotator {
     }
 
     private fun annotateKeyValuePair(element: LatexOptionalKeyValPair, annotationHolder: AnnotationHolder) {
-        element.keyValValue ?: return
+        val value = element.keyValValue ?: return
 
         annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(TextRange(element.optionalKeyValKey.endOffset, element.keyValValue!!.startOffset))
+            .range(TextRange(element.optionalKeyValKey.endOffset, value.startOffset))
             .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
             .create()
     }
@@ -226,14 +230,14 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateStyle(command: LatexCommands, annotationHolder: AnnotationHolder) {
         val style = when (command.name) {
-            "\\textbf" -> LatexSyntaxHighlighter.STYLE_BOLD
-            "\\textit" -> LatexSyntaxHighlighter.STYLE_ITALIC
-            "\\underline" -> LatexSyntaxHighlighter.STYLE_UNDERLINE
-            "\\sout" -> LatexSyntaxHighlighter.STYLE_STRIKETHROUGH
-            "\\textsc" -> LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS
-            "\\overline" -> LatexSyntaxHighlighter.STYLE_OVERLINE
-            "\\texttt" -> LatexSyntaxHighlighter.STYLE_TYPEWRITER
-            "\\textsl" -> LatexSyntaxHighlighter.STYLE_SLANTED
+            TEXTBF.cmd -> LatexSyntaxHighlighter.STYLE_BOLD
+            TEXTIT.cmd -> LatexSyntaxHighlighter.STYLE_ITALIC
+            LatexGenericRegularCommand.UNDERLINE.cmd -> LatexSyntaxHighlighter.STYLE_UNDERLINE
+            SOUT.cmd -> LatexSyntaxHighlighter.STYLE_STRIKETHROUGH
+            TEXTSC.cmd -> LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS
+            OVERLINE.cmd -> LatexSyntaxHighlighter.STYLE_OVERLINE
+            TEXTTT.cmd -> LatexSyntaxHighlighter.STYLE_TYPEWRITER
+            TEXTSL.cmd -> LatexSyntaxHighlighter.STYLE_SLANTED
             else -> return
         }
 
