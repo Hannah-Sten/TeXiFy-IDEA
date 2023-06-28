@@ -1,0 +1,6 @@
+By default, the shortcut kbd:[Ctrl + /] will add a comment (`%`) character to the beginning of the line.
+When multiple lines are selected, these will all be commented.
+
+Note that the block comment shortcut kbd:[Ctrl + Shift + /] should not be used, as LaTeX does not have any block comments by itself.
+
+Also see the [Option to start a comment at the same indentation as normal text](Code-style-settings#indent-comment).
