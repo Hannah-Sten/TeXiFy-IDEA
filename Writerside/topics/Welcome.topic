@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Welcome" id="Welcome">
+
+    <section-starting-page><title>TeXiFy-IDEA</title>
+        <description>LaTeX support for IntelliJ</description>
+        <spotlight>
+            <a href="Quick-start-guide.md" type="start" summary="Quick guide for experienced LaTeX users to get TeXiFy-IDEA set up"/>
+            <a href="Installation-guide.md" type="install" summary="Detailed installation instructions for TeXiFy-IDEA and (optional) dependencies"/>
+        </spotlight>
+
+        <secondary><title>Explore and contribute</title>
+            <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions" summary="Start a discussion, propose an idea, ask a question">Getting help</a>
+            <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues" summary="Report a bug or suggest an enhancement">Report an issue</a>
+        </secondary>
+    </section-starting-page>
+</topic>

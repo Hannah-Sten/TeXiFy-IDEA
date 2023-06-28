@@ -14,4 +14,12 @@
         <description><![CDATA[Created after removal of "<File-inclusion-navigation.md>" from TeXiFy-IDEA documentation]]></description>
         <accepts>File-inclusion-navigation.html</accepts>
     </rule>
+    <rule id="7026de73">
+        <description>Created after removal of "Introduction" from TeXiFy-IDEA documentation</description>
+        <accepts>Introduction.html</accepts>
+    </rule>
+    <rule id="4a412cf2">
+        <description>Created after removal of "About TeXiFy-IDEA documentation" from TeXiFy-IDEA documentation</description>
+        <accepts>starter-topic.html</accepts>
+    </rule>
 </rules>

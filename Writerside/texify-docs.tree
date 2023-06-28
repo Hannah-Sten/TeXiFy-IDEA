@@ -6,5 +6,7 @@
                  name="TeXiFy-IDEA documentation"
                  start-page="starter-topic.md">
 
-    <toc-element topic="starter-topic.md"/>
+    <toc-element topic="Welcome.topic"/>
+    <toc-element topic="Quick-start-guide.md"/>
+    <toc-element topic="Installation-guide.md"/>
 </instance-profile>
