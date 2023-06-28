@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rules SYSTEM "https://resources.jetbrains.com/writerside/1.0/redirection-rules.dtd">
+<rules>
+    <!-- format is as follows
+    <rule id="<unique id>">
+        <accepts>page.html</accepts>
+    </rule>
+    -->
+    <rule id="4a6c2c99">
+        <description><![CDATA[Created after removal of "<Redundant-LaTeX.md>" from TeXiFy-IDEA documentation]]></description>
+        <accepts>Redundant-LaTeX.html</accepts>
+    </rule>
+    <rule id="712c0804">
+        <description><![CDATA[Created after removal of "<File-inclusion-navigation.md>" from TeXiFy-IDEA documentation]]></description>
+        <accepts>File-inclusion-navigation.html</accepts>
+    </rule>
+</rules>
