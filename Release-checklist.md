@@ -1,0 +1,21 @@
+- [ ] Create branch bx.x.x
+- [ ] Run 'Usage of IntelliJ API not available in older IDEs' and 'Stateful extension' inspection (ctrl+alt+shift+i)
+- [ ] Increase stub version in LatexParserDefinition
+- [ ] Gradle clean, create new empty project and check that document compiles and pdf viewer is opened
+- [ ] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
+- [ ] Forward/backward search
+- [ ] Does it work in PyCharm?
+- [ ] Run ctan.py
+
+- [ ] Add welcome text to Changelog.md
+- [ ] Update welcome text
+- [ ] Update version in gradle.properties
+- [ ] run patchChangelog (ideally this would be done for the publishPlugin task, but somehow that produces an 'Unreleased' title instead of 0.x.x)
+- [ ] Delete alpha versions from changelog
+- [ ] runIDE and check the changelog is formatted correctly
+- [ ] Run publishPlugin
+- [ ] Merge PR
+- [ ] buildPlugin and release on GitHub, tag version: v0.x.x and release title: Beta x.x.x
+- [ ] Close the milestone
+- [ ] Update MiKTeX Docker image
+- [ ] Check performance: indexing texlive full should take around one minute, inspections on a 10k line file should take around 10 seconds, pressing enter in such a file should react within a second.
