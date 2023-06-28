@@ -6,6 +6,6 @@ The combobox allows you to limit the symbols to specific categories. You can use
 
 The symbol tool window supports both light and dark mode.
 
-image:https://user-images.githubusercontent.com/17410729/104858724-a27fa800-5921-11eb-8460-0d86094f89ad.png[]
+![104858724-a27fa800-5921-11eb-8460-0d86094f89ad](https://user-images.githubusercontent.com/17410729/104858724-a27fa800-5921-11eb-8460-0d86094f89ad.png)
 
-link:https://user-images.githubusercontent.com/17410729/104858463-ad393d80-591f-11eb-8b3c-2fba54ed05b1.mp4[Demo video]
+[Demo video](https://user-images.githubusercontent.com/17410729/104858463-ad393d80-591f-11eb-8b3c-2fba54ed05b1.mp4)

@@ -1,3 +1,0 @@
-== Icons
-
-image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/figures/icons.png[]
