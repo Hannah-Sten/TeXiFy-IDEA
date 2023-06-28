@@ -1,27 +1,23 @@
-:experimental:
-
 If you run into troubles while using TeXiFy, you can try the following things.
 
-* If you have problems with installation, make sure you followed the link:Installation[Installation wiki page].
-* Search through the features list at link:Features[Features] or the link:Features#searching[complete wiki] to find documentation about the feature you're having problems with.
-* Search through the https://github.com/Hannah-Sten/TeXiFy-IDEA/issues?q=is%3Aissue[GitHub issues] to find similar problems, and if your issue has already been resolved
+* If you have problems with installation, make sure you followed the [Installation wiki page](Installation).
+* Search through the features list at [Features](Features) or the [complete wiki](Features#searching) to find documentation about the feature you’re having problems with.
+* Search through the [GitHub issues](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues?q=is%3Aissue) to find similar problems, and if your issue has already been resolved
 * Look through the list of common problems at this page
-* Ask for help at https://gitter.im/TeXiFy-IDEA[gitter]
-* https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose[Open an issue]
+* Ask for help at [gitter](https://gitter.im/TeXiFy-IDEA)
+* [Open an issue](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose)
 
+## The equation/TikZ preview is not working
 
-== The equation/TikZ preview is not working
+Make sure you have installed the dependencies as described in [the Preview page](Preview#Equation-preview).
 
-Make sure you have installed the dependencies as described in link:Preview#Equation-preview[the Preview page].
+If that doesn’t help and you can run Kotlin programs, you can run the program below and report the output in your (new) issue.
 
-If that doesn't help and you can run Kotlin programs, you can run the program below and report the output in your (new) issue.
-
-+++ <details><summary> +++
++++ &lt;details>&lt;summary> +++
 `preview.kt`
-+++ </summary><div> +++
++++ &lt;/summary>&lt;div> +++
 
-[source,kotlin]
-----
+```kotlin
 import java.io.File
 import java.io.PrintWriter
 import java.nio.file.Paths
@@ -158,30 +154,28 @@ $previewCode
         runPreview(createTempDir(directory = File(System.getProperty("user.home"))))
     }
 }
-----
+```
 
-+++ </div></details> +++
++++ &lt;/div>&lt;/details> +++
 
-== Error running 'main': Cannot run program "pdflatex"
+## Error running 'main': Cannot run program "pdflatex"
 
 Make sure you have followed all the installation instructions at https://github.com/Ruben-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin
 
-. Check if `pdflatex` is properly installed by running in a terminal or command prompt `pdflatex -v`. Probably this is not the case. If it is the case, then for some reason pdflatex cannot run. Test this with `pdflatex small2e` in a location where you have write access.
-. Check if `pdflatex` is installed: if you have MikTeX start the MikTeX console and check that the `pdftex` package is installed. If you have TeX Live, check with `tlmgr install pdftex`.
-. If so, make sure you have logged in and out to complete the installation of LaTeX, and especially with TeX Live make sure that TeX Live is added to your PATH.
-. Make sure you did install MikTeX or TeX Live _for your user only_, so not for all users. If not, uninstall, install the right way and reboot.
-. If you are on Windows or Mac and installing MikTeX, you can also try installing TeX Live instead.
-. Ask on https://tex.stackexchange.com, providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
+1. Check if `pdflatex` is properly installed by running in a terminal or command prompt `pdflatex -v`. Probably this is not the case. If it is the case, then for some reason pdflatex cannot run. Test this with `pdflatex small2e` in a location where you have write access.
+2. Check if `pdflatex` is installed: if you have MikTeX start the MikTeX console and check that the `pdftex` package is installed. If you have TeX Live, check with `tlmgr install pdftex`.
+3. If so, make sure you have logged in and out to complete the installation of LaTeX, and especially with TeX Live make sure that TeX Live is added to your PATH.
+4. Make sure you did install MikTeX or TeX Live _for your user only_, so not for all users. If not, uninstall, install the right way and reboot.
+5. If you are on Windows or Mac and installing MikTeX, you can also try installing TeX Live instead.
+6. Ask on https://tex.stackexchange.com, providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
 
-
-== What should my document structure look like?
+## What should my document structure look like?
 
 In general you have a main file which contains the documentclass and the document environment (the `\begin{document}` and `\end{document}`).
 From here you can include other files which can then include even more files and so on.
 An example is:
 
-[source,latex]
-----
+```latex
 \documentclass{exam}
 
 % Packages
@@ -206,46 +200,44 @@ An example is:
     \input{example-theorems}
 
 \end{document}
-----
+```
 
 where the files `introduction.tex` and `example-theorems.tex` contain just the content, for example these could be the complete file contents of `introduction.tex`:
 
-[source,latex]
-----
+```latex
 \begin{theorem}
     If the meanings of 'true' and 'false' were switched, then this sentence wouldn't be false.
 \end{theorem}
-----
+```
 
-== I have an error which complains about openout_any = p
+## I have an error which complains about openout_any = p
 
 When you get during compilation the error
-----
+```
 makeindex: Not writing to /path/to/project/latexfile.ind (openout_any = p).
 Can't create output index file /path/to/project/latexfile.ind.
-----
+```
 
 or
-----
+```
 bibtex: Not writing to ../out/latexfile.blg (openout_any = p).
-----
+```
 
-this probably happens because you are trying to use makeindex or bibtex with a separate output directory. You should either disable the out directory in the run config or change the security setting in `texmf.cnf`, see https://tex.stackexchange.com/questions/12686/how-do-i-run-bibtex-after-using-the-output-directory-flag-with-pdflatex-when-f/289336#289336[this tex.stackexchange.com answer].
+this probably happens because you are trying to use makeindex or bibtex with a separate output directory. You should either disable the out directory in the run config or change the security setting in `texmf.cnf`, see [this tex.stackexchange.com answer](https://tex.stackexchange.com/questions/12686/how-do-i-run-bibtex-after-using-the-output-directory-flag-with-pdflatex-when-f/289336#289336).
 This is a TeX Live security setting which you can change by editing `/path/to/texlive/2019/texmf-dist/web2c/texmf.cnf` and changing `openout_any = p` to `openout_any = a`.
 
-== My index is not generated correctly
+## My index is not generated correctly
 
 If you have TeXiFy version 0.6.7 or later, make sure that makeindex is run by TeXiFy, so you should see a run window called makeindex with the output.
-See link:Makeindex[Makeindex].
+See [Makeindex](Makeindex).
 
-=== Version 0.6.6 or older
+### Version 0.6.6 or older
 Note that you _have_ to disable both the `auxil/` (in case of MiKTeX) and `out/` directories in the run configuration, otherwise the `.idx` file will not be found by the index package.
 
 In general we would recommend using the `imakeidx` package like below, but equivalent index packages should also work.
 
 Example:
-[source,latex]
-----
+```latex
 \documentclass{article}
 \usepackage{imakeidx}
 \makeindex
@@ -259,27 +251,25 @@ Example:
 
     \printindex
 \end{document}
-----
+```
 
-
-== How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
+## How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
 
 You can define a live template via menu:File[Settings > Editor > Live Templates]. For example, for the `itemize` environment, you could use the following template:
 
-----
+```
 \begin{itemize}
     \item $PARM1$
 \end{itemize}
-----
+```
 
 Set the template to be applicable in LaTeX files.
 Also see https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates
 
-image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/marco.png[Screenshot of live template UI, showing the template text above along with an abbreviation of itemize and a description of 'Add itemize env'. The macro is set to be 'Applicable in LaTeX' and expands with the Tab key.]
+![Screenshot of live template UI](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/marco.png)
 
 Once the live template is created, close the Settings dialog. Use menu:Edit[Macros > Start Macro Recording] and enter the live template abbreviation. Finish recording the macro, and name it. Via menu:Settings[Keymap], assign the macro a key binding such as kbd:[Ctrl + Alt + Shift + I].
 
 Now, you can use the macro key binding and hit kbd:[Enter] to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
 
 For commands, you can define templates for e.g. `\emph{$PARM1$}`.
-
