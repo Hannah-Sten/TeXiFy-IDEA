@@ -4,7 +4,7 @@
 
 <instance-profile id="texify-docs"
                  name="TeXiFy-IDEA documentation"
-                 start-page="starter-topic.md">
+                 start-page="Welcome.topic">
 
     <toc-element topic="Welcome.topic"/>
     <toc-element topic="Quick-start-guide.md"/>
