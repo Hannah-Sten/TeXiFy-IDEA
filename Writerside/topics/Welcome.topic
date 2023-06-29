@@ -11,10 +11,18 @@
             <a href="Quick-start-guide.md" type="start" summary="Quick guide for experienced LaTeX users to get TeXiFy-IDEA set up"/>
             <a href="Installation-guide.md" type="install" summary="Detailed installation instructions for TeXiFy-IDEA and (optional) dependencies"/>
         </spotlight>
+        
+        <primary>
+            <title>Contribute</title>
+            <a href="Contributing-to-the-documentation.md" summary="A guide on how to improve this documentation: edit it in your browser">Contribute to the documentation</a>
+            <a href="Contributing-to-the-source-code.md" summary="Things to keep in mind when developing TeXiFy-IDEA source code">Contribute to the source code</a>
+        </primary>
 
-        <secondary><title>Explore and contribute</title>
+        <secondary><title>Help and support</title>
             <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions" summary="Start a discussion, propose an idea, ask a question">Getting help</a>
+            <a href="https://gitter.im/TeXiFy-IDEA" summary="TeXiFy-IDEA Gitter room">Chat</a>
             <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues" summary="Report a bug or suggest an enhancement">Report an issue</a>
+            <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA" summary="Sponsor the project developers">Donate</a>
         </secondary>
     </section-starting-page>
 </topic>
