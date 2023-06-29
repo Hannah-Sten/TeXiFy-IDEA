@@ -13,8 +13,7 @@ permissions:
 env:
   PRODUCT: Writerside/texify-docs
   DOC_ARTIFACT: webHelpTEXIFY-DOCS2-all.zip
-  # Add the variable below to upload Algolia indexes
-#  ALGOLIA_ARTIFACT: algolia-indexes-XX.zip
+  ALGOLIA_ARTIFACT: algolia-indexes-TEXIFY-DOCS.zip
 
 jobs:
   build-job:
@@ -30,13 +29,12 @@ jobs:
           name: help
           path: artifacts/${{ env.DOC_ARTIFACT }}
           retention-days: 7
-      # Add the step below to upload Algolia indexes
-#      - name: Upload algolia-indexes
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: algolia-indexes
-#          path: artifacts/${{ env.ALGOLIA_ARTIFACT }}
-#          retention-days: 7
+      - name: Upload algolia-indexes
+        uses: actions/upload-artifact@v3
+        with:
+          name: algolia-indexes
+          path: artifacts/${{ env.ALGOLIA_ARTIFACT }}
+          retention-days: 7
 
   deploy:
     environment:
