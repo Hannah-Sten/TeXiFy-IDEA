@@ -4,6 +4,10 @@
         <algolia-id>D5M21MXSWC</algolia-id>
         <algolia-index>TeXiFy-IDEA</algolia-index>
         <algolia-api-key>24051865ac9a05c6332f3e3c04468ea5</algolia-api-key>
+
+        <browser-edits-url>https://github.com/Hannah-Sten/TeXiFy-IDEA/edit/master</browser-edits-url>
+        <search-scope/>
+        <search-scopes-provider>https://data.services.jetbrains.com/search/</search-scopes-provider>
     </variables>
-    <build-profile instance="instance_id"/>
+    <build-profile instance="texify-docs"/>
 </buildprofiles>
