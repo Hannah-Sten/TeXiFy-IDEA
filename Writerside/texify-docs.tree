@@ -7,6 +7,8 @@
                  start-page="Welcome.topic">
 
     <toc-element topic="Welcome.topic"/>
+    <toc-element topic="Contributing-to-the-documentation.md"/>
+    <toc-element topic="Contributing-to-the-source-code.md"/>
     <toc-element topic="Quick-start-guide.md"/>
     <toc-element topic="Installation-guide.md"/>
 </instance-profile>
