@@ -5,9 +5,9 @@
         <algolia-index>TeXiFy-IDEA</algolia-index>
         <algolia-api-key>24051865ac9a05c6332f3e3c04468ea5</algolia-api-key>
 
-        <browser-edits-url>https://github.com/Hannah-Sten/TeXiFy-IDEA/edit/master</browser-edits-url>
+        <browser-edits-url>https://github.com/Hannah-Sten/TeXiFy-IDEA/edit/master/Writerside</browser-edits-url>
         <search-scope/>
-        <config-search-scopes-provider>https://data.services.jetbrains.com/search/</config-search-scopes-provider>
+        <search-scopes-provider>https://www.jetbrains.com/search/json/</search-scopes-provider>
     </variables>
     <build-profile instance="texify-docs"/>
 </buildprofiles>
