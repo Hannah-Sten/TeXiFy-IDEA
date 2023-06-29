@@ -1,0 +1,9 @@
+<buildprofiles xsi:noNamespaceSchemaLocation="https://helpserver.labs.jb.gg/help/schemas/mvp/build-profiles.xsd"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <variables>
+        <algolia-id>D5M21MXSWC</algolia-id>
+        <algolia-index>TeXiFy-IDEA</algolia-index>
+        <algolia-api-key>24051865ac9a05c6332f3e3c04468ea5</algolia-api-key>
+    </variables>
+    <build-profile instance="instance_id"/>
+</buildprofiles>
