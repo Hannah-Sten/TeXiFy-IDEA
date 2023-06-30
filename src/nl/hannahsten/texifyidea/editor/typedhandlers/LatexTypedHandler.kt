@@ -85,6 +85,9 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             else if (c == '(') {
                 return insertRobustInlineMathClose(editor)
             }
+            else if (c == '{') {
+                return insertClosingEscapeBracket(editor)
+            }
         }
         return Result.CONTINUE
     }
@@ -135,6 +138,14 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             return Result.STOP
         }
         return Result.CONTINUE
+    }
+
+    /**
+     * Upon typing `\{`, inserts the closing delimiter `\}`.
+     */
+    private fun insertClosingEscapeBracket(editor: Editor): Result {
+        editor.document.insertString(editor.caretModel.offset, "\\}")
+        return Result.STOP
     }
 
     /**
