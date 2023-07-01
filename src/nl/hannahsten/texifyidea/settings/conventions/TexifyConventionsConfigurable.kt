@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.ToolbarDecorator
@@ -11,16 +12,19 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.TableView
+import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTable
 import javax.swing.table.DefaultTableCellRenderer
+import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
 /**
@@ -48,6 +52,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     private lateinit var mainPanel: JPanel
     private lateinit var maxSectionSize: JBIntSpinner
     private lateinit var labelConventionsTable: TableView<LabelConvention>
+    private lateinit var labelCommandType: ComboBox<LabelConventionType>
 
     private val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
         override fun valueOf(item: LabelConvention): String = item.prefix!!
@@ -57,11 +62,11 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         }
     }
 
-    private val nameColumnInfo =
-        object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Element") {
-            override fun valueOf(item: LabelConvention): LabelConvention = item
-            override fun isCellEditable(item: LabelConvention?): Boolean = false
+    private val typeColumnInfo =
+        object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Type") {
+            override fun valueOf(item: LabelConvention?): LabelConvention? = item
             override fun getColumnClass(): Class<*> = LabelConvention::class.java
+            //        override fun getTooltipText(): String = "The name of a command or environment"
             override fun getRenderer(item: LabelConvention?): TableCellRenderer {
                 return object : DefaultTableCellRenderer() {
                     override fun getTableCellRendererComponent(
@@ -73,7 +78,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                         column: Int
                     ): Component {
                         val convention = value as LabelConvention?
-                        super.getTableCellRendererComponent(table, convention?.name, selected, focus, row, column)
+                        super.getTableCellRendererComponent(table, convention?.type, selected, focus, row, column)
                         //noinspection unchecked
                         icon = if (value != null) {
                             when (value.type!!) {
@@ -89,7 +94,45 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                     }
                 }
             }
+
+            override fun setValue(item: LabelConvention?, value: LabelConvention?) {
+                if (item != null && value != null)
+                    item.type = value.type
+            }
+
+            override fun getEditor(o: LabelConvention?): TableCellEditor {
+                return object : AbstractTableCellEditor() {
+                    override fun getCellEditorValue(): Any {
+                        val labelType = (labelCommandType.selectedItem ?: LabelConventionType.ENVIRONMENT) as LabelConventionType
+                        val out = LabelConvention(false, labelType)
+                        return out //NON-NLS handled by custom renderer
+                    }
+
+                    override fun getTableCellEditorComponent(
+                        table: JTable,
+                        value: Any,
+                        isSelected: Boolean,
+                        row: Int,
+                        column: Int
+                    ): Component {
+                        if (value !is LabelConvention) {
+                            labelCommandType.selectedItem = LabelConventionType.ENVIRONMENT
+                        }
+                        else {
+                            labelCommandType.selectedItem = value.type
+                        }
+                        return labelCommandType
+                    }
+                }
+            }
         }
+    private val nameColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Element") {
+        override fun valueOf(item: LabelConvention): String = item.name!!
+        override fun getColumnClass(): Class<*> = String::class.java
+        override fun setValue(item: LabelConvention, value: String?) {
+            item.name = value ?: ""
+        }
+    }
 
     private val enabledColumnInfo =
         object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("Should Have Label") {
@@ -109,7 +152,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         }
 
     private fun createConventionsTable(): TableView<LabelConvention> {
-        val model = ListTableModel<LabelConvention>(nameColumnInfo, prefixColumnInfo, enabledColumnInfo)
+        val model = ListTableModel<LabelConvention>(typeColumnInfo, nameColumnInfo, prefixColumnInfo, enabledColumnInfo)
         labelConventionsTable = TableView(model)
 
         return labelConventionsTable
@@ -119,18 +162,51 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         val panelForTable = ToolbarDecorator.createDecorator(labelConventionsTable, null)
             .setAddActionUpdater { e: AnActionEvent? -> true }
             .setAddAction { button: AnActionButton? ->
-//                unsavedSettings.schemes.add(LabelConvention(false, LabelConventionType.COMMAND, "new_command", "newcmd"))
+                unsavedSettings.createLabel(unsavedSettings.currentScheme)
+                loadScheme(unsavedSettings.currentScheme)
+                labelConventionsTable.setRowSelectionInterval(
+                    labelConventionsTable.rowCount - 1,
+                    labelConventionsTable.rowCount - 1
+                )
                 // todo add row
             }
             .setRemoveActionUpdater { e: AnActionEvent? -> labelConventionsTable.selection.isNotEmpty() }
             .setRemoveAction { button: AnActionButton? ->
-                labelConventionsTable.items.removeAll(labelConventionsTable.selection)
+                labelConventionsTable.selectedObjects.forEach { unsavedSettings.currentScheme.labelConventions.remove(it) }
+                loadScheme(unsavedSettings.currentScheme)
                 // todo remove row
             }
-            .disableUpDownActions()
+            .setMoveUpActionUpdater { e: AnActionEvent? -> labelConventionsTable.selectedRow > 0 }
+            .setMoveUpAction {
+                val startRow = labelConventionsTable.selectedRow
+                val endRow = labelConventionsTable.selectedRowCount + startRow - 1
+                val holder = unsavedSettings.currentScheme.labelConventions[startRow - 1]
+
+                unsavedSettings.currentScheme.labelConventions.removeAt(startRow - 1)
+                unsavedSettings.currentScheme.labelConventions.add(endRow, holder)
+
+                loadScheme(unsavedSettings.currentScheme)
+                labelConventionsTable.setRowSelectionInterval(startRow - 1, endRow - 1)
+            }
+            .setMoveDownActionUpdater { e: AnActionEvent? -> labelConventionsTable.selectedRow < labelConventionsTable.rowCount - 1 }
+            .setMoveDownAction {
+                val startRow = labelConventionsTable.selectedRow
+                val endRow = labelConventionsTable.selectedRowCount + startRow - 1
+                val holder = unsavedSettings.currentScheme.labelConventions[endRow + 1]
+
+                unsavedSettings.currentScheme.labelConventions.removeAt(endRow + 1)
+                unsavedSettings.currentScheme.labelConventions.add(startRow, holder)
+
+                loadScheme(unsavedSettings.currentScheme)
+                labelConventionsTable.setRowSelectionInterval(startRow + 1, endRow + 1)
+            }
             .createPanel()
         panelForTable.preferredSize = JBDimension(-1, 200)
         return panelForTable
+    }
+
+    private fun buildEnvironmentSelector(): ComboBox<LabelConventionType> {
+        return ComboBox(LabelConventionType.values())
     }
 
     override fun createComponent(): JComponent {
@@ -152,6 +228,13 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         labelConventionsTable = createConventionsTable()
 
         createMappingsTable()
+
+        labelCommandType = buildEnvironmentSelector()
+        labelCommandType.addItemListener { e: ItemEvent? ->
+            if (labelConventionsTable.isEditing) {
+                labelConventionsTable.stopEditing()
+            }
+        }
 
         val centerPanel = panel {
             row {
@@ -189,7 +272,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         // make sure to make a copy so changes to the elements are transferred explicitly
         val items = scheme.labelConventions.map { l -> l.copy() }
-        val model = ListTableModel(arrayOf(nameColumnInfo, prefixColumnInfo, enabledColumnInfo), items)
+        val model = ListTableModel(arrayOf(typeColumnInfo, nameColumnInfo, prefixColumnInfo, enabledColumnInfo), items)
         labelConventionsTable.model = model
     }
 
