@@ -59,4 +59,10 @@ class LatexTypedHandlerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testBracesCompletion() {
+        myFixture.configureByText(LatexFileType, """\mycommand<caret>""")
+        myFixture.type("{")
+        myFixture.checkResult("""\mycommand{<caret>}""")
+    }
 }
