@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.editor.typedhandlers
 
+import com.intellij.codeInsight.editorActions.AutoHardWrapHandler
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
 import com.intellij.codeInsight.template.TemplateManager
@@ -35,7 +36,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         }
 
         // Don't insert \item when the enter was triggered by the word wrap
-        if (DataManager.getInstance().loadFromDataContext(context, LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY) == true) {
+        if (DataManager.getInstance().loadFromDataContext(context, LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY) == true || DataManager.getInstance().loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true) {
             return Result.Continue
         }
 
