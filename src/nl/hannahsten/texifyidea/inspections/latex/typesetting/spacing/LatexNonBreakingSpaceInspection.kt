@@ -7,6 +7,8 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -74,17 +76,24 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
                 ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
                 ?: continue
 
+            val previousSentence = sibling.prevSibling
+                ?: sibling.parent?.prevSibling
+                ?: sibling.parentOfType(LatexNoMathContent::class)?.prevSibling
+                ?: continue
+
             // When sibling is whitespace, it's obviously bad news. Must not have a newline
-            if (sibling is PsiWhiteSpace && !sibling.text.contains('\n')) {
-                descriptors.add(
-                    manager.createProblemDescriptor(
-                        sibling,
-                        "Reference without a non-breaking space",
-                        WhitespaceReplacementFix(),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly
+            if (sibling is PsiWhiteSpace) {
+                if (!PatternMagic.sentenceSeparatorAtLineEnd.matcher(file.text.subSequence(previousSentence.startOffset, previousSentence.endOffset)).find()) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            sibling,
+                            "Reference without a non-breaking space",
+                            WhitespaceReplacementFix(),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly
+                        )
                     )
-                )
+                }
                 continue
             }
         }

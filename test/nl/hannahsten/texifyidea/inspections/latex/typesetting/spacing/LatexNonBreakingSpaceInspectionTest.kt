@@ -27,6 +27,37 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
         myFixture.checkHighlighting()
     }
 
+    fun testWarningNewlineSentence() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference.
+                \ref{fig}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testWarningNoNewLine() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference. \ref{fig}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testWarningNoNewLineSentenceEnd() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference. \ref{fig}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testNoWarning() {
         myFixture.configureByText(
             LatexFileType,
