@@ -6,7 +6,11 @@
 
 ### Fixed
 
-## [0.7.31-alpha.2] - 2023-06-19
+## [0.7.31] - 2023-07-01
+Welcome to TeXiFy IDEA 0.7.31! This release improves the grammar checks and syntax highlighter, as well as the parsing of optional parameters.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
 
 ### Added
 * Add text parameters of commands to grammar checked text
@@ -15,18 +19,6 @@
 
 ### Fixed
 * Improve code of the documentation provider
-* Fix double highlighting of inline and display math, by @jojo2357
-* Fix false positive grammar error when a sentence ends with a closing brace
-* Fix false positive grammar error when a newline follows a command between sentences
-
-## [0.7.31-alpha.1] - 2023-06-18
-
-### Added
-* Add text parameters of commands to grammar checked text
-* Improved parsing of optional parameters
-* Internal improvements (#3092, #3102)
-
-### Fixed
 * Fix double highlighting of inline and display math, by @jojo2357
 * Fix false positive grammar error when a sentence ends with a closing brace
 * Fix false positive grammar error when a newline follows a command between sentences
@@ -163,9 +155,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.31-alpha.2...HEAD
-[0.7.31-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30...v0.7.31-alpha.1
-[0.7.31-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.31-alpha.1...v0.7.31-alpha.2
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.31...HEAD
+[0.7.31]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30...v0.7.31
 [0.7.30]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.29...v0.7.30
 [0.7.29]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28...v0.7.29
 [0.7.28]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.27...v0.7.28
