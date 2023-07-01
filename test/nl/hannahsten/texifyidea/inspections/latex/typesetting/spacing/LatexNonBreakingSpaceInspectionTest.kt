@@ -16,6 +16,17 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
         myFixture.checkHighlighting()
     }
 
+    fun testWarningNewline() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference<warning descr="Reference without a non-breaking space">
+                </warning>\ref{fig}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testNoWarning() {
         myFixture.configureByText(
             LatexFileType,
