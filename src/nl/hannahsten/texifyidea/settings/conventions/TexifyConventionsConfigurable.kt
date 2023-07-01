@@ -1,14 +1,17 @@
 package nl.hannahsten.texifyidea.settings.conventions
 
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.ui.AnActionButton
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.TableView
+import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -112,6 +115,24 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         return labelConventionsTable
     }
 
+    private fun createMappingsTable(): JComponent {
+        val panelForTable = ToolbarDecorator.createDecorator(labelConventionsTable, null)
+            .setAddActionUpdater { e: AnActionEvent? -> true }
+            .setAddAction { button: AnActionButton? ->
+//                unsavedSettings.schemes.add(LabelConvention(false, LabelConventionType.COMMAND, "new_command", "newcmd"))
+                // todo add row
+            }
+            .setRemoveActionUpdater { e: AnActionEvent? -> labelConventionsTable.selection.isNotEmpty() }
+            .setRemoveAction { button: AnActionButton? ->
+                labelConventionsTable.items.removeAll(labelConventionsTable.selection)
+                // todo remove row
+            }
+            .disableUpDownActions()
+            .createPanel()
+        panelForTable.preferredSize = JBDimension(-1, 200)
+        return panelForTable
+    }
+
     override fun createComponent(): JComponent {
         schemesPanel = TexifyConventionsSchemesPanel(unsavedSettings)
 
@@ -130,6 +151,8 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         labelConventionsTable = createConventionsTable()
 
+        createMappingsTable()
+
         val centerPanel = panel {
             row {
                 label("Maximum section size (characters)")
@@ -142,11 +165,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             group("Labels") {
                 row {
                     cell(
-                        ToolbarDecorator.createDecorator(labelConventionsTable)
-                            .disableAddAction()
-                            .disableRemoveAction()
-                            .disableUpDownActions()
-                            .createPanel()
+                        createMappingsTable()
                     )
                         .resizableColumn()
                         .gap(RightGap.SMALL)
