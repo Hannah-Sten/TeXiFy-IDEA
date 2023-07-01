@@ -141,11 +141,17 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     }
 
     /**
-     * Upon typing `\{`, inserts the closing delimiter `\}`.
+     * Upon typing `\{`, inserts the closing delimiter `\}`. Unlike the others, this isnt a token so we just have to check manually
      */
     private fun insertClosingEscapeBracket(editor: Editor): Result {
-        editor.document.insertString(editor.caretModel.offset, "\\}")
-        return Result.STOP
+        val offset = editor.caretModel.offset
+        if (offset > editor.document.textLength) return Result.CONTINUE
+        if (offset - 2 < 0) return Result.CONTINUE
+        if (editor.document.getText(TextRange.from(offset - 2, 2)) == "\\{") {
+            editor.document.insertString(editor.caretModel.offset, "\\}")
+            return Result.STOP
+        }
+        return Result.CONTINUE
     }
 
     /**

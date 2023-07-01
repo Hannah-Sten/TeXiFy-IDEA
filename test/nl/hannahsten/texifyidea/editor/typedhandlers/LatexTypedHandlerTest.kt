@@ -65,4 +65,22 @@ class LatexTypedHandlerTest : BasePlatformTestCase() {
         myFixture.type("{")
         myFixture.checkResult("""\mycommand{<caret>}""")
     }
+
+    fun testStartOfLineBracesCompletion() {
+        myFixture.configureByText(LatexFileType, """<caret>""")
+        myFixture.type("{")
+        myFixture.checkResult("""{<caret>}""")
+    }
+
+    fun testStartOfLineEscapedBracesCompletion() {
+        myFixture.configureByText(LatexFileType, """<caret>""")
+        myFixture.type("\\{")
+        myFixture.checkResult("""\{<caret>\}""")
+    }
+
+    fun testEscapedBracesCompletion() {
+        myFixture.configureByText(LatexFileType, """Hello World <caret>""")
+        myFixture.type("\\{")
+        myFixture.checkResult("""Hello World \{<caret>\}""")
+    }
 }
