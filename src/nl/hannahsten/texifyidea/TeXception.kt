@@ -20,3 +20,8 @@ open class TeXception : RuntimeException {
  * Represents a signal that a request to one of the remote libraries failed.
  */
 data class RemoteLibraryRequestFailure(val libraryName: String, val response: HttpResponse)
+
+/**
+ * A system command/program that failed to run successfully.
+ */
+data class CommandFailure(val output: String, val exitCode: Int)
