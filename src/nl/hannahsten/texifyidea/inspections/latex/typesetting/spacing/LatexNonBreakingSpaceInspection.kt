@@ -74,8 +74,8 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
                 ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
                 ?: continue
 
-            // When sibling is whitespace, it's obviously bad news.
-            if (sibling is PsiWhiteSpace) {
+            // When sibling is whitespace, it's obviously bad news. Must not have a newline
+            if (sibling is PsiWhiteSpace && !sibling.text.contains('\n')) {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         sibling,
