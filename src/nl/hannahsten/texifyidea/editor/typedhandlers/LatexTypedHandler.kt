@@ -18,8 +18,8 @@ import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.parser.inVerbatim
 import nl.hannahsten.texifyidea.util.orFalse
+import nl.hannahsten.texifyidea.util.parser.inVerbatim
 
 /**
  * @author Sten Wessel
@@ -86,7 +86,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
                 return insertRobustInlineMathClose(editor)
             }
             else if (c == '{') {
-                return insertClosingEscapeBracket(editor)
+                return insertClosingEscapeBrace(editor)
             }
         }
         return Result.CONTINUE
@@ -143,7 +143,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     /**
      * Upon typing `\{`, inserts the closing delimiter `\}`. Unlike the others, this isnt a token so we just have to check manually
      */
-    private fun insertClosingEscapeBracket(editor: Editor): Result {
+    private fun insertClosingEscapeBrace(editor: Editor): Result {
         val offset = editor.caretModel.offset
         if (offset > editor.document.textLength) return Result.CONTINUE
         if (offset - 2 < 0) return Result.CONTINUE
