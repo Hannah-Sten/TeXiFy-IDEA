@@ -25,11 +25,9 @@ When you spot unacceptable behavior, please report per the instructions in the C
 
 
 ## I just have a question!
-The fastest way to reach us is on the project's [Gitter chat](https://gitter.im/TeXiFy-IDEA) (just log in with your GitHub account).
+The fastest way to reach us is by starting a [GitHub Discussion](https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions).
+You can also reach us on the project's [Gitter chat](https://gitter.im/TeXiFy-IDEA) (just log in with your GitHub account).
 We will get notified directly if you post something there and we try to get back to you as soon as possible.
-
-As an alternative, you can always [submit an issue with the label 'support'](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=support&body=).
-
 
 ## Your first contribution
 Unsure where to start?
@@ -42,7 +40,7 @@ Be sure to run your idea by us (see [here](#i-just-have-a-question) how to do th
 This prevents your changes to be rejected in a later stage.
 
 
-Have a look at the [wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Contributing-to-TeXiFy#building-from-source) to see how you can setup local development and build from source and the [helpful resources](#helpful-resources).
+Have a look at the [contributing documentation](https://hannah-sten.github.io/TeXiFy-IDEA/contributing-to-the-source-code.html) to see how you can setup local development and build from source, and the [helpful resources](#helpful-resources).
 
 At any point, feel free to ask for help!
 Everyone is a beginner at first, and we will try to help you on your way as good as we can.

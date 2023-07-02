@@ -11,7 +11,5 @@ Fix #
 
 ```
 
-#### Wiki
-
-<!-- Add link to updated wiki page -->
-- [ ] Updated the wiki:
+- [ ] Updated the documentation, or no update necessary
+- [ ] Added tests, or no tests necessary
