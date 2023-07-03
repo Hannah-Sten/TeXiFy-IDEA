@@ -16,12 +16,14 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.lastChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
 
@@ -93,10 +95,8 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
             // When sibling is whitespace, it's obviously bad news. Must not have a newline
             if (sibling is PsiWhiteSpace) {
-                if (previousSentence.lastChild is LatexNormalText && !PatternMagic.sentenceSeparatorAtLineEnd.matcher(
-                        file.text.subSequence(previousSentence.startOffset, previousSentence.endOffset)
-                    ).find()
-                ) {
+                val lastBitOfText = previousSentence.lastChildOfType(LatexNormalText::class) ?: previousSentence.lastChildOfType(LatexParameterText::class) ?: continue
+                if (!PatternMagic.sentenceSeparatorAtLineEnd.matcher(file.text.subSequence(lastBitOfText.startOffset, lastBitOfText.endOffset)).find()) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             sibling,
