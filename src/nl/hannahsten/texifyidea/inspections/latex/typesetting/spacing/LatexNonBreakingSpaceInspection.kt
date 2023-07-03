@@ -16,12 +16,12 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
 
@@ -38,7 +38,17 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
          * All commands that should not have a forced breaking space.
          */
         val IGNORED_COMMANDS = setOf(
-            "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\Cref", "\\cpageref", "\\autoref", "\\citeauthor", "\\textcite", "\\Textcite"
+            "\\citet",
+            "\\citet*",
+            "\\Citet",
+            "\\Citet*",
+            "\\cref",
+            "\\Cref",
+            "\\cpageref",
+            "\\autoref",
+            "\\citeauthor",
+            "\\textcite",
+            "\\Textcite"
         )
 
         /**
@@ -83,7 +93,10 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
             // When sibling is whitespace, it's obviously bad news. Must not have a newline
             if (sibling is PsiWhiteSpace) {
-                if (!PatternMagic.sentenceSeparatorAtLineEnd.matcher(file.text.subSequence(previousSentence.startOffset, previousSentence.endOffset)).find()) {
+                if (previousSentence.lastChild is LatexNormalText && !PatternMagic.sentenceSeparatorAtLineEnd.matcher(
+                        file.text.subSequence(previousSentence.startOffset, previousSentence.endOffset)
+                    ).find()
+                ) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             sibling,

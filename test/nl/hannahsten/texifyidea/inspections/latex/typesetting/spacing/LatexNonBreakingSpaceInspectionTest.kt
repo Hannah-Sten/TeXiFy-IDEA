@@ -27,7 +27,7 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
         myFixture.checkHighlighting()
     }
 
-    fun testWarningNewlineSentence() {
+    fun testNoWarningNewlineSentence() {
         myFixture.configureByText(
             LatexFileType,
             """
@@ -38,7 +38,7 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
         myFixture.checkHighlighting()
     }
 
-    fun testWarningNoNewLine() {
+    fun testNoWarningNewLineSentenceEnd() {
         myFixture.configureByText(
             LatexFileType,
             """
@@ -48,11 +48,45 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
         myFixture.checkHighlighting()
     }
 
-    fun testWarningNoNewLineSentenceEnd() {
+    fun testWarningAfterMathContext() {
         myFixture.configureByText(
             LatexFileType,
             """
-                Reference. \ref{fig}
+                Reference ${"$"}math$<warning descr="Reference without a non-breaking space"> </warning>\ref{fig}.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningAfterEnvironment() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \begin{center}
+                    Something centered.
+                \end{center}
+                \ref{blub} Starts a new sentence.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningAfterComment() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                % Hello World
+                \ref{blub} This is science.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testWarningAfterTextModifier() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \textit{Hello}<warning descr="Reference without a non-breaking space"> </warning>\ref{blub} world.
             """.trimIndent()
         )
         myFixture.checkHighlighting()
