@@ -74,6 +74,6 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
     }
 
     override fun matchesExtension(extension: String): Boolean {
-        return supportedExtensions.contains(extension)
+        return supportedExtensions.contains(extension.lowercase(Locale.getDefault()))
     }
 }
