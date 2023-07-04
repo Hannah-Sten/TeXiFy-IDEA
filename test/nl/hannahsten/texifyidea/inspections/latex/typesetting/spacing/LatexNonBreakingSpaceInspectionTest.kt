@@ -16,6 +16,82 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
         myFixture.checkHighlighting()
     }
 
+    fun testWarningNewline() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference<warning descr="Reference without a non-breaking space">
+                </warning>\ref{fig}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningNewlineSentence() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference.
+                \ref{fig}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningNewLineSentenceEnd() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference. \ref{fig}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testWarningAfterMathContext() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                Reference ${"$"}math$<warning descr="Reference without a non-breaking space"> </warning>\ref{fig}.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningAfterEnvironment() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \begin{center}
+                    Something centered.
+                \end{center}
+                \ref{blub} Starts a new sentence.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningAfterComment() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                % Hello World
+                \ref{blub} This is science.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testWarningAfterTextModifier() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \textit{Hello}<warning descr="Reference without a non-breaking space"> </warning>\ref{blub} world.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testNoWarning() {
         myFixture.configureByText(
             LatexFileType,
