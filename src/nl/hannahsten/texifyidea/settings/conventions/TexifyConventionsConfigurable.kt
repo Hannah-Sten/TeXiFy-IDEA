@@ -5,13 +5,18 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.ui.DialogBuilder
+import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.TableView
+import com.intellij.ui.util.preferredWidth
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.ListTableModel
@@ -166,18 +171,14 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         val panelForTable = ToolbarDecorator.createDecorator(labelConventionsTable, null)
             .setAddActionUpdater { e: AnActionEvent? -> true }
             .setAddAction { button: AnActionButton? ->
-                unsavedSettings.createLabel(unsavedSettings.currentScheme)
-                loadScheme(unsavedSettings.currentScheme)
-                labelConventionsTable.setRowSelectionInterval(
-                    labelConventionsTable.rowCount - 1,
-                    labelConventionsTable.rowCount - 1
-                )
+                createAddLabelConventionDialog()
             }
             .setRemoveActionUpdater { e: AnActionEvent? -> labelConventionsTable.selection.isNotEmpty() }
             .setRemoveAction { button: AnActionButton? ->
                 labelConventionsTable.selectedObjects.forEach { unsavedSettings.currentScheme.labelConventions.remove(it) }
                 loadScheme(unsavedSettings.currentScheme)
             }
+            // Up/down actions currently have no function, other than allowing users to group them together in the UI
             .setMoveUpActionUpdater { e: AnActionEvent? -> labelConventionsTable.selectedRow > 0 }
             .setMoveUpAction {
                 // take the list element above the selection block and move it to the end of the block
@@ -207,6 +208,46 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             .createPanel()
         panelForTable.preferredSize = JBDimension(-1, 200)
         return panelForTable
+    }
+
+    /**
+     * In order to make it easier for the user to enter new values, we use a dialog before adding the entry to the list (might be out of view if the list is long).
+     */
+    private fun createAddLabelConventionDialog() {
+        val typeField = ComboBox(LabelConventionType.values())
+        val elementField = JBTextField().apply { preferredWidth = 200 }
+        val prefixField = JBTextField().apply { preferredWidth = 200 }
+        val labelField = JBCheckBox()
+
+        DialogBuilder().apply {
+            setCenterPanel(
+                panel {
+                    row("Type:") { cell(typeField) }
+                    row("Environment/command name:") { cell(elementField) }
+                    row("Prefix:") { cell(prefixField) }
+                    row("Should have label:") { cell(labelField) }
+                }
+            )
+
+            addOkAction()
+            addCancelAction()
+            title("Add Label Convention")
+
+            if (show() == DialogWrapper.OK_EXIT_CODE) {
+                val newLabel = LabelConvention(
+                    labelField.isSelected,
+                    typeField.selectedItem as LabelConventionType,
+                    elementField.text,
+                    prefixField.text
+                )
+                unsavedSettings.currentScheme.labelConventions.add(newLabel)
+                loadScheme(unsavedSettings.currentScheme)
+                labelConventionsTable.setRowSelectionInterval(
+                    labelConventionsTable.rowCount - 1,
+                    labelConventionsTable.rowCount - 1
+                )
+            }
+        }
     }
 
     private fun buildEnvironmentSelector(): ComboBox<LabelConventionType> {

@@ -93,10 +93,8 @@ data class TexifyConventionsSettings internal constructor(
         return currentScheme.labelConventions.singleOrNull { c -> c.name == conventionName && c.type == type }
     }
 
-    fun createLabel(activeScheme: TexifyConventionsScheme): LabelConvention {
-        val addedElement = LabelConvention(false, LabelConventionType.ENVIRONMENT, "new-environment", "")
-        activeScheme.labelConventions.add(addedElement)
-        return addedElement
+    fun getDefaultLabel(): LabelConvention {
+        return LabelConvention(false, LabelConventionType.ENVIRONMENT, "new-environment", "")
     }
 
     fun deleteProjectLabel(index: Int) {
