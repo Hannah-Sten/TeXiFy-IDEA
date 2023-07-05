@@ -128,7 +128,7 @@ View report downloaded from GH Actions:
 docker run -it --rm -p 8000:80 -v $(pwd)/report:/usr/share/nginx/html nginx
 ```
 
-## <a name="Troubleshooting-build"></a>Troubleshooting
+## Troubleshooting {id="Troubleshooting-build"}
 
 ### java.util.zip.ZipException: Archive is not a ZIP archive
 
