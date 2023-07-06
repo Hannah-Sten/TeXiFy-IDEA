@@ -12,7 +12,7 @@ The default shortcut for backward search in Evince is kbd:[Ctrl + Left mouse cli
 Note that spaces in your path (including filename) are not allowed.
 
 ### Forward search
-When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the menu menu:Tools[LaTeX > Evince > Forward Search], or using the shortcut kbd:[Ctrl + Alt + Shift + .] which is listed there.
+When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the menu <ui-path>Tools | LaTeX | Evince | Forward Search</ui-path>, or using the shortcut kbd:[Ctrl + Alt + Shift + .] which is listed there.
 This shortcut can also be used to bring the Evince window in view when you do not see it.
 
 ### Backward or inverse search

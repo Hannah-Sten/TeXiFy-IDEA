@@ -255,7 +255,7 @@ Example:
 
 ## How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
 
-You can define a live template via menu:File[Settings > Editor > Live Templates]. For example, for the `itemize` environment, you could use the following template:
+You can define a live template via <ui-path>File | Settings | Editor | Live Templates</ui-path>. For example, for the `itemize` environment, you could use the following template:
 
 ```
 \begin{itemize}
@@ -268,7 +268,7 @@ Also see [https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates](https:
 
 ![Screenshot of live template UI](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/marco.png)
 
-Once the live template is created, close the Settings dialog. Use menu:Edit[Macros > Start Macro Recording] and enter the live template abbreviation. Finish recording the macro, and name it. Via menu:Settings[Keymap], assign the macro a key binding such as kbd:[Ctrl + Alt + Shift + I].
+Once the live template is created, close the Settings dialog. Use <ui-path>Edit | Macros > Start Macro Recording</ui-path| and enter the live template abbreviation. Finish recording the macro, and name it. Via <ui-path|Settings | Keymap</ui-path>, assign the macro a key binding such as kbd:[Ctrl + Alt + Shift + I].
 
 Now, you can use the macro key binding and hit kbd:[Enter] to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
 

@@ -3,13 +3,13 @@ Also see the [option to enable continuous preview of math and TikZ environments]
 ## Unicode math preview
 
 TeXiFy can show a unicode preview of some math characters like greek letters.
-You can trigger this with your cursor on a math command and clicking menu:Code[Folding > Collapse] or using kbd:[Ctrl + NumPad -].
+You can trigger this with your cursor on a math command and clicking <ui-path>Code | Folding | Collapse</ui-path> or using kbd:[Ctrl + NumPad -].
 Clicking on it will expand it again.
 TeXiFy shows these previews automatically when a project is opened.
 
 ## Equation preview
 
-You can use the Equation Preview by making sure your cursor is in a math environment and clicking menu:Tools[LaTeX > Preview Equation], or using kbd:[Ctrl + Shift + X].
+You can use the Equation Preview by making sure your cursor is in a math environment and clicking <ui-path>Tools | LaTeX | Preview Equation</ui-path>, or using kbd:[Ctrl + Shift + X].
 
 Since version 0.7.11, if you don’t have a custom preamble we use jlatexmath (https://github.com/opencollab/jlatexmath) and it should work out of the box.
 
@@ -37,7 +37,7 @@ This is only necessary if you want to use a custom preamble (using magic comment
 
 ## TikZ preview
 
-You can use the TikZ Preview by placing your cursor in a `tikzpicture` environment and clicking menu:Tools[LaTeX > TikZ Picture Preview], or using kbd:[Ctrl + Shift + Y].
+You can use the TikZ Preview by placing your cursor in a `tikzpicture` environment and clicking <ui-path>Tools | LaTeX | TikZ Picture Preview</ui-path>, or using kbd:[Ctrl + Shift + Y].
 
 The TikZ Preview will take TikZ and pgf libraries into account.
 
@@ -71,6 +71,6 @@ For example, to include your custom command `\newcommand{\letters}{\alpha \beta 
 
 TeXiFy seems to have problems with running pdflatex, as commented at [#25](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/25#issuecomment-314573002) this might have to do with PATH problems.
 The comment links to [http://depressiverobot.com/2016/02/05/intellij-path.html](http://depressiverobot.com/2016/02/05/intellij-path.html) which has a couple of workarounds, for example using `open -a "IntelliJ IDEA CE"` or `open -a pycharm`. There is also a more permanent workaround.
-If you use the Jetbrains Toolbox, you can find the path in the Toolbox under menu:Settings[Tools].
+If you use the Jetbrains Toolbox, you can find the path in the Toolbox under <ui-path>Settings | Tools</ui-path>.
 
 If you do know how we could fix this on the plugin side, please let us know.

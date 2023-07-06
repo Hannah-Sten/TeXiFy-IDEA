@@ -17,7 +17,7 @@ You have multiple options of acquiring a zip file with the plugin.
 
 #### Installing the plugin from a zip file
 
-* Go to menu:Settings[Plugins] and click the gear icon, click Install Plugin from Disk, select the zip file and install.
+* Go to <ui-path>Settings | Plugins</ui-path> and click the gear icon, click Install Plugin from Disk, select the zip file and install.
 * Make sure to restart IntelliJ.
 
 ### Subscribing to the alpha channel

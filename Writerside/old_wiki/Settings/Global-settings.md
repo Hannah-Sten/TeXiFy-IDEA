@@ -1,4 +1,4 @@
-These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy]
+These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy</ui-path>
 
 ## Option to disable automatic insertion of second $
 

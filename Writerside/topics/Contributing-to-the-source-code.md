@@ -26,8 +26,8 @@ We assume that git, IntelliJ, java and LaTeX are installed. If not, follow the n
 * If you are prompted to open the `build.gradle` file, do so.
 * Select 'Use auto-import'.
 * Thank Gradle that you’re done now!
-* Check that in menu:Settings[Build, Execution, Deployment > Compiler > Kotlin Compiler] the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
-* Check that in menu:Settings[Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM] it is set to the required java version as specified at [https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions](https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions)
+* Check that in <ui-path>Settings | Build, Execution, Deployment | Compiler | Kotlin Compiler</ui-path> the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
+* Check that in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path> it is set to the required java version as specified at [https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions](https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions)
 * Test it worked by executing the 'buildPlugin' task in [Gradle > Tasks > intellij], or hit double control and run `gradle buildPLugin`
 * You can ignore deprecation warnings in the build output.
 * If something doesn’t work, have a look at the [Troubleshooting](#Troubleshooting-build) section.
@@ -142,7 +142,7 @@ If you get the error `Caused by: org.gradle.process.internal.ExecException: Proc
 
 ### The server may not support the client's requested TLS protocol versions: (TLSv1.2, TLSv1.3)
 
-Please make sure you’re using at least JDK 17, both as project SDK and in menu:Settings[Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM].
+Please make sure you’re using at least JDK 17, both as project SDK and in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path>.
 
 ### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
 

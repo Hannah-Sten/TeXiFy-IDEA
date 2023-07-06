@@ -1,4 +1,4 @@
-Note that all shortcuts are customizable, you can change them in menu:File[Settings > Keymap].
+Note that all shortcuts are customizable, you can change them in <ui-path>File | Settings | Keymap</ui-path>.
 
 ## General IntelliJ shortcuts
 

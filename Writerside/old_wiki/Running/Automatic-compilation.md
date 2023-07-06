@@ -1,6 +1,6 @@
 _Since b0.6.8_
 
-menu:File[Settings > Languages & Frameworks > TeXiFy]
+<ui-path>File | Settings | Languages & Frameworks | TeXiFy</ui-path>
 
 TeXiFy supports automatic compilation, which means that when you type in your document, it will automatically be compiled.
 In general, we advise against using this because once you are somewhat familiar with LaTeX there is no need to compile all the time to check if what you typed is correct, and compiling so much will have a serious impact on your CPU usage which can slow other things (including IntelliJ itself) down considerably.
@@ -20,7 +20,7 @@ Currently the automatic compilation is only triggered when you type in a documen
 ## Automatic compilation only when the document is saved.
 You can enable this in TeXiFy settings.
 When enabled, auto compilation will only run when the file is actually saved to disk, instead of after every change.
-To configure when a file is saved to disk (for example after a certain idle time), go to menu:Settings[Appearance > System Settings].
+To configure when a file is saved to disk (for example after a certain idle time), go to <ui-path>Settings | Appearance | System Settings</ui-path>.
 Also see [https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html](https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html)
 
 ## Automatic compilation support by compilers

@@ -11,13 +11,13 @@ The default shortcut for backward search in SumatraPDF is a double left mouse cl
 ## Explanation
 
 ### Forward search
-When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the menu menu:Tools[LaTeX > SumatraPDF > Forward Search], or using the shortcut kbd:[Ctrl + Alt + Shift + .] which is listed there.
+When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the menu <ui-path>Tools | LaTeX | SumatraPDF | Forward Search</ui-path>, or using the shortcut kbd:[Ctrl + Alt + Shift + .] which is listed there.
 This shortcut can also be used to bring the SumatraPDF window in view when you recompiled a document but you do not see it.
 
 ### Backward or inverse search
 
 You can also do the reverse of the forward search lookup.
-To configure this, the first time you have to press menu:Tools[LaTeX > SumatraPDF > Configure Inverse Search], this will update a setting in SumatraPDF.
+To configure this, the first time you have to press <ui-path>Tools | LaTeX | SumatraPDF | Configure Inverse Search</ui-path>, this will update a setting in SumatraPDF.
 You also have to do this every time after you update IntelliJ.
 
 Now you can double left-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ.

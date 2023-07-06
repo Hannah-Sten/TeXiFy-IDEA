@@ -27,7 +27,7 @@ For more information, see [https://www.jetbrains.com/help/idea/changing-default-
 
 When changing this template, all new run configurations created in any new project will be affected.
 
-Go to menu:File[Other Settings > Run configuration Templates for New Projects] and select LaTeX.
+Go to <ui-path>File | Other Settings | Run configuration Templates for New Projects</ui-path> and select LaTeX.
 
 ## Run configuration settings
 

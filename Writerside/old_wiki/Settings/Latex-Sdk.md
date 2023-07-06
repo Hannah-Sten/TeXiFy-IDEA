@@ -1,7 +1,7 @@
 In IntelliJ you can use the SDK settings editor to specify a custom LaTeX SDK, in order to let TeXiFy know where your LaTeX installation is.
 This is of course only necessary if it is not in your PATH already, but in some cases (like with a Flatpak installation) it is not possible to modify your PATH.
 
-You can find these settings in menu:File[Project Structure].
+You can find these settings in <ui-path>File | Project Structure</ui-path>.
 Under SDKs you can see all the configured SDKs.
 If you click the plus button there, you can see the different types of SDKs you can add but it also shows automatically detected SDKs.
 
