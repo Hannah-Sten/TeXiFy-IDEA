@@ -4,5 +4,5 @@
 <ihp version="2.0">
     <topics dir="topics"/>
     <images dir="images"/>
-    <instance src="texify-docs.tree" web-path="/texify-docs/"  version="master"/>
+    <instance src="texify-docs.tree" web-path="/texify-docs/" />
 </ihp>
