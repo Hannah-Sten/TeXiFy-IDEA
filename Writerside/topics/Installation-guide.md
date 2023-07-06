@@ -9,7 +9,6 @@ switcher-label: Operating System
 {style="Warning"}
 
 ## Installing IntelliJ, LaTeX and the TeXiFy-IDEA plugin
-
 In this section we will show you how to install everything that is necessary to get started with TeXiFy, as well as give a few pointers to get started with LaTeX.
 
 ### Installation instructions for Windows {switcher-key="Windows"}
@@ -43,12 +42,12 @@ In this section we will show you how to install everything that is necessary to 
   on the left of your screen.
 * Type some text between the `\begin{document}` and `\end{document}`
   lines, hit the compile icon next to the `\begin{document}` line and
-  click Run, or use kbd:[Ctrl+Shift+F10]. If you see a pdf appearing,
+  click Run, or use <shortcut>Control+Shift+F10</shortcut>. If you see a pdf appearing,
   congratulations!
 * If you see `LaTeX error: file a4.sty not found` then you did not
   restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a
-  Play button) in the top-right menu, or using kbd:[Shift+F10].
+  Play button) in the top-right menu, or using <shortcut>Shift+F10</shortcut>.
 
 #### Configuring forward and inverse search
 
@@ -59,7 +58,7 @@ In this section we will show you how to install everything that is necessary to 
   the SumatraPDF window in view when you do not see it.
 * You can also do the reverse: if you have the pdf open inside IntelliJ, you can hold Ctrl and click in the document to bring your cursor to the LaTeX source. Make sure you have compiled the document first.
   If you use SumatraPDF, you have to configure it once by clicking
-  menu:[Tools > LaTeX > SumatraPDF > Configure inverse search]. Then double-click
+  <ui-path>Tools | LaTeX | SumatraPDF | Configure inverse search</ui-path>. Then double-click
   in SumatraPDF in a pdf you just compiled, and it should make your cursor
   go to the correct location in IntelliJ.
 * Have a look at the [tips](#tips).
@@ -108,7 +107,7 @@ cd install-tl-*
 ./install-tl --scheme=basic
 ```
 
-In the installer, press kbd:[D] and kbd:[Enter] to change the home directory from `/user/local/texlive/yyyy` to `/home/username/texlive/yyyy` or whatever you want.
+In the installer, press <control>D</control> and <control>Enter</control> to change the home directory from `/user/local/texlive/yyyy` to `/home/username/texlive/yyyy` or whatever you want.
 
 Add `/home/username/texlive/yyyy/bin/x86_64-linux` or wherever you installed it to your `PATH` environment variable, for example by putting in some configuration file like `~/.bashrc` or `~/.profile` the line `export PATH="/home/username/texlive/2018/bin/x86_64-linux:$PATH`.
 Don’t forget to log out and back in.
@@ -149,12 +148,12 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   on the left of your screen.
 * Type some text between the `\begin{document}` and `\end{document}`
   lines, hit the compile icon next to the `\begin{document}` line and
-  click Run, or use kbd:[Ctrl+Shift+F10]. If you see a pdf appearing,
+  click Run, or use <shortcut>Ctrl+Shift+F10</shortcut>. If you see a pdf appearing,
   congratulations!
 * If you see `LaTeX error: file a4.sty not found` then you did not
   restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a
-  Play button) in the top-right menu, or using kbd[Shift+F10].
+  Play button) in the top-right menu, or using <shortcut>Shift+F10</shortcut>.
 
 #### Forward and inverse search
 
@@ -163,7 +162,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   cursor is at by going in IntelliJ to <ui-path>Tools | LaTeX | Forward Search</ui-path>, or using the shortcut
   which is listed there. If you use Evince, this shortcut can also be used to bring the
   Evince window in view when you do not see it.
-* You can also do the reverse: press Ctrl and click in a pdf (either in Evince or in IntelliJ)
+* You can also do the reverse: press <control>Ctrl</control> and click in a pdf (either in Evince or in IntelliJ)
   you just compiled, and it should make your cursor go to the correct
   location in IntelliJ.
 * Also have a look at the [tips](#tips).
@@ -222,9 +221,9 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
   indicate that something is wrong. Hovering over it gives extra
   information. In some cases, a ready-made fix is waiting to be applied:
   hit the lightbulb that appears on the left, or hit Alt+Enter to view and
-  apply it. A quick overview of useful shortcuts is on the  [Shortcuts](Shortcuts) page.
+  apply it. A quick overview of useful shortcuts is on the [Shortcuts](Shortcuts) page.
 * If your LaTeX indentation (the number of spaces that is in front of
-  each line) looks messy, reformat with kbd:[Ctrl+Alt+L].
+  each line) looks messy, reformat with <shortcut key="$Reformat">.
 * This wiki contains documentation about many features, you can browse around the [Features](Features) page.
 * If you are searching how a particular symbol has to be written in
   LaTeX, the [Detexify](http://detexify.kirelabs.org/classify.html) tool can
@@ -255,7 +254,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 
 #### To push (upload) changes
 
-* Hit kbd:[Ctrl+K] to commit changes to git.
+* Hit <shortcut key="$Commit"> to commit changes to git.
 * Specify a commit message.
 * Click `commit and push` by hovering over the `commit` button.
 * If your git username is asked, specify it.
@@ -263,7 +262,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 
 #### To pull (download) changes
 
-* Hit kbd:[Ctrl+T] or the arrow icon at the top right.
+* Hit <shortcut key="$Pull"> or the arrow icon at the top right.
 
 ### I want to know more about git
 
