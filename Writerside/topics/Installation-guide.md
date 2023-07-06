@@ -211,8 +211,8 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
 * You never have to remember to save your work, IntelliJ will
   automatically save every letter you type.
 * You can personalise the template that is used when you create a new
-  LaTeX file in <ui-path>Settings > Editor | File and code templates | LaTeX
-  source].
+  LaTeX file in <ui-path>Settings | Editor | File and code templates | LaTeX
+  source</ui-path>.
 * You don’t need to close the pdf to recompile, it will automatically
   refresh.
 * A good way to start learning LaTeX is by asking someone how to do what
@@ -222,7 +222,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
   indicate that something is wrong. Hovering over it gives extra
   information. In some cases, a ready-made fix is waiting to be applied:
   hit the lightbulb that appears on the left, or hit Alt+Enter to view and
-  apply it. A quick overview of useful shortcuts is on the  | Shortcuts</ui-path>(Shortcuts) page.
+  apply it. A quick overview of useful shortcuts is on the  [Shortcuts](Shortcuts) page.
 * If your LaTeX indentation (the number of spaces that is in front of
   each line) looks messy, reformat with kbd:[Ctrl+Alt+L].
 * This wiki contains documentation about many features, you can browse around the [Features](Features) page.
@@ -232,8 +232,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
   command will be listed on the right.
   In LaTeX projects you should have a Detexify tool window on the right.
 * If you want a proper explanation of what LaTeX and its philosophy is
-  about, read the [http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf[Not](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf[Not)
-  So Short Introduction To LaTeX2e].
+  about, read the [Not So Short Introduction To LaTeX2e](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf).
 
 Any suggestions for improvements of the installation instructions, however small? Please feel free to edit this wiki page, or let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
