@@ -7,7 +7,7 @@ To disable formatting on a portion of your `tex` file, wrap the code with
 % @formatter:on
 ```
 
-and enable these comments in the settings by going to menu:Settings[Editor > Code Style > Formatter Control] and checking **Enable formatter markers in comments**.
+and enable these comments in the settings by going to <ui-path>Settings | Editor | Code Style | Formatter Control</ui-path> and checking **Enable formatter markers in comments**.
 This can be particularly useful for `listings` environments.
 
 ## Indents in (math) environments
@@ -115,12 +115,12 @@ Formatting for algorithms written with `algorithm2e` instead of `algorithmicx` i
 
 In some cases, you might have external requirements on your formatting which are incompatible with the default TeXiFy formatter.
 For these cases, there are some built-in actions that run external formatters.
-Most probably you want to bind a shortcut to this action in menu:File[Settings > Keymap].
+Most probably you want to bind a shortcut to this action in <ui-path>File | Settings | Keymap</ui-path>.
 
 ### Latexindent
 _Since b0.7.7_
 
-If your caret is in a LaTeX file, you can use menu:Code[Reformat with Latexindent].
+If your caret is in a LaTeX file, you can use <ui-path>Code | Reformat with Latexindent</ui-path>.
 This will run latexindent.pl on the current file, and it will be updated on disk.
 
 ### bibtex-tidy

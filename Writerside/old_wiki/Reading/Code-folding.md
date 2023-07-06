@@ -1,9 +1,9 @@
-Using the gutter icons (to the left of your open file), the menu (menu:Code[Folding]) or context menu (right-click), or the shortcuts (see the menu or the keymap), you can fold and unfold regions of text.
+Using the gutter icons (to the left of your open file), the menu (<ui-path>Code | Folding</ui-path>) or context menu (right-click), or the shortcuts (see the menu or the keymap), you can fold and unfold regions of text.
 
 You can for example fold sections, subsections, greek letters, etc.
 Note you can easily fold or collapse until a certain level using the menu or shortcuts.
 
-Which elements are folded by default can be configured in menu:File[Settings > Editor > General > Code Folding > LaTeX].
+Which elements are folded by default can be configured in <ui-path>File | Settings | Editor | General | Code Folding | LaTeX</ui-path>.
 
 ![folding](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/folding.png)
 

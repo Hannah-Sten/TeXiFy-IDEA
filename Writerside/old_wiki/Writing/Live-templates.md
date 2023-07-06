@@ -10,7 +10,7 @@ Currently implemented by default are live templates for:
 * figures, tables, itemize, enumerate, and in math for summations and integrals;
 * sectioning with automatic label (triggered with `\partl`, `\chapl`, `\secl`, etc.), _since b0.7.3_.
 
-You can find these live templates, as well as add your own, under menu:File[Settings > Editor > Live Templates > LaTeX]. _Since b0.7.4:_ the default live templates are disabled in verbatim contexts.
+You can find these live templates, as well as add your own, under <ui-path>File | Settings | Editor | Live Templates | LaTeX</ui-path>. _Since b0.7.4:_ the default live templates are disabled in verbatim contexts.
 
 ![live-template-settings](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/live-template-settings.png)
 

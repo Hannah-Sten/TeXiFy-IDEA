@@ -2,8 +2,8 @@ _Since b0.6.8_
 
 TeXiFy provides support for Grazie, which is a grammar and spellchecking plugin.
 
-Make sure it is installed and enabled by going to menu:File[Settings > Plugins].
-You can switch on or off grammar rules in menu:File[Settings > Tools > Grazie].
+Make sure it is installed and enabled by going to <ui-path>File | Settings | Plugins</ui-path>.
+You can switch on or off grammar rules in <ui-path>File | Settings | Tools | Grazie</ui-path>.
 
 For more information about Grazie, see [https://plugins.jetbrains.com/plugin/12175-grazie/](https://plugins.jetbrains.com/plugin/12175-grazie/)
 

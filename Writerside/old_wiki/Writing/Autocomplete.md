@@ -33,7 +33,7 @@ _Since b0.7.4_
 
 TeXiFy will look in your LaTeX installation for installed LaTeX packages, and then figures out what commands those packages provide to put those in the autocompletion.
 The indexing of all packages can take significant time (up to one minute for TeX Live full with thousands of packages) so this is persistent between restarts.
-If you want to reset the index, use menu:File[Invalidate Caches / Restart].
+If you want to reset the index, use <ui-path>File | Invalidate Caches / Restart</ui-path>.
 
 Often, the extracted information includes the command parameters and some documentation about the command (see [LaTeX documentation](LaTeX-documentation)).
 However, this relies on package authors respecting the LaTeX conventions (using the doc package).

@@ -50,7 +50,7 @@ If the run configuration is not created correctly the first time, you need to ma
 Jinja2 is a templating language, so you can write special commands in LaTeX which will be replaced by actual valid LaTeX by a certain Python script.
 The difference with using e.g. lualatex or simply outputting LaTeX from Python is that you can still do the formatting in LaTeX, and from the Python script you only give the raw data to be typeset to the LaTeX file (taking an abstract point of view).
 
-PyCharm supports Jinja2 by default, you can enable it for LaTeX by going to menu:File[Settings > Languages & Frameworks] and add LaTeX source file as language.
+PyCharm supports Jinja2 by default, you can enable it for LaTeX by going to <ui-path>File | Settings | Languages & Frameworks</ui-path> and add LaTeX source file as language.
 Also see [https://www.jetbrains.com/help/pycharm/template-languages.html](https://www.jetbrains.com/help/pycharm/template-languages.html)
 
 Then you can write for example a LaTeX file containing

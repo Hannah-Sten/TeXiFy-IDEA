@@ -154,7 +154,7 @@ If you are new to BibTeX, see the [BibTeX introduction](BibTeX).
 ## Settings and preferences
 ### Global settings
 
-These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy] and are global to your IntelliJ: they will be same for all projects.
+These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy</ui-path> and are global to your IntelliJ: they will be same for all projects.
 
 * [Option to disable automatic insertion of second $](Global-settings#closing-math)
 * [Option to disable automatic brace insertion around text in subscript and superscript](Global-settings#brace-insertion)
@@ -168,7 +168,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * [Option to enable smart quote substitution](Global-settings#smart-quotes)
 
 #### Conventions
-These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy > Conventions] and allow you to configure Latex code conventions that apply either globally or for the current project.
+These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy | Conventions</ui-path> and allow you to configure Latex code conventions that apply either globally or for the current project.
 
 * [The maximum number of characters in a section before TeXiFy will suggest to move the section to another file](Conventions#maximum-section-size)
 * [Which commands and environments should have a label and which prefix the label should have](Conventions#label-conventions)
@@ -200,7 +200,7 @@ See [Run configurations settings](Run-configurations#Run-configuration-settings)
 
 ### Code style settings
 
-These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX (or BibTeX)].
+These settings can be found in <ui-path>File | Settings | Editor | Code Style | LaTeX (or BibTeX)</ui-path>.
 
 #### Common code style settings for LaTeX and BibTex
 
@@ -218,45 +218,45 @@ These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX 
 
 If any shortcut is assigned to a menu entry, it will be shown next to it.
 
-* **menu:File[New > LaTeX File]**\
+* **<ui-path>File | New | LaTeX File</ui-path>**\
 Create a new LaTeX file of type Source (`.tex`), Bibliography(`.bib`), Package (`.sty`), Document class (`.cls`) or TikZ (`.tikz`)
-* **menu:File[Other Settings > Run configuration Templates for New Projects]**\
+* **<ui-path>File | Other Settings | Run configuration Templates for New Projects</ui-path>**\
 [Change the run configuration template](Run-configurations)
-* **menu:Edit[LaTeX > Sectioning]**\
+* **<ui-path>Edit | LaTeX | Sectioning</ui-path>**\
 Insert sectioning commands like `\part` or `\subsection`. If any text is selected, it will be used as argument to the command.
-* **menu:Edit[LaTeX > Font Style]**\
+* **<ui-path>Edit | LaTeX | Font Style</ui-path>**\
 Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
-* **menu:Edit[LaTeX > [Insert Table...](Menu-entries#table-creation-wizard)]**\
+* **<ui-path>Edit | LaTeX | [Insert Table...</ui-path>(Menu-entries#table-creation-wizard)]**\
 Displays a table creation wizard that generates a LaTeX table.
-* **menu:Edit[LaTeX > [Insert Graphic...](Menu-entries#insert-graphic-wizard)]**\
+* **<ui-path>Edit | LaTeX | [Insert Graphic...</ui-path>(Menu-entries#insert-graphic-wizard)]**\
 Displays a wizard that generates graphic inclusion LaTeX.
 
-* **menu:Edit[LaTeX > Toggle Star]**\
+* **<ui-path>Edit | LaTeX | Toggle Star</ui-path>**\
 Toggle the star of a command.
-* **menu:Edit[Fill Paragraph]**\
+* **<ui-path>Edit | Fill Paragraph</ui-path>**\
 Fill the paragraph that is currently under the cursor such that each line is filled until the right margin, but does not exceed it.
-* **menu:Code[Reformat File with Latexindent]**\
+* **<ui-path>Code | Reformat File with Latexindent</ui-path>**\
 [Run Latexindent.pl on the LaTeX file the caret is in.](Code-formatting#latexindent)
-* **menu:Code[Reformat File with bibtex-tidy]**\
+* **<ui-path>Code | Reformat File with bibtex-tidy</ui-path>**\
 [Run bibtex-tidy on the file the caret is in.](Code-formatting#bibtex-tidy)
-* **menu:Analyze[Code > Word Count]**\
+* **<ui-path>Analyze | Code | Word Count</ui-path>**\
 [Word counting tool](Menu-entries#_word_counting_tool).
-* **menu:Tools[LaTeX > Equation Preview]**\
+* **<ui-path>Tools | LaTeX | Equation Preview</ui-path>**\
 Preview equations.
-* **menu:Tools[LaTeX > TikZ Preview]**\
+* **<ui-path>Tools | LaTeX | TikZ Preview</ui-path>**\
 Preview TikZ pictures.
-* **menu:Tools[LaTeX > [Clear Auxiliary Files](Menu-entries#clear-aux-files)]**\
+* **<ui-path>Tools | LaTeX | [Clear Auxiliary Files</ui-path>(Menu-entries#clear-aux-files)]**\
 Clear the generated auxiliary files.
-* **menu:Tools[LaTeX > [Clear Generated Files](Menu-entries#clear-generated-files)]**\
+* **<ui-path>Tools | LaTeX | [Clear Generated Files</ui-path>(Menu-entries#clear-generated-files)]**\
 Clear all generated files.
-* **menu:Tools[LaTeX > SumatraPDF]**\
+* **<ui-path>Tools | LaTeX | SumatraPDF</ui-path>**\
 (Windows only) Forward search and configuration of inverse search
 
 ### Context menu entries
 
-* **menu:Right-click on any file[New > LaTeX File]**\
+* **<ui-path>Right-click on any file | New | LaTeX File</ui-path>**\
 Create a new LaTeX file.
-* **menu:Right-click on LaTeX source file[Run 'filename']**\
+* **<ui-path>Right-click on LaTeX source file | Run 'filename'</ui-path>**\
 Compiles the file.
 
 ## Inspections

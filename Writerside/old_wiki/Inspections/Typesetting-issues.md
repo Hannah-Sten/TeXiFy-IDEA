@@ -76,6 +76,6 @@ Different characters are used to open and close a quotation. For example `"quota
 _Since b0.7.24_
 
 TeXiFy has support for Textidote (https://github.com/sylvainhalle/textidote) as an external linter.
-It can be enabled in menu:File[Settings > Languages & Frameworks > TeXiFy], you can also change command line options there.
+It can be enabled in <ui-path>File | Settings | Languages & Frameworks | TeXiFy</ui-path>, you can also change command line options there.
 The warnings will be shown in the IDE, very similar to inspection warnings.
 Note that it is an alternative to the Grazie plugin for grammar checking with LanguageTool, it essentially does the same but it is slower.

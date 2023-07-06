@@ -14,10 +14,10 @@ which requires adding the `:experimental:` attribute at the top of the file
 * Display menu selections:
 
 ```asciidoc
-menu:File[New > LaTeX File]
+<ui-path>File | New | LaTeX File</ui-path>
 ```
 
-results in menu:File[New > LaTeX File]
+results in <ui-path>File | New | LaTeX File</ui-path>
 
 * Pages with dashes in the filename will appear with spaces on the wiki, so include them with:
 

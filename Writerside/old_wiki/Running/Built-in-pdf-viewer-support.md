@@ -3,11 +3,11 @@ _Since b0.7.4_
 TeXiFy supports using the [PDF Viewer](https://plugins.jetbrains.com/plugin/14494-pdf-viewer) plugin to view PDFs inside the IDE.
 This includes forward and inverse search functionality.
 
-To forward search, use menu:Tools[LaTeX > Forward search] or the shortcut listed there.
+To forward search, use <ui-path>Tools | LaTeX | Forward search</ui-path> or the shortcut listed there.
 To inverse search, use kbd:[Ctrl + click].
 
 To use the PDF Viewer plugin, install it via the plugin settings in your IDE.
-In IntelliJ: menu:Settings[Plugins > search in marketplace], and select it in your LaTeX run configuration as the PDF viewer.
+In IntelliJ: <ui-path>Settings | Plugins | search in marketplace</ui-path>, and select it in your LaTeX run configuration as the PDF viewer.
 After compilation it will open the PDF viewer on the right.
 
 At the moment of writing (April 2023), a newer version with bug fixes is available at [https://github.com/slideclimb/intellij-pdf-viewer/releases](https://github.com/slideclimb/intellij-pdf-viewer/releases)

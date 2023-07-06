@@ -23,13 +23,13 @@ In this section we will show you how to install everything that is necessary to 
 * Download and install [LaTeX for Windows](https://miktex.org/download).
   During installation, choose the option
   `Install missing packages on the fly: yes`.
-* Open IntelliJ, in the welcome menu choose menu:Configure[Plugins] (or when
-  you already have a project open, use menu:File[Settings > Plugins]).
+* Open IntelliJ, in the welcome menu choose <ui-path>Configure | Plugins</ui-path> (or when
+  you already have a project open, use <ui-path>File | Settings | Plugins</ui-path>).
 * Click on Marketplace and search for `texify`, then click
   `install`.
 * Install the [PDF Viewer](https://plugins.jetbrains.com/plugin/14494-pdf-viewer) plugin as well, it provides a built-in pdf viewer but does not have full functionality yet. Alternatively, you can install the [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html) pdf viewer.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
-* Click on Create New Project (in the welcome menu) or menu:File[New > Project],
+* Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
   select LaTeX in the left column and click next. Specify a name for your
   project, and a location. A project can contain multiple LaTeX files and documents, so
   for example if you make a new document for each new homework you get,
@@ -54,7 +54,7 @@ In this section we will show you how to install everything that is necessary to 
 
 * When your cursor is in IntelliJ and you have just compiled a document,
   you can look up which line in the pdf corresponds to the line your
-  cursor is at by going in IntelliJ to menu:Tools[LaTeX > Forward Search], or using the
+  cursor is at by going in IntelliJ to <ui-path>Tools | LaTeX | Forward Search</ui-path>, or using the
   shortcut which is listed there. If you use SumatraPDF, this shortcut can also be used to bring
   the SumatraPDF window in view when you do not see it.
 * You can also do the reverse: if you have the pdf open inside IntelliJ, you can hold Ctrl and click in the document to bring your cursor to the LaTeX source. Make sure you have compiled the document first.
@@ -129,13 +129,13 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
 
 #### Starting with IntelliJ
 
-* Open IntelliJ, in the welcome menu choose menu:Configure[Plugins] (or when
-  you already have a project open, use menu:File[Settings > Plugins]).
+* Open IntelliJ, in the welcome menu choose <ui-path>Configure | Plugins</ui-path> (or when
+  you already have a project open, use <ui-path>File | Settings | Plugins</ui-path>).
 * Click on Marketplace and search for `texify`, then click
   `install`.
 * Also install the PDF Viewer plugin to view the pdf within IntelliJ.
 * If you had to install LaTeX, log out and log back in.
-* Click on Create New Project (in the welcome menu) or menu:File[New > Project],
+* Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
   select LaTeX in the left column and click next. Specify a name for your
   project, and a location. A project can contain multiple LaTeX files and documents, so
   for example if you make a new document for each new homework you get,
@@ -160,7 +160,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
 
 * When your cursor is in IntelliJ and you have just compiled a document,
   you can look up which line in the pdf corresponds to the line your
-  cursor is at by going in IntelliJ to menu:Tools[LaTeX > Forward Search], or using the shortcut
+  cursor is at by going in IntelliJ to <ui-path>Tools | LaTeX | Forward Search</ui-path>, or using the shortcut
   which is listed there. If you use Evince, this shortcut can also be used to bring the
   Evince window in view when you do not see it.
 * You can also do the reverse: press Ctrl and click in a pdf (either in Evince or in IntelliJ)
@@ -179,13 +179,13 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
 * Download and install [https://miktex.org/howto/install-miktex-mac[LaTeX](https://miktex.org/howto/install-miktex-mac[LaTeX)
   for Mac]. It’s less error-prone if you install MiKTeX `system-wide`. During installation, choose the option
   `Install missing packages on the fly: yes`.
-* Open IntelliJ, in the welcome menu choose menu:Configure[Plugins] (or when
-  you already have a project open, use menu:File[Settings > Plugins]).
+* Open IntelliJ, in the welcome menu choose <ui-path>Configure | Plugins</ui-path> (or when
+  you already have a project open, use <ui-path>File | Settings | Plugins</ui-path>).
 * Click on Marketplace and search for `texify`, then click
   `install`.
 * Install the PDF Viewer plugin as well to view the pdf inside IntelliJ.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
-* Click on Create New Project (in the welcome menu) or menu:File[New > Project],
+* Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
   select LaTeX in the left column and click next. Specify a name for your
   project, and a location. A project can contain multiple LaTeX files, so
   for example if you make a new document for each new homework you get,
@@ -211,7 +211,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
 * You never have to remember to save your work, IntelliJ will
   automatically save every letter you type.
 * You can personalise the template that is used when you create a new
-  LaTeX file in menu:Settings > Editor > File and code templates > LaTeX
+  LaTeX file in <ui-path>Settings > Editor | File and code templates | LaTeX
   source].
 * You don’t need to close the pdf to recompile, it will automatically
   refresh.
@@ -222,7 +222,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
   indicate that something is wrong. Hovering over it gives extra
   information. In some cases, a ready-made fix is waiting to be applied:
   hit the lightbulb that appears on the left, or hit Alt+Enter to view and
-  apply it. A quick overview of useful shortcuts is on the [Shortcuts](Shortcuts) page.
+  apply it. A quick overview of useful shortcuts is on the  | Shortcuts</ui-path>(Shortcuts) page.
 * If your LaTeX indentation (the number of spaces that is in front of
   each line) looks messy, reformat with kbd:[Ctrl+Alt+L].
 * This wiki contains documentation about many features, you can browse around the [Features](Features) page.
@@ -250,7 +250,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
   click `next` everywhere.
 * Restart your computer.
 * Make sure you have a GitHub account, and create a new repository.
-* Go to IntelliJ and click menu:File[New > Project from VCS > GitHub] and select the repository you created.
+* Go to IntelliJ and click <ui-path>File | New | Project from VCS | GitHub</ui-path> and select the repository you created.
 * If you are asked by IntelliJ `Do you want to add this file to git?`,
   just click `no` when you do not recognize the file, and `yes` when you recognise it as a source file (`.tex` for example).
 
@@ -279,6 +279,6 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 ### Installing a specific version.
 
 * Go to [https://plugins.jetbrains.com/plugin/9473-texify-idea/versions](https://plugins.jetbrains.com/plugin/9473-texify-idea/versions) and download the version you want
-* Go to menu:Settings[Plugins] and click the gear icon, click Install Plugin from Disk, select the zip file and install.
+* Go to <ui-path>Settings | Plugins</ui-path> and click the gear icon, click Install Plugin from Disk, select the zip file and install.
 
 For installing alpha versions, see [Alpha builds](Alpha-builds).

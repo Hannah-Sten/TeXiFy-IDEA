@@ -1,4 +1,4 @@
-These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy > Project Settings]
+These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy | Project Settings</ui-path>
 
 ## Option to change compiler for which to check compatibility
 __Since b0.6.7__
