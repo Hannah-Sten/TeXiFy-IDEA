@@ -4,11 +4,13 @@ switcher-label: Operating System
 
 # Installation guide
 
-## Installation instructions and getting started: installing IntelliJ, LaTeX and the TeXiFy-IDEA plugin
+
+> Before reading this page, select your operating system in the menu at the top right of this page.
+{style="Warning"}
+
+## Installing IntelliJ, LaTeX and the TeXiFy-IDEA plugin
 
 In this section we will show you how to install everything that is necessary to get started with TeXiFy, as well as give a few pointers to get started with LaTeX.
-
-
 
 ### Installation instructions for Windows {switcher-key="Windows"}
 
@@ -62,7 +64,7 @@ In this section we will show you how to install everything that is necessary to 
   go to the correct location in IntelliJ.
 * Have a look at the [tips](#tips).
 
-### [[linux-instructions]] Installation instructions for linux {switcher-key="Linux"}
+### Installation instructions for linux {switcher-key="Linux"}
 
 These instructions were tested on at least Ubuntu 16.04, 18.04, Fedora
 and Arch Linux.
