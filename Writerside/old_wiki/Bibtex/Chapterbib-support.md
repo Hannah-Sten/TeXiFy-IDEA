@@ -3,7 +3,7 @@ _Since b0.6.9_
 chapterbib is a package which allows you to have a separate bibliography per chapter.
 This means you have in your main file `\include` commands to include chapters, and each chapter file includes its own bibliography (this can be different per chapter).
 TeXiFy will recognise this and automatically create the necessary BibTeX run configurations for each chapter, and run them.
-For more information, see https://ctan.org/pkg/chapterbib?lang=en
+For more information, see [https://ctan.org/pkg/chapterbib?lang=en](https://ctan.org/pkg/chapterbib?lang=en)
 
 Example:
 

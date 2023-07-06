@@ -70,7 +70,7 @@ For example, to include your custom command `\newcommand{\letters}{\alpha \beta 
 ## Using the preview on macOS
 
 TeXiFy seems to have problems with running pdflatex, as commented at [#25](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/25#issuecomment-314573002) this might have to do with PATH problems.
-The comment links to http://depressiverobot.com/2016/02/05/intellij-path.html which has a couple of workarounds, for example using `open -a "IntelliJ IDEA CE"` or `open -a pycharm`. There is also a more permanent workaround.
+The comment links to [http://depressiverobot.com/2016/02/05/intellij-path.html](http://depressiverobot.com/2016/02/05/intellij-path.html) which has a couple of workarounds, for example using `open -a "IntelliJ IDEA CE"` or `open -a pycharm`. There is also a more permanent workaround.
 If you use the Jetbrains Toolbox, you can find the path in the Toolbox under menu:Settings[Tools].
 
 If you do know how we could fix this on the plugin side, please let us know.

@@ -160,14 +160,14 @@ $previewCode
 
 ## Error running 'main': Cannot run program "pdflatex"
 
-Make sure you have followed all the installation instructions at https://github.com/Ruben-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin
+Make sure you have followed all the installation instructions at [https://github.com/Ruben-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin](https://github.com/Ruben-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin)
 
 1. Check if `pdflatex` is properly installed by running in a terminal or command prompt `pdflatex -v`. Probably this is not the case. If it is the case, then for some reason pdflatex cannot run. Test this with `pdflatex small2e` in a location where you have write access.
 2. Check if `pdflatex` is installed: if you have MikTeX start the MikTeX console and check that the `pdftex` package is installed. If you have TeX Live, check with `tlmgr install pdftex`.
 3. If so, make sure you have logged in and out to complete the installation of LaTeX, and especially with TeX Live make sure that TeX Live is added to your PATH.
 4. Make sure you did install MikTeX or TeX Live _for your user only_, so not for all users. If not, uninstall, install the right way and reboot.
 5. If you are on Windows or Mac and installing MikTeX, you can also try installing TeX Live instead.
-6. Ask on https://tex.stackexchange.com, providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
+6. Ask on [https://tex.stackexchange.com,](https://tex.stackexchange.com,) providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
 
 ## What should my document structure look like?
 
@@ -264,7 +264,7 @@ You can define a live template via menu:File[Settings > Editor > Live Templates]
 ```
 
 Set the template to be applicable in LaTeX files.
-Also see https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates
+Also see [https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates)
 
 ![Screenshot of live template UI](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/marco.png)
 

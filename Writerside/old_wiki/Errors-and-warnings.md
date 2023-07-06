@@ -2162,7 +2162,7 @@ Test file:
 }
 ```
 
-The following errors and warnings were extracted from bibtex.web, availabe for example at http://tug.org/svn/texlive/trunk/Build/source/texk/web2c/bibtex.web?view=markup
+The following errors and warnings were extracted from bibtex.web, availabe for example at [http://tug.org/svn/texlive/trunk/Build/source/texk/web2c/bibtex.web?view=markup](http://tug.org/svn/texlive/trunk/Build/source/texk/web2c/bibtex.web?view=markup)
 
 ## Errors
 

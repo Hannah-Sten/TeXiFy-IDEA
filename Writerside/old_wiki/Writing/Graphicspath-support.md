@@ -21,4 +21,4 @@ You also need to use forward slashes on Windows.
 
 You can include multiple search paths by continuing the list, like `\includegraphics{{/path1/}{../path2/}}`.
 
-For more information, see the documentation linked at https://ctan.org/pkg/graphicx
+For more information, see the documentation linked at [https://ctan.org/pkg/graphicx](https://ctan.org/pkg/graphicx)

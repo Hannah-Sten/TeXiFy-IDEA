@@ -3,7 +3,7 @@ When you want to use references in your LaTeX, you should use BibTeX.
 First, you have to decide which package and compiler you are going to use.
 There are many different ways to do this, but we will compare two of the most used ways.
 
-Before starting, make sure you have TeXiFy and LaTeX installed according to https://github.com/Hannah-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin
+Before starting, make sure you have TeXiFy and LaTeX installed according to [https://github.com/Hannah-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin](https://github.com/Hannah-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin)
 
 ## Terminology
 
@@ -13,7 +13,7 @@ To avoid confusion, we first name some relevant parts.
 * You can use LaTeX packages to help you typesetting your bibliography in the way you want, an example is biblatex.
 * You also have to compile your `.bib` file using a special _bibtex compiler_. The most common ones are the biber compiler and the (confusingly named) bibtex compiler.
 
-For more information about these differences and more examples, see for example https://tex.stackexchange.com/questions/25701/bibtex-vs-biber-and-biblatex-vs-natbib
+For more information about these differences and more examples, see for example [https://tex.stackexchange.com/questions/25701/bibtex-vs-biber-and-biblatex-vs-natbib](https://tex.stackexchange.com/questions/25701/bibtex-vs-biber-and-biblatex-vs-natbib)
 
 ## Choosing your way of using bibtex
 
@@ -47,7 +47,7 @@ TeXiFy will try to detect this, and automatically compile with the right compile
 }
 ```
 
-For a downloadable example, see https://github.com/PHPirates/bibtex-mwe
+For a downloadable example, see [https://github.com/PHPirates/bibtex-mwe](https://github.com/PHPirates/bibtex-mwe)
 
 ### Using the biber compiler and the biblatex package
 
@@ -88,7 +88,7 @@ An example of using the biblatex package:
 }
 ```
 
-For a downloadable example, see https://github.com/PHPirates/biber-biblatex-mwe
+For a downloadable example, see [https://github.com/PHPirates/biber-biblatex-mwe](https://github.com/PHPirates/biber-biblatex-mwe)
 
 ## Compiling
 

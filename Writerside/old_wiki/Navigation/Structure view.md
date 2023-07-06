@@ -9,4 +9,4 @@ Note that to use `\chapter` in your document you need to use `\documentclass{boo
 
 When using `\newcommand` or variants, we recommend to use braces like `\newcommand{\mycommand}{42}` so it will appear correctly in the structure view.
 
-For more information about the structure view, see https://www.jetbrains.com/help/idea/structure-tool-window-file-structure-popup.html
+For more information about the structure view, see [https://www.jetbrains.com/help/idea/structure-tool-window-file-structure-popup.html](https://www.jetbrains.com/help/idea/structure-tool-window-file-structure-popup.html)

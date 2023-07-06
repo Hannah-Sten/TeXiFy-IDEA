@@ -127,7 +127,7 @@ This also works for nested quotes, typing `"nested "quotes""` results in `\enquo
 Note that instead of typing the closing `'` or `"` you could also type the closing `}` and IntelliJ will skip over it like usual.
 Whenever the next character is not a closing brace, we assume you want opening quotes and insert the `\enquote` command.
 
-For more advantages, see https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f
+For more advantages, see [https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f](https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f)
 
 ## Option to select default PDF viewer
 _Since b0.6.7_

@@ -1,6 +1,6 @@
 On Windows, TeXiFy supports SumatraPDF as a pdf viewer with forward and inverse search.
 
-It can be downloaded from https://www.sumatrapdfreader.org/download-free-pdf-viewer.html.
+It can be downloaded from [https://www.sumatrapdfreader.org/download-free-pdf-viewer.html](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html).
 If you know you are on a 64-bit system you can download the 64-bit build installer. If you have no idea, download the normal installer which is the top-most link.
 
 ## Shortcuts
@@ -32,4 +32,4 @@ When you run the run configuration, SumatraPDF should open.
 Note that to use forward and inverse search, the folder containing `SumatraPDF.exe` should be added to your PATH, or the registry key `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\SumatraPDF.exe` should be set to the path to `SumatraPDF.exe`.
 
 ## "No synchronization info at this position" or "Synchronization file cannot be opened"
-After compiling your file and after SumatraPDF opens up, if you get errors in SumatraPDF such as "No synchronization info at this position" or "Synchronization file cannot be opened", it might be an issue with SumatraPDF itself (see here : https://github.com/sumatrapdfreader/sumatrapdf/discussions/2741, https://github.com/sumatrapdfreader/sumatrapdf/issues/2642). The issue doesn’t seem to appear when closing the file in SumatraPDF, and then opening it without compiling. The issue seems to appear only after a compilation. A fix that seems to work is to install the portable version of SumatraPDF. Don’t forget to add "SumatraPDF.exe" to your PATH variables or in the registry editor (see above in Portable SumatraPDF section).
+After compiling your file and after SumatraPDF opens up, if you get errors in SumatraPDF such as "No synchronization info at this position" or "Synchronization file cannot be opened", it might be an issue with SumatraPDF itself (see here : [https://github.com/sumatrapdfreader/sumatrapdf/discussions/2741,](https://github.com/sumatrapdfreader/sumatrapdf/discussions/2741,) https://github.com/sumatrapdfreader/sumatrapdf/issues/2642). The issue doesn’t seem to appear when closing the file in SumatraPDF, and then opening it without compiling. The issue seems to appear only after a compilation. A fix that seems to work is to install the portable version of SumatraPDF. Don’t forget to add "SumatraPDF.exe" to your PATH variables or in the registry editor (see above in Portable SumatraPDF section).

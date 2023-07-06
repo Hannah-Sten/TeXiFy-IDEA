@@ -33,6 +33,6 @@ Note that MiKTeX can be installed for the user only or as admin, both of which a
 
 Tectonic is a bit of a special case, because while it uses TeX Live as source for all the packages, it has automatic package download implemented and uses a local cache in its own format.
 That means TeXiFy can find these files, but because dtx files are not downloaded (only sty files) the autocompletion will be limited.
-This is also the reason that you have to select the path containing the cached files as SDK home directory, see https://github.com/tectonic-typesetting/tectonic/issues/159.
+This is also the reason that you have to select the path containing the cached files as SDK home directory, see [https://github.com/tectonic-typesetting/tectonic/issues/159](https://github.com/tectonic-typesetting/tectonic/issues/159).
 
 For the MiKTeX Docker image you can select the image name in the settings, but currently it still only works with MiKTeX images.

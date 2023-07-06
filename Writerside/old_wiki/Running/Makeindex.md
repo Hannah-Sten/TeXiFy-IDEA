@@ -36,7 +36,7 @@ TeXiFy also supports using xindy (instead of makeindex) and a custom index name,
 \end{document}
 ```
 
-See the imakeidx documentation at https://ctan.org/pkg/imakeidx for more details.
+See the imakeidx documentation at [https://ctan.org/pkg/imakeidx](https://ctan.org/pkg/imakeidx) for more details.
 Note that in order to use xindy to need to install Perl.
 
 ## Input index file filename.idx not found.

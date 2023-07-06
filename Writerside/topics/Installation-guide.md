@@ -176,7 +176,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so
   you can manage projects and editors easily (Jetbrains has editors for
   more programming languages as well).
-* Download and install https://miktex.org/howto/install-miktex-mac[LaTeX
+* Download and install [https://miktex.org/howto/install-miktex-mac[LaTeX](https://miktex.org/howto/install-miktex-mac[LaTeX)
   for Mac]. It’s less error-prone if you install MiKTeX `system-wide`. During installation, choose the option
   `Install missing packages on the fly: yes`.
 * Open IntelliJ, in the welcome menu choose menu:Configure[Plugins] (or when
@@ -232,7 +232,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
   command will be listed on the right.
   In LaTeX projects you should have a Detexify tool window on the right.
 * If you want a proper explanation of what LaTeX and its philosophy is
-  about, read the http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf[Not
+  about, read the [http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf[Not](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf[Not)
   So Short Introduction To LaTeX2e].
 
 Any suggestions for improvements of the installation instructions, however small? Please feel free to edit this wiki page, or let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
@@ -278,7 +278,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 
 ### Installing a specific version.
 
-* Go to https://plugins.jetbrains.com/plugin/9473-texify-idea/versions and download the version you want
+* Go to [https://plugins.jetbrains.com/plugin/9473-texify-idea/versions](https://plugins.jetbrains.com/plugin/9473-texify-idea/versions) and download the version you want
 * Go to menu:Settings[Plugins] and click the gear icon, click Install Plugin from Disk, select the zip file and install.
 
 For installing alpha versions, see [Alpha builds](Alpha-builds).

@@ -134,7 +134,7 @@ docker run -it --rm -p 8000:80 -v $(pwd)/report:/usr/share/nginx/html nginx
 
 ### bad class file: class file has wrong version 55.0, should be 52.0
 
-The IntelliJ SDK [requires Java 11](https://blog.jetbrains.com/platform/2020/09/intellij-project-migrates-to-java-11/), see https://stackoverflow.com/a/59783851/4126843.
+The IntelliJ SDK [requires Java 11](https://blog.jetbrains.com/platform/2020/09/intellij-project-migrates-to-java-11/), see [https://stackoverflow.com/a/59783851/4126843](https://stackoverflow.com/a/59783851/4126843).
 
 ### Execution failed for task ':runIde'.	Process 'command java.exe' finished with non-zero exit value 1
 
@@ -167,10 +167,10 @@ This probably means your Gradle cache is corrupt, delete (on Windows) `C:\Users\
 
 Because the official [miktex/miktex](https://hub.docker.com/r/miktex/miktex) is at the moment rather out of date, we provide an updated version.
 It can be updated as follows.
-* Clone the source repo https://github.com/MiKTeX/docker-miktex
+* Clone the source repo [https://github.com/MiKTeX/docker-miktex](https://github.com/MiKTeX/docker-miktex)
 * Create a Docker run config with image tag `docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest` and run it. You might want to add `--no-cache --pull` build options.
-* Make sure that there is a valid Docker Registry for GitHub in Settings > Build, ..., > Docker > Registry, use a Docker V2 registry, point it to `ghcr.io` and as a password provide a PAT (see https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry).
-* Right-click the image and click Push, provide as repository `hannah-sten/texify-idea/miktex` and tag `latest`. If it doesn’t work, follow https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry
+* Make sure that there is a valid Docker Registry for GitHub in Settings > Build, ..., > Docker > Registry, use a Docker V2 registry, point it to `ghcr.io` and as a password provide a PAT (see [https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry](https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry)).
+* Right-click the image and click Push, provide as repository `hannah-sten/texify-idea/miktex` and tag `latest`. If it doesn’t work, follow [https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry)
 
 ## Debugging the intellij-pdf-viewer plugin with TeXiFy
 

@@ -12,7 +12,7 @@ For example in the case of `\re|f{mylabel}` where `|` denotes the cursor, then i
 ## Peek definition
 
 For the elements for which Go To Declaration is implemented, you also have a Peek Definition, by default kbd:[Ctrl + Shift + I].
-For more information, see https://www.jetbrains.com/help/idea/viewing-reference-information.html#
+For more information, see [https://www.jetbrains.com/help/idea/viewing-reference-information.html#](https://www.jetbrains.com/help/idea/viewing-reference-information.html#)
 
 ![peek-definition](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/peek-definition.png)
 

@@ -4,7 +4,7 @@
 
 If you are experiencing UI freezes, IntelliJ will generate a thread dump, please upload this file as well.
 
-For any performance issue: if you do not have a favourite profiler yet, you can use VisualVM. Install it using your package manager or go to https://visualvm.github.io/.
+For any performance issue: if you do not have a favourite profiler yet, you can use VisualVM. Install it using your package manager or go to [https://visualvm.github.io](https://visualvm.github.io)
 
 * First, just run TeXiFy like usual.
 * Start VisualVM.

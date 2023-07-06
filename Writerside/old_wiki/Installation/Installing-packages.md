@@ -5,7 +5,7 @@ If unsure, check https://ctan.org/pkg/packagename which package you have to inst
 
 ## Installing a package when you have the MiKTeX distribution
 
-* Open the MiKTeX console, click Packages and search for the right package to install it. For more information, see https://miktex.org/howto/miktex-console
+* Open the MiKTeX console, click Packages and search for the right package to install it. For more information, see [https://miktex.org/howto/miktex-console](https://miktex.org/howto/miktex-console)
 
 ## Installing a package when you have the TeX Live distribution
 

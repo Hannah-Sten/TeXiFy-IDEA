@@ -4,7 +4,7 @@ In the [Run configuration settings](Run-configurations#_choose_latex_distributio
 
 ## Setup
 
-* Install WSL, see for example https://docs.microsoft.com/en-us/windows/wsl/install-win10
+* Install WSL, see for example [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 * Install TeX Live as usual, see for example [TeX Live installation](Installation).
 * Add `export PATH="/path/to/texlive/yyyy/bin/x86_64-linux:$PATH"` to your `~/.bashrc`.
 

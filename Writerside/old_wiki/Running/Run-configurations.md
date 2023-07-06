@@ -1,6 +1,6 @@
 ## About run configurations
 
-See https://www.jetbrains.com/help/idea/creating-and-editing-run-debug-configurations.html
+See [https://www.jetbrains.com/help/idea/creating-and-editing-run-debug-configurations.html](https://www.jetbrains.com/help/idea/creating-and-editing-run-debug-configurations.html)
 
 To run all run configurations in the project, you can use the `Build Project` button next to the run configurations dropdown.
 
@@ -21,7 +21,7 @@ When changing this template, only new run configurations created in that project
 
 Open the Run/Debug Configurations by clicking on the dropdown at the top and selecting Edit Configurations.
 Then go to Templates, select LaTeX and edit it.
-For more information, see https://www.jetbrains.com/help/idea/changing-default-run-debug-configurations.html
+For more information, see [https://www.jetbrains.com/help/idea/changing-default-run-debug-configurations.html](https://www.jetbrains.com/help/idea/changing-default-run-debug-configurations.html)
 
 ### Changing the run configuration template for new projects
 
@@ -43,7 +43,7 @@ Select a path to a LaTeX compiler.
 
 Extra arguments to pass to the compiler.
 It depends on the compiler which ones are there by default.
-For more info, check the implementation at https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/src/nl/hannahsten/texifyidea/run/compiler/LatexCompiler.kt
+For more info, check the implementation at [https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/src/nl/hannahsten/texifyidea/run/compiler/LatexCompiler.kt](https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/src/nl/hannahsten/texifyidea/run/compiler/LatexCompiler.kt)
 
 ### Environment variables
 
@@ -51,7 +51,7 @@ You can pass environment variables to the command that is run to compile the LaT
 There is an option to include system variables.
 You can use for example the `TEXINPUTS` environment variable to include LaTeX files in a different directory anywhere on your system.
 For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and TeXiFy) will search in any subdirectory of `/path/to/directory` for the file to be included, and `:` means to include the standard content of `TEXINPUTS`. For Windows, it is similar: `TEXINPUTS=C:...\path\to\directory\\;` (note the semicolon).
-For more information about paths resolving, see https://www.tug.org/texinfohtml/kpathsea.html#Path-searching
+For more information about paths resolving, see [https://www.tug.org/texinfohtml/kpathsea.html#Path-searching](https://www.tug.org/texinfohtml/kpathsea.html#Path-searching)
 
 ### Custom SumatraPDF path
 
@@ -120,4 +120,4 @@ They will be run appropriately inbetween LaTeX runs.
 ### Other tasks to run before the run configuration, including other run configurations or external tools
 
 Use this to run anything before the run configuration.
-See https://www.jetbrains.com/help/idea/run-debug-configurations-dialog.html#before-launch-options
+See [https://www.jetbrains.com/help/idea/run-debug-configurations-dialog.html#before-launch-options](https://www.jetbrains.com/help/idea/run-debug-configurations-dialog.html#before-launch-options)
