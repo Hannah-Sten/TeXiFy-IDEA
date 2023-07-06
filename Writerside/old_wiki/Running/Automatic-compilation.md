@@ -21,7 +21,7 @@ Currently the automatic compilation is only triggered when you type in a documen
 You can enable this in TeXiFy settings.
 When enabled, auto compilation will only run when the file is actually saved to disk, instead of after every change.
 To configure when a file is saved to disk (for example after a certain idle time), go to menu:Settings[Appearance > System Settings].
-Also see https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html
+Also see [https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html](https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html)
 
 ## Automatic compilation support by compilers
 

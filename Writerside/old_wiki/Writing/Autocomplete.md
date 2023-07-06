@@ -6,7 +6,7 @@ This includes for example commands you defined with the `xparse` package.
 
 ## Autocompletion for all words
 
-If you are looking for a 'dumb' autocompletion mode to autocomplete on any word in the file/project, you can use Hippie completion: https://www.jetbrains.com/go/guide/tips/cyclic-expand-word/ and https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion
+If you are looking for a 'dumb' autocompletion mode to autocomplete on any word in the file/project, you can use Hippie completion: [https://www.jetbrains.com/go/guide/tips/cyclic-expand-word/](https://www.jetbrains.com/go/guide/tips/cyclic-expand-word/) and [https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion](https://www.jetbrains.com/help/idea/auto-completing-code.html#hippie_completion)
 
 ## GitHub Copilot
 

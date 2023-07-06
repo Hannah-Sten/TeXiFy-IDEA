@@ -24,7 +24,7 @@ The syntax `% !TeX parser = off` is also supported.
 ## Custom folding regions
 
 You can use either `%! region My description` and `%! endregion` or NetBeans-style `%! <editor-fold desc="My Description">` and `%! <editor-fold>` magic comments to specify custom folding regions.
-For more information, see https://blog.jetbrains.com/idea/2012/03/custom-code-folding-regions-in-intellij-idea-111/ and https://www.jetbrains.com/help/idea/code-folding-settings.html
+For more information, see [https://blog.jetbrains.com/idea/2012/03/custom-code-folding-regions-in-intellij-idea-111/](https://blog.jetbrains.com/idea/2012/03/custom-code-folding-regions-in-intellij-idea-111/) and [https://www.jetbrains.com/help/idea/code-folding-settings.html](https://www.jetbrains.com/help/idea/code-folding-settings.html)
 
 ## Fake sections
 
@@ -33,4 +33,4 @@ Here, `section` can be one of `part`, `chapter`, `section`, `subsection`, `subsu
 Fake sections can also have a title, so `%! fake subsection Introduction part 1` is valid.
 
 Note: if you feel you need to fold code because the file is too big or you lose overview, you probably should split it up into smaller files.
-See https://blog.codinghorror.com/the-problem-with-code-folding/
+See [https://blog.codinghorror.com/the-problem-with-code-folding/](https://blog.codinghorror.com/the-problem-with-code-folding/)

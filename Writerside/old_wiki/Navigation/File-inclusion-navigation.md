@@ -16,7 +16,7 @@ For example, if you have `main.tex` which contains `\subimport{chapters/}{chapte
 Without the import package, you would need to write `\input{chapters/included.tex}` for the include to work.
 
 The package also has the `\import` command for absolute instead of relative paths.
-For more information, see http://mirrors.ctan.org/macros/latex/contrib/import/import.pdf
+For more information, see [http://mirrors.ctan.org/macros/latex/contrib/import/import.pdf](http://mirrors.ctan.org/macros/latex/contrib/import/import.pdf)
 
 ## Referencing files in bibtex
 

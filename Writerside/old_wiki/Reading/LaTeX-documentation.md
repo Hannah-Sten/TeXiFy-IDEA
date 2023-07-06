@@ -17,4 +17,4 @@ Note that you can also use the shortcut kbd:[Ctrl + Q] during autocompletion of 
 When you have set up a [LaTeX SDK](Latex-Sdk), in most cases you will have all commands and environments from all installed LaTeX packages in the autocompletion (see [Autocomplete](Autocomplete#command-completion)).
 In a lot of cases, this includes some documentation for each command and environment.
 However, this relies on package authors respecting the LaTeX conventions (using the doc package) whether the documentation is actually useful.
-If you find something incorrect, please let us know and then we can determine whether something needs to be improved in the LaTeX package or in TeXiFy (example bug report: https://gitlab.com/axelsommerfeldt/caption/-/issues/114).
+If you find something incorrect, please let us know and then we can determine whether something needs to be improved in the LaTeX package or in TeXiFy (example bug report: [https://gitlab.com/axelsommerfeldt/caption/-/issues/114](https://gitlab.com/axelsommerfeldt/caption/-/issues/114)).

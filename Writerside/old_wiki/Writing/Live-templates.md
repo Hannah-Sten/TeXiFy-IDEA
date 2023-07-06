@@ -14,4 +14,4 @@ You can find these live templates, as well as add your own, under menu:File[Sett
 
 ![live-template-settings](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/live-template-settings.png)
 
-For more information, see https://www.jetbrains.com/help/idea/creating-and-editing-live-templates.html
+For more information, see [https://www.jetbrains.com/help/idea/creating-and-editing-live-templates.html](https://www.jetbrains.com/help/idea/creating-and-editing-live-templates.html)

@@ -2,7 +2,7 @@ Note that all shortcuts are customizable, you can change them in menu:File[Setti
 
 ## General IntelliJ shortcuts
 
-See https://www.jetbrains.com/help/idea/mastering-keyboard-shortcuts.html for more information.
+See [https://www.jetbrains.com/help/idea/mastering-keyboard-shortcuts.html](https://www.jetbrains.com/help/idea/mastering-keyboard-shortcuts.html) for more information.
 
 Some useful shortcuts are for example:
 

@@ -7,4 +7,4 @@ Which elements are folded by default can be configured in menu:File[Settings > E
 
 ![folding](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/folding.png)
 
-For more information, see https://www.jetbrains.com/help/rider/Code_Folding.html
+For more information, see [https://www.jetbrains.com/help/rider/Code_Folding.html](https://www.jetbrains.com/help/rider/Code_Folding.html)

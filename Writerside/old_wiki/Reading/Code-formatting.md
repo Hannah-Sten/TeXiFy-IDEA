@@ -130,4 +130,4 @@ Installation: `npm install -g bibtex-tidy`
 At the moment of writing, version 1.7.2 is not yet published to npm, but this verion adds a feature which allows TeXiFy to get the output from stdout, which allows for better user feedback because IntelliJ will not have to ask you whether you want to load file changes from disk.
 You can install the new version locally by cloning the repo, optionally change the version number, run the npm `build` task and then run `npm link`.
 
-See https://github.com/FlamingTempura/bibtex-tidy for more information.
+See [https://github.com/FlamingTempura/bibtex-tidy](https://github.com/FlamingTempura/bibtex-tidy) for more information.

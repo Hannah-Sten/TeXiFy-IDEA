@@ -50,7 +50,7 @@ Another example, tested with XeLaTeX:
 In some cases, there is a plain LaTeX equivalent available.
 This will change for example `ö` into `\"o`.
 
-Note that since TeX Live 2018 this is unnecessary: UTF-8 is assumed as the default input encoding (source: https://tex.stackexchange.com/a/370280/98850).
+Note that since TeX Live 2018 this is unnecessary: UTF-8 is assumed as the default input encoding (source: [https://tex.stackexchange.com/a/370280/98850](https://tex.stackexchange.com/a/370280/98850)).
 
 #### Include Unicode support packages
 
@@ -63,7 +63,7 @@ This will load
 
 Note that since TeX Live 2018 loading `inputenc` does not solve anything: UTF-8 is assumed as the default input encoding (source: https://tex.stackexchange.com/a/370280/98850).
 
-Also note that in general it is better to use `\usepackage[T1]{fontenc}`, see https://tex.stackexchange.com/questions/664/why-should-i-use-usepackaget1fontenc
+Also note that in general it is better to use `\usepackage[T1]{fontenc}`, see [https://tex.stackexchange.com/questions/664/why-should-i-use-usepackaget1fontenc](https://tex.stackexchange.com/questions/664/why-should-i-use-usepackaget1fontenc)
 
 #### Change compiler compatibility
 
@@ -175,7 +175,7 @@ If you have multiple `\graphicspath` commands, only the last one that LaTeX find
 The `BIBINPUTS` environment variable cannot handle paths which start with `../`  in the `\bibliography` command, e.g. `\bibliography{../mybib}`.
 Solution: set the `BIBINPUTS` path to the parent and use `\bibliography{mybib}` instead (or use a "fake" subfolder and do `\bibliography{fake/../../mybib}`).
 This solution can be applied using the quickfix for this inspection.
-See https://tex.stackexchange.com/questions/406024/relative-paths-with-bibinputs
+See [https://tex.stackexchange.com/questions/406024/relative-paths-with-bibinputs](https://tex.stackexchange.com/questions/406024/relative-paths-with-bibinputs)
 
 [Edit March 2023] This issue might not exist anymore, perhaps it has been fixed in bibtex, so the inspection is disabled.
 

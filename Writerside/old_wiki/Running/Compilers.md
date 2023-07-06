@@ -46,7 +46,7 @@ LuaLaTeX has the advantage that you can use Lua (a programming language) in your
 
 ### Latexmk
 
-See https://mg.readthedocs.io/latexmk.html for installation and more information.
+See [https://mg.readthedocs.io/latexmk.html](https://mg.readthedocs.io/latexmk.html) for installation and more information.
 With TeX Live, install with `tlmgr install latexmk`.
 With Latexmk the project is compiled just as much times as needed and handles BibTeX/Biber.
 It uses pdflatex by default, but you can use an other compiler as well.
@@ -82,17 +82,17 @@ The purpose of texliveonfly is to install TeX Live packages automatically during
 So it is only relevant if you have TeX Live, and if you do not have a full install with all the packages already installed.
 You can use texliveonfly with any other LaTeX compiler.
 
-For more info have a look at https://tex.stackexchange.com/a/463842/98850
+For more info have a look at [https://tex.stackexchange.com/a/463842/98850](https://tex.stackexchange.com/a/463842/98850)
 
 ### Tectonic
 _Since b0.6.6_
 
-See https://tectonic-typesetting.github.io/en-US/ for installation and more info.
+See [https://tectonic-typesetting.github.io/en-US/](https://tectonic-typesetting.github.io/en-US/) for installation and more info.
 Tectonic has the advantage that it downloads packages automatically, compiles just as much times as needed and handles BibTeX, but it often only works for not too complicated LaTeX documents.
 
 It also has automatic compilation using `tectonic -X watch`.
 
-The documentation can be found at https://tectonic-typesetting.github.io/book/latest/
+The documentation can be found at [https://tectonic-typesetting.github.io/book/latest/](https://tectonic-typesetting.github.io/book/latest/)
 
 ## BibTeX compilers
 
