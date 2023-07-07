@@ -28,25 +28,25 @@ We assume that git, IntelliJ, java and LaTeX are installed. If not, follow the n
 * Thank Gradle that you’re done now!
 * Check that in <ui-path>Settings | Build, Execution, Deployment | Compiler | Kotlin Compiler</ui-path> the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
 * Check that in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path> it is set to the required java version as specified at [https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions](https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions)
-* Test it worked by executing the 'buildPlugin' task in [Gradle > Tasks > intellij], or hit double control and run `gradle buildPLugin`
+* Test it worked by executing the 'buildPlugin' task in <ui-path>Gradle | Tasks | intellij</ui-path>, or hit double control and run `gradle buildPLugin`
 * You can ignore deprecation warnings in the build output.
 * If something doesn’t work, have a look at the [Troubleshooting](#Troubleshooting-build) section.
 
 #### To run directly from source
-* Click the Gradle button on the right, the gradle task is located in [Tasks > intellij > runIde]. Double-click to run.
+* Click the Gradle button on the right, the gradle task is located in <ui-path>Tasks | intellij | runIde</ui-path>. Double-click to run.
 * If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
 * Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
 * The first time it will look like you are installing a new IntelliJ - don’t worry, just click through it.
 * You can also debug against other IDEs. At the moment only PyCharm is set up, but it is easy to add others. You can use it by specifying the argument `-PusePycharm=true` in your runIde run configuration.
-* To make a new project but also to open existing `.tex` files, use [File > New > Project > LaTeX].
+* To make a new project but also to open existing `.tex` files, use <ui-path>File | New | Project | LaTeX</ui-path>.
 * Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
 
 #### To build a zip which contains the plugin
-* Click the Gradle button on the right, the gradle task is located in [Tasks > intellij > buildPlugin]. Right-click and run. The zip will be in build/distributions.
-* Install the zip in IntelliJ using [Settings > Plugins > Install plugin from disk].
+* Click the Gradle button on the right, the gradle task is located in <ui-path>Tasks | intellij | buildPlugin</ui-path>. Right-click and run. The zip will be in build/distributions.
+* Install the zip in IntelliJ using <ui-path>Settings | Plugins | Install plugin from disk</ui-path>.
 
 #### To run tests
-* Click the Gradle button on the right, the gradle task is located in [Tasks > verification > check]. Right-click and run. Note that check includes test so it will run the tests as well as ktlint.
+* Click the Gradle button on the right, the gradle task is located in <ui-path>Tasks | verification | check</ui-path>. Right-click and run. Note that check includes test so it will run the tests as well as ktlint.
 
 
 ## Adding an inspection
@@ -84,8 +84,8 @@ This can lead to strange behaviour (see e.g. [#1097](https://github.com/Hannah-S
 
 ## Helpful tools
 
-* [Tools > View PSI Structure]
-* [Tools > Internal Actions > UI > UI Inspector] to view information about any UI element
+* <ui-path>Tools | View PSI Structure</ui-path>
+* <ui-path>Tools | Internal Actions | UI | UI Inspector</ui-path> to view information about any UI element
 
 ## Adding code which uses classes from the java plugin
 
@@ -96,7 +96,7 @@ At the moment, it does not seem to be possible to debug in PyCharm because to bu
 
 ## Adding project templates
 
-If you use [Tools > Save as project template] then a zip will be created in `build/idea-sandbox/config/projectTemplates`.
+If you use <ui-path>Tools | Save as project template</ui-path> then a zip will be created in `build/idea-sandbox/config/projectTemplates`.
 Copy it to `resources/projectTemplates` and add an entry to `resources/META-INF/extensions/project-templates.xml`.
 
 ## Debugging plugin unload fail

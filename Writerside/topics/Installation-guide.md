@@ -5,7 +5,7 @@ switcher-label: Operating System
 # Installation guide
 
 
-> Before reading this page, select your operating system in the menu at the top right of this page.
+> Before reading this page, select your operating system in the menu at the top of this page.
 {style="Warning"}
 
 ## Installing IntelliJ, LaTeX and the TeXiFy-IDEA plugin
