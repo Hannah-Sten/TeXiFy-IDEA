@@ -6,7 +6,7 @@
         <projectService
                 serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsProjectSettingsManager"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language"
-                                 id="TexifyConfigurable"/>
+                                 id="TexifyConfigurable" displayName="TeXiFy"/>
         <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions"
                              instance="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable"/>
 
