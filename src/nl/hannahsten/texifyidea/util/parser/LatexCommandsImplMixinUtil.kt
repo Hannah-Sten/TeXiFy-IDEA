@@ -23,7 +23,7 @@ import kotlin.collections.set
 /**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
  *
- * Do not use this method directly, use command.references.filterIsInstance<InputFileReference>() instead.
+ * Use this instead of command.references.filterIsInstance<InputFileReference>(), to avoid resolving references of types that will not be needed.
  */
 fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     val inputFileReferences = mutableListOf<InputFileReference>()
