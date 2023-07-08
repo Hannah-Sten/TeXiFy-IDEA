@@ -20,7 +20,7 @@ import java.util.regex.Pattern
  */
 open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported: Boolean = true, open val commaSeparatesArguments: Boolean, vararg extensions: String) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
 
-    lateinit var supportedExtensions: Set<String>
+    lateinit var supportedExtensions: List<String>
     lateinit var defaultExtension: String
         private set
     private var pattern: Pattern? = null
@@ -38,7 +38,7 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
      * extensions, all files will match.
      */
     private fun setExtensions(vararg extensions: String) {
-        val supportedExtensions = mutableSetOf<String>()
+        val supportedExtensions = mutableListOf<String>()
         val regex = StringBuilder(".*")
         if (extensions.isEmpty()) {
             setRegex(regex.toString())

@@ -9,7 +9,7 @@ object FileMagic {
     /**
      * All file extensions of files that can be included (and where the included files contain language that needs to be considered).
      */
-    val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
+    val includeExtensions = listOf("tex", "sty", "cls", "bib")
 
     val automaticExtensions = mapOf(
         INCLUDE.cmd to LatexFileType.defaultExtension,
@@ -60,5 +60,5 @@ object FileMagic {
     /**
      * All extensions for graphic files.
      */
-    val graphicFileExtensions = setOf("eps", "pdf", "png", "jpeg", "jpg", "jbig2", "jp2")
+    val graphicFileExtensions = listOf<String>("pdf", "png", "jpg", "mps", "jpeg", "jbig2", "jb2", "PDF", "PNG", "JPG", "JPEG", "JBIG2", "JB2", "eps")
 }
