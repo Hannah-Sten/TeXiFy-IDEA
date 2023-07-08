@@ -18,8 +18,8 @@ import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.parser.inVerbatim
 import nl.hannahsten.texifyidea.util.orFalse
+import nl.hannahsten.texifyidea.util.parser.inVerbatim
 
 /**
  * @author Sten Wessel
@@ -85,6 +85,9 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             else if (c == '(') {
                 return insertRobustInlineMathClose(editor)
             }
+            else if (c == '{') {
+                return insertClosingEscapeBrace(editor)
+            }
         }
         return Result.CONTINUE
     }
@@ -132,6 +135,20 @@ class LatexTypedHandler : TypedHandlerDelegate() {
         if (tokenType === LatexTypes.INLINE_MATH_START) {
             // Only insert backslash because the closing parenthesis is already inserted by the PairedBraceMatcher.
             editor.document.insertString(editor.caretModel.offset, "\\")
+            return Result.STOP
+        }
+        return Result.CONTINUE
+    }
+
+    /**
+     * Upon typing `\{`, inserts the closing delimiter `\}`. Unlike the others, this isnt a token so we just have to check manually
+     */
+    private fun insertClosingEscapeBrace(editor: Editor): Result {
+        val offset = editor.caretModel.offset
+        if (offset > editor.document.textLength) return Result.CONTINUE
+        if (offset - 2 < 0) return Result.CONTINUE
+        if (editor.document.getText(TextRange.from(offset - 2, 2)) == "\\{") {
+            editor.document.insertString(editor.caretModel.offset, "\\}")
             return Result.STOP
         }
         return Result.CONTINUE

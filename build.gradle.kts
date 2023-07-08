@@ -9,7 +9,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.14.1"
+    id("org.jetbrains.intellij") version "1.14.2"
     kotlin("jvm") version ("1.8.0")
     kotlin("plugin.serialization") version ("1.8.0")
 
@@ -23,13 +23,13 @@ plugins {
     id("de.undercouch.download") version "5.4.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.1"
+    id("org.jetbrains.kotlinx.kover") version "0.7.2"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "8.2.1"
+    id("org.owasp.dependencycheck") version "8.3.1"
 
     id("org.jetbrains.changelog") version "2.1.0"
 
@@ -98,13 +98,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.1")
-    implementation("io.ktor:ktor-client-cio:2.3.1")
-    implementation("io.ktor:ktor-client-auth:2.3.1")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.1")
-    implementation("io.ktor:ktor-server-core:2.3.1")
-    implementation("io.ktor:ktor-server-jetty:2.3.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1")
+    implementation("io.ktor:ktor-client-core:2.3.2")
+    implementation("io.ktor:ktor-client-cio:2.3.2")
+    implementation("io.ktor:ktor-client-auth:2.3.2")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
+    implementation("io.ktor:ktor-server-core:2.3.2")
+    implementation("io.ktor:ktor-server-jetty:2.3.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-5")
@@ -116,6 +116,10 @@ dependencies {
         exclude("xml-apis", "xml-apis")
         exclude("xml-apis", "xml-apis-ext")
     }
+
+    implementation("io.arrow-kt:arrow-core:1.2.0-RC")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
+    implementation("io.arrow-kt:arrow-resilience:1.2.0-RC")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
@@ -255,6 +259,9 @@ tasks.test {
 
 ktlint {
     verbose.set(true)
+    filter {
+        exclude { it.file.path.contains("generated") }
+    }
 }
 
 tasks.jar {

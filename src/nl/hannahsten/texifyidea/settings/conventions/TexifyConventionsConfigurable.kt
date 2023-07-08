@@ -1,23 +1,35 @@
 package nl.hannahsten.texifyidea.settings.conventions
 
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.ui.DialogBuilder
+import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.AnActionButton
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.TableView
+import com.intellij.ui.util.preferredWidth
+import com.intellij.util.ui.AbstractTableCellEditor
+import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTable
 import javax.swing.table.DefaultTableCellRenderer
+import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
 /**
@@ -41,23 +53,16 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
      */
     private val unsavedSettings: TexifyConventionsSettings = TexifyConventionsSettings()
 
+    // used for the selector
+    private lateinit var labelCommandType: ComboBox<LabelConventionType>
     private lateinit var schemesPanel: TexifyConventionsSchemesPanel
     private lateinit var mainPanel: JPanel
     private lateinit var maxSectionSize: JBIntSpinner
     private lateinit var labelConventionsTable: TableView<LabelConvention>
 
-    private val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
-        override fun valueOf(item: LabelConvention): String = item.prefix!!
-        override fun getTooltipText(): String = "The prefix labels for the given Latex element should have"
-        override fun setValue(item: LabelConvention, value: String?) {
-            item.prefix = value ?: ""
-        }
-    }
-
-    private val nameColumnInfo =
-        object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Element") {
-            override fun valueOf(item: LabelConvention): LabelConvention = item
-            override fun isCellEditable(item: LabelConvention?): Boolean = false
+    private val typeColumnInfo =
+        object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Type") {
+            override fun valueOf(item: LabelConvention?): LabelConvention? = item
             override fun getColumnClass(): Class<*> = LabelConvention::class.java
             override fun getRenderer(item: LabelConvention?): TableCellRenderer {
                 return object : DefaultTableCellRenderer() {
@@ -70,7 +75,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                         column: Int
                     ): Component {
                         val convention = value as LabelConvention?
-                        super.getTableCellRendererComponent(table, convention?.name, selected, focus, row, column)
+                        super.getTableCellRendererComponent(table, convention?.type, selected, focus, row, column)
                         //noinspection unchecked
                         icon = if (value != null) {
                             when (value.type!!) {
@@ -86,7 +91,54 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                     }
                 }
             }
+
+            override fun setValue(item: LabelConvention?, value: LabelConvention?) {
+                if (item != null && value != null)
+                    item.type = value.type
+            }
+
+            override fun getEditor(o: LabelConvention?): TableCellEditor {
+                return object : AbstractTableCellEditor() {
+                    override fun getCellEditorValue(): Any {
+                        val labelType =
+                            (labelCommandType.selectedItem ?: LabelConventionType.ENVIRONMENT) as LabelConventionType
+                        return LabelConvention(false, labelType)
+                    }
+
+                    override fun getTableCellEditorComponent(
+                        table: JTable,
+                        value: Any,
+                        isSelected: Boolean,
+                        row: Int,
+                        column: Int
+                    ): Component {
+                        if (value !is LabelConvention) {
+                            labelCommandType.selectedItem = LabelConventionType.ENVIRONMENT
+                        }
+                        else {
+                            labelCommandType.selectedItem = value.type
+                        }
+                        return labelCommandType
+                    }
+                }
+            }
         }
+
+    private val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
+        override fun valueOf(item: LabelConvention): String = item.prefix!!
+        override fun getTooltipText(): String = "The prefix labels for the given Latex element should have"
+        override fun setValue(item: LabelConvention, value: String?) {
+            item.prefix = value ?: ""
+        }
+    }
+
+    private val nameColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Element") {
+        override fun valueOf(item: LabelConvention): String = item.name!!
+        override fun getColumnClass(): Class<*> = String::class.java
+        override fun setValue(item: LabelConvention, value: String?) {
+            item.name = value ?: ""
+        }
+    }
 
     private val enabledColumnInfo =
         object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("Should Have Label") {
@@ -106,10 +158,100 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         }
 
     private fun createConventionsTable(): TableView<LabelConvention> {
-        val model = ListTableModel<LabelConvention>(nameColumnInfo, prefixColumnInfo, enabledColumnInfo)
+        val model = ListTableModel<LabelConvention>(typeColumnInfo, nameColumnInfo, prefixColumnInfo, enabledColumnInfo)
         labelConventionsTable = TableView(model)
 
         return labelConventionsTable
+    }
+
+    /**
+     * This creates that header you see at the top of the table with the plus minus, etc
+     */
+    private fun createMappingsTableDecorator(): JComponent {
+        val panelForTable = ToolbarDecorator.createDecorator(labelConventionsTable, null)
+            .setAddActionUpdater { e: AnActionEvent? -> true }
+            .setAddAction { button: AnActionButton? ->
+                createAddLabelConventionDialog()
+            }
+            .setRemoveActionUpdater { e: AnActionEvent? -> labelConventionsTable.selection.isNotEmpty() }
+            .setRemoveAction { button: AnActionButton? ->
+                labelConventionsTable.selectedObjects.forEach { unsavedSettings.currentScheme.labelConventions.remove(it) }
+                loadScheme(unsavedSettings.currentScheme)
+            }
+            // Up/down actions currently have no function, other than allowing users to group them together in the UI
+            .setMoveUpActionUpdater { e: AnActionEvent? -> labelConventionsTable.selectedRow > 0 }
+            .setMoveUpAction {
+                // take the list element above the selection block and move it to the end of the block
+                val startRow = labelConventionsTable.selectedRow
+                val endRow = labelConventionsTable.selectedRowCount + startRow - 1
+                val holder = unsavedSettings.currentScheme.labelConventions[startRow - 1]
+
+                unsavedSettings.currentScheme.labelConventions.removeAt(startRow - 1)
+                unsavedSettings.currentScheme.labelConventions.add(endRow, holder)
+
+                loadScheme(unsavedSettings.currentScheme)
+                labelConventionsTable.setRowSelectionInterval(startRow - 1, endRow - 1)
+            }
+            .setMoveDownActionUpdater { e: AnActionEvent? -> labelConventionsTable.selectedRow < labelConventionsTable.rowCount - 1 }
+            .setMoveDownAction {
+                // take the list element below the selection block and move it to the start of the block
+                val startRow = labelConventionsTable.selectedRow
+                val endRow = labelConventionsTable.selectedRowCount + startRow - 1
+                val holder = unsavedSettings.currentScheme.labelConventions[endRow + 1]
+
+                unsavedSettings.currentScheme.labelConventions.removeAt(endRow + 1)
+                unsavedSettings.currentScheme.labelConventions.add(startRow, holder)
+
+                loadScheme(unsavedSettings.currentScheme)
+                labelConventionsTable.setRowSelectionInterval(startRow + 1, endRow + 1)
+            }
+            .createPanel()
+        panelForTable.preferredSize = JBDimension(-1, 200)
+        return panelForTable
+    }
+
+    /**
+     * In order to make it easier for the user to enter new values, we use a dialog before adding the entry to the list (might be out of view if the list is long).
+     */
+    private fun createAddLabelConventionDialog() {
+        val typeField = ComboBox(LabelConventionType.values())
+        val elementField = JBTextField().apply { preferredWidth = 200 }
+        val prefixField = JBTextField().apply { preferredWidth = 200 }
+        val labelField = JBCheckBox()
+
+        DialogBuilder().apply {
+            setCenterPanel(
+                panel {
+                    row("Type:") { cell(typeField) }
+                    row("Environment/command name:") { cell(elementField) }
+                    row("Prefix:") { cell(prefixField) }
+                    row("Should have label:") { cell(labelField) }
+                }
+            )
+
+            addOkAction()
+            addCancelAction()
+            title("Add Label Convention")
+
+            if (show() == DialogWrapper.OK_EXIT_CODE) {
+                val newLabel = LabelConvention(
+                    labelField.isSelected,
+                    typeField.selectedItem as LabelConventionType,
+                    elementField.text,
+                    prefixField.text
+                )
+                unsavedSettings.currentScheme.labelConventions.add(newLabel)
+                loadScheme(unsavedSettings.currentScheme)
+                labelConventionsTable.setRowSelectionInterval(
+                    labelConventionsTable.rowCount - 1,
+                    labelConventionsTable.rowCount - 1
+                )
+            }
+        }
+    }
+
+    private fun buildEnvironmentSelector(): ComboBox<LabelConventionType> {
+        return ComboBox(LabelConventionType.values())
     }
 
     override fun createComponent(): JComponent {
@@ -130,6 +272,15 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         labelConventionsTable = createConventionsTable()
 
+        createMappingsTableDecorator()
+
+        labelCommandType = buildEnvironmentSelector()
+        labelCommandType.addItemListener { e: ItemEvent? ->
+            if (labelConventionsTable.isEditing) {
+                labelConventionsTable.stopEditing()
+            }
+        }
+
         val centerPanel = panel {
             row {
                 label("Maximum section size (characters)")
@@ -142,11 +293,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             group("Labels") {
                 row {
                     cell(
-                        ToolbarDecorator.createDecorator(labelConventionsTable)
-                            .disableAddAction()
-                            .disableRemoveAction()
-                            .disableUpDownActions()
-                            .createPanel()
+                        createMappingsTableDecorator()
                     )
                         .resizableColumn()
                         .gap(RightGap.SMALL)
@@ -170,7 +317,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         // make sure to make a copy so changes to the elements are transferred explicitly
         val items = scheme.labelConventions.map { l -> l.copy() }
-        val model = ListTableModel(arrayOf(nameColumnInfo, prefixColumnInfo, enabledColumnInfo), items)
+        val model = ListTableModel(arrayOf(typeColumnInfo, nameColumnInfo, prefixColumnInfo, enabledColumnInfo), items)
         labelConventionsTable.model = model
     }
 
