@@ -27,6 +27,13 @@ import nl.hannahsten.texifyidea.util.parser.*
  */
 open class LatexAnnotator : Annotator {
 
+    companion object {
+        /**
+         * All user defined commands, cached because it requires going over all commands, which we don't want to do for every command we need to annotate.
+         */
+        var allUserDefinedCommands = emptyList<String>()
+    }
+
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
         // Math display
         if (psiElement is LatexInlineMath) {
@@ -189,10 +196,12 @@ open class LatexAnnotator : Annotator {
         annotateStyle(command, annotationHolder)
 
         // Make user-defined commands highlighting customizable
-        val allUserCommands = LatexDefinitionIndex.getItems(command.project)
-            .filter { it.isCommandDefinition() }
-            .map { it.definedCommandName() }
-        if (command.name in allUserCommands) {
+        if (allUserDefinedCommands.isEmpty()) {
+            allUserDefinedCommands = LatexDefinitionIndex.getItems(command.project)
+                .filter { it.isCommandDefinition() }
+                .mapNotNull { it.definedCommandName() }
+        }
+        if (command.name in allUserDefinedCommands) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .textAttributes(LatexSyntaxHighlighter.USER_DEFINED_COMMAND_KEY)
                 .range(command.commandToken)

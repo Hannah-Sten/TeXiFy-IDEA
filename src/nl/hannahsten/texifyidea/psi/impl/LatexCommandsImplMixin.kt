@@ -9,7 +9,10 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexVisitor
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -74,6 +77,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     /**
      * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexParameterText)}.
      * For more info and an example, see {@link nl.hannahsten.texifyidea.reference.LatexLabelParameterReference}.
+     *
+     * Do not use this if you just want references of a particular type, to avoid resolving references (which can be expensive) that are not needed.
+     * For example, use LatexCommands.getFileArgumentsReferences() for InputFileReferences.
      */
     override fun getReferences(): Array<PsiReference> {
         val requiredParameters = getRequiredParameters(this)
