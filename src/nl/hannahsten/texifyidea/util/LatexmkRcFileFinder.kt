@@ -107,7 +107,7 @@ object LatexmkRcFileFinder {
      * Get TEXINPUTS from latexmkrc.
      */
     private fun getTexinputs(file: VirtualFile): String? {
-        return """ensure_path\('TEXINPUTS',\s*'(?<path>[^']+)'\)""".toRegex().find(file.inputStream.reader().readText())?.groups?.get("path")?.value
+        return """ensure_path\(\s*'TEXINPUTS',\s*'(?<path>[^']+)'\s*\)""".toRegex().find(file.inputStream.reader().readText())?.groups?.get("path")?.value
     }
 
     private var usesLatexmkrc: Boolean? = null
