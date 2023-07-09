@@ -223,7 +223,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
   hit the lightbulb that appears on the left, or hit Alt+Enter to view and
   apply it. A quick overview of useful shortcuts is on the [Shortcuts](Shortcuts) page.
 * If your LaTeX indentation (the number of spaces that is in front of
-  each line) looks messy, reformat with <shortcut key="$Reformat">.
+  each line) looks messy, reformat with <shortcut key="$Reformat"/>.
 * This wiki contains documentation about many features, you can browse around the [Features](Features) page.
 * If you are searching how a particular symbol has to be written in
   LaTeX, the [Detexify](http://detexify.kirelabs.org/classify.html) tool can
@@ -254,7 +254,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 
 #### To push (upload) changes
 
-* Hit <shortcut key="$Commit"> to commit changes to git.
+* Hit <shortcut key="$Commit"/> to commit changes to git.
 * Specify a commit message.
 * Click `commit and push` by hovering over the `commit` button.
 * If your git username is asked, specify it.
@@ -262,7 +262,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 
 #### To pull (download) changes
 
-* Hit <shortcut key="$Pull"> or the arrow icon at the top right.
+* Hit <shortcut key="$Pull"/> or the arrow icon at the top right.
 
 ### I want to know more about git
 

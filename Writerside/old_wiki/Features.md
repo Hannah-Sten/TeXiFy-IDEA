@@ -1,20 +1,3 @@
-This is a work in progress. More features should be added, and each should link to its own page with documentation. Link to IJ docs where possible and useful
-
-## [[searching]] Searching through this wiki
-
-You can search through this wiki by using the GitHub global search bar at the top of the page, and then selecting Wiki results.
-
-## Installation
-
-Also see the [installation guide](Installation).
-
-* Support for [Windows](Installation#windows-instructions), [Mac](Installation#mac-instructions) and [Unix](Installation#linux-instructions) (via for example MiKTeX or [TeX Live](Installation#texlive))
-* [MIT license](https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/LICENSE)
-* Built on the IntelliJ IDE which has many features built in ([documentation](https://www.jetbrains.com/help/))
-* [Works with all Jetbrains IDEs](https://plugins.jetbrains.com/plugin/9473-texify-idea/versions), including IntelliJ, PyCharm, PhpStorm, DataGrip, Rider, GoLand, RubyMine, Android Studio, WebStorm and CLion.
-* Suggested updates of TeXiFy and one click to update
-* [Prerelease alpha builds available](Alpha-builds)
-
 ## Writing LaTeX
 
 * [Unicode support](Unicode)
