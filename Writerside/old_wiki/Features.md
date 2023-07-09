@@ -1,41 +1,39 @@
-## Writing LaTeX
+## Editing LaTeX
 
-* [Unicode support](Unicode)
-* [Autocomplete of labels, all commands from installed packages, custom defined commands and (custom) environments](Autocomplete)
-* [Smart quote substitution](Global-settings#option-to-enable-smart-quote-substitution)
 * [Automagically import packages of common commands](Automatic-package-importing)
-* [Shortcuts for styling text](Features#Menu-entries)
-* [Line commenting shortcut](Line-commenting)
 * [Renaming of labels and environments](Refactoring)
+* [Easy switching to other math environments](Math-environment-switcher)
+* [Many useful customizable shortcuts](Shortcuts)
+* [Surround with dollars, quotes, or braces](Surrounding)
+* Multi-cursors
+* [Support for `\graphicspath` from the graphicx package.](Graphicspath-support)
+* [Support for `\newcommand`-like custom definitions of cite and label commands](Custom-commands)
 * [Inlining of files and command definitions](Inline-File)
-* Support for user-created document classes and packages
-* Toggle star action
-* Custom shortcuts for menu items
+* [Action for swapping arguments of LaTeX commands](Move-arguments)
+* [Magic comments](Magic-comments)
+* [Known issues with parsing LaTeX](Known-issues)
+* 
+* [Drag and drop graphics inside your document](++Menu-entries#insert-graphic-wizard++)
+* [Paste HTML tables and turn them into LaTeX](++Menu-entries#table-creation-wizard++)
+* [Paste images directly from your clipboard](++Pasting-images++)
+
+### Writing LaTeX
+
+### Autocompletion
+* Automatic insertion of `\end` when typing `\begin` for environments
+* On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
+* Automatic insertion of braces of first required parameter
+* Typing `}` at closing brace skips over it, same for `$..$`
+* [Automatic insertion of `\item` in list environments like itemize and enumerate](Item-insertion)
 * [Brace matching](Brace-matching)
 * [Live templates](Live-templates)
 * Custom live templates
 * [Postfix templates](Postfix-templates)
 * Custom macros with shortcuts
-* Spellchecking with custom dictionaries
-* [Support for the Grazie grammar and spellchecking plugin](Grazie)
-* [Soft wraps and wrap on typing](Soft-wraps)
-* [Many useful shortcuts](Shortcuts)
-* [Automatic insertion of `\item` in list environments like itemize and enumerate](Item-insertion)
-* Automatic insertion of `\end` when typing `\begin` for environments
-* On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
-* [Surround with dollars, quotes, or braces](Surrounding)
-* Automatic insertion of braces of first required parameter
-* Typing `}` at closing brace skips over it, same for `$..$`
-* Multi-cursors
-* [Easy switching to other math environments](Math-environment-switcher)
-* [Support for `\graphicspath` from the graphicx package.](Graphicspath-support)
-* [Magic comments](Magic-comments)
-* [Support for `\newcommand`-like custom definitions of cite and label commands](Custom-commands)
-* [Action for swapping arguments of LaTeX commands](Move-arguments)
-* [Drag and drop graphics inside your document](++Menu-entries#insert-graphic-wizard++)
-* [Paste HTML tables and turn them into LaTeX](++Menu-entries#table-creation-wizard++)
-* [Paste images directly from your clipboard](++Pasting-images++)
-* [Known issues with parsing LaTeX](Known-issues)
+* [Autocomplete of labels, all commands from installed packages, custom defined commands and (custom) environments](Autocomplete)
+* [Smart quote substitution](Global-settings#option-to-enable-smart-quote-substitution)
+* Support for user-created document classes and packages
+
 
 ## Reading
 * Customizable syntax highlighting
@@ -47,6 +45,7 @@
 * Special highlighting and marker for `todo` comments, customizable
 * Links in comments and in commands which provide links (e.g. \url and \href) are clickable
 * [Easy links to LaTeX package documentation, and documentation for many commands and environments](LaTeX-documentation)
+* [Soft wraps and wrap on typing](Soft-wraps)
 
 ## Preview
 * [Unicode math preview](Preview#Unicode-math-preview)
@@ -257,6 +256,9 @@ Compiles the file.
 ### LaTeX
 
 If you see a minor issue, like some missing metadata about commands or environments, you are encouraged to check if you can [fix it yourself](Contributing-to-TeXiFy#editing-magic).
+
+* Spellchecking with custom dictionaries
+* [Support for the Grazie grammar and spellchecking plugin](Grazie)
 
 #### Typesetting issues
 Issues which have influence on the typeset result.

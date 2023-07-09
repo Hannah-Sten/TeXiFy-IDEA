@@ -90,7 +90,7 @@ and Arch Linux.
   [these steps](https://tex.stackexchange.com/a/95502/98850)) and then
   install a newer TeX Live (based on the LaTeX3 setup), as follows.
 
-#### Installing TeX Live
+### Installing TeX Live
 
 It is recommended to install TeX Live directly and not via your package manager, to ensure you have the latest version.
 You should install TeX Live in your home directory, so it doesn’t need elevated permissions for everything.
@@ -115,7 +115,7 @@ You can test the installation by running `latex small2e`.
 
 If IntelliJ does not recognise your TeX Live installation, for example you get a warning `SyncTeX not installed: Forward search and inverse search need the synctex command line tool to be installed.`, make sure you modify your PATH as above. Note that for example `~/.zshrc` might not be picked up and you need to use `~/.profile`.
 
-#### Installing packages for not-full installations
+### Installing packages for not-full installations
 
 When not doing a full TeX Live install (e.g., to save space) not all tex engines are installed. To install one later on, use `tlmgr` to install the needed packages.
 Note that when using `tlmgr` to search for the necessary packages, e.g., `tlmgr search xetex`, they might not show up.
@@ -126,7 +126,7 @@ For example, for XeLaTeX, you need to install `collection-xetex`.
 
 If you have an existing document, you can also use [texliveonfly](https://tex.stackexchange.com/a/463842/98850) to install the required packages automatically.
 
-#### Starting with IntelliJ
+### Starting with IntelliJ
 
 * Open IntelliJ, in the welcome menu choose <ui-path>Configure | Plugins</ui-path> (or when
   you already have a project open, use <ui-path>File | Settings | Plugins</ui-path>).
@@ -155,7 +155,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
 * The next time you can also compile using the Run button (looks like a
   Play button) in the top-right menu, or using <shortcut>Shift+F10</shortcut>.
 
-#### Forward and inverse search
+### Forward and inverse search
 
 * When your cursor is in IntelliJ and you have just compiled a document,
   you can look up which line in the pdf corresponds to the line your
@@ -205,7 +205,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
 
 If you want to use Skim instead of the built-in pdf viewer, for configuring forward and backward search see the [Skim support](Skim-support) wiki page.
 
-### Tips
+## Tips
 
 * You never have to remember to save your work, IntelliJ will
   automatically save every letter you type.
@@ -235,7 +235,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
 
 Any suggestions for improvements of the installation instructions, however small? Please feel free to edit this wiki page, or let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
-### When you want to work together: install git
+## When you want to work together: install git
 
 * Often you will be working together on one document. In that case, use
   git to make this go smoothly. We use git because git is awesome, but
@@ -252,7 +252,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 * If you are asked by IntelliJ `Do you want to add this file to git?`,
   just click `no` when you do not recognize the file, and `yes` when you recognise it as a source file (`.tex` for example).
 
-#### To push (upload) changes
+### To push (upload) changes
 
 * Hit <shortcut key="$Commit"/> to commit changes to git.
 * Specify a commit message.
@@ -260,11 +260,11 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 * If your git username is asked, specify it.
 * Click `push`.
 
-#### To pull (download) changes
+### To pull (download) changes
 
 * Hit <shortcut key="$Pull"/> or the arrow icon at the top right.
 
-### I want to know more about git
+## I want to know more about git
 
 * That’s great! Actually, git and similar tools are used everywhere by
   programmers to collaborate; it’s not just for LaTeX and doesn’t work
@@ -274,7 +274,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 * Want to know even more of advanced use of git? Read the excellent
   [Pro Git book](https://git-scm.com/book/en/v2) for free.
 
-### Installing a specific version.
+## Installing a specific version.
 
 * Go to [https://plugins.jetbrains.com/plugin/9473-texify-idea/versions](https://plugins.jetbrains.com/plugin/9473-texify-idea/versions) and download the version you want
 * Go to <ui-path>Settings | Plugins</ui-path> and click the gear icon, click Install Plugin from Disk, select the zip file and install.

@@ -57,6 +57,7 @@ The prefixes can be configured in settings, see [Conventions settings.](Features
 In general, we recommend starting every sentence on a new line, especially because this works nicer with version control systems, which work per line.
 That also makes it more meaningful to reference a certain line in a document.
 It also makes it easier to read when soft wrapping is off.
+Other languages also recommend this, see for example [Asciidoctor](https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line).
 
 Note that this inspection would trigger on abbreviations like `etc.`.
 However, when you use abbreviations like that you should always tell LaTeX to use a normal space instead of an end-of-sentence space, so instead of `This etc. contains a sentence` you should write `This etc.\ contains a sentence`.
