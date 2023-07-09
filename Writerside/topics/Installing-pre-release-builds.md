@@ -1,4 +1,4 @@
-### About alpha builds
+# Installing pre-release builds
 
 This plugin also has an alpha channel besides the default stable channel.
 The alpha channel contains the latest build with the latest features available (of most open pull requests), and is updated much more frequently than the stable channel.
@@ -24,5 +24,5 @@ You have multiple options of acquiring a zip file with the plugin.
 
 More detailed information is at [https://www.jetbrains.com/help/idea/managing-plugins.html#repos](https://www.jetbrains.com/help/idea/managing-plugins.html#repos) but we will quickly summarize the steps.
 
-* Subscribe to the alpha channel by going to Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon, then use the url https://plugins.jetbrains.com/plugins/alpha/list or https://plugins.jetbrains.com/plugins/alpha/list?pluginId=9473
+* Subscribe to the alpha channel by going to <ui-path>Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon<ui-path>, then use the url https://plugins.jetbrains.com/plugins/alpha/list or https://plugins.jetbrains.com/plugins/alpha/list?pluginId=9473
 * IntelliJ should suggest an update of TeXiFy now. If not, uninstall the plugin first and then reinstall the plugin by going to Marketplace and searching for `TeXiFy-IDEA`, you should see the version next to the name is the alpha version.
