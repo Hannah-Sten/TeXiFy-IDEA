@@ -29,7 +29,7 @@ An example is the `align` environment, which is provided by the `amsmath` packag
 If you use the autocomplete to type `\begin{align} ... \end{align}`,you will see in the autocomplete window that `align` has the `amsmath` dependency.
 If you select it, then `\usepackage{amsmath}` will be inserted automatically, as you can see below.
 
-![package-import](../images/editing/package-import.gif)
+[//]: # (![package-import]&#40;../images/editing/package-import.gif&#41;)
 
 Note that currently only a few common commands and packages are supported.
 
@@ -40,7 +40,7 @@ TeXiFy support using the `subfiles` package.
 This means that package imports will be placed in the main file when you are writing in a subfile, and imports will be detected correctly.
 An example of using the subfile package would be:
 
-```latex
+```
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{subfiles}
@@ -52,7 +52,7 @@ An example of using the subfile package would be:
 
 `section1.tex`:
 
-```latex
+```
 \documentclass[main.tex]{subfiles}
 
 \begin{document}
