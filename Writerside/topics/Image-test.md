@@ -16,4 +16,4 @@
 
 ![Alt text]($WRS_MODULE$/images/editing/brace-matching.png)
 
-![Alt text](math-postfix.gif)
+[//]: # (![Alt text]&#40;math-postfix.gif&#41;)
