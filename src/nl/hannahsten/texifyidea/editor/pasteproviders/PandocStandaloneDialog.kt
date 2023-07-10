@@ -22,9 +22,9 @@ class PandocStandaloneDialog(var isAddImports: Boolean? = null) {
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             val useInternalPaste = JRadioButton("Use internal paste translator")
-            val addImports = JRadioButton("Add required imports and paste")
+            val addImports = JRadioButton("Add required pandoc imports and paste")
             addImports.isSelected = true
-            val onlyPaste = JRadioButton("Only paste")
+            val onlyPaste = JRadioButton("Only paste pandoc translation")
             // todo check performance of pandoc. If bad, show this dialog once and save preference in settings
 
             RadioUpDownListener(useInternalPaste, addImports, onlyPaste)
