@@ -97,3 +97,7 @@ by making sure your cursor is on the environment name inside either the `\begin`
 
 When you try to rename an element for which refactoring is not supported, the element will simply not change or in some cases a warning "Inserted identifier is not valid" will be shown.
 
+
+
+
+See [Images test](Image-test.md)
