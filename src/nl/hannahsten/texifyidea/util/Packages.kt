@@ -44,92 +44,27 @@ object PackageUtils {
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
     private fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
-        if (!file.isWritable) return
-
-        if (!TexifySettings.getInstance().automaticDependencyCheck) {
-            return
-        }
-
-        val commands = file.commandsInFile()
-
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
-
-        var last: LatexCommands? = null
-        for (cmd in commands) {
-            if (commandName == cmd.commandToken.text) {
-                // Do not insert below the subfiles package, it should stay last
-                if (cmd.requiredParameters.contains("subfiles")) {
-                    break
-                }
-                else {
-                    last = cmd
-                }
-            }
-        }
-
-        val prependNewLine: Boolean
-        // The anchor after which the new element will be inserted
-        val anchorAfter: PsiElement?
-
-        // When there are no usepackage commands: insert below documentclass.
-        if (last == null) {
-            val classHuh = commands.asSequence()
-                .filter { cmd ->
-                    "\\documentclass" == cmd.commandToken
-                        .text || "\\LoadClass" == cmd.commandToken.text
-                }
-                .firstOrNull()
-            if (classHuh != null) {
-                anchorAfter = classHuh
-                prependNewLine = true
-            }
-            else {
-                // No other sensible location can be found
-                anchorAfter = null
-                prependNewLine = false
-            }
-        }
-        // Otherwise, insert below the lowest usepackage.
-        else {
-            anchorAfter = last
-            prependNewLine = true
-        }
 
         var command = commandName
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
         command += "{$packageName}"
 
-        val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
-
-        // Don't run in a write action, as that will produce a SideEffectsNotAllowedException for INVOKE_LATER
-
-        // Avoid "Attempt to modify PSI for non-committed Document"
-        // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
-        PsiDocumentManager.getInstance(file.project)
-            .doPostponedOperationsAndUnblockDocument(file.document() ?: return)
-        PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return)
-        runWriteAction {
-            if (anchorAfter != null) {
-                val anchorBefore = anchorAfter.node.treeNext
-                @Suppress("KotlinConstantConditions")
-                if (prependNewLine) {
-                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
-                    anchorAfter.parent.node.addChild(newLine, anchorBefore)
-                }
-                anchorAfter.parent.node.addChild(newNode, anchorBefore)
-            }
-            else {
-                // Insert at beginning
-                file.node.addChild(newNode, file.firstChild.node)
-            }
-        }
+        return insertPreambleText(file, command)
     }
 
     /**
-     * todo this function is copy paste of the one above
+     * Inserts text into the preamble. See [insertUsepackage] for more user-friendly versions.
+     *
+     * This exists strictly for pandoc
+     *
+     * @param file
+     *          The file to add the string to.
+     * @param resolvedInsertText
+     *          The string to insert to the end of the preamble.
      */
     @JvmStatic
-    fun insertPreambleText(file: PsiFile, packageName: String) {
+    fun insertPreambleText(file: PsiFile, resolvedInsertText: String) {
 
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
@@ -180,9 +115,7 @@ object PackageUtils {
             prependNewLine = true
         }
 
-        val command = packageName
-
-        val newNode = LatexPsiHelper(file.project).createFromText(command)
+        val newNode = LatexPsiHelper(file.project).createFromText(resolvedInsertText).firstChild.node
 
         // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
         // Avoid 'Write access is allowed inside write-action only' exception
@@ -191,22 +124,26 @@ object PackageUtils {
             PsiDocumentManager.getInstance(file.project)
                 .doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
             PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
-            if (anchorAfter != null) {
+            if (anchorAfter != null && com.intellij.psi.impl.source.tree.TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
                 val anchorBefore = anchorAfter.node.treeNext
 
-                if (prependNewLine && anchorBefore != null) {
-                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild
-                    anchorAfter.parent.addBefore(newLine, anchorBefore.psi)
+                @Suppress("KotlinConstantConditions")
+                if (prependNewLine) {
+                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                    if (anchorBefore != null)
+                        anchorAfter.parent.node.addChild(newLine, anchorBefore)
+                    else
+                        anchorAfter.parent.node.addChild(newLine)
                 }
 
                 if (anchorBefore == null)
-                    anchorAfter.parent.add(newNode)
+                    anchorAfter.parent.node.addChild(newNode)
                 else
-                    anchorAfter.parent.addBefore(newNode, anchorBefore.psi)
+                    anchorAfter.parent.node.addChild(newNode, anchorBefore)
             }
             else {
                 // Insert at beginning
-                file.addBefore(newNode, file.firstChild)
+                file.node.addChild(newNode, file.firstChild.node)
             }
         }
     }
