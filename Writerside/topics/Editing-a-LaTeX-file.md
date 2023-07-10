@@ -29,7 +29,7 @@ An example is the `align` environment, which is provided by the `amsmath` packag
 If you use the autocomplete to type `\begin{align} ... \end{align}`,you will see in the autocomplete window that `align` has the `amsmath` dependency.
 If you select it, then `\usepackage{amsmath}` will be inserted automatically, as you can see below.
 
-![package-import](../images/editing/package-import.gif)
+![package-import]($PROJECT_DIR$/Writerside/images/editing/package-import.gif)
 
 Note that currently only a few common commands and packages are supported.
 
