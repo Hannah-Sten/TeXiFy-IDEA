@@ -29,7 +29,7 @@ An example is the `align` environment, which is provided by the `amsmath` packag
 If you use the autocomplete to type `\begin{align} ... \end{align}`,you will see in the autocomplete window that `align` has the `amsmath` dependency.
 If you select it, then `\usepackage{amsmath}` will be inserted automatically, as you can see below.
 
-![package-import]($PROJECT_DIR$/Writerside/images/editing/package-import.gif)
+![package-import](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/package-import.gif)
 
 Note that currently only a few common commands and packages are supported.
 
@@ -40,7 +40,7 @@ TeXiFy support using the `subfiles` package.
 This means that package imports will be placed in the main file when you are writing in a subfile, and imports will be detected correctly.
 An example of using the subfile package would be:
 
-```
+```latex
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{subfiles}
@@ -52,7 +52,7 @@ An example of using the subfile package would be:
 
 `section1.tex`:
 
-```
+```latex
 \documentclass[main.tex]{subfiles}
 
 \begin{document}
@@ -65,3 +65,35 @@ An example of using the subfile package would be:
 
 
 ```
+
+## Renaming labels and environments
+
+_Since b0.6.9_
+
+Currently, refactoring (renaming) elements is supported for files, labels and environments.
+
+To rename a label, place your cursor on a label definition or reference, e.g. `\ref{some-<cursor>label}` and press kbd:[Shift+F6].
+
+To find out what elements need to be renamed as well (definition and other usages), the functionality from [Find usages](Find-usages) is used.
+
+> You need to select 'Search for references' if you get a popup to rename an element, in order to let IntelliJ rename all the references to for example a file.
+{style="note"}
+
+Similarly, you can easily rename an environment, i.e. replace
+
+```latex
+\begin{center}
+\end{center}
+```
+
+with
+
+```latex
+\begin{abstract}
+\end{abstract}
+```
+
+by making sure your cursor is on the environment name inside either the `\begin` or `\end` command and using kbd:[Shift + F6], then type the new name.
+
+When you try to rename an element for which refactoring is not supported, the element will simply not change or in some cases a warning "Inserted identifier is not valid" will be shown.
+

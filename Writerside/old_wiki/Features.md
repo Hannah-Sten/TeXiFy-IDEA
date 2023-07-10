@@ -1,7 +1,5 @@
 ## Editing LaTeX
 
-* [Automagically import packages of common commands](Automatic-package-importing)
-* [Renaming of labels and environments](Refactoring)
 * [Easy switching to other math environments](Math-environment-switcher)
 * [Many useful customizable shortcuts](Shortcuts)
 * [Surround with dollars, quotes, or braces](Surrounding)
