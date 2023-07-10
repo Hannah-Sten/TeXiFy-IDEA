@@ -4,25 +4,24 @@ import com.intellij.ide.PasteProvider
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.editor.EditorModificationUtil
 import com.intellij.openapi.editor.actions.PasteAction
-import com.intellij.openapi.project.Project
-import com.intellij.testFramework.utils.vfs.getDocument
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.PackageUtils.insertPreambleText
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.Node
 import java.awt.datatransfer.DataFlavor
 
 /**
  * Takes html from clipboard and pastes it as LaTeX.
- * todo why is there no StyledTextPasteProvider subclassing LatexPasteProvider
  *
  * @author jojo2357
  */
-class StyledTextPasteProvider : PasteProvider {
+class StyledTextPasteProvider : PasteProvider, LatexPasteProvider {
 
     override fun isPastePossible(dataContext: DataContext): Boolean {
         val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
@@ -34,17 +33,19 @@ class StyledTextPasteProvider : PasteProvider {
     }
 
     override fun performPaste(dataContext: DataContext) {
-        val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return
         val clipboardHtml = dataContext.transferableHtml() ?: return
+        val editor = project.currentTextEditor()?.editor ?: return
+
+        // dont bother with expensive operations unless the gimmes have passed
+
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
+        println(html)
 
-        val textToInsert = Jsoup.parse(html).parseText(project, dataContext)
+        val textToInsert = convertHtmlToLatex(Jsoup.parse(html).select("body")[0], dataContext)
 
-        val editor = dataContext.getData(PlatformDataKeys.PROJECT)?.currentTextEditor() ?: return
-
-        // todo insert properly
-        file.getDocument().insertString(editor.editor.caretModel.offset, textToInsert)
+        val writeAction = Runnable { EditorModificationUtil.insertStringAtCaret(editor, textToInsert) }
+        WriteCommandAction.runWriteCommandAction(project, writeAction)
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
@@ -62,25 +63,22 @@ class StyledTextPasteProvider : PasteProvider {
         else null
     }
 
-    /**
-     * Parses html to LaTeX using pandoc if available, otherwise defaults to built-in methods.
-     *
-     * @return Translated LaTeX
-     */
-    private fun Document.parseText(project: Project, dataContext: DataContext): String {
-        val default = parseToString(select("body")[0].childNodes(), project, dataContext)
-        return if (!PandocPasteProvider.isPandocInPath) {
-            default
+    override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
+        // could be inlined, but kept out for neatness
+        fun default() = parseToString(htmlIn.childNodes(), dataContext)
+
+        return if (!PandocPasteTranslator.isPandocInPath) {
+            default()
         }
         else {
             // todo why put a dialog?
             val pandocStandaloneDialog = PandocStandaloneDialog()
             if (pandocStandaloneDialog.abort)
-                default
+                default()
             else {
-                val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return default
+                val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return default()
 
-                val latexText = PandocPasteProvider(isStandalone).translateHtml(this.html()) ?: return default
+                val latexText = PandocPasteTranslator(isStandalone).translateHtml(htmlIn.toString()) ?: return default()
 
                 if ("\\begin{document}" in latexText) {
                     val (preamble, content) = latexText.split("\\begin{document}")
@@ -96,5 +94,6 @@ class StyledTextPasteProvider : PasteProvider {
                 }
             }
         }
+
     }
 }

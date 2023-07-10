@@ -18,10 +18,10 @@ import javax.imageio.ImageIO
 open class ClipboardHtmlImagePasteProvider : LatexPasteProvider {
 
     // todo this seems to duplicate the other ImagePasteProvider#pasteRawImage
-    private fun pasteRawImage(project: Project, file: VirtualFile, clipboard: BufferedImage): String {
+    private fun pasteRawImage(project: Project, file: VirtualFile, clipboard: BufferedImage, sourceUrl: URL): String {
         var outstring = ""
 
-        SaveImageFromWebDialog(project, clipboard) {
+        SaveImageFromWebDialog(project, clipboard, sourceUrl) {
             it.savedImage?.let { imageFile ->
                 outstring = InsertGraphicWizardAction(imageFile).getGraphicString(file, project)
             }
@@ -37,6 +37,6 @@ open class ClipboardHtmlImagePasteProvider : LatexPasteProvider {
         val url = URL(htmlIn.attr("src"))
 
         val image = ImageIO.read(url)
-        return pasteRawImage(project, file, image)
+        return pasteRawImage(project, file, image, url)
     }
 }

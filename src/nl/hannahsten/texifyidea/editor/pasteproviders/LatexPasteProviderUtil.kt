@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.Log
@@ -59,7 +58,7 @@ private val closingTags = hashMapOf(
     "h5" to "}\n",
 )
 
-private val tagDependencies = hashMapOf<String, LatexPackage>(
+private val tagDependencies = hashMapOf(
     "a" to LatexPackage.HYPERREF
 )
 
@@ -104,7 +103,7 @@ private val escapeChars = hashMapOf(
 /**
  * Parse given HTML nodes to LaTeX using direct hardcoded mappings.
  */
-fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext): String {
+fun parseToString(nodes: List<Node>, dataContext: DataContext): String {
     val out = StringBuilder()
 
     for (node in nodes) {
@@ -112,7 +111,7 @@ fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext)
             when (node) {
                 is TextNode -> out.append(escapeText(node.text()))
                 is Element -> {
-                    handleElement(node, out, project, dataContext)
+                    handleElement(node, out, dataContext)
                 }
 
                 else -> throw IllegalStateException("Did not plan for " + node.javaClass.name + " please implement a case for this")
@@ -120,10 +119,10 @@ fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext)
         }
         else {
             if (node is Element) {
-                handleElement(node, out, project, dataContext)
+                handleElement(node, out, dataContext)
             }
             else
-                out.append(parseToString(node.childNodes(), project, dataContext))
+                out.append(parseToString(node.childNodes(), dataContext))
         }
     }
 
@@ -133,7 +132,7 @@ fun parseToString(nodes: List<Node>, project: Project, dataContext: DataContext)
 /**
  * Convert one html element to LaTeX and append to the given StringBuilder.
  */
-private fun handleElement(element: Element, out: StringBuilder, project: Project, dataContext: DataContext) {
+private fun handleElement(element: Element, out: StringBuilder, dataContext: DataContext) {
     if (tagDependencies[element.tagName()] != null)
         (dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile)?.insertUsepackage(tagDependencies[element.tagName()]!!)
 
@@ -149,7 +148,7 @@ private fun handleElement(element: Element, out: StringBuilder, project: Project
         out.append(getPrefix(element))
 
         if (element.childNodeSize() > 0)
-            out.append(parseToString(element.childNodes(), project, dataContext))
+            out.append(parseToString(element.childNodes(), dataContext))
         else
             out.append(escapeText(element.text()))
 
@@ -192,4 +191,4 @@ private fun escapeText(stringin: String): String {
 }
 
 fun htmlTextIsFormattable(htmlIn: String): Boolean =
-    (PandocPasteProvider.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
+    (PandocPasteTranslator.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }

@@ -11,12 +11,14 @@ import com.intellij.util.ui.ImageUtil
 import nl.hannahsten.texifyidea.ui.ImagePanel
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import nl.hannahsten.texifyidea.util.formatAsFileName
+import org.apache.commons.io.FilenameUtils
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Image
 import java.awt.datatransfer.DataFlavor
 import java.awt.image.BufferedImage
 import java.io.File
+import java.net.URL
 import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.BoxLayout
@@ -38,6 +40,8 @@ class SaveImageFromWebDialog(
      * Must support the image data flavor [DataFlavor.imageFlavor].
      */
     private val image: BufferedImage,
+
+    private val sourceUrl: URL,
 
     /**
      * The function to execute when the dialog is succesfully closed.
@@ -105,8 +109,7 @@ class SaveImageFromWebDialog(
         val heightRatio = 1.0.coerceAtMost(300.0 / imageHeight)
         val ratio = widthRatio.coerceAtLeast(heightRatio)
 
-        val scaled =
-            image.getScaledInstance((imageWidth * ratio).toInt(), (imageHeight * ratio).toInt(), Image.SCALE_SMOOTH)
+        val scaled = image.getScaledInstance((imageWidth * ratio).toInt(), (imageHeight * ratio).toInt(), Image.SCALE_SMOOTH)
         setImage(ImageUtil.toBufferedImage(scaled))
     }
 
@@ -275,6 +278,8 @@ class SaveImageFromWebDialog(
      * data when present.
      */
     private fun findMetaData() {
+        imageFormat = ImageFormat.imageFormatFromExtension(FilenameUtils.getExtension(sourceUrl.file))
+        imageName = FilenameUtils.getBaseName(sourceUrl.file)
     }
 
     /**

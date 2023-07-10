@@ -66,7 +66,6 @@ object PackageUtils {
      */
     @JvmStatic
     fun insertPreambleText(file: PsiFile, resolvedInsertText: String) {
-
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
         }

@@ -95,7 +95,7 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
         insertAtCaretAndMove(buildGraphicString(project, data, indent, tab))
     }
 
-    fun buildGraphicString(
+    private fun buildGraphicString(
         project: Project,
         data: InsertGraphicData,
         indent: String,

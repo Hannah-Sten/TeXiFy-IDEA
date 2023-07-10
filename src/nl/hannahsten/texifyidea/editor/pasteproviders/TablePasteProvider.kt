@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.action.wizard.table.ColumnType
 import nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction
 import nl.hannahsten.texifyidea.action.wizard.table.TableCreationDialogWrapper
@@ -15,11 +14,9 @@ import java.util.*
 class TablePasteProvider : LatexPasteProvider {
 
     override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
-        val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return ""
         return LatexTableWizardAction().executeAction(
             dataContext.getData(PlatformDataKeys.PROJECT) ?: return "",
             htmlIn.ownerDocument()?.toTableDialogWrapper(
-                project,
                 dataContext
             ) ?: return ""
         )
@@ -29,7 +26,7 @@ class TablePasteProvider : LatexPasteProvider {
      * Creates the Table Creation Dialog filled in with the data from the clipboard.
      */
     @Suppress("USELESS_CAST")
-    private fun Document.toTableDialogWrapper(project: Project, dataContext: DataContext): TableCreationDialogWrapper? {
+    private fun Document.toTableDialogWrapper(dataContext: DataContext): TableCreationDialogWrapper? {
         val rows = select("table tr")
         val height = rows.size
         val width = rows.firstOrNull()?.select("td, th")?.size ?: 0
@@ -39,7 +36,7 @@ class TablePasteProvider : LatexPasteProvider {
         // Convert html to data vector Vector<Vector<Any?>> and headers.
         val header = rows.firstOrNull()?.select("td, th")?.mapNotNull { it.text() }?.toVector() ?: return null
         val content: Vector<Vector<Any?>> = rows.drop(1).map { tr ->
-            tr.select("td, th").map { td -> parseToString(td.children(), project, dataContext) as Any? }.toVector()
+            tr.select("td, th").map { td -> parseToString(td.children(), dataContext) as Any? }.toVector()
         }.toVector()
 
         // Find the type of column automatically.
