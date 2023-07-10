@@ -32,7 +32,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 class InputFileReference(
     element: LatexCommands,
     val range: TextRange,
-    val extensions: Set<String>,
+    val extensions: List<String>,
     val defaultExtension: String
 ) : PsiReferenceBase<LatexCommands>(element) {
 

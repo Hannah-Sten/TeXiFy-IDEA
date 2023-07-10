@@ -64,7 +64,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
-            inputFileReferences.add(InputFileReference(this, range.shrink(1), setOf("tex"), "tex"))
+            inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), "tex"))
         }
     }
 
