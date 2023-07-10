@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.gutter.LatexElementColorProvider
 import nl.hannahsten.texifyidea.util.Kindness
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.getCommandsInFiles
-import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
-import nl.hannahsten.texifyidea.util.isColorDefinition
+import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
+import nl.hannahsten.texifyidea.util.parser.isColorDefinition
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import java.awt.Color
 
@@ -42,7 +42,7 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
             }
 
             val colorName = cmd.getRequiredArgumentValueByName("name") ?: continue
-            val color = LatexElementColorProvider.findColor(colorName, file)
+            val color = LatexElementColorProvider().findColor(colorName, file)
             val lookupElement = if (color != null) {
                 LookupElementBuilder.create(colorName).withIcon(ColorIcon(12, color))
             }

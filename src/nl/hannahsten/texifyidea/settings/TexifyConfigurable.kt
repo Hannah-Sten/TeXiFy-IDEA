@@ -32,6 +32,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var enableExternalIndex: JBCheckBox? = null
     private var enableTextidote: JBCheckBox? = null
     private var textidoteOptions: RawCommandLineEditor? = null
+    private var latexIndentOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
 
     /**
@@ -72,7 +73,8 @@ class TexifyConfigurable : SearchableConfigurable {
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                     enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
                     enableTextidote = addCheckbox("Enable the Textidote linter")
-                    textidoteOptions = addTextidoteOptions()
+                    textidoteOptions = addCommandLineEditor("Textidote", TexifySettingsState().textidoteOptions)
+                    latexIndentOptions = addCommandLineEditor("Latexindent", TexifySettingsState().latexIndentOptions)
                     automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                     addPdfViewerText()
                 }
@@ -95,24 +97,27 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     /**
-     * Add Textidote options
+     * Add a field for command options
+     *
+     * @param label Name of the command
+     * @param initialValue Only used to guess a good field width
      */
-    private fun JPanel.addTextidoteOptions(): RawCommandLineEditor {
-        val textidoteOptions = RawCommandLineEditor()
+    private fun JPanel.addCommandLineEditor(label: String, initialValue: String): RawCommandLineEditor {
+        val cmdEditor = RawCommandLineEditor()
 
         // It's magic
-        val width = textidoteOptions.getFontMetrics(textidoteOptions.font).stringWidth(TexifySettingsState().textidoteOptions) + 170
-        textidoteOptions.minimumSize = Dimension(width, textidoteOptions.preferredSize.height)
-        textidoteOptions.size = Dimension(width, textidoteOptions.preferredSize.height)
-        textidoteOptions.preferredSize = Dimension(width, textidoteOptions.preferredSize.height)
+        val width = cmdEditor.getFontMetrics(cmdEditor.font).stringWidth(initialValue) + 170
+        cmdEditor.minimumSize = Dimension(width, cmdEditor.preferredSize.height)
+        cmdEditor.size = Dimension(width, cmdEditor.preferredSize.height)
+        cmdEditor.preferredSize = Dimension(width, cmdEditor.preferredSize.height)
 
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JBLabel("Textidote command line options: "))
-                add(textidoteOptions)
+                add(JBLabel("$label command line options: "))
+                add(cmdEditor)
             }
         )
-        return textidoteOptions
+        return cmdEditor
     }
 
     private fun JPanel.addPdfViewerText() {
@@ -137,6 +142,7 @@ class TexifyConfigurable : SearchableConfigurable {
     override fun isModified(): Boolean {
         return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
             textidoteOptions?.text != settings.textidoteOptions ||
+            latexIndentOptions?.text != settings.latexIndentOptions ||
             automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal
     }
 
@@ -145,6 +151,7 @@ class TexifyConfigurable : SearchableConfigurable {
             setting.second.set(setting.first.get()?.isSelected == true)
         }
         settings.textidoteOptions = textidoteOptions?.text ?: ""
+        settings.latexIndentOptions = latexIndentOptions?.text ?: ""
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
     }
 
@@ -153,6 +160,7 @@ class TexifyConfigurable : SearchableConfigurable {
             setting.first.get()?.isSelected = setting.second.get()
         }
         textidoteOptions?.text = settings.textidoteOptions
+        latexIndentOptions?.text = settings.latexIndentOptions
         automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
     }
 }

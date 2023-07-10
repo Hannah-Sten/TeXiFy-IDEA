@@ -17,6 +17,8 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 import nl.hannahsten.texifyidea.util.magic.TypographyMagic
+import nl.hannahsten.texifyidea.util.parser.isEnvironmentDefinition
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -45,7 +47,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
 
     private fun insertPseudocodeEnd(name: String, context: InsertionContext) {
         val numberRequiredArguments = LatexCommand.lookup(name)
-            ?.firstOrNull()?.arguments
+            ?.first()?.arguments
             ?.count { it is RequiredArgument } ?: 0
 
         val templateText = List(numberRequiredArguments) {

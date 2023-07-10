@@ -10,10 +10,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -117,7 +119,8 @@ open class WordCountAction : AnAction(
                         ${formatAsHtml("Characters", characters?.toString())}
                         ${formatAsHtml("Error message", errorMessage)}
                         |</table>
-                        |</html>""".trimMargin(),
+                        |</html>
+                    """.trimMargin(),
                     AllIcons.General.InformationDialog,
                     SwingConstants.LEADING
                 )
@@ -275,10 +278,6 @@ open class WordCountAction : AnAction(
     private fun isWrongCommand(word: PsiElement): Boolean {
         val command = word.grandparent(7) as? LatexCommands ?: return false
 
-        if (IGNORE_COMMANDS.contains(command.name)) {
-            return true
-        }
-
-        return false
+        return IGNORE_COMMANDS.contains(command.name)
     }
 }

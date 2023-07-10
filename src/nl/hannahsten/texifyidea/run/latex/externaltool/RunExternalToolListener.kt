@@ -47,7 +47,6 @@ class RunExternalToolListener(
 
     override fun processTerminated(event: ProcessEvent) {
         try {
-
             // Only create new one if there is none yet
             val runConfigSettingsList =
                 latexRunConfig.externalToolRunConfigs.ifEmpty {

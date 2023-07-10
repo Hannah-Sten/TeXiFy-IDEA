@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.library
 
+import arrow.core.getOrElse
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.runReadAction
@@ -10,7 +11,6 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.ui.treeStructure.Tree
 import kotlinx.coroutines.runBlocking
-import nl.hannahsten.texifyidea.RemoteLibraryRequestTeXception
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.ui.remotelibraries.LibraryMutableTreeNode
 import nl.hannahsten.texifyidea.ui.remotelibraries.findLibraryNode
 import nl.hannahsten.texifyidea.util.TexifyDataKeys
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import java.util.*
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
@@ -52,17 +53,14 @@ class SyncLibraryAction : AnAction() {
 
             override fun run(indicator: ProgressIndicator) {
                 runBlocking {
-                    try {
-                        bibItems = library.getCollection()
-                        RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
-                        expandedPaths =
-                            tree?.let { it.getExpandedDescendants(TreePath(it.model.root)) } ?: return@runBlocking
-                    }
-                    catch (exception: RemoteLibraryRequestTeXception) {
-                        exception.showNotification(e.project!!)
+                    bibItems = library.getCollection().getOrElse {
+                        library.showNotification(e.project!!, it.libraryName, it.response)
                         // Apparently this is the way to cancel the task (and thus to avoid going into the onSuccess).
-                        throw ProcessCanceledException(exception)
+                        throw ProcessCanceledException()
                     }
+                    RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+                    expandedPaths =
+                        tree?.let { it.getExpandedDescendants(TreePath(it.model.root)) } ?: return@runBlocking
                 }
             }
 
@@ -79,14 +77,14 @@ class SyncLibraryAction : AnAction() {
                                     ?: LibraryMutableTreeNode(library.identifier, library.displayName)
                                 libraryNode.children().asSequence()
                                     .map { it as DefaultMutableTreeNode }
-                                    .filter { (it.userObject as BibtexStructureViewEntryElement).entry.identifier !in bibItems.map { bib -> bib.identifier } }
+                                    .filter { (it.userObject as BibtexStructureViewEntryElement).entry.getIdentifier() !in bibItems.map { bib -> bib.getIdentifier() } }
                                     .forEach { libraryNode.remove(it) }
 
                                 val itemsInLib = libraryNode.children().asSequence()
-                                    .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.identifier }
+                                    .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.getIdentifier() }
                                     .toList()
                                 bibItems.forEach { bib ->
-                                    if (bib.identifier !in itemsInLib) {
+                                    if (bib.getIdentifier() !in itemsInLib) {
                                         val entryElement = BibtexStructureViewEntryElement(bib)
                                         val entryNode = DefaultMutableTreeNode(entryElement)
                                         libraryNode.add(entryNode)

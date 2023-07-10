@@ -153,7 +153,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      *          The project instance.
      */
     private fun getKeys(project: Project): Array<String> {
-        return if (!DumbService.isDumb(project)) {
+        return if (!DumbService.isDumb(project) && !project.isDefault) {
             runReadAction { StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray() }
         }
         else {

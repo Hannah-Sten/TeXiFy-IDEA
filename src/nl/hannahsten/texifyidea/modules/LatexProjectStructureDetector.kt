@@ -43,7 +43,6 @@ class LatexProjectStructureDetector : ProjectStructureDetector() {
         projectDescriptor: ProjectDescriptor?,
         stepIcon: Icon?
     ): MutableList<ModuleWizardStep> {
-
         // Note that at least one DetectedProjectRoot needs to be added as above for the steps to be actually added
         // (to avoid showing the step for non-LaTeX project creations)
 

@@ -31,7 +31,6 @@ class LatexTableWizardAction : AnAction() {
 
         // If the user pressed OK, do stuff.
         if (dialogWrapper.showAndGet()) {
-
             // Get the table information from the dialog, and convert it to latex.
             return convertTableToLatex(dialogWrapper.tableInformation, indent)
 

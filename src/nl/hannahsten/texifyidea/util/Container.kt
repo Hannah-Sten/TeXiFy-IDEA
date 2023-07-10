@@ -15,8 +15,7 @@ open class Container<T> @JvmOverloads constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Container<*>) return false
-        if (item != other.item) return false
-        return true
+        return item == other.item
     }
 
     override fun hashCode() = item?.hashCode() ?: 0

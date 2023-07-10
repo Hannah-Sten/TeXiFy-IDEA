@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.isDefinition
+import nl.hannahsten.texifyidea.util.parser.isDefinition
 
 /**
  * Finds all the files in the project that are somehow related using includes.
@@ -69,7 +69,7 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> {
 /**
  * @see [BibtexEntryIndex.getIndexedEntriesInFileSet]
  */
-fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
+fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet(this)
 
 /**
  * @see [LatexCommandsIndex.getItemsInFileSet]

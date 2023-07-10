@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.psi.BibtexTag
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.substringEnd
 import nl.hannahsten.texifyidea.util.tokenType
 import java.util.*

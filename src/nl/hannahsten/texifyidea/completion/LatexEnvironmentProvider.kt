@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Kindness
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.util.*
 
 /**

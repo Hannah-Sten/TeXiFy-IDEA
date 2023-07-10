@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.parser.endOffset
 
 /**
  * Surrounds selected text with the given strings.

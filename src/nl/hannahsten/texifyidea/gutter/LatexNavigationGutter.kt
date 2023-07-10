@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import javax.swing.Icon
 
 /**
@@ -25,7 +25,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         element: PsiElement,
         result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
     ) {
-
         // Gutters should only be used with leaf elements.
         // We assume gutter icons only have to be shown for elements in required parameters
         if (element.firstChild != null || element.parentOfType(LatexRequiredParamContent::class) == null) return
@@ -38,8 +37,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // Fetch the corresponding LatexRegularCommand object.
         val commandHuh = LatexCommand.lookup(fullCommand.substring(1)) ?: return
 
-        val arguments = commandHuh.firstOrNull()?.getArgumentsOf(RequiredFileArgument::class.java)
-        if (arguments?.isEmpty() == true) {
+        val arguments = commandHuh.first().getArgumentsOf(RequiredFileArgument::class.java)
+        if (arguments.isEmpty()) {
             return
         }
 

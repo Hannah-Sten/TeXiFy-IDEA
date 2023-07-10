@@ -47,7 +47,6 @@ class LatexProjectGenerator :
     override fun createPeer(): ProjectGeneratorPeer<TexifySettings> = LatexProjectGeneratorPeer().also { peer = it }
 
     override fun generateProject(project: Project, baseDir: VirtualFile, settings: TexifySettings, module: Module) {
-
         // This behaviour was inspired by the Julia plugin, see
         // https://github.com/JuliaEditorSupport/julia-intellij/blob/master/src/org/ice1000/julia/lang/module/julia-projects.kt
         val modifiableModel: ModifiableRootModel = ModifiableModelsProvider.getInstance().getModuleModifiableModel(module)
@@ -60,7 +59,6 @@ class LatexProjectGenerator :
 
         // We can only write to disk in a runWriteAction
         ApplicationManager.getApplication().runWriteAction {
-
             // Add source, auxil and output directories
             rootModel.contentEntries.firstOrNull()?.apply {
                 addSourceFolder(findOrCreate(baseDir, "src", module), false)

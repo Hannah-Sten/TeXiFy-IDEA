@@ -15,10 +15,10 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 /**
  * @author Hannah Schellekens

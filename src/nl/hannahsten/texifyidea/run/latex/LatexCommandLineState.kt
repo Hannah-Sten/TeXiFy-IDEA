@@ -233,7 +233,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     private fun addOpenViewerListener(handler: ProcessHandler, focusAllowed: Boolean = true) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
-
             // Split user command on spaces, then replace {pdf} if needed
             val commandString = runConfig.viewerCommand!!
 
@@ -260,7 +259,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Do nothing if the user selected that they do not want a viewer to open.
         else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
         // Sumatra does not support DVI
-        else if (((runConfig.pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.getSumatraAvailability())) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
+        else if (((runConfig.pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable)) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }

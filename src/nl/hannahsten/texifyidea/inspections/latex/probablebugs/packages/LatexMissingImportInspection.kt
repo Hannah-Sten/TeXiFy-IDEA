@@ -19,10 +19,13 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.findCommandDefinitions
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
@@ -41,7 +44,6 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Missing imports"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return emptyList()
         }
@@ -105,16 +107,18 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
+        // This loops over all commands, so we don't want to do this again for every command in the file for performance
+        val commandDefinitionsInProject = file.project.findCommandDefinitions().map { it.definedCommandName() }
+
         val commands = file.commandsInFile()
         commandLoop@ for (command in commands) {
-
             // If we are actually defining the command, then it doesn't need any dependency
             if (command.parent.firstParentOfType(LatexCommands::class).isCommandDefinition()) {
                 continue
             }
 
             // If defined within the project, also fine
-            if (command.project.findCommandDefinitions().map { it.definedCommandName() }.contains(command.name)) {
+            if (commandDefinitionsInProject.contains(command.name)) {
                 continue
             }
 

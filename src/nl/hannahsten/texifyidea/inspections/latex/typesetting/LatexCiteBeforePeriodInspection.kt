@@ -6,6 +6,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.regex.Pattern
 import kotlin.math.max
 
@@ -32,7 +34,6 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
 ) {
 
     override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
-
         val file = descriptor.psiElement.containingFile
         val document = file.document() ?: return 0
         val cite = file.findElementAt(replacementRange.last + 3)?.parentOfType(LatexCommands::class) ?: return 0

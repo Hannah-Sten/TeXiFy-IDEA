@@ -24,13 +24,13 @@ import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
@@ -255,7 +255,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional: List<String> = LinkedList(commands.optionalParameterMap.toStringMap().keys)
+                val optional: List<String> = LinkedList(commands.getOptionalParameterMap().toStringMap().keys)
                 var requiredParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {
@@ -277,7 +277,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
             "\\DeclarePairedDelimiter" -> "{param}"
             "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> {
-                val optional = commands.optionalParameterMap.toStringMap().keys.firstOrNull()
+                val optional = commands.getOptionalParameterMap().toStringMap().keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
                 }
@@ -288,7 +288,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             }
 
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
-                val paramSpecification = commands.requiredParameters.getOrNull(1)?.removeAll("null", " ") ?: ""
+                val paramSpecification = commands.getRequiredParameters().getOrNull(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
                     if (PackageMagic.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"

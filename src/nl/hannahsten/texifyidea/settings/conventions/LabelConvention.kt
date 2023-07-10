@@ -29,8 +29,12 @@ data class LabelConvention(
     var prefix: String? = null
 )
 
-enum class LabelConventionType {
+enum class LabelConventionType(private val prettyName: String) {
 
-    ENVIRONMENT,
-    COMMAND
+    ENVIRONMENT("Environment"),
+    COMMAND("Command");
+
+    override fun toString(): String {
+        return prettyName
+    }
 }

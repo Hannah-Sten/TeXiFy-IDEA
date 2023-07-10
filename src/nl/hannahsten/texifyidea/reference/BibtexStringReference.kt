@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.*
 import nl.hannahsten.texifyidea.psi.BibtexDefinedString
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.tags
 import nl.hannahsten.texifyidea.util.toTextRange
 import nl.hannahsten.texifyidea.util.tokenName

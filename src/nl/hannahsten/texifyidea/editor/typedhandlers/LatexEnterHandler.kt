@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 /**
  * Configure the indent after pressing enter.

@@ -19,10 +19,10 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
-import nl.hannahsten.texifyidea.util.endOffset
-import nl.hannahsten.texifyidea.util.hasParent
+import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.hasParent
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * Implements the paragraph fill handler action.

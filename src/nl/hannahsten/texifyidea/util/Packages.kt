@@ -124,22 +124,17 @@ object PackageUtils {
             PsiDocumentManager.getInstance(file.project)
                 .doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
             PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
+            // Avoid NPE, see #3083 (cause unknown)
             if (anchorAfter != null && com.intellij.psi.impl.source.tree.TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
                 val anchorBefore = anchorAfter.node.treeNext
 
                 @Suppress("KotlinConstantConditions")
                 if (prependNewLine) {
                     val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
-                    if (anchorBefore != null)
-                        anchorAfter.parent.node.addChild(newLine, anchorBefore)
-                    else
-                        anchorAfter.parent.node.addChild(newLine)
+                    anchorAfter.parent.node.addChild(newLine, anchorBefore)
                 }
 
-                if (anchorBefore == null)
-                    anchorAfter.parent.node.addChild(newNode)
-                else
-                    anchorAfter.parent.node.addChild(newNode, anchorBefore)
+                anchorAfter.parent.node.addChild(newNode, anchorBefore)
             }
             else {
                 // Insert at beginning
@@ -260,7 +255,6 @@ object PackageUtils {
             )
 
             for (list in packages) {
-
                 if (list.isEmpty()) {
                     continue
                 }

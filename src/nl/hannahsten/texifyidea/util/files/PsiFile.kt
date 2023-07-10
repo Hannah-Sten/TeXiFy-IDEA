@@ -26,6 +26,10 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
+import nl.hannahsten.texifyidea.util.parser.isDefinition
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Get the file search scope for this psi file.

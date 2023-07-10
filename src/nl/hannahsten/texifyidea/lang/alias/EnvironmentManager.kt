@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.lang.alias
 
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Similar to the [CommandManager], this manages aliases of environments.

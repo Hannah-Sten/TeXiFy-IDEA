@@ -13,8 +13,8 @@ import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.getParentOfType
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.getParentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * @author Hannah Schellekens
