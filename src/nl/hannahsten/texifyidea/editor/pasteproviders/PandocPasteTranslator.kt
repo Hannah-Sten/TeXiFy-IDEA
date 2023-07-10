@@ -2,13 +2,12 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
-
 /**
  * todo
  *
  * This is not a LatexPasteProvider because it operates on the whole html at once, not on individual nodes.
  */
-class PandocPasteProvider(private val isStandalone: Boolean = false) {
+class PandocPasteTranslator(private val isStandalone: Boolean = false) {
 
     companion object {
 
@@ -30,8 +29,8 @@ class PandocPasteProvider(private val isStandalone: Boolean = false) {
                 "html",
                 "-t",
                 "latex"
-            ) + if (isStandalone) arrayOf("--standalone") else arrayOf()
-            val (output, exitCode) = runCommandWithExitCode(*commands, inputString=htmlIn)
+            ) + (if (isStandalone) arrayOf("--standalone") else arrayOf())
+            val (output, exitCode) = runCommandWithExitCode(*commands, inputString = htmlIn)
             if (exitCode != 0 || output == null) return null
             return sanitizeOutput(output, isStandalone)
         }
