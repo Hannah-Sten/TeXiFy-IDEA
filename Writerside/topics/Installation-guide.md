@@ -279,4 +279,4 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 * Go to [https://plugins.jetbrains.com/plugin/9473-texify-idea/versions](https://plugins.jetbrains.com/plugin/9473-texify-idea/versions) and download the version you want
 * Go to <ui-path>Settings | Plugins</ui-path> and click the gear icon, click Install Plugin from Disk, select the zip file and install.
 
-For installing alpha versions, see [Alpha builds](Alpha-builds).
+For installing alpha versions, see [Alpha builds](Installing-pre-release-builds.md).

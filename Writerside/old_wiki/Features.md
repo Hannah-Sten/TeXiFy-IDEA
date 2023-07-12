@@ -1,14 +1,5 @@
 ## Editing LaTeX
 
-* [Easy switching to other math environments](Math-environment-switcher)
-* [Many useful customizable shortcuts](Shortcuts)
-* [Surround with dollars, quotes, or braces](Surrounding)
-* Multi-cursors
-* [Support for `\graphicspath` from the graphicx package.](Graphicspath-support)
-* [Support for `\newcommand`-like custom definitions of cite and label commands](Custom-commands)
-* [Inlining of files and command definitions](Inline-File)
-* [Action for swapping arguments of LaTeX commands](Move-arguments)
-* [Magic comments](Magic-comments)
 * [Known issues with parsing LaTeX](Known-issues)
 * 
 * [Drag and drop graphics inside your document](++Menu-entries#insert-graphic-wizard++)

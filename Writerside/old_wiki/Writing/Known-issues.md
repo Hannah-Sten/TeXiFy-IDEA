@@ -12,7 +12,7 @@ As a workaround, if you want to keep syntax highlighting for that part you can u
 % @formatter:on
 ```
 
-If you are fine without the syntax highlighting for that part, you can disable the parser entirely (see [Magic comments](Magic-comments)).
+If you are fine without the syntax highlighting for that part, you can disable the parser entirely (see [Magic comments](Editing-a-LaTeX-file.md#magic-comments)).
 This will ensure that TeXiFy completely ignores this part of the code, and other parts should remain working fine.
 
 ```latex
