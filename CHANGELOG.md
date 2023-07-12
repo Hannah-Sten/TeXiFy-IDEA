@@ -6,6 +6,17 @@
 
 ### Fixed
 
+## [0.7.32-alpha.2] - 2023-07-08
+
+### Added
+* Add option to add custom environments/commands in label convention settings, by @jojo2357
+* Autocomplete \{...\}, by @jojo2357
+* Improve inspections performance
+
+### Fixed
+* Fix PluginException #3140
+* Fix false positive non-breaking space warning when starting a sentence with a reference, by @jojo2357
+
 ## [0.7.32-alpha.1] - 2023-07-06
 
 ### Added
@@ -165,8 +176,9 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.32-alpha.1...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.32-alpha.2...HEAD
 [0.7.32-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.31...v0.7.32-alpha.1
+[0.7.32-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.32-alpha.1...v0.7.32-alpha.2
 [0.7.31]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30...v0.7.31
 [0.7.30]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.29...v0.7.30
 [0.7.29]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.28...v0.7.29
