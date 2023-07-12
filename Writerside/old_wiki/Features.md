@@ -1,22 +1,6 @@
-## Editing LaTeX
-
-* [Known issues with parsing LaTeX](Known-issues)
-* 
-* [Drag and drop graphics inside your document](++Menu-entries#insert-graphic-wizard++)
-* [Paste HTML tables and turn them into LaTeX](++Menu-entries#table-creation-wizard++)
-* [Paste images directly from your clipboard](++Pasting-images++)
-
-### Writing LaTeX
 
 ### Autocompletion
-* Automatic insertion of `\end` when typing `\begin` for environments
-* On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
-* Automatic insertion of braces of first required parameter
-* Typing `}` at closing brace skips over it, same for `$..$`
-* [Automatic insertion of `\item` in list environments like itemize and enumerate](Item-insertion)
-* [Brace matching](Brace-matching)
-* [Live templates](Live-templates)
-* Custom live templates
+
 * [Postfix templates](Postfix-templates)
 * Custom macros with shortcuts
 * [Autocomplete of labels, all commands from installed packages, custom defined commands and (custom) environments](Autocomplete)
