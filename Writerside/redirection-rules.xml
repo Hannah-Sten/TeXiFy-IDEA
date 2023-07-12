@@ -22,4 +22,8 @@
         <description>Created after removal of "About TeXiFy-IDEA documentation" from TeXiFy-IDEA documentation</description>
         <accepts>starter-topic.html</accepts>
     </rule>
+    <rule id="1e23fa2c">
+        <description>Created after removal of "Image test" from TeXiFy-IDEA documentation</description>
+        <accepts>Image-test.html</accepts>
+    </rule>
 </rules>

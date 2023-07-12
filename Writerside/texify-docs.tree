@@ -6,10 +6,6 @@
                  name="TeXiFy-IDEA documentation"
                  start-page="Welcome.topic">
 
-    <toc-element topic="Image-test.md"/>
-    <toc-element topic="Image-test-2.md"/>
-    <toc-element topic="Image-test-4.md"/>
-    <toc-element topic="Image-test-3.md"/>
     <toc-element topic="Welcome.topic"/>
     <toc-element topic="Quick-start-guide.md"/>
     <toc-element topic="Installation-guide.md"/>

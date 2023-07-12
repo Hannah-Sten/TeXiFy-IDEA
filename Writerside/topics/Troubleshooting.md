@@ -16,3 +16,9 @@ For any performance issue: if you do not have a favourite profiler yet, you can 
 * Stop the profiling
 * Take a Snapshot to view and save results. Note that you may have to click a few more levels open to see the actual methods.
 * Now you can zip the nps file and upload it here on GitHub.
+
+## Main file is not detected correctly
+
+If TeXiFy does not detect which file is your main/root LaTeX file, you may experience problems like package imports being placed in the wrong file, or imports not being resolved correctly.
+If this is the case, please report a [GitHub issue](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose).
+Until the problem is fixed, you can use a [Magic comment](Editing-a-LaTeX-file.md#magic-comments) as a workaround.
