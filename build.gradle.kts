@@ -31,7 +31,7 @@ plugins {
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "8.3.1"
 
-    id("org.jetbrains.changelog") version "2.1.1"
+    id("org.jetbrains.changelog") version "2.1.2"
 
     id("org.jetbrains.grammarkit") version "2022.3.1"
 }
@@ -117,9 +117,9 @@ dependencies {
         exclude("xml-apis", "xml-apis-ext")
     }
 
-    implementation("io.arrow-kt:arrow-core:1.2.0-RC")
-    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
-    implementation("io.arrow-kt:arrow-resilience:1.2.0-RC")
+    implementation("io.arrow-kt:arrow-core:1.2.0")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
+    implementation("io.arrow-kt:arrow-resilience:1.2.0")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
