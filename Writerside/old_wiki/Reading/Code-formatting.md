@@ -16,7 +16,7 @@ This can be particularly useful for `listings` environments.
 
 ## Indents in (math) environments
 
-![indent-environment](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/indent-environment.gif)
+![indent-environment](indent-environment.gif)
 
 ## Indents in groups
 
@@ -24,7 +24,7 @@ _Since b0.6.8_
 
 When writing inside a group (`{...}` or `[...]`) the formatter will indent all content that is on a new line.
 
-![indent-group](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/indent-group.gif)
+![indent-group](indent-group.gif)
 
 ## Blank lines before sectioning commands
 
@@ -32,7 +32,7 @@ _Since b0.6.8_
 
 Edit this behaviour in the [code style settings](Code-style-settings#section-newlines).
 
-![blank-lines-section](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/blank-lines-section.gif)
+![blank-lines-section](blank-lines-section.gif)
 
 ## Hard wrap
 
@@ -40,7 +40,7 @@ _Since b0.6.8_
 
 Enable or disable this setting in the [code style settings](Code-style-settings#hard-wrap).
 
-![hard-wrap](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/hard-wrap.gif)
+![hard-wrap](hard-wrap.gif)
 
 ## Table formatting
 
@@ -48,7 +48,7 @@ _Since b0.6.10_
 
 Inside a table environment, like `tabular`, the ``&``s and ``\\``s are aligned, so it is clear which cells belong to the same column.
 
-![table-formatter-simple](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/table-formatter-simple.gif)
+![table-formatter-simple](table-formatter-simple.gif)
 
 When formatting the contents of a table, it ignores all table lines that
 
@@ -57,7 +57,7 @@ When formatting the contents of a table, it ignores all table lines that
 
 If you have 'Wrap on typing' set to 'yes', then long lines may be split.
 
-![table-formatter-multiline](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/table-formatter-multiline.gif)
+![table-formatter-multiline](table-formatter-multiline.gif)
 
 ## Algorithm pseudocode
 

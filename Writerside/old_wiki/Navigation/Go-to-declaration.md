@@ -3,8 +3,8 @@ In general, you can go back to your previous cursor location with <shortcut>Ctrl
 
 This also works with usages of commands defined with `\newcommand` definitions (in your fileset, not in LaTeX packages), but only if your command definition includes braces, like `\newcommand{\mycommand}{definition}`
 
-![go-to-label-declaration](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-label-declaration.gif)
-![go-to-cite-declaration](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-cite-declaration.gif)
+![go-to-label-declaration](go-to-label-declaration.gif)
+![go-to-cite-declaration](go-to-cite-declaration.gif)
 
 Note that your cursor has to be placed somewhere in the parameter of the referencing command, not on the command itself.
 For example in the case of `\re|f{mylabel}` where `|` denotes the cursor, then it will not work, but for `\ref{my|label}` it will.
@@ -14,7 +14,7 @@ For example in the case of `\re|f{mylabel}` where `|` denotes the cursor, then i
 For the elements for which Go To Declaration is implemented, you also have a Peek Definition, by default <shortcut>Ctrl + Shift + I</shortcut>.
 For more information, see [https://www.jetbrains.com/help/idea/viewing-reference-information.html#](https://www.jetbrains.com/help/idea/viewing-reference-information.html#)
 
-![peek-definition](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/peek-definition.png)
+![peek-definition](peek-definition.png)
 
 ## Using the xr package
 
@@ -22,7 +22,7 @@ TeXiFy also supports the xr package with respect to label reference resolving an
 This also includes related features like 'find usages', as in the screenshot below.
 As you can see, using a prefix also works as expected.
 
-![externaldocument-usages](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/externaldocument-usages.png)
+![externaldocument-usages](externaldocument-usages.png)
 
 An example of using the xr package is as follows.
 Note that you need to compile `presentation.tex` before `main.tex`, and that you can do so by specifying the run configuration for `presentation.tex` in the 'Before launch' section in the run configuration for `main.tex`.

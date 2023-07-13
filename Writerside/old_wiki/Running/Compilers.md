@@ -3,7 +3,7 @@
 You can switch to a different compiler by clicking on the dropdown list next to the run button, select Edit Configurations and select a different compiler in the Compiler dropdown menu.
 Make sure you have it installed correctly.
 
-![change-compiler](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Running/figures/change-compiler.gif)
+![change-compiler](change-compiler.gif)
 
 ### Using magic comments to specify the compiler for new run configurations
 To set the compiler of a document, put the magic comment

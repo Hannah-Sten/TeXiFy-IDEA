@@ -2,7 +2,7 @@ Next to commands that include other files, there is a gutter icon.
 You can click on it to bring you to the file, or you can use <shortcut>Ctrl + B</shortcut> when your cursor is on the filename.
 This includes commands like `\documentclass`, `\usepackage` and `\includegraphics` and many more.
 
-![go-to-file-inclusion](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-file-inclusion.gif)
+![go-to-file-inclusion](go-to-file-inclusion.gif)
 
 File reference resolving also uses `kpsewhich`, so you can for example include a LaTeX file located in `~/texmf/tex/latex/` and TeXiFy recognises it.
 

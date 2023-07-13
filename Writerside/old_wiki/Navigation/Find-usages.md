@@ -7,7 +7,7 @@ This holds for at least command definitions, labels and bibtex citations.
 As a complement for [Go to declaration](Go-to-declaration), you can easily find usages of LaTeX commands you defined in your document, for example using `\newcommand` or `\DeclareMathOperator`, using <shortcut>Ctrl + B</shortcut>.
 Note that this is the same shortcut as for Go to declaration.
 
-![find-usages](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/find-usages.png)
+![find-usages](find-usages.png)
 
 ## Find usages for labels
 

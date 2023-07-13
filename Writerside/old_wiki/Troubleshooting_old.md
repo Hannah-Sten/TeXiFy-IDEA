@@ -266,7 +266,7 @@ You can define a live template via <ui-path>File | Settings | Editor | Live Temp
 Set the template to be applicable in LaTeX files.
 Also see [https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates)
 
-![Screenshot of live template UI](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/marco.png)
+![Screenshot of live template UI](marco.png)
 
 Once the live template is created, close the Settings dialog. Use <ui-path>Edit | Macros > Start Macro Recording</ui-path| and enter the live template abbreviation. Finish recording the macro, and name it. Via <ui-path|Settings | Keymap</ui-path>, assign the macro a key binding such as <shortcut>Ctrl + Alt + Shift + I</shortcut>.
 
