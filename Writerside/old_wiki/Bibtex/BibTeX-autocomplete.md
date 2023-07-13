@@ -3,4 +3,4 @@ The suggestions list will show title and (to the right) the bibtex id.
 If you press <shortcut>Ctrl + Q</shortcut> when having an item selected you can also view the authors.
 When you select it, the bibtex id will be inserted.
 
-![bibtex-autocomplete](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Bibtex/figures/bibtex-autocomplete.png)
+![bibtex-autocomplete](bibtex-autocomplete.png)
