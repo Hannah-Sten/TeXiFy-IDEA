@@ -1,6 +1,6 @@
 _Since b0.6.7_
 
-When you create a run configuration from context (for example using the button next to `\begin{document}` or the shortcut kbd:[Ctrl + Shift + F10]) then TeXiFy will look whether you need to run makeindex, xindy, makeglossaries, etc., and when needed create the necessary run configurations automatically.
+When you create a run configuration from context (for example using the button next to `\begin{document}` or the shortcut <shortcut>Ctrl + Shift + F10</shortcut>) then TeXiFy will look whether you need to run makeindex, xindy, makeglossaries, etc., and when needed create the necessary run configurations automatically.
 Makeindex is only run when you actually include an index package like `imakeidx` or a glossary package like `makeglossaries`.
 
 Makeindex will be run as a separate configuration, so you will see the output in a window next to your normal LaTeX output window.

@@ -10,10 +10,10 @@ Also see the [Unicode inspection](Probable-bugs#Unsupported-Unicode-character).
 
 ## Line commenting
 
-By default, the shortcut kbd:[Ctrl + /] will add a comment (`%`) character to the beginning of the line.
+By default, the shortcut <shortcut>Ctrl + /</shortcut> will add a comment (`%`) character to the beginning of the line.
 When multiple lines are selected, these will all be commented.
 
-Note that the block comment shortcut kbd:[Ctrl + Shift + /] should not be used, as LaTeX does not have any block comments by itself.
+Note that the block comment shortcut <shortcut>Ctrl + Shift + /</shortcut> should not be used, as LaTeX does not have any block comments by itself.
 
 Also see the [Option to start a comment at the same indentation as normal text](Code-style-settings#indent-comment).
 
@@ -39,7 +39,7 @@ _Since b0.6.9_
 
 Currently, refactoring (renaming) elements is supported for files, labels and environments.
 
-To rename a label, place your cursor on a label definition or reference, e.g. `\ref{some-<cursor>label}` and press kbd:[Shift+F6].
+To rename a label, place your cursor on a label definition or reference, e.g. `\ref{some-<cursor>label}` and press <shortcut>Shift+F6</shortcut>.
 
 To find out what elements need to be renamed as well (definition and other usages), the functionality from [Find usages](Find-usages) is used.
 
@@ -60,12 +60,12 @@ with
 \end{abstract}
 ```
 
-by making sure your cursor is on the environment name inside either the `\begin` or `\end` command and using kbd:[Shift + F6], then type the new name.
+by making sure your cursor is on the environment name inside either the `\begin` or `\end` command and using <shortcut>Shift + F6</shortcut>, then type the new name.
 
 When you try to rename an element for which refactoring is not supported, the element will simply not change or in some cases a warning "Inserted identifier is not valid" will be shown.
 
 ## Switching between math environments
-To switch between math environments, press kbd:[Alt + Enter] when your cursor is in a math environment.
+To switch between math environments, press <shortcut>Alt + Enter</shortcut> when your cursor is in a math environment.
 Then you can choose 'Convert to other math environment' and you will get a popup to choose from.
 
 ![Environment switching](environment-switch.png)
@@ -82,14 +82,14 @@ See [https://www.jetbrains.com/help/idea/mastering-keyboard-shortcuts.html](http
 
 Some useful shortcuts are for example:
 
-* Double kbd:[Shift]: Search for any IntelliJ command, like Reformat.
-* kbd:[Alt + Enter]: When your cursor is in a place where an inspection ribbon is shown, view the quick fix, if there is one. Apply the fix with kbd:[Enter].
-* kbd:[Ctrl + Alt + L]: Reformat the file.
-* kbd:[Ctrl + D]: Duplicate the line or selection.
-* kbd:[Alt + Shift + &#8593;] or kbd:[Alt + Shift + &#8595;]: Move the line up or down.
-* kbd:[Ctrl + K]: Commit and push changes with git.
-* kbd:[Ctrl + T] Pull changes with git.
-* kbd:[Ctrl + Alt + &lt;-] Go back to previous cursor location.
+* Double <shortcut>Shift</shortcut>: Search for any IntelliJ command, like Reformat.
+* <shortcut>Alt + Enter</shortcut>: When your cursor is in a place where an inspection ribbon is shown, view the quick fix, if there is one. Apply the fix with <shortcut>Enter</shortcut>.
+* <shortcut>Ctrl + Alt + L</shortcut>: Reformat the file.
+* <shortcut>Ctrl + D</shortcut>: Duplicate the line or selection.
+* <shortcut>Alt + Shift + &#8593;</shortcut> or <shortcut>Alt + Shift + &#8595;</shortcut>: Move the line up or down.
+* <shortcut>Ctrl + K</shortcut>: Commit and push changes with git.
+* <shortcut>Ctrl + T</shortcut> Pull changes with git.
+* <shortcut>Ctrl + Alt + &lt;-</shortcut> Go back to previous cursor location.
 
 ### TeXiFy-IDEA shortcuts
 
@@ -99,9 +99,9 @@ In the menu in IntelliJ you can see the shortcuts.
 ## Surrounding selection with quotes or dollars
 _Since b0.6.9_
 
-With some text selected, press kbd:[Ctrl + Alt + T] (surround with) to surround text with quotes, dollar signs (inline math) or braces.
+With some text selected, press <shortcut>Ctrl + Alt + T</shortcut> (surround with) to surround text with quotes, dollar signs (inline math) or braces.
 When surrounding with quotes, quotes will be inserted according to the [Smart quotes settings](Global-settings#smart-quotes).
-Use kbd:[Ctrl + Alt + J] (surround with live template) to surround with a live template, i.e., surround with dollars or braces.
+Use <shortcut>Ctrl + Alt + J</shortcut> (surround with live template) to surround with a live template, i.e., surround with dollars or braces.
 To surround a selection with dollars, it is also possible to simply press `$`.
 
 ## Multi-cursors
@@ -148,7 +148,7 @@ To perform this, you can right click an input command -> refactor -> inline and 
 
 ## Swapping command arguments
 
-Using <ui-path>Code | Move Element Left/Right</ui-path> or by default kbd:[Ctrl + Alt + Shift + Left/Right] you can move/swap required arguments of LaTeX commands.
+Using <ui-path>Code | Move Element Left/Right</ui-path> or by default <shortcut>Ctrl + Alt + Shift + Left/Right</shortcut> you can move/swap required arguments of LaTeX commands.
 
 ![move-argument](move-argument.gif)
 

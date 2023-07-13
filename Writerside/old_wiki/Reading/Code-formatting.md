@@ -1,4 +1,4 @@
-Press kbd:[Ctrl+Alt+L] to reformat.
+Press <shortcut>Ctrl+Alt+L</shortcut> to reformat.
 To disable formatting on a portion of your `tex` file, wrap the code with
 
 ```latex

@@ -4,20 +4,20 @@ TeXiFy automatically completes many structures as you type.
 Some examples are:
 
 * Automatic insertion of `\end` when typing `\begin` for environments
-* On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
+* On typing `\[` automatic insertion of `\]`, after <shortcut>Enter</shortcut> also with correct indentation
 * Automatic insertion of braces of first required parameter
 * Typing `}` at closing brace skips over it, same for `$..$`
 
 ## Inserting \item in itemize environments
 
-When writing in an itemize-like environment, pressing kbd:[Enter] will automatically insert an `\item` on the next line.
+When writing in an itemize-like environment, pressing <shortcut>Enter</shortcut> will automatically insert an `\item` on the next line.
 This allows for easy writing of lists.
 
-If you are writing an item in the list but you do want a linebreak, for example to start a new sentence, use kbd:[Shift + Enter].
+If you are writing an item in the list but you do want a linebreak, for example to start a new sentence, use <shortcut>Shift + Enter</shortcut>.
 
-If your cursor is in the middle of a line and you want to split it, but without inserting an `\item` in the middle, use kbd:[Ctrl + Enter].
+If your cursor is in the middle of a line and you want to split it, but without inserting an `\item` in the middle, use <shortcut>Ctrl + Enter</shortcut>.
 
-An example which shows the use of kbd:[Enter] at the end of a line, kbd:[Enter] at the middle of a line, kbd:[Shift + Enter] and kbd:[Ctrl + Enter] (in that order):
+An example which shows the use of <shortcut>Enter</shortcut> at the end of a line, <shortcut>Enter</shortcut> at the middle of a line, <shortcut>Shift + Enter</shortcut> and <shortcut>Ctrl + Enter</shortcut> (in that order):
 
 ![itemize-enter](itemize-enter.gif)
 
@@ -36,9 +36,9 @@ If you then continue typing, you can exit the brace pair by typing the closing b
 ## Live templates
 
 Using live templates, you can quickly insert a predefined piece of text by typing just a few characters of a certain key.
-You can denote places to which the cursor skips when you press kbd:[Tab] after inserting the live template.
+You can denote places to which the cursor skips when you press <shortcut>Tab</shortcut> after inserting the live template.
 
-To use a live template, type (a part of) the key, for example `fig`, hit enter when the live template is suggested in the autocomplete, type things and use kbd:[Tab] to skip to the next place to type information.
+To use a live template, type (a part of) the key, for example `fig`, hit enter when the live template is suggested in the autocomplete, type things and use <shortcut>Tab</shortcut> to skip to the next place to type information.
 
 ![live-templates](live-templates.gif)
 

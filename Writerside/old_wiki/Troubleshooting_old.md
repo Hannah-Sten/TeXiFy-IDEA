@@ -268,8 +268,8 @@ Also see [https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates](https:
 
 ![Screenshot of live template UI](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/marco.png)
 
-Once the live template is created, close the Settings dialog. Use <ui-path>Edit | Macros > Start Macro Recording</ui-path| and enter the live template abbreviation. Finish recording the macro, and name it. Via <ui-path|Settings | Keymap</ui-path>, assign the macro a key binding such as kbd:[Ctrl + Alt + Shift + I].
+Once the live template is created, close the Settings dialog. Use <ui-path>Edit | Macros > Start Macro Recording</ui-path| and enter the live template abbreviation. Finish recording the macro, and name it. Via <ui-path|Settings | Keymap</ui-path>, assign the macro a key binding such as <shortcut>Ctrl + Alt + Shift + I</shortcut>.
 
-Now, you can use the macro key binding and hit kbd:[Enter] to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
+Now, you can use the macro key binding and hit <shortcut>Enter</shortcut> to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
 
 For commands, you can define templates for e.g. `\emph{$PARM1$}`.

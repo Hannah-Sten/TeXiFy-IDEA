@@ -3,11 +3,11 @@ _Since b0.6.7_
 On Linux systems, TeXiFy supports Okular as a pdf viewer with forward and inverse search.
 
 ## Shortcuts
-The default shortcut for forward search in IntelliJ is is kbd:[Ctrl + Alt + Shift + .].
-The default shortcut for inverse search in Okular is kbd:[Shift + Left mouse click].
+The default shortcut for forward search in IntelliJ is is <shortcut>Ctrl + Alt + Shift + .</shortcut>.
+The default shortcut for inverse search in Okular is <shortcut>Shift + Left mouse click</shortcut>.
 
 ## Configuring inverse (or backwards) search
-_Note that inverse search only works when you’re viewing the pdf in browse mode (kbd:[Ctrl + 1])_
+_Note that inverse search only works when you’re viewing the pdf in browse mode (<shortcut>Ctrl + 1</shortcut>)_
 
 * In Okular, open the settings and go to the Editor tab.
 * For Okular version > 1.8.3, select TeXiFy-IDEA from the list. For Okular 1.8.3 or less, select the Custom Text Editor in the editor field, and type the command `idea --line %l %f` (for PyCharm replace `idea` with `pycharm`).

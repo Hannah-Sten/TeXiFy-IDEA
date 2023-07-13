@@ -1,4 +1,4 @@
-<ui-path>View | Tool Windows | Structure</ui-path> or kbd:[Alt + 7]
+<ui-path>View | Tool Windows | Structure</ui-path> or <shortcut>Alt + 7</shortcut>
 
 The structure view shows all includes, sectioning commands (including proper nesting when chapter, section, subsection etc. are used), command definitions, labels and bibliography items (in `.bib` files).
 You can show/hide any of these types in the Structure View at the top.

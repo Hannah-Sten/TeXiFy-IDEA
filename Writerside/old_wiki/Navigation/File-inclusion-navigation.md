@@ -1,5 +1,5 @@
 Next to commands that include other files, there is a gutter icon.
-You can click on it to bring you to the file, or you can use kbd:[Ctrl + B] when your cursor is on the filename.
+You can click on it to bring you to the file, or you can use <shortcut>Ctrl + B</shortcut> when your cursor is on the filename.
 This includes commands like `\documentclass`, `\usepackage` and `\includegraphics` and many more.
 
 ![go-to-file-inclusion](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-file-inclusion.gif)
@@ -21,7 +21,7 @@ For more information, see [http://mirrors.ctan.org/macros/latex/contrib/import/i
 ## Referencing files in bibtex
 
 When you have a `file` or `bibsource` field, the content can include a path (absolute or relative) to a local pdf file from which the bibtex entry was created.
-Then when you press kbd:[Ctrl + B] when your cursor is on the file path, the file will be opened.
+Then when you press <shortcut>Ctrl + B</shortcut> when your cursor is on the file path, the file will be opened.
 Autocompletion is also available (for any file type).
 
 An example:

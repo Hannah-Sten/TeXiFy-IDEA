@@ -1,5 +1,5 @@
 These settings can be found in <ui-path>File | Settings | Editor | Code Style | LaTeX</ui-path> and <ui-path>File | Settings | Editor | Code Style | BibTeX</ui-path> for LaTeX and BibTeX, respectively.
-These settings will change the behaviour of the [formatter](Formatter), triggered by pressing kbd:[Ctrl + Alt + L], or the behaviour of the editor.
+These settings will change the behaviour of the [formatter](Formatter), triggered by pressing <shortcut>Ctrl + Alt + L</shortcut>, or the behaviour of the editor.
 
 ## Common code style settings for both LaTeX and BibTeX
 
@@ -24,7 +24,7 @@ These settings are only available for LaTeX.
 
 This setting is in the **Code Generation** tab.
 
-Press kbd:[Ctrl + /] to turn a line into a comment.
+Press <shortcut>Ctrl + /</shortcut> to turn a line into a comment.
 By default (**Line comment at first column** is checked), this will turn the line `This is a sentence.`
 
 ```
@@ -51,7 +51,7 @@ Uncheck **Line comment at first column** and check **Add space to comment start*
 \end{center}
 ```
 
-Note that this only changes the behaviour when **generating** a comment with kbd:[Ctrl + /], and that this setting has no influence on the formatting of comments.
+Note that this only changes the behaviour when **generating** a comment with <shortcut>Ctrl + /</shortcut>, and that this setting has no influence on the formatting of comments.
 
 ### Specify number of blank lines before sectioning commands
 

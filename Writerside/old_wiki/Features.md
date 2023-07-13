@@ -72,13 +72,13 @@ If you are new to BibTeX, see the [BibTeX introduction](BibTeX).
 * Formatter
 * [Autocomplete](BibTeX-autocomplete)
 * Structure view with filters
-* kbd:[Ctrl + Q] on a bibtex reference will show a popup with title and authors from the bibtex entry
+* <shortcut>Ctrl + Q</shortcut> on a bibtex reference will show a popup with title and authors from the bibtex entry
 * [Support for @string variables](String-variables)
 * [Folding](Bibtex-folding)
 * [Chapterbib support](Chapterbib-support)
 
 ## Managing LaTeX
-* Never press kbd:[Ctrl + S] again: saves while you type
+* Never press <shortcut>Ctrl + S</shortcut> again: saves while you type
 * Project management
 * Support for multiple content roots
 
