@@ -8,6 +8,8 @@ Some examples are:
 * Automatic insertion of braces of first required parameter
 * Typing `}` at closing brace skips over it, same for `$..$`
 
+Some of this basic code completion can be disabled in <ui-path>Settings | Languages & Frameworks | TeXiFy</ui-path>.
+
 See the [IntelliJ documentation about Code Completion](https://www.jetbrains.com/help/idea/auto-completing-code.html).
 
 TeXiFy supports autocomplete of labels, all commands from installed LaTeX packages, user defined commands, and (user defined) environments.
@@ -136,3 +138,5 @@ See also [https://www.jetbrains.com/help/idea/auto-completing-code.html#postfix_
 
 ## Smart quote substitution
 
+The <control>csquotes</control> package provides the `\enquote` command.
+TeXiFy can automatically insert the command if you type regular quotes, see [Global Settings](Global-settings.md#csquotes).
