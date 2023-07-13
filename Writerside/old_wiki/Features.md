@@ -1,9 +1,6 @@
 
 ### Autocompletion
 
-* [Postfix templates](Postfix-templates)
-* Custom macros with shortcuts
-* [Autocomplete of labels, all commands from installed packages, custom defined commands and (custom) environments](Autocomplete)
 * [Smart quote substitution](Global-settings#option-to-enable-smart-quote-substitution)
 * Support for user-created document classes and packages
 

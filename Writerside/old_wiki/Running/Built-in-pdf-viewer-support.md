@@ -12,7 +12,7 @@ After compilation it will open the PDF viewer on the right.
 
 At the moment of writing (April 2023), a newer version with bug fixes is available at [https://github.com/slideclimb/intellij-pdf-viewer/releases](https://github.com/slideclimb/intellij-pdf-viewer/releases)
 
-![built-in-pdf-viewer](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Running/figures/built-in-pdf-viewer.gif)
+![built-in-pdf-viewer](built-in-pdf-viewer.gif)
 
 ---
 
