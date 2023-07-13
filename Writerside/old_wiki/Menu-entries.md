@@ -25,8 +25,8 @@ Right-click in Project tool window, then <ui-path>New | LaTeX File</ui-path>.
 
 Displays a dialog with a table creation wizard with a table, caption, and label. Click the plus to add a column, the
 minus to remove the column of the currently selected cell, and the pencil to edit this column.
-Hit kbd:[Tab] to edit the next cell (same row, column on the right of the current cell).
-Hit kbd:[Tab] on the last cell of a column to add a new row.
+Hit <shortcut>Tab</shortcut> to edit the next cell (same row, column on the right of the current cell).
+Hit <shortcut>Tab</shortcut> on the last cell of a column to add a new row.
 
 Each column has a name, and a type.
 The available column types are:
@@ -36,7 +36,7 @@ The available column types are:
 LaTeX.
 * Numbers: As per convention, numbers are aligned on the right.
 
-_Since b0.7.3:_ the table wizard also opens when you paste an HTML table (in your browser, Excel, LibreOffice, ...) into the editor. _Since b0.7.4_ you can also open the wizard in the Generate menu (kbd:[Alt+Insert]).
+_Since b0.7.3:_ the table wizard also opens when you paste an HTML table (in your browser, Excel, LibreOffice, ...) into the editor. _Since b0.7.4_ you can also open the wizard in the Generate menu (<shortcut>Alt+Insert</shortcut>).
 
 ## [[insert-graphic-wizard]]Insert Graphic Wizard
 
@@ -44,7 +44,7 @@ _Since b0.7.3_
 
 <ui-path>Edit | LaTeX | Insert Graphic...</ui-path>
 
-Helps you generate LaTeX for inserting graphics. The wizard also opens when dropping a supported image file into a .tex file. You can also paste an image directly from your clipboard into the editor. You’ll be prompted with the wizard after you have saved the image from your clipboard using another dialog. _Since b0.7.4_ you can also open the wizard in the Generate menu (kbd:[Alt+Insert]).
+Helps you generate LaTeX for inserting graphics. The wizard also opens when dropping a supported image file into a .tex file. You can also paste an image directly from your clipboard into the editor. You’ll be prompted with the wizard after you have saved the image from your clipboard using another dialog. _Since b0.7.4_ you can also open the wizard in the Generate menu (<shortcut>Alt+Insert</shortcut>).
 
 See [demo video](https://user-images.githubusercontent.com/17410729/103922867-b0108300-5114-11eb-92d8-25d63eaeb1f1.mp4).
 
@@ -56,7 +56,7 @@ _Since b0.7.4_
 
 Tool for inserting `blindtext` and `lipsum` commands. Also provides a `raw text` option that just pastes raw dummy text in the editor. There is currently one style available: TeXiFy IDEA Ipsum. This is a report and business style ipsum generator.
 
-You can also access this action via the Generate menu by pressing kbd:[Alt + Insert] in a LaTeX document.
+You can also access this action via the Generate menu by pressing <shortcut>Alt + Insert</shortcut> in a LaTeX document.
 
 ## [[clear-aux-files]]Clear Auxiliary Files
 

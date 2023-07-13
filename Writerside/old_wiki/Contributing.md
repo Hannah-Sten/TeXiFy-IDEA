@@ -5,10 +5,10 @@ You can clone this wiki and edit in IntelliJ using the AsciiDoc plugin.
 * Display keyboard shortcuts:
 
 ```asciidoc
-kbd:[Ctrl + \]]
+<shortcut>Ctrl + \</shortcut>]
 ```
 
-results in kbd:[Ctrl + \]]
+results in <shortcut>Ctrl + \</shortcut>]
 which requires adding the `:experimental:` attribute at the top of the file
 
 * Display menu selections:

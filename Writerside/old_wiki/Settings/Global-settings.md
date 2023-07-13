@@ -17,7 +17,7 @@ You can disable this behaviour using this setting.
 
 ## Option to disable auto-insertion of \item
 
-By default, when you press kbd:[Enter] when in an itemize or enumerate environment, TeXiFy will insert a new `\item` for you.
+By default, when you press <shortcut>Enter</shortcut> when in an itemize or enumerate environment, TeXiFy will insert a new `\item` for you.
 
 For example, when in a situation like
 
@@ -27,7 +27,7 @@ For example, when in a situation like
 \end{itemize}
 ```
 
-and you press kbd:[Enter], it will result in
+and you press <shortcut>Enter</shortcut>, it will result in
 
 ```latex
 \begin{itemize}
@@ -36,7 +36,7 @@ and you press kbd:[Enter], it will result in
 \end{itemize}
 ```
 
-If you do not want to insert an `\item`, press kbd:[Shift + Enter] instead.
+If you do not want to insert an `\item`, press <shortcut>Shift + Enter</shortcut> instead.
 
 You can disable the automatic insertion of `\item` using this setting.
 
@@ -66,7 +66,7 @@ For continuous compilation of the complete document, see [Latexmk](Compilers#Lat
 ## Option to include the backslash when selecting a LaTeX command
 _Since b0.6.10_
 
-When enabled, selecting a LaTeX command by for example double-clicking or using kbd:[Ctrl + W] will also include the backslash in the selection.
+When enabled, selecting a LaTeX command by for example double-clicking or using <shortcut>Ctrl + W</shortcut> will also include the backslash in the selection.
 
 ## Option to show LaTeX package files in the structure view
 _Since b0.7_

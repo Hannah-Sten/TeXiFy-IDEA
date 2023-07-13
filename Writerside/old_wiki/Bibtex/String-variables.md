@@ -1,4 +1,4 @@
-TeXiFy supports the use of `@string` variables in bibtex files, including syntax highlighting, autocompletion and 'go to source' navigation (kbd:[Ctrl + B] by default).
+TeXiFy supports the use of `@string` variables in bibtex files, including syntax highlighting, autocompletion and 'go to source' navigation (<shortcut>Ctrl + B</shortcut> by default).
 
 A usage example is the following.
 ```bibtex

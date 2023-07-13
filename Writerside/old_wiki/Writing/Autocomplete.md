@@ -21,7 +21,7 @@ It can give larger suggestions than TeXiFy will do, but in some cases the comple
 _Since b0.6.9_
 
 When invoking autocomplete on a command or environment that takes required parameters, TeXiFy will insert a brace pair for each parameter.
-The caret is placed in the first pair, and you can use kbd:[Tab] to skip to the next pair.
+The caret is placed in the first pair, and you can use <shortcut>Tab</shortcut> to skip to the next pair.
 Since optional parameters are, well, optional, both the command with and without the optional parameters appear in the autocomplete list.
 If you always select the version with optional parameters, after a couple of times IntelliJ will remember your choice and show it first (so above the version without optional parameters).
 

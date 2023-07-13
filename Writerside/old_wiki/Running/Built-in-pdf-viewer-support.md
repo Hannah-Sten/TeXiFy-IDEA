@@ -4,7 +4,7 @@ TeXiFy supports using the [PDF Viewer](https://plugins.jetbrains.com/plugin/1449
 This includes forward and inverse search functionality.
 
 To forward search, use <ui-path>Tools | LaTeX | Forward search</ui-path> or the shortcut listed there.
-To inverse search, use kbd:[Ctrl + click].
+To inverse search, use <shortcut>Ctrl + click</shortcut>.
 
 To use the PDF Viewer plugin, install it via the plugin settings in your IDE.
 In IntelliJ: <ui-path>Settings | Plugins | search in marketplace</ui-path>, and select it in your LaTeX run configuration as the PDF viewer.

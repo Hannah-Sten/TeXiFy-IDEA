@@ -4,7 +4,7 @@ In general, if [Go to declaration](Go-to-declaration) on something works, then F
 This holds for at least command definitions, labels and bibtex citations.
 
 ## Find usages for commands
-As a complement for [Go to declaration](Go-to-declaration), you can easily find usages of LaTeX commands you defined in your document, for example using `\newcommand` or `\DeclareMathOperator`, using kbd:[Ctrl + B].
+As a complement for [Go to declaration](Go-to-declaration), you can easily find usages of LaTeX commands you defined in your document, for example using `\newcommand` or `\DeclareMathOperator`, using <shortcut>Ctrl + B</shortcut>.
 Note that this is the same shortcut as for Go to declaration.
 
 ![find-usages](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/find-usages.png)

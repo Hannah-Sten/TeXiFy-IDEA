@@ -1,5 +1,5 @@
-By pressing kbd:[Ctrl + B] on a reference to a label, or a citation of a bibtex entry, your cursor will go to the declaration of the reference or citation.
-In general, you can go back to your previous cursor location with kbd:[Ctrl + Alt + &lt;-]
+By pressing <shortcut>Ctrl + B</shortcut> on a reference to a label, or a citation of a bibtex entry, your cursor will go to the declaration of the reference or citation.
+In general, you can go back to your previous cursor location with <shortcut>Ctrl + Alt + &lt;-</shortcut>
 
 This also works with usages of commands defined with `\newcommand` definitions (in your fileset, not in LaTeX packages), but only if your command definition includes braces, like `\newcommand{\mycommand}{definition}`
 
@@ -11,7 +11,7 @@ For example in the case of `\re|f{mylabel}` where `|` denotes the cursor, then i
 
 ## Peek definition
 
-For the elements for which Go To Declaration is implemented, you also have a Peek Definition, by default kbd:[Ctrl + Shift + I].
+For the elements for which Go To Declaration is implemented, you also have a Peek Definition, by default <shortcut>Ctrl + Shift + I</shortcut>.
 For more information, see [https://www.jetbrains.com/help/idea/viewing-reference-information.html#](https://www.jetbrains.com/help/idea/viewing-reference-information.html#)
 
 ![peek-definition](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/peek-definition.png)

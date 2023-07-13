@@ -95,7 +95,7 @@ For a downloadable example, see [https://github.com/PHPirates/biber-biblatex-mwe
 Once you have chosen which compiler and packages you want, make sure you have a simple example file like above to test it with.
 This makes it easier to detect and solve any errors you get.
 
-* Place your cursor in your main LaTeX file (`main.tex` in the example) and hit kbd:[Ctrl + Shift + F10] to create a run configuration and run it.
+* Place your cursor in your main LaTeX file (`main.tex` in the example) and hit <shortcut>Ctrl + Shift + F10</shortcut> to create a run configuration and run it.
 * TeXiFy should have created a LaTeX run configuration which is linked to a BibTeX run configuration, so you should see output windows for both LaTeX and BibTeX, and the references appear correctly in the pdf.
 
 ## Troubleshooting

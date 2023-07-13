@@ -29,7 +29,7 @@ An example for compiling with lualatex that needs `--shell-escape` and biber:
 %! BibTeX Compiler = biber
 ```
 
-***Note:*** These magic comments only take affect when creating a new run configuration (using kbd:[Ctrl] + kbd:[Shift] + kbd:[F10] or using the gutter icon).
+***Note:*** These magic comments only take affect when creating a new run configuration (using <shortcut>Ctrl</shortcut> + <shortcut>Shift</shortcut> + <shortcut>F10</shortcut> or using the gutter icon).
 They have no effect on already existing run configurations, which can be edited using Edit Configurations dialog.
 
 ## LaTeX compilers
@@ -58,7 +58,7 @@ TeXiFy will also read additions to the TEXINPUTS environment variable from your 
 
 #### Tip: compiling automatically when IntelliJ loses focus
 When you add the flag `-pvc` it watches the files and recompiles automatically on saved changes (in IntelliJ a save is
-triggered, when the window looses focus, or by kbd:[Ctrl +S]).
+triggered, when the window looses focus, or by <shortcut>Ctrl +S</shortcut>).
 
 For an automatic start of your pdf viewer you have to create a file in your users home directory.
 The path for the file is under Linux and Mac `$HOME/.latexmkrc` and under Windows `%USERPROFILE%\.latexmkrc`.

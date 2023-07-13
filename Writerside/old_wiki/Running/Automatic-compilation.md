@@ -6,9 +6,9 @@ TeXiFy supports automatic compilation, which means that when you type in your do
 In general, we advise against using this because once you are somewhat familiar with LaTeX there is no need to compile all the time to check if what you typed is correct, and compiling so much will have a serious impact on your CPU usage which can slow other things (including IntelliJ itself) down considerably.
 
 When you start typing in a document, the run configuration that is selected in the dropdown menu at the top is run, so make sure you select the right one first.
-Recall that you can create a run config with kbd:[Ctrl + Shift + F10].
+Recall that you can create a run config with <shortcut>Ctrl + Shift + F10</shortcut>.
 
-When you use Evince or Okular, you need to compile manually (so using the button next to the run configuration or using kbd:[Shift + F10]) once before you can use forward search.
+When you use Evince or Okular, you need to compile manually (so using the button next to the run configuration or using <shortcut>Shift + F10</shortcut>) once before you can use forward search.
 This is because you need to tell TeXiFy where the pdf is that you want to forward search to, which depends on the run configuration.
 Since these pdf viewers will focus when you forward search, this is not done while you are typing.
 This is not the case for SumatraPDF, which can forward search without losing focus.
