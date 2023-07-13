@@ -1,15 +1,5 @@
 
-### Autocompletion
-
-* [Smart quote substitution](Global-settings#option-to-enable-smart-quote-substitution)
-* Support for user-created document classes and packages
-
-
 ## Reading
-* Customizable syntax highlighting
-* [Code folding for imports, (sub(sub))sections, environments, some math symbols and some escaped symbols like `\%`](Code-folding)
-* [Code formatting](Code-formatting)
-* [Line markers for sections](Line-markers)
 * [Color preview for the xcolor package](Color-preview)
 * [Language injection](Language-injection)
 * Special highlighting and marker for `todo` comments, customizable

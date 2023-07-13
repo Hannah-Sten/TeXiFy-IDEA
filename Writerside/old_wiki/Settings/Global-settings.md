@@ -120,7 +120,7 @@ _Since b0.6.6_
 The [csquotes](https://ctan.org/pkg/csquotes?lang=en) (Context Sensitive quotes) package provides some improvements for typesetting quotes, using the `\enquote` command.
 For example, nested quotations work properly.
 
-Typing ’quote'` will result in `\enquote*{quote}` and typing `"quote"` will result in `\enquote{quote}`.
+Typing `’quote'` will result in `\enquote*{quote}` and typing `"quote"` will result in `\enquote{quote}`.
 
 This also works for nested quotes, typing `"nested "quotes""` results in `\enquote{nested \enquote<q> </q>}`.
 

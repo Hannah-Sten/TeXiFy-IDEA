@@ -1,6 +1,4 @@
-:experimental:
-
-_General_
+# Code formatting
 
 Press <shortcut>Ctrl+Alt+L</shortcut> to reformat.
 To disable formatting on a portion of your `tex` file, wrap the code with
