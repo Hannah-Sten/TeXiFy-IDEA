@@ -1,6 +1,6 @@
 _Since b0.7_
 
-![Log tab image](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Running/figures/log-tab.png)
+![Log tab image](log-tab.png)
 
 After running a run configuration, next to the full Console output there is a Log message tab which contains errors and warnings from the log.
 You can focus this tab by default by right-clicking and selecting Focus On Startup.

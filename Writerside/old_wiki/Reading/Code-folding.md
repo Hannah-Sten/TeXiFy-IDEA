@@ -5,6 +5,6 @@ Note you can easily fold or collapse until a certain level using the menu or sho
 
 Which elements are folded by default can be configured in <ui-path>File | Settings | Editor | General | Code Folding | LaTeX</ui-path>.
 
-![folding](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/folding.png)
+![folding](folding.png)
 
 For more information, see [https://www.jetbrains.com/help/rider/Code_Folding.html](https://www.jetbrains.com/help/rider/Code_Folding.html)

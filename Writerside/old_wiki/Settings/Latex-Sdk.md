@@ -11,7 +11,7 @@ It is probably a good idea to do that for your [run configuration template](Run-
 
 If you don’t have `pdflatex` in your PATH, TeXiFy will show a warning that you won’t be able to compile.
 
-![set-up-sdk](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Settings/figures/set-up-sdk.png)
+![set-up-sdk](set-up-sdk.png)
 
 Because there are many different ways to install LaTeX, and many have their own SDK type, we provide a small overview.
 The home path is the default path you need to select if you add such an SDK types, of course only if you did install it to the default location.

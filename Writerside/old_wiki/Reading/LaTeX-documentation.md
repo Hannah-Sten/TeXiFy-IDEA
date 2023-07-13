@@ -10,8 +10,8 @@ When your cursor is on an environment name, documentation for that environment w
 
 Note that you can also use the shortcut <shortcut>Ctrl + Q</shortcut> during autocompletion of commands and environments, and navigate through the completion list using the arrow keys.
 
-![texdoc](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/texdoc.png)
-![env-docs](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/env-docs.png)
+![texdoc](texdoc.png)
+![env-docs](env-docs.png)
 
 ## Source of documentation
 When you have set up a [LaTeX SDK](Latex-Sdk), in most cases you will have all commands and environments from all installed LaTeX packages in the autocompletion (see [Autocomplete](Autocomplete#command-completion)).

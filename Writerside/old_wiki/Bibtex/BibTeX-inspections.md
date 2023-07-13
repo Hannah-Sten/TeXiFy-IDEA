@@ -24,4 +24,4 @@ When using the safe deletion, TeXiFy will also search for cites that appear in c
 
 **View of the safe delete that found a usage in a comment.**
 
-![bibtex-safe-delete-entry](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Bibtex/figures/bibtex-safe-delete-entry.png)
+![bibtex-safe-delete-entry](bibtex-safe-delete-entry.png)

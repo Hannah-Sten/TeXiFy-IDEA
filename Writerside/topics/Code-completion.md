@@ -14,7 +14,7 @@ TeXiFy supports autocomplete of labels, all commands from installed LaTeX packag
 
 This includes for example commands you defined with the `xparse` package.
 
-![xparse-autocomplete](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/xparse-autocomplete.png)
+![xparse-autocomplete](xparse-autocomplete.png)
 
 ## Autocompletion for all words
 
@@ -37,8 +37,8 @@ The caret is placed in the first pair, and you can use <shortcut>Tab</shortcut> 
 Since optional parameters are, well, optional, both the command with and without the optional parameters appear in the autocomplete list.
 If you always select the version with optional parameters, after a couple of times IntelliJ will remember your choice and show it first (so above the version without optional parameters).
 
-![required-parameters-autocomplete](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/required-parameters-autocomplete.gif)
-![required-parameters-environments](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/required-parameters-environments.gif)
+![required-parameters-autocomplete](required-parameters-autocomplete.gif)
+![required-parameters-environments](required-parameters-environments.gif)
 
 ## Autocompletion of commands from installed LaTeX packages.
 _Since b0.7.4_
@@ -55,8 +55,8 @@ In the case of TeX Live, TeXiFy will currently not suggest commands from _all_ p
 This would flood the completion with many commands that are very rarely used.
 Therefore, TeXiFy will only suggest commands from packages that you have already included somewhere in your project, directly or indirectly via other packages.
 
-![command-autocomplete1](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/command-autocomplete1.png)
-![command-autocomplete2](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/command-autocomplete2.png)
+![command-autocomplete1](command-autocomplete1.png)
+![command-autocomplete2](command-autocomplete2.png)
 
 ### MiKTeX admin install
 
@@ -64,11 +64,11 @@ With MiKTeX, TeXiFy needs to extract zipped files in order to obtain source file
 If you installed MiKTeX as admin, this will not be possible.
 The MiKTeX installer clearly warns about this:
 
-![miktex-admin](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/miktex-admin.PNG)
+![miktex-admin](miktex-admin.PNG)
 
 On Linux the warning is less clear though:
 
-![miktex-linux](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/miktex-linux.png)
+![miktex-linux](miktex-linux.png)
 
 
 ## Inserting \item in itemize environments
