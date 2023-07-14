@@ -1,12 +1,10 @@
 # Editing a LaTeX file
 
-## Unicode support
+## Manage the appearance for long lines
 
-IntelliJ supports Unicode, see for example [https://blog.jetbrains.com/idea/2013/03/use-the-utf-8-luke-file-encodings-in-intellij-idea/](https://blog.jetbrains.com/idea/2013/03/use-the-utf-8-luke-file-encodings-in-intellij-idea/)
+You can enable soft wraps by going to <ui-path>Settings | General | Soft Wraps</ui-path>, enable Soft-wrap files and put `**.tex` in the text field, or just `**` to soft-wrap all files.
 
-Note that if the LaTeX log output contains characters in an incorrect encoding on Windows, you can fix this by going to <ui-path>Help | Edit Custom VM Options</ui-path> and add `-Dfile.encoding=UTF-8`, then restart your IDE.
-
-Also see the [Unicode inspection](Probable-bugs#Unsupported-Unicode-character).
+In <ui-path>Settings | Editor | Code Style | LaTeX<ui-path> you can enable 'wrap on typing' and much more, see [Code formatting settings](Code-formatting.md).
 
 ## Line commenting
 
@@ -16,6 +14,11 @@ When multiple lines are selected, these will all be commented.
 Note that the block comment shortcut <shortcut>Ctrl + Shift + /</shortcut> should not be used, as LaTeX does not have any block comments by itself.
 
 Also see the [Option to start a comment at the same indentation as normal text](Code-style-settings#indent-comment).
+
+## Multi-cursors
+
+IntelliJ supports handling multiple carets at once, see [https://www.jetbrains.com/help/idea/multicursor.html](https://www.jetbrains.com/help/idea/multicursor.html).
+
 
 ## Shortcuts for styling text
 
@@ -72,6 +75,29 @@ Then you can choose 'Convert to other math environment' and you will get a popup
 
 When you switch from an `alignat` environment to a different environment, the environment parameter will be removed.
 
+## Quick documentation
+
+If you want to have quick links to package documentation pdfs, make sure you have installed `texdoc`, for example on TeX Live with `tlmgr install texdoc`.
+Then place your cursor on a LaTeX command and press <shortcut>Ctrl + Q</shortcut>.
+If the command has a package dependency which is known to TeXiFy, you will get a popup which includes links to the package documentation that is installed locally on your machine.
+LaTeX package documentation is written in LaTeX (surprise) so when you click on a link it will open a pdf.
+
+When the command is a `\usepackage` or `\documentclass` then the documentation of the included package or class will be shown.
+
+When your cursor is on an environment name, documentation for that environment will be shown.
+
+Note that you can also use the shortcut <shortcut>Ctrl + Q</shortcut> during autocompletion of commands and environments, and navigate through the completion list using the arrow keys.
+
+![texdoc](texdoc.png)
+![env-docs](env-docs.png)
+
+### Source of documentation
+When you have set up a [LaTeX SDK](Latex-Sdk), in most cases you will have all commands and environments from all installed LaTeX packages in the autocompletion (see [Autocomplete](Autocomplete#command-completion)).
+In a lot of cases, this includes some documentation for each command and environment.
+However, this relies on package authors respecting the LaTeX conventions (using the doc package) whether the documentation is actually useful.
+If you find something incorrect, please let us know and then we can determine whether something needs to be improved in the LaTeX package or in TeXiFy (example bug report: [https://gitlab.com/axelsommerfeldt/caption/-/issues/114](https://gitlab.com/axelsommerfeldt/caption/-/issues/114)).
+
+
 ## Shortcuts
 
 Note that all shortcuts are customizable, you can change them in <ui-path>File | Settings | Keymap</ui-path>.
@@ -103,11 +129,6 @@ With some text selected, press <shortcut>Ctrl + Alt + T</shortcut> (surround wit
 When surrounding with quotes, quotes will be inserted according to the [Smart quotes settings](Global-settings#smart-quotes).
 Use <shortcut>Ctrl + Alt + J</shortcut> (surround with live template) to surround with a live template, i.e., surround with dollars or braces.
 To surround a selection with dollars, it is also possible to simply press `$`.
-
-## Multi-cursors
-
-IntelliJ supports handling multiple carets at once, see [https://www.jetbrains.com/help/idea/multicursor.html](https://www.jetbrains.com/help/idea/multicursor.html).
-
 
 ## Inlining files and command definitions
 
@@ -282,3 +303,12 @@ You also need to use forward slashes on Windows.
 You can include multiple search paths by continuing the list, like `\includegraphics{{/path1/}{../path2/}}`.
 
 For more information, see the documentation linked at [https://ctan.org/pkg/graphicx](https://ctan.org/pkg/graphicx)
+
+
+## Unicode support
+
+IntelliJ supports Unicode, see for example [https://blog.jetbrains.com/idea/2013/03/use-the-utf-8-luke-file-encodings-in-intellij-idea/](https://blog.jetbrains.com/idea/2013/03/use-the-utf-8-luke-file-encodings-in-intellij-idea/)
+
+Note that if the LaTeX log output contains characters in an incorrect encoding on Windows, you can fix this by going to <ui-path>Help | Edit Custom VM Options</ui-path> and add `-Dfile.encoding=UTF-8`, then restart your IDE.
+
+Also see the [Unicode inspection](Probable-bugs#Unsupported-Unicode-character).
