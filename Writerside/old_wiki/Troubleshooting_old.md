@@ -9,7 +9,7 @@ If you run into troubles while using TeXiFy, you can try the following things.
 
 ## The equation/TikZ preview is not working
 
-Make sure you have installed the dependencies as described in [the Preview page](Preview#Equation-preview).
+Make sure you have installed the dependencies as described in [the Preview page](Tool-Windows.md#Equation-preview).
 
 If that doesn’t help and you can run Kotlin programs, you can run the program below and report the output in your (new) issue.
 

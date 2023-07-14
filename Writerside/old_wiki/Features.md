@@ -1,18 +1,6 @@
 
-## Reading
-* [Color preview for the xcolor package](Color-preview)
-* [Language injection](Language-injection)
-* Special highlighting and marker for `todo` comments, customizable
-* Links in comments and in commands which provide links (e.g. \url and \href) are clickable
-* [Easy links to LaTeX package documentation, and documentation for many commands and environments](LaTeX-documentation)
-* [Soft wraps and wrap on typing](Soft-wraps)
-
-## Preview
-* [Unicode math preview](Preview#Unicode-math-preview)
-* [Equation preview](Preview#Equation-preview)
-* [TikZ preview](Preview#TikZ-preview)
-
 ## Navigation
+* Links in comments and in commands which provide links (e.g. \url and \href) are clickable
 * link:++Structure view++[Structure view with filters]
 * [Go to declaration of labels, citations and custom commands](Go-to-declaration)
 * [Label reference resolving when using the xr package](Go-to-declaration#using-the-xr-package)
