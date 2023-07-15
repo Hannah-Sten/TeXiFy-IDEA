@@ -129,7 +129,7 @@ class InputFileReference(
             ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
             ?: runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
 
-        for (texInputPath in texinputsVariable?.split(":")?.filter { it.isNotBlank() } ?: emptyList()) {
+        for (texInputPath in texinputsVariable?.trim('\'')?.split(":")?.filter { it.isNotBlank() } ?: emptyList()) {
             val path = texInputPath.trimEnd(':')
             searchPaths.add(path.trimEnd('/'))
             // See the kpathsea manual, // expands to subdirs

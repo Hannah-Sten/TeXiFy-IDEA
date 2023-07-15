@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix a parse issue with TEXINPUTS
 
 ## [0.7.32] - 2023-07-13
 
