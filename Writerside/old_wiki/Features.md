@@ -1,32 +1,4 @@
 
-### PDF viewers
-* [Built-in PDF viewer](Built-in-pdf-viewer-support)
-* [SumatraPDF (Windows) support with forward and backward search](SumatraPDF-support)
-* [Evince (Linux) support with forward and backward search](Evince-support)
-* [Okular (Linux) support with forward and backward search](Okular-support)
-* [Zathura (Linux) support with forward and backward search](Zathura-support)
-* [Skim (MacOS) support with forward and backward search](Skim-support)
-* [Custom pdf viewer](Run-configurations#Custom-pdf-viewer)
-* Opens system default pdf viewer when no custom or supported pdf viewer is known
-
-## External tools
-* [Support for run configurations to create an index/glossary, also when auxil/ or out/ is used](Makeindex)
-* [Jinja2 support](External-tools#Jinja2-support)
-* [Run any external tool before compiling](Run-configurations#before-run-tasks)
-
-### BibTeX
-
-If you are new to BibTeX, see the [BibTeX introduction](BibTeX).
-
-* Syntax highlighting
-* Formatter
-* [Autocomplete](BibTeX-autocomplete)
-* Structure view with filters
-* <shortcut>Ctrl + Q</shortcut> on a bibtex reference will show a popup with title and authors from the bibtex entry
-* [Support for @string variables](String-variables)
-* [Folding](Bibtex-folding)
-* [Chapterbib support](Chapterbib-support)
-
 ## Managing LaTeX
 * Never press <shortcut>Ctrl + S</shortcut> again: saves while you type
 * Project management
