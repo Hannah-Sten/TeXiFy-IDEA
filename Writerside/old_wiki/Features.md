@@ -1,15 +1,4 @@
 
-## Navigation
-* Links in comments and in commands which provide links (e.g. \url and \href) are clickable
-* link:++Structure view++[Structure view with filters]
-* [Go to declaration of labels, citations and custom commands](Go-to-declaration)
-* [Label reference resolving when using the xr package](Go-to-declaration#using-the-xr-package)
-* [Find usages for commands defined in a \newcommand-like way](Find-usages)
-* "Goto Symbol" support for section names, labels, bibitems, new environments and new commands
-* [Gutter icons and navigation shortcuts for file inclusions](File-inclusion-navigation)
-* [Support for the import package](File-inclusion-navigation#import-package)
-* Breadcrumbs for environments and commands
-
 ## Running
 * Gutter icons for quick compilation
 * [Customizable run configurations to compile LaTeX files](Run-configurations)

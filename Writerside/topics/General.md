@@ -34,6 +34,11 @@ When enabled, horizontal line markers will be shown above sectioning commands.
 
 ![line-markers](line-markers.png)
 
+## Breadcrumbs
+
+By default, TeXiFy will show breadcrumbs at the bottom of the editor, indicating in which environments your cursor is.
+See [Breadcrumbs | IntelliJ IDEA Documentation](https://www.jetbrains.com/help/idea/settings-editor-breadcrumbs.html)
+
 ## Gutter icons
 
 ### Color preview
@@ -49,6 +54,7 @@ When you use the color picker on a color _definition_, choosing a different colo
 ### Navigate to referenced file
 
 If you include a file, for example like `\input{beta.tex}`, there will be a gutter icon in front of the line which you can click to navigate to the included file (<shortcut>Ctrl + B</shortcut>).
+See [Code navigation/File inclusion navigation](Code-navigation.md#file-inclusion-navigation).
 
 ### Run file
 
