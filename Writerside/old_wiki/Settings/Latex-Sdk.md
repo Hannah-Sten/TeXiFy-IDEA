@@ -7,7 +7,7 @@ If you click the plus button there, you can see the different types of SDKs you 
 
 Once you have created an SDK (which is a global setting), you can select it as Project SDK under the Project menu.
 Then you can in your run configuration under LaTeX Distribution select Use project SDK.
-It is probably a good idea to do that for your [run configuration template](Run-configurations) as well if you want to use it every time.
+It is probably a good idea to do that for your [run configuration template](Running-a-LaTeX-file.md) as well if you want to use it every time.
 
 If you don’t have `pdflatex` in your PATH, TeXiFy will show a warning that you won’t be able to compile.
 

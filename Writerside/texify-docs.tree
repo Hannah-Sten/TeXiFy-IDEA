@@ -15,6 +15,9 @@
         <toc-element topic="Code-formatting.md"/>
         <toc-element topic="Code-navigation.md"/>
     </toc-element>
+    <toc-element topic="Running-a-LaTeX-file.md">
+        <toc-element topic="Run-configuration-settings.md"/>
+    </toc-element>
     <toc-element topic="Settings.md">
         <toc-element topic="Editor.md">
             <toc-element topic="General.md"/>

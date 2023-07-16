@@ -132,4 +132,4 @@ For more advantages, see [https://tex.stackexchange.com/questions/39285/whats-th
 ## Option to select default PDF viewer
 _Since b0.6.7_
 
-Note: As of _b0.7.2_ this setting has been moved to the [run configuration (template) settings](Run-configurations#Choose-pdf-viewer).
+Note: As of _b0.7.2_ this setting has been moved to the [run configuration (template) settings](Run-configuration-settings.md#choose-pdf-viewer).
