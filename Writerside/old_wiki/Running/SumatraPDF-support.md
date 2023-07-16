@@ -26,7 +26,7 @@ Now you can double left-click in SumatraPDF in a pdf you just compiled, and it s
 _Since b0.6.6_
 
 There also is support for portable SumatraPDF installations, in case you cannot install use the normal installer for example if you do not have administrator rights.
-Open your [run configuration](Run-configurations), click Select custom SumatraPDF path and specify in the text field the folder which contains `SumatraPDF.exe`, either by editing the field or by clicking the folder icon on the right.
+Open your [run configuration](Running-a-LaTeX-file.md), click Select custom SumatraPDF path and specify in the text field the folder which contains `SumatraPDF.exe`, either by editing the field or by clicking the folder icon on the right.
 When you run the run configuration, SumatraPDF should open.
 
 Note that to use forward and inverse search, the folder containing `SumatraPDF.exe` should be added to your PATH, or the registry key `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\SumatraPDF.exe` should be set to the path to `SumatraPDF.exe`.

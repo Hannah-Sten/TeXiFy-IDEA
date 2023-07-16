@@ -1,18 +1,4 @@
 
-## Running
-* Gutter icons for quick compilation
-* [Customizable run configurations to compile LaTeX files](Run-configurations)
-* [Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, Tectonic, bibtex, and biber](Compilers)
-* [A clean overview of LaTeX, BibTeX and Biber warnings and errors](Log-messages)
-* [Support for automatic compilation](Automatic-compilation)
-* The pdf will appear in a separate out/ directory to avoid cluttering the source directory
-* [Auxiliary files will be put in a separate auxil/ directory](Auxil-directory)
-* Custom compiler path
-* Option to choose different output formats like PDF and DVI
-* [Support for TEXINPUTS and environment variables in general](Run-configurations#environment-variables)
-* [Support for Dockerized MiKTeX](Dockerized-MiKTeX)
-* [Support for TeX Live from WSL](WSL-support)
-
 ### PDF viewers
 * [Built-in PDF viewer](Built-in-pdf-viewer-support)
 * [SumatraPDF (Windows) support with forward and backward search](SumatraPDF-support)
