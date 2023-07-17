@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import java.io.File
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -129,8 +130,8 @@ class InputFileReference(
             ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
             ?: runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
 
-        for (texInputPath in texinputsVariable?.trim('\'')?.split(":")?.filter { it.isNotBlank() } ?: emptyList()) {
-            val path = texInputPath.trimEnd(':')
+        for (texInputPath in texinputsVariable?.trim('\'')?.split(File.pathSeparator)?.filter { it.isNotBlank() } ?: emptyList()) {
+            val path = texInputPath.trimEnd(File.pathSeparatorChar)
             searchPaths.add(path.trimEnd('/'))
             // See the kpathsea manual, // expands to subdirs
             if (path.endsWith("//")) {
