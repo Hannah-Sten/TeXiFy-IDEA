@@ -10,6 +10,7 @@
     <toc-element topic="Quick-start-guide.md"/>
     <toc-element topic="Installation-guide.md"/>
     <toc-element topic="Installing-pre-release-builds.md"/>
+    <toc-element topic="Project-configuration.md"/>
     <toc-element topic="Editing-a-LaTeX-file.md">
         <toc-element topic="Code-completion.md"/>
         <toc-element topic="Code-formatting.md"/>

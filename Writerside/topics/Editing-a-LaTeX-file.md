@@ -242,6 +242,10 @@ For example,
 ~\ref{<caret>} % autocompletion shows sec:one but not One
 ```
 
+## Autosave and local history
+
+IntelliJ automatically saves files at certain moments, and saves history locally.
+For more information, see [Save and revert changes | IntelliJ IDEA Documentation](https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html).
 
 
 ## Subfiles

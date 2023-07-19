@@ -1,9 +1,4 @@
 
-## Managing LaTeX
-* Never press <shortcut>Ctrl + S</shortcut> again: saves while you type
-* Project management
-* Support for multiple content roots
-
 ## Tools
 * VCS integration including Git
 * Terminal window
