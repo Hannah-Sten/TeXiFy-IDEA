@@ -7,7 +7,7 @@
                 serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsProjectSettingsManager"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language"
                                  id="TexifyConfigurable" displayName="TeXiFy"/>
-        <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions"
+        <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions" displayName="Conventions"
                              instance="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable"/>
 
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
