@@ -13,6 +13,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
+import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile

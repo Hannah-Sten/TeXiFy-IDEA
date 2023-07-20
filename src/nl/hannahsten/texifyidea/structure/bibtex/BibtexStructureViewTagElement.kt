@@ -6,6 +6,7 @@ import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.NavigationItem
 import com.intellij.util.PlatformIcons
+import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexTag
 import nl.hannahsten.texifyidea.util.evaluate
 import nl.hannahsten.texifyidea.util.keyName
@@ -21,7 +22,7 @@ open class BibtexStructureViewTagElement(val tag: BibtexTag) : StructureViewTree
 
         override fun getPresentableText() = tag.keyName()
 
-        override fun getIcon(b: Boolean) = PlatformIcons.PROTECTED_ICON
+        override fun getIcon(b: Boolean) = TexifyIcons.KEY_USER_DEFINED
     }
 
     override fun getValue() = tag

@@ -41,9 +41,9 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
             ContainerUtil.map2List(fields) {
                 val (message, icon) = when (it) {
                     in required -> " required" and TexifyIcons.KEY_REQUIRED
-                    in optional -> " optional" and PlatformIcons.PROTECTED_ICON
+                    in optional -> " optional" and TexifyIcons.KEY_USER_DEFINED
                     in userDefined -> " custom" and TexifyIcons.KEY_USER_DEFINED
-                    else -> "" and PlatformIcons.PROTECTED_ICON
+                    else -> "" and TexifyIcons.KEY_USER_DEFINED
                 }
 
                 LookupElementBuilder.create(it, it.fieldName)

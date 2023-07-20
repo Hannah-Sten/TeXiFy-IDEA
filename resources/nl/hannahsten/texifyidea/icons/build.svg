@@ -1,21 +1,107 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12">
-	<rect fill="rgb(255,255,255)" fill-opacity="0" stroke="none" width="12" height="12"/>
-	<defs>
-		<clipPath id="clip_0">
-			<rect width="12" height="12" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_0)">
-		<path fill="rgb(110,110,110)" stroke="none" transform="translate(1 9)" d="M0 0L0 2L10 2L10 0L0 0Z"/>
-	</g>
-	<defs>
-		<clipPath id="clip_1">
-			<rect width="12" height="12" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_1)">
-		<path fill="rgb(101,179,68)" stroke="none" transform="translate(2 0)" d="M3 0L5 0L5 4L8 4L4 8L0 4L3 4L3 0Z"/>
-	</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="ZZZ-build.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10">
+    <inkscape:path-effect
+       effect="powerstroke"
+       id="path-effect4185"
+       is_visible="true"
+       offset_points="0,0.5"
+       sort_points="true"
+       interpolator_type="CubicBezierJohan"
+       interpolator_beta="0.2"
+       start_linecap_type="zerowidth"
+       linejoin_type="round"
+       miter_limit="4"
+       end_linecap_type="zerowidth"
+       cusp_linecap_type="round" />
+    <inkscape:path-effect
+       effect="powerstroke"
+       id="path-effect4181"
+       is_visible="true"
+       offset_points="0.93521967,0.49753736"
+       sort_points="true"
+       interpolator_type="Linear"
+       interpolator_beta="0.2"
+       start_linecap_type="zerowidth"
+       linejoin_type="round"
+       miter_limit="4"
+       end_linecap_type="zerowidth"
+       cusp_linecap_type="round" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="59.002457"
+     inkscape:cx="11.541718"
+     inkscape:cy="7.2989782"
+     inkscape:window-x="2552"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2"
+     inkscape:snap-bbox="true" />
+  <rect
+     x="1.9773203"
+     y="11.478461"
+     width="12.04536"
+     height="3.2464683"
+     rx="0.71375072"
+     id="rect4"
+     style="fill:#ebecf0;fill-opacity:1;stroke:#6c707e;stroke-width:0.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="7.6101694"
+     y="4.2203388"
+     id="text4140"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan4142"
+       x="7.6101694"
+       y="4.2203388" /></text>
+  <path
+     style="fill:#f2f9ee;fill-opacity:1;stroke:#7fb967;stroke-width:0.8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 6.484,1.2011719 c -0.075669,0 -0.1440635,0.061481 -0.136,0.1367187 L 6.348,6 4,6 l 4,4 4,-4 -2.348,0 0,-4.6621094 c 0,-0.075669 -0.060331,-0.1367187 -0.136,-0.1367187 z"
+     id="rect4-9"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="sscccccsss" />
 </svg>
