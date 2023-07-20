@@ -5,10 +5,6 @@ import com.intellij.util.PlatformIcons
 import java.util.*
 import javax.swing.Icon
 
-fun main() {
-
-}
-
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
