@@ -8,16 +8,17 @@ import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.psi.LatexStrictKeyValPair
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParameters>() {
 
     private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): LinkedHashMap<String, String> {
-        val map = HashMap<LatexKeyValKey, LatexKeyValValue?>()
-        pairs.forEach { p -> map[p.keyValKey] = p.keyValValue }
-        return pairs.associate<LatexKeyValuePair, LatexKeyValKey, LatexKeyValValue?> { Pair(it.keyValKey, it.keyValValue) }.toStringMap()
+        return pairs.associate { pair -> Pair(pair.keyValKey, pair.keyValValue) }.toStringMap()
     }
 
     private fun prettyPrintParameter(param: LatexRequiredParam): String {
@@ -47,14 +48,14 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
         val lookupItems = glossaryCommands.mapNotNull { command: LatexCommands ->
             when (command.name) {
                 NEWACRONYM.cmd, NEWABBREVIATION.cmd -> {
-                    val params = command.requiredParameters
+                    val params = command.getRequiredParameters()
                     val label = params.getOrNull(0) ?: return@mapNotNull null
                     val short = params.getOrNull(1) ?: return@mapNotNull null
                     val description = command.requiredParameters().getOrNull(2) ?: return@mapNotNull null
                     buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
                 NEWGLOSSARYENTRY.cmd -> {
-                    val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
+                    val label = command.getRequiredParameters().getOrNull(0) ?: return@mapNotNull null
                     val options =
                         command.requiredParameters().getOrNull(1)?.strictKeyValPairList ?: return@mapNotNull null
                     val optionsMap = getOptionsMap(options)
@@ -63,7 +64,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     buildLookupElement(command, label, short, description)
                 }
                 LONGNEWGLOSSARYENTRY.cmd -> {
-                    val label = command.requiredParameters.getOrNull(0) ?: return@mapNotNull null
+                    val label = command.getRequiredParameters().getOrNull(0) ?: return@mapNotNull null
                     val options =
                         command.requiredParameters().getOrNull(1)?.strictKeyValPairList ?: return@mapNotNull null
                     val optionsMap = getOptionsMap(options)

@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
-import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
+import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import org.jetbrains.annotations.Nls

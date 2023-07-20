@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
+import arrow.core.NonEmptySet
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
@@ -11,7 +12,7 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.length
 import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
@@ -30,7 +31,7 @@ interface LatexCommand : Described, Dependend {
          *          The command name to look up. Can start with or without `\`
          * @return The found commands, or `null` when the command doesn't exist.
          */
-        fun lookup(commandName: String?): Set<LatexCommand>? {
+        fun lookup(commandName: String?): NonEmptySet<LatexCommand>? {
             var result = commandName ?: return null
             if (result.startsWith("\\")) {
                 result = result.substring(1)
@@ -53,34 +54,34 @@ interface LatexCommand : Described, Dependend {
             // Look up in index
             FileBasedIndex.getInstance().processValues(
                 LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
-                    val dependency = LatexPackage.create(file)
-                    // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
-                    // Basically this means we add the indexed docs to the known command
-                    val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
-                    val cmd = if (defaultcmds.isNotEmpty()) {
-                        val defaultCommand = defaultcmds.first()
-                        object : LatexCommand {
-                            override val command = cmdWithoutSlash
-                            override val display = defaultCommand.display
-                            override val arguments = defaultCommand.arguments
-                            override val description = format(value)
-                            override val dependency = dependency
-                            override val isMathMode = defaultCommand.isMathMode
-                        }
+                val dependency = LatexPackage.create(file)
+                // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
+                // Basically this means we add the indexed docs to the known command
+                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
+                val cmd = if (defaultcmds.isNotEmpty()) {
+                    val defaultCommand = defaultcmds.first()
+                    object : LatexCommand {
+                        override val command = cmdWithoutSlash
+                        override val display = defaultCommand.display
+                        override val arguments = defaultCommand.arguments
+                        override val description = format(value)
+                        override val dependency = dependency
+                        override val isMathMode = defaultCommand.isMathMode
                     }
-                    else {
-                        object : LatexCommand {
-                            override val command = cmdWithoutSlash
-                            override val display: String? = null
-                            override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
-                            override val description = format(value)
-                            override val dependency = dependency
-                            override val isMathMode = false
-                        }
+                }
+                else {
+                    object : LatexCommand {
+                        override val command = cmdWithoutSlash
+                        override val display: String? = null
+                        override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
+                        override val description = format(value)
+                        override val dependency = dependency
+                        override val isMathMode = false
                     }
-                    cmds.add(cmd)
-                    true
-                },
+                }
+                cmds.add(cmd)
+                true
+            },
                 GlobalSearchScope.everythingScope(project)
             )
 

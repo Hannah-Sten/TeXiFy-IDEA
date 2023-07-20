@@ -19,7 +19,7 @@ class LatexChapterPresentation(chapterCommand: LatexCommands) : EditableHintPres
             throw IllegalArgumentException("command is no \\chapter-command")
         }
 
-        this.chapterName = chapterCommand.requiredParameters.getOrElse(0) { "No chapter name" }
+        this.chapterName = chapterCommand.getRequiredParameters().getOrElse(0) { "No chapter name" }
     }
 
     override fun getPresentableText() = chapterName

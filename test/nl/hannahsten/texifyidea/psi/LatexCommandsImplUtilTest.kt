@@ -3,7 +3,9 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 import org.junit.Test
 
 class LatexCommandsImplUtilTest : BasePlatformTestCase() {
@@ -28,7 +30,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(3, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])
@@ -55,7 +57,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(2, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])
@@ -81,7 +83,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(3, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])
@@ -108,7 +110,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(6, map.keys)
         assertEquals("value11,value12", map["param1"])
         assertEquals("value2", map["param2"])
@@ -138,7 +140,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(2, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])
@@ -164,7 +166,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(1, map.keys)
         assertEquals("\\textwidth", map["linewidth"])
     }
@@ -189,7 +191,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(3, map.keys)
         assertEquals("", map["param1"])
         assertEquals("", map["param2"])
@@ -216,7 +218,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameterMap(parameters).toStringMap()
+        val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
         assertSize(2, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])

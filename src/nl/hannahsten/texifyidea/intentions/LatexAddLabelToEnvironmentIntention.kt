@@ -9,13 +9,14 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.CAPTION
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.endOffset
 
 open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementPointer<LatexEnvironment>? = null) :
     LatexAddLabelIntention("Add label to environment") {
@@ -25,7 +26,7 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
             return false
         }
 
-        val targetName = findTarget<LatexEnvironment>(editor, file)?.environmentName
+        val targetName = findTarget<LatexEnvironment>(editor, file)?.getEnvironmentName()
         val conventionSettings = TexifyConventionsSettingsManager.getInstance(project).getSettings()
         return conventionSettings.getLabelConvention(targetName, LabelConventionType.ENVIRONMENT)?.enabled
             ?: false
@@ -43,15 +44,15 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
         // Determine label name.
         val conventionSettings = TexifyConventionsSettingsManager.getInstance(project).getSettings()
         val prefix =
-            conventionSettings.getLabelConvention(environment.environmentName, LabelConventionType.ENVIRONMENT)?.prefix
+            conventionSettings.getLabelConvention(environment.getEnvironmentName(), LabelConventionType.ENVIRONMENT)?.prefix
                 ?: return
 
         val createdLabel = getUniqueLabelName(
-            environment.environmentName.formatAsLabel(),
+            environment.getEnvironmentName().formatAsLabel(),
             prefix, environment.containingFile
         )
 
-        if (EnvironmentMagic.labelAsParameter.contains(environment.environmentName)) {
+        if (EnvironmentMagic.labelAsParameter.contains(environment.getEnvironmentName())) {
             val endMarker = editor.document.createRangeMarker(environment.startOffset, environment.endOffset())
             createLabelAndStartRename(editor, project, environment.beginCommand, createdLabel, endMarker)
         }

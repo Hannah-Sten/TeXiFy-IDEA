@@ -16,8 +16,8 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.name
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import org.jetbrains.concurrency.runAsync
 
 /**
@@ -30,7 +30,7 @@ class SumatraForwardSearchListener(
 
     override fun processTerminated(event: ProcessEvent) {
         // First check if the user provided a custom path to SumatraPDF, if not, check if it is installed
-        if (event.exitCode == 0 && SumatraAvailabilityChecker.getSumatraAvailability()) {
+        if (event.exitCode == 0 && SumatraAvailabilityChecker.isSumatraAvailable) {
             try {
                 SumatraConversation.openFile(runConfig.outputFilePath)
             }

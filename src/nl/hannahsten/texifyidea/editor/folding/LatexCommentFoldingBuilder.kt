@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 
 /**
  * Enables folding of multiple comments on successive lines.
@@ -48,7 +48,6 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
         var parentCollapse: PsiElement? = null
 
         for (comment in comments) {
-
             // Initialization: start with the first comment in a possible sequence
             if (collectedTextRange == null) {
                 collectedTextRange = TextRange(comment.startOffset, comment.endOffset)

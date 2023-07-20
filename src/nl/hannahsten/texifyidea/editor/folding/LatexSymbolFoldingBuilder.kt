@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.shiftRight
 import nl.hannahsten.texifyidea.util.toTextRange
 

@@ -17,11 +17,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
-import nl.hannahsten.texifyidea.util.expandCommandsOnce
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
-import nl.hannahsten.texifyidea.util.includedPackages
-import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
@@ -32,12 +29,56 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 class InputFileReference(
     element: LatexCommands,
     val range: TextRange,
-    val extensions: Set<String>,
+    val extensions: List<String>,
     val defaultExtension: String
 ) : PsiReferenceBase<LatexCommands>(element) {
 
     init {
         rangeInElement = range
+    }
+
+    companion object {
+
+        /**
+         * Handle element rename, but taking into account whether the given
+         * newElementName is just a filename which we have to replace,
+         * or a full relative path (in which case we replace the whole path).
+         */
+        fun handleElementRename(command: LatexCommands, newElementName: String, elementNameIsJustFilename: Boolean): PsiElement {
+            // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
+            // It seems to be problematic to find the old filename we want to replace
+            // Since the parameter content may be a path, but we are just given a filename, just replace the filename
+            // We guess the filename is after the last occurrence of /
+            val oldNode = command.node
+
+            val newName = if ((oldNode?.psi as? LatexCommands)?.name in CommandMagic.illegalExtensions.keys) {
+                newElementName.removeFileExtension()
+            }
+            else {
+                newElementName
+            }
+
+            val defaultNewText = "${command.name}{$newName}"
+            // Assumes that it is the last parameter, but at least leaves the options intact
+            val default = oldNode?.text?.replaceAfterLast('{', "$newName}", defaultNewText) ?: defaultNewText
+
+            // Recall that \ is a file separator on Windows
+            val newText = if (elementNameIsJustFilename) {
+                oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
+                    ?.let { "\\" + it } ?: default
+            }
+            else {
+                default
+            }
+            val newNode = LatexPsiHelper(command.project).createFromText(newText).firstChild.node ?: return command
+            if (oldNode == null) {
+                command.parent?.node?.addChild(newNode)
+            }
+            else {
+                command.parent.node.replaceChild(oldNode, newNode)
+            }
+            return command
+        }
     }
 
     val key by lazy {
@@ -78,15 +119,17 @@ class InputFileReference(
 
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
-        val texInputPath = runManager.allConfigurationsList
+        val texinputsVariable = runManager.allConfigurationsList
             .filterIsInstance<LatexRunConfiguration>()
             .firstOrNull { it.mainFile in rootFiles }
             ?.environmentVariables
             ?.envs
             ?.getOrDefault("TEXINPUTS", null)
+            // Not sure which of these takes precedence, or if they are joined together
             ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
+            ?: runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
 
-        if (texInputPath != null) {
+        for (texInputPath in texinputsVariable?.split(":")?.filter { it.isNotBlank() } ?: emptyList()) {
             val path = texInputPath.trimEnd(':')
             searchPaths.add(path.trimEnd('/'))
             // See the kpathsea manual, // expands to subdirs
@@ -198,58 +241,16 @@ class InputFileReference(
         }
     }
 
-    /**
-     * Handle element rename, but taking into account whether the given
-     * newElementName is just a filename which we have to replace,
-     * or a full relative path (in which case we replace the whole path).
-     */
-    fun handleElementRename(newElementName: String, elementNameIsJustFilename: Boolean): PsiElement {
-
-        // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
-        // It seems to be problematic to find the old filename we want to replace
-        // Since the parameter content may be a path, but we are just given a filename, just replace the filename
-        // We guess the filename is after the last occurrence of /
-        val oldNode = myElement?.node
-
-        val newName = if ((oldNode?.psi as? LatexCommands)?.name in CommandMagic.illegalExtensions.keys) {
-            newElementName.removeFileExtension()
-        }
-        else {
-            newElementName
-        }
-
-        val defaultNewText = "${myElement?.name}{$newName}"
-        // Assumes that it is the last parameter, but at least leaves the options intact
-        val default = oldNode?.text?.replaceAfterLast('{', "$newName}", defaultNewText) ?: defaultNewText
-
-        // Recall that \ is a file separator on Windows
-        val newText = if (elementNameIsJustFilename) {
-            oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
-                ?.let { "\\" + it } ?: default
-        }
-        else {
-            default
-        }
-        val newNode = LatexPsiHelper(element.project).createFromText(newText).firstChild.node ?: return myElement
-        if (oldNode == null) {
-            myElement?.parent?.node?.addChild(newNode)
-        }
-        else {
-            myElement.parent.node.replaceChild(oldNode, newNode)
-        }
-        return myElement
-    }
-
     override fun handleElementRename(newElementName: String): PsiElement {
-        return handleElementRename(newElementName, true)
+        return handleElementRename(element, newElementName, true)
     }
 
     // Required for moving referenced files
-    override fun bindToElement(element: PsiElement): PsiElement {
-        val newFile = element as? PsiFile ?: return this.element
+    override fun bindToElement(givenElement: PsiElement): PsiElement {
+        val newFile = givenElement as? PsiFile ?: return this.element
         // Assume LaTeX will accept paths relative to the root file
         val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
-        return handleElementRename(newFileName, false)
+        return handleElementRename(element, newFileName, false)
     }
 
     /**

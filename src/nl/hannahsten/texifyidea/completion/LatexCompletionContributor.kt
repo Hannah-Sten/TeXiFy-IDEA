@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**

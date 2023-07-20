@@ -55,9 +55,9 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         }
 
         // Manage paths/file names.
-        @Language("RegExp")
         // Note that we do not override the user-specified filename to be LaTeX-like.
         // Path of virtual file always contains '/' as file separators.
+        @Language("RegExp")
         val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
         // Execute write actions.

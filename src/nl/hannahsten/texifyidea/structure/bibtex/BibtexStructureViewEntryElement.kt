@@ -9,6 +9,7 @@ import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import java.util.*
 
 /**
@@ -27,7 +28,7 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
         override fun getPresentableText() = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "preamble" -> "preamble"
             "string" -> entry.tags().firstOrNull()?.keyName()
-            else -> entry.identifier()
+            else -> entry.getIdentifier()
         } ?: ""
 
         override fun getIcon(b: Boolean) = when (entry.tokenName().lowercase(Locale.getDefault())) {
@@ -53,7 +54,7 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
         "preamble" -> "a"
         "string" -> "b"
         else -> "c"
-    } + entry.identifier()
+    } + entry.getIdentifier()
 
     override fun getPresentation() = entryPresentation
 

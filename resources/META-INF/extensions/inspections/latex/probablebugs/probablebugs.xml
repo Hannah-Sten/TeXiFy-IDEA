@@ -24,6 +24,10 @@
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Unresolved references"
                          enabledByDefault="true"
                          level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexSuspiciousSectionFormattingInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Suspicious formatting in section-like command"
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexNonMatchingEnvironmentInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Non matching environment commands"
                          enabledByDefault="true"

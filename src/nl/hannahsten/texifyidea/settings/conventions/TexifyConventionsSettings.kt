@@ -92,4 +92,16 @@ data class TexifyConventionsSettings internal constructor(
 
         return currentScheme.labelConventions.singleOrNull { c -> c.name == conventionName && c.type == type }
     }
+
+    fun getDefaultLabel(): LabelConvention {
+        return LabelConvention(false, LabelConventionType.ENVIRONMENT, "new-environment", "")
+    }
+
+    fun deleteProjectLabel(index: Int) {
+        projectState.scheme.labelConventions.removeAt(index)
+    }
+
+    fun deleteProjectLabel(item: LabelConvention) {
+        projectState.scheme.labelConventions.remove(item)
+    }
 }

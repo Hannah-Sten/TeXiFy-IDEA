@@ -5,10 +5,10 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
-import nl.hannahsten.texifyidea.util.endCommand
-import nl.hannahsten.texifyidea.util.environmentName
+import nl.hannahsten.texifyidea.util.parser.endCommand
+import nl.hannahsten.texifyidea.util.parser.environmentName
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.replaceString
 
 /**

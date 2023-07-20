@@ -17,6 +17,8 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Sten Wessel
@@ -33,7 +35,6 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Same bibliography is included multiple times"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         // Chapterbib allows multiple bibliographies
         if (file.includedPackages().any { it == LatexPackage.CHAPTERBIB }) {
             return emptyList()

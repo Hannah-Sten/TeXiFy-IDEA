@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
@@ -44,10 +45,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                         val conventionSettings = TexifyConventionsSettingsManager
                             .getInstance(label.project).getSettings()
                         conventionSettings.getLabelConvention(
-                                it.environmentName,
+                                it.getEnvironmentName(),
                                 LabelConventionType.ENVIRONMENT
                             ) != null &&
-                            !EnvironmentMagic.labelAsParameter.contains(it.environmentName)
+                            !EnvironmentMagic.labelAsParameter.contains(it.getEnvironmentName())
                     }
                     ) {
                         label.parentOfType(LatexEnvironment::class)
@@ -81,7 +82,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 }
                 is LatexEnvironment -> {
                     conventionSettings.getLabelConvention(
-                        labeledCommand.environmentName,
+                        labeledCommand.getEnvironmentName(),
                         LabelConventionType.ENVIRONMENT
                     )?.prefix
                 }

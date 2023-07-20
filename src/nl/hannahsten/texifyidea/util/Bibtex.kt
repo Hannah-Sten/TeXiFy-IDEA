@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import java.util.*
 
 /**
@@ -12,11 +14,6 @@ fun BibtexEntry.tokenType(): String = type.text.lowercase(Locale.getDefault())
  * Get the token type (excluding `@`) of the BibTeX entry (e.g. `article`).
  */
 fun BibtexEntry.tokenName(): String = tokenType().substring(1)
-
-/**
- * Get the identifier/label of the BibTeX entry (e.g. `someAuthor:23b`).
- */
-fun BibtexEntry.identifier(): String? = firstChildOfType(BibtexId::class)?.text
 
 /**
  * Get all the tags in the entry.
@@ -31,13 +28,7 @@ fun BibtexEntry.keys(): Collection<BibtexKey> = childrenOfType(BibtexKey::class)
 /**
  * Get the first key in the entry, or `null` when there are no keys in the entry.
  */
-fun BibtexEntry.firstKey(): BibtexKey? {
-    val keys = keys()
-    if (keys.isEmpty()) {
-        return null
-    }
-    return keys.first()
-}
+fun BibtexEntry.firstKey() = keys().firstOrNull()
 
 /**
  * Get all the names of all entry's keys.

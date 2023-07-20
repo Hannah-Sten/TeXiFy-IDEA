@@ -37,12 +37,12 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
             .filter { it.name in CommandMagic.illegalExtensions }
             .filter { command ->
                 CommandMagic.illegalExtensions[command.name]!!.any {
-                    extension ->
-                    command.requiredParameters.any { it.split(",").any { parameter -> parameter.endsWith(extension) } }
+                        extension ->
+                    command.getRequiredParameters().any { it.split(",").any { parameter -> parameter.endsWith(extension) } }
                 }
             }
             .forEach { command ->
-                val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+                val parameterList = command.getRequiredParameters().map { it.split(",") }.flatten()
                 var offset = command.parameterList.first { it.requiredParam != null }.textOffset - command.textOffset + 1
                 for (parameter in parameterList) {
                     if (CommandMagic.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
@@ -77,7 +77,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
 
-            val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+            val parameterList = command.getRequiredParameters().map { it.split(",") }.flatten()
             var offset = 0
             for (parameter in parameterList) {
                 if (CommandMagic.illegalExtensions.getOrDefault(command.name, null)?.any { parameter.endsWith(it) } == true) {

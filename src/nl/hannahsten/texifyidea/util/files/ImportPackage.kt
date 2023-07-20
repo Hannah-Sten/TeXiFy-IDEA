@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * This method will try to find a file when the 'import' package is used, which means that including files have to be searched for import paths.
@@ -59,7 +59,7 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
 
     val relativeSearchPaths = mutableListOf<String>()
     if (command.name in CommandMagic.relativeImportCommands) {
-        relativeSearchPaths.add(command.requiredParameters.firstOrNull() ?: "")
+        relativeSearchPaths.add(command.getRequiredParameters().firstOrNull() ?: "")
     }
     else {
         relativeSearchPaths.add("")
@@ -73,7 +73,7 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
  */
 fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
     if (command.name in CommandMagic.absoluteImportCommands) {
-        val absolutePath = command.requiredParameters.firstOrNull()
+        val absolutePath = command.getRequiredParameters().firstOrNull()
         if (absolutePath != null) {
             // No need to search further, because using an absolute path overrides the rest
             LocalFileSystem.getInstance().findFileByPath(absolutePath)?.let { return it }
@@ -88,8 +88,8 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
     val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
     var includingCommands = allIncludeCommands.filter {
-        includeCommand ->
-        includeCommand.requiredParameters.any { it.contains(command.containingFile.name.removeFileExtension()) }
+            includeCommand ->
+        includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) }
     }.filter { includeCommand ->
         // Only consider commands that can include LaTeX files
         LatexCommand.lookup(includeCommand.name)?.firstOrNull()?.getArgumentsOf(RequiredFileArgument::class.java)?.any { it.supportedExtensions.contains("tex") } == true
@@ -126,14 +126,14 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
             // Each of the search paths gets prepended by one of the new relative paths found
             for (oldPath in relativeSearchPaths) {
                 if (includingCommand.name in CommandMagic.relativeImportCommands) {
-                    newSearchPaths.add(includingCommand.requiredParameters.firstOrNull() + oldPath)
+                    newSearchPaths.add(includingCommand.getRequiredParameters().firstOrNull() + oldPath)
                 }
             }
 
             // Find files/commands to search next
             val file = includingCommand.containingFile
             if (file !in handledFiles) {
-                val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(file.name) } }
+                val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(file.name) } }
                 if (commandsIncludingThisFile.isEmpty()) {
                     // Cool, we supposedly have a root file, now try to find the directory containing the file being included by command
                     for (relativePath in newSearchPaths) {

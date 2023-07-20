@@ -28,6 +28,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var environmentVariables: EnvironmentVariablesComponent
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
+
     /** Keep track of the the working directory for bibtex, i.e., where bibtex should find the files it needs.
      * Is automatically set based on the LaTeX run config when created. */
     private lateinit var bibWorkingDir: LabeledComponent<TextFieldWithBrowseButton>

@@ -7,6 +7,8 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -14,13 +16,15 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.lastChildOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
 
 /**
@@ -36,7 +40,17 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
          * All commands that should not have a forced breaking space.
          */
         val IGNORED_COMMANDS = setOf(
-            "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\Cref", "\\cpageref", "\\autoref", "\\citeauthor", "\\textcite", "\\Textcite"
+            "\\citet",
+            "\\citet*",
+            "\\Citet",
+            "\\Citet*",
+            "\\cref",
+            "\\Cref",
+            "\\cpageref",
+            "\\autoref",
+            "\\citeauthor",
+            "\\textcite",
+            "\\Textcite"
         )
 
         /**
@@ -74,17 +88,25 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
                 ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
                 ?: continue
 
-            // When sibling is whitespace, it's obviously bad news.
+            val previousSentence = sibling.prevSibling
+                ?: sibling.parent?.prevSibling
+                ?: sibling.parentOfType(LatexNoMathContent::class)?.prevSibling
+                ?: continue
+
+            // When sibling is whitespace, it's obviously bad news. Must not have a newline
             if (sibling is PsiWhiteSpace) {
-                descriptors.add(
-                    manager.createProblemDescriptor(
-                        sibling,
-                        "Reference without a non-breaking space",
-                        WhitespaceReplacementFix(),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly
+                val lastBitOfText = previousSentence.lastChildOfType(LatexNormalText::class) ?: previousSentence.lastChildOfType(LatexParameterText::class) ?: continue
+                if (!PatternMagic.sentenceSeparatorAtLineEnd.matcher(file.text.subSequence(lastBitOfText.startOffset, lastBitOfText.endOffset)).find()) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            sibling,
+                            "Reference without a non-breaking space",
+                            WhitespaceReplacementFix(),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly
+                        )
                     )
-                )
+                }
                 continue
             }
         }

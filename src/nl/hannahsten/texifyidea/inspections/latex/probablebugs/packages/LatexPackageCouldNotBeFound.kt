@@ -9,10 +9,10 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.projectSearchScope
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.util.*
 
 class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
@@ -38,7 +38,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
             .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
         for (command in commands) {
-            val `package` = command.requiredParameters.firstOrNull()?.lowercase(Locale.getDefault())
+            val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault())
             if (!packages.contains(`package`)) {
                 descriptors.add(
                     manager.createProblemDescriptor(

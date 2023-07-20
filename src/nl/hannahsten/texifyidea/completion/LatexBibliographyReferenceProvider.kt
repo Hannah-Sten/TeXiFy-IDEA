@@ -9,10 +9,13 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
-import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.util.labels.findBibtexItems
+import nl.hannahsten.texifyidea.util.parser.getAuthors
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getTitle
 import java.util.*
 
 object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParameters>() {
@@ -48,24 +51,24 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
     }
 
     private fun createLookupElementFromBibtexEntry(bibtexEntry: BibtexEntry, remote: Boolean = false): LookupElementBuilder {
-        val lookupStrings = LinkedList(bibtexEntry.authors)
-        lookupStrings.add(bibtexEntry.title)
-        return LookupElementBuilder.create(bibtexEntry.identifier)
+        val lookupStrings = LinkedList(bibtexEntry.getAuthors())
+        lookupStrings.add(bibtexEntry.getTitle())
+        return LookupElementBuilder.create(bibtexEntry.getIdentifier())
             .withPsiElement(bibtexEntry.id)
-            .withPresentableText(bibtexEntry.title)
+            .withPresentableText(bibtexEntry.getTitle())
             .bold()
             .withInsertHandler(LatexReferenceInsertHandler(remote, if (remote) bibtexEntry else null))
             .withLookupStrings(lookupStrings)
             .withTypeText(
-                bibtexEntry.identifier,
+                bibtexEntry.getIdentifier(),
                 true
             )
             .withIcon(TexifyIcons.DOT_BIB)
     }
 
     private fun createLookupElementFromLatexCommand(latexCommand: LatexCommands): LookupElementBuilder? {
-        if (latexCommand.requiredParameters.isEmpty()) return null
-        return LookupElementBuilder.create(latexCommand.requiredParameters[0])
+        if (latexCommand.getRequiredParameters().isEmpty()) return null
+        return LookupElementBuilder.create(latexCommand.getRequiredParameters()[0])
             .bold()
             .withInsertHandler(LatexReferenceInsertHandler())
             .withTypeText(latexCommand.containingFile.name + ": " + (1 + StringUtil.offsetToLineNumber(latexCommand.containingFile.text, latexCommand.textOffset)), true)

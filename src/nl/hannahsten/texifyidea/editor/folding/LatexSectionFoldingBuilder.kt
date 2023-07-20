@@ -8,11 +8,11 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 
 /**
  * Recursively folds section commands
@@ -71,14 +71,12 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                 // If we found a command which is ranked lower, save the block of text inbetween
                 // Note that a section is ranked lower than a subsection
                 if (nextCommandRank <= currentCommandRank) {
-
                     // Get the location of the next folding command
                     val end = nextFoldingCommand.parentOfType(LatexNoMathContent::class)?.previousSiblingIgnoreWhitespace()
                         ?: break
 
                     // Get the text range between the current and the next folding command
                     if (end.textOffset + end.textLength - currentFoldingCommand.textOffset > 0) {
-
                         val foldingRange = TextRange(currentFoldingCommand.textOffset, end.textOffset + end.textLength)
 
                         // Add it as a folding block

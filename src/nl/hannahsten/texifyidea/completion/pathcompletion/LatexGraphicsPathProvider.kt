@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.cmd
 import java.io.File
@@ -60,7 +60,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
 
         val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
         // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
-        var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(command.containingFile.name.removeFileExtension()) } }
+        var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) } }
 
         // Avoid endless loop (in case of a file inclusion loop)
         val maxDepth = allIncludeCommands.size
@@ -78,7 +78,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
                 // Find files/commands to search next
                 val file = includingCommand.containingFile
                 if (file !in handledFiles) {
-                    val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(file.name) } }
+                    val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(file.name) } }
                     newIncludingCommands.addAll(commandsIncludingThisFile)
                     handledFiles.add(file)
                 }
