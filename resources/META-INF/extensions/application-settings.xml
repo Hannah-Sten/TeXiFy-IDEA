@@ -3,8 +3,6 @@
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
         <applicationService
                 serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsGlobalSettingsManager"/>
-        <projectService
-                serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsProjectSettingsManager"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language"
                                  id="TexifyConfigurable" displayName="TeXiFy"/>
         <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions" displayName="Conventions"
