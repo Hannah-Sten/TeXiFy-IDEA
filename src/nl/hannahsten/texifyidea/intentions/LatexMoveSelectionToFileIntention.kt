@@ -20,7 +20,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
 
     companion object {
 
-        private const val minimumSelectionLength = 24
+        private const val MINIMUM_SELECTION_LENGTH = 24
     }
 
     override fun startInWriteAction() = false
@@ -31,7 +31,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         }
 
         val selectionSize = selectionOffsets(editor).sumOf { (start, end): Pair<Int, Int> -> end - start }
-        return selectionSize >= minimumSelectionLength
+        return selectionSize >= MINIMUM_SELECTION_LENGTH
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {

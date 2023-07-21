@@ -26,8 +26,8 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
 
     companion object {
 
-        const val projectDirString = "{projectDir}"
-        const val mainFileString = "{mainFileParent}"
+        const val PROJECT_DIR_STRING = "{projectDir}"
+        const val MAIN_FILE_STRING = "{mainFileParent}"
     }
 
     fun clone(): LatexOutputPath {
@@ -37,7 +37,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
 
-    var pathString: String = "$projectDirString/$variant"
+    var pathString: String = "$PROJECT_DIR_STRING/$variant"
 
     /**
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
@@ -50,7 +50,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
 
         // Just to be sure, avoid using jetbrains /bin path as output
         if (pathString.isBlank()) {
-            pathString = "$projectDirString/$variant"
+            pathString = "$PROJECT_DIR_STRING/$variant"
         }
 
         // Caching of the result
@@ -69,13 +69,13 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             return virtualFile!!
         }
         else {
-            val pathString = if (pathString.contains(projectDirString)) {
+            val pathString = if (pathString.contains(PROJECT_DIR_STRING)) {
                 if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
-                pathString.replace(projectDirString, contentRoot?.path ?: return null)
+                pathString.replace(PROJECT_DIR_STRING, contentRoot?.path ?: return null)
             }
             else {
                 if (mainFile == null) return null
-                pathString.replace(mainFileString, mainFile?.parent?.path ?: return null)
+                pathString.replace(MAIN_FILE_STRING, mainFile?.parent?.path ?: return null)
             }
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
             if (path != null && path.isDirectory) {

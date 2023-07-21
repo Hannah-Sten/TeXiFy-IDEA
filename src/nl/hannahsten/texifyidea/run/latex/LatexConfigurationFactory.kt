@@ -17,7 +17,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
 
     companion object {
 
-        private const val factoryName = "LaTeX configuration factory"
+        private const val FACTORY_NAME = "LaTeX configuration factory"
     }
 
     override fun createTemplateConfiguration(project: Project) = when (type) {
@@ -34,7 +34,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
         else -> throw IllegalArgumentException("No TeXiFy run configuration type, but ${type.id} was received instead.")
     }
 
-    override fun getName() = factoryName
+    override fun getName() = FACTORY_NAME
 
-    override fun getId() = factoryName
+    override fun getId() = FACTORY_NAME
 }
