@@ -20,6 +20,14 @@ See [General](General.md).
 
 Here you can edit the syntax highlighting colours of both LaTeX and BibTeX, for example for commands, math and references.
 
+##  File templates {id="file-templates"}
+
+<ui-path>Settings | Editor | File and Code Templates</ui-path>
+
+Right-click in Project tool window, then <ui-path>New | LaTeX File</ui-path>.
+
+![new-file](https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/figures/new-file.png)
+
 ## Language injections
 
 _Since b0.6.10_

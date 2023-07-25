@@ -27,7 +27,9 @@
             <toc-element topic="General.md"/>
         </toc-element>
     </toc-element>
-    <toc-element topic="Tool-Windows.md"/>
+    <toc-element topic="Tools.md">
+        <toc-element topic="Tool-Windows.md"/>
+    </toc-element>
     <toc-element topic="Contributing-to-the-documentation.md"/>
     <toc-element topic="Contributing-to-the-source-code.md"/>
     <toc-element topic="Troubleshooting.md"/>
