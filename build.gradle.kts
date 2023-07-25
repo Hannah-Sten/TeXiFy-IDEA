@@ -10,8 +10,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.15.0"
-    kotlin("jvm") version ("1.8.0")
-    kotlin("plugin.serialization") version ("1.8.0")
+    kotlin("jvm") version ("1.9.0")
+    kotlin("plugin.serialization") version ("1.9.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.47.0"
@@ -270,7 +270,7 @@ tasks.jar {
 
 // https://github.com/ben-manes/gradle-versions-plugin
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()

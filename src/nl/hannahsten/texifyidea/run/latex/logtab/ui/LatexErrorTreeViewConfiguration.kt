@@ -12,7 +12,6 @@ import com.intellij.util.xmlb.XmlSerializerUtil
     name = "LatexErrorTreeViewConfiguration",
     storages = [Storage(StoragePathMacros.WORKSPACE_FILE)]
 )
-
 @Service(Service.Level.PROJECT)
 data class LatexErrorTreeViewConfiguration(
     var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.values().associateWith { true }.toMutableMap(),
