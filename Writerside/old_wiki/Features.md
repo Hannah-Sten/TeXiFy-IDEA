@@ -1,21 +1,4 @@
-
-## Tools
-* VCS integration including Git
-* Terminal window
-* [Access Remote Libraries](Tools#remote-libraries)
-* [Detexify](Tools#detexify)
-* [Extend TeXiFy functionality with custom scripts](https://github.com/dkandalov/live-plugin)
-* [Word counting tool](Menu-entries#Word-counting-tool)
-* [Customizable file templates for .tex, .sty, .cls and .bib files](Menu-entries#file-templates)
-* [Table Creation Wizard](++Menu-entries#table-creation-wizard++)
-* [Graphic Insertion Wizard](++Menu-entries#insert-graphic-wizard++)
-* [Dummy Text (Lorem Ipsum) Wizard](++Menu-entries#insert-dummy-text-wizard++)
-* [Menu button to delete generated auxiliary files](++Menu-entries#clear-aux-files++)
-* Crash reporting dialog
-* File creation dialog
-
 ## UI
-* [Symbol tool window](Symbol-view)
 * [Editor tabs](https://www.jetbrains.com/help/idea/using-code-editor.html#manage_tabs)
 * [Split screen editing](https://www.jetbrains.com/help/idea/using-code-editor.html#split_screen)
 * [Change display font](https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#fonts)

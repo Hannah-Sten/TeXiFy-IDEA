@@ -65,20 +65,20 @@ However, when you use abbreviations like that you should always tell LaTeX to us
 
 ![link="https://xkcd.com/1285/"](https://imgs.xkcd.com/comics/third_way.png)
 
-## [[ins:eqref]] Use `\eqref{...}` instead of `(\ref{...})`
+##  Use `\eqref{...}` instead of `(\ref{...})` {id="ins:eqref"}
 _Since b0.6.6_
 
 Equations should be referenced using `\eqref{...}` rather than `(\ref{...})` to ensure that all your equation references
 are formatted in the same way. This inspection is only triggered when the corresponding label was defined in a math environment.
 
-## [[ins:requirepackage]] Use `\RequirePackage{...}` instead of `\usepackage{...}`
+##  Use `\RequirePackage{...}` instead of `\usepackage{...}` {id="ins:requirepackage"}
 _Since b0.7.8_
 
 While the `\usepackage` and `\RequirePackage` commands do roughly the same thing -- including packages -- it is common practice to use the `\RequirePackage` in class and style files and to use the `\usepackage` command in most other files.
 
 See [Difference between RequirePackage and usepackage](https://tex.stackexchange.com/questions/19919/whats-the-difference-between-requirepackage-and-usepackage) for more information.
 
-## [[ins:documentclass]] File that contains a document environment should contain a `\documentclass` command
+##  File that contains a document environment should contain a `\documentclass` command {id="ins:documentclass"}
 _Since b0.7.1_
 
 A LaTeX root file has the following structure:
@@ -107,6 +107,6 @@ When the need arises to specify the document class in the personal package, tran
 If you redefine common commands such as `\begin` or `\newcommand` to do something different, this may confuse TeXiFy and break functionality.
 It will probably also confuse anyone (like your future self) who reads your LaTeX.
 
-## [[too-large-section]]Too large section
+## Too large section {id="too-large-section"}
 
 Similar to [move selection contents to separate file](Intentions#selection-to-file) and [move section contents to separate file](Intentions#move-section-to-file), except that this is a visible warning on a section command whenever a section is too large (currently some thousand characters).

@@ -11,7 +11,7 @@ Instead of using styling commands like `{\bf bold text}` and `{\it italic text}`
 
 Instead of using `\def` to define new commands, generally you should use `\newcommand` instead, or other new commands like `\NewDocumentCommand`.
 
-## [[ins:avoid-eqnarray]]Avoid `eqnarray`
+## Avoid `eqnarray` {id="ins:avoid-eqnarray"}
 The `eqnarray` and `eqnarray==` environments are not recommended because they produce inconsistent spacing of the equal signs and make no attempt to prevent overprinting of the equation body and equation number.
 
 ## Discouraged use of primitive TeX display math

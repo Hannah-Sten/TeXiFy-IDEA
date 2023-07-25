@@ -20,7 +20,7 @@ Add `\left` and `\right` to brackets, e.g. changing `$(\frac 1 2)$` into `\left(
 
 Switch between math environments, e.g. `align*` and inline math.
 
-## [[move-section-to-file]]Move section contents to separate file
+## Move section contents to separate file {id="move-section-to-file"}
 Similar to [move selection contents to separate file](Intentions#selection-to-file), except that it is triggered on
 a section heading. Any `\section{...}` command will trigger this. It turns
 
@@ -54,7 +54,7 @@ into the two files
 First section.
 ```
 
-## [[selection-to-file]]Move selection contents to separate file
+## Move selection contents to separate file {id="selection-to-file"}
 Move the selected text to a new file. When triggering this intention, there will be a popup asking for the name and
 location of the new file. Consider the following file:
 
