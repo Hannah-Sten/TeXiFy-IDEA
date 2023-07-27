@@ -36,10 +36,10 @@ class DefaultFileCreator(
 
         // Apply template.
         val template = if (isBibtexEnabled) {
-            LatexTemplatesFactory.fileTemplateTexWithBib
+            LatexTemplatesFactory.FILE_TEMPLATE_TEX_WITH_BIB
         }
         else {
-            LatexTemplatesFactory.fileTemplateTex
+            LatexTemplatesFactory.FILE_TEMPLATE_TEX
         }
         val templateText = LatexTemplatesFactory.getTemplateText(project, template, fileName)
 
@@ -69,7 +69,7 @@ class DefaultFileCreator(
         }
 
         // Apply template.
-        val template = LatexTemplatesFactory.fileTemplateBib
+        val template = LatexTemplatesFactory.FILE_TEMPLATE_BIB
         val templateText = LatexTemplatesFactory.getTemplateText(project, template, fileName)
 
         try {
