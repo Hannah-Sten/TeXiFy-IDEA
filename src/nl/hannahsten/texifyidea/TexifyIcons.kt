@@ -50,10 +50,6 @@ object TexifyIcons {
 
     val FILE = TEXT_FILE
 
-    val TEMP_FILE = IconLoader.getIcon(
-        "/nl/hannahsten/texifyidea/icons/temp.svg", TexifyIcons::class.java
-    )
-
     val SYNCTEX_FILE = TEXT_FILE
 
     val AUX_FILE = TEXT_FILE
