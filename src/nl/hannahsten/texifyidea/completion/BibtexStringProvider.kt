@@ -5,17 +5,16 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.psi.BibtexComment
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexTag
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.lastChildOfType
 import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.tokenType
 
 /**
  * I think this provides autocompletion for strings defined with @string{..} commands.
@@ -38,7 +37,7 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
 
         result.addAllElements(
             strings.map {
-                LookupElementBuilder.create(StringDescription(it!!.third), it.first)
+                LookupElementBuilder.create(StringDescription(it.third), it.first)
                     .withPresentableText(it.first)
                     .bold()
                     .withTypeText(it.second, true)
