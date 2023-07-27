@@ -37,7 +37,7 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
             .toList()
 
         result.addAllElements(
-            ContainerUtil.map2List(strings) {
+            strings.map {
                 LookupElementBuilder.create(StringDescription(it!!.third), it.first)
                     .withPresentableText(it.first)
                     .bold()

@@ -26,7 +26,7 @@ object LatexDocumentclassProvider : CompletionProvider<CompletionParameters>() {
         val project = parameters.editor.project ?: return
         val classes = DEFAULT_CLASSES + project.findAvailableDocumentClasses()
         result.addAllElements(
-            ContainerUtil.map2List(classes) { name ->
+            classes.map { name ->
                 LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()

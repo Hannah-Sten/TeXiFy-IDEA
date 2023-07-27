@@ -40,7 +40,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
 
         // Add lookup elements.
         result.addAllElements(
-            ContainerUtil.map2List(fields) {
+            fields.map {
                 val (message, icon) = when (it) {
                     in required -> " required" and TexifyIcons.KEY_REQUIRED
                     in optional -> " optional" and PlatformIcons.PROTECTED_ICON
