@@ -1,5 +1,5 @@
 version: "1.0"
-linter: jetbrains/qodana-jvm:latest
+linter: jetbrains/qodana-jvm-community:latest
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
