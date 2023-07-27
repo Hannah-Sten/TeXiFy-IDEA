@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix a parse issue with TEXINPUTS
 
 ## [0.7.33] - 2023-07-27
 This release fixes an exception introduced by IntelliJ 2023.2.
