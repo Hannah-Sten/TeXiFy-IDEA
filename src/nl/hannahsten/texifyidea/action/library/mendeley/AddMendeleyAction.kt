@@ -1,8 +1,12 @@
 package nl.hannahsten.texifyidea.action.library.mendeley
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.raise.either
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.jcef.JBCefBrowser
+import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.action.library.AddLibraryAction
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
@@ -14,11 +18,11 @@ import javax.swing.JComponent
 
 class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.AddMendeleyDialogWrapper>() {
 
-    override suspend fun createLibrary(dialogWrapper: AddMendeleyDialogWrapper, project: Project): Pair<MendeleyLibrary, List<BibtexEntry>>? {
-        val library = RemoteBibLibraryFactory.create(MendeleyLibrary.NAME) as? MendeleyLibrary ?: return null
-        val bibItems = library.getCollection()
+    override suspend fun createLibrary(dialogWrapper: AddMendeleyDialogWrapper, project: Project): Either<RemoteLibraryRequestFailure, Pair<MendeleyLibrary, List<BibtexEntry>>?> = either {
+        val library = RemoteBibLibraryFactory.create(MendeleyLibrary.NAME) as? MendeleyLibrary ?: return@either null
+        val bibItems = library.getCollection().getOrElse { raise(it) }
         RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
-        return library to bibItems
+        library to bibItems
     }
 
     override fun getDialog(project: Project): AddMendeleyDialogWrapper {

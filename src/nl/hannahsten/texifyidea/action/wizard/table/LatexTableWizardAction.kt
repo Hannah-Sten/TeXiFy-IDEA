@@ -38,10 +38,12 @@ class LatexTableWizardAction : AnAction() {
         // If the user pressed OK, do stuff.
         if (dialogWrapper.showAndGet()) {
             // Get the table information from the dialog, and convert it to latex.
-            val tableTextToInsert = convertTableToLatex(dialogWrapper.tableInformation, indent)
+            with(dialogWrapper.tableInformation) {
+                val tableTextToInsert = convertTableToLatex(indent)
 
-            // Use an insert action to insert the table.
-            InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
+                // Use an insert action to insert the table.
+                InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
+            }
 
             // Insert the booktabs package.
             WriteCommandAction.runWriteCommandAction(
@@ -71,63 +73,58 @@ class LatexTableWizardAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     /**
+     * Function to process the contents of the table, i.e. the header text and table entries. The indentation
+     * is the same throughout the table contents.
+     */
+    private fun TableInformation.processTableContent(indent: String): String {
+        val headers = tableModel.getColumnNames()
+            .joinToString(
+                prefix = "$indent\\toprule\n$indent",
+                separator = " & ",
+                postfix = " \\\\\n$indent\\midrule\n"
+            ) { "\\textbf{$it}" }
+
+        val rows = tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
+            (row as Vector<*>).joinToString(
+                prefix = indent,
+                separator = " & ",
+                postfix = " \\\\"
+            ) {
+                // Enclose with $ if the type of this column is math.
+                val index = row.indexOf(it)
+                val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
+                encloseWith + it.toString() + encloseWith
+            }
+        }
+        return headers + rows
+    }
+
+    /**
      * Convert the table information to a latex table that can be inserted into the file.
      *
-     * @param tableInformation
      * @param lineIndent
      *          The indentation of the current line, to be used on each new line.
      * @param tabIndent
      *          The continuation indent.
      */
-    private fun convertTableToLatex(tableInformation: TableInformation, lineIndent: String, tabIndent: String = "    "): String {
-        /**
-         * Local function to process the contents of the table, i.e. the header text and table entries. The indentation
-         * is the same throughout the table contents.
-         */
-        fun processTableContent(indent: String): String {
-            return with(tableInformation) {
-                val headers = tableModel.getColumnNames()
-                    .joinToString(
-                        prefix = "$indent\\toprule\n$indent",
-                        separator = " & ",
-                        postfix = " \\\\\n$indent\\midrule\n"
-                    ) { "\\textbf{$it}" }
-
-                val rows = tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
-                    (row as Vector<*>).joinToString(
-                        prefix = indent,
-                        separator = " & ",
-                        postfix = " \\\\"
-                    ) {
-                        // Enclose with $ if the type of this column is math.
-                        val index = row.indexOf(it)
-                        val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
-                        encloseWith + it.toString() + encloseWith
-                    }
-                }
-                headers + rows
-            }
-        }
-
+    private fun TableInformation.convertTableToLatex(lineIndent: String, tabIndent: String = "    "): String {
         // The tex(t) for a table consists of three parts: the open commands, the actual content, and the closing commands
         // (this includes the caption and label).
-        return with(tableInformation) {
-            val openTableCommand = "\\begin{table}\n" +
-                "$lineIndent$tabIndent\\centering\n" +
-                // Everything within the table command gets an extra indent.
-                "$lineIndent$tabIndent\\begin{tabular}{${columnTypes.toLatexColumnFormatters()}}\n"
+        val openTableCommand = "\\begin{table}\n" +
+            "$lineIndent$tabIndent\\centering\n" +
+            // Everything within the table command gets an extra indent.
+            "$lineIndent$tabIndent\\begin{tabular}{${columnTypes.toLatexColumnFormatters()}}\n"
 
-            // The content has to be indented once more.
-            val content = processTableContent(indent = lineIndent + tabIndent + tabIndent)
+        // The content has to be indented once more.
+        val content = processTableContent(indent = lineIndent + tabIndent + tabIndent)
 
-            val closeTableCommand = "$lineIndent$tabIndent\\end{tabular}\n" +
-                "$lineIndent$tabIndent\\caption{$caption}\n" +
-                "$lineIndent$tabIndent\\label{$label}\n" +
-                "$lineIndent\\end{table}\n" +
-                lineIndent // Indentation on the last line so we can continue typing there.
+        val closeTableCommand = "$lineIndent$tabIndent\\end{tabular}\n" +
+            "$lineIndent$tabIndent\\caption{$caption}\n" +
+            "$lineIndent$tabIndent\\label{$label}\n" +
+            "$lineIndent\\end{table}\n" +
+            lineIndent // Indentation on the last line so we can continue typing there.
 
-            openTableCommand + content + closeTableCommand
-        }
+        return openTableCommand + content + closeTableCommand
     }
 
     /**

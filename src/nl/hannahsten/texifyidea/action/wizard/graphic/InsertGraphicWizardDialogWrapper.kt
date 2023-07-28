@@ -141,7 +141,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
                     val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
                     // Add symbol if selected.
                     if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
-                        txtPosition.text = txtPosition.text + location.symbol
+                        txtPosition.text += location.symbol
                     }
                     // Remove if deselected.
                     else {
@@ -272,7 +272,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         }
         // When there is something, append width property.
         else {
-            txtCustomOptions.text = txtCustomOptions.text + ",$fieldName=$text"
+            txtCustomOptions.text += ",$fieldName=$text"
         }
     }
 

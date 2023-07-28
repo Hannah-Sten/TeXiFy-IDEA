@@ -17,12 +17,10 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
-import nl.hannahsten.texifyidea.util.expandCommandsOnce
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
-import nl.hannahsten.texifyidea.util.includedPackages
-import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import java.io.File
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -32,7 +30,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 class InputFileReference(
     element: LatexCommands,
     val range: TextRange,
-    val extensions: Set<String>,
+    val extensions: List<String>,
     val defaultExtension: String
 ) : PsiReferenceBase<LatexCommands>(element) {
 
@@ -122,16 +120,18 @@ class InputFileReference(
 
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
-        val texInputPath = runManager.allConfigurationsList
+        val texinputsVariable = runManager.allConfigurationsList
             .filterIsInstance<LatexRunConfiguration>()
             .firstOrNull { it.mainFile in rootFiles }
             ?.environmentVariables
             ?.envs
             ?.getOrDefault("TEXINPUTS", null)
+            // Not sure which of these takes precedence, or if they are joined together
             ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
+            ?: runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
 
-        if (texInputPath != null) {
-            val path = texInputPath.trimEnd(':')
+        for (texInputPath in texinputsVariable?.trim('\'')?.split(File.pathSeparator)?.filter { it.isNotBlank() } ?: emptyList()) {
+            val path = texInputPath.trimEnd(File.pathSeparatorChar)
             searchPaths.add(path.trimEnd('/'))
             // See the kpathsea manual, // expands to subdirs
             if (path.endsWith("//")) {

@@ -65,7 +65,7 @@ fun findVirtualFileByAbsoluteOrRelativePath(path: String, project: Project): Vir
  *         Set of all supported extensions to look for.
  * @return The matching file, or `null` when the file couldn't be found.
  */
-fun VirtualFile.findFile(filePath: String, extensions: Set<String> = emptySet()): VirtualFile? {
+fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList()): VirtualFile? {
     try {
         val isAbsolute = File(filePath).isAbsolute
         var file = if (!isAbsolute) {

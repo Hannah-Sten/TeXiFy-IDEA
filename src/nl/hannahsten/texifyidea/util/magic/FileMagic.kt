@@ -8,8 +8,9 @@ object FileMagic {
 
     /**
      * All file extensions of files that can be included (and where the included files contain language that needs to be considered).
+     * sty extensions are preferred over tex extensions for the case when e.g. a main.tex file includes a main.sty file (generally it will not be the other way around).
      */
-    val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
+    val includeExtensions = listOf("sty", "tex", "cls", "bib")
 
     val automaticExtensions = mapOf(
         INCLUDE.cmd to LatexFileType.defaultExtension,
@@ -59,6 +60,8 @@ object FileMagic {
 
     /**
      * All extensions for graphic files.
+     * This order is determined by the order in which \includegraphics tries the extensions to find files, as can be seen with
+     * texdef -t pdflatex -p graphicx Gin@extensions
      */
-    val graphicFileExtensions = setOf("eps", "pdf", "png", "jpeg", "jpg", "jbig2", "jp2")
+    val graphicFileExtensions = listOf("pdf", "png", "jpg", "mps", "jpeg", "jbig2", "jb2", "PDF", "PNG", "JPG", "JPEG", "JBIG2", "JB2", "eps")
 }

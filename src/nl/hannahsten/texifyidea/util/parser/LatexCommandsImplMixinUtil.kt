@@ -23,7 +23,7 @@ import kotlin.collections.set
 /**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
  *
- * Do not use this method directly, use command.references.filterIsInstance<InputFileReference>() instead.
+ * Use this instead of command.references.filterIsInstance<InputFileReference>(), to avoid resolving references of types that will not be needed.
  */
 fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     val inputFileReferences = mutableListOf<InputFileReference>()
@@ -64,7 +64,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
-            inputFileReferences.add(InputFileReference(this, range.shrink(1), setOf("tex"), "tex"))
+            inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), "tex"))
         }
     }
 

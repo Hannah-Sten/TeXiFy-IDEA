@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.settings
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.RoamingType
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
@@ -9,7 +10,7 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 /**
  * @author Sten Wessel
  */
-@State(name = "TexifySettings", storages = [(Storage("texifySettings.xml"))])
+@State(name = "TexifySettings", storages = [(Storage("texifySettings.xml", roamingType = RoamingType.DEFAULT))])
 class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     companion object {

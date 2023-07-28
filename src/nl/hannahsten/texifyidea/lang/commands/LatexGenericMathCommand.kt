@@ -111,6 +111,7 @@ enum class LatexGenericMathCommand(
     IMAGINARY("Im", display = "ℑ", collapse = true),
     DOTLESS_I("imath", display = "ı", collapse = true),
     INFINUM("inf"),
+    INTERTEXT("intertext", "text".asRequired(), dependency = AMSMATH),
     INVERSE_F("Finv", dependency = AMSSYMB, display = "Ⅎ", collapse = true),
     INVERSED_NOT_SIGN("invneg", dependency = WASYSYM),
     DOTLESS_J("jmath", display = "ȷ", collapse = true),

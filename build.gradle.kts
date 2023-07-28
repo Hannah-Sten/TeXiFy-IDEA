@@ -9,9 +9,9 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.14.1"
-    kotlin("jvm") version ("1.8.0")
-    kotlin("plugin.serialization") version ("1.8.0")
+    id("org.jetbrains.intellij") version "1.15.0"
+    kotlin("jvm") version ("1.9.0")
+    kotlin("plugin.serialization") version ("1.9.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.47.0"
@@ -23,15 +23,15 @@ plugins {
     id("de.undercouch.download") version "5.4.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.1"
+    id("org.jetbrains.kotlinx.kover") version "0.7.2"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "8.2.1"
+    id("org.owasp.dependencycheck") version "8.3.1"
 
-    id("org.jetbrains.changelog") version "2.1.0"
+    id("org.jetbrains.changelog") version "2.1.2"
 
     id("org.jetbrains.grammarkit") version "2022.3.1"
 }
@@ -87,7 +87,7 @@ dependencies {
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.7.1")
+    implementation("org.codehaus.plexus:plexus-archiver:4.8.0")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
@@ -98,13 +98,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.1")
-    implementation("io.ktor:ktor-client-cio:2.3.1")
-    implementation("io.ktor:ktor-client-auth:2.3.1")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.1")
-    implementation("io.ktor:ktor-server-core:2.3.1")
-    implementation("io.ktor:ktor-server-jetty:2.3.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1")
+    implementation("io.ktor:ktor-client-core:2.3.2")
+    implementation("io.ktor:ktor-client-cio:2.3.2")
+    implementation("io.ktor:ktor-client-auth:2.3.2")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
+    implementation("io.ktor:ktor-server-core:2.3.2")
+    implementation("io.ktor:ktor-server-jetty:2.3.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-5")
@@ -117,20 +117,24 @@ dependencies {
         exclude("xml-apis", "xml-apis-ext")
     }
 
+    implementation("io.arrow-kt:arrow-core:1.2.0")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
+    implementation("io.arrow-kt:arrow-resilience:1.2.0")
+
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.3")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.9.3")
+    testImplementation("org.junit.platform:junit-platform-runner:1.10.0")
 
     testImplementation("io.mockk:mockk:1.13.5")
 
@@ -255,6 +259,9 @@ tasks.test {
 
 ktlint {
     verbose.set(true)
+    filter {
+        exclude { it.file.path.contains("generated") }
+    }
 }
 
 tasks.jar {
@@ -263,7 +270,7 @@ tasks.jar {
 
 // https://github.com/ben-manes/gradle-versions-plugin
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()
