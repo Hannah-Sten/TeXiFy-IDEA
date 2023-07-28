@@ -1,3 +1,5 @@
+# TeXiFy settings
+
 These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy</ui-path>
 
 ## Option to disable automatic insertion of second $
@@ -133,3 +135,9 @@ For more advantages, see [https://tex.stackexchange.com/questions/39285/whats-th
 _Since b0.6.7_
 
 Note: As of _b0.7.2_ this setting has been moved to the [run configuration (template) settings](Run-configuration-settings.md#choose-pdf-viewer).
+
+## Conventions
+These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy | Conventions</ui-path> and allow you to configure Latex code conventions that apply either globally or for the current project.
+
+* [The maximum number of characters in a section before TeXiFy will suggest to move the section to another file](Conventions#maximum-section-size)
+* [Which commands and environments should have a label and which prefix the label should have](Conventions#label-conventions)

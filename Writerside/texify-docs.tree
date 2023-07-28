@@ -23,6 +23,7 @@
     </toc-element>
     <toc-element topic="BibTeX.md"/>
     <toc-element topic="Settings.md">
+        <toc-element topic="TeXiFy-settings.md"/>
         <toc-element topic="Editor.md">
             <toc-element topic="General.md"/>
         </toc-element>
