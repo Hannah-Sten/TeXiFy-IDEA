@@ -1,32 +1,4 @@
-## UI
-* [Editor tabs](https://www.jetbrains.com/help/idea/using-code-editor.html#manage_tabs)
-* [Split screen editing](https://www.jetbrains.com/help/idea/using-code-editor.html#split_screen)
-* [Change display font](https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#fonts)
-* [Custom color scheme](https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#customize-color-scheme)
-* [RTL/bidirectional support](https://www.jetbrains.com/help/idea/text-direction.html)
-* [Fancy icons that fit in with the IntelliJ style](UI#Icons)
-
 ## Settings and preferences
-### Global settings
-
-These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy</ui-path> and are global to your IntelliJ: they will be same for all projects.
-
-* [Option to disable automatic insertion of second $](Global-settings#closing-math)
-* [Option to disable automatic brace insertion around text in subscript and superscript](Global-settings#brace-insertion)
-* [Option to disable auto-insertion of \item](Global-settings#item-insertion)
-* [Option to disable automatic package dependency checks](Global-settings#dependency-check)
-* [Option to enable automatic compilation](Global-settings#automatic-compilation)
-* [Option to enable continuous preview of math and TikZ environments](Global-settings#continuous-preview)
-* [Option to include the backslash when selecting a LaTeX command](Global-settings#backslash-selection)
-* [Option to show LaTeX package files in the structure view](Global-settings#package-structure-view)
-* [Option to disable indexing of MiKTeX/TeX Live package files](Global-settings#external-index)
-* [Option to enable smart quote substitution](Global-settings#smart-quotes)
-
-#### Conventions
-These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy | Conventions</ui-path> and allow you to configure Latex code conventions that apply either globally or for the current project.
-
-* [The maximum number of characters in a section before TeXiFy will suggest to move the section to another file](Conventions#maximum-section-size)
-* [Which commands and environments should have a label and which prefix the label should have](Conventions#label-conventions)
 
 ### LaTeX SDK
 
