@@ -95,12 +95,13 @@ open class LatexPackage @JvmOverloads constructor(
          */
         fun create(sourceFile: VirtualFile): LatexPackage {
             val isLatexBase = sourceFile.parent.name == "base"
-            val dependencyText = if (sourceFile.fileType is StyleFileType || sourceFile.fileType is ClassFileType) {
-                sourceFile.nameWithoutExtension
-            }
-            else {
+            val dependencyText =
+                when (sourceFile.fileType) {
+                is StyleFileType -> sourceFile.nameWithoutExtension
+                // Shouldn't happen, but if it does, a cls file is not a package and we don't support importing it, so don't do anything
+                is ClassFileType -> ""
                 // The mapping from dtx to package names is nontrivial, we just do a guess for now
-                sourceFile.parent.name
+                else -> sourceFile.parent.name
             }
             val fileName = sourceFile.name.removeFileExtension()
             return if (isLatexBase) LatexPackage("", fileName = fileName) else LatexPackage(dependencyText, fileName = fileName)
