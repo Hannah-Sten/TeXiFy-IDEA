@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang
 
 import com.intellij.codeInsight.intention.FileModifier
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 
@@ -94,7 +95,7 @@ open class LatexPackage @JvmOverloads constructor(
          */
         fun create(sourceFile: VirtualFile): LatexPackage {
             val isLatexBase = sourceFile.parent.name == "base"
-            val dependencyText = if (sourceFile.fileType is StyleFileType) {
+            val dependencyText = if (sourceFile.fileType is StyleFileType || sourceFile.fileType is ClassFileType) {
                 sourceFile.nameWithoutExtension
             }
             else {
