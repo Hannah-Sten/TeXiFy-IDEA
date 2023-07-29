@@ -57,7 +57,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
         }
         // Gutter requires a smaller icon per IJ SDK docs.
-        val icon = TexifyIcons.getIconFromExtension(extension, smaller = true)
+        val icon = TexifyIcons.getIconFromExtension(extension)
 
         try {
             val builder = NavigationGutterIconBuilder
@@ -80,6 +80,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
     }
 
     override fun getIcon(): Icon {
-        return TexifyIcons.LATEX_FILE_SMALLER
+        return TexifyIcons.LATEX_FILE
     }
 }

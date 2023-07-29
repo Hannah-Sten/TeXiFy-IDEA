@@ -1,39 +1,80 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16">
-	<rect fill="rgb(255,255,255)" fill-opacity="0" stroke="none" width="16" height="16"/>
-	<defs>
-		<clipPath id="clip_0">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_0)">
-		<path fill="rgb(154,167,176)" fill-opacity="0.80000001" stroke="none" transform="translate(3 1)" d="M0 4L4 4L4 0L0 4Z"/>
-	</g>
-	<defs>
-		<clipPath id="clip_1">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_1)">
-		<path fill="rgb(154,167,176)" fill-opacity="0.80000001" stroke="none" transform="translate(3 1)" d="M0 7L0 5L5 5L5 0L10 0L10 7L0 7Z"/>
-	</g>
-	<defs>
-		<clipPath id="clip_2">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_2)">
-		<path fill="rgb(244,175,61)" fill-opacity="0.69803923" stroke="none" transform="translate(1 9)" d="M0 0L15 0L15 7L0 7L0 0Z"/>
-	</g>
-	<defs>
-		<clipPath id="clip_3">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_3)">
-		<text fill="rgb(35,31,32)" fill-opacity="0.69803923" stroke="none" transform="translate(1.5 12.5)" font-size="7" font-weight="bold" font-family="Gotham" x="0" y="2.45">
-				DC
-		</text>
-	</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="doc-latex-file.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1278"
+     inkscape:window-height="1368"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="29.5"
+     inkscape:cx="7.7165289"
+     inkscape:cy="6.1682381"
+     inkscape:window-x="2553"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <rect
+     x="2.5"
+     y="2.5"
+     width="11"
+     height="11"
+     rx="1.5"
+     fill="#FAF5FF"
+     stroke="#834DF0"
+     id="rect4"
+     style="stroke:#c27d04;stroke-opacity:1;fill:#fffaeb;fill-opacity:1" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="7.6101694"
+     y="4.2203388"
+     id="text4140"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan4142"
+       x="7.6101694"
+       y="4.2203388" /></text>
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#c27d04;fill-opacity:1"
+     d="m 7.5318032,11.364409 c 0.84379,0 1.50746,-0.37098 1.8881596,-0.99832 l 0,0.87551 0.9824542,0 0,-6.8771922 -1.0029242,0 0,2.4796807 C 9.0157232,6.2372075 8.3607532,5.8790078 7.5318032,5.8790078 c -1.45829,0 -2.4765895,1.1155197 -2.4765895,2.7427097 0,1.6271915 1.0182995,2.7426915 2.4765895,2.7426915 z m 0.2098,-4.5848015 c 0.97734,0 1.6578896,0.7522 1.6578896,1.84211 0,1.08991 -0.6805496,1.8421115 -1.6578896,1.8421115 -0.97223,0 -1.64259,-0.7522015 -1.64259,-1.8421115 0,-1.08991 0.67036,-1.84211 1.64259,-1.84211 z"
+     id="path6-5" />
 </svg>
