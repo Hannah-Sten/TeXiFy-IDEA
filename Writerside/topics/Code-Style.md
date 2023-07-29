@@ -1,3 +1,5 @@
+# Code Style
+
 These settings can be found in <ui-path>File | Settings | Editor | Code Style | LaTeX</ui-path> and <ui-path>File | Settings | Editor | Code Style | BibTeX</ui-path> for LaTeX and BibTeX, respectively.
 These settings will change the behaviour of the [formatter](Formatter), triggered by pressing <shortcut>Ctrl + Alt + L</shortcut>, or the behaviour of the editor.
 

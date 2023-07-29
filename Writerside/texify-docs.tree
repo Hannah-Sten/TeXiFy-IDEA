@@ -26,6 +26,7 @@
         <toc-element topic="TeXiFy-settings.md"/>
         <toc-element topic="Editor.md">
             <toc-element topic="General.md"/>
+            <toc-element topic="Code-Style.md"/>
         </toc-element>
     </toc-element>
     <toc-element topic="Tools.md">
