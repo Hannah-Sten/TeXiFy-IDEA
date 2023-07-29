@@ -68,7 +68,6 @@ object LatexSdkUtil {
     private fun defaultIsDockerMiktex() =
         (!isMiktexAvailable && !TexliveSdk.isAvailable && DockerSdk.isAvailable)
 
-    @Suppress("RedundantIf")
     fun isAvailable(type: LatexDistributionType, project: Project): Boolean {
         if (type == LatexDistributionType.PROJECT_SDK && getLatexProjectSdk(project) != null) return true
         if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true

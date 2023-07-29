@@ -24,12 +24,12 @@ object EvinceConversation : ViewerConversation() {
      * D-Bus object which allows us to execute the FindDocument function, which is exported on the D-Bus
      * by Evince.
      */
-    private const val evinceDaemonPath = "/org/gnome/evince/Daemon"
+    private const val EVINCE_DAEMON_PATH = "/org/gnome/evince/Daemon"
 
     /**
      * Object name of the Evince daemon.
      */
-    private const val evinceDaemonName = "org.gnome.evince.Daemon"
+    private const val EVINCE_DAEMON_NAME = "org.gnome.evince.Daemon"
 
     /**
      * This variable will hold the latest known Evince process owner. We need to know the owner of the pdf file in order to execute forward search.
@@ -91,7 +91,7 @@ object EvinceConversation : ViewerConversation() {
         val connection = DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION)
 
         // Get the Daemon object using its bus name and object path
-        val daemon = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Daemon::class.java)
+        val daemon = connection.getRemoteObject(EVINCE_DAEMON_NAME, EVINCE_DAEMON_PATH, Daemon::class.java)
 
         // Call the method on the D-Bus by using the function we defined in the Daemon interface
         // Catch a NoReply, because it is unknown why Evince cannot start so we don't try to fix that
