@@ -30,14 +30,6 @@
                     description="Shows a popup to insert dummy text."/>
 
             <separator/>
-
-            <!-- Enumeration indentation -->
-            <action class="nl.hannahsten.texifyidea.action.edit.IndentEnumerationAction" id="texify.edit.IndentEnumeration"
-                    text="_Indent Enumeration Item"
-                    description="Adds one level of indentation to the selected enumeration item."/>
-            <action class="nl.hannahsten.texifyidea.action.edit.UnindentEnumerationAction" id="texify.edit.UnindentEnumeration"
-                    text="_Unindent Enumeration Item"
-                    description="Removes one level of indentation to the selected enumeration item."/>
         </group>
 
         <!-- Insert: Sectioning -->
