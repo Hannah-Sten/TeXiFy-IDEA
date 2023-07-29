@@ -1,46 +1,5 @@
 ## Settings and preferences
 
-### LaTeX SDK
-
-* [Custom location of LaTeX installation](Latex-Sdk)
-
-### Run configuration settings
-
-See [Run configurations settings](Run-configurations#Run-configuration-settings) for more info.
-
-* Choose compiler
-* Custom compiler path
-* Custom compiler arguments
-* Custom environment variables
-* (Windows) Choose a custom path to SumatraPDF
-* Choose pdf viewer
-* Custom pdf viewer
-* Choose LaTeX source file to compile
-* (MiKTeX only) Set a custom path for auxiliary files
-* Set a custom path for output files
-* Option to always compile documents twice
-* Choose output format
-* Choose LaTeX distribution
-* Choose BibTeX run configuration
-* Choose Makeindex run configuration
-* Other tasks to run before the run configuration, including other run configurations or external tools
-
-### Code style settings
-
-These settings can be found in <ui-path>File | Settings | Editor | Code Style | LaTeX (or BibTeX)</ui-path>.
-
-#### Common code style settings for LaTeX and BibTex
-
-* [Specify the number of spaces to use for indentation](Code-style-settings#indent-size)
-* [Option to hard wrap LaTeX and BibTeX files](Code-style-settings#hard-wrap)
-
-#### LaTeX specific code style settings
-
-* [Option to start a comment at the same indentation as normal text](Code-style-settings#indent-comment)
-* [Specify the number of blank lines before a sectioning command](Code-style-settings#section-newlines)
-* [Indent text in sections](Code-style-settings#section-indentation)
-* [Option to disable indentation of the document environment](Code-style-settings#indent-document-environment)
-
 ## Menu entries
 
 If any shortcut is assigned to a menu entry, it will be shown next to it.
