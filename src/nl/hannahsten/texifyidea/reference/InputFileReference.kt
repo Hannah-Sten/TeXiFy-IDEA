@@ -40,6 +40,10 @@ class InputFileReference(
 
     companion object {
 
+        private val texinputs by lazy {
+            runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
+        }
+
         /**
          * Handle element rename, but taking into account whether the given
          * newElementName is just a filename which we have to replace,
@@ -84,10 +88,6 @@ class InputFileReference(
 
     val key by lazy {
         rangeInElement.substring(element.text)
-    }
-
-    private val texinputs by lazy {
-        runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
     }
 
     override fun resolve(): PsiFile? {
