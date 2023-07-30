@@ -2,35 +2,6 @@
 
 ## Menu entries
 
-If any shortcut is assigned to a menu entry, it will be shown next to it.
-
-* **<ui-path>File | New | LaTeX File</ui-path>**\
-Create a new LaTeX file of type Source (`.tex`), Bibliography(`.bib`), Package (`.sty`), Document class (`.cls`) or TikZ (`.tikz`)
-* **<ui-path>File | Other Settings | Run configuration Templates for New Projects</ui-path>**\
-[Change the run configuration template](Run-configurations)
-* **<ui-path>Edit | LaTeX | Sectioning</ui-path>**\
-Insert sectioning commands like `\part` or `\subsection`. If any text is selected, it will be used as argument to the command.
-* **<ui-path>Edit | LaTeX | Font Style</ui-path>**\
-Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
-* **<ui-path>Edit | LaTeX | [Insert Table...</ui-path>(Menu-entries#table-creation-wizard)]**\
-Displays a table creation wizard that generates a LaTeX table.
-* **<ui-path>Edit | LaTeX | [Insert Graphic...</ui-path>(Menu-entries#insert-graphic-wizard)]**\
-Displays a wizard that generates graphic inclusion LaTeX.
-
-* **<ui-path>Edit | LaTeX | Toggle Star</ui-path>**\
-Toggle the star of a command.
-* **<ui-path>Edit | Fill Paragraph</ui-path>**\
-Fill the paragraph that is currently under the cursor such that each line is filled until the right margin, but does not exceed it.
-* **<ui-path>Code | Reformat File with Latexindent</ui-path>**\
-[Run Latexindent.pl on the LaTeX file the caret is in.](Code-formatting#latexindent)
-* **<ui-path>Code | Reformat File with bibtex-tidy</ui-path>**\
-[Run bibtex-tidy on the file the caret is in.](Code-formatting#bibtex-tidy)
-* **<ui-path>Analyze | Code | Word Count</ui-path>**\
-[Word counting tool](Menu-entries#_word_counting_tool).
-* **<ui-path>Tools | LaTeX | Equation Preview</ui-path>**\
-Preview equations.
-* **<ui-path>Tools | LaTeX | TikZ Preview</ui-path>**\
-Preview TikZ pictures.
 * **<ui-path>Tools | LaTeX | [Clear Auxiliary Files</ui-path>(Menu-entries#clear-aux-files)]**\
 Clear the generated auxiliary files.
 * **<ui-path>Tools | LaTeX | [Clear Generated Files</ui-path>(Menu-entries#clear-generated-files)]**\
