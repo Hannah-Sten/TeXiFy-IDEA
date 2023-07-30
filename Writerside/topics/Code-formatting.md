@@ -1,6 +1,14 @@
 # Code formatting
 
 Press <shortcut>Ctrl+Alt+L</shortcut> to reformat.
+
+## Fill paragraph
+
+<ui-path>Edit | Fill Paragraph</ui-path>
+
+Fill the paragraph that is currently under the cursor such that each line is filled until the right margin, but does not exceed it.
+
+## Disabling the formatter
 To disable formatting on a portion of your `tex` file, wrap the code with
 
 ```latex

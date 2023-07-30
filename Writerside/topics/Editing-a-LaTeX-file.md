@@ -20,9 +20,29 @@ Also see the [Option to start a comment at the same indentation as normal text](
 IntelliJ supports handling multiple carets at once, see [https://www.jetbrains.com/help/idea/multicursor.html](https://www.jetbrains.com/help/idea/multicursor.html).
 
 
-## Shortcuts for styling text
+## Styling text
+<ui-path>Edit | LaTeX | Font Style</ui-path>
 
-See [Menu Entries](Menu-entries.md)
+Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
+
+## Inserting \section-like commands
+
+<ui-path>Edit | LaTeX | Sectioning</ui-path>
+
+Insert sectioning commands like `\part` or `\subsection`. If any text is selected, it will be used as argument to the command.
+
+<ui-path>Edit | LaTeX | Toggle Star</ui-path>
+
+Add or remove the star of a command, e.g. switch between `\section{...}` and `\section*{...}`.
+
+
+## Surrounding selection with quotes or dollars
+_Since b0.6.9_
+
+With some text selected, press <shortcut>Ctrl + Alt + T</shortcut> (surround with) to surround text with quotes, dollar signs (inline math) or braces.
+When surrounding with quotes, quotes will be inserted according to the [Smart quotes settings](Global-settings#smart-quotes).
+Use <shortcut>Ctrl + Alt + J</shortcut> (surround with live template) to surround with a live template, i.e., surround with dollars or braces.
+To surround a selection with dollars, it is also possible to simply press `$`.
 
 ## Automatic package importing
 
@@ -122,19 +142,12 @@ Some useful shortcuts are for example:
 See the [Menu entries](Features#menu-entries), of which many have shortcuts.
 In the menu in IntelliJ you can see the shortcuts.
 
-## Surrounding selection with quotes or dollars
-_Since b0.6.9_
-
-With some text selected, press <shortcut>Ctrl + Alt + T</shortcut> (surround with) to surround text with quotes, dollar signs (inline math) or braces.
-When surrounding with quotes, quotes will be inserted according to the [Smart quotes settings](Global-settings#smart-quotes).
-Use <shortcut>Ctrl + Alt + J</shortcut> (surround with live template) to surround with a live template, i.e., surround with dollars or braces.
-To surround a selection with dollars, it is also possible to simply press `$`.
 
 ## Inlining files and command definitions
 
 Nearly every JetBrains IDE offers a refactoring tool called [Inline](https://www.jetbrains.com/help/idea/inline.html) which allows you to replace every reference of something with its definition. TeXiFy implements this in the following way:
 
-#### Before
+**Before**
 ------------
 Main.tex:
 ```latex
@@ -152,7 +165,7 @@ demo.tex:
 Hello World!
 ```
 
-#### After
+**After**
 --------------
 Main.tex:
 ```latex
