@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
-import nl.hannahsten.texifyidea.run.getMakeindexOptions
+import nl.hannahsten.texifyidea.run.step.getMakeindexOptions
 import org.jdom.Element
 import java.util.*
 

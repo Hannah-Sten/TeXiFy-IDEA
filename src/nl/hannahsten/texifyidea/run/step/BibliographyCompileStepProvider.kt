@@ -13,16 +13,17 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
-import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.usesBiber
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.hasBibliography
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.usesBiber
 import java.io.File
 import java.util.*
 
@@ -113,10 +114,10 @@ object BibliographyCompileStepProvider : StepProvider {
         // that do have one can have it in any included file
         psiFile.allCommands()
             .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
-            .flatMap { command -> command.requiredParameters }
+            .flatMap { command -> command.requiredParameters() }
             .forEach { filename ->
                 // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                val chapterMainFile = psiFile.findFile(filename)
+                val chapterMainFile = psiFile.findFile(filename.text)
                     ?: return@forEach
 
                 val chapterFiles = chapterMainFile.referencedFileSet()

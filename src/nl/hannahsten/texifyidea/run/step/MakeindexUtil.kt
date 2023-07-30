@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.step
 
 import com.intellij.execution.ExecutionException
 import com.intellij.notification.Notification
@@ -8,15 +8,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
-import nl.hannahsten.texifyidea.util.parser.toStringMap
-import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
  * Try to find out which index program the user wants to use, based on the given options.

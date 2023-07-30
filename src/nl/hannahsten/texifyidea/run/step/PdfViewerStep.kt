@@ -37,8 +37,8 @@ import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.name
-import nl.hannahsten.texifyidea.util.parentsOfType
+import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import java.io.File
 import java.io.OutputStream
 import java.util.*

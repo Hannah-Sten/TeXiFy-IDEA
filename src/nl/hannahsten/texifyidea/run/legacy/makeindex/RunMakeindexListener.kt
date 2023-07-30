@@ -11,8 +11,8 @@ import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
 import nl.hannahsten.texifyidea.run.LatexTemplateConfigurationFactory
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.getDefaultMakeindexPrograms
-import nl.hannahsten.texifyidea.run.getMakeindexOptions
+import nl.hannahsten.texifyidea.run.step.getDefaultMakeindexPrograms
+import nl.hannahsten.texifyidea.run.step.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.io.File
