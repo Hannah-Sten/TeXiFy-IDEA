@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.psi.toStringMap
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.io.IOException
@@ -31,9 +31,9 @@ class LatexCommandsStubElementType(debugName: String) :
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
-        val requiredParameters = latexCommands.requiredParameters
+        val requiredParameters = latexCommands.getRequiredParameters()
         val optionalParameters: Map<String, String> =
-            latexCommands.optionalParameterMap.toStringMap()
+            latexCommands.getOptionalParameterMap().toStringMap()
         return LatexCommandsStubImpl(
             parent!!, this,
             commandToken,

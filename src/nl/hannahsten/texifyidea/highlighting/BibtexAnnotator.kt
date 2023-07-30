@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.psi.BibtexQuotedString
 import nl.hannahsten.texifyidea.psi.BibtexQuotedVerbatim
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.tokenType
 import java.util.*
 

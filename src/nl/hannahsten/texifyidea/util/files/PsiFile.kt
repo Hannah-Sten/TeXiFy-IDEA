@@ -25,6 +25,10 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
+import nl.hannahsten.texifyidea.util.parser.isDefinition
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Get the file search scope for this psi file.
@@ -129,7 +133,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile:
  *         The path relative to this file.
  * @return The found file, or `null` when the file could not be found.
  */
-fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
+fun PsiFile.findFile(path: String, extensions: List<String>? = null): PsiFile? {
     if (project.isDisposed) return null
     val directory = containingDirectory?.virtualFile
 
@@ -163,7 +167,7 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
     return arguments.filter { it.isNotEmpty() }.mapNotNull {
         val extension = FileMagic.automaticExtensions[command.name]
         if (extension != null) {
-            findFile(it, setOf(extension))
+            findFile(it, listOf(extension))
         }
         else {
             findFile(it)
@@ -178,7 +182,7 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
  *         The path relative to {@code original}.
  * @return The found file, or `null` when the file could not be found.
  */
-fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
+fun PsiFile.scanRoots(path: String, extensions: List<String>? = null): PsiFile? {
     val rootManager = ProjectRootManager.getInstance(project)
     rootManager.contentSourceRoots.forEach { root ->
         val file = root.findFile(

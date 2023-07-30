@@ -5,16 +5,18 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiFile
-import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.hannahsten.texifyidea.lang.*
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexKey
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.and
+import nl.hannahsten.texifyidea.util.keyNames
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.tokenType
 
 /**
  * @author Hannah Schellekens
@@ -41,9 +43,9 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
             ContainerUtil.map2List(fields) {
                 val (message, icon) = when (it) {
                     in required -> " required" and TexifyIcons.KEY_REQUIRED
-                    in optional -> " optional" and PlatformIcons.PROTECTED_ICON
+                    in optional -> " optional" and TexifyIcons.KEY_USER_DEFINED
                     in userDefined -> " custom" and TexifyIcons.KEY_USER_DEFINED
-                    else -> "" and PlatformIcons.PROTECTED_ICON
+                    else -> "" and TexifyIcons.KEY_USER_DEFINED
                 }
 
                 LookupElementBuilder.create(it, it.fieldName)

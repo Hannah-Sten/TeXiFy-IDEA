@@ -5,6 +5,7 @@ import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -38,19 +39,19 @@ object MendeleyAuthenticator {
     /**
      * The port is fixed by Mendeley, so we choose a port that hopefully no one has anything running on.
      */
-    private const val port = 59473
+    private const val PORT = 59473
 
-    private const val redirectPath = "/"
+    private const val REDIRECT_PATH = "/"
 
-    private const val redirectUrl = "http://localhost:$port$redirectPath"
+    private const val REDIRECT_URL = "http://localhost:$PORT$REDIRECT_PATH"
 
     /**
      * See [Mendeley documentation](https://dev.mendeley.com/reference/topics/authorization_auth_code.html) for explanations
      * about these parameters.
      */
     private val authorizationParameters: String = Parameters.build {
-        append("client_id", MendeleyCredentials.id)
-        append("redirect_uri", redirectUrl)
+        append("client_id", MendeleyCredentials.ID)
+        append("redirect_uri", REDIRECT_URL)
         append("response_type", "code")
         append("scope", "all")
     }.formUrlEncode()
@@ -79,7 +80,7 @@ object MendeleyAuthenticator {
     private fun createAuthenticationServer() {
         try {
             isUserAuthenticationFinished = false
-            authenticationServer = embeddedServer(Jetty, port = port) {
+            authenticationServer = embeddedServer(Jetty, port = PORT) {
                 routing {
                     get("/") {
                         this.call.respondText("You are now logged in to Mendeley. Click OK to continue.")
@@ -106,6 +107,10 @@ object MendeleyAuthenticator {
                     }
                 )
             }
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 3)
+                exponentialDelay()
+            }
         }
     }
 
@@ -119,10 +124,10 @@ object MendeleyAuthenticator {
                 formParameters = Parameters.build {
                     append("grant_type", "authorization_code")
                     append("code", it)
-                    append("redirect_uri", redirectUrl)
+                    append("redirect_uri", REDIRECT_URL)
                 }
             ) {
-                basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())
+                basicAuth(MendeleyCredentials.ID, MendeleyCredentials.SECRET.decipher())
             }.body()
 
             token.getCredentials().first
@@ -139,10 +144,10 @@ object MendeleyAuthenticator {
             formParameters = Parameters.build {
                 append("grant_type", "refresh_token")
                 append("refresh_token", refreshToken)
-                append("redirect_uri", "http://localhost:$port/")
+                append("redirect_uri", "http://localhost:$PORT/")
             }
         ) {
-            basicAuth(MendeleyCredentials.id, MendeleyCredentials.secret.decipher())
+            basicAuth(MendeleyCredentials.ID, MendeleyCredentials.SECRET.decipher())
         }.body()
 
         val (tokenCredentials, refreshTokenCredentials) = token.getCredentials()

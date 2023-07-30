@@ -2,13 +2,14 @@ package nl.hannahsten.texifyidea.settings
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.RoamingType
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 
 /**
  * @author Sten Wessel
  */
-@State(name = "TexifySettings", storages = [(Storage("texifySettings.xml"))])
+@State(name = "TexifySettings", storages = [(Storage("texifySettings.xml", roamingType = RoamingType.DEFAULT))])
 class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     companion object {
@@ -41,6 +42,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var enableExternalIndex = true
     var enableTextidote = false
     var textidoteOptions = "--check en --output singleline --no-color"
+    var latexIndentOptions = ""
     var automaticQuoteReplacement = QuoteReplacement.NONE
 
     override fun getState(): TexifySettingsState {
@@ -57,6 +59,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             enableExternalIndex = enableExternalIndex,
             enableTextidote = enableTextidote,
             textidoteOptions = textidoteOptions,
+            latexIndentOptions = latexIndentOptions,
             automaticQuoteReplacement = automaticQuoteReplacement,
         )
     }
@@ -74,6 +77,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         enableExternalIndex = state.enableExternalIndex
         enableTextidote = state.enableTextidote
         textidoteOptions = state.textidoteOptions
+        latexIndentOptions = state.latexIndentOptions
         automaticQuoteReplacement = state.automaticQuoteReplacement
     }
 }

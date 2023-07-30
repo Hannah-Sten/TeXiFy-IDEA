@@ -13,8 +13,10 @@ interface LatexStubElementTypes {
 
         @JvmField
         val COMMANDS = LatexTypes.COMMANDS as LatexCommandsStubElementType
+
         @JvmField
         val ENVIRONMENT = LatexTypes.ENVIRONMENT as LatexEnvironmentStubElementType
+
         @JvmField
         val MAGIC_COMMENT = LatexTypes.MAGIC_COMMENT as LatexMagicCommentStubElementType
     }

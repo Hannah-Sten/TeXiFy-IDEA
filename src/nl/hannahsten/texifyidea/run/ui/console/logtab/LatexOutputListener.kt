@@ -150,7 +150,7 @@ class LatexOutputListener(
     }
 
     private fun findProjectFileRelativeToMain(fileName: String?): VirtualFile? =
-        mainFile?.parent?.findFile(fileName ?: mainFile.name, setOf("tex"))
+        mainFile?.parent?.findFile(fileName ?: mainFile.name, listOf("tex"))
 
     /**
      * Reset the tree view and the message list when starting a new run. (latexmk)

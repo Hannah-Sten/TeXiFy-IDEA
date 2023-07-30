@@ -6,7 +6,8 @@ import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.getTagContent
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 

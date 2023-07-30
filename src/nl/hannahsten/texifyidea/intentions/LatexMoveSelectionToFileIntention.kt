@@ -20,7 +20,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
 
     companion object {
 
-        private const val minimumSelectionLength = 24
+        private const val MINIMUM_SELECTION_LENGTH = 24
     }
 
     override fun startInWriteAction() = false
@@ -31,7 +31,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         }
 
         val selectionSize = selectionOffsets(editor).sumOf { (start, end): Pair<Int, Int> -> end - start }
-        return selectionSize >= minimumSelectionLength
+        return selectionSize >= MINIMUM_SELECTION_LENGTH
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
@@ -55,9 +55,9 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         }
 
         // Manage paths/file names.
-        @Language("RegExp")
         // Note that we do not override the user-specified filename to be LaTeX-like.
         // Path of virtual file always contains '/' as file separators.
+        @Language("RegExp")
         val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
         // Execute write actions.

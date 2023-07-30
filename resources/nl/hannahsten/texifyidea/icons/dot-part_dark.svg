@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="dot-part_dark.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1278"
+     inkscape:window-height="1368"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="29.5"
+     inkscape:cx="3.41752"
+     inkscape:cy="5.6363053"
+     inkscape:window-x="2553"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <circle
+     cx="8"
+     cy="8"
+     r="6.5"
+     fill="#E7EFFD"
+     stroke="#3574F0"
+     id="circle4"
+     style="fill:#25324d;fill-opacity:1;stroke:#548af7;stroke-opacity:1" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#548af7;fill-opacity:1"
+     d="m 6.1277896,5.0916849 2.5198,0 c 0.40707,0 0.76397,0.07453 1.0707,0.2236 0.3096004,0.14907 0.5475784,0.3612 0.7137774,0.6364 0.1692,0.2752 0.2537,0.5934 0.2537,0.9546 0,0.36407 -0.086,0.6837 -0.258,0.9589 -0.169099,0.2752 -0.409907,0.48877 -0.7223774,0.6407 -0.31246,0.15193 -0.67653,0.2279 -1.0922,0.2279 l -1.505,0 0,2.3779171 -0.9804,0 0,-6.0200171 z m 2.4768,2.795 c 0.21214,0 0.39847,-0.0387 0.559,-0.1161 0.16054,-0.08027 0.2838,-0.1935 0.3698,-0.3397 0.086,-0.14907 0.129,-0.3225 0.129,-0.5203 0,-0.1978 -0.043,-0.3698 -0.129,-0.516 -0.086,-0.1462 -0.20926,-0.258 -0.3698,-0.3354 -0.16053,-0.08027 -0.34686,-0.1204 -0.559,-0.1204 l -1.4964,0 0,1.9479 1.4964,0 z"
+     id="path6" />
+</svg>

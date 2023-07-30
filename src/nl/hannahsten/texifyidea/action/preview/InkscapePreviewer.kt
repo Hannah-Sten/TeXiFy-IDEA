@@ -106,7 +106,6 @@ $previewCode
         waitTime: Long,
         previewForm: PreviewForm
     ): String? {
-
         val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime)
 
         if (result.second != 0) {

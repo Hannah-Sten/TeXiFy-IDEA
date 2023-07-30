@@ -20,6 +20,8 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.getFileArgumentsReferences
+import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import java.util.*
 
 /**
@@ -48,7 +50,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val referencesList = command.references.filterIsInstance<InputFileReference>()
+            val referencesList = command.getFileArgumentsReferences()
             for (reference in referencesList) {
                 if (reference.resolve() == null) {
                     createQuickFixes(reference, descriptors, manager, isOntheFly)

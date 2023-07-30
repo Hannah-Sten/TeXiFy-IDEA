@@ -15,7 +15,7 @@ internal class ImagePanel : JPanel() {
 
     companion object {
 
-        private const val serialVersionUID = 1L
+        private const val SERIAL_VERSION_UID = 1L
     }
 
     private var image: Image? = null

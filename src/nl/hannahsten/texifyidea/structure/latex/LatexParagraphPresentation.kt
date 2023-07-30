@@ -17,11 +17,11 @@ class LatexParagraphPresentation(paragraphCommand: LatexCommands) : EditableHint
             throw IllegalArgumentException("command is no \\paragraph-command")
         }
 
-        if (paragraphCommand.requiredParameters.isEmpty()) {
+        if (paragraphCommand.getRequiredParameters().isEmpty()) {
             this.paragraphName = ""
         }
         else {
-            this.paragraphName = paragraphCommand.requiredParameters[0]
+            this.paragraphName = paragraphCommand.getRequiredParameters()[0]
         }
     }
 

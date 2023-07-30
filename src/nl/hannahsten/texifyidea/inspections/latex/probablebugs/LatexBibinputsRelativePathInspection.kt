@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.

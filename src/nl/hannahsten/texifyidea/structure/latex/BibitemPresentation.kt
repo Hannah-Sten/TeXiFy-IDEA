@@ -19,7 +19,7 @@ class BibitemPresentation(labelCommand: LatexCommands) : ItemPresentation {
         }
 
         // Get label name.
-        this.bibitemName = labelCommand.requiredParameters.firstOrNull() ?: ""
+        this.bibitemName = labelCommand.getRequiredParameters().firstOrNull() ?: ""
 
         // Location string.
         val manager = FileDocumentManager.getInstance()

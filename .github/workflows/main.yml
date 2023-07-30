@@ -11,15 +11,27 @@ on:
 jobs:
   qodana:
     name: Qodana
-    runs-on: ubuntu-latest
+    # Note: updating to ubuntu-latest may slow the build and produce a "The runner has received a shutdown signal."
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - name: Generate lexer/parser
+        run: ./gradlew setupDependencies
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
-          args: --baseline,qodana.sarif.json
+          post-pr-comment: false
+          pr-mode: false
+          args: >
+            --baseline,qodana.sarif.json,
+            --source-directory,src
+          cache-default-branch-only: true
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning

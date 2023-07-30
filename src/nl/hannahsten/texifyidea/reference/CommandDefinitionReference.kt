@@ -5,10 +5,10 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.util.definitionCommand
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.definitionCommand
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parentsOfType
+import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import nl.hannahsten.texifyidea.util.projectSearchScope
 
 /**
@@ -35,7 +35,7 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
         }
         else {
             return LatexDefinitionIndex.getCommandsByNames(definitionsAndRedefinitions, element.project, element.project.projectSearchScope)
-                .filter { it.requiredParameters.firstOrNull() == element.name }
+                .filter { it.getRequiredParameters().firstOrNull() == element.name }
                 .mapNotNull { newcommand ->
                     // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
                     // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand

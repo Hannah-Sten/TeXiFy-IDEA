@@ -14,18 +14,18 @@ object Log {
 
     private val logger: Logger by lazy { Logger.getInstance(Log::class.java) }
 
-    private const val prefix = "TEXIFY-IDEA -"
+    private const val PREFIX = "TEXIFY-IDEA -"
 
     /**
      * Sends an info message to the IntelliJ logger.
      *
      * All messages start with the prefix `TEXIFY-IDEA - `.
      */
-    fun info(message: String) = logger.info("$prefix $message")
+    fun info(message: String) = logger.info("$PREFIX $message")
 
-    fun warn(message: String) = logger.warn("$prefix $message")
+    fun warn(message: String) = logger.warn("$PREFIX $message")
 
-    fun debug(message: String) = logger.debug("$prefix $message")
+    fun debug(message: String) = logger.debug("$PREFIX $message")
 
-    fun error(message: String) = logger.error("$prefix $message")
+    fun error(message: String) = logger.error("$PREFIX $message")
 }

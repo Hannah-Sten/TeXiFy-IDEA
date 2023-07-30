@@ -49,7 +49,7 @@ val Project.sourceSetSearchScope: GlobalSearchScope
 fun Project.findAvailableDocumentClasses(): Set<String> {
     val defines = LatexDefinitionIndex.getCommandsByName("ProvidesClass", this, sourceSetSearchScope)
     return defines.asSequence()
-        .map { it.requiredParameters }
+        .map { it.getRequiredParameters() }
         .filter { it.isNotEmpty() }
         .mapNotNull { it.firstOrNull() }
         .toSet()
@@ -82,7 +82,7 @@ fun Project.allFiles(type: FileType): Collection<VirtualFile> {
  */
 fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     if (isDisposed) return emptyList()
-    return (RunManagerImpl.getInstanceImpl(this) as RunManager).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
+    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
 }
 
 /**

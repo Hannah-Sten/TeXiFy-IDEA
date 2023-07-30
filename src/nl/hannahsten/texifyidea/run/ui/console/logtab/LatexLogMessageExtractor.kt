@@ -28,7 +28,6 @@ object LatexLogMessageExtractor {
      * @param newText Second line of 'text',
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
-
         val specialErrorHandlersList = listOf(
             LatexUndefinedControlSequenceHandler,
             LatexSingleLineErrorMessageHandler,

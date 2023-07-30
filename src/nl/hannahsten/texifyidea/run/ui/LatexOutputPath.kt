@@ -130,7 +130,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
-        val module = fileIndex.getModuleForFile(mainFile, false)
+        val module = runReadAction { fileIndex.getModuleForFile(mainFile, false) }
         if (File(outPath).mkdirs()) {
             module?.createExcludedDir(outPath)
             return LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)

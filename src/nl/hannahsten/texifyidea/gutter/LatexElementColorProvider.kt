@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.gutter
 
+import arrow.core.max
+import arrow.core.nonEmptyListOf
 import com.intellij.openapi.editor.ElementColorProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -11,6 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
+import nl.hannahsten.texifyidea.util.parser.*
 import java.awt.Color
 import java.util.*
 import kotlin.math.max
@@ -101,7 +104,6 @@ class LatexElementColorProvider : ElementColorProvider {
             if (colorName.contains('!') || colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
                 .contains(colorName)
             ) {
-
                 val colorDefinitionCommand =
                     colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
                 when (colorDefinitionCommand?.name?.substring(1)) {
@@ -250,9 +252,9 @@ class LatexElementColorProvider : ElementColorProvider {
     /**
      * Convert a [Color] object to a cmyk string.
      */
-    private fun Color.toCmykString(): String? {
-        val rgb = listOf(red, green, blue).map { it / 255.0 }
-        val k: Double = 1.0 - (rgb.maxOrNull() ?: return null)
+    private fun Color.toCmykString(): String {
+        val rgb = nonEmptyListOf(red, green, blue).map { it / 255.0 }
+        val k: Double = 1.0 - rgb.max()
         return rgb.map { (1.0 - it - k) / (1.0 - k) }.joinToString(", ") { it.format() } + ", $k"
     }
 

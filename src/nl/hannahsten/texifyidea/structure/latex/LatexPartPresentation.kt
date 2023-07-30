@@ -17,7 +17,7 @@ class LatexPartPresentation(partCommand: LatexCommands) : EditableHintPresentati
             throw IllegalArgumentException("command is no \\part-command")
         }
 
-        this.partName = partCommand.requiredParameters[0]
+        this.partName = partCommand.getRequiredParameters()[0]
     }
 
     override fun getPresentableText() = partName

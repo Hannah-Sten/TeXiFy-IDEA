@@ -16,6 +16,16 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 
+@JvmInline value class FileName(val value: String)
+
+@JvmInline value class StartLine(val value: Int)
+
+@JvmInline value class StartColumn(val value: Int)
+
+@JvmInline value class EndLine(val value: Int)
+
+@JvmInline value class EndColumn(val value: Int)
+
 data class TextidoteAnnotatorInitialInfo(
     val fileName: String,
     val workingDirectory: File,
@@ -24,11 +34,11 @@ data class TextidoteAnnotatorInitialInfo(
 )
 
 data class TextidoteWarning(
-    val fileName: String,
-    val startLine: Int,
-    val startColumn: Int,
-    val endLine: Int,
-    val endColumn: Int,
+    val fileName: FileName,
+    val startLine: StartLine,
+    val startColumn: StartColumn,
+    val endLine: EndLine,
+    val endColumn: EndColumn,
     val message: String,
 )
 
@@ -39,7 +49,9 @@ data class TextidoteAnnotationResult(
 
 class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitialInfo, TextidoteAnnotationResult>() {
 
-    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): TextidoteAnnotatorInitialInfo {
+    override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): TextidoteAnnotatorInitialInfo? {
+        if (file.containingDirectory == null) return null
+
         return TextidoteAnnotatorInitialInfo(
             file.virtualFile.name,
             File(file.containingDirectory.virtualFile.path),
@@ -82,7 +94,7 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
                     val column2 = match.groups["column2"]?.value?.toInt() ?: return@mapNotNull null
                     val message = match.groups["message"]?.value ?: return@mapNotNull null
 
-                    TextidoteWarning(collectedInfo.fileName, line1, column1, line2, column2, message)
+                    TextidoteWarning(FileName(collectedInfo.fileName), StartLine(line1), StartColumn(column1), EndLine(line2), EndColumn(column2), message)
                 }.toList()
 
         // Exit code is nonzero when warnings are found
@@ -98,22 +110,27 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
     }
 
     override fun apply(file: PsiFile, annotationResult: TextidoteAnnotationResult, holder: AnnotationHolder) {
-
         for (warning in annotationResult.warnings) {
             val document = annotationResult.document
 
             // Don't show obsolete warnings out of range
-            if (warning.endLine > document.lineCount) {
+            if (warning.endLine.value > document.lineCount) {
                 continue
             }
 
-            // In Textidote, everything is 1-based, and here everyting is 0-based
-            val lineStartOffset1 = document.getLineStartOffset(warning.startLine - 1)
-            val lineStartOffset2 = document.getLineStartOffset(warning.endLine - 1)
+            // In Textidote, everything is 1-based, and here everything is 0-based
+            val lineStartOffset1 = document.getLineStartOffset(warning.startLine.value - 1)
+            val lineStartOffset2 = document.getLineStartOffset(warning.endLine.value - 1)
 
-            holder.newAnnotation(HighlightSeverity.WARNING, warning.message + " (Textidote)")
-                .range(TextRange(lineStartOffset1 + warning.startColumn - 1, lineStartOffset2 + warning.endColumn - 1))
-                .create()
+            val startOffset = lineStartOffset1 + warning.startColumn.value - 1
+            val endOffset = lineStartOffset2 + warning.endColumn.value - 1
+
+            // Check if computed range falls in the document range.
+            if (startOffset < document.textLength && endOffset < document.textLength) {
+                holder.newAnnotation(HighlightSeverity.WARNING, warning.message + " (Textidote)")
+                    .range(TextRange(startOffset, endOffset))
+                    .create()
+            }
         }
 
         super.apply(file, annotationResult, holder)

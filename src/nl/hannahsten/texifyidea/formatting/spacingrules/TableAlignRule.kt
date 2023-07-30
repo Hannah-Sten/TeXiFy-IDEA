@@ -7,9 +7,10 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import kotlin.math.min
 
 /** At this length, we put table cells on their own line. */
@@ -19,13 +20,14 @@ const val LINE_LENGTH = 80
  * Align spaces to the right of &
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
-
     // Only add spaces after &, unless escaped
     if (left.node?.text?.endsWith("&") == false) return null
     if (left.node?.text?.endsWith("\\&") == true) return null
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-        ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject)
+        ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
+                parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+            )
     ) return null
 
     return createSpacing(
@@ -44,7 +46,10 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
     val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.getAllTableEnvironments(project)) return null
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
+            project
+        )
+    ) return null
 
     val tableLineSeparator = "\\\\"
     if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
@@ -127,7 +132,6 @@ fun getNumberOfSpaces(
     absoluteAmpersandIndicesPerLine: List<List<Int>>,
     indent: String
 ): Int? {
-
     val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator)
         .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
         .toMutableList()

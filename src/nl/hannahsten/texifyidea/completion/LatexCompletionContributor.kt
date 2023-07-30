@@ -4,13 +4,13 @@ import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionType
-import com.intellij.icons.AllIcons
 import com.intellij.patterns.PlatformPatterns
-import nl.hannahsten.texifyidea.grammar.LatexLanguage
+import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.lang.LatexMode
@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
+import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import java.util.*
 
@@ -206,7 +207,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         extendMagicCommentValues(
             "suppress",
             suppressRegex,
-            LatexMagicCommentValueProvider(suppressRegex, inspectionIds, AllIcons.General.InspectionsEye)
+            LatexMagicCommentValueProvider(suppressRegex, inspectionIds, TexifyIcons.INSPECTION)
         )
     }
 

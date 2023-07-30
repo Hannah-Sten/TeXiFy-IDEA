@@ -9,3 +9,5 @@ idea-flex.skeleton
 jflex-*.jar
 scripts/venv
 results/
+gen/
+**/node_modules

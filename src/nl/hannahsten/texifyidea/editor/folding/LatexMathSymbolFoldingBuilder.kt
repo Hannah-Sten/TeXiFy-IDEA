@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 
 /**
  * @author Sten Wessel

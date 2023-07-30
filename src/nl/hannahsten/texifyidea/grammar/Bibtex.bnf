@@ -7,7 +7,6 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
-    psiImplUtilClass="nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.BibtexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.BibtexElementType"
@@ -28,7 +27,7 @@ bibtexFile ::= (entry | comment)*
 entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) ((id SEPARATOR)? entry_content | preamble) comment* endtry comment* SEPARATOR? {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStub"
-    methods=[getReferences getTitle getAuthors getYear getIdentifier getNameIdentifier getAbstract getTagContent getName setName toString]
+    mixin="nl.hannahsten.texifyidea.psi.impl.BibtexEntryImplMixin"
 }
 
 entry_content ::= tag (SEPARATOR tag)* SEPARATOR? { pin=1 }
@@ -40,12 +39,12 @@ type ::= TYPE_TOKEN
 preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | key
 
 id ::= comment* key comment* {
-    methods=[getNameIdentifier getName setName delete]
+    mixin="nl.hannahsten.texifyidea.psi.impl.BibtexIdImplMixin"
 }
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* {
     pin=2
-    methods=[getReferences]
+    mixin="nl.hannahsten.texifyidea.psi.impl.BibtexTagImplMixin"
 }
 
 key ::= VERBATIM_IDENTIFIER | IDENTIFIER
@@ -55,7 +54,7 @@ content ::= (string (CONCATENATE string)+) | string | NUMBER | key
 string ::= defined_string | quoted_verbatim | braced_verbatim | quoted_string | braced_string
 
 defined_string ::= key {
-    methods=[getReference]
+    mixin="nl.hannahsten.texifyidea.psi.impl.BibtexDefinedStringImplMixin"
 }
 
 quoted_string ::= QUOTES normal_text? END_QUOTES { pin=1 }
