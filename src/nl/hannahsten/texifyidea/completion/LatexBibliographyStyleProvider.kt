@@ -5,7 +5,6 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
 
 /**
@@ -20,7 +19,7 @@ object LatexBibliographyStyleProvider : CompletionProvider<CompletionParameters>
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         result.addAllElements(
-            ContainerUtil.map2List(DEFAULT_STYLES) { name ->
+            DEFAULT_STYLES.map { name ->
                 LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()
