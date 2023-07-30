@@ -7,6 +7,7 @@ For a general overview on how to work with run configurations, see [Run/debug co
 Next to every `\begin{document}`, there will be a gutter icon with which you can easily start compilation of the file.
 The first time you do this, a new run configuration will be generated.
 If one exists already for that file, that run configuration will be reused.
+You can also right-click in a LaTeX file and select <ui-path>Run myfilename.tex</ui-path>.
 
 ## About run configurations
 

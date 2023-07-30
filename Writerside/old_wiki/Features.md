@@ -1,36 +1,6 @@
-## Settings and preferences
-
-## Menu entries
-
-* **<ui-path>Tools | LaTeX | [Clear Auxiliary Files</ui-path>(Menu-entries#clear-aux-files)]**\
-Clear the generated auxiliary files.
-* **<ui-path>Tools | LaTeX | [Clear Generated Files</ui-path>(Menu-entries#clear-generated-files)]**\
-Clear all generated files.
-* **<ui-path>Tools | LaTeX | SumatraPDF</ui-path>**\
-(Windows only) Forward search and configuration of inverse search
-
-### Context menu entries
-
-* **<ui-path>Right-click on any file | New | LaTeX File</ui-path>**\
-Create a new LaTeX file.
-* **<ui-path>Right-click on LaTeX source file | Run 'filename'</ui-path>**\
-Compiles the file.
-
 ## Inspections
 
-* [Inspection suppression](Inspection-suppression)
-* [Creating Custom Inspections](https://www.jetbrains.com/help/idea/creating-custom-inspections.html)
-
-### BibTeX
-* [Duplicate ID](BibTeX-inspections#Duplicate-ID)
-* [Missing bibliography style](BibTeX-inspections#Missing-bibliography-style)
-* [Duplicate bibliography style commands](BibTeX-inspections#Duplicate-bibliography-style)
-* [Same bibliography is included multiple times](BibTeX-inspections#Same-bibliography-is-included-multiple-times)
-* [Bib entry is not used](BibTex-inspections#Bib-entry-is-not-used)
-
 ### LaTeX
-
-If you see a minor issue, like some missing metadata about commands or environments, you are encouraged to check if you can [fix it yourself](Contributing-to-TeXiFy#editing-magic).
 
 * Spellchecking with custom dictionaries
 * [Support for the Grazie grammar and spellchecking plugin](Grazie)

@@ -1,3 +1,5 @@
+# BibTeX Inspections
+
 ## Duplicate ID
 
 You cannot have two bibtex entries with the same id.
