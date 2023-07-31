@@ -30,6 +30,8 @@ The available column types are:
   LaTeX.
 * Numbers: As per convention, numbers are aligned on the right.
 
+![Insert table](insert-table-wizard.png)
+
 _Since b0.7.3:_ the table wizard also opens when you paste an HTML table (in your browser, Excel, LibreOffice, ...) into the editor. _Since b0.7.4_ you can also open the wizard in the Generate menu (<shortcut>Alt+Insert</shortcut>).
 
 ## Insert Graphic Wizard {id="insert-graphic-wizard"}

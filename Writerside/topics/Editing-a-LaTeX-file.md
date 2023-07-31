@@ -2,6 +2,8 @@
 
 To create a new LaTeX file, either use <ui-path>File | New | LaTeX File</ui-path> or right-click in the Project tool window and select <ui-path>New | LaTeX File</ui-path>.
 
+![New file](newfile.png)
+
 ## Manage the appearance for long lines
 
 You can enable soft wraps by going to <ui-path>Settings | General | Soft Wraps</ui-path>, enable Soft-wrap files and put `**.tex` in the text field, or just `**` to soft-wrap all files.
