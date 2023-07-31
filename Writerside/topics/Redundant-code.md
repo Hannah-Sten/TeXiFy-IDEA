@@ -1,3 +1,5 @@
+# Redundant code
+
 ## Redundant escape when Unicode is enabled
 
 When unicode is enabled (see * [Unsupported Unicode character](Probable-bugs#Unsupported-Unicode-character)) then you can use the unicode character instead of escaping the diacritic, so you can write `ú` instead of `\'u`.

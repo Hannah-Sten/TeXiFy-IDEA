@@ -1,3 +1,7 @@
+# Intentions
+
+Intentions are similar to inspection quickfixes, but they are always available, not only when an inspection is triggered.
+
 ## Add label
 
 Add a label to a sectioning command. Also see [Missing label inspection](Conventions#Missing-labels).

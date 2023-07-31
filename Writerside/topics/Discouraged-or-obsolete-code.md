@@ -1,3 +1,5 @@
+# Discouraged or obsolete code
+
 ## Use of `\over` discouraged
 
 Use `\frac` instead of `\over`.
