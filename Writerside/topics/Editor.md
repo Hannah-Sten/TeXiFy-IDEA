@@ -17,8 +17,15 @@ For all available settings, see [https://www.jetbrains.com/help/idea/settings-ed
 See [General](General.md).
 
 ## Color scheme
+You can customize syntax highlighting in <ui-path>Settings | Editor | Color Scheme | LaTeX</ui-path>.
 
 Here you can edit the syntax highlighting colours of both LaTeX and BibTeX, for example for commands, math and references.
+Various default color schemes are available.
+
+See [https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html](https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html)
+
+![syntax-highlighting](syntax-highlighting.png)
+
 
 ##  File templates {id="file-templates"}
 
