@@ -32,6 +32,8 @@ The available column types are:
 
 ![Insert table](insert-table-wizard.png)
 
+![Insert table](insert-table-wizard.gif)
+
 _Since b0.7.3:_ the table wizard also opens when you paste an HTML table (in your browser, Excel, LibreOffice, ...) into the editor. _Since b0.7.4_ you can also open the wizard in the Generate menu (<shortcut>Alt+Insert</shortcut>).
 
 ## Insert Graphic Wizard {id="insert-graphic-wizard"}
@@ -42,7 +44,7 @@ _Since b0.7.3_
 
 Helps you generate LaTeX for inserting graphics. The wizard also opens when dropping a supported image file into a .tex file. You can also paste an image directly from your clipboard into the editor. You’ll be prompted with the wizard after you have saved the image from your clipboard using another dialog. _Since b0.7.4_ you can also open the wizard in the Generate menu (<shortcut>Alt+Insert</shortcut>).
 
-See [demo video](https://user-images.githubusercontent.com/17410729/103922867-b0108300-5114-11eb-92d8-25d63eaeb1f1.mp4).
+![demo video](insert-graphic-wizard.gif).
 
 ## Insert Dummy Text Wizard {id="insert-dummy-text"}
 
