@@ -1,3 +1,5 @@
+# Errors and warnings
+
 This is a list of most of the errors and warnings that are in Appendix B of _The Latex Companion_ [mittelbach2004](#mittelbach2004), plus some more we encountered while error/warning hunting.
 For each error/warning, we give a minimal working example, and the relevant part of the output log.
 For more info on a message, see [mittelbach2004](#mittelbach2004).
