@@ -1,3 +1,5 @@
+# Code style issues
+
 ## Math functions in `\text`
 _Since b0.7.3_
 
