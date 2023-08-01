@@ -86,6 +86,8 @@ This can lead to strange behaviour (see e.g. [#1097](https://github.com/Hannah-S
 
 * <ui-path>Tools | View PSI Structure</ui-path>
 * <ui-path>Tools | Internal Actions | UI | UI Inspector</ui-path> to view information about any UI element
+* Index Viewer plugin
+* Thread Access Info plugin
 
 ## Adding code which uses classes from the java plugin
 
