@@ -26,6 +26,7 @@ In this section we will show you how to install everything that is necessary to 
   you already have a project open, use <ui-path>File | Settings | Plugins</ui-path>).
 * Click on Marketplace and search for `texify`, then click
   `install`.
+  ![Install](install.png)
 * Install the [PDF Viewer](https://plugins.jetbrains.com/plugin/14494-pdf-viewer) plugin as well, it provides a built-in pdf viewer but does not have full functionality yet. Alternatively, you can install the [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html) pdf viewer.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
 * Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
@@ -64,9 +65,6 @@ In this section we will show you how to install everything that is necessary to 
 * Have a look at the [tips](#tips).
 
 ### Installation instructions for linux {switcher-key="Linux"}
-
-These instructions were tested on at least Ubuntu 16.04, 18.04, Fedora
-and Arch Linux.
 
 * If you don’t have the latest version yet, download and install
   [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community
@@ -132,6 +130,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   you already have a project open, use <ui-path>File | Settings | Plugins</ui-path>).
 * Click on Marketplace and search for `texify`, then click
   `install`.
+  ![Install](install.png)
 * Also install the PDF Viewer plugin to view the pdf within IntelliJ.
 * If you had to install LaTeX, log out and log back in.
 * Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
@@ -175,13 +174,13 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so
   you can manage projects and editors easily (Jetbrains has editors for
   more programming languages as well).
-* Download and install [https://miktex.org/howto/install-miktex-mac[LaTeX](https://miktex.org/howto/install-miktex-mac[LaTeX)
-  for Mac]. It’s less error-prone if you install MiKTeX `system-wide`. During installation, choose the option
+* Download and install [MiKTeX for Mac](https://miktex.org/howto/install-miktex-mac). It’s less error-prone if you install MiKTeX `system-wide`. During installation, choose the option
   `Install missing packages on the fly: yes`.
 * Open IntelliJ, in the welcome menu choose <ui-path>Configure | Plugins</ui-path> (or when
   you already have a project open, use <ui-path>File | Settings | Plugins</ui-path>).
 * Click on Marketplace and search for `texify`, then click
   `install`.
+  ![Install](install.png)
 * Install the PDF Viewer plugin as well to view the pdf inside IntelliJ.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
 * Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
@@ -203,28 +202,25 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   Play button) in the top-right menu.
 * Have a look at the [tips](#tips).
 
-If you want to use Skim instead of the built-in pdf viewer, for configuring forward and backward search see the [Skim support](Skim-support) wiki page.
+If you want to use Skim instead of the built-in pdf viewer, for configuring forward and backward search see the [Skim support](PDF-viewers.md#skim) page.
 
 ## Tips
 
 * You never have to remember to save your work, IntelliJ will
   automatically save every letter you type.
-* You can personalise the template that is used when you create a new
-  LaTeX file in <ui-path>Settings | Editor | File and code templates | LaTeX
-  source</ui-path>.
 * You don’t need to close the pdf to recompile, it will automatically
   refresh.
 * A good way to start learning LaTeX is by asking someone how to do what
   you want to do or by Googling ``what-I-want-to-do latex''.
-* Some standard LaTeX commands are available in the LaTeX menu.
+* Some standard LaTeX commands are available in the <ui-path>Edit | LaTeX</ui-path> menu.
 * Pay attention to squiggles (wavey lines) under text you typed, they
-  indicate that something is wrong. Hovering over it gives extra
+  indicate that an inspection found that something is wrong. Hovering over it gives extra
   information. In some cases, a ready-made fix is waiting to be applied:
   hit the lightbulb that appears on the left, or hit Alt+Enter to view and
-  apply it. A quick overview of useful shortcuts is on the [Shortcuts](Shortcuts) page.
+  apply it. For more information, see [Inspections](Inspections.md).
 * If your LaTeX indentation (the number of spaces that is in front of
   each line) looks messy, reformat with <shortcut key="$Reformat"/>.
-* This wiki contains documentation about many features, you can browse around the [Features](Features) page.
+* This documentation you are reading right now has information about many IntelliJ features specific to LaTeX, you can browse around using the menu on the left.
 * If you are searching how a particular symbol has to be written in
   LaTeX, the [Detexify](http://detexify.kirelabs.org/classify.html) tool can
   probably help you. Just draw your symbol in the `draw here` box and the
