@@ -104,21 +104,27 @@ The current implementation of the Equation Preview was contributed by Sergei Izm
 It also relies on system installed fonts, because it converts svg to image, and svg doesn’t include fonts.
 
 Also see the [option to enable continuous preview of math and TikZ environments](Global-settings#continuous-preview)
-### Instructions for Linux
 
+### Installation instructions
 This is only necessary if you want to use a custom preamble (using magic comments), or if you have a TeXiFy version older than 0.7.11.
 
-* Install Inkscape from [inkscape.org/release](https://inkscape.org/release).
-* If not using Inkscape 1.0 or later, you have to install the `pdf2svg` package for your distro, for example on Ubuntu with `sudo apt-get install pdf2svg` or on Arch Linux with `sudo pacman -S pdf2svg`.
+<tabs>
+<tab title="Instructions for Linux/MacOS">
+<procedure>
+<step>Install Inkscape from [inkscape.org/release](https://inkscape.org/release).</step>
+<step>If not using Inkscape 1.0 or later, you have to install the `pdf2svg` package for your distro, for example on Ubuntu with `sudo apt-get install pdf2svg` or on Arch Linux with `sudo pacman -S pdf2svg`.</step>
+</procedure>
+</tab>
 
-### Instructions for Windows
-
-This is only necessary if you want to use a custom preamble (using magic comments), or if you have a TeXiFy version older than 0.7.11.
-
-* Install Inkscape from [inkscape.org/release](https://inkscape.org/release), suppose you install it in `C:\Program Files\Inkscape`.
-* If not using Inkscape 1.0 or later, you have to install pdf2svg from [github.com/textext/pdf2svg/releases](https://github.com/textext/pdf2svg/releases), suppose you install it in `C:\Program Files\pdf2svg`.
-* Add both `C:\Program Files\Inkscape` and (if you installed it) `C:\Program Files\pdf2svg` to your PATH environment variable, for example by searching for Environment Variables on your computer, clicking 'Edit the system environment variables', clicking 'Environment Variables', and under System variables find the one named Path, edit it and insert the paths here. Make sure the paths are separated by a `;` if using Windows 8 or lower.
-* Log out and back in.
+<tab title="Instructions for Windows">
+<procedure>
+<step>Install Inkscape from <a href="https://inkscape.org/release">inkscape.org/release</a>, suppose you install it in <code>C:\Program Files\Inkscape</code>.</step>
+<step>If not using Inkscape 1.0 or later, you have to install pdf2svg from <a href="https://github.com/textext/pdf2svg/releases">github.com/textext/pdf2svg/releases</a>, suppose you install it in <code>C:\Program Files\pdf2svg</code>.</step>
+<step>Add both <code>C:\Program Files\Inkscape</code> and (if you installed it) <code>C:\Program Files\pdf2svg</code> to your PATH environment variable, for example by searching for Environment Variables on your computer, clicking 'Edit the system environment variables', clicking 'Environment Variables', and under System variables find the one named Path, edit it and insert the paths here. Make sure the paths are separated by a <code>;</code> if using Windows 8 or lower.</step>
+<step>Log out and back in.</step>
+</procedure>
+</tab>
+</tabs>
 
 ## TikZ preview
 
