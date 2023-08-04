@@ -4,7 +4,7 @@ import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
-import nl.hannahsten.texifyidea.util.magic.IconMagic
+import nl.hannahsten.texifyidea.TexifyIcons
 import java.util.*
 
 /**
@@ -30,7 +30,7 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         // Allow Material design plugins to take over the icons
         // For file types registered in plugin.xml this happens automatically
         if (PluginManager.getLoadedPlugins().none { it.name.contains("Material") }) {
-            val icon = IconMagic.fileIcons[extension.lowercase(Locale.getDefault())] ?: return
+            val icon = TexifyIcons.getIconFromExtension(extension.lowercase(Locale.getDefault()))
             presentationData.setIcon(icon)
         }
     }

@@ -28,6 +28,8 @@
             <action class="nl.hannahsten.texifyidea.action.wizard.ipsum.InsertDummyTextAction" id="texify.DummyTextWizard"
                     text="Insert _Dummy Text..."
                     description="Shows a popup to insert dummy text."/>
+
+            <separator/>
         </group>
 
         <!-- Insert: Sectioning -->

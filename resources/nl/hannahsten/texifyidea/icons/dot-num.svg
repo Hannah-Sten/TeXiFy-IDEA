@@ -1,32 +1,79 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0.511 0.495 16 16" enable-background="new 0.511 0.495 16 16" xml:space="preserve">
-<rect x="0.511" y="0.495" fill="#FFFFFF" fill-opacity="0" width="16.001" height="16"/>
-<g>
-	<defs>
-		<rect id="SVGID_1_" x="0.511" y="0.495" width="16.001" height="16"/>
-	</defs>
-	<clipPath id="SVGID_2_">
-		<use xlink:href="#SVGID_1_"  overflow="visible"/>
-	</clipPath>
-	<g clip-path="url(#SVGID_2_)">
-		<path fill="#40B6E0" fill-opacity="0.6" d="M1.511,8.494c0-3.866,3.134-7,7-7s7.001,3.134,7.001,7c0,3.867-3.135,7-7.001,7
-			S1.511,12.361,1.511,8.494z"/>
-	</g>
-</g>
-<g>
-	<defs>
-		<rect id="SVGID_3_" x="0.511" y="0.495" width="16.001" height="16"/>
-	</defs>
-	<clipPath id="SVGID_4_">
-		<use xlink:href="#SVGID_3_"  overflow="visible"/>
-	</clipPath>
-</g>
-<g opacity="0.7">
-	<path fill="#231F20" d="M5.805,5.19h0.774v6.345H5.48v-5.22L4.347,6.631l-0.234-0.9L5.805,5.19z"/>
-	<path fill="#231F20" d="M8.056,11.535v-1.232h1.196v1.232H8.056z"/>
-	<path fill="#231F20" d="M11.34,5.19h0.774v6.345h-1.099v-5.22L9.882,6.631l-0.233-0.9L11.34,5.19z"/>
-</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="dot-num.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1278"
+     inkscape:window-height="1368"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="29.5"
+     inkscape:cx="9.0492028"
+     inkscape:cy="3.9931143"
+     inkscape:window-x="2553"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <circle
+     cx="8"
+     cy="8"
+     r="6.5"
+     fill="#E7EFFD"
+     stroke="#3574F0"
+     id="circle4" />
+  <g
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#3574f0;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     id="text4136">
+    <path
+       d="m 6.4865599,11.559321 -1.1474609,0 0,-4.6093739 q 0,-0.8251953 0.039063,-1.3085938 Q 5.2658568,5.7585408 5.0998412,5.9001424 4.9387084,6.041744 4.0060912,6.7985799 L 3.4299193,6.0710408 5.5295287,4.4206502 l 0.9570312,0 0,7.1386708 z"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:10px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#3574f0;fill-opacity:1"
+       id="path4141"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 7.6067764,10.982867 q 0,-0.356445 0.1855469,-0.546875 0.1855469,-0.19043 0.5371094,-0.19043 0.3564452,0 0.5419922,0.200196 0.185547,0.195312 0.185547,0.537109 0,0.34668 -0.19043,0.551758 -0.185547,0.200195 -0.5371092,0.200195 -0.3515625,0 -0.5371094,-0.200195 Q 7.6067764,11.33443 7.6067764,10.982867 Z"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:10px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#3574f0;fill-opacity:1"
+       id="path4143"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 11.418163,11.627118 -1.147458,0 0,-4.6093743 q 0,-0.8251953 0.03906,-1.3085938 Q 10.19746,5.8263374 10.031447,5.967939 9.8703136,6.1095406 8.9376966,6.8663765 l -0.576172,-0.7275391 2.0996064,-1.6503906 0.957031,0 0,7.1386712 z"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:10px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#3574f0;fill-opacity:1"
+       id="path4145"
+       inkscape:connector-curvature="0" />
+  </g>
 </svg>
