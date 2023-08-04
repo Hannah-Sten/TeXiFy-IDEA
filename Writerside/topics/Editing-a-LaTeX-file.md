@@ -8,6 +8,8 @@ To create a new LaTeX file, either use <ui-path>File | New | LaTeX File</ui-path
 
 You can enable soft wraps by going to <ui-path>Settings | General | Soft Wraps</ui-path>, enable Soft-wrap files and put `**.tex` in the text field, or just `**` to soft-wrap all files.
 
+![Soft wraps](soft-wraps.png)
+
 In <ui-path>Settings | Editor | Code Style | LaTeX<ui-path> you can enable 'wrap on typing' and much more, see [Code formatting settings](Code-formatting.md).
 
 ## Line commenting
