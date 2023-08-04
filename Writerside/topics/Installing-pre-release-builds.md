@@ -1,14 +1,14 @@
 # Installing pre-release builds
 
 This plugin also has an alpha channel besides the default stable channel.
-The alpha channel contains the latest build with the latest features available (of most open pull requests), and is updated much more frequently than the stable channel.
+The alpha channel contains the latest build with the latest features available, and is updated much more frequently than the stable channel.
 
 It is used for testing features before they are released in the stable channel, so alpha versions of the plugin may be more unstable.
 There are multiple ways by which you can acquire an alpha build.
 
 ### Download it directly
 
-You have multiple options of acquiring a zip file with the plugin.
+You have multiple options for acquiring a zip file with the plugin.
 
 1. Go to [https://plugins.jetbrains.com/plugin/9473-texify-idea/versions](https://plugins.jetbrains.com/plugin/9473-texify-idea/versions) and click on Alpha, then to the right you have a download button for each alpha version.
 2. You could also download a stable release from there or from the releases page (on which they appear just a bit earlier) at [https://github.com/Ruben-Sten/TeXiFy-IDEA/releases](https://github.com/Ruben-Sten/TeXiFy-IDEA/releases)
@@ -24,5 +24,5 @@ You have multiple options of acquiring a zip file with the plugin.
 
 More detailed information is at [https://www.jetbrains.com/help/idea/managing-plugins.html#repos](https://www.jetbrains.com/help/idea/managing-plugins.html#repos) but we will quickly summarize the steps.
 
-* Subscribe to the alpha channel by going to <ui-path>Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon<ui-path>, then use the url https://plugins.jetbrains.com/plugins/alpha/list or https://plugins.jetbrains.com/plugins/alpha/list?pluginId=9473
+* Subscribe to the alpha channel by going to <ui-path>Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon</ui-path>, then use the url `https://plugins.jetbrains.com/plugins/alpha/list` or `https://plugins.jetbrains.com/plugins/alpha/list?pluginId=9473`
 * IntelliJ should suggest an update of TeXiFy now. If not, uninstall the plugin first and then reinstall the plugin by going to Marketplace and searching for `TeXiFy-IDEA`, you should see the version next to the name is the alpha version.
