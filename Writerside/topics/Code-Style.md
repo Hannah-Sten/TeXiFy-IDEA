@@ -22,7 +22,7 @@ Set **Wrap on typing** to **Yes** to let the editor automatically go to a new li
 
 These settings are only available for LaTeX.
 
-### Option to start comment at the same indentation as normal text
+### Line comment at first column
 
 This setting is in the **Code Generation** tab.
 
