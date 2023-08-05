@@ -19,7 +19,7 @@ When multiple lines are selected, these will all be commented.
 
 Note that the block comment shortcut <shortcut>Ctrl + Shift + /</shortcut> should not be used, as LaTeX does not have any block comments by itself.
 
-Also see the [Option to start a comment at the same indentation as normal text](Code-style-settings#indent-comment).
+Also see the option to set [line comment at first column](Code-Style.md#line-comment-at-first-column).
 
 ## Multi-cursors
 
@@ -30,6 +30,8 @@ IntelliJ supports handling multiple carets at once, see [https://www.jetbrains.c
 <ui-path>Edit | LaTeX | Font Style</ui-path>
 
 Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
+
+![font style](font-style.png)
 
 ## Inserting \section-like commands
 
@@ -46,36 +48,40 @@ Add or remove the star of a command, e.g. switch between `\section{...}` and `\s
 _Since b0.6.9_
 
 With some text selected, press <shortcut>Ctrl + Alt + T</shortcut> (surround with) to surround text with quotes, dollar signs (inline math) or braces.
-When surrounding with quotes, quotes will be inserted according to the [Smart quotes settings](Global-settings#smart-quotes).
+When surrounding with quotes, quotes will be inserted according to the [Smart quotes settings](TeXiFy-settings.md#smart-quote-substitution).
 Use <shortcut>Ctrl + Alt + J</shortcut> (surround with live template) to surround with a live template, i.e., surround with dollars or braces.
 To surround a selection with dollars, it is also possible to simply press `$`.
+
+![surround](surround.png)
 
 ## Automatic package importing
 
 By default, TeXiFy will automatically insert package dependencies when you use autocomplete on a command of which the dependency is known.
 
 An example is the `align` environment, which is provided by the `amsmath` package.
-If you use the autocomplete to type `\begin{align} ... \end{align}`,you will see in the autocomplete window that `align` has the `amsmath` dependency.
+If you use the autocomplete to type `\begin{align} ... \end{align}`, you will see in the autocomplete window that `align` has the `amsmath` dependency.
 If you select it, then `\usepackage{amsmath}` will be inserted automatically, as you can see below.
 
 ![package-import](package-import.gif)
 
-Note that currently only a few common commands and packages are supported.
+Note that not all commands' packages might be known to TeXiFy, see [SDK settings](Project-configuration.md#sdks) for ways to help TeXiFy in this.
 
 ## Renaming labels and environments
 
 _Since b0.6.9_
 
-Currently, refactoring (renaming) elements is supported for files, labels and environments.
+Currently, refactoring (renaming) elements is supported for files, references and citations.
 
 To rename a label, place your cursor on a label definition or reference, e.g. `\ref{some-<cursor>label}` and press <shortcut>Shift+F6</shortcut>.
+
+![rename](rename-navigate.gif)
 
 To find out what elements need to be renamed as well (definition and other usages), the functionality from [Find usages](Find-usages) is used.
 
 > You need to select 'Search for references' if you get a popup to rename an element, in order to let IntelliJ rename all the references to for example a file.
 {style="note"}
 
-Similarly, you can easily rename an environment, i.e. replace
+You can also use the rename functionality to change an environment name in `\begin` and `\end` at the same time, i.e. replace
 
 ```latex
 \begin{center}

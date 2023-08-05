@@ -95,7 +95,7 @@ See [Textidote](Typesetting-issues#Textidote)
 
 Extra command line options to [Latexindent](Code-formatting#Latexindent)
 
-## Option to enable smart quote substitution
+## Smart quote substitution
 
 Instead of writing opening and closing quotes like ``quote'` and ```quote''` yourself, you can also let TeXiFy choose for you whether to insert opening or closing quotes, and of what type.
 
