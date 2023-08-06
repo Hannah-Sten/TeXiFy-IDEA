@@ -17,6 +17,15 @@ import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
  */
 abstract class RemoteBibLibrary(open val identifier: String, open val displayName: String) {
 
+    companion object {
+
+        fun showNotification(project: Project, libraryName: String, response: HttpResponse) {
+            val title = "Could not connect to $libraryName"
+            val statusMessage = "${response.status.value}: ${response.status.description}"
+            Notification("LaTeX", title, statusMessage, NotificationType.ERROR).notify(project)
+        }
+    }
+
     /**
      * Get the bib items from the remote library in bibtex format, then parse the bibtex to obtain all the bib entries.
      *
@@ -33,12 +42,6 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
         runReadAction {
             BibtexEntryListConverter().fromString(body)
         }
-    }
-
-    fun showNotification(project: Project, libraryName: String, response: HttpResponse) {
-        val title = "Could not connect to $libraryName"
-        val statusMessage = "${response.status.value}: ${response.status.description}"
-        Notification("LaTeX", title, statusMessage, NotificationType.ERROR).notify(project)
     }
 
     /**

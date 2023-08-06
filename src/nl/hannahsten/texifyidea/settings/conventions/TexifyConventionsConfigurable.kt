@@ -24,7 +24,6 @@ import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
 import java.awt.BorderLayout
 import java.awt.Component
-import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTable
@@ -169,17 +168,17 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
      */
     private fun createMappingsTableDecorator(): JComponent {
         val panelForTable = ToolbarDecorator.createDecorator(labelConventionsTable, null)
-            .setAddActionUpdater { e: AnActionEvent? -> true }
-            .setAddAction { button: AnActionButton? ->
+            .setAddActionUpdater { _: AnActionEvent? -> true }
+            .setAddAction { _: AnActionButton? ->
                 createAddLabelConventionDialog()
             }
-            .setRemoveActionUpdater { e: AnActionEvent? -> labelConventionsTable.selection.isNotEmpty() }
-            .setRemoveAction { button: AnActionButton? ->
+            .setRemoveActionUpdater { _: AnActionEvent? -> labelConventionsTable.selection.isNotEmpty() }
+            .setRemoveAction { _: AnActionButton? ->
                 labelConventionsTable.selectedObjects.forEach { unsavedSettings.currentScheme.labelConventions.remove(it) }
                 loadScheme(unsavedSettings.currentScheme)
             }
             // Up/down actions currently have no function, other than allowing users to group them together in the UI
-            .setMoveUpActionUpdater { e: AnActionEvent? -> labelConventionsTable.selectedRow > 0 }
+            .setMoveUpActionUpdater { _: AnActionEvent? -> labelConventionsTable.selectedRow > 0 }
             .setMoveUpAction {
                 // take the list element above the selection block and move it to the end of the block
                 val startRow = labelConventionsTable.selectedRow
@@ -192,7 +191,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
                 loadScheme(unsavedSettings.currentScheme)
                 labelConventionsTable.setRowSelectionInterval(startRow - 1, endRow - 1)
             }
-            .setMoveDownActionUpdater { e: AnActionEvent? -> labelConventionsTable.selectedRow < labelConventionsTable.rowCount - 1 }
+            .setMoveDownActionUpdater { _: AnActionEvent? -> labelConventionsTable.selectedRow < labelConventionsTable.rowCount - 1 }
             .setMoveDownAction {
                 // take the list element below the selection block and move it to the start of the block
                 val startRow = labelConventionsTable.selectedRow
@@ -275,7 +274,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         createMappingsTableDecorator()
 
         labelCommandType = buildEnvironmentSelector()
-        labelCommandType.addItemListener { e: ItemEvent? ->
+        labelCommandType.addItemListener {
             if (labelConventionsTable.isEditing) {
                 labelConventionsTable.stopEditing()
             }

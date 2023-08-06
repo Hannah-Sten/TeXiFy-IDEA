@@ -37,14 +37,14 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import org.jdom.Element
 import java.io.File
@@ -205,7 +205,7 @@ class LatexRunConfiguration(
 
         // Updates the SumatraAvailabilityChecker with the path in sumatraPath after change.
         // Also checks if the path leads to a correct directory containing Sumatra.
-        if (!SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second && enableSumatraPath == true) {
+        if (enableSumatraPath == true && !SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second) {
             throw RuntimeConfigurationError("Run configuration is invalid: custom Sumatra path doesn't point to a valid directory")
         }
     }

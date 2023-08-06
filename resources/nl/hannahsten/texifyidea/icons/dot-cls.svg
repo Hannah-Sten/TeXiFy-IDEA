@@ -1,38 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0.511 0.495 16 16" enable-background="new 0.511 0.495 16 16" xml:space="preserve">
-<rect x="0.511" y="0.495" fill="#FFFFFF" fill-opacity="0" width="16.001" height="16"/>
-<g>
-	<defs>
-		<rect id="SVGID_1_" x="0.511" y="0.495" width="16.001" height="16"/>
-	</defs>
-	<clipPath id="SVGID_2_">
-		<use xlink:href="#SVGID_1_"  overflow="visible"/>
-	</clipPath>
-	<g clip-path="url(#SVGID_2_)">
-		<path fill="#B99BF8" fill-opacity="0.6" d="M1.511,8.494c0-3.866,3.134-7,7-7s7.001,3.134,7.001,7c0,3.867-3.135,7-7.001,7
-			S1.511,12.361,1.511,8.494z"/>
-	</g>
-</g>
-<g>
-	<defs>
-		<rect id="SVGID_3_" x="0.511" y="0.495" width="16.001" height="16"/>
-	</defs>
-	<clipPath id="SVGID_4_">
-		<use xlink:href="#SVGID_3_"  overflow="visible"/>
-	</clipPath>
-</g>
-<g opacity="0.7">
-	<path fill="#231F20" d="M10.803,11.201c-0.176,0.135-0.367,0.252-0.57,0.352c-0.205,0.098-0.428,0.174-0.672,0.225
-		c-0.242,0.051-0.51,0.076-0.805,0.076c-0.462,0-0.888-0.084-1.278-0.252s-0.728-0.397-1.013-0.688s-0.509-0.634-0.671-1.03
-		S5.552,9.061,5.552,8.604c0-0.45,0.079-0.873,0.238-1.269c0.158-0.396,0.383-0.742,0.671-1.04c0.287-0.297,0.63-0.531,1.025-0.702
-		c0.396-0.171,0.834-0.257,1.314-0.257c0.289,0,0.551,0.024,0.787,0.072c0.238,0.048,0.455,0.116,0.652,0.203
-		c0.199,0.087,0.381,0.19,0.549,0.31c0.168,0.12,0.328,0.252,0.479,0.396l-0.711,0.819c-0.252-0.234-0.52-0.423-0.801-0.567
-		C9.473,6.427,9.152,6.354,8.793,6.354c-0.301,0-0.579,0.059-0.833,0.176C7.705,6.647,7.484,6.806,7.298,7.007
-		c-0.187,0.201-0.33,0.437-0.433,0.706c-0.102,0.27-0.152,0.562-0.152,0.873c0,0.313,0.051,0.605,0.152,0.878
-		c0.103,0.273,0.246,0.512,0.433,0.716c0.186,0.204,0.406,0.364,0.661,0.481s0.532,0.175,0.833,0.175
-		c0.383,0,0.713-0.072,0.988-0.22c0.277-0.147,0.549-0.347,0.82-0.599l0.711,0.721C11.15,10.912,10.98,11.066,10.803,11.201z"/>
-</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="dot-cls.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1278"
+     inkscape:window-height="1368"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="41.7193"
+     inkscape:cx="8.4095882"
+     inkscape:cy="7.9615049"
+     inkscape:window-x="2553"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <circle
+     cx="8"
+     cy="8"
+     r="6.5"
+     fill="#E7EFFD"
+     stroke="#3574F0"
+     id="circle4"
+     style="fill:#faf5ff;fill-opacity:1;stroke:#834df0;stroke-opacity:1" />
+  <path
+     d="M8.13295 11.5C9.61223 11.5 10.8836 10.6105 11.2075 9.33909H10.2213C9.90229 10.0739 9.11914 10.6057 8.13295 10.6057C6.77936 10.6057 5.80284 9.51796 5.80284 8C5.80284 6.48204 6.77936 5.39434 8.13295 5.39434C9.11914 5.39434 9.90229 5.92611 10.2213 6.66091H11.2075C10.8836 5.3895 9.61223 4.5 8.13295 4.5C6.21859 4.5 4.79248 5.99378 4.79248 8C4.79248 10.0062 6.21859 11.5 8.13295 11.5Z"
+     fill="#3574F0"
+     id="path6"
+     style="fill:#834df0;fill-opacity:1" />
 </svg>

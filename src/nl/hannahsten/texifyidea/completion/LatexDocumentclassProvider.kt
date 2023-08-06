@@ -5,7 +5,6 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 import nl.hannahsten.texifyidea.util.findAvailableDocumentClasses
@@ -26,7 +25,7 @@ object LatexDocumentclassProvider : CompletionProvider<CompletionParameters>() {
         val project = parameters.editor.project ?: return
         val classes = DEFAULT_CLASSES + project.findAvailableDocumentClasses()
         result.addAllElements(
-            ContainerUtil.map2List(classes) { name ->
+            classes.map { name ->
                 LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()

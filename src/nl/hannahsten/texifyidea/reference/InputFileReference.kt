@@ -40,6 +40,10 @@ class InputFileReference(
 
     companion object {
 
+        private val texinputs by lazy {
+            runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
+        }
+
         /**
          * Handle element rename, but taking into account whether the given
          * newElementName is just a filename which we have to replace,
@@ -128,7 +132,7 @@ class InputFileReference(
             ?.getOrDefault("TEXINPUTS", null)
             // Not sure which of these takes precedence, or if they are joined together
             ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
-            ?: runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
+            ?: texinputs
 
         for (texInputPath in texinputsVariable?.trim('\'')?.split(File.pathSeparator)?.filter { it.isNotBlank() } ?: emptyList()) {
             val path = texInputPath.trimEnd(File.pathSeparatorChar)

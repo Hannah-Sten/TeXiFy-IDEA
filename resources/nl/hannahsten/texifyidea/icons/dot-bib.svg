@@ -1,28 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0.511 0.495 16 16" enable-background="new 0.511 0.495 16 16" xml:space="preserve">
-<rect x="0.511" y="0.495" fill="#FFFFFF" fill-opacity="0" width="16.001" height="16"/>
-<g>
-	<defs>
-		<rect id="SVGID_1_" x="0.511" y="0.495" width="16.001" height="16"/>
-	</defs>
-	<clipPath id="SVGID_2_">
-		<use xlink:href="#SVGID_1_"  overflow="visible"/>
-	</clipPath>
-	<g clip-path="url(#SVGID_2_)">
-		<path fill="#E9A055" fill-opacity="0.6" d="M1.511,8.494c0-3.866,3.134-7,7-7s7.001,3.134,7.001,7c0,3.867-3.135,7-7.001,7
-			S1.511,12.361,1.511,8.494z"/>
-	</g>
-</g>
-<g>
-	<defs>
-		<rect id="SVGID_3_" x="0.511" y="0.495" width="16.001" height="16"/>
-	</defs>
-	<clipPath id="SVGID_4_">
-		<use xlink:href="#SVGID_3_"  overflow="visible"/>
-	</clipPath>
-</g>
-<text transform="matrix(1 0 0 1 5.7085 11.7461)" opacity="0.7" fill="#231F20" font-family="'Gotham-Medium'" font-size="9">B</text>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="dot-bib.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1278"
+     inkscape:window-height="1368"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="41.7193"
+     inkscape:cx="6.7188216"
+     inkscape:cy="7.9615049"
+     inkscape:window-x="2553"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <circle
+     cx="8"
+     cy="8"
+     r="6.5"
+     fill="#E7EFFD"
+     stroke="#3574F0"
+     id="circle4"
+     style="fill:#fff4eb;fill-opacity:1;stroke:#e66d17;stroke-opacity:1" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#e66d17"
+     d="m 8.4905333,11.398234 c -0.8437896,0 -1.5074596,-0.37098 -1.8881592,-0.99832 l 0,0.87551 -0.98245,0 0,-6.8771902 1.00292,0 0,2.4796807 c 0.3837696,-0.60688 1.0387396,-0.9650797 1.8676892,-0.9650797 1.4582896,0 2.4765897,1.1155197 2.4765897,2.7427097 0,1.6271895 -1.0183001,2.7426895 -2.4765897,2.7426895 z m -0.2098,-4.5847995 c -0.9773396,0 -1.6578892,0.7522 -1.6578892,1.84211 0,1.08991 0.6805496,1.8421095 1.6578892,1.8421095 0.97223,0 1.64259,-0.7521995 1.64259,-1.8421095 0,-1.08991 -0.67036,-1.84211 -1.64259,-1.84211 z"
+     id="path6-5" />
 </svg>

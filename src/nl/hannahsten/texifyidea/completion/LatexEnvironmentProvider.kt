@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
@@ -64,7 +63,7 @@ object LatexEnvironmentProvider {
 
         // Create autocomplete elements.
         result.addAllElements(
-            ContainerUtil.map2List(environments) { env: Environment ->
+            environments.map { env: Environment ->
                 createEnvironmentLookupElement(env)
             }
         )
