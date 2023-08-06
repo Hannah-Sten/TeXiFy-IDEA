@@ -115,7 +115,6 @@ If the command has a package dependency which is known to TeXiFy, you will get a
 LaTeX package documentation is written in LaTeX (surprise) so when you click on a link it will open a pdf.
 
 When the command is a `\usepackage` or `\documentclass` then the documentation of the included package or class will be shown.
-
 When your cursor is on an environment name, documentation for that environment will be shown.
 
 Note that you can also use the shortcut <shortcut>Ctrl + Q</shortcut> during autocompletion of commands and environments, and navigate through the completion list using the arrow keys.
@@ -124,7 +123,7 @@ Note that you can also use the shortcut <shortcut>Ctrl + Q</shortcut> during aut
 ![env-docs](env-docs.png)
 
 ### Source of documentation
-When you have set up a [LaTeX SDK](Latex-Sdk), in most cases you will have all commands and environments from all installed LaTeX packages in the autocompletion (see [Autocomplete](Autocomplete#command-completion)).
+When you have set up a [LaTeX SDK](Project-configuration.md#sdks), in most cases you will have all commands and environments from all installed LaTeX packages in the autocompletion (see [Autocomplete](Code-completion.md#autocomplete-installed-commands)).
 In a lot of cases, this includes some documentation for each command and environment.
 However, this relies on package authors respecting the LaTeX conventions (using the doc package) whether the documentation is actually useful.
 If you find something incorrect, please let us know and then we can determine whether something needs to be improved in the LaTeX package or in TeXiFy (example bug report: [https://gitlab.com/axelsommerfeldt/caption/-/issues/114](https://gitlab.com/axelsommerfeldt/caption/-/issues/114)).
@@ -149,11 +148,7 @@ Some useful shortcuts are for example:
 * <shortcut>Ctrl + T</shortcut> Pull changes with git.
 * <shortcut>Ctrl + Alt + &lt;-</shortcut> Go back to previous cursor location.
 
-### TeXiFy-IDEA shortcuts
-
-See the [Menu entries](Features#menu-entries), of which many have shortcuts.
-In the menu in IntelliJ you can see the shortcuts.
-
+> TeXiFy specific shortcuts can be found in <ui-path>File | Settings | Keymap</ui-path> under <control>plugins/TeXiFy IDEA</control>
 
 ## Inlining files and command definitions
 
@@ -192,6 +187,8 @@ Main.tex:
 
 To perform this, you can right click an input command -> refactor -> inline and select what kind on inlining you are looking for.
 
+![inline command](inline-command.gif)
+
 ## Swapping command arguments
 
 Using <ui-path>Code | Move Element Left/Right</ui-path> or by default <shortcut>Ctrl + Alt + Shift + Left/Right</shortcut> you can move/swap required arguments of LaTeX commands.
@@ -203,7 +200,7 @@ Using <ui-path>Code | Move Element Left/Right</ui-path> or by default <shortcut>
 _Since b0.6.10_
 
 ### Compilers
-See [Using magic comments to specify the compiler for new run configurations](Compilers#using-magic-comments-to-specify-the-compiler-for-new-run-configurations).
+See [Using magic comments to specify the compiler for new run configurations](Run-configuration-settings.md#using-magic-comments-to-specify-the-compiler-for-new-run-configurations).
 
 ### Root file
 
@@ -212,11 +209,11 @@ For example, use `%! root = main.tex` in a file that is included by `main.tex`, 
 
 ### Language injection
 
-See [Language injection](Language-injection).
+See [Language injection](Editor.md#language-injections).
 
 ### Custom preamble for math and tikz preview
 
-See [Preview](Preview).
+See [Preview](Tool-Windows.md#equation-preview).
 
 ### Switching parser off and on
 
