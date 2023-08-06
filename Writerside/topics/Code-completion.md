@@ -42,7 +42,7 @@ If you always select the version with optional parameters, after a couple of tim
 ![required-parameters-autocomplete](required-parameters-autocomplete.gif)
 ![required-parameters-environments](required-parameters-environments.gif)
 
-## Autocompletion of commands from installed LaTeX packages.
+## Autocompletion of commands from installed LaTeX packages. {#autocomplete-installed-commands}
 _Since b0.7.4_
 
 TeXiFy will look in your LaTeX installation for installed LaTeX packages, and then figures out what commands those packages provide to put those in the autocompletion.
