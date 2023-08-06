@@ -98,13 +98,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.2")
-    implementation("io.ktor:ktor-client-cio:2.3.2")
-    implementation("io.ktor:ktor-client-auth:2.3.2")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
-    implementation("io.ktor:ktor-server-core:2.3.2")
-    implementation("io.ktor:ktor-server-jetty:2.3.2")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
+    implementation("io.ktor:ktor-client-core:2.3.3")
+    implementation("io.ktor:ktor-client-cio:2.3.3")
+    implementation("io.ktor:ktor-client-auth:2.3.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.3")
+    implementation("io.ktor:ktor-server-core:2.3.3")
+    implementation("io.ktor:ktor-server-jetty:2.3.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-5")
