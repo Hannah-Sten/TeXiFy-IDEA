@@ -73,7 +73,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val compilerCompat = file.project.selectedRunConfig()?.compiler
             if (compilerCompat == LatexCompiler.LUALATEX ||
                 compilerCompat == LatexCompiler.XELATEX ||
-                TexliveSdk.version >= 2018 ||
+                TexliveSdk.Cache.version >= 2018 ||
                 MiktexWindowsSdk().getVersion(null) >= DefaultArtifactVersion("2.9.7350")
             ) {
                 return true

@@ -36,9 +36,6 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
         return true
     }
 
-    companion object {
-
-        private val commandsDisallowingUnderscore =
-            CommandMagic.sectionMarkers + CommandMagic.textStyles + setOf("""\caption""")
-    }
+    private val commandsDisallowingUnderscore =
+        CommandMagic.sectionMarkers + CommandMagic.textStyles + setOf("""\caption""")
 }

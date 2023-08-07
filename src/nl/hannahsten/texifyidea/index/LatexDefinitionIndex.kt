@@ -14,5 +14,5 @@ open class LatexDefinitionIndex : StringStubIndexExtension<LatexCommands>() {
     @Suppress("RedundantCompanionReference")
     override fun getKey() = Companion.key()
 
-    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
+    override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

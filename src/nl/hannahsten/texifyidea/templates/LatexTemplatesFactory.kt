@@ -75,7 +75,6 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
         const val FILE_TEMPLATE_CLS = "LaTeX Document class.cls"
         const val FILE_TEMPLATE_BIB = "BibTeX Bibliography.bib"
         const val FILE_TEMPLATE_TIKZ = "TikZ Picture.tikz"
-
     }
 
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {

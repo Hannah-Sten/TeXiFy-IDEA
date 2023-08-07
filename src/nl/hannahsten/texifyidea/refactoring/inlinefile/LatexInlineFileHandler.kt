@@ -111,5 +111,4 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             else null
         }
     }
-
 }

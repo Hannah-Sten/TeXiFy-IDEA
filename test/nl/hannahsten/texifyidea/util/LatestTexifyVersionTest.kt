@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.LatexErrorReportSubmitter
 class LatestTexifyVersionTest : BasePlatformTestCase() {
 
     fun testVersion() {
-        val version = LatexErrorReportSubmitter.getLatestVersion()
+        val version = LatexErrorReportSubmitter.Util.getLatestVersion()
         assertTrue(version.version.toString().isNotBlank())
     }
 }

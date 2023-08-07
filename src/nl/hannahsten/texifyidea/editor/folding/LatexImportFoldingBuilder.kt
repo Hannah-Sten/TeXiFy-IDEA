@@ -13,10 +13,10 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.util.parser.allCommands
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
@@ -27,10 +27,7 @@ import nl.hannahsten.texifyidea.util.parser.parentOfType
  */
 open class LatexImportFoldingBuilder : FoldingBuilderEx() {
 
-    companion object {
-
-        private val includesSet = setOf(LatexGenericRegularCommand.USEPACKAGE.cmd, LatexGenericRegularCommand.REQUIREPACKAGE.cmd)
-    }
+    private val includesSet = setOf(LatexGenericRegularCommand.USEPACKAGE.cmd, LatexGenericRegularCommand.REQUIREPACKAGE.cmd)
 
     override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().collapseImports
 
