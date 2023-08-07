@@ -14,12 +14,12 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.get
-import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import java.util.*
 
 /**
@@ -27,9 +27,8 @@ import java.util.*
  */
 open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Custom commands") {
 
-    companion object {
-
-        private val brackets = mapOf(
+    object Util {
+        val brackets = mapOf(
             "(" to ")",
             "[" to "]"
         )
@@ -53,7 +52,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
             // Scan all characters in math mode. (+2/-2 to ignore \[ and \]).
             for (openOffset in mathMode.textOffset + 2 until mathMode.endOffset() - 2) {
                 val char = document[openOffset]
-                if (!brackets.containsKey(char)) {
+                if (!Util.brackets.containsKey(char)) {
                     continue
                 }
                 if (ignore(document, openOffset)) {
@@ -128,7 +127,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     private fun seek(document: Document, offset: Int, file: PsiFile): Int? {
         // Scan document.
         val open = document[offset]
-        val close = brackets[open]
+        val close = Util.brackets[open]
 
         var current = offset
         var nested = 0
@@ -209,7 +208,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
             if (!applied) {
                 val psiHelper = LatexPsiHelper(project)
                 val openReplacement = psiHelper.createFromText("\\left$open").firstChild
-                val closeReplacement = psiHelper.createFromText("\\right${brackets[open]}").firstChild
+                val closeReplacement = psiHelper.createFromText("\\right${Util.brackets[open]}").firstChild
 
                 // Get the elements from the psi pointers before replacing elements, because the pointers are not accurate
                 // anymore after changing the psi structure.

@@ -15,8 +15,8 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
@@ -36,7 +36,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
 
         file.commandsInFile("\\text").asSequence()
             .filter { it.inMathContext() }
-            .filter { it.requiredParameter(0)?.trim() in AFFECTED_COMMANDS }
+            .filter { it.requiredParameter(0)?.trim() in affectedCommands }
             .forEach { affectedTextCommand ->
                 descriptors.add(
                     manager.createProblemDescriptor(
@@ -67,10 +67,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
         }
     }
 
-    companion object {
-
-        private val AFFECTED_COMMANDS = CommandMagic.slashlessMathOperators.asSequence()
-            .map { it.command }
-            .toSet()
-    }
+    private val affectedCommands = CommandMagic.slashlessMathOperators.asSequence()
+        .map { it.command }
+        .toSet()
 }

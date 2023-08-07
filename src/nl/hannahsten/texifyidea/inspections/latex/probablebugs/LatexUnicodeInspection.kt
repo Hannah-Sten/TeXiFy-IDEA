@@ -55,9 +55,8 @@ import java.util.regex.Pattern
  */
 class LatexUnicodeInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
+    object Util {
+        internal val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
 
         /**
          * Checks whether Unicode support is enabled for the file.
@@ -96,7 +95,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     override val inspectionId = "Unicode"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val hasUnicode = unicodeEnabled(file)
+        val hasUnicode = Util.unicodeEnabled(file)
 
         val descriptors = descriptorList()
 
@@ -256,7 +255,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val n = Normalizer.normalize(c, Normalizer.Form.NFD)
 
             // Extract base characters
-            val matcher = BASE_PATTERN.matcher(n)
+            val matcher = Util.BASE_PATTERN.matcher(n)
             matcher.find()
             val base = matcher.group()
 

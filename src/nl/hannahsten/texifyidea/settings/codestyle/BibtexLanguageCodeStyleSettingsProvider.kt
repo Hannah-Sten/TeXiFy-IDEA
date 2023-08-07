@@ -11,10 +11,7 @@ import nl.hannahsten.texifyidea.util.removeHtmlTags
 
 class BibtexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
-    companion object {
-
-        private val demoText = GeneralMagic.bibtexDemoText.removeHtmlTags()
-    }
+    private val demoText = GeneralMagic.bibtexDemoText.removeHtmlTags()
 
     override fun getLanguage(): Language = BibtexLanguage
 

@@ -24,17 +24,17 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 class LatexInlineFileHandler : LatexInlineHandler() {
 
     override fun canInlineElement(element: PsiElement?): Boolean {
-        return canInlineLatexElement(element)
+        return Util.canInlineLatexElement(element)
     }
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         // Resolve the file to be inlined
-        val inlineFile: LatexFile = resolveInlineFile(element) ?: return
+        val inlineFile: LatexFile = Util.resolveInlineFile(element) ?: return
 
         val dialog = LatexInlineFileDialog(
             project,
             inlineFile,
-            getReference(element, editor),
+            Util.getReference(element, editor),
             editor != null
         )
 
@@ -61,8 +61,7 @@ class LatexInlineFileHandler : LatexInlineHandler() {
         }
     }
 
-    companion object {
-
+    object Util {
         /**
          * This is static only so that the unit tests can use it, and also since it can be static
          */
@@ -112,4 +111,5 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             else null
         }
     }
+
 }

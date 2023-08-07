@@ -19,10 +19,7 @@ import nl.hannahsten.texifyidea.file.StyleFileType
  */
 class LatexExternalPackageInclusionIndex : FileBasedIndexExtension<String, String>() {
 
-    companion object {
-
-        val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.package.inclusions")
-    }
+    val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.package.inclusions")
 
     private val indexer = LatexExternalPackageInclusionDataIndexer()
 
