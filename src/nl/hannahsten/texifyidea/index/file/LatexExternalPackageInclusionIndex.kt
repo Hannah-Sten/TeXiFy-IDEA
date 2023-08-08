@@ -19,12 +19,14 @@ import nl.hannahsten.texifyidea.file.StyleFileType
  */
 class LatexExternalPackageInclusionIndex : FileBasedIndexExtension<String, String>() {
 
-    val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.package.inclusions")
+    object Cache {
+        val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.package.inclusions")
+    }
 
     private val indexer = LatexExternalPackageInclusionDataIndexer()
 
     override fun getName(): ID<String, String> {
-        return id
+        return Cache.id
     }
 
     override fun getIndexer(): DataIndexer<String, String, FileContent> {

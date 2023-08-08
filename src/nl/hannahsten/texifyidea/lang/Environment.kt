@@ -34,7 +34,7 @@ interface Environment : Dependend, Described {
         fun lookupInIndex(environmentName: String, project: Project): Set<Environment> {
             val envs = mutableSetOf<Environment>()
             FileBasedIndex.getInstance().processValues(
-                LatexExternalEnvironmentIndex.id, environmentName, null, { file, value ->
+                LatexExternalEnvironmentIndex.Cache.id, environmentName, null, { file, value ->
                 val dependency = file.name.removeFileExtension()
                 val env = object : Environment {
                     override val arguments = extractArgumentsFromDocs(value)
