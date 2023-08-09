@@ -6,7 +6,8 @@ switcher-label: Operating System
 
 
 > Before reading this page, select your operating system in the menu at the top of this page.
-{style="Warning"}
+> 
+{style="note"}
 
 ## Installing IntelliJ, LaTeX and the TeXiFy-IDEA plugin
 In this section we will show you how to install everything that is necessary to get started with TeXiFy, as well as give a few pointers to get started with LaTeX.
