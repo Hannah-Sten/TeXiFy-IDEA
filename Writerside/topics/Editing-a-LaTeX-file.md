@@ -10,7 +10,7 @@ You can enable soft wraps by going to <ui-path>Settings | General | Soft Wraps</
 
 ![Soft wraps](soft-wraps.png)
 
-In <ui-path>Settings | Editor | Code Style | LaTeX<ui-path> you can enable 'wrap on typing' and much more, see [Code formatting settings](Code-formatting.md).
+In <ui-path>Settings | Editor | Code Style | LaTeX</ui-path> you can enable 'wrap on typing' and much more, see [Code formatting settings](Code-formatting.md).
 
 ## Line commenting
 
@@ -76,10 +76,10 @@ To rename a label, place your cursor on a label definition or reference, e.g. `\
 
 ![rename](rename-navigate.gif)
 
-To find out what elements need to be renamed as well (definition and other usages), the functionality from [Find usages](Find-usages) is used.
+To find out what elements need to be renamed as well (definition and other usages), the functionality from [Find usages](Code-navigation.md#find-usages) is used.
 
 > You need to select 'Search for references' if you get a popup to rename an element, in order to let IntelliJ rename all the references to for example a file.
-{style="note"}
+> 
 
 You can also use the rename functionality to change an environment name in `\begin` and `\end` at the same time, i.e. replace
 
@@ -120,6 +120,7 @@ When your cursor is on an environment name, documentation for that environment w
 Note that you can also use the shortcut <shortcut>Ctrl + Q</shortcut> during autocompletion of commands and environments, and navigate through the completion list using the arrow keys.
 
 ![texdoc](texdoc.png)
+
 ![env-docs](env-docs.png)
 
 ### Source of documentation
@@ -202,7 +203,7 @@ _Since b0.6.10_
 ### Compilers
 See [Using magic comments to specify the compiler for new run configurations](Run-configuration-settings.md#using-magic-comments-to-specify-the-compiler-for-new-run-configurations).
 
-### Root file
+### Root file magic comment
 
 If TeXiFy does not guess your root file(s) correctly, you can help TeXiFy by using the `root` magic comment to point TeXiFy to a root file.
 For example, use `%! root = main.tex` in a file that is included by `main.tex`, when TeXiFy cannot figure out that `main.tex` is a root file of this file.
@@ -219,6 +220,14 @@ See [Preview](Tool-Windows.md#equation-preview).
 
 If you want to temporarily switch off the parser for a part of your LaTeX, for example because there is a parse error which is causing other problems in your files, you can use the magic comments `%! parser = off` and `%! parser = on` to avoid parsing the text between these two comments.
 The syntax `% !TeX parser = off` is also supported.
+
+```latex
+%! parser=off
+    \catcode`#=14
+    # Please don't do this
+    # $PHP COMMENT
+%! parser=on
+```
 
 ### Custom folding regions
 
@@ -247,7 +256,7 @@ For example, if you write
 \section{One}\mylabel{sec:one}
 \section{Two}\label{sec:two}
 
-~\ref{la<caret>} % autocompletion shows both sec:one and sec:two
+~\ref{se<caret>} % autocompletion shows both sec:one and sec:two
 ```
 
 For definitions like `\newcommand{\mycite}[1]{\citeauthor{#1}\cite{#1}}`, this means that you will also get autocompletion of citation labels in `\mycite` commands.
@@ -323,8 +332,11 @@ For example, if you have images in a path `/path/to/figures` you could write
 \end{document}
 ```
 
-You can also use relative paths, but no matter what path you use it _has_ to end in a forward slash `/`.
-You also need to use forward slashes on Windows.
+
+> You can also use relative paths, but no matter what path you use it _has_ to end in a forward slash `/`.
+> You also need to use forward slashes on Windows.
+> 
+{style="note"}
 
 You can include multiple search paths by continuing the list, like `\includegraphics{{/path1/}{../path2/}}`.
 
@@ -337,4 +349,4 @@ IntelliJ supports Unicode, see for example [https://blog.jetbrains.com/idea/2013
 
 Note that if the LaTeX log output contains characters in an incorrect encoding on Windows, you can fix this by going to <ui-path>Help | Edit Custom VM Options</ui-path> and add `-Dfile.encoding=UTF-8`, then restart your IDE.
 
-Also see the [Unicode inspection](Probable-bugs#Unsupported-Unicode-character).
+Also see the [Unicode inspection](Probable-bugs.md#unsupported-unicode-character).

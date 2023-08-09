@@ -27,7 +27,6 @@ Once you have created an SDK (which is a global setting), you can select it as P
 Then you can in your run configuration under LaTeX Distribution select Use project SDK.
 
 > Set the LaTeX Distribution in your [run configuration template](Running-a-LaTeX-file.md) as well if you want to use it by default for new run configurations.
-{style="note"}
 
 If you don’t have `pdflatex` in your PATH, TeXiFy will show a warning that you won’t be able to compile.
 
