@@ -55,7 +55,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
                             it.psiElement == element && it.descriptionTemplate == "Non-escaped math operator"
                         } != null
 
-                        if (element.text in SLASHLESS_MATH_OPERATORS && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
+                        if (element.text in slashlessMathOperators && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
                             descriptors.add(
                                 manager.createProblemDescriptor(
                                     element,
@@ -89,10 +89,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
         }
     }
 
-    companion object {
-
-        private val SLASHLESS_MATH_OPERATORS = CommandMagic.slashlessMathOperators.asSequence()
-            .map { it.command }
-            .toSet()
-    }
+    private val slashlessMathOperators = CommandMagic.slashlessMathOperators.asSequence()
+        .map { it.command }
+        .toSet()
 }

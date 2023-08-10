@@ -19,14 +19,11 @@ import nl.hannahsten.texifyidea.util.parser.inMathContext
  */
 open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \\left..\\right") {
 
-    companion object {
-
-        private val brackets = mapOf(
-            "(" to ")",
-            "[" to "]",
-            "<" to ">"
-        )
-    }
+    private val brackets = mapOf(
+        "(" to ")",
+        "[" to "]",
+        "<" to ">"
+    )
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {

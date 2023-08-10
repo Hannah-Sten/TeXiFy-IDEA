@@ -25,11 +25,11 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
     inspectionId = "VerticallyCenteredColon",
     errorMessage = { "Colon is vertically uncentered" },
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    pattern = REGEX,
+    pattern = Util.REGEX,
     mathMode = true,
-    replacement = this::replacement,
+    replacement = Util::replacement,
     replacementRange = { it.groupRange(0) },
-    quickFixName = { "Change to ${PATTERNS[it.group(0).replace(WHITESPACE, "")]!!.command} (mathtools)" },
+    quickFixName = { "Change to ${Util.PATTERNS[it.group(0).replace(Util.WHITESPACE, "")]!!.command} (mathtools)" },
     cancelIf = { _, file ->
         // Per mathtools documentation, colons are automatically centered when this option is set.
         // It is impossible to determine whether this option is actually set (think scoping, but this option can also be
@@ -39,12 +39,11 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
     }
 ) {
 
-    private data class Pattern(val regex: String, val command: String)
+    internal data class Pattern(val regex: String, val command: String)
 
-    companion object {
-
+    object Util {
         // Whitespace in between is matched, except for newlines (we have to draw the line somewhere...)
-        private val PATTERNS = mapOf(
+        internal val PATTERNS = mapOf(
             ":=" to Pattern(""":[^\S\r\n]*=""", "\\coloneqq"),
             "::=" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*=""", "\\Coloneqq"),
             ":-" to Pattern(""":[^\S\r\n]*-""", "\\coloneq"),
@@ -59,11 +58,8 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
             "::\\sim" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*\\sim(?![a-zA-Z])""", "\\Colonsim"),
             "::" to Pattern(""":[^\S\r\n]*:""", "\\dblcolon"),
         )
-
-        private val WHITESPACE = """[^\S\r\n]+""".toRegex()
-
-        private val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern()
-
+        internal val WHITESPACE = """[^\S\r\n]+""".toRegex()
+        internal val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern()
         fun replacement(matcher: Matcher, file: PsiFile): String {
             val replacement = PATTERNS[matcher.group(0).replace(WHITESPACE, "")]!!.command
 

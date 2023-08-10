@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 class TexLivePackageListInitializer : ProjectActivity {
 
     override suspend fun execute(project: Project) {
-        if (TexliveSdk.isAvailable) {
+        if (TexliveSdk.Cache.isAvailable) {
             val result = "tlmgr list --only-installed".runCommand() ?: return
             TexLivePackages.packageList = Regex("i\\s(.*):").findAll(result)
                 .map { it.groupValues.last() }.toMutableList()

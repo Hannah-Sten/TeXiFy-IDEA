@@ -30,7 +30,7 @@ object LatexEnvironmentProvider {
         )
 
         result.addAllElements(
-            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.id, project)
+            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.Cache.id, project)
                 .flatMap { envText ->
                     Environment.lookupInIndex(envText, project)
                         .filter { if (usesTexlive) it.dependency in packagesInProject else true }

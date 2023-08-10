@@ -28,9 +28,9 @@ object LatexExternalPackageInclusionCache {
         val directChildren = mutableMapOf<LatexPackage, MutableSet<LatexPackage>>()
 
         // Get direct children from the index
-        FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.id, project).forEach { indexKey ->
+        FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project).forEach { indexKey ->
             FileBasedIndex.getInstance().processValues(
-                LatexExternalPackageInclusionIndex.id, indexKey, null, { file, _ ->
+                LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
                 val key = LatexPackage(file.name.removeFileExtension())
                 directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
                 true

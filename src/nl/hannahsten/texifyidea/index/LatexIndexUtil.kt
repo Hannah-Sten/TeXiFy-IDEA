@@ -8,5 +8,5 @@ fun <T : PsiElement> indexSinkOccurrence(indexSink: IndexSink, index: IndexUtilB
     // Clear cache to be sure that any update will be reflected (we don't know whether something will be added to the index or whether it's already in there)
     index.cache.clear()
     indexSink.occurrence(index.key(), token)
-    LatexAnnotator.allUserDefinedCommands = emptyList()
+    LatexAnnotator.Cache.allUserDefinedCommands = emptyList()
 }

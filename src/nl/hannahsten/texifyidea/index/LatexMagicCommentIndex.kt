@@ -12,5 +12,5 @@ class LatexMagicCommentIndex : StringStubIndexExtension<LatexMagicComment>() {
     @Suppress("RedundantCompanionReference")
     override fun getKey(): StubIndexKey<String, LatexMagicComment> = Companion.key()
 
-    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
+    override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

@@ -16,8 +16,7 @@ import java.nio.file.Paths
  */
 class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
-    companion object {
-
+    object Cache {
         // Cache version
         var version: DefaultArtifactVersion? = null
     }
@@ -90,11 +89,11 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
     override fun getVersionString(sdkHome: String) = "MiKTeX " + getVersion(sdkHome).toString()
 
     fun getVersion(sdkHome: String?): DefaultArtifactVersion {
-        version?.let { return it }
+        Cache.version?.let { return it }
         val executable = sdkHome?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
         val output = "$executable --version".runCommand() ?: ""
         val versionString = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.groups?.get(1)?.value ?: ""
-        version = DefaultArtifactVersion(versionString)
-        return version!!
+        Cache.version = DefaultArtifactVersion(versionString)
+        return Cache.version!!
     }
 }

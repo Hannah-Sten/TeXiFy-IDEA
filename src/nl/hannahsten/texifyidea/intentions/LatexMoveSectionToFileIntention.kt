@@ -6,7 +6,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection.Companion.findNextSection
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection.Util.findNextSection
 import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection.InspectionFix.Companion.findLabel
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
@@ -26,10 +26,7 @@ import java.io.File
  */
 open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section contents to separate file") {
 
-    companion object {
-
-        private val affectedCommands = setOf("\\section", "\\chapter")
-    }
+    private val affectedCommands = setOf("\\section", "\\chapter")
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {
