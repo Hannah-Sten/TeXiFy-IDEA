@@ -4,8 +4,8 @@ TeXiFy automatically completes many structures as you type.
 Some examples are:
 
 * Automatic insertion of `\end` when typing `\begin` for environments
-* On typing `\[` automatic insertion of `\]`, after <shortcut>Enter</shortcut> also with correct indentation
-* Automatic insertion of braces of first required parameter
+* On typing `\\[` automatic insertion of `\\]`, after <shortcut>Enter</shortcut> also with correct indentation
+* Automatic insertion of braces of required parameters
 * Typing `}` at closing brace skips over it, same for `$..$`
 
 Some of this basic code completion can be disabled in <ui-path>Settings | Languages & Frameworks | TeXiFy</ui-path>.
@@ -40,6 +40,7 @@ Since optional parameters are, well, optional, both the command with and without
 If you always select the version with optional parameters, after a couple of times IntelliJ will remember your choice and show it first (so above the version without optional parameters).
 
 ![required-parameters-autocomplete](required-parameters-autocomplete.gif)
+
 ![required-parameters-environments](required-parameters-environments.gif)
 
 ## Autocompletion of commands from installed LaTeX packages. {#autocomplete-installed-commands}
@@ -49,7 +50,7 @@ TeXiFy will look in your LaTeX installation for installed LaTeX packages, and th
 The indexing of all packages can take significant time (up to one minute for TeX Live full with thousands of packages) so this is persistent between restarts.
 If you want to reset the index, use <ui-path>File | Invalidate Caches / Restart</ui-path>.
 
-Often, the extracted information includes the command parameters and some documentation about the command (see [LaTeX documentation](LaTeX-documentation)).
+Often, the extracted information includes the command parameters and some documentation about the command (see [LaTeX documentation](Editing-a-LaTeX-file.md#quick-documentation)).
 However, this relies on package authors respecting the LaTeX conventions (using the doc package).
 If you find something incorrect, please let us know and then we can determine whether something needs to be improved in the LaTeX package or in TeXiFy.
 
@@ -58,6 +59,7 @@ This would flood the completion with many commands that are very rarely used.
 Therefore, TeXiFy will only suggest commands from packages that you have already included somewhere in your project, directly or indirectly via other packages.
 
 ![command-autocomplete1](command-autocomplete1.png)
+
 ![command-autocomplete2](command-autocomplete2.png)
 
 ### MiKTeX admin install
@@ -92,6 +94,8 @@ Note that for even quicker insertion of an itemize you can use live templates (`
 
 TeXiFy matches braces, inline math and more.
 If you type the first one, the second one will be automatically inserted.
+You can disable this in <ui-path>File | Settings | Editor | General | Smart Keys | Insert paired brackets</ui-path>.
+
 If you then continue typing, you can exit the brace pair by typing the closing brace or dollar sign, or you can use tab if you have <ui-path>File | Settings | Editor | General | Smart Keys | "Jump outside closing bracket with Tab when typing"</ui-path> enabled.
 
 ![brace-matching](brace-matching.png)
@@ -139,4 +143,4 @@ See also [https://www.jetbrains.com/help/idea/auto-completing-code.html#postfix_
 ## Smart quote substitution
 
 The <control>csquotes</control> package provides the `\enquote` command.
-TeXiFy can automatically insert the command if you type regular quotes, see [Global Settings](Global-settings.md#csquotes).
+TeXiFy can automatically insert the command if you type regular quotes, see [Global Settings](TeXiFy-settings.md#csquotes).
