@@ -63,8 +63,8 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    # Requires the build-job results
-    needs: build-job
+    # Requires the build results
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -86,7 +86,7 @@ jobs:
         uses: actions/deploy-pages@v1
 
   publish-indexes:
-    needs: build-job
+    needs: build
     runs-on: ubuntu-latest
     container:
       image: registry.jetbrains.team/p/writerside/builder/algolia-publisher:2.0.32-2
