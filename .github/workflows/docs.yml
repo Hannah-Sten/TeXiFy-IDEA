@@ -21,7 +21,7 @@ env:
   CONFIG_JSON_VERSION: master
 
 jobs:
-  build-job:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -31,8 +31,10 @@ jobs:
       - name: Upload documentation
         uses: actions/upload-artifact@v3
         with:
-          name: help
-          path: artifacts/${{ env.DOC_ARTIFACT }}
+          name: docs
+          path: |
+            artifacts/${{ env.DOC_ARTIFACT }}
+            artifacts/report.json
           retention-days: 7
       - name: Upload algolia-indexes
         uses: actions/upload-artifact@v3
@@ -40,6 +42,22 @@ jobs:
           name: algolia-indexes
           path: artifacts/${{ env.ALGOLIA_ARTIFACT }}
           retention-days: 7
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: docs
+          path: artifacts
+
+      - name: Test documentation
+        uses: JetBrains/writerside-checker-action@v1
+        with:
+          instance: ${{ env.INSTANCE }}
+
 
   deploy:
     environment:
@@ -52,7 +70,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: help
+          name: docs
       - name: Unzip artifact
         uses: montudor/action-zip@v1
         with:
