@@ -12,15 +12,14 @@ import com.intellij.util.io.KeyDescriptor
  */
 class LatexExternalEnvironmentIndex : FileBasedIndexExtension<String, String>() {
 
-    companion object {
-
+    object Cache {
         val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.environments")
     }
 
     private val indexer = LatexExternalEnvironmentDataIndexer()
 
     override fun getName(): ID<String, String> {
-        return id
+        return Cache.id
     }
 
     override fun getIndexer(): DataIndexer<String, String, FileContent> {

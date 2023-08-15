@@ -34,30 +34,27 @@ import java.util.*
  */
 open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
-    companion object {
+    /**
+     * All commands that should not have a forced breaking space.
+     */
+    private val ignoredCommands = setOf(
+        "\\citet",
+        "\\citet*",
+        "\\Citet",
+        "\\Citet*",
+        "\\cref",
+        "\\Cref",
+        "\\cpageref",
+        "\\autoref",
+        "\\citeauthor",
+        "\\textcite",
+        "\\Textcite"
+    )
 
-        /**
-         * All commands that should not have a forced breaking space.
-         */
-        val IGNORED_COMMANDS = setOf(
-            "\\citet",
-            "\\citet*",
-            "\\Citet",
-            "\\Citet*",
-            "\\cref",
-            "\\Cref",
-            "\\cpageref",
-            "\\autoref",
-            "\\citeauthor",
-            "\\textcite",
-            "\\Textcite"
-        )
-
-        /**
-         * Commands redefined by cleveref, such that no non-breaking space is needed anymore.
-         */
-        val CLEVEREF_REDEFINITIONS = setOf(THREF, VREF, VREFRANGE, FULLREF).map { it.commandWithSlash }
-    }
+    /**
+     * Commands redefined by cleveref, such that no non-breaking space is needed anymore.
+     */
+    private val cleverefRedefinitions = setOf(THREF, VREF, VREFRANGE, FULLREF).map { it.commandWithSlash }
 
     override val inspectionGroup = InsightGroup.LATEX
 
@@ -77,10 +74,10 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             if (!CommandMagic.reference.contains(command.name)) continue
 
             // Don't consider certain commands.
-            if (command.name in IGNORED_COMMANDS) continue
+            if (command.name in ignoredCommands) continue
 
             // Don't out-clever cleveref
-            if (isCleverefLoaded && command.name in CLEVEREF_REDEFINITIONS) continue
+            if (isCleverefLoaded && command.name in cleverefRedefinitions) continue
 
             // Get the NORMAL_TEXT in front of the command.
             val sibling = command.prevSibling

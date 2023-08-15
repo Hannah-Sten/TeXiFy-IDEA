@@ -28,8 +28,5 @@ class LatexEscapedSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
             .toTypedArray()
     }
 
-    companion object {
-
-        val commandsToFold = setOf("%", "#", "&", "_", "$").map { "\\" + it }
-    }
+    private val commandsToFold = setOf("%", "#", "&", "_", "$").map { "\\" + it }
 }

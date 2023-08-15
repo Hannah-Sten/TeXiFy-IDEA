@@ -21,16 +21,7 @@ import java.util.*
  */
 open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
 
-    companion object {
-
-        const val DESCRIPTOR = "LaTeX"
-        const val FILE_TEMPLATE_TEX = "LaTeX Source.tex"
-        const val FILE_TEMPLATE_TEX_WITH_BIB = "LaTeX Source With BibTeX.tex"
-        const val FILE_TEMPLATE_STY = "LaTeX Package.sty"
-        const val FILE_TEMPLATE_CLS = "LaTeX Document class.cls"
-        const val FILE_TEMPLATE_BIB = "BibTeX Bibliography.bib"
-        const val FILE_TEMPLATE_TIKZ = "TikZ Picture.tikz"
-
+    object Util {
         @JvmStatic
         fun createFromTemplate(
             directory: PsiDirectory, fileName: String,
@@ -73,6 +64,17 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
                 throw TeXception("Could not load template $templateName", e)
             }
         }
+    }
+
+    companion object {
+
+        const val DESCRIPTOR = "LaTeX"
+        const val FILE_TEMPLATE_TEX = "LaTeX Source.tex"
+        const val FILE_TEMPLATE_TEX_WITH_BIB = "LaTeX Source With BibTeX.tex"
+        const val FILE_TEMPLATE_STY = "LaTeX Package.sty"
+        const val FILE_TEMPLATE_CLS = "LaTeX Document class.cls"
+        const val FILE_TEMPLATE_BIB = "BibTeX Bibliography.bib"
+        const val FILE_TEMPLATE_TIKZ = "TikZ Picture.tikz"
     }
 
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {

@@ -53,7 +53,7 @@ interface LatexCommand : Described, Dependend {
 
             // Look up in index
             FileBasedIndex.getInstance().processValues(
-                LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
+                LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command

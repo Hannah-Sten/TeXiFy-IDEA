@@ -2,8 +2,10 @@ package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
-import com.intellij.execution.configurations.ConfigurationTypeUtil
+import com.intellij.execution.configurations.runConfigurationType
 import nl.hannahsten.texifyidea.TexifyIcons
+
+internal fun latexRunConfigurationType(): LatexRunConfigurationType = runConfigurationType<LatexRunConfigurationType>()
 
 /**
  * Registers the LaTeX run configuration as a run configuration.
@@ -11,12 +13,6 @@ import nl.hannahsten.texifyidea.TexifyIcons
  * @author Hannah Schellekens, Sten Wessel
  */
 class LatexRunConfigurationType : ConfigurationType {
-
-    companion object {
-
-        val instance: LatexRunConfigurationType
-            get() = ConfigurationTypeUtil.findConfigurationType(LatexRunConfigurationType::class.java)
-    }
 
     override fun getDisplayName() = "LaTeX"
 

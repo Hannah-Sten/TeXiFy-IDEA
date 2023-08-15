@@ -41,7 +41,7 @@ class DefaultFileCreator(
         else {
             LatexTemplatesFactory.FILE_TEMPLATE_TEX
         }
-        val templateText = LatexTemplatesFactory.getTemplateText(project, template, fileName)
+        val templateText = LatexTemplatesFactory.Util.getTemplateText(project, template, fileName)
 
         try {
             FileOutputStream(mainFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }
@@ -70,7 +70,7 @@ class DefaultFileCreator(
 
         // Apply template.
         val template = LatexTemplatesFactory.FILE_TEMPLATE_BIB
-        val templateText = LatexTemplatesFactory.getTemplateText(project, template, fileName)
+        val templateText = LatexTemplatesFactory.Util.getTemplateText(project, template, fileName)
 
         try {
             FileOutputStream(bibFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }

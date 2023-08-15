@@ -47,7 +47,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         val indexedCommands = mutableSetOf<LookupElementBuilder>()
 
         /** Whether TeX Live is available at all, in which case it could be that all packages from texlive-full are in the index. */
-        val isTexliveAvailable = TexliveSdk.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
+        val isTexliveAvailable = TexliveSdk.Cache.isAvailable || ProjectJdkTable.getInstance().allJdks.any { it.sdkType is TexliveSdk }
     }
 
     override fun addCompletions(
@@ -112,7 +112,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         val commandsFromIndex = mutableListOf<Set<LatexCommand>>()
 
         FileBasedIndex.getInstance().processAllKeys(
-            LatexExternalCommandIndex.id,
+            LatexExternalCommandIndex.Cache.id,
             { cmdWithSlash -> commandsFromIndex.add(LatexCommand.lookupInIndex(cmdWithSlash.substring(1), project)) },
             GlobalSearchScope.everythingScope(project),
             null
@@ -141,13 +141,13 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     }
 
     private fun addNormalCommands(result: CompletionResultSet, project: Project) {
-        val indexedKeys = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project)
+        val indexedKeys = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.Cache.id, project)
 
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
                 /** True if there is a package for which we already have the [cmd] command indexed.  */
                 fun alreadyIndexed() =
-                    FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project))
+                    FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.Cache.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project))
                         .map { LatexPackage.create(it) }.contains(cmd.dependency)
 
                 // Avoid adding duplicates

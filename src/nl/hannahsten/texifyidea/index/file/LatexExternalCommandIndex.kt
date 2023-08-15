@@ -19,15 +19,14 @@ import com.intellij.util.io.KeyDescriptor
  */
 class LatexExternalCommandIndex : FileBasedIndexExtension<String, String>() {
 
-    companion object {
-
+    object Cache {
         val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.commands")
     }
 
     private val indexer = LatexExternalCommandDataIndexer()
 
     override fun getName(): ID<String, String> {
-        return id
+        return Cache.id
     }
 
     override fun getIndexer(): DataIndexer<String, String, FileContent> {

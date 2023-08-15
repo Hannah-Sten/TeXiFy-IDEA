@@ -16,8 +16,7 @@ import nl.hannahsten.texifyidea.util.runCommand
  */
 class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
-    companion object {
-
+    object Cache {
         // Path to texmf-dist, e.g. /usr/share/texmf-dist/ for texlive-core on Arch or /opt/texlive/2020/texmf-dist/ for texlive-full
         val texmfDistPath: String by lazy {
             "kpsewhich article.sty".runCommand()?.substringBefore("texmf-dist") + "texmf-dist"
@@ -53,7 +52,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
     }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String {
-        return "$texmfDistPath/doc"
+        return "${Cache.texmfDistPath}/doc"
     }
 
     override fun getExecutableName(executable: String, homePath: String): String {

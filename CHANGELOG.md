@@ -5,9 +5,26 @@
 This beta release contains a completely new LaTeX run configuration. However, currently is it still incompatible with the old run configuration, so that is why this is published in a separate beta channel.
 
 ### Added
+* Improve performance on plugin installation
+
+### Fixed
+
+## [0.9.0] - 2023-08-14
+Welcome to TeXiFy IDEA 0.9.0! In this release, we celebrate the completely new icon set by @HannahSchellekens which blends in much better with the new IntelliJ UI.
+Enjoy the new icons for LaTeX file types, menu entries, tool windows and more!
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+* New icons
+* Improve performance of file reference resolving
 
 ### Fixed
 * Fix a parse issue with TEXINPUTS
+* Fix a possible infinite loop when resolving imports
+* Fix an initialization issue in the remote library tool window
+* Fix an incorrect package import when completing commands from a project class file that is also in a project root
 
 ## [0.7.33] - 2023-07-27
 This release fixes an exception introduced by IntelliJ 2023.2.
@@ -178,7 +195,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...v0.9.0
 [0.7.33]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.32...v0.7.33
 [0.7.32]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.31...v0.7.32
 [0.7.31]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.30...v0.7.31

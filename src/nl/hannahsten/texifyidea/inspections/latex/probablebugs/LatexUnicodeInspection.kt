@@ -54,9 +54,8 @@ import java.util.regex.Pattern
  */
 class LatexUnicodeInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
+    object Util {
+        internal val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
 
         /**
          * Checks whether Unicode support is enabled for the file.
@@ -72,7 +71,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
             val compilerCompat = file.project.selectedRunConfig()?.let { it.options.compiler }
             if (compilerCompat?.supportsUnicode == true ||
-                TexliveSdk.version >= 2018  ||
+                TexliveSdk.Cache.version >= 2018  ||
                 MiktexWindowsSdk().getVersion(null) >= DefaultArtifactVersion("2.9.7350")) {
                 return true
             }
@@ -93,7 +92,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     override val inspectionId = "Unicode"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val hasUnicode = unicodeEnabled(file)
+        val hasUnicode = Util.unicodeEnabled(file)
 
         val descriptors = descriptorList()
 
@@ -253,7 +252,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val n = Normalizer.normalize(c, Normalizer.Form.NFD)
 
             // Extract base characters
-            val matcher = BASE_PATTERN.matcher(n)
+            val matcher = Util.BASE_PATTERN.matcher(n)
             matcher.find()
             val base = matcher.group()
 

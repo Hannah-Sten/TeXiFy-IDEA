@@ -6,7 +6,6 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiFile
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.hannahsten.texifyidea.lang.*
@@ -40,7 +39,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
 
         // Add lookup elements.
         result.addAllElements(
-            ContainerUtil.map2List(fields) {
+            fields.map {
                 val (message, icon) = when (it) {
                     in required -> " required" and TexifyIcons.KEY_REQUIRED
                     in optional -> " optional" and TexifyIcons.KEY_USER_DEFINED

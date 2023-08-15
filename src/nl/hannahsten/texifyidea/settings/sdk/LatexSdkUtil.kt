@@ -67,13 +67,13 @@ object LatexSdkUtil {
      * In this case we assume the user wants to use Dockerized MiKTeX.
      */
     private fun defaultIsDockerMiktex() =
-        (!isMiktexAvailable && !TexliveSdk.isAvailable && DockerSdk.isAvailable)
+        (!isMiktexAvailable && !TexliveSdk.Cache.isAvailable && DockerSdk.Availability.isAvailable)
 
     fun isAvailable(type: LatexDistributionType, project: Project): Boolean {
         if (type == LatexDistributionType.PROJECT_SDK && getLatexProjectSdk(project) != null) return true
         if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
-        if (type == LatexDistributionType.TEXLIVE && TexliveSdk.isAvailable) return true
-        if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.isAvailable) return true
+        if (type == LatexDistributionType.TEXLIVE && TexliveSdk.Cache.isAvailable) return true
+        if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.Availability.isAvailable) return true
         if (type == LatexDistributionType.WSL_TEXLIVE && isWslTexliveAvailable) return true
         return false
     }
@@ -125,7 +125,7 @@ object LatexSdkUtil {
         return when {
             getLatexProjectSdk(project) != null -> LatexDistributionType.PROJECT_SDK
             isMiktexAvailable -> LatexDistributionType.MIKTEX
-            TexliveSdk.isAvailable -> LatexDistributionType.TEXLIVE
+            TexliveSdk.Cache.isAvailable -> LatexDistributionType.TEXLIVE
             defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
             else -> LatexDistributionType.TEXLIVE
         }

@@ -4,10 +4,11 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.parser.endCommand
 import nl.hannahsten.texifyidea.util.parser.environmentName
-import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.replaceString
 
@@ -16,10 +17,7 @@ import nl.hannahsten.texifyidea.util.replaceString
  */
 open class LatexDisplayMathIntention : TexifyIntentionBase("Change equation*/displaymath environment to '\\[..\\]'") {
 
-    companion object {
-
-        private val affectedEnvironments = setOf("displaymath", "equation*")
-    }
+    private val affectedEnvironments = setOf(DefaultEnvironment.DISPLAYMATH.environmentName, DefaultEnvironment.EQUATION_STAR.environmentName)
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {

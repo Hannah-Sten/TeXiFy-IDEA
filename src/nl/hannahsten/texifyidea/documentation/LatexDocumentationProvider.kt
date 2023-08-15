@@ -175,7 +175,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         // base/lt... files are documented in source2e.pdf
         val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
-        val command = if (TexliveSdk.isAvailable) {
+        val command = if (TexliveSdk.Cache.isAvailable) {
             // -M to avoid texdoc asking to choose from the list
             listOf("texdoc", "-l", "-M", name)
         }
@@ -203,7 +203,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         validLines.toSet().mapNotNull {
             // Do some guesswork about the format
-            if (TexliveSdk.isAvailable) {
+            if (TexliveSdk.Cache.isAvailable) {
                 // Line consists of: name version path optional file description
                 it.split("\t").getOrNull(2)
             }

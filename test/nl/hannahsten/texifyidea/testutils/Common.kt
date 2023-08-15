@@ -51,8 +51,8 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
         every { project.selectedRunConfig()?.let { it.options.compiler } } returns PdflatexCompiler
-        mockkObject(TexliveSdk)
-        every { TexliveSdk.version } returns 2017
+        mockkObject(TexliveSdk.Cache)
+        every { TexliveSdk.Cache.version } returns 2017
     }
 }
 

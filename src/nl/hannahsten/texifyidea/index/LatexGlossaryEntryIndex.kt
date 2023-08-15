@@ -14,5 +14,5 @@ class LatexGlossaryEntryIndex : StringStubIndexExtension<LatexCommands>() {
     @Suppress("RedundantCompanionReference") // Avoid type checking issues
     override fun getKey() = Companion.key()
 
-    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
+    override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

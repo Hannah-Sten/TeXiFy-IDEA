@@ -17,12 +17,12 @@ open class LatexRedundantParInspection : TexifyRegexInspection(
     errorMessage = { "Use of \\par is redundant here" },
     pattern = Pattern.compile("((\\s*\\n\\s*\\n\\s*(\\\\par))|(\\n\\s*(\\\\par)\\s*\\n)|((\\\\par)\\s*\\n\\s*\\n))"),
     replacement = { _, _ -> "" },
-    replacementRange = this::parRange,
+    replacementRange = Util::parRange,
     quickFixName = { "Remove \\par" },
-    highlightRange = { parRange(it).toTextRange() }
+    highlightRange = { Util.parRange(it).toTextRange() }
 ) {
 
-    companion object {
+    object Util {
 
         fun parRange(it: Matcher) = when {
             it.group(3) != null -> it.groupRange(3)

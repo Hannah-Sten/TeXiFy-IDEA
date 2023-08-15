@@ -16,8 +16,7 @@ import java.nio.file.Paths
  */
 class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
 
-    companion object {
-
+    object Cache {
         // Cache version
         var version: String? = null
     }
@@ -53,13 +52,13 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
     }
 
     override fun getVersionString(sdkHome: String): String? {
-        version?.let { return version }
+        Cache.version?.let { return Cache.version }
 
         val executable = getExecutableName("pdflatex", sdkHome)
         val output = "$executable --version".runCommand() ?: ""
-        version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
+        Cache.version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
 
-        return version
+        return Cache.version
     }
 
     override fun getDefaultSourcesPath(homePath: String): VirtualFile? {

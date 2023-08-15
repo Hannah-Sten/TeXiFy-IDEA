@@ -44,7 +44,7 @@ abstract class AddLibraryAction<Lib : RemoteBibLibrary, T : AddLibDialogWrapper>
                         runBlocking {
                             // Cannot be destructured directly.
                             val (libraryT, bibItemsT) = createLibrary(dialogWrapper, e.project!!).getOrElse {
-                                library.showNotification(e.project!!, it.libraryName, it.response)
+                                RemoteBibLibrary.showNotification(e.project!!, it.libraryName, it.response)
                                 // Apparently this is the way to cancel the task (and thus to avoid going into the onSuccess).
                                 throw ProcessCanceledException()
                             } ?: return@runBlocking
