@@ -173,7 +173,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 
-        val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default=FILE)
+        val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default = FILE)
         resultSet?.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name)
                 .withPresentableText(foundFile.presentableName)
