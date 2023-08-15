@@ -7,7 +7,6 @@
 ### Fixed
 
 ## [0.9.1] - 2023-08-15
-
 This release fixes a bug related to the new file icons from the previous release.
 
 ### Added
@@ -202,8 +201,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1-alpha.1...HEAD
-[0.9.1-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...v0.9.1-alpha.1
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...v0.9.0
 [0.7.33]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.32...v0.7.33
 [0.7.32]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.31...v0.7.32
