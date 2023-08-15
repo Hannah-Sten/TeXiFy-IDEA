@@ -12,6 +12,7 @@ import com.intellij.psi.util.parentOfTypes
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.TexifyIcons.FILE
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
@@ -172,7 +173,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 
-        val icon = TexifyIcons.getIconFromExtension(foundFile.extension)
+        val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default=FILE)
         resultSet?.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name)
                 .withPresentableText(foundFile.presentableName)
