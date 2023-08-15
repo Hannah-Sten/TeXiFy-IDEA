@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
+import nl.hannahsten.texifyidea.run.latexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
@@ -53,7 +53,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
         val fileSet = ReferencedFileSetCache().fileSetFor(psiFile)
 
         val mainFileCandidates = RunManager.getInstance(project)
-            .getConfigurationsList(LatexRunConfigurationType.instance)
+            .getConfigurationsList(latexRunConfigurationType())
             .asSequence()
             .mapNotNull { it as LatexRunConfiguration }
             .filter { it.options.mainFile.resolve()?.psiFile(project) in fileSet }

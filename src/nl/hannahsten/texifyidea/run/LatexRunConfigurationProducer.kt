@@ -26,7 +26,7 @@ import nl.hannahsten.texifyidea.run.step.PdfViewerStepProvider
 class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfiguration>() {
 
     override fun getConfigurationFactory(): ConfigurationFactory {
-        return LatexTemplateConfigurationFactory(LatexRunConfigurationType.instance)
+        return LatexTemplateConfigurationFactory(latexRunConfigurationType())
     }
 
     override fun setupConfigurationFromContext(
