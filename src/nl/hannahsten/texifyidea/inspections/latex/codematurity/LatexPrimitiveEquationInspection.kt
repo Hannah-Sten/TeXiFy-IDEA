@@ -19,14 +19,13 @@ open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
     pattern = Pattern.compile("(\\\$\\\$)[^\$]*\\\$?[^\$]*(\\\$\\\$)"),
     mathMode = false,
     replacement = { _, _ -> "" },
-    replacementRange = this::replaceRange,
+    replacementRange = Util::replaceRange,
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    highlightRange = { replaceRange(it).toTextRange().grown(-1) },
+    highlightRange = { Util.replaceRange(it).toTextRange().grown(-1) },
     quickFixName = { "Replace with '\\[..\\]'" }
 ) {
 
-    companion object {
-
+    object Util {
         fun replaceRange(it: Matcher) = (it.groupRange(1).first..it.groupRange(2).last)
     }
 

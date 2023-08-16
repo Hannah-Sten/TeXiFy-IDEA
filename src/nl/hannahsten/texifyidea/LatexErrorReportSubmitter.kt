@@ -43,7 +43,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
         val latestVersion = try {
             runBlocking {
-                retrySchedule.retry { getLatestVersion() }
+                retrySchedule.retry { Util.getLatestVersion() }
             }
         }
         // Don't do the check when there's no internet connection
@@ -51,14 +51,14 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             return true
         }
 
-        if (latestVersion.version.toString().isNotBlank() && DefaultArtifactVersion(currentVersion) < latestVersion.version) {
+        if (latestVersion.version.toString().isNotBlank() && DefaultArtifactVersion(Util.currentVersion) < latestVersion.version) {
             val currentIdeaVersion = DefaultArtifactVersion(ApplicationInfo.getInstance().build.asStringWithoutProductCode())
             val requiredIdeaVersion = latestVersion.ideaVersion.sinceBuild
 
             JBPopupFactory.getInstance().createMessage("")
                 .showInCenterOf(parentComponent)
 
-            val message = "Please update your current version ($currentVersion) of TeXiFy to the latest version (${latestVersion.version}) before submitting,\n" +
+            val message = "Please update your current version (${Util.currentVersion}) of TeXiFy to the latest version (${latestVersion.version}) before submitting,\n" +
                 "to check if the error is already fixed. Go to Settings > Plugins to update.\n" +
                 if (currentIdeaVersion < requiredIdeaVersion) "You first need to update your current IDE version ($currentIdeaVersion) to $requiredIdeaVersion or newer.\n" else ""
 
@@ -91,7 +91,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             builder.append(URLEncoder.encode("### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version\n${applicationInfo}\n\n", ENCODING))
             val systemInfo = "${SystemInfo.OS_NAME} ${SystemInfo.OS_VERSION} (${SystemInfo.OS_ARCH})"
             builder.append(URLEncoder.encode("### Operating System \n$systemInfo\n\n", ENCODING))
-            builder.append(URLEncoder.encode("### TeXiFy IDEA version\n$currentVersion\n\n", ENCODING))
+            builder.append(URLEncoder.encode("### TeXiFy IDEA version\n${Util.currentVersion}\n\n", ENCODING))
             builder.append(URLEncoder.encode("### Description\n", ENCODING))
             builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
             builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(6000)}\n```", ENCODING))
@@ -118,16 +118,8 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         return true
     }
 
-    companion object {
-
-        private const val ISSUE_URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&template=crash_report.md&title="
-
-        private const val JETBRAINS_API_URL = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
-
-        private const val ENCODING = "UTF-8"
-
+    object Util {
         private var latestVersionCached = IdeaPlugin()
-
         fun getLatestVersion(): IdeaPlugin {
             if (latestVersionCached.version.toString().isNotBlank()) return latestVersionCached
 
@@ -157,6 +149,15 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         val currentVersion by lazy {
             PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
         }
+    }
+
+    companion object {
+
+        private const val ISSUE_URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&template=crash_report.md&title="
+
+        private const val JETBRAINS_API_URL = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
+
+        private const val ENCODING = "UTF-8"
     }
 
     /**

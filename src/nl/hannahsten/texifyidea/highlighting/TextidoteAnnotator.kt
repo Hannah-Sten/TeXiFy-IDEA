@@ -54,7 +54,7 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
 
         return TextidoteAnnotatorInitialInfo(
             file.virtualFile.name,
-            File(file.containingDirectory.virtualFile.path),
+            File(file.containingDirectory?.virtualFile?.path ?: return null),
             file.project,
             editor.document,
         )

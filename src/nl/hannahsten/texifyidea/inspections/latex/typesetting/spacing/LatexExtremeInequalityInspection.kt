@@ -16,13 +16,12 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
     errorMessage = { "Use the amssymb symbol instead." },
     pattern = Pattern.compile("(<\\s*<(?!\\s*<))|(<\\s*<\\s*<)|(>\\s*>(?!\\s*>))|(>\\s*>\\s*>)"),
     mathMode = true,
-    replacement = { it, _ -> replacement(it) },
-    replacementRange = this::replaceRange,
+    replacement = { it, _ -> Util.replacement(it) },
+    replacementRange = Util::replaceRange,
     quickFixName = { "Insert amssymb symbol." }
 ) {
 
-    companion object {
-
+    object Util {
         /**
          * Determines what the replacement for the quick fix must be.
          */

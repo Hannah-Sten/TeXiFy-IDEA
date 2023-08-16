@@ -26,7 +26,7 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
     private lateinit var imageName: ComboBox<String>
 
     override fun createComponent(): JComponent {
-        val images = DockerSdk.getAvailableImages()
+        val images = DockerSdk.Availability.getAvailableImages()
         imageName = ComboBox(images.toTypedArray())
 
         if (images.isEmpty()) {

@@ -24,7 +24,7 @@ class BibtexParserDefinition : ParserDefinition {
 
     override fun createParser(project: Project) = BibtexParser()
 
-    override fun getFileNodeType(): IStubFileElementType<*> = FILE
+    override fun getFileNodeType(): IStubFileElementType<*> = Cache.FILE
 
     override fun getWhitespaceTokens(): TokenSet = BibtexTokenSets.WHITE_SPACES
 
@@ -41,8 +41,7 @@ class BibtexParserDefinition : ParserDefinition {
         astNode1: ASTNode
     ): SpaceRequirements = SpaceRequirements.MAY
 
-    companion object {
-
+    object Cache {
         val FILE = object : IStubFileElementType<BibtexFileStub>(
             "BibtexStubFileElementType", Language.findInstance(BibtexLanguage::class.java)
         ) {

@@ -64,7 +64,7 @@ abstract class ExternalReformatAction(title: String, val isValidFile: (file: Psi
         val command = getCommand(file)
         val process = try {
             GeneralCommandLine(command)
-                .withWorkDirectory(file.containingDirectory.virtualFile.path)
+                .withWorkDirectory(file.containingDirectory?.virtualFile?.path)
                 .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
                 .createProcess()
         }

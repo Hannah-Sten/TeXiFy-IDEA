@@ -17,8 +17,7 @@ import javax.swing.JComponent
  */
 class DockerSdk : LatexSdk("LaTeX Docker SDK") {
 
-    companion object {
-
+    object Availability {
         val isAvailable: Boolean by lazy {
             getAvailableImages().any { it.contains("miktex") }
         }

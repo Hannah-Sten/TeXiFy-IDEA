@@ -98,16 +98,16 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.2")
-    implementation("io.ktor:ktor-client-cio:2.3.2")
-    implementation("io.ktor:ktor-client-auth:2.3.2")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
-    implementation("io.ktor:ktor-server-core:2.3.2")
-    implementation("io.ktor:ktor-server-jetty:2.3.2")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
+    implementation("io.ktor:ktor-client-core:2.3.3")
+    implementation("io.ktor:ktor-client-cio:2.3.3")
+    implementation("io.ktor:ktor-client-auth:2.3.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.3")
+    implementation("io.ktor:ktor-server-core:2.3.3")
+    implementation("io.ktor:ktor-server-jetty:2.3.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-5")
+    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-7")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
@@ -136,7 +136,7 @@ dependencies {
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.10.0")
 
-    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("io.mockk:mockk:1.13.7")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))

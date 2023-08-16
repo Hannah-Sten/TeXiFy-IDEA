@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
@@ -31,12 +32,12 @@ import java.util.*
  */
 open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
-    companion object {
+    object Util {
 
         /**
          * All commands that count as inspected sections in order of hierarchy.
          */
-        private val SECTION_NAMES = listOf("\\chapter", "\\section")
+        val SECTION_NAMES = listOf(LatexGenericRegularCommand.CHAPTER.cmd, LatexGenericRegularCommand.SECTION.cmd)
 
         /**
          * Looks up the section command that comes after the given command.
@@ -83,10 +84,10 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-            .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
+            .filter { cmd -> Util.SECTION_NAMES.contains(cmd.name) }
 
         for (i in commands.indices) {
-            if (!isTooLong(commands[i], findNextSection(commands[i]))) {
+            if (!isTooLong(commands[i], Util.findNextSection(commands[i]))) {
                 continue
             }
 
@@ -126,7 +127,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      * @return `true` when the command starts a section that is too long.
      */
     private fun isTooLong(command: LatexCommands, nextCommand: PsiElement?): Boolean {
-        if (!SECTION_NAMES.contains(command.name)) {
+        if (!Util.SECTION_NAMES.contains(command.name)) {
             return false
         }
 
@@ -163,7 +164,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands
-            val nextCmd = findNextSection(cmd)
+            val nextCmd = Util.findNextSection(cmd)
             val label = findLabel(cmd)
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return

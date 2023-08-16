@@ -30,7 +30,8 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         // Allow Material design plugins to take over the icons
         // For file types registered in plugin.xml this happens automatically
         if (PluginManager.getLoadedPlugins().none { it.name.contains("Material") }) {
-            val icon = TexifyIcons.getIconFromExtension(extension.lowercase(Locale.getDefault()))
+            // Make sure to now override non-LaTeX extensions with the default icon
+            val icon = TexifyIcons.getIconFromExtension(extension.lowercase(Locale.getDefault()), default = null) ?: return
             presentationData.setIcon(icon)
         }
     }

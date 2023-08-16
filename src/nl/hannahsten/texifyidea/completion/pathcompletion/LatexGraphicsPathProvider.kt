@@ -6,9 +6,9 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import java.io.File
 
 /**
@@ -19,7 +19,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
     override fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile> {
         val paths = getProjectRoots()
 
-        val rootDirectory = file.findRootFile().containingDirectory.virtualFile
+        val rootDirectory = file.findRootFile().containingDirectory?.virtualFile ?: return arrayListOf()
         getGraphicsPathsInFileSet(file).forEach {
             paths.add(rootDirectory.findVirtualFileByAbsoluteOrRelativePath(it) ?: return@forEach)
         }
@@ -95,13 +95,13 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      * Get all the graphics paths defined by one \graphicspaths command.
      */
     private fun LatexCommands.getGraphicsPaths(): List<String> {
-        if (name != "\\graphicspath") return emptyList()
+        if (name != LatexGenericRegularCommand.GRAPHICSPATH.cmd) return emptyList()
         return parameterList.firstNotNullOfOrNull { it.requiredParam }
             // Each graphics path is in a group.
             ?.childrenOfType(LatexNormalText::class)
             ?.map { it.text }
             // Relative paths (not starting with /) have to be appended to the directory of the file of the given command.
-            ?.map { if (it.startsWith('/')) it else containingFile.containingDirectory.virtualFile.path + File.separator + it }
+            ?.mapNotNull { if (it.startsWith('/')) it else (containingFile.containingDirectory?.virtualFile?.path ?: return@mapNotNull null) + File.separator + it }
             ?: emptyList()
     }
 

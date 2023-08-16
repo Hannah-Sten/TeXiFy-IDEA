@@ -19,15 +19,15 @@ import nl.hannahsten.texifyidea.util.parser.*
 class LatexInlineCommandHandler : LatexInlineHandler() {
 
     override fun canInlineElement(element: PsiElement?): Boolean {
-        return canInlineLatexElement(
+        return Util.canInlineLatexElement(
             element
         )
     }
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         // Resolve the file to be inlined
-        val inlineCommand: LatexCommands = resolveInlineCommandDefinition(element) ?: return
-        val myReference = getReference(editor)
+        val inlineCommand: LatexCommands = Util.resolveInlineCommandDefinition(element) ?: return
+        val myReference = Util.getReference(editor)
 
         val dialog = LatexInlineCommandDialog(
             project,
@@ -39,8 +39,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
         showDialog(dialog, inlineCommand.name ?: "", project)
     }
 
-    companion object {
-
+    object Util {
         /**
          * This is static only so that the unit tests can use it, and also since it can be static
          */

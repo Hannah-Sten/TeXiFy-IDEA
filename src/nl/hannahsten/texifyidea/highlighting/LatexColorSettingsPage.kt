@@ -10,69 +10,64 @@ import nl.hannahsten.texifyidea.TexifyIcons
  */
 class LatexColorSettingsPage : ColorSettingsPage {
 
-    companion object {
+    /*
+     * You can group multiple descriptors by prefixing it with the group name and '//'. FYI.
+     */
+    val descriptors = arrayOf(
+        AttributesDescriptor("Braces", LatexSyntaxHighlighter.BRACES),
+        AttributesDescriptor("Brackets", LatexSyntaxHighlighter.BRACKETS),
+        AttributesDescriptor("Commands//Optional parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
+        AttributesDescriptor("Commands//Equals sign in key-value pairs", LatexSyntaxHighlighter.SEPARATOR_EQUALS),
+        AttributesDescriptor("Commands//Commands", LatexSyntaxHighlighter.COMMAND),
+        AttributesDescriptor("Commands//User defined commands", LatexSyntaxHighlighter.USER_DEFINED_COMMAND),
+        AttributesDescriptor("Commands//Commands in inline math mode", LatexSyntaxHighlighter.COMMAND_MATH_INLINE),
+        AttributesDescriptor("Commands//Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
+        AttributesDescriptor("Commands//Stars", LatexSyntaxHighlighter.STAR),
+        AttributesDescriptor("Comments//Regular comment", LatexSyntaxHighlighter.COMMENT),
+        AttributesDescriptor("Comments//Magic comment", LatexSyntaxHighlighter.MAGIC_COMMENT),
+        AttributesDescriptor("References//Label definition", LatexSyntaxHighlighter.LABEL_DEFINITION),
+        AttributesDescriptor("References//Label reference", LatexSyntaxHighlighter.LABEL_REFERENCE),
+        AttributesDescriptor("References//Bibliography item", LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION),
+        AttributesDescriptor("References//Citation", LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE),
+        AttributesDescriptor("Math//Inline math", LatexSyntaxHighlighter.INLINE_MATH),
+        AttributesDescriptor("Math//Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
+        AttributesDescriptor("Math//Text in math", LatexSyntaxHighlighter.MATH_NESTED_TEXT),
 
-        /*
-         * You can group multiple descriptors by prefixing it with the group name and '//'. FYI.
-         */
-        @JvmStatic
-        val DESCRIPTORS = arrayOf(
-            AttributesDescriptor("Braces", LatexSyntaxHighlighter.BRACES),
-            AttributesDescriptor("Brackets", LatexSyntaxHighlighter.BRACKETS),
-            AttributesDescriptor("Commands//Optional parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
-            AttributesDescriptor("Commands//Equals sign in key-value pairs", LatexSyntaxHighlighter.SEPARATOR_EQUALS),
-            AttributesDescriptor("Commands//Commands", LatexSyntaxHighlighter.COMMAND),
-            AttributesDescriptor("Commands//User defined commands", LatexSyntaxHighlighter.USER_DEFINED_COMMAND),
-            AttributesDescriptor("Commands//Commands in inline math mode", LatexSyntaxHighlighter.COMMAND_MATH_INLINE),
-            AttributesDescriptor("Commands//Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
-            AttributesDescriptor("Commands//Stars", LatexSyntaxHighlighter.STAR),
-            AttributesDescriptor("Comments//Regular comment", LatexSyntaxHighlighter.COMMENT),
-            AttributesDescriptor("Comments//Magic comment", LatexSyntaxHighlighter.MAGIC_COMMENT),
-            AttributesDescriptor("References//Label definition", LatexSyntaxHighlighter.LABEL_DEFINITION),
-            AttributesDescriptor("References//Label reference", LatexSyntaxHighlighter.LABEL_REFERENCE),
-            AttributesDescriptor("References//Bibliography item", LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION),
-            AttributesDescriptor("References//Citation", LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE),
-            AttributesDescriptor("Math//Inline math", LatexSyntaxHighlighter.INLINE_MATH),
-            AttributesDescriptor("Math//Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
-            AttributesDescriptor("Math//Text in math", LatexSyntaxHighlighter.MATH_NESTED_TEXT),
+        // Styles
+        AttributesDescriptor("Font style//Bold", LatexSyntaxHighlighter.STYLE_BOLD),
+        AttributesDescriptor("Font style//Italics", LatexSyntaxHighlighter.STYLE_ITALIC),
+        AttributesDescriptor("Font style//Underline", LatexSyntaxHighlighter.STYLE_UNDERLINE),
+        AttributesDescriptor("Font style//Strikethrough", LatexSyntaxHighlighter.STYLE_STRIKETHROUGH),
+        AttributesDescriptor("Font style//Small capitals", LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS),
+        AttributesDescriptor("Font style//Overline", LatexSyntaxHighlighter.STYLE_OVERLINE),
+        AttributesDescriptor("Font style//Typewriter", LatexSyntaxHighlighter.STYLE_TYPEWRITER),
+        AttributesDescriptor("Font style//Slanted", LatexSyntaxHighlighter.STYLE_SLANTED)
+    )
 
-            // Styles
-            AttributesDescriptor("Font style//Bold", LatexSyntaxHighlighter.STYLE_BOLD),
-            AttributesDescriptor("Font style//Italics", LatexSyntaxHighlighter.STYLE_ITALIC),
-            AttributesDescriptor("Font style//Underline", LatexSyntaxHighlighter.STYLE_UNDERLINE),
-            AttributesDescriptor("Font style//Strikethrough", LatexSyntaxHighlighter.STYLE_STRIKETHROUGH),
-            AttributesDescriptor("Font style//Small capitals", LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS),
-            AttributesDescriptor("Font style//Overline", LatexSyntaxHighlighter.STYLE_OVERLINE),
-            AttributesDescriptor("Font style//Typewriter", LatexSyntaxHighlighter.STYLE_TYPEWRITER),
-            AttributesDescriptor("Font style//Slanted", LatexSyntaxHighlighter.STYLE_SLANTED)
-        )
-
-        @JvmStatic
-        val DEMO_TAGS = mapOf(
-            "displayCommand" to LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY,
-            "inlineCommand" to LatexSyntaxHighlighter.COMMAND_MATH_INLINE,
-            "userDefinedCommand" to LatexSyntaxHighlighter.USER_DEFINED_COMMAND,
-            "displayMath" to LatexSyntaxHighlighter.DISPLAY_MATH,
-            "inlineMath" to LatexSyntaxHighlighter.INLINE_MATH,
-            "textInMath" to LatexSyntaxHighlighter.MATH_NESTED_TEXT,
-            "optionalParam" to LatexSyntaxHighlighter.OPTIONAL_PARAM,
-            "comment" to LatexSyntaxHighlighter.COMMENT,
-            "magicComment" to LatexSyntaxHighlighter.MAGIC_COMMENT,
-            "equalsSeparator" to LatexSyntaxHighlighter.SEPARATOR_EQUALS,
-            "labelDefinition" to LatexSyntaxHighlighter.LABEL_DEFINITION,
-            "reference" to LatexSyntaxHighlighter.LABEL_REFERENCE,
-            "bibliographyDefinition" to LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION,
-            "bibliographyReference" to LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE,
-            "styleBold" to LatexSyntaxHighlighter.STYLE_BOLD,
-            "styleItalic" to LatexSyntaxHighlighter.STYLE_ITALIC,
-            "styleUnderline" to LatexSyntaxHighlighter.STYLE_UNDERLINE,
-            "styleStrikethrough" to LatexSyntaxHighlighter.STYLE_STRIKETHROUGH,
-            "styleSmallCapitals" to LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS,
-            "styleOverline" to LatexSyntaxHighlighter.STYLE_OVERLINE,
-            "styleTypewriter" to LatexSyntaxHighlighter.STYLE_TYPEWRITER,
-            "styleSlanted" to LatexSyntaxHighlighter.STYLE_SLANTED
-        )
-    }
+    private val demoTags = mapOf(
+        "displayCommand" to LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY,
+        "inlineCommand" to LatexSyntaxHighlighter.COMMAND_MATH_INLINE,
+        "userDefinedCommand" to LatexSyntaxHighlighter.USER_DEFINED_COMMAND,
+        "displayMath" to LatexSyntaxHighlighter.DISPLAY_MATH,
+        "inlineMath" to LatexSyntaxHighlighter.INLINE_MATH,
+        "textInMath" to LatexSyntaxHighlighter.MATH_NESTED_TEXT,
+        "optionalParam" to LatexSyntaxHighlighter.OPTIONAL_PARAM,
+        "comment" to LatexSyntaxHighlighter.COMMENT,
+        "magicComment" to LatexSyntaxHighlighter.MAGIC_COMMENT,
+        "equalsSeparator" to LatexSyntaxHighlighter.SEPARATOR_EQUALS,
+        "labelDefinition" to LatexSyntaxHighlighter.LABEL_DEFINITION,
+        "reference" to LatexSyntaxHighlighter.LABEL_REFERENCE,
+        "bibliographyDefinition" to LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION,
+        "bibliographyReference" to LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE,
+        "styleBold" to LatexSyntaxHighlighter.STYLE_BOLD,
+        "styleItalic" to LatexSyntaxHighlighter.STYLE_ITALIC,
+        "styleUnderline" to LatexSyntaxHighlighter.STYLE_UNDERLINE,
+        "styleStrikethrough" to LatexSyntaxHighlighter.STYLE_STRIKETHROUGH,
+        "styleSmallCapitals" to LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS,
+        "styleOverline" to LatexSyntaxHighlighter.STYLE_OVERLINE,
+        "styleTypewriter" to LatexSyntaxHighlighter.STYLE_TYPEWRITER,
+        "styleSlanted" to LatexSyntaxHighlighter.STYLE_SLANTED
+    )
 
     override fun getIcon() = TexifyIcons.LATEX_FILE
 
@@ -172,9 +167,9 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |\end{document}
         """.trimMargin()
 
-    override fun getAdditionalHighlightingTagToDescriptorMap() = DEMO_TAGS
+    override fun getAdditionalHighlightingTagToDescriptorMap() = demoTags
 
-    override fun getAttributeDescriptors() = DESCRIPTORS
+    override fun getAttributeDescriptors() = descriptors
 
     override fun getColorDescriptors(): Array<out ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY!!
 

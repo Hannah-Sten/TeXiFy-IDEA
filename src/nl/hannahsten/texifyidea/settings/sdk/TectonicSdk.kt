@@ -13,8 +13,7 @@ import java.io.File
  */
 class TectonicSdk : LatexSdk("Tectonic SDK") {
 
-    companion object {
-
+    object Cache {
         // Map readable file name (e.g. article.sty) to actual file path on disk
         var fileLocationCache: Map<String, String>? = null
     }
@@ -28,8 +27,8 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
 
         // Avoid many threads trying to fill the cache at the same time
         synchronized(this) {
-            if (fileLocationCache == null) {
-                fileLocationCache = File("$homePath/urls").listFiles()
+            if (Cache.fileLocationCache == null) {
+                Cache.fileLocationCache = File("$homePath/urls").listFiles()
                     // Get manifest names
                     ?.mapNotNull { it.readText().trim() }
                     // Get manifest contents
@@ -43,7 +42,7 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
                     ?.mapValues { "$homePath/files/${it.value.take(2)}/${it.value.drop(2)}" } ?: return ""
             }
         }
-        return fileLocationCache?.get(name) ?: ""
+        return Cache.fileLocationCache?.get(name) ?: ""
     }
 
     override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
