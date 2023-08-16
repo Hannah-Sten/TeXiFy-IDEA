@@ -34,7 +34,7 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
     suspend fun getCollection(): Either<RemoteLibraryRequestFailure, List<BibtexEntry>> = either {
         val (response, body) = getBibtexString()
 
-        ensure(response.status.value !in 200 until 300) {
+        ensure(response.status.value in 200 until 300) {
             RemoteLibraryRequestFailure(displayName, response)
         }
 
