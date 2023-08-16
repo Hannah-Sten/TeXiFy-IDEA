@@ -15,6 +15,8 @@ When using `\newcommand` or variants, we recommend to use braces like `\newcomma
 
 For more information about the structure view, see [https://www.jetbrains.com/help/idea/structure-tool-window-file-structure-popup.html](https://www.jetbrains.com/help/idea/structure-tool-window-file-structure-popup.html)
 
+![structure view](structure-view.png)
+
 ## Clickable links
 
 Web links in `\url` and `\href` commands are clickable using <shortcut>Ctrl + Click</shortcut>.
@@ -27,6 +29,7 @@ In general, you can go back to your previous cursor location with <shortcut>Ctrl
 This also works with usages of commands defined with `\newcommand` definitions (in your fileset, not in LaTeX packages), but only if your command definition includes braces, like `\newcommand{\mycommand}{definition}`
 
 ![go-to-label-declaration](go-to-label-declaration.gif)
+
 ![go-to-cite-declaration](go-to-cite-declaration.gif)
 
 Note that your cursor has to be placed somewhere in the parameter of the referencing command, not on the command itself.
