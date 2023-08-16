@@ -221,15 +221,16 @@ object TexifyIcons {
      *
      * This method ignores case.
      *
-     * @param extension
-     *              The extension of the file to get the icon of without a dot.
+     * @param extension The extension of the file to get the icon of without a dot.
+     * @param default Use this if you want to get an icon also if the extension is not known to TeXiFy
+     *
      * @return The Icon that corresponds to the given extension.
      * @throws IllegalArgumentException
      * When `extension` is null.
      */
-    fun getIconFromExtension(extension: String?): Icon {
+    fun getIconFromExtension(extension: String?, default: Icon? = null): Icon? {
         return if (extension == null) {
-            FILE
+            default
         }
         else when (extension.lowercase(Locale.getDefault())) {
             "tex" -> LATEX_FILE
@@ -243,7 +244,7 @@ object TexifyIcons {
             "pdf" -> PDF_FILE
             "synctex.gz" -> SYNCTEX_FILE
             "dvi" -> DVI_FILE
-            else -> FILE
+            else -> default
         }
     }
 
