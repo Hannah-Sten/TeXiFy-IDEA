@@ -31,7 +31,7 @@ plugins {
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "8.3.1"
 
-    id("org.jetbrains.changelog") version "2.1.2"
+    id("org.jetbrains.changelog") version "2.2.0"
 
     id("org.jetbrains.grammarkit") version "2022.3.1"
 }
