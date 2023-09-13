@@ -104,7 +104,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.4")
     implementation("io.ktor:ktor-server-core:2.3.3")
     implementation("io.ktor:ktor-server-jetty:2.3.4")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-7")
