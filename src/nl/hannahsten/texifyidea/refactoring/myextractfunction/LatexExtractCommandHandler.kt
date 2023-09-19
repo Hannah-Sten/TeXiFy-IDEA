@@ -10,7 +10,6 @@ import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
 import com.intellij.psi.util.elementType
-import com.intellij.psi.util.findTopmostParentInFile
 import com.intellij.psi.util.parents
 import com.intellij.refactoring.IntroduceTargetChooser
 import com.intellij.refactoring.RefactoringActionHandler
@@ -46,74 +45,16 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
         else {
             val extractor = { expr: PsiElement ->
                 extractExpression(
-                    editor, expr, ":)"//RsBundle.message("command.name.introduce.local.variable")
+                    editor, expr, RefactoringBundle.message("introduce.variable.title")
                 )
             }
             if (exprs.size == 1) {
                 extractor(exprs.single())
-            } else showExpressionChooser(editor, exprs) {
+            }
+            else showExpressionChooser(editor, exprs) {
                 extractor(it)
             }
-
-            /*else showExpressionChooser(editor, exprs) {
-                extractor(it)
-            }*/
         }
-        /*
-                val start = editor.selectionModel.selectionStart
-                val end = editor.selectionModel.selectionEnd
-                if (start === null || end === null) return
-
-                // what do we need to do?
-                */
-        /*
-                Resolve the current selection. If this is text, we need to ask to extract the current word, sentence, paragraph.
-                If this is inter-environmental, we need to select all the environments.
-                 *//*
-
-        val firstUnresolved = file.findElementAt(start) ?: return
-        val first =
-            if (firstUnresolved is PsiWhiteSpace)
-                file.findElementAt(firstUnresolved.startOffset - 1) ?: return
-            else
-                firstUnresolved
-
-        val lastUnresolved = file.findElementAt(end - 1) ?: return
-        val last =
-            if (lastUnresolved is PsiWhiteSpace)
-                file.findElementAt(lastUnresolved.endOffset) ?: return
-            else
-                lastUnresolved
-
-        val parent = findCommonParent(first, last)
-
-        // should be doing extra here?
-
-        val psiSeq = generateSequence(first) {
-            if (it.nextSibling == last)
-                null
-            else
-                it.nextSibling
-        }
-
-        val entries = PsiUtilCore.toPsiElementArray(psiSeq.filter{ it !is PsiWhiteSpace}.toList())
-
-        if (entries.isEmpty()) return
-
-        println("I would have extracted " + entries.fold ("") { out, curr -> out + curr.text + " " });
-*/
-
-        /*
-        We need to find other usages of this, so we can replace them too
-         */
-
-        /*
-        We need to create the command calls
-         */
-
-        /*
-        we need to settle on a name for those calls
-         */
     }
 
     override fun invoke(project: Project, elements: Array<out PsiElement>, dataContext: DataContext?) {
@@ -174,7 +115,7 @@ private class ExpressionReplacer(
             editor.caretModel.moveToOffset(actualToken.textRange.startOffset)
 
             LatexInPlaceVariableIntroducer(
-                actualToken, editor, project, "Choose me!"
+                actualToken, editor, project, "choose a variable"
             )
                 .performInplaceRefactoring(LinkedHashSet())
         }
@@ -230,9 +171,6 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Psi
     else {
         val expr = findExpressionAtCaret(file, editor.caretModel.offset)
             ?: return emptyList()
-        // Finds possible expressions that might want to be bound to a local variable.
-        // We don't go further than the current block scope,
-        // further more path expressions don't make sense to bind to a local variable so we exclude them.
         expr.parents(true)
             .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
             .toList()
@@ -282,13 +220,3 @@ fun findOccurrences(parent: PsiElement, expr: PsiElement): List<PsiElement> {
     parent.acceptChildren(visitor)
     return visitor.foundOccurrences
 }
-
-/*
-fun moveEditorToNameElement(editor: Editor, element: PsiElement?): RsPatBinding? {
-    val newName = element?.findBinding()
-    editor.caretModel.moveToOffset(newName?.identifier?.textRange?.startOffset ?: 0)
-    return newName
-}
-
-fun PsiElement.findBinding() = PsiTreeUtil.findChildOfType(this,::class.java)
-*/
