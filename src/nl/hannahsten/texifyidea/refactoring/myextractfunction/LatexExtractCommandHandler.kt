@@ -9,7 +9,9 @@ import com.intellij.openapi.util.Pass
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
+import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parents
+import com.intellij.refactoring.IntroduceTargetChooser
 import com.intellij.refactoring.RefactoringActionHandler
 import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.introduce.inplace.OccurrencesChooser
@@ -18,6 +20,7 @@ import com.intellij.refactoring.suggested.startOffset
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
@@ -46,8 +49,9 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
             }
             if (exprs.size == 1) {
                 extractor(exprs.single())
+            } else showExpressionChooser(editor, exprs) {
+                extractor(it)
             }
-            else TODO(":(")
 
             /*else showExpressionChooser(editor, exprs) {
                 extractor(it)
@@ -115,6 +119,14 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
     }
 }
 
+fun showExpressionChooser(
+    editor: Editor,
+    exprs: List<PsiElement>,
+    callback: (PsiElement) -> Unit
+) {
+    IntroduceTargetChooser.showChooser(editor, exprs, callback.asPass) { it.text }
+}
+
 fun extractExpression(
     editor: Editor,
     expr: PsiElement,
@@ -153,7 +165,6 @@ private class ExpressionReplacer(
 
 
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
-            //name.commandToken
             val actualToken =
                 letBinding.childrenOfType(PsiNameIdentifierOwner::class).filterIsInstance<LatexCommands>()
                     .first { it.text == "\\mycommand" }
@@ -221,7 +232,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Psi
         // We don't go further than the current block scope,
         // further more path expressions don't make sense to bind to a local variable so we exclude them.
         expr.parents(true)
-            .takeWhile { it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
+            .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
             .toList()
     }
 }
@@ -241,7 +252,7 @@ fun LatexFile.expressionAtOffset(offset: Int): PsiElement? {
     val element = findElementAt(offset) ?: return null
 
     return element.parents(true)
-        .firstOrNull { it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
+        .firstOrNull { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
 }
 
 /**
