@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiFile
 import java.util.regex.Pattern
 
 /**
@@ -32,6 +33,16 @@ fun runWriteCommandAction(project: Project, writeCommandAction: () -> Unit) {
     WriteCommandAction.runWriteCommandAction(project, writeCommandAction)
 }
 
+fun <T> runWriteCommandAction(
+    project: Project,
+    commandName: String,
+    vararg files: PsiFile,
+    writeCommandAction: () -> T
+): T {
+    return WriteCommandAction.writeCommandAction(project, *files).withName(commandName)
+        .compute<T, RuntimeException>(writeCommandAction)
+}
+
 /**
  * Converts an [IntRange] to [TextRange].
  */
@@ -47,7 +58,8 @@ val IntRange.length: Int
  * Converts the range to a range representation with the given seperator.
  * When the range has size 0, it will only print the single number.
  */
-fun IntRange.toRangeString(separator: String = "-") = if (start == endInclusive) start else "$start$separator$endInclusive"
+fun IntRange.toRangeString(separator: String = "-") =
+    if (start == endInclusive) start else "$start$separator$endInclusive"
 
 /**
  * Shift the range to the right by the number of places given.
