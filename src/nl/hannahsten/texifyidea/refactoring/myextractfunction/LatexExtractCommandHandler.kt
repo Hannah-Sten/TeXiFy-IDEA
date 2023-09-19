@@ -21,10 +21,13 @@ import com.intellij.refactoring.util.CommonRefactoringUtil
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.insertCommandDefinition
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
+import java.lang.IllegalStateException
 
 class LatexExtractCommandHandler : RefactoringActionHandler {
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext?) {
@@ -99,18 +102,19 @@ private class ExpressionReplacer(
         val sortedExprs = exprs.sortedBy { it.startOffset }
         val firstExpr = sortedExprs.firstOrNull() ?: chosenExpr
 
-        val newcommand = psiFactory.createFromText("\\newcommand{\\mycommand}{${chosenExpr.text}}").firstChild
+//        val newcommand = psiFactory.createFromText("\\newcommand{\\mycommand}{${chosenExpr.text}}").firstChildOfType(PsiNameIdentifierOwner::class) ?: throw IllegalStateException("This isnt doable")
         val name = psiFactory.createFromText("\\mycommand{}").firstChildOfType(LatexCommands::class) ?: return
 
         runWriteCommandAction(project, commandName) {
-            val letBinding = firstExpr.parent.addBefore(newcommand, firstExpr)
+            val letBinding = insertCommandDefinition(chosenExpr.containingFile, chosenExpr.text) ?: return@runWriteCommandAction //firstExpr.parent.addBefore(newcommand, firstExpr)
             exprs.forEach { it.replace(name) }
 
-
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
-            val actualToken =
+            val filterIsInstance =
                 letBinding.childrenOfType(PsiNameIdentifierOwner::class).filterIsInstance<LatexCommands>()
-                    .first { it.text == "\\mycommand" }
+            val actualToken =
+                filterIsInstance.firstOrNull { it.text == "\\mycommand" } ?:
+                throw IllegalStateException("How did this happen??")
 
             editor.caretModel.moveToOffset(actualToken.textRange.startOffset)
 
@@ -173,6 +177,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Psi
             ?: return emptyList()
         expr.parents(true)
             .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
+            .distinctBy { it.text }
             .toList()
     }
 }
