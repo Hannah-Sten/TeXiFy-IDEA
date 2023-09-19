@@ -10,6 +10,7 @@ import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
 import com.intellij.psi.util.elementType
+import com.intellij.psi.util.findTopmostParentInFile
 import com.intellij.psi.util.parents
 import com.intellij.refactoring.IntroduceTargetChooser
 import com.intellij.refactoring.RefactoringActionHandler
@@ -23,6 +24,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 
 class LatexExtractCommandHandler : RefactoringActionHandler {
@@ -260,7 +262,7 @@ fun LatexFile.expressionAtOffset(offset: Int): PsiElement? {
  */
 
 fun findOccurrences(expr: PsiElement): List<PsiElement> {
-    val parent = expr.parent
+    val parent = expr.parentOfType(LatexFile::class)
         ?: return emptyList()
     return findOccurrences(parent, expr)
 }
