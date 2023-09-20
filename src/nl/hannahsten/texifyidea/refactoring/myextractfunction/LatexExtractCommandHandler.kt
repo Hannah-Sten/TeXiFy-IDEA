@@ -21,13 +21,11 @@ import com.intellij.refactoring.util.CommonRefactoringUtil
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
-import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.insertCommandDefinition
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
-import java.lang.IllegalStateException
 
 class LatexExtractCommandHandler : RefactoringActionHandler {
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext?) {
@@ -102,21 +100,22 @@ private class ExpressionReplacer(
         val sortedExprs = exprs.sortedBy { it.startOffset }
         val firstExpr = sortedExprs.firstOrNull() ?: chosenExpr
 
-//        val newcommand = psiFactory.createFromText("\\newcommand{\\mycommand}{${chosenExpr.text}}").firstChildOfType(PsiNameIdentifierOwner::class) ?: throw IllegalStateException("This isnt doable")
         val name = psiFactory.createFromText("\\mycommand{}").firstChildOfType(LatexCommands::class) ?: return
 
         runWriteCommandAction(project, commandName) {
-            val letBinding = insertCommandDefinition(chosenExpr.containingFile, chosenExpr.text) ?: return@runWriteCommandAction //firstExpr.parent.addBefore(newcommand, firstExpr)
-            exprs.forEach { it.replace(name) }
+            val letBinding = insertCommandDefinition(chosenExpr.containingFile, chosenExpr.text)
+                ?: return@runWriteCommandAction //firstExpr.parent.addBefore(newcommand, firstExpr)
+            exprs.filter{ it != chosenExpr }.forEach { it.replace(name) }
+            val chosenInsertion = chosenExpr.replace(name)
 
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
             val filterIsInstance =
-                letBinding.childrenOfType(PsiNameIdentifierOwner::class).filterIsInstance<LatexCommands>()
+                letBinding.childrenOfType(PsiNamedElement::class).filterIsInstance<LatexCommands>()
             val actualToken =
-                filterIsInstance.firstOrNull { it.text == "\\mycommand" } ?:
-                throw IllegalStateException("How did this happen??")
+                filterIsInstance.firstOrNull { it.text == "\\mycommand" }
+                    ?: throw IllegalStateException("How did this happen??")
 
-            editor.caretModel.moveToOffset(actualToken.textRange.startOffset)
+            editor.caretModel.moveToOffset(chosenInsertion.textRange.startOffset)
 
             LatexInPlaceVariableIntroducer(
                 actualToken, editor, project, "choose a variable"
@@ -182,6 +181,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Psi
     }
 }
 
+
 fun findExpressionAtCaret(file: LatexFile, offset: Int): PsiElement? {
     val expr = file.expressionAtOffset(offset)
     val exprBefore = file.expressionAtOffset(offset - 1)
@@ -193,6 +193,9 @@ fun findExpressionAtCaret(file: LatexFile, offset: Int): PsiElement? {
     }
 }
 
+/**
+ * Gets the smallest extractable expression at the given offset
+ */
 fun LatexFile.expressionAtOffset(offset: Int): PsiElement? {
     val element = findElementAt(offset) ?: return null
 
@@ -203,7 +206,6 @@ fun LatexFile.expressionAtOffset(offset: Int): PsiElement? {
 /**
  * Finds occurrences in the sub scope of expr, so that all will be replaced if replace all is selected.
  */
-
 fun findOccurrences(expr: PsiElement): List<PsiElement> {
     val parent = expr.parentOfType(LatexFile::class)
         ?: return emptyList()

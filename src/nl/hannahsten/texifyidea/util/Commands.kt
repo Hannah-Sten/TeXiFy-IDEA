@@ -60,8 +60,6 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 
     val commands = file.commandsInFile()
 
-    val definitionCommandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
-
     var last: LatexCommands? = null
     for (cmd in commands) {
         if (cmd.commandToken.text == "\\newcommand") {
