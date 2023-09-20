@@ -24,9 +24,7 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.insertCommandDefinition
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
-import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import org.jetbrains.annotations.TestOnly
 
@@ -184,10 +182,23 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Psi
     else {
         val expr = findExpressionAtCaret(file, editor.caretModel.offset)
             ?: return emptyList()
-        expr.parents(true)
-            .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
-            .distinctBy { it.text }
-            .toList()
+        if (expr is LatexBeginCommand) {
+            val endCommand = expr.endCommand()
+            if (endCommand == null)
+                emptyList()
+            else
+            {
+                val environToken = findCommonParent(expr, endCommand)
+                if (environToken != null)
+                    listOf(environToken)
+                else
+                    emptyList()
+            }
+        } else
+            expr.parents(true)
+                .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
+                .distinctBy { it.text }
+                .toList()
     }
 }
 
