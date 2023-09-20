@@ -35,7 +35,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         
             ${'$'}\lim_{x \to \infty} (1+\frac{1}{x})^{x}=2.718${'$'}
         
-            Some old guy discovered <selection>2.718</selection> and was amazed!
+            Some old guy discovered 2.7<caret>18 and was amazed!
         
             Not to be confused with 2.714, or  ${'$'}3\pi!-6\pi${'$'}
         
@@ -62,7 +62,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             Not to be confused with 2.714, or  ${'$'}3\pi!-6\pi${'$'}
         
         \end{document}
-    """
+    """, true
     )
 
     fun testMultiTableSelection() = doTest(
@@ -117,7 +117,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         
             Some may wonder why \mycommand{} is so special.
         \end{document}
-    """
+    """, true
     )
 
     private fun doTest(
