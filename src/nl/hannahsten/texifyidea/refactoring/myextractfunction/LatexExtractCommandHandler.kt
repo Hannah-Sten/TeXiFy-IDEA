@@ -1,7 +1,9 @@
 package nl.hannahsten.texifyidea.refactoring.myextractfunction
 
 import com.intellij.codeInsight.PsiEquivalenceUtil
+import com.intellij.ide.plugins.PluginManagerCore.isUnitTestMode
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts
@@ -26,6 +28,7 @@ import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
+import org.jetbrains.annotations.TestOnly
 
 class LatexExtractCommandHandler : RefactoringActionHandler {
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext?) {
@@ -68,7 +71,10 @@ fun showExpressionChooser(
     exprs: List<PsiElement>,
     callback: (PsiElement) -> Unit
 ) {
-    IntroduceTargetChooser.showChooser(editor, exprs, callback.asPass) { it.text }
+    if (isUnitTestMode) {
+        callback(MOCK!!.chooseTarget(exprs))
+    } else
+        IntroduceTargetChooser.showChooser(editor, exprs, callback.asPass) { it.text }
 }
 
 fun extractExpression(
@@ -131,15 +137,19 @@ fun showOccurrencesChooser(
     occurrences: List<PsiElement>,
     callback: (List<PsiElement>) -> Unit
 ) {
-    OccurrencesChooser.simpleChooser<PsiElement>(editor)
-        .showChooser(
-            expr,
-            occurrences,
-            { choice: OccurrencesChooser.ReplaceChoice ->
-                val toReplace = if (choice == OccurrencesChooser.ReplaceChoice.ALL) occurrences else listOf(expr)
-                callback(toReplace)
-            }.asPass
-        )
+    if (isUnitTestMode && occurrences.size > 1) {
+        callback(MOCK!!.chooseOccurrences(expr, occurrences))
+    } else {
+        OccurrencesChooser.simpleChooser<PsiElement>(editor)
+            .showChooser(
+                expr,
+                occurrences,
+                { choice: OccurrencesChooser.ReplaceChoice ->
+                    val toReplace = if (choice == OccurrencesChooser.ReplaceChoice.ALL) occurrences else listOf(expr)
+                    callback(toReplace)
+                }.asPass
+            )
+    }
 }
 
 private val <T> ((T) -> Unit).asPass: Pass<T>
@@ -226,4 +236,20 @@ fun findOccurrences(parent: PsiElement, expr: PsiElement): List<PsiElement> {
     }
     parent.acceptChildren(visitor)
     return visitor.foundOccurrences
+}
+
+interface ExtractExpressionUi {
+    fun chooseTarget(exprs: List<PsiElement>): PsiElement
+    fun chooseOccurrences(expr: PsiElement, occurrences: List<PsiElement>): List<PsiElement>
+}
+
+var MOCK: ExtractExpressionUi? = null
+@TestOnly
+fun withMockTargetExpressionChooser(mock: ExtractExpressionUi, f: () -> Unit) {
+    MOCK = mock
+    try {
+        f()
+    } finally {
+        MOCK = null
+    }
 }
