@@ -161,14 +161,14 @@ fun findExpressionInRange(file: PsiFile, startOffset: Int, endOffset: Int): PsiE
     val firstUnresolved = file.findElementAt(startOffset) ?: return null
     val first =
         if (firstUnresolved is PsiWhiteSpace)
-            file.findElementAt(firstUnresolved.startOffset - 1) ?: return null
+            file.findElementAt(firstUnresolved.endOffset) ?: return null
         else
             firstUnresolved
 
     val lastUnresolved = file.findElementAt(endOffset - 1) ?: return null
     val last =
         if (lastUnresolved is PsiWhiteSpace)
-            file.findElementAt(lastUnresolved.endOffset) ?: return null
+            file.findElementAt(lastUnresolved.startOffset - 1) ?: return null
         else
             lastUnresolved
 

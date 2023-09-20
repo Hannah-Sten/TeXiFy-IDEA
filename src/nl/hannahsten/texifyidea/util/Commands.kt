@@ -101,7 +101,8 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     val nonConflictingName = "${newCommandName}${if (blockingNames.isEmpty()) "" else blockingNames.size.toString()}"
     val command = "\\newcommand{\\$nonConflictingName}{${commandText}}";
 
-    val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
+    val newChild = LatexPsiHelper(file.project).createFromText(command).firstChild
+    val newNode = newChild.node
 
     // Don't run in a write action, as that will produce a SideEffectsNotAllowedException for INVOKE_LATER
 
@@ -125,7 +126,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
         }
     }
 
-    return newNode.psi
+    return newChild
 }
 
 /**

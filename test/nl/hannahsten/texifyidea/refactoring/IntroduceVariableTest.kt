@@ -120,6 +120,18 @@ class IntroduceVariableTest : BasePlatformTestCase() {
     """, true
     )
 
+    fun testWithQuotes() = doTest(
+        """
+        We could not find strategies that would be of great assistance in this category.
+	    However, if you ever find yourself reading ``<selection>Test With Quotes</selection>'' I thinnk you for your service.
+    """, emptyList(), 0, """
+        \newcommand{\mycommand}{Test With Quotes}
+        
+        We could not find strategies that would be of great assistance in this category.
+	    However, if you ever find yourself reading ``\mycommand{}'' I thinnk you for your service.
+    """
+    )
+
     private fun doTest(
         before: String,
         expressions: List<String>,
