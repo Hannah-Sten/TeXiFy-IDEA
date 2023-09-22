@@ -71,7 +71,7 @@ fun IntRange.shiftRight(displacement: Int): IntRange {
 /**
  * Converts a [TextRange] to [IntRange].
  */
-fun TextRange.toIntRange() = startOffset..endOffset
+fun TextRange.toIntRange() = startOffset until endOffset
 
 /**
  * Easy access to [java.util.regex.Matcher.matches].
