@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.refactoring.myextractfunction
+package nl.hannahsten.texifyidea.refactoring.introduceCommand
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project

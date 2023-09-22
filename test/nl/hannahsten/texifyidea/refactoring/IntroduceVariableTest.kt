@@ -3,8 +3,9 @@ package nl.hannahsten.texifyidea.refactoring
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.refactoring.myextractfunction.ExtractExpressionUi
-import nl.hannahsten.texifyidea.refactoring.myextractfunction.withMockTargetExpressionChooser
+import nl.hannahsten.texifyidea.refactoring.introduceCommand.ExtractExpressionUi
+import nl.hannahsten.texifyidea.refactoring.introduceCommand.LatexExtractablePSI
+import nl.hannahsten.texifyidea.refactoring.introduceCommand.withMockTargetExpressionChooser
 
 class IntroduceVariableTest : BasePlatformTestCase() {
     fun testBasicCaret() = doTest(
@@ -163,13 +164,13 @@ class IntroduceVariableTest : BasePlatformTestCase() {
     ) {
         var shownTargetChooser = false
         withMockTargetExpressionChooser(object : ExtractExpressionUi {
-            override fun chooseTarget(exprs: List<PsiElement>): PsiElement {
+            override fun chooseTarget(exprs: List<LatexExtractablePSI>): LatexExtractablePSI {
                 shownTargetChooser = true
                 assertEquals(exprs.map { it.text }, expressions)
                 return exprs[target]
             }
 
-            override fun chooseOccurrences(expr: PsiElement, occurrences: List<PsiElement>): List<PsiElement> =
+            override fun chooseOccurrences(expr: LatexExtractablePSI, occurrences: List<LatexExtractablePSI>): List<LatexExtractablePSI> =
                 if (replaceAll) occurrences else listOf(expr)
         }) {
             myFixture.configureByText(LatexFileType, before.trimIndent())
