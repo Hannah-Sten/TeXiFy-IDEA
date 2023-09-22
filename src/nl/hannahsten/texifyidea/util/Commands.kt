@@ -99,7 +99,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     val blockingNames = file.definitions().filter { it.commandToken.text.matches("${newCommandName}\\d*".toRegex()) }
 
     val nonConflictingName = "${newCommandName}${if (blockingNames.isEmpty()) "" else blockingNames.size.toString()}"
-    val command = "\\newcommand{\\$nonConflictingName}{${commandText}}";
+    val command = "\\newcommand{\\$nonConflictingName}{${commandText}}"
 
     val newChild = LatexPsiHelper(file.project).createFromText(command).firstChild
     val newNode = newChild.node
@@ -113,16 +113,18 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return null)
 
     runWriteAction {
+        val newLine = LatexPsiHelper(file.project).createFromText("\n\n").firstChild.node
         // Avoid NPE, see #3083 (cause unknown)
         if (anchorAfter != null && com.intellij.psi.impl.source.tree.TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
             val anchorBefore = anchorAfter.node.treeNext
-            val newLine = LatexPsiHelper(file.project).createFromText("\n\n").firstChild.node
             anchorAfter.parent.node.addChild(newLine, anchorBefore)
             anchorAfter.parent.node.addChild(newNode, anchorBefore)
         }
         else {
             // Insert at beginning
+            file.node.addChild(newLine, file.firstChild.node)
             file.node.addChild(newNode, file.firstChild.node)
+//            file.node.addChild(newLine, file.firstChild.node)
         }
     }
 
