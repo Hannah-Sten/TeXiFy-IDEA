@@ -73,7 +73,8 @@ fun showExpressionChooser(
     if (isUnitTestMode) {
         callback(MOCK!!.chooseTarget(exprs))
     } else
-        IntroduceTargetChooser.showChooser(editor, exprs, callback.asPass) { it.text.substring(it.extractableRange.startOffset, it.extractableRange.endOffset) }
+        IntroduceTargetChooser.showChooser(editor, exprs, callback.asPass,
+            { it.text.substring(it.extractableRange.startOffset, it.extractableRange.endOffset) }, RefactoringBundle.message("introduce.target.chooser.expressions.title"), { (it as LatexExtractablePSI).extractableTextRange })
 }
 
 fun extractExpression(
