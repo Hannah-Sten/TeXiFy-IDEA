@@ -235,7 +235,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
             if (expr.elementType == NORMAL_TEXT_WORD) {
                 val interruptedParent = expr.firstParentOfType(LatexNormalText::class)
                     ?: throw IllegalStateException("You suck")
-                var out = arrayListOf(LatexExtractablePSI(expr), LatexExtractablePSI(interruptedParent))
+                var out = arrayListOf(LatexExtractablePSI(expr))
                 val interruptedText = interruptedParent.text
                 if (interruptedText.contains('\n')) {
                     val previousLineBreak = interruptedText.substring(0, editor.caretModel.offset - interruptedParent.startOffset).lastIndexOf('\n')
@@ -245,7 +245,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                         interruptedParent.textLength
                     else
                         startIndex + nextNewlineindex
-                    out.add(1, LatexExtractablePSI(interruptedParent, TextRange(startIndex, endOffset)))
+                    out.add(LatexExtractablePSI(interruptedParent, TextRange(startIndex, endOffset)))
                 }
 
                 val mathParent = expr.firstParentOfType(LatexInlineMath::class)
@@ -255,7 +255,8 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                         out.add(LatexExtractablePSI(mathChild))
                     out.add(LatexExtractablePSI(mathParent))
                 }
-                return out.distinctBy { it.text }
+                out.add(LatexExtractablePSI(interruptedParent))
+                return out.distinctBy { it.text.substring(it.extractableRange.toIntRange()) }
             } else
             return expr.parents(true)
                 .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
