@@ -255,7 +255,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                         out.add(LatexExtractablePSI(mathChild))
                     out.add(LatexExtractablePSI(mathParent))
                 }
-                return out
+                return out.distinctBy { it.text }
             } else
             return expr.parents(true)
                 .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
