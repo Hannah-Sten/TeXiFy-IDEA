@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.refactoring.introduceCommand.ExtractExpressionUi
 import nl.hannahsten.texifyidea.refactoring.introduceCommand.LatexExtractablePSI
 import nl.hannahsten.texifyidea.refactoring.introduceCommand.withMockTargetExpressionChooser
+import nl.hannahsten.texifyidea.util.toIntRange
 
 class IntroduceVariableTest : BasePlatformTestCase() {
     fun testBasicCaret() = doTest(
@@ -46,7 +47,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         
         \end{document}
     """, listOf("2.718", "Some old guy discovered 2.718 and was amazed!",
-        "Some old guy discovered 2.718 and was amazed!\n\n\t\tNot to be confused with 2.714, or ${'$'}3\\pi!-6\\pi${'$'}"
+        "Some old guy discovered 2.718 and was amazed!\n\n    Not to be confused with 2.714, or"
         ), 0, """
             \documentclass[11pt]{article}
             
@@ -62,7 +63,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             
                 Some old guy discovered \mycommand{} and was amazed!
             
-                Not to be confused with 2.714, or  ${'$'}3\pi!-6\pi${'$'}
+                Not to be confused with 2.714, or ${'$'}3\pi!-6\pi${'$'}
             
             \end{document}
         """, true)
@@ -163,10 +164,10 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             override fun chooseTarget(exprs: List<LatexExtractablePSI>): LatexExtractablePSI {
                 shownTargetChooser = true
                 println("saw")
-                exprs.forEach { println("'" + it.text + "'") }
+                exprs.forEach { println("'" + it.text.substring(it.extractableRange.toIntRange()) + "'") }
                 println("xpect")
                 expressions.map { println("'" + it + "'") }
-                assertEquals(exprs.map { it.text.trimIndent() }, expressions.map { it.trimIndent() })
+                assertEquals(exprs.map { it.text.substring(it.extractableRange.toIntRange()).trimIndent() }, expressions.map { it.trimIndent() })
                 return exprs[target]
             }
 

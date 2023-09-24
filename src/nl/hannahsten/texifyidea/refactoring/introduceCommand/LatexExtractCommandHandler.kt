@@ -264,11 +264,11 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 out.add(LatexExtractablePSI(interruptedParent))
                 return out.distinctBy { it.text.substring(it.extractableRange.toIntRange()) }
             } else
-            return expr.parents(true)
-                .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
-                .distinctBy { it.text }
-                .map { LatexExtractablePSI(it) }
-                .toList()
+                return expr.parents(true)
+                    .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
+                    .distinctBy { it.text }
+                    .map { LatexExtractablePSI(it) }
+                    .toList()
         }
     }
 }
