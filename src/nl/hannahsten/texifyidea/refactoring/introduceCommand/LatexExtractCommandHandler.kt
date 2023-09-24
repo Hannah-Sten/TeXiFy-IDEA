@@ -30,6 +30,12 @@ import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import nl.hannahsten.texifyidea.util.toIntRange
 import org.jetbrains.annotations.TestOnly
 
+/**
+ * Extract the selected piece of text into a \newcommand definition and replace usages.
+ *
+ * Based on code from https://github.com/intellij-rust/intellij-rust/blob/b18aab90317564307829f3c9c8e0188817a377ad/src/main/kotlin/org/rust/ide/refactoring/extraxtExpressionUi.kt#L1
+ * and https://github.com/intellij-rust/intellij-rust/blob/b18aab90317564307829f3c9c8e0188817a377ad/src/main/kotlin/org/rust/ide/refactoring/extraxtExpressionUtils.kt#L1
+ */
 class LatexExtractCommandHandler : RefactoringActionHandler {
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext?) {
         if (file !is LatexFile) return
