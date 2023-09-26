@@ -5,14 +5,12 @@ import com.intellij.ide.plugins.PluginManagerCore.isUnitTestMode
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.util.Pass
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
 import com.intellij.psi.util.elementType
-import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parents
 import com.intellij.refactoring.IntroduceTargetChooser
 import com.intellij.refactoring.RefactoringActionHandler
@@ -25,7 +23,10 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.insertCommandDefinition
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.endCommand
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import nl.hannahsten.texifyidea.util.toIntRange
 import org.jetbrains.annotations.TestOnly
@@ -79,9 +80,16 @@ fun showExpressionChooser(
 ) {
     if (isUnitTestMode) {
         callback(MOCK!!.chooseTarget(exprs))
-    } else
-        IntroduceTargetChooser.showChooser(editor, exprs, callback.asPass,
-            { it.text.substring(it.extractableRange.toIntRange()) }, RefactoringBundle.message("introduce.target.chooser.expressions.title"), { (it as LatexExtractablePSI).extractableTextRange })
+    }
+    else
+        IntroduceTargetChooser.showChooser(
+            editor,
+            exprs,
+            callback.asPass,
+            { it.text.substring(it.extractableRange.toIntRange()) },
+            RefactoringBundle.message("introduce.target.chooser.expressions.title"),
+            { (it as LatexExtractablePSI).extractableTextRange }
+        )
 }
 
 fun extractExpression(
@@ -110,23 +118,38 @@ private class ExpressionReplacer(
     ) {
         val name = psiFactory.createFromText("\\mycommand{}").firstChildOfType(LatexCommands::class) ?: return
 
+        val containingFile = chosenExpr.containingFile
         if (chosenExpr.elementType == NORMAL_TEXT_WORD || chosenExpr.commonParent is LatexNormalText) {
             runWriteCommandAction(project, commandName) {
                 val letBinding = insertCommandDefinition(
-                    chosenExpr.containingFile,
+                    containingFile,
                     chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange())
                 )
-                    ?: return@runWriteCommandAction //firstExpr.parent.addBefore(newcommand, firstExpr)
+                    ?: return@runWriteCommandAction
                 exprs.filter { it != chosenExpr }.forEach {
-                    val newItem = it.text.replace(chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange()), "\\mycommand{}")
+                    val newItem = it.text.replace(
+                        chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange()),
+                        "\\mycommand{}"
+                    )
                     it.replace(psiFactory.createFromText(newItem).firstChild)
                 }
-                val newItem = chosenExpr.text.replace(chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange()), "\\mycommand{}")
+                val newItem = chosenExpr.text.replace(
+                    chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange()),
+                    "\\mycommand{}"
+                )
                 chosenExpr.replace(psiFactory.createFromText(newItem).firstChild)
 
+                val letOffset = letBinding.textRange
+
                 PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
+
+                println("you have beautiful eyes")
+
+                val respawnedLetBinding = findExpressionAtCaret(containingFile as LatexFile, letOffset.startOffset)
+                    ?: throw IllegalStateException("This really sux")
+
                 val filterIsInstance =
-                    letBinding.childrenOfType(PsiNamedElement::class).filterIsInstance<LatexCommands>()
+                    respawnedLetBinding.childrenOfType(PsiNamedElement::class).filterIsInstance<LatexCommands>()
                 val actualToken =
                     filterIsInstance.firstOrNull { it.text == "\\mycommand" }
                         ?: throw IllegalStateException("How did this happen??")
@@ -138,15 +161,16 @@ private class ExpressionReplacer(
                 )
                     .performInplaceRefactoring(LinkedHashSet())
             }
-        } else {
+        }
+        else {
             runWriteCommandAction(project, commandName) {
                 val letBinding = insertCommandDefinition(
-                    chosenExpr.containingFile,
+                    containingFile,
                     chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange())
                 )
-                    ?: return@runWriteCommandAction //firstExpr.parent.addBefore(newcommand, firstExpr)
+                    ?: return@runWriteCommandAction
                 exprs.filter { it != chosenExpr }.forEach { it.replace(name) }
-                val chosenInsertion = chosenExpr.replace(name) as LatexCommands
+                chosenExpr.replace(name) as LatexCommands
 
                 PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
                 val filterIsInstance =
@@ -174,7 +198,8 @@ fun showOccurrencesChooser(
 ) {
     if (isUnitTestMode && occurrences.size > 1) {
         callback(MOCK!!.chooseOccurrences(expr, occurrences))
-    } else {
+    }
+    else {
         OccurrencesChooser.simpleChooser<PsiElement>(editor)
             .showChooser(
                 expr,
@@ -211,7 +236,8 @@ fun findExpressionInRange(file: PsiFile, startOffset: Int, endOffset: Int): Late
 
     return if (parent is LatexNormalText) {
         LatexExtractablePSI(parent, TextRange(startOffset - parent.startOffset, endOffset - parent.startOffset))
-    } else
+    }
+    else
         LatexExtractablePSI(parent)
 }
 
@@ -235,17 +261,22 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 else
                     emptyList()
             }
-        } else if (expr is LatexNormalText) {
+        }
+        else if (expr is LatexNormalText) {
             return listOf(LatexExtractablePSI(expr))
-        } else {
+        }
+        else {
             if (expr.elementType == NORMAL_TEXT_WORD) {
                 val interruptedParent = expr.firstParentOfType(LatexNormalText::class)
                     ?: throw IllegalStateException("You suck")
                 var out = arrayListOf(LatexExtractablePSI(expr))
                 val interruptedText = interruptedParent.text
                 if (interruptedText.contains('\n')) {
-                    val previousLineBreak = interruptedText.substring(0, editor.caretModel.offset - interruptedParent.startOffset).lastIndexOf('\n')
-                    val startIndex = previousLineBreak + 1 + interruptedText.substring(previousLineBreak + 1).indexOfFirst { !it.isWhitespace() }
+                    val previousLineBreak =
+                        interruptedText.substring(0, editor.caretModel.offset - interruptedParent.startOffset)
+                            .lastIndexOf('\n')
+                    val startIndex = previousLineBreak + 1 + interruptedText.substring(previousLineBreak + 1)
+                        .indexOfFirst { !it.isWhitespace() }
                     val nextNewlineindex = interruptedText.substring(startIndex).indexOf('\n')
                     val endOffset = if (nextNewlineindex == -1)
                         interruptedParent.textLength
@@ -263,7 +294,8 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 }
                 out.add(LatexExtractablePSI(interruptedParent))
                 return out.distinctBy { it.text.substring(it.extractableRange.toIntRange()) }
-            } else
+            }
+            else
                 return expr.parents(true)
                     .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
                     .distinctBy { it.text }
@@ -272,7 +304,6 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
         }
     }
 }
-
 
 fun findExpressionAtCaret(file: LatexFile, offset: Int): PsiElement? {
     val expr = file.expressionAtOffset(offset)
@@ -326,12 +357,14 @@ interface ExtractExpressionUi {
 }
 
 var MOCK: ExtractExpressionUi? = null
+
 @TestOnly
 fun withMockTargetExpressionChooser(mock: ExtractExpressionUi, f: () -> Unit) {
     MOCK = mock
     try {
         f()
-    } finally {
+    }
+    finally {
         MOCK = null
     }
 }

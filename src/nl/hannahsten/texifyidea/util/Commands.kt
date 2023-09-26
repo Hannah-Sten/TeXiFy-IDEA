@@ -1,26 +1,22 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.stream.Collectors
 
@@ -64,9 +60,11 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     for (cmd in commands) {
         if (cmd.commandToken.text == "\\newcommand") {
             last = cmd
-        } else if (cmd.commandToken.text == "\\usepackage") {
+        }
+        else if (cmd.commandToken.text == "\\usepackage") {
             last = cmd
-        } else if (cmd.commandToken.text == "\\begin" && cmd.requiredParameter(0) == "document") {
+        }
+        else if (cmd.commandToken.text == "\\begin" && cmd.requiredParameter(0) == "document") {
             last = cmd
             break
         }
@@ -99,7 +97,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     val blockingNames = file.definitions().filter { it.commandToken.text.matches("${newCommandName}\\d*".toRegex()) }
 
     val nonConflictingName = "${newCommandName}${if (blockingNames.isEmpty()) "" else blockingNames.size.toString()}"
-    val command = "\\newcommand{\\$nonConflictingName}{${commandText}}"
+    val command = "\\newcommand{\\$nonConflictingName}{${commandText}}\n"
 
     val newChild = LatexPsiHelper(file.project).createFromText(command).firstChild
     val newNode = newChild.node
@@ -141,7 +139,10 @@ fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): Str
 
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
-        val commandExpansion = LatexCommandsIndex.getCommandsByNames(file ?: return null, *CommandMagic.commandDefinitionsAndRedefinitions.toTypedArray())
+        val commandExpansion = LatexCommandsIndex.getCommandsByNames(
+            file ?: return null,
+            *CommandMagic.commandDefinitionsAndRedefinitions.toTypedArray()
+        )
             .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
             ?.getRequiredArgumentValueByName("def")
         text = text.replace(command.text, commandExpansion ?: command.text)

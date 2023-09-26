@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.refactoring
 
-import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.refactoring.introduceCommand.ExtractExpressionUi
@@ -12,7 +11,10 @@ class IntroduceVariableTest : BasePlatformTestCase() {
     fun testBasicCaret() = doTest(
         """
         My favorite number is 5.<caret>25
-    """, listOf("5.25", "My favorite number is 5.25"), 0, """
+    """,
+        listOf("5.25", "My favorite number is 5.25"),
+        0,
+        """
         \newcommand{\mycommand}{5.25}
         
         My favorite number is \mycommand{}
@@ -22,7 +24,10 @@ class IntroduceVariableTest : BasePlatformTestCase() {
     fun testBasicSelection() = doTest(
         """
         My favorite number is <selection>5.25</selection>
-    """, emptyList(), 0, """
+    """,
+        emptyList(),
+        0,
+        """
         \newcommand{\mycommand}{5.25}
         
         My favorite number is \mycommand{}
@@ -46,9 +51,14 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             Not to be confused with 2.714, or ${'$'}3\pi!-6\pi${'$'}
         
         \end{document}
-    """, listOf("2.718", "Some old guy discovered 2.718 and was amazed!",
-        "Some old guy discovered 2.718 and was amazed!\n\n    Not to be confused with 2.714, or"
-        ), 0, """
+    """,
+        listOf(
+            "2.718",
+            "Some old guy discovered 2.718 and was amazed!",
+            "Some old guy discovered 2.718 and was amazed!\n\n    Not to be confused with 2.714, or"
+        ),
+        0,
+        """
             \documentclass[11pt]{article}
             
             \newcommand{\mycommand}{2.718}
@@ -66,7 +76,9 @@ class IntroduceVariableTest : BasePlatformTestCase() {
                 Not to be confused with 2.714, or ${'$'}3\pi!-6\pi${'$'}
             
             \end{document}
-        """, true)
+        """,
+        true
+    )
 
     fun testMultiTableSelection() = doTest(
         """
@@ -93,11 +105,13 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         
             Some may wonder why 2.68291 is so special.
         \end{document}
-    """, emptyList(), 0, """
+    """,
+        emptyList(),
+        0,
+        """
         \documentclass[11pt]{article}
         
         \newcommand{\mycommand}{2.68291}
-        
         \begin{document}
             
             ${'$'}5.25 * \mycommand{} = 450${'$'}
@@ -113,26 +127,34 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             \begin{table}[ht!]
                 \begin{tabular}{| r |}
                     \hline
-                    \mycommand{}          \\
+                    \mycommand{} \\
                     \hline
                 \end{tabular}
             \end{table}
         
             Some may wonder why \mycommand{} is so special.
         \end{document}
-    """, true)
+    """,
+        true
+    )
 
-    fun testWithQuotes() = doTest("""
+    fun testWithQuotes() = doTest(
+        """
         We could not find strategies that would be of great assistance in this category.
         However, if you ever find yourself reading ``<selection>Test With Quotes</selection>'' I thinnk you for your service.
-    """, emptyList(), 0, """
+    """,
+        emptyList(),
+        0,
+        """
         \newcommand{\mycommand}{Test With Quotes}
         
         We could not find strategies that would be of great assistance in this category.
         However, if you ever find yourself reading ``\mycommand{}'' I thinnk you for your service.
-    """)
+    """
+    )
 
-    fun testEnvironmentEnumerate() = doTest("""
+    fun testEnvironmentEnumerate() = doTest(
+        """
         Hello Werld
         
         \beg<caret>in{enumerate}
@@ -140,7 +162,10 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             \item{Link Data: originating page, originating namespace, target page, target namespace (File Schema: enwiki-latest-pagelinks.sql.gz)}
             \item{Redirect Data: originating page, originating namespace, target page, target namespace (File Schema: enwiki-latest-redirect.sql.gz)}
         \end{enumerate}
-    """, emptyList(), 0, """
+    """,
+        emptyList(),
+        0,
+        """
         \newcommand{\mycommand}{\begin{enumerate}
                                     \item{Page Data: page id, namespace, title (File Schema: enwiki-latest-page.sql.gz)}
                                     \item{Link Data: originating page, originating namespace, target page, target namespace (File Schema: enwiki-latest-pagelinks.sql.gz)}
@@ -150,7 +175,8 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         Hello Werld
         
         \mycommand{}
-    """)
+    """
+    )
 
     private fun doTest(
         before: String,
@@ -167,18 +193,24 @@ class IntroduceVariableTest : BasePlatformTestCase() {
                 exprs.forEach { println("'" + it.text.substring(it.extractableRange.toIntRange()) + "'") }
                 println("xpect")
                 expressions.map { println("'" + it + "'") }
-                assertEquals(exprs.map { it.text.substring(it.extractableRange.toIntRange()).trimIndent() }, expressions.map { it.trimIndent() })
+                assertEquals(
+                    exprs.map { it.text.substring(it.extractableRange.toIntRange()).trimIndent() },
+                    expressions.map { it.trimIndent() }
+                )
                 return exprs[target]
             }
 
-            override fun chooseOccurrences(expr: LatexExtractablePSI, occurrences: List<LatexExtractablePSI>): List<LatexExtractablePSI> =
+            override fun chooseOccurrences(
+                expr: LatexExtractablePSI,
+                occurrences: List<LatexExtractablePSI>
+            ): List<LatexExtractablePSI> =
                 if (replaceAll) occurrences else listOf(expr)
         }) {
             myFixture.configureByText(LatexFileType, before.trimIndent())
-/*            println("'" + before + "'")
-            println(before.trimIndent())
-            println("'" + after + "'")
-            println(after.trimIndent())*/
+            /*            println("'" + before + "'")
+                        println(before.trimIndent())
+                        println("'" + after + "'")
+                        println(after.trimIndent())*/
             myFixture.performEditorAction("IntroduceVariable")
             myFixture.checkResult(after.trimIndent())
 
