@@ -10,4 +10,3 @@ class LatexExtractablePSI(
 ) : PsiElement by commonParent {
     val extractableTextRange get() = TextRange(commonParent.startOffset + extractableRange.startOffset, commonParent.startOffset + extractableRange.endOffset)
 }
-

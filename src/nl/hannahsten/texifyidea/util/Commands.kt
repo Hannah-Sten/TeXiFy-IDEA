@@ -97,7 +97,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     val blockingNames = file.definitions().filter { it.commandToken.text.matches("${newCommandName}\\d*".toRegex()) }
 
     val nonConflictingName = "${newCommandName}${if (blockingNames.isEmpty()) "" else blockingNames.size.toString()}"
-    val command = "\\newcommand{\\$nonConflictingName}{${commandText}}\n"
+    val command = "\\newcommand{\\$nonConflictingName}{$commandText}\n"
 
     val newChild = LatexPsiHelper(file.project).createFromText(command).firstChild
     val newNode = newChild.node
