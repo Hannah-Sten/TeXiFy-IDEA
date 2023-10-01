@@ -112,76 +112,47 @@ private class ExpressionReplacer(
         commandName: String
     ) {
         val containingFile = chosenExpr.containingFile
-        if (chosenExpr.elementType == NORMAL_TEXT_WORD || chosenExpr.self is LatexNormalText) {
-            runWriteCommandAction(project, commandName) {
-                val letBinding = insertCommandDefinition(
-                    containingFile,
-                    chosenExpr.text.substring(chosenExpr.extractableIntRange)
-                )
-                    ?: return@runWriteCommandAction
-                exprs.filter { it != chosenExpr }.forEach {
-                    val newItem = it.text.replace(
-                        chosenExpr.text.substring(chosenExpr.extractableIntRange),
-                        "\\mycommand"
-                    )
-                    it.replace(psiFactory.createFromText(newItem).firstChild)
-                }
-                val newItem = chosenExpr.text.replace(
+        runWriteCommandAction(project, commandName) {
+
+            val letBinding = insertCommandDefinition(
+                containingFile,
+                chosenExpr.text.substring(chosenExpr.extractableIntRange)
+            )
+                ?: return@runWriteCommandAction
+            exprs.filter { it != chosenExpr }.forEach {
+                val newItem = it.text.replace(
                     chosenExpr.text.substring(chosenExpr.extractableIntRange),
                     "\\mycommand"
                 )
-                chosenExpr.replace(psiFactory.createFromText(newItem).firstChild)
-
-                val letOffset = letBinding.textRange
-
-                PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
-
-                println("you have beautiful eyes")
-
-                val respawnedLetBinding = (containingFile as LatexFile).findExpressionAtCaret(letOffset.startOffset)
-                    ?: throw IllegalStateException("This really sux")
-
-                val filterIsInstance =
-                    respawnedLetBinding.childrenOfType(PsiNamedElement::class).filterIsInstance<LatexCommands>()
-                val actualToken =
-                    filterIsInstance.firstOrNull { it.text == "\\mycommand" }
-                        ?: throw IllegalStateException("How did this happen??")
-
-                editor.caretModel.moveToOffset(actualToken.textRange.startOffset)
-
-                LatexInPlaceVariableIntroducer(
-                    actualToken, editor, project, "choose a variable"
-                )
-                    .performInplaceRefactoring(LinkedHashSet())
+                it.replace(psiFactory.createFromText(newItem).firstChild)
             }
-        }
-        else {
-            runWriteCommandAction(project, commandName) {
-                val name = psiFactory.createFromText("\\mycommand").firstChildOfType(LatexCommands::class)
-                    ?: return@runWriteCommandAction
+            val newItem = chosenExpr.text.replace(
+                chosenExpr.text.substring(chosenExpr.extractableIntRange),
+                "\\mycommand"
+            )
+            chosenExpr.replace(psiFactory.createFromText(newItem).firstChild)
 
-                val letBinding = insertCommandDefinition(
-                    containingFile,
-                    chosenExpr.text.substring(chosenExpr.extractableIntRange)
-                )
-                    ?: return@runWriteCommandAction
-                exprs.filter { it != chosenExpr }.forEach { it.replace(name) }
-                chosenExpr.replace(name) as LatexCommands
+            val letOffset = letBinding.textRange
 
-                PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
-                val filterIsInstance =
-                    letBinding.childrenOfType(PsiNamedElement::class).filterIsInstance<LatexCommands>()
-                val actualToken =
-                    filterIsInstance.firstOrNull { it.text == "\\mycommand" }
-                        ?: throw IllegalStateException("How did this happen??")
+            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
 
-                editor.caretModel.moveToOffset(actualToken.textRange.startOffset)
+            println("you have beautiful eyes")
 
-                LatexInPlaceVariableIntroducer(
-                    actualToken, editor, project, "choose a variable"
-                )
-                    .performInplaceRefactoring(LinkedHashSet())
-            }
+            val respawnedLetBinding = (containingFile as LatexFile).findExpressionAtCaret(letOffset.startOffset)
+                ?: throw IllegalStateException("This really sux")
+
+            val filterIsInstance =
+                respawnedLetBinding.childrenOfType(PsiNamedElement::class).filterIsInstance<LatexCommands>()
+            val actualToken =
+                filterIsInstance.firstOrNull { it.text == "\\mycommand" }
+                    ?: throw IllegalStateException("How did this happen??")
+
+            editor.caretModel.moveToOffset(actualToken.textRange.startOffset)
+
+            LatexInPlaceVariableIntroducer(
+                actualToken, editor, project, "choose a variable"
+            )
+                .performInplaceRefactoring(LinkedHashSet())
         }
     }
 }
