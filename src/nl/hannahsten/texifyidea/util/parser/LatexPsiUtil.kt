@@ -1,7 +1,10 @@
 package nl.hannahsten.texifyidea.util.parser
 
+import com.intellij.codeInsight.PsiEquivalenceUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiRecursiveElementVisitor
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -130,6 +133,27 @@ val LatexParameterText.command: PsiElement?
         return this.firstParentOfType(LatexCommands::class)?.firstChild
     }
 
-// fun LatexOptionalKeyValPair.getKeyValValue() {
-//    PsiTreeUtil.getChildOfType(this, LatexKeyValValue::class.java)
-// }
+/**
+ * Finds occurrences in the sub scope of expr, so that all will be replaced if replace all is selected.
+ */
+fun PsiElement.findOccurrences(): List<LatexExtractablePSI> {
+    val parent = firstParentOfType(LatexFile::class)
+        ?: return emptyList()
+    return this.findOccurrences(parent)
+}
+
+fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI> {
+    val visitor = object : PsiRecursiveElementVisitor() {
+        val foundOccurrences = ArrayList<PsiElement>()
+        override fun visitElement(element: PsiElement) {
+            if (PsiEquivalenceUtil.areElementsEquivalent(this@findOccurrences, element)) {
+                foundOccurrences.add(element)
+            }
+            else {
+                super.visitElement(element)
+            }
+        }
+    }
+    searchRoot.acceptChildren(visitor)
+    return visitor.foundOccurrences.map { it.asExtractable() }
+}

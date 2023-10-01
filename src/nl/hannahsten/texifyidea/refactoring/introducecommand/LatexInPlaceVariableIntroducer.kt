@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.refactoring.introduceCommand
+package nl.hannahsten.texifyidea.refactoring.introducecommand
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -13,7 +13,7 @@ class LatexInPlaceVariableIntroducer(
     elementToRename: PsiNamedElement,
     editor: Editor,
     project: Project,
-    @Suppress("UnstableApiUsage") @NlsContexts.Command title: String,
+    @NlsContexts.Command title: String,
     private val additionalElementsToRename: List<PsiElement> = emptyList()
 ) : InplaceVariableIntroducer<PsiElement>(elementToRename, editor, project, title, emptyArray(), null) {
 

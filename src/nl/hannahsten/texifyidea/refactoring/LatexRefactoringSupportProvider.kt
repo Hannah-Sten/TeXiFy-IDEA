@@ -4,7 +4,7 @@ import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.RefactoringActionHandler
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.refactoring.introduceCommand.LatexExtractCommandHandler
+import nl.hannahsten.texifyidea.refactoring.introducecommand.LatexExtractCommandHandler
 
 /**
  * This class is used to enable inline refactoring.

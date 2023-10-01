@@ -6,30 +6,27 @@ import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
+import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.file.ClassFileType
-import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.file.StyleFileType
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
+import com.intellij.psi.util.parents
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
+import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import nl.hannahsten.texifyidea.util.parser.allCommands
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
-import nl.hannahsten.texifyidea.util.parser.isDefinition
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * Get the file search scope for this psi file.
@@ -269,3 +266,49 @@ fun PsiFile.getBibtexRunConfigurations() = project
     .flatMap { it.bibRunConfigs }
     .map { it.configuration }
     .filterIsInstance<BibtexRunConfiguration>()
+
+/**
+ * Gets the smallest extractable expression at the given offset. this should reaaaly be a LatexFile
+ */
+fun PsiFile.expressionAtOffset(offset: Int): PsiElement? {
+    val element = findElementAt(offset) ?: return null
+
+    return element.parents(true)
+        .firstOrNull { it.elementType == LatexTypes.NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
+}
+
+// should the reciever just be `LatexFile`?
+fun PsiFile.findExpressionInRange(startOffset: Int, endOffset: Int): LatexExtractablePSI? {
+    val firstUnresolved = findElementAt(startOffset) ?: return null
+    val first =
+        if (firstUnresolved is PsiWhiteSpace)
+            findElementAt(firstUnresolved.endOffset) ?: return null
+        else
+            firstUnresolved
+
+    val lastUnresolved = findElementAt(endOffset - 1) ?: return null
+    val last =
+        if (lastUnresolved is PsiWhiteSpace)
+            findElementAt(lastUnresolved.startOffset - 1) ?: return null
+        else
+            lastUnresolved
+
+    val parent = PsiTreeUtil.findCommonParent(first, last) ?: return null
+
+    return if (parent is LatexNormalText) {
+        parent.asExtractable(TextRange(startOffset - parent.startOffset, endOffset - parent.startOffset))
+    }
+    else
+        parent.asExtractable()
+}
+
+fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
+    val expr = expressionAtOffset(offset)
+    val exprBefore = expressionAtOffset(offset - 1)
+    return when {
+        expr == null -> exprBefore
+        exprBefore == null -> expr
+        PsiTreeUtil.isAncestor(expr, exprBefore, false) -> exprBefore
+        else -> expr
+    }
+}

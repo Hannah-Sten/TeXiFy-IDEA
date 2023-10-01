@@ -2,10 +2,9 @@ package nl.hannahsten.texifyidea.refactoring
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.refactoring.introduceCommand.ExtractExpressionUi
-import nl.hannahsten.texifyidea.refactoring.introduceCommand.LatexExtractablePSI
-import nl.hannahsten.texifyidea.refactoring.introduceCommand.withMockTargetExpressionChooser
-import nl.hannahsten.texifyidea.util.toIntRange
+import nl.hannahsten.texifyidea.refactoring.introducecommand.ExtractExpressionUi
+import nl.hannahsten.texifyidea.util.parser.LatexExtractablePSI
+import nl.hannahsten.texifyidea.refactoring.introducecommand.withMockTargetExpressionChooser
 
 class IntroduceVariableTest : BasePlatformTestCase() {
     fun testBasicCaret() = doTest(
@@ -190,11 +189,11 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             override fun chooseTarget(exprs: List<LatexExtractablePSI>): LatexExtractablePSI {
                 shownTargetChooser = true
                 println("saw")
-                exprs.forEach { println("'" + it.text.substring(it.extractableRange.toIntRange()) + "'") }
+                exprs.forEach { println("'" + it.text.substring(it.extractableIntRange) + "'") }
                 println("xpect")
                 expressions.map { println("'" + it + "'") }
                 assertEquals(
-                    exprs.map { it.text.substring(it.extractableRange.toIntRange()).trimIndent() },
+                    exprs.map { it.text.substring(it.extractableIntRange).trimIndent() },
                     expressions.map { it.trimIndent() }
                 )
                 return exprs[target]
