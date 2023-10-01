@@ -46,4 +46,38 @@ class LatexInlineDisplayToggleIntentionTest : BasePlatformTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testDisplayToInlineToggleFirstLine() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \[
+                \pi = 3<caret>
+            \]
+            """.trimIndent()
+        )
+        myFixture.findSingleIntention("Toggle inline/display math mode").invoke(myFixture.project, myFixture.editor, myFixture.file)
+        myFixture.checkResult(
+            """
+            $\pi = 3$
+            """.trimIndent()
+        )
+    }
+
+    fun testInlineToDisplayToggleFirstLine() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            $\pi = 3<caret>$
+            """.trimIndent()
+        )
+        myFixture.findSingleIntention("Toggle inline/display math mode").invoke(myFixture.project, myFixture.editor, myFixture.file)
+        myFixture.checkResult(
+            """
+            \[
+                \pi = 3
+            \]
+            """.trimIndent()
+        )
+    }
 }
