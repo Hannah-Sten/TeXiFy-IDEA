@@ -116,7 +116,7 @@ private class ExpressionReplacer(
         exprs: List<LatexExtractablePSI>,
         commandName: String
     ) {
-        val name = psiFactory.createFromText("\\mycommand ").firstChildOfType(LatexCommands::class) ?: return
+        val name = psiFactory.createFromText("\\mycommand").firstChildOfType(LatexCommands::class) ?: return
 
         val containingFile = chosenExpr.containingFile
         if (chosenExpr.elementType == NORMAL_TEXT_WORD || chosenExpr.commonParent is LatexNormalText) {
@@ -129,13 +129,13 @@ private class ExpressionReplacer(
                 exprs.filter { it != chosenExpr }.forEach {
                     val newItem = it.text.replace(
                         chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange()),
-                        "\\mycommand "
+                        "\\mycommand"
                     )
                     it.replace(psiFactory.createFromText(newItem).firstChild)
                 }
                 val newItem = chosenExpr.text.replace(
                     chosenExpr.text.substring(chosenExpr.extractableRange.toIntRange()),
-                    "\\mycommand "
+                    "\\mycommand"
                 )
                 chosenExpr.replace(psiFactory.createFromText(newItem).firstChild)
 

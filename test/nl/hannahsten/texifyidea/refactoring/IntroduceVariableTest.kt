@@ -17,7 +17,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         """
         \newcommand{\mycommand}{5.25}
         
-        My favorite number is \mycommand{}
+        My favorite number is \mycommand
     """
     )
 
@@ -30,7 +30,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         """
         \newcommand{\mycommand}{5.25}
         
-        My favorite number is \mycommand{}
+        My favorite number is \mycommand
     """
     )
 
@@ -65,13 +65,13 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             
             \begin{document}
             
-                \chapter{The significance of \mycommand{}, or e}
+                \chapter{The significance of \mycommand, or e}
             
-                \mycommand{} is a special number.
+                \mycommand is a special number.
             
-                ${'$'}\lim_{x \to \infty} (1+\frac{1}{x})^{x}=\mycommand{}${'$'}
+                ${'$'}\lim_{x \to \infty} (1+\frac{1}{x})^{x}=\mycommand${'$'}
             
-                Some old guy discovered \mycommand{} and was amazed!
+                Some old guy discovered \mycommand and was amazed!
             
                 Not to be confused with 2.714, or ${'$'}3\pi!-6\pi${'$'}
             
@@ -114,12 +114,12 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         \newcommand{\mycommand}{2.68291}
         \begin{document}
             
-            ${'$'}5.25 * \mycommand{} = 450${'$'}
+            ${'$'}5.25 * \mycommand = 450${'$'}
         
             \begin{table}[ht!]
                 \begin{tabular}{| r |}
                     \hline
-                    \mycommand{} \\
+                    \mycommand \\
                     \hline
                 \end{tabular}
             \end{table}
@@ -127,12 +127,12 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             \begin{table}[ht!]
                 \begin{tabular}{| r |}
                     \hline
-                    \mycommand{} \\
+                    \mycommand \\
                     \hline
                 \end{tabular}
             \end{table}
         
-            Some may wonder why \mycommand{} is so special.
+            Some may wonder why \mycommand is so special.
         \end{document}
     """,
         true
@@ -149,7 +149,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         \newcommand{\mycommand}{Test With Quotes}
         
         We could not find strategies that would be of great assistance in this category.
-        However, if you ever find yourself reading ``\mycommand{}'' I thinnk you for your service.
+        However, if you ever find yourself reading ``\mycommand'' I thinnk you for your service.
     """
     )
 
@@ -174,7 +174,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
     
         Hello Werld
         
-        \mycommand{}
+        \mycommand
     """
     )
 
