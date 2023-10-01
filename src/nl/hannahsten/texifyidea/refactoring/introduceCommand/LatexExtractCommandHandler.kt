@@ -268,6 +268,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
         else {
             if (expr.elementType == NORMAL_TEXT_WORD) {
                 val interruptedParent = expr.firstParentOfType(LatexNormalText::class)
+                    ?: expr.firstParentOfType(LatexParameterText::class)
                     ?: throw IllegalStateException("You suck")
                 var out = arrayListOf(LatexExtractablePSI(expr))
                 val interruptedText = interruptedParent.text
