@@ -20,7 +20,7 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.4.0"
+    id("de.undercouch.download") version "5.5.0"
 
     // Test coverage
     id("org.jetbrains.kotlinx.kover") version "0.7.3"
@@ -29,7 +29,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "8.3.1"
+    id("org.owasp.dependencycheck") version "8.4.0"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
@@ -82,7 +82,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.7")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
@@ -98,11 +98,11 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.3")
-    implementation("io.ktor:ktor-client-cio:2.3.3")
+    implementation("io.ktor:ktor-client-core:2.3.4")
+    implementation("io.ktor:ktor-client-cio:2.3.4")
     implementation("io.ktor:ktor-client-auth:2.3.4")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.4")
-    implementation("io.ktor:ktor-server-core:2.3.3")
+    implementation("io.ktor:ktor-server-core:2.3.4")
     implementation("io.ktor:ktor-server-jetty:2.3.4")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
 
@@ -117,8 +117,8 @@ dependencies {
         exclude("xml-apis", "xml-apis-ext")
     }
 
-    implementation("io.arrow-kt:arrow-core:1.2.0")
-    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
+    implementation("io.arrow-kt:arrow-core:1.2.1")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.1")
     implementation("io.arrow-kt:arrow-resilience:1.2.1")
 
     // Test dependencies
