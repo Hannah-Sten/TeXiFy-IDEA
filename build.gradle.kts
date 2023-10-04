@@ -14,7 +14,7 @@ plugins {
     kotlin("plugin.serialization") version ("1.9.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.47.0"
+    id("com.github.ben-manes.versions") version "0.48.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -33,7 +33,7 @@ plugins {
 
     id("org.jetbrains.changelog") version "2.2.0"
 
-    id("org.jetbrains.grammarkit") version "2022.3.1"
+    id("org.jetbrains.grammarkit") version "2022.3.2"
 }
 
 group = "nl.hannahsten"
@@ -100,7 +100,7 @@ dependencies {
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.3")
     implementation("io.ktor:ktor-client-cio:2.3.3")
-    implementation("io.ktor:ktor-client-auth:2.3.3")
+    implementation("io.ktor:ktor-client-auth:2.3.4")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.4")
     implementation("io.ktor:ktor-server-core:2.3.3")
     implementation("io.ktor:ktor-server-jetty:2.3.4")
@@ -119,7 +119,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:1.2.0")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
-    implementation("io.arrow-kt:arrow-resilience:1.2.0")
+    implementation("io.arrow-kt:arrow-resilience:1.2.1")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
@@ -136,7 +136,7 @@ dependencies {
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.10.0")
 
-    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("io.mockk:mockk:1.13.8")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
