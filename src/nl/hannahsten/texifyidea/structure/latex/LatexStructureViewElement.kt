@@ -195,7 +195,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
             // Avoid that an element is not added at all by adding it one level up anyway.
             // If index is null, that means that the tree currently only has elements with a higher order.
-            else {
+            else if (index == null || indexInsert == index) {
                 registerSameLevel(sections, child, currentCmd, treeElements, numbering)
                 break
             }
