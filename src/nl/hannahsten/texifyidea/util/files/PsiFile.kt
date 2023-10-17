@@ -268,7 +268,7 @@ fun PsiFile.getBibtexRunConfigurations() = project
     .filterIsInstance<BibtexRunConfiguration>()
 
 /**
- * Gets the smallest extractable expression at the given offset. this should reaaaly be a LatexFile
+ * Gets the smallest extractable expression at the given offset
  */
 fun PsiFile.expressionAtOffset(offset: Int): PsiElement? {
     val element = findElementAt(offset) ?: return null
@@ -277,31 +277,37 @@ fun PsiFile.expressionAtOffset(offset: Int): PsiElement? {
         .firstOrNull { it.elementType == LatexTypes.NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
 }
 
-// should the reciever just be `LatexFile`?
+/**
+ * Get "expression" within range specified. An expression is either a PsiElement, or a PsiElement with a specific extraction range in the case that the range lies entirely within a text block
+ */
 fun PsiFile.findExpressionInRange(startOffset: Int, endOffset: Int): LatexExtractablePSI? {
     val firstUnresolved = findElementAt(startOffset) ?: return null
-    val first =
+    val startElement =
         if (firstUnresolved is PsiWhiteSpace)
             findElementAt(firstUnresolved.endOffset) ?: return null
         else
             firstUnresolved
 
     val lastUnresolved = findElementAt(endOffset - 1) ?: return null
-    val last =
+    val endElement =
         if (lastUnresolved is PsiWhiteSpace)
             findElementAt(lastUnresolved.startOffset - 1) ?: return null
         else
             lastUnresolved
 
-    val parent = PsiTreeUtil.findCommonParent(first, last) ?: return null
+    val commonParent = PsiTreeUtil.findCommonParent(startElement, endElement) ?: return null
 
-    return if (parent is LatexNormalText) {
-        parent.asExtractable(TextRange(startOffset - parent.startOffset, endOffset - parent.startOffset))
+    // We will consider an exression to be a sentence or a substring out of text. Here we will mark that in the extraction range.
+    return if (commonParent is LatexNormalText) {
+        commonParent.asExtractable(TextRange(startOffset - commonParent.startOffset, endOffset - commonParent.startOffset))
     }
     else
-        parent.asExtractable()
+        commonParent.asExtractable()
 }
 
+/**
+ * Attempts to find the "expression" at the given offset
+ */
 fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
     val expr = expressionAtOffset(offset)
     val exprBefore = expressionAtOffset(offset - 1)

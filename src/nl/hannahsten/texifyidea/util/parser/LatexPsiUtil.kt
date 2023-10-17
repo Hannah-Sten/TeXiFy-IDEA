@@ -134,7 +134,7 @@ val LatexParameterText.command: PsiElement?
     }
 
 /**
- * Finds occurrences in the sub scope of expr, so that all will be replaced if replace all is selected.
+ * @see PsiElement.findOccurrences(PsiElement)
  */
 fun PsiElement.findOccurrences(): List<LatexExtractablePSI> {
     val parent = firstParentOfType(LatexFile::class)
@@ -142,6 +142,10 @@ fun PsiElement.findOccurrences(): List<LatexExtractablePSI> {
     return this.findOccurrences(parent)
 }
 
+/**
+ * Known weakness: since we will allow the user to extract portions of a text block, this will only extract text when the parent PSI's are identical.
+ * However, extracting a single word does not suffer from this as we are extracting an actual token.
+ */
 fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI> {
     val visitor = object : PsiRecursiveElementVisitor() {
         val foundOccurrences = ArrayList<PsiElement>()

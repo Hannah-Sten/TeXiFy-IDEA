@@ -37,6 +37,7 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
         if (file !is LatexFile) return
         val exprs = findCandidateExpressionsToExtract(editor, file)
 
+        // almost never happens, so the error will be likely worded wrong, but hopefully that will generate more bug reports!
         if (exprs.isEmpty()) {
             val message = RefactoringBundle.message(
                 if (editor.selectionModel.hasSelection())
@@ -57,6 +58,7 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
             if (exprs.size == 1) {
                 extractor(exprs.single())
             }
+            // if there are multiple candidates (ie the user did not have an active selection, ask for them to choose what to extract
             else showExpressionChooser(editor, exprs) {
                 extractor(it)
             }
@@ -64,22 +66,22 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
     }
 
     override fun invoke(project: Project, elements: Array<out PsiElement>, dataContext: DataContext?) {
-        TODO("This was not meant to happen like this")
+        TODO("This should never get called")
     }
 }
 
 fun showExpressionChooser(
     editor: Editor,
-    exprs: List<LatexExtractablePSI>,
+    candidates: List<LatexExtractablePSI>,
     callback: (LatexExtractablePSI) -> Unit
 ) {
     if (isUnitTestMode) {
-        callback(MOCK!!.chooseTarget(exprs))
+        callback(MOCK!!.chooseTarget(candidates))
     }
     else
         IntroduceTargetChooser.showChooser(
             editor,
-            exprs,
+            candidates,
             callback.asPass,
             { it.text.substring(it.extractableIntRange) },
             RefactoringBundle.message("introduce.target.chooser.expressions.title"),
@@ -107,14 +109,17 @@ private class ExpressionReplacer(
 ) {
     private val psiFactory = LatexPsiHelper(project)
 
+    /**
+     * This actually replaces all the ocurrences
+     */
     fun replaceElementForAllExpr(
         exprs: List<LatexExtractablePSI>,
         commandName: String
     ) {
+        // cache file in case the psi tree breaks
         val containingFile = chosenExpr.containingFile
         runWriteCommandAction(project, commandName) {
-
-            val letBinding = insertCommandDefinition(
+            val definitionToken = insertCommandDefinition(
                 containingFile,
                 chosenExpr.text.substring(chosenExpr.extractableIntRange)
             )
@@ -132,23 +137,24 @@ private class ExpressionReplacer(
             )
             chosenExpr.replace(psiFactory.createFromText(newItem).firstChild)
 
-            val letOffset = letBinding.textRange
+            val definitionOffset = definitionToken.textRange
 
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
 
-            println("you have beautiful eyes")
+            // sometimes calling the previous line will invalidate `definitionToken`, so we will make sure to find the actual valid token
+            val vampireCommandDefinition = containingFile.findExpressionAtCaret(definitionOffset.startOffset)
+                ?: throw IllegalStateException("Unexpectedly could not find an expression")
 
-            val respawnedLetBinding = (containingFile as LatexFile).findExpressionAtCaret(letOffset.startOffset)
-                ?: throw IllegalStateException("This really sux")
-
-            val filterIsInstance =
-                respawnedLetBinding.childrenOfType(PsiNamedElement::class).filterIsInstance<LatexCommands>()
             val actualToken =
-                filterIsInstance.firstOrNull { it.text == "\\mycommand" }
-                    ?: throw IllegalStateException("How did this happen??")
+                vampireCommandDefinition
+                    .childrenOfType(PsiNamedElement::class)
+                    .filterIsInstance<LatexCommands>()
+                    .firstOrNull { it.text == "\\mycommand" }
+                    ?: throw IllegalStateException("Psi Tree was not in the expected state")
 
             editor.caretModel.moveToOffset(actualToken.textRange.startOffset)
 
+            // unsure where title is used. Either way, put the user into a refactor where they get to specify the new command name
             LatexInPlaceVariableIntroducer(
                 actualToken, editor, project, "choose a variable"
             )
@@ -185,8 +191,12 @@ private val <T> ((T) -> Unit).asPass: Pass<T>
         override fun pass(t: T) = this@asPass(t)
     }
 
+/**
+ * Returns a list of "expressions" which could be extracted.
+ */
 fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<LatexExtractablePSI> {
     val selection = editor.selectionModel
+    // if the user has highlighted a block, simply return that
     if (selection.hasSelection()) {
         // If there's an explicit selection, suggest only one expression
         return listOfNotNull(file.findExpressionInRange(selection.selectionStart, selection.selectionEnd))
@@ -194,6 +204,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
     else {
         val expr = file.findExpressionAtCaret(editor.caretModel.offset)
             ?: return emptyList()
+        // if expr is a \begin, return the whole block it is a part of, and just assume since the cursor was there that it was meant to be
         if (expr is LatexBeginCommand) {
             val endCommand = expr.endCommand()
             return if (endCommand == null)
@@ -206,16 +217,21 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                     emptyList()
             }
         }
+        // if this was text, like in a command parameter, only ofer itself
         else if (expr is LatexNormalText) {
             return listOf(expr.asExtractable())
         }
         else {
+            // if inside a text block, we will offer the current word, current sentence, current line, whole block, and applicable parents
             if (expr.elementType == NORMAL_TEXT_WORD) {
+                // variable where we will build up our return
+                val out = arrayListOf(expr.asExtractable())
+
                 val interruptedParent = expr.firstParentOfType(LatexNormalText::class)
                     ?: expr.firstParentOfType(LatexParameterText::class)
                     ?: throw IllegalStateException("You suck")
-                val out = arrayListOf(expr.asExtractable())
                 val interruptedText = interruptedParent.text
+                // in this text block, if it multiline, find current line
                 if (interruptedText.contains('\n')) {
                     val previousLineBreak =
                         interruptedText.substring(0, editor.caretModel.offset - interruptedParent.startOffset)
@@ -230,6 +246,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                     out.add(interruptedParent.asExtractable(TextRange(startIndex, endOffset)))
                 }
 
+                // if this text is in a math context, offer the math environ
                 val mathParent = expr.firstParentOfType(LatexInlineMath::class)
                 if (mathParent != null) {
                     val mathChild = mathParent.firstChildOfType(LatexMathContent::class)
@@ -240,6 +257,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 out.add(interruptedParent.asExtractable())
                 return out.distinctBy { it.text.substring(it.extractableIntRange) }
             }
+            // default behavior: offer to extract any parent that we consider "extractable"
             else
                 return expr.parents(true)
                     .takeWhile { it.elementType == NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
@@ -255,6 +273,7 @@ interface ExtractExpressionUi {
     fun chooseOccurrences(expr: LatexExtractablePSI, occurrences: List<LatexExtractablePSI>): List<LatexExtractablePSI>
 }
 
+// This allows us to run tests and mimic user input
 var MOCK: ExtractExpressionUi? = null
 
 @TestOnly
