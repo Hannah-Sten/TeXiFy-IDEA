@@ -10,8 +10,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.16.0"
-    kotlin("jvm") version ("1.9.0")
-    kotlin("plugin.serialization") version ("1.9.0")
+    kotlin("jvm") version ("1.9.20")
+    kotlin("plugin.serialization") version ("1.9.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.49.0"
@@ -77,8 +77,9 @@ tasks.compileTestKotlin {
 dependencies {
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
-    implementation(files("lib/JavaDDE.dll"))
-    implementation(files("lib/JavaDDEx64.dll"))
+    // These lines can sometimes be problematic on Linux
+//    implementation(files("lib/JavaDDE.dll"))
+//    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
