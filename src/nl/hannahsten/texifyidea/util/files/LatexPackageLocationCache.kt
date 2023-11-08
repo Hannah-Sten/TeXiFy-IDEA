@@ -27,7 +27,7 @@ object LatexPackageLocationCache {
         // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.
         // We cannot rely on ls-R databases because they are not always populated, and running mktexlsr may run into permission issues.
         val executableName = LatexSdkUtil.getExecutableName("kpsewhich", project)
-        val searchPaths = runCommand(executableName, "-show-path=tex")
+        val searchPaths = (runCommand(executableName, "-show-path=tex") ?: ".") + File.pathSeparator + (runCommand(executableName, "-show-path=bib") ?: ".")
         cache = runCommand(executableName, "-expand-path", searchPaths ?: ".:")?.split(File.pathSeparator)
             ?.flatMap { LocalFileSystem.getInstance().findFileByPath(it)?.children?.toList() ?: emptyList() }
             ?.filter { !it.isDirectory }
