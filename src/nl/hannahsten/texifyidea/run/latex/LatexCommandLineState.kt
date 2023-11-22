@@ -68,6 +68,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         else {
             setOf()
         }
+        runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
@@ -77,7 +78,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
-        scheduleFileCleanup(runConfig.filesToCleanUp, createdOutputDirectories, handler)
+        scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
 
         return handler
     }
