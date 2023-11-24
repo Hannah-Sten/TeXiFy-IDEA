@@ -6,30 +6,26 @@
 
 ### Fixed
 
-## [0.9.2-alpha.3] - 2023-10-19
+## [0.9.2] - 2023-11-24
+
+Welcome to TeXiFy IDEA 0.9.2! This release introduces a new 'extract value' functionality to easily create custom commands from a text selection, and fixes some minor bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
 
 ### Added
 
+* Add "Extract value" refactoring to create custom LaTeX commands and replace all occurrences, by @jojo2357
+* Include bibliography files from the LaTeX installation in the possible inclusion targets
 * Add some missing starred versions of table environments
 * Add support for package indexing for native TeX Live installations
 
 ### Fixed
 
+* Ignore non-TeXiFy indexing related exceptions
 * Fix structure view nesting
 * Fix some bugs in the math environment toggle intention
 * Fix support for inlining commands in non-IntelliJ IDEs, by @jojo2357
-* Fix a sync issue with remote libraries
-
-## [0.9.2-alpha.2] - 2023-10-04
-
-### Fixed
-
-* Fix a sync issue with remote libraries
-
-## [0.9.2-alpha.1] - 2023-08-16
-
-### Fixed
-
 * Fix a sync issue with remote libraries
 
 ## [0.9.1] - 2023-08-15
@@ -259,10 +255,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2-alpha.3...HEAD
-[0.9.2-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2-alpha.1...v0.9.2-alpha.2
-[0.9.2-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2-alpha.1
-[0.9.2-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2-alpha.2...v0.9.2-alpha.3
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2...HEAD
+[0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...v0.9.0
 [0.7.33]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.32...v0.7.33
