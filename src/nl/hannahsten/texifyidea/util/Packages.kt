@@ -67,8 +67,6 @@ object PackageUtils {
         }
     }
 
-
-
     /**
      * Inserts a usepackage statement for the given package in a certain file.
      *
