@@ -157,7 +157,7 @@ private class ExpressionReplacer(
 
             // unsure where title is used. Either way, put the user into a refactor where they get to specify the new command name
             LatexInPlaceVariableIntroducer(
-                actualToken, editor, project, "choose a variable"
+                actualToken, editor, project, "Choose a Variable"
             )
                 .performInplaceRefactoring(LinkedHashSet())
         }
