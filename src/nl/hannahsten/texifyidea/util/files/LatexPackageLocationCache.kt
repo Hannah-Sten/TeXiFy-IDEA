@@ -28,7 +28,7 @@ object LatexPackageLocationCache {
         // We cannot rely on ls-R databases because they are not always populated, and running mktexlsr may run into permission issues.
         val executableName = LatexSdkUtil.getExecutableName("kpsewhich", project)
         val searchPaths = (runCommand(executableName, "-show-path=tex") ?: ".") + File.pathSeparator + (runCommand(executableName, "-show-path=bib") ?: ".")
-        cache = runCommand(executableName, "-expand-path", searchPaths ?: ".:")?.split(File.pathSeparator)
+        cache = runCommand(executableName, "-expand-path", searchPaths)?.split(File.pathSeparator)
             ?.flatMap { LocalFileSystem.getInstance().findFileByPath(it)?.children?.toList() ?: emptyList() }
             ?.filter { !it.isDirectory }
             ?.toSet()
