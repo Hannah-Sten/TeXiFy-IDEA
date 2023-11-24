@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
@@ -13,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -70,30 +70,6 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
         }
     }
 
-    // The anchor after which the new element will be inserted
-    val anchorAfter: PsiElement?
-
-    // When there are no usepackage commands: insert below documentclass.
-    if (last == null) {
-        val classHuh = commands.asSequence()
-            .filter { cmd ->
-                "\\documentclass" == cmd.commandToken
-                    .text || "\\LoadClass" == cmd.commandToken.text
-            }
-            .firstOrNull()
-        if (classHuh != null) {
-            anchorAfter = classHuh
-        }
-        else {
-            // No other sensible location can be found
-            anchorAfter = null
-        }
-    }
-    // Otherwise, insert below the lowest usepackage.
-    else {
-        anchorAfter = last
-    }
-
     val blockingNames = file.definitions().filter { it.commandToken.text.matches("${newCommandName}\\d*".toRegex()) }
 
     val nonConflictingName = "${newCommandName}${if (blockingNames.isEmpty()) "" else blockingNames.size.toString()}"
@@ -102,29 +78,11 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     val newChild = LatexPsiHelper(file.project).createFromText(command).firstChild
     val newNode = newChild.node
 
-    // Don't run in a write action, as that will produce a SideEffectsNotAllowedException for INVOKE_LATER
+    // The anchor after which the new element will be inserted
+    // When there are no usepackage commands: insert below documentclass.
+    val (anchorAfter, _) = getDefaultInsertAnchor(commands, last)
 
-    // Avoid "Attempt to modify PSI for non-committed Document"
-    // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
-    PsiDocumentManager.getInstance(file.project)
-        .doPostponedOperationsAndUnblockDocument(file.document() ?: return null)
-    PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return null)
-
-    runWriteAction {
-        val newLine = LatexPsiHelper(file.project).createFromText("\n\n").firstChild.node
-        // Avoid NPE, see #3083 (cause unknown)
-        if (anchorAfter != null && com.intellij.psi.impl.source.tree.TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
-            val anchorBefore = anchorAfter.node.treeNext
-            anchorAfter.parent.node.addChild(newLine, anchorBefore)
-            anchorAfter.parent.node.addChild(newNode, anchorBefore)
-        }
-        else {
-            // Insert at beginning
-            file.node.addChild(newLine, file.firstChild.node)
-            file.node.addChild(newNode, file.firstChild.node)
-//            file.node.addChild(newLine, file.firstChild.node)
-        }
-    }
+    PackageUtils.insertNodeAfterAnchor(file, anchorAfter, prependNewLine = true, newNode, prependBlankLine = true)
 
     return newChild
 }
