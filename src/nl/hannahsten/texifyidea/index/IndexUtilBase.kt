@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.diagnostic.RuntimeExceptionWithAttachments
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -11,6 +10,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.refactoring.suggested.createSmartPointer
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
@@ -139,9 +139,10 @@ abstract class IndexUtilBase<T : PsiElement>(
         try {
             return runReadAction { StubIndex.getElements(indexKey, name, project, scope, elementClass) }
         }
-        catch (e: RuntimeExceptionWithAttachments) {
-            // Ignore, because we've seen it only four times so far (#1375, #1446, #1591, #2086) but I fail to see how this would be a bug in TeXiFy.
-            if (e.message?.contains("PSI and index do not match") == false) throw e
+        catch (e: Exception) {
+            // For some reason, any issue from any plugin that causes an exception will be raised here and will be attributed to TeXiFy, flooding the backlog
+            // Hence, we just ignore all of them and hope it's not important
+            Log.warn(e.toString())
         }
         return emptySet()
     }
@@ -153,12 +154,16 @@ abstract class IndexUtilBase<T : PsiElement>(
      *          The project instance.
      */
     private fun getKeys(project: Project): Array<String> {
-        return if (!DumbService.isDumb(project) && !project.isDefault) {
-            runReadAction { StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray() }
+        if (!DumbService.isDumb(project) && !project.isDefault) {
+            try {
+                return runReadAction { StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray() }
+            }
+            catch (e: Exception) {
+                // See above
+                Log.warn(e.toString())
+            }
         }
-        else {
-            emptyArray()
-        }
+        return emptyArray()
     }
 
     /**

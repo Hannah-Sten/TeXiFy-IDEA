@@ -10,8 +10,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij") version "1.16.0"
-    kotlin("jvm") version ("1.9.0")
-    kotlin("plugin.serialization") version ("1.9.0")
+    kotlin("jvm") version ("1.9.20")
+    kotlin("plugin.serialization") version ("1.9.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.50.0"
@@ -77,6 +77,7 @@ tasks.compileTestKotlin {
 dependencies {
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
+    // These lines can sometimes be problematic on Linux, but are required for SumatraPDF
     implementation(files("lib/JavaDDE.dll"))
     implementation(files("lib/JavaDDEx64.dll"))
 
