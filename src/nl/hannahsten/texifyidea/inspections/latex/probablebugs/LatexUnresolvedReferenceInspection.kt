@@ -7,12 +7,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import java.lang.Integer.max
 import java.util.*
 
@@ -56,7 +58,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                 if (part == "*") continue
 
                 // The cleveref package allows empty items to customize enumerations
-                if (part.isEmpty() && (command.commandToken.text == "\\cref" || command.commandToken.text == "\\Cref")) continue
+                if (part.isEmpty() && (command.name == LatexGenericRegularCommand.CREF.cmd || command.name == LatexGenericRegularCommand.CREF_CAPITAL.cmd)) continue
 
                 // If there is no label with this required label parameter value
                 if (!labels.contains(part.trim())) {
