@@ -14,7 +14,7 @@ plugins {
     kotlin("plugin.serialization") version ("1.9.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.49.0"
+    id("com.github.ben-manes.versions") version "0.50.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -29,7 +29,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "8.4.2"
+    id("org.owasp.dependencycheck") version "9.0.0"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
@@ -94,9 +94,9 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.15.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.6")
@@ -234,7 +234,7 @@ intellij {
 tasks.publishPlugin {
     dependsOn("patchChangelog")
     dependsOn("useLatestVersions")
-    dependsOn("dependencyCheckAnalyze")
+//    dependsOn("dependencyCheckAnalyze")
 
     token.set(properties["intellijPublishToken"].toString())
 

@@ -6,30 +6,27 @@ import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
+import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.file.ClassFileType
-import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.file.StyleFileType
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
+import com.intellij.psi.util.parents
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
+import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import nl.hannahsten.texifyidea.util.parser.allCommands
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
-import nl.hannahsten.texifyidea.util.parser.isDefinition
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * Get the file search scope for this psi file.
@@ -269,3 +266,55 @@ fun PsiFile.getBibtexRunConfigurations() = project
     .flatMap { it.bibRunConfigs }
     .map { it.configuration }
     .filterIsInstance<BibtexRunConfiguration>()
+
+/**
+ * Gets the smallest extractable expression at the given offset
+ */
+fun PsiFile.expressionAtOffset(offset: Int): PsiElement? {
+    val element = findElementAt(offset) ?: return null
+
+    return element.parents(true)
+        .firstOrNull { it.elementType == LatexTypes.NORMAL_TEXT_WORD || it is LatexNormalText || it is LatexParameter || it is LatexMathContent || it is LatexCommandWithParams }
+}
+
+/**
+ * Get "expression" within range specified. An expression is either a PsiElement, or a PsiElement with a specific extraction range in the case that the range lies entirely within a text block
+ */
+fun PsiFile.findExpressionInRange(startOffset: Int, endOffset: Int): LatexExtractablePSI? {
+    val firstUnresolved = findElementAt(startOffset) ?: return null
+    val startElement =
+        if (firstUnresolved is PsiWhiteSpace)
+            findElementAt(firstUnresolved.endOffset) ?: return null
+        else
+            firstUnresolved
+
+    val lastUnresolved = findElementAt(endOffset - 1) ?: return null
+    val endElement =
+        if (lastUnresolved is PsiWhiteSpace)
+            findElementAt(lastUnresolved.startOffset - 1) ?: return null
+        else
+            lastUnresolved
+
+    val commonParent = PsiTreeUtil.findCommonParent(startElement, endElement) ?: return null
+
+    // We will consider an exression to be a sentence or a substring out of text. Here we will mark that in the extraction range.
+    return if (commonParent is LatexNormalText) {
+        commonParent.asExtractable(TextRange(startOffset - commonParent.startOffset, endOffset - commonParent.startOffset))
+    }
+    else
+        commonParent.asExtractable()
+}
+
+/**
+ * Attempts to find the "expression" at the given offset
+ */
+fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
+    val expr = expressionAtOffset(offset)
+    val exprBefore = expressionAtOffset(offset - 1)
+    return when {
+        expr == null -> exprBefore
+        exprBefore == null -> expr
+        PsiTreeUtil.isAncestor(expr, exprBefore, false) -> exprBefore
+        else -> expr
+    }
+}
