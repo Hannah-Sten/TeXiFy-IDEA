@@ -2,7 +2,9 @@ package nl.hannahsten.texifyidea.refactoring
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
+import com.intellij.refactoring.RefactoringActionHandler
 import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.refactoring.introducecommand.LatexExtractCommandHandler
 
 /**
  * This class is used to enable inline refactoring.
@@ -20,4 +22,6 @@ class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
     override fun isSafeDeleteAvailable(element: PsiElement): Boolean {
         return element is LatexParameterText
     }
+
+    override fun getIntroduceVariableHandler(): RefactoringActionHandler = LatexExtractCommandHandler()
 }

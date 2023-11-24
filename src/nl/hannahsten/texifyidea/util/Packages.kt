@@ -1,10 +1,12 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.TreeUtil
 import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -14,6 +16,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 
@@ -33,6 +36,36 @@ object PackageUtils {
         ?.readLine()
         ?.split(";")
         ?.toList() ?: emptyList()
+
+    /**
+     * Get the default psi element to insert new packages/definitions after.
+     * The anchor will be the given preferred anchor if not null.
+     */
+    fun getDefaultInsertAnchor(commands: Collection<LatexCommands>, preferredAnchor: LatexCommands?): Pair<PsiElement?, Boolean> {
+        val classHuh = commands.asSequence()
+            .filter { cmd ->
+                cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd || cmd.name == LatexGenericRegularCommand.LOADCLASS.cmd
+            }
+            .firstOrNull()
+        val anchorAfter: PsiElement?
+        val prependNewLine: Boolean
+        if (classHuh != null) {
+            anchorAfter = classHuh
+            prependNewLine = true
+        }
+        else {
+            // No other sensible location can be found
+            anchorAfter = null
+            prependNewLine = false
+        }
+
+        return if (preferredAnchor == null) {
+            Pair(anchorAfter, prependNewLine)
+        }
+        else {
+            Pair(preferredAnchor, true)
+        }
+    }
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
@@ -69,33 +102,7 @@ object PackageUtils {
             }
         }
 
-        val prependNewLine: Boolean
-        // The anchor after which the new element will be inserted
-        val anchorAfter: PsiElement?
-
-        // When there are no usepackage commands: insert below documentclass.
-        if (last == null) {
-            val classHuh = commands.asSequence()
-                .filter { cmd ->
-                    "\\documentclass" == cmd.commandToken
-                        .text || "\\LoadClass" == cmd.commandToken.text
-                }
-                .firstOrNull()
-            if (classHuh != null) {
-                anchorAfter = classHuh
-                prependNewLine = true
-            }
-            else {
-                // No other sensible location can be found
-                anchorAfter = null
-                prependNewLine = false
-            }
-        }
-        // Otherwise, insert below the lowest usepackage.
-        else {
-            anchorAfter = last
-            prependNewLine = true
-        }
+        val (anchorAfter, prependNewLine) = getDefaultInsertAnchor(commands, last)
 
         var command = commandName
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
@@ -103,6 +110,21 @@ object PackageUtils {
 
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
 
+        insertNodeAfterAnchor(file, anchorAfter, prependNewLine, newNode)
+    }
+
+    /**
+     * Insert an AST node after a certain anchor, possibly with a newline.
+     *
+     * @param prependBlankLine If prependNewLine is true, you can set this to true to insert an additional blank line.
+     */
+    fun insertNodeAfterAnchor(
+        file: PsiFile,
+        anchorAfter: PsiElement?,
+        prependNewLine: Boolean,
+        newNode: ASTNode,
+        prependBlankLine: Boolean = false
+    ) {
         // Don't run in a write action, as that will produce a SideEffectsNotAllowedException for INVOKE_LATER
 
         // Avoid "Attempt to modify PSI for non-committed Document"
@@ -111,18 +133,21 @@ object PackageUtils {
             .doPostponedOperationsAndUnblockDocument(file.document() ?: return)
         PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return)
         runWriteAction {
+            val newlineText = if (prependBlankLine) "\n\n" else "\n"
+            val newLine = LatexPsiHelper(file.project).createFromText(newlineText).firstChild.node
             // Avoid NPE, see #3083 (cause unknown)
-            if (anchorAfter != null && com.intellij.psi.impl.source.tree.TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
+            if (anchorAfter != null && TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
                 val anchorBefore = anchorAfter.node.treeNext
-                @Suppress("KotlinConstantConditions")
-                if (prependNewLine) {
-                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                if (prependNewLine || prependBlankLine) {
                     anchorAfter.parent.node.addChild(newLine, anchorBefore)
                 }
                 anchorAfter.parent.node.addChild(newNode, anchorBefore)
             }
             else {
                 // Insert at beginning
+                if (prependNewLine || prependBlankLine) {
+                    file.node.addChild(newLine, file.firstChild.node)
+                }
                 file.node.addChild(newNode, file.firstChild.node)
             }
         }
