@@ -6,7 +6,10 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Pass
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.*
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parents
@@ -45,7 +48,7 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
                 else
                     "refactoring.introduce.selection.error"
             )
-            val title = RefactoringBundle.message("introduce.variable.title")
+            val title = "Introduce Custom Command"
             val helpId = "refactoring.extractVariable"
             CommonRefactoringUtil.showErrorHint(project, editor, message, title, helpId)
         }
@@ -65,9 +68,7 @@ class LatexExtractCommandHandler : RefactoringActionHandler {
         }
     }
 
-    override fun invoke(project: Project, elements: Array<out PsiElement>, dataContext: DataContext?) {
-        TODO("This should never get called")
-    }
+    override fun invoke(project: Project, elements: Array<out PsiElement>, dataContext: DataContext?) { }
 }
 
 fun showExpressionChooser(
@@ -229,7 +230,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
 
                 val interruptedParent = expr.firstParentOfType(LatexNormalText::class)
                     ?: expr.firstParentOfType(LatexParameterText::class)
-                    ?: throw IllegalStateException("You suck")
+                    ?: return emptyList()
                 val interruptedText = interruptedParent.text
                 // in this text block, if it multiline, find current line
                 if (interruptedText.contains('\n')) {

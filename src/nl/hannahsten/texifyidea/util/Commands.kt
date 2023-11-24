@@ -6,17 +6,17 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.stream.Collectors
 
@@ -42,14 +42,7 @@ fun getIncludeCommands(): Set<String> {
 }
 
 /**
- * Inserts a usepackage statement for the given package in a certain file.
- *
- * @param file
- *          The file to add the usepackage statement to.
- * @param packageName
- *          The name of the package to insert.
- * @param parameters
- *          Parameters to add to the statement, `null` or empty string for no parameters.
+ * Inserts a custom c custom command definition.
  */
 fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: String = "mycommand"): PsiElement? {
     if (!file.isWritable) return null
@@ -58,13 +51,13 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 
     var last: LatexCommands? = null
     for (cmd in commands) {
-        if (cmd.commandToken.text == "\\newcommand") {
+        if (cmd.name == LatexNewDefinitionCommand.NEWCOMMAND.cmd) {
             last = cmd
         }
-        else if (cmd.commandToken.text == "\\usepackage") {
+        else if (cmd.name == LatexGenericRegularCommand.USEPACKAGE.cmd) {
             last = cmd
         }
-        else if (cmd.commandToken.text == "\\begin" && cmd.requiredParameter(0) == "document") {
+        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameter(0) == "document") {
             last = cmd
             break
         }
