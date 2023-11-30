@@ -77,9 +77,9 @@ tasks.compileTestKotlin {
 dependencies {
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
-    // These lines can sometimes be problematic on Linux, but are required for SumatraPDF
-    implementation(files("lib/JavaDDE.dll"))
-    implementation(files("lib/JavaDDEx64.dll"))
+    // The dependency is runtime only to avoid "this archive is not a zip file" error on Linux
+    runtimeOnly(files("lib/JavaDDE.dll"))
+    runtimeOnly(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
