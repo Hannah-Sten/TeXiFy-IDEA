@@ -28,7 +28,7 @@ class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
             Notification(
                 "LaTeX",
                 "Library could not be imported completely",
-                "Some bib elements might be missing in the imported library. See the TeXiFy wiki for more information.",
+                "Some bib elements might be missing in the imported library. See the TeXiFy documentation for more information.",
                 NotificationType.WARNING
             ).notify(project)
         }
