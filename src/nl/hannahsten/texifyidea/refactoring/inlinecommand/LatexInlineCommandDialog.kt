@@ -54,7 +54,6 @@ class LatexInlineCommandDialog(
                 GlobalSearchScope.projectScope(myProject)
             )
         )
-        updateSettingsPreferences()
     }
 
     override fun getNumberOfOccurrences(): Int {

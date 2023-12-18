@@ -228,7 +228,7 @@ object TexifyIcons {
      * @throws IllegalArgumentException
      * When `extension` is null.
      */
-    fun getIconFromExtension(extension: String?, default: Icon?=null): Icon? {
+    fun getIconFromExtension(extension: String?, default: Icon? = null): Icon? {
         return if (extension == null) {
             default
         }

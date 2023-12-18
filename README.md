@@ -13,7 +13,8 @@
 
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
-No idea where to start? Have a look at the [installation instructions](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation). Otherwise, take a look at the [tips](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation) instead, or browse through the documentation in the [Wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features)
+Read the [Quick Start guide](https://hannah-sten.github.io/TeXiFy-IDEA/quick-start-guide.html) to get started directly.
+No idea where to start, or new to LaTeX or IntelliJ? Have a look at the [installation guide](https://hannah-sten.github.io/TeXiFy-IDEA/installation-guide.html), or browse through the [documentation](https://hannah-sten.github.io/TeXiFy-IDEA).
 
 Create the most beautiful LaTeX documents with the user friendliness of the IntelliJ platform.
 This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin.
@@ -32,45 +33,45 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 
 ## Features
 
-* [Syntax highlighting](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Syntax-highlighting)
-* [Autocompletion of labels, (custom defined) commands and environments](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Autocomplete)
+* [Syntax highlighting](https://hannah-sten.github.io/TeXiFy-IDEA/editor.html#color-scheme)
+* [Autocompletion of labels, (custom defined) commands and environments](https://hannah-sten.github.io/TeXiFy-IDEA/code-completion.html)
 * [Writer ergonomics - writing LaTeX made less cumbersome](https://www.jetbrains.com/idea/features/)
-* [Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Compilers)
-* [Inspections. Intentions. And heaps more inspections](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features#inspections)
-* [Full BibTeX support](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features#bibtex)
-* [Formatter for LaTeX and BibTeX](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-formatting)
-* [Structure view for LaTeX and BibTeX with filters](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Structure%20view)
-* [Code folding for imports, sections, and environments](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-folding)
-* [Built-in pdf viewer via the PDF Viewer plugin, including forward and backward search](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Built-in-pdf-viewer-support)
-* [SumatraPDF (Windows)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/SumatraPDF-support), [Evince (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Evince-support), [Okular (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Okular-support), [Zathura (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Zathura-support) and [Skim (MacOS)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Skim-support) support with forward and backward search
-* [Smart Quotes](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Smart-quotes)
-* [Unicode math preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Unicode-math-preview)
-* [Equation preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Equation-preview)
-* [Gutter icons for quick compilation and file includes](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/File-inclusion-navigation)
-* [Fancy icons that fit in with the IntelliJ style](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/UI#Icons)
-* [Brace matching](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Brace-matching)
-* [Word counting tool](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Menu-entries#Word-counting-tool)
-* [File templates for .tex, .sty, .cls and .bib files](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Menu-entries#file-templates)
-* [Automagically import packages of common commands](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Automatic-package-importing)
-* [Go to declaration](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Go-to-declaration) and [find usages](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Find-usages) for labels, citations, and custom commands
-* [Renaming of labels, citations, environments and files](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Refactoring)
-* [Shortcuts for styling text](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features#menu-entries)
-* [Line commenter](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Line-commenting)
-* [Support for user-created document classes and packages](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/File-inclusion-navigation)
+* [Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber](https://hannah-sten.github.io/TeXiFy-IDEA/run-configuration-settings.html#latex-compilers)
+* [Inspections. Intentions. And heaps more inspections](https://hannah-sten.github.io/TeXiFy-IDEA/inspections.html)
+* [Full BibTeX support](https://hannah-sten.github.io/TeXiFy-IDEA/bibtex.html)
+* [Formatter for LaTeX and BibTeX](https://hannah-sten.github.io/TeXiFy-IDEA/code-formatting.html)
+* [Structure view for LaTeX and BibTeX with filters](https://hannah-sten.github.io/TeXiFy-IDEA/code-navigation.html#structure-view)
+* [Code folding for imports, sections, and environments](https://hannah-sten.github.io/TeXiFy-IDEA/general.html#code-folding)
+* [Built-in pdf viewer via the PDF Viewer plugin, including forward and backward search](https://hannah-sten.github.io/TeXiFy-IDEA/pdf-viewers.html#pdf-viewer-intellij-plugin)
+* [SumatraPDF (Windows)](https://hannah-sten.github.io/TeXiFy-IDEA/pdf-viewers.html#sumatrapdf), [Evince (Linux)](https://hannah-sten.github.io/TeXiFy-IDEA/pdf-viewers.html#evince), [Okular (Linux)](https://hannah-sten.github.io/TeXiFy-IDEA/pdf-viewers.html#okular), [Zathura (Linux)](https://hannah-sten.github.io/TeXiFy-IDEA/pdf-viewers.html#zathura) and [Skim (MacOS)](https://hannah-sten.github.io/TeXiFy-IDEA/pdf-viewers.html#skim) support with forward and backward search
+* [Smart Quotes](https://hannah-sten.github.io/TeXiFy-IDEA/texify-settings.html#smart-quote-substitution)
+* [Unicode math preview](https://hannah-sten.github.io/TeXiFy-IDEA/general.html#unicode-math-preview)
+* [Equation preview](https://hannah-sten.github.io/TeXiFy-IDEA/tool-windows.html#equation-preview)
+* [Gutter icons for quick compilation and file includes](https://hannah-sten.github.io/TeXiFy-IDEA/running-a-latex-file.html#gutter-icons)
+* [Fancy icons that fit in with the IntelliJ style](https://hannah-sten.github.io/TeXiFy-IDEA/editing-a-latex-file.html)
+* [Brace matching](https://hannah-sten.github.io/TeXiFy-IDEA/code-completion.html#brace-matching)
+* [Word counting tool](https://hannah-sten.github.io/TeXiFy-IDEA/tools.html#word-counting-tool)
+* [File templates for .tex, .sty, .cls and .bib files](https://hannah-sten.github.io/TeXiFy-IDEA/editor.html#file-templates)
+* [Automagically import packages of common commands](https://hannah-sten.github.io/TeXiFy-IDEA/editing-a-latex-file.html#automatic-package-importing)
+* [Go to declaration](https://hannah-sten.github.io/TeXiFy-IDEA/code-navigation.html#go-to-declaration-for-labels-citations-and-commands) and [find usages](https://hannah-sten.github.io/TeXiFy-IDEA/code-navigation.html#find-usages) for labels, citations, and custom commands
+* [Renaming of labels, citations, environments and files](https://hannah-sten.github.io/TeXiFy-IDEA/editing-a-latex-file.html#renaming-labels-and-environments)
+* [Shortcuts for styling text](https://hannah-sten.github.io/TeXiFy-IDEA/editing-a-latex-file.html#styling-text)
+* [Line commenter](https://hannah-sten.github.io/TeXiFy-IDEA/editing-a-latex-file.html#line-commenting)
+* [Support for user-created commands, document classes and packages](https://hannah-sten.github.io/TeXiFy-IDEA/editing-a-latex-file.html#support-for-user-defined-commands)
 
-A more extensive (but not complete) list as well as documentation for these features can be found in the [Wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features).
+The full documentation can be found at https://hannah-sten.github.io/TeXiFy-IDEA
 You can find IntelliJ documentation at https://www.jetbrains.com/idea/documentation/ and https://www.jetbrains.com/help/idea/.
 
 ## Installation instructions and getting started
 
-See https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation for how to install everything you need to get up and running with TeXiFy-IDEA.
+See the [quick start guide](https://hannah-sten.github.io/TeXiFy-IDEA/quick-start-guide.html) or the [full installation guide](https://hannah-sten.github.io/TeXiFy-IDEA/installation-guide.html) for how to install everything you need to get up and running with TeXiFy-IDEA.
 
-## Other helpful wiki links
+## Other helpful links
 
-* [Main documentation wiki page](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features)
-* [Troubleshooting issues with TeXiFy-IDEA](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Troubleshooting)
-* [Installing alpha builds](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Alpha-builds) for the latest features.
-* [Building the project from source](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Contributing-to-TeXiFy#building-from-source)
+* [Troubleshooting issues with TeXiFy-IDEA](https://hannah-sten.github.io/TeXiFy-IDEA/troubleshooting.html)
+* [Editing the documentation](https://hannah-sten.github.io/TeXiFy-IDEA/contributing-to-the-documentation.html)
+* [Installing pre-release builds](https://hannah-sten.github.io/TeXiFy-IDEA/installing-pre-release-builds.html) for the latest features.
+* [Building the project from source](https://hannah-sten.github.io/TeXiFy-IDEA/contributing-to-the-source-code.html)
 
 ## Screenshots
 
