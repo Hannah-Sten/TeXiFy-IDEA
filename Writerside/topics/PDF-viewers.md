@@ -99,8 +99,15 @@ The default shortcut for inverse search in Okular is <shortcut>Shift + Left mous
 _Note that inverse search only works when you’re viewing the pdf in browse mode (<shortcut>Ctrl + 1</shortcut>)_
 
 * In Okular, open the settings and go to the Editor tab.
-* For Okular version > 1.8.3, select TeXiFy-IDEA from the list. For Okular 1.8.3 or less, select the Custom Text Editor in the editor field, and type the command `idea --line %l %f` (for PyCharm replace `idea` with `pycharm`).
-* Check that `idea` is available with `which idea`. If it isn’t, you might have to enable the "Generate shell scripts" settings in Jetbrains Toolbox, see the [IntelliJ documentation](https://www.jetbrains.com/help/idea/opening-files-from-command-line.html) for more information.
+* Specify the correct binary for your Jetbrains IDE
+* General instructions:
+  * custom Text editor and add `{bin} --line %l %f`
+* For IDEA:
+  *  For Okular version > 1.8.3, select TeXiFy-IDEA from the list. For Okular 1.8.3 or less, select the Custom Text Editor in the editor field, and type the command `idea --line %l %f`
+* For Pycharm
+  * `pycharm-community --line %l %f`
+* If you have problems ensure that your binary is in the system path.  You can check with the `which {bin}` command, so for IDEA: `which idea` and for pycharm community edition `which pycharm-community`
+* If the binary is missing from the system path you may need to add it e.g. via `echo export PATH="$PATH:/bin/pest" >> ~/.bashrc`.  Some users have needed to enable the "Generate shell scripts" settings in Jetbrains Toolbox; however I have had success with a snap installed pycharm (no Jetbrains Toolbox installed). For more information on the Jetbrains Toolbox see the [IntelliJ documentation](https://www.jetbrains.com/help/idea/opening-files-from-command-line.html).
 
 See the [Okular documentation](https://docs.kde.org/stable5/en/kdegraphics/okular/inverse_search.html) for more information on inverse search with Okular.
 
