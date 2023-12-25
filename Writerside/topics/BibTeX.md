@@ -26,7 +26,7 @@ TeXiFy will try to detect this, and automatically compile with the right compile
 
 ### Using the bibtex compiler and no extra package
 
-#### Example
+#### Example {id="example-bibtex-compiler"}
 
 `main.tex`
 ```latex
@@ -55,7 +55,7 @@ For a downloadable example, see [https://github.com/PHPirates/bibtex-mwe](https:
 
 ### Using the biber compiler and the biblatex package
 
-#### Example
+#### Example {id="example-biber-biblatex"}
 An example of using the biblatex package:
 
 `main.tex`
@@ -108,7 +108,7 @@ If the references do not appear correctly and no bibliography section is shown, 
 
 * On Linux, make sure you have the 'Separate output files from source' checkbox disabled.
 * Make sure that a BibTeX run configuration was created, after running you should see multiple tabs in the Run window at the bottom of your screen, like `main`, `main bibliography`, `main`, `main`. If not, you have multiple options.
-    1. Switch to a different compiler which handles BibTeX automatically for you. You can for example use latexmk, see [Compilers#latexmk](Compilers#latexmk) on how to install it, then [switch to it](Compilers#Switching-compilers). An other compiler which can do this is [Tectonic](Compilers#Tectonic).
+    1. Switch to a different compiler which handles BibTeX automatically for you. You can for example use latexmk, see [latexmk](Run-configuration-settings.md#latex-compilers-latexmk) on how to install it, then [switch to it](Run-configuration-settings.md#switching-compilers). An other compiler which can do this is [Tectonic](Run-configuration-settings.md#latex-compilers-tectonic).
     2. Create a BibTeX run configuration manually:
         * Click the dropdown list with the name of your run configuration (probably the name of your main file)
         * Click Edit Configurations

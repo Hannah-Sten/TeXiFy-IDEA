@@ -30,8 +30,8 @@ This inspection provides a quick fix to fix the path in the package name.
 
 For some common commands TeXiFy knows which package is needed to use them.
 A quickfix is available to add the missing `\usepackage` or `\RequirePackage` command.
-For more information, see [Automagically import packages of common commands](Automatic-package-importing).
+For more information, see [Automagically import packages of common commands](Editing-a-LaTeX-file.md#automatic-package-importing).
 
-Note that if TeXiFy complains incorrectly that you did not import the package, you may need to tell TeXiFy which file is your root file, see [Magic comments](Magic-comments).
+Note that if TeXiFy complains incorrectly that you did not import the package, you may need to tell TeXiFy which file is your root file, see [Magic comments](Editing-a-LaTeX-file.md#magic-comments).
 It could also be that you installed TeX Live via your package manager instead of via the official installer.
-In general it is better (and easier for TeXiFy) to install the official distribution, see [Installation](Installation#texlive).
+In general it is better (and easier for TeXiFy) to install the official distribution, see [Installation](Installation-guide.md#installing-tex-live).

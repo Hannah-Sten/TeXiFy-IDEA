@@ -4,16 +4,16 @@ Intentions are similar to inspection quickfixes, but they are always available, 
 
 ## Add label
 
-Add a label to a sectioning command. Also see [Missing label inspection](Conventions#Missing-labels).
+Add a label to a sectioning command. Also see [Missing label inspection](Code-style-issues.md#missing-labels).
 
 ## Toggle inline/display math mode
 
-Switch between inline and display math. A shortcut for an action also present in the [Convert to other math environment](Intentions#convert-to-other-math-environment) intention.
+Switch between inline and display math. A shortcut for an action also present in the [Convert to other math environment](Intentions.md#convert-to-other-math-environment) intention.
 
 ## Insert comments to disable the formatter
 
 Insert `% @formatter:off` and `% @formatter:on` comments around the environment.
-See [Code formatting](Code-formatting).
+See [Code formatting](Code-formatting.md#disabling-the-formatter).
 Currently only enabled on verbatim-like environments.
 
 ## Change to `\left..\right`
@@ -25,7 +25,7 @@ Add `\left` and `\right` to brackets, e.g. changing `$(\frac 1 2)$` into `\left(
 Switch between math environments, e.g. `align*` and inline math.
 
 ## Move section contents to separate file {id="move-section-to-file"}
-Similar to [move selection contents to separate file](Intentions#selection-to-file), except that it is triggered on
+Similar to [move selection contents to separate file](Intentions.md#selection-to-file), except that it is triggered on
 a section heading. Any `\section{...}` command will trigger this. It turns
 
 **main.tex**

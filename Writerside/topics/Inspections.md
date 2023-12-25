@@ -1,7 +1,7 @@
 # Inspections
 
 Inspections check your LaTeX and BibTeX as you write, and highlight any possible issues.
-If you see a minor bug in an inspection, like some missing metadata about commands or environments, you are encouraged to check if you can [fix it yourself](Contributing-to-TeXiFy#editing-magic).
+If you see a minor bug in an inspection, like some missing metadata about commands or environments, you are encouraged to check if you can [fix it yourself](Contributing-to-the-source-code.md#adding-an-inspection).
 
 
 ## Suppress inspections

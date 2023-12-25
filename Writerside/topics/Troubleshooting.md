@@ -2,8 +2,8 @@
 
 If you run into troubles while using TeXiFy, you can try the following things.
 
-* If you have problems with installation, make sure you followed the [Installation wiki page](Installation).
-* Search through the features list at [Features](Features) or the [complete wiki](Features#searching) to find documentation about the feature you’re having problems with.
+* If you have problems with installation, make sure you followed the [installation guide](Installation-guide.md).
+* Search this wiki using the search bar in the top right corner.
 * Search through the [GitHub issues](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues?q=is%3Aissue) to find similar problems, and if your issue has already been resolved
 * Look through the list of common problems at this page
 * Ask for help at [gitter](https://gitter.im/TeXiFy-IDEA)
@@ -40,7 +40,7 @@ This has the advantage that it is relatively easy to implement features which ma
 We intend to make the parser such that it will accept almost all LaTeX that we think is well-structured and readable.
 
 If you do encounter a parse error that you think is incorrect, please raise an issue.
-As a workaround, if you want to keep syntax highlighting for that part you can use magic comments to disable the formatter (see [Code formatting](Code-formatting)) to avoid it incorrectly formatting your file:
+As a workaround, if you want to keep syntax highlighting for that part you can use magic comments to disable the formatter (see [Code formatting](Code-formatting.md#disabling-the-formatter)) to avoid it incorrectly formatting your file:
 
 ```latex
 % @formatter:off
@@ -90,7 +90,7 @@ But the only reason this is valid LaTeX at all is the `\if`, and whether we need
 ## Pasting images and tables into LaTeX
 
 If you drag and drop an image file into a LaTeX file, or paste an image or table from your clipboard, TeXiFy will start a wizard to help you inserting the image or table into your document.
-See [Insert Graphics wizard](Menu-entries.md#insert-graphic-wizard) and [Table Creation Wizard](Menu-entries.md#table-creation-wizard) for starting these wizards manually.
+See [Insert Graphics wizard](Tools.md#insert-graphic-wizard) and [Table Creation Wizard](Tools.md#table-creation-wizard) for starting these wizards manually.
 
 ### Pasting images from the clipboard
 
@@ -106,7 +106,7 @@ An Insert Graphic dialog will be opened immediately after saving the pasted imag
 
 ## The equation/TikZ preview is not working
 
-Make sure you have installed the dependencies as described in [the Preview page](Tool-Windows.md#Equation-preview).
+Make sure you have installed the dependencies as described in [the Preview page](Tool-Windows.md#equation-preview).
 
 If that doesn’t help and you can run Kotlin programs, you can run the program below and report the output in your (new) issue.
 
@@ -326,7 +326,7 @@ This is a TeX Live security setting which you can change by editing `/path/to/te
 ## My index is not generated correctly
 
 If you have TeXiFy version 0.6.7 or later, make sure that makeindex is run by TeXiFy, so you should see a run window called makeindex with the output.
-See [Makeindex](Makeindex).
+See [Makeindex](Run-configuration-settings.md#makeindex).
 
 ### Version 0.6.6 or older
 Note that you _have_ to disable both the `auxil/` (in case of MiKTeX) and `out/` directories in the run configuration, otherwise the `.idx` file will not be found by the index package.

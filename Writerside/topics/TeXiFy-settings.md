@@ -45,23 +45,23 @@ You can disable the automatic insertion of `\item` using this setting.
 ## Option to disable automatic package dependency checks
 
 You can disable the automatic insertion of package dependencies.
-This also disables the inspection which checks for [Missing imports](Probable-bugs#Missing-imports).
-For more information, see [Automagically import packages of common commands](Automatic-package-importing).
+This also disables the inspection which checks for [Missing imports](Packages.md#missing-imports).
+For more information, see [Automagically import packages of common commands](Editing-a-LaTeX-file.md#automatic-package-importing).
 
 If you disable this, consider if TeXiFy should support your use case and please open an issue if so.
 
 ## Option to enable automatic compilation
 _Since b0.6.8_
 
-See [Support for automatic compilation](Automatic-compilation).
+See [Support for automatic compilation](Running-a-LaTeX-file.md#automatic-compilation).
 
 ## Option to enable continuous preview of math and TikZ environments
 _Since b0.6.7_
 
 When enabled and you are typing in a math environment (for example inline math `$..$` or display math `\[ ... \]`) then a preview window will pop up which will show how the math will look like. The same holds for `tikzpicture` environments.
 
-For more information about the preview and how to install dependencies, see [Equation preview](Preview#Equation-preview).
-For continuous compilation of the complete document, see [Latexmk](Compilers#Latexmk).
+For more information about the preview and how to install dependencies, see [Equation preview](Tool-Windows.md#equation-preview).
+For continuous compilation of the complete document, see [Latexmk](Run-configuration-settings.md#latex-compilers-latexmk).
 
 ![Continuous preview](continuous-preview.gif)
 
@@ -89,11 +89,11 @@ If this is a problem, you can turn this feature off by deselecting this checkbox
 
 ## Textidote linter
 
-See [Textidote](Typesetting-issues#Textidote)
+See [Textidote](Spacing.md#textidote)
 
 ## Latexindent command line options
 
-Extra command line options to [Latexindent](Code-formatting#Latexindent)
+Extra command line options to [Latexindent](Code-formatting.md#latexindent)
 
 ## Smart quote substitution
 
@@ -145,7 +145,7 @@ Each project can either use the globally configured conventions (called `Default
 
 When a section grows bigger than the configured number of characters, and there are also other sections in the file, TeXiFy will show a warning and suggest to move the section to separate file.
 
-See [Too large section inspection](Code-style-issues#too-large-section).
+See [Too large section inspection](Code-style-issues.md#too-large-section).
 
 ### Label Conventions
 
@@ -157,5 +157,5 @@ In addition, you can configure the preferred prefix for a label, e.g., `fig:` fo
 
 ![Added Label](https://user-images.githubusercontent.com/7955528/153943754-176325aa-cd3c-4efb-8ec6-0b561d8ac3dc.png)
 
-See [Label conventions inspection](Code-style-issues#Label-conventions) and [Missing labels inspection](Code-style-issues#Missing-labels).
+See [Label conventions inspection](Code-style-issues.md#label-conventions) and [Missing labels inspection](Code-style-issues.md#missing-labels).
 

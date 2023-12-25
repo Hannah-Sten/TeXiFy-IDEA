@@ -66,7 +66,7 @@ If you select it, then `\usepackage{amsmath}` will be inserted automatically, as
 
 Note that not all commands' packages might be known to TeXiFy, see [SDK settings](Project-configuration.md#sdks) for ways to help TeXiFy in this.
 
-## Renaming labels and environments
+## Renaming labels and environments {id="refactoring"}
 
 _Since b0.6.9_
 

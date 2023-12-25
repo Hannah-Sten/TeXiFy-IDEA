@@ -22,7 +22,7 @@ This means you can choose for example your favourite compiler or pdf viewer in t
 Note that choosing a main file to compile in the template generally is not useful because it will be different for each new run config, and when creating a run config from context (like when using the gutter icon next to `\begin{document}`), it will be overwritten anyway.
 In principle, all other settings in the run configuration you can configure in the template.
 This includes the output path, using the `{mainFileParent}` and `{projectDir}` placeholders which will be resolved when the run configuration is created.
-See the [Output path section](#outputpath) below.
+See the [Output path section](Run-configuration-settings.md#set-a-custom-path-for-output-files) below.
 
 You can change the template on two levels, project and global level.
 
@@ -63,7 +63,7 @@ Right-clicking in the log message tab will bring up a context menu in which you 
 
 If you see anything in the log tab which could be improved, especially errors/warnings we may have missed, please [open an issue](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new).
 
-The log message parsing is mostly based on the list from the [Errors and warnings](Errors-and-warnings) page.
+The log message parsing is mostly based on the list from the [Errors and warnings](Errors-and-warnings.md) page.
 
 ## Automatic compilation
 
@@ -96,7 +96,7 @@ Also see [https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html]
 
 Some compilers, at least latexmk and tectonic, also support automatic compilation.
 It depends on your preferences whether this will work better than the autocompile in TeXiFy or not.
-See [Compilers](Compilers) for more information.
+See [Compilers](Run-configuration-settings.md#latex-compilers) for more information.
 
 ## Installing LaTeX packages
 

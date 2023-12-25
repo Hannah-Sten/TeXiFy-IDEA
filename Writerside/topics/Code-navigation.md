@@ -21,7 +21,7 @@ For more information about the structure view, see [https://www.jetbrains.com/he
 
 Web links in `\url` and `\href` commands are clickable using <shortcut>Ctrl + Click</shortcut>.
 
-## Go to declaration for labels, citations and commands
+## Go to declaration for labels, citations and commands {id="go-to-declaration"}
 
 By pressing <shortcut>Ctrl + B</shortcut> on a reference to a label, or a citation of a bibtex entry, your cursor will go to the declaration of the reference or citation.
 In general, you can go back to your previous cursor location with <shortcut>Ctrl + Alt + &lt;-</shortcut>
@@ -91,11 +91,11 @@ Note that you need to compile `presentation.tex` before `main.tex`, and that you
 
 _Since b0.6.9_
 
-In general, if [Go to declaration](Go-to-declaration) on something works, then Find Usages will probably work as well.
+In general, if [Go to declaration](#go-to-declaration) on something works, then Find Usages will probably work as well.
 This holds for at least command definitions, labels and bibtex citations.
 
 ### Find usages for commands
-As a complement for [Go to declaration](Go-to-declaration), you can easily find usages of LaTeX commands you defined in your document, for example using `\newcommand` or `\DeclareMathOperator`, using <shortcut>Ctrl + B</shortcut>.
+As a complement for [Go to declaration](#go-to-declaration), you can easily find usages of LaTeX commands you defined in your document, for example using `\newcommand` or `\DeclareMathOperator`, using <shortcut>Ctrl + B</shortcut>.
 Note that this is the same shortcut as for Go to declaration.
 
 ![find-usages](find-usages.png)
@@ -106,7 +106,7 @@ The same functionality exists for labels, where `\label{mylabel}` is a definitio
 
 Note that your cursor needs to be on the label itself, not on the commands, so `\label{sec:my-<cursor>section}` works but `\lab<cursor>el{sec:my-section}` does not.
 
-Also see [Refactoring](Refactoring).
+Also see [Refactoring](Editing-a-LaTeX-file.md#refactoring).
 
 ## File inclusion navigation
 

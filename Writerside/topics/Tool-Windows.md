@@ -36,7 +36,7 @@ Collections (for Mendeley and Zotero) are currently not supported.
 When adding a Mendeley library you have to log in to you Mendeley account.
 After logging in you can close the dialog by clicking OK.
 Clicking cancel or closing the dialog in any other way will cancel the Mendeley setup.
-You will be logged in to your Mendeley account until you [remove](Tools#library-remove) the library.
+You will be logged in to your Mendeley account until you [remove](Tool-Windows.md#library-remove) the library.
 
 #### Zotero {id="zotero"}
 
@@ -103,7 +103,7 @@ You may need to have certain fonts installed to make this work.
 The current implementation of the Equation Preview was contributed by Sergei Izmailov and requires external dependencies, for which installation instructions follow.
 It also relies on system installed fonts, because it converts svg to image, and svg doesn’t include fonts.
 
-Also see the [option to enable continuous preview of math and TikZ environments](Global-settings#continuous-preview)
+Also see the [option to enable continuous preview of math and TikZ environments](TeXiFy-settings.md#option-to-enable-continuous-preview-of-math-and-tikz-environments)
 
 ### Installation instructions
 This is only necessary if you want to use a custom preamble (using magic comments), or if you have a TeXiFy version older than 0.7.11.

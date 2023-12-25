@@ -31,18 +31,18 @@ On Windows, TeXiFy supports SumatraPDF as a pdf viewer with forward and inverse 
 It can be downloaded from [https://www.sumatrapdfreader.org/download-free-pdf-viewer.html](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html).
 If you know you are on a 64-bit system you can download the 64-bit build installer. If you have no idea, download the normal installer which is the top-most link.
 
-### Shortcuts
+### Shortcuts {id="sumatra-shortcuts"}
 
 The default shortcut for forward search in IntelliJ is <shortcut>Ctrl + Alt + Shift + .</shortcut>.
 The default shortcut for backward search in SumatraPDF is a double left mouse click.
 
 ### Explanation
 
-#### Forward search
+#### Forward search {id="sumatra-forward-search"}
 When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the menu <ui-path>Tools | LaTeX | SumatraPDF | Forward Search</ui-path>, or using the shortcut <shortcut>Ctrl + Alt + Shift + .</shortcut> which is listed there.
 This shortcut can also be used to bring the SumatraPDF window in view when you recompiled a document but you do not see it.
 
-#### Backward or inverse search
+#### Backward or inverse search {id="sumatra-inverse-search"}
 
 You can also do the reverse of the forward search lookup.
 To configure this, the first time you have to press <ui-path>Tools | LaTeX | SumatraPDF | Configure Inverse Search</ui-path>, this will update a setting in SumatraPDF.
@@ -68,18 +68,18 @@ _Since b0.6.6_
 
 On non-Windows systems, TeXiFy supports Evince as a pdf viewer with forward and inverse search.
 
-### Shortcuts
+### Shortcuts {id="evince-shortcuts"}
 
 The default shortcut for forward search in IntelliJ is <shortcut>Ctrl + Alt + Shift + .</shortcut>.
 The default shortcut for backward search in Evince is <shortcut>Ctrl + Left mouse click</shortcut>.
 
 Note that spaces in your path (including filename) are not allowed.
 
-### Forward search
+### Forward search {id="evince-forward-search"}
 When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the menu <ui-path>Tools | LaTeX | Evince | Forward Search</ui-path>, or using the shortcut <shortcut>Ctrl + Alt + Shift + .</shortcut> which is listed there.
 This shortcut can also be used to bring the Evince window in view when you do not see it.
 
-### Backward or inverse search
+### Backward or inverse search {id="evince-inverse-search"}
 
 You can also do the reverse: press <shortcut>Ctrl</shortcut> and click in Evince in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ.
 
@@ -91,11 +91,11 @@ _Since b0.6.7_
 
 On Linux systems, TeXiFy supports Okular as a pdf viewer with forward and inverse search.
 
-### Shortcuts
+### Shortcuts {id="okular-shortcuts"}
 The default shortcut for forward search in IntelliJ is is <shortcut>Ctrl + Alt + Shift + .</shortcut>.
 The default shortcut for inverse search in Okular is <shortcut>Shift + Left mouse click</shortcut>.
 
-### Configuring inverse (or backwards) search
+### Configuring inverse (or backwards) search {id="okular-inverse-search"}
 _Note that inverse search only works when you’re viewing the pdf in browse mode (<shortcut>Ctrl + 1</shortcut>)_
 
 * In Okular, open the settings and go to the Editor tab.
@@ -117,18 +117,18 @@ _Since b0.7.1_
 
 On non-Windows systems, TeXiFy supports [Zathura](https://pwmt.org/projects/zathura/) as a pdf viewer with forward and inverse search.
 
-### Shortcuts
+### Shortcuts {id="zathura-shortcuts"}
 
 The default shortcut for forward search in IntelliJ is <shortcut>Ctrl + Alt + Shift + .</shortcut>.
 The default shortcut for backward search in Zathura is <shortcut>Ctrl + Left mouse click</shortcut>.
 
 Note that spaces in your path (including filename) are not allowed.
 
-### Forward search
+### Forward search {id="zathura-forward-search"}
 When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the menu <ui-path>Tools | LaTeX | Zathura | Forward Search</ui-path>, or using the shortcut <shortcut>Ctrl + Alt + Shift + .</shortcut> which is listed there.
 This shortcut can also be used to bring the Zathura window in view when you do not see it.
 
-### Backward or inverse search
+### Backward or inverse search {id="zathura-inverse-search"}
 
 You can also do the reverse: press <shortcut>Ctrl</shortcut> and click in Zathura in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ.
 
@@ -138,11 +138,11 @@ _Since b0.6.8_
 
 On MacOS, TeXiFy supports Skim as a pdf viewer with forward and inverse search.
 
-### Shortcuts
+### Shortcuts {id="skim-shortcuts"}
 The default shortcut for forward search in IntelliJ is is <shortcut>⌥ + ⇧ + ⌘ + .</shortcut>.
 The default shortcut for inverse search in Skim is <shortcut>⌘ + ⇧ + Click</shortcut>.
 
-### Configuring inverse (or backwards) search
+### Configuring inverse (or backwards) search {id="skim-inverse-search"}
 
 * In Skim, open the settings (<shortcut>⌘ + ,</shortcut>) and go to the Sync tab.
 * Select the Custom as preset, and fill in `idea` as command and `--line %line %file` as arguments (for PyCharm replace `idea` with `pycharm`).

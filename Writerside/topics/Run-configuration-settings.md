@@ -47,7 +47,7 @@ To use LuaLaTeX, install the `luatex` package.
 When using custom fonts, use either LuaLaTeX or XeLaTeX.
 LuaLaTeX has the advantage that you can use Lua (a programming language) in your LaTeX.
 
-### Latexmk
+### Latexmk {id="latex-compilers-latexmk"}
 
 See [https://mg.readthedocs.io/latexmk.html](https://mg.readthedocs.io/latexmk.html) for installation and more information.
 With TeX Live, install with `tlmgr install latexmk`.
@@ -87,7 +87,7 @@ You can use texliveonfly with any other LaTeX compiler.
 
 For more info have a look at [https://tex.stackexchange.com/a/463842/98850](https://tex.stackexchange.com/a/463842/98850)
 
-### Tectonic
+### Tectonic {id="latex-compilers-tectonic"}
 _Since b0.6.6_
 
 See [https://tectonic-typesetting.github.io/en-US/](https://tectonic-typesetting.github.io/en-US/) for installation and more info.
@@ -122,7 +122,7 @@ For more information about paths resolving, see [https://www.tug.org/texinfohtml
 
 ## Custom SumatraPDF path
 
-See [(Windows) Choose a custom path to SumatraPDF](Running/SumatraPDF-support#Portable-SumatraPDF)
+See [(Windows) Choose a custom path to SumatraPDF](PDF-viewers.md#portable-sumatrapdf).
 
 ## Choose pdf viewer
 _Since b0.7.2_
@@ -130,7 +130,7 @@ _Since b0.7.2_
 This lists all supported pdf viewers that are installed on your system, which you can select as the default pdf viewer.
 Selecting a supported viewer as default means that you get forward and inverse search, and that the selected pdf viewer is the viewer that will open when compilation is done.
 
-The supported pdf viewers are [Sumatra](SumatraPDF-support) for Windows, and [Evince](Evince-support) and [Okular](Okular-support) for linux, or no pdf viewer at all.
+The supported pdf viewers are the [internal PDF viewer](PDF-viewers.md#pdf-viewer-intellij-plugin) on all platforms, [Sumatra](PDF-viewers.md#sumatrapdf) for Windows, and [Evince](PDF-viewers.md#evince), [Okular](PDF-viewers.md#okular), and [Zathura](PDF-viewers.md#zathura) for linux, or no pdf viewer at all.
 You can use any other pdf viewer by selecting the option Custom PDF Viewer.
 
 ## Custom pdf viewer
@@ -196,7 +196,7 @@ Some compilers support different output formats than just pdf, for example dvi.
 ## Choose LaTeX distribution
 
 When a different LaTeX distribution is detected, like Dockerized MiKTeX or TeX Live from WSL, you can choose it here.
-Note that you can also change this in the [run configuration template](Run-configurations#template) to always use a different LaTeX distribution.
+Note that you can also change this in the [run configuration template](Running-a-LaTeX-file.md#template-run-configurations) to always use a different LaTeX distribution.
 
 ### Dockerized MiKTeX
 
@@ -222,12 +222,12 @@ Custom output directories are supported.
 
 _Since b0.6.10_
 
-In the [Run configuration settings](Run-configurations#_choose_latex_distribution) you can choose to use TeX Live from WSL.
+In the [Run configuration settings](Run-configuration-settings.md#choose-latex-distribution) you can choose to use TeX Live from WSL.
 
 #### Setup
 
 * Install WSL, see for example [https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-* Install TeX Live as usual, see for example [TeX Live installation](Installation).
+* Install TeX Live as usual, see for example [TeX Live installation](Installation-guide.md#installing-tex-live).
 * Add `export PATH="/path/to/texlive/yyyy/bin/x86_64-linux:$PATH"` to your `~/.bashrc`.
 
 Currently, TeXiFy will use bash to run LaTeX compilers.
@@ -241,7 +241,7 @@ If pdflatex is not found, double check if the default wsl distribution is the on
 
 ## Choose External LaTeX tool run configuration
 
-You can add [BibTeX](BibTeX), [Makeindex](Makeindex) or [other external tool](External-tools) run configurations to your main LaTeX run configuration.
+You can add [BibTeX](BibTeX.md), [Makeindex](External-tools.md#makeindex) or [other external tool](External-tools.md) run configurations to your main LaTeX run configuration.
 They will be run appropriately inbetween LaTeX runs.
 
 ## Other tasks to run before the run configuration, including other run configurations or external tools

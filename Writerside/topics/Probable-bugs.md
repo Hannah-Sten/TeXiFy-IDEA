@@ -69,7 +69,7 @@ Also note that in general it is better to use `\usepackage[T1]{fontenc}`, see [h
 
 #### Change compiler compatibility
 
-Opens the settings page with the [option to change compiler for which to check compatibility](Project-settings#compiler-compatibility).
+Opens the settings page with the [option to change compiler for which to check compatibility](Run-configuration-settings.md#switching-compilers).
 
 ## File argument should not include the extension
 

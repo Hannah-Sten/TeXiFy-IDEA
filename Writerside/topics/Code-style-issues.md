@@ -46,13 +46,13 @@ TeXiFy checks for missing labels for sections, chapters and environments. If any
 
 The inserted label is guaranteed to be unique and follows the label conventions. For sections and chapters the label is inserted after the section, for environments the label is inserted in the environment. If the environment already contains a `\caption`, the label is inserted after the `\caption`. Otherwise the label would label the surrounding environment.
 
-You can configure in Settings which elements need a label, see [Conventions settings.](Features#Conventions)
+You can configure in Settings which elements need a label, see [Conventions settings.](TeXiFy-settings.md#conventions)
 
 ## Label conventions
 
 TeXiFy defines label conventions to specify how labels should typically look like and includes an inspection to verify that all labels adhere to the convention. Furthermore, labels inserted as part of a quickfix are also named accordingly. The convention states, that labels should have a prefix depending on the command or environment they label. For example, a label for a figure has the prefix `fig:`.
 
-The prefixes can be configured in settings, see [Conventions settings.](Features#Conventions)
+The prefixes can be configured in settings, see [Conventions settings.](TeXiFy-settings.md#conventions)
 
 ## Start sentences on a new line
 
@@ -111,4 +111,4 @@ It will probably also confuse anyone (like your future self) who reads your LaTe
 
 ## Too large section {id="too-large-section"}
 
-Similar to [move selection contents to separate file](Intentions#selection-to-file) and [move section contents to separate file](Intentions#move-section-to-file), except that this is a visible warning on a section command whenever a section is too large (currently some thousand characters).
+Similar to [move selection contents to separate file](Intentions.md#selection-to-file) and [move section contents to separate file](Intentions.md#move-section-to-file), except that this is a visible warning on a section command whenever a section is too large (currently some thousand characters).
