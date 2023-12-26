@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
  *
  * @author Thomas
  */
-abstract class ExternalReformatAction(title: String, val isValidFile: (file: PsiFile) -> Boolean) : AnAction(title), DumbAware {
+abstract class ExternalReformatAction(val isValidFile: (file: PsiFile) -> Boolean) : AnAction(), DumbAware {
 
     override fun update(event: AnActionEvent) {
         // Possible improvement: make visible anyway in LaTeX project (but only enabled if cursor in file)

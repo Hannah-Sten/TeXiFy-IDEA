@@ -6,16 +6,18 @@
         </action>
 
         <!-- LaTeX Code menu -->
-        <action id="texify.ReformatLatexindent" class="nl.hannahsten.texifyidea.action.reformat.ReformatWithLatexindent" description="Run latexindent.pl" >
+        <!--suppress PluginXmlCapitalization -->
+        <action id="texify.ReformatLatexindent" class="nl.hannahsten.texifyidea.action.reformat.ReformatWithLatexindent" text="Reformat with latexindent" description="Reformat File with latexindent.pl" >
             <add-to-group group-id="CodeFormatGroup" anchor="after" relative-to-action="ShowReformatFileDialog" />
         </action>
-        <action id="texify.ReformatBibtexTidy" class="nl.hannahsten.texifyidea.action.reformat.ReformatWithBibtexTidy" description="Run bibtex-tidy" >
+        <!--suppress PluginXmlCapitalization -->
+        <action id="texify.ReformatBibtexTidy" class="nl.hannahsten.texifyidea.action.reformat.ReformatWithBibtexTidy" text="Reformat with bibtex-tidy" description="Reformat File with bibtex-tidy" >
             <add-to-group group-id="CodeFormatGroup" anchor="after" relative-to-action="ShowReformatFileDialog" />
         </action>
 
         <!-- LaTeX Analyze menu -->
         <action class="nl.hannahsten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
-                text="_Word Count" description="Estimate the word count of the currently active .tex file and inclusions.">
+                text="_Word Count" description="Estimate the word count of the currently active .tex file and inclusions." icon="nl.hannahsten.texifyidea.TexifyIcons.WORD_COUNT">
             <keyboard-shortcut first-keystroke="control alt W" keymap="$default"/>
             <override-text place="GoToAction" text="LaTeX _Word Count"/>
             <!-- Prior to idea 213, the Code menu was called Analyze (but only in IntelliJ) -->
