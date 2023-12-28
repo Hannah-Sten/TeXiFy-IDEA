@@ -33,6 +33,6 @@ open class LatexMagicCommentStubElementType(debugName: String) : IStubElementTyp
     }
 
     override fun indexStub(stub: LatexMagicCommentStub, sink: IndexSink) {
-        indexSinkOccurrence(sink, LatexMagicCommentIndex, stub.key)
+        indexSinkOccurrence(sink, LatexMagicCommentIndex.Util, stub.key)
     }
 }

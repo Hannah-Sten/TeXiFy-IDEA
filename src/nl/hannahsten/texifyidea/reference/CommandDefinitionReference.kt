@@ -34,7 +34,7 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
             return emptyArray()
         }
         else {
-            return LatexDefinitionIndex.getCommandsByNames(definitionsAndRedefinitions, element.project, element.project.projectSearchScope)
+            return LatexDefinitionIndex.Util.getCommandsByNames(definitionsAndRedefinitions, element.project, element.project.projectSearchScope)
                 .filter { it.getRequiredParameters().firstOrNull() == element.name }
                 .mapNotNull { newcommand ->
                     // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}

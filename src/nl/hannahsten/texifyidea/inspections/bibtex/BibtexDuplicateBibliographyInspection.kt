@@ -45,7 +45,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         // Map each bibliography file to all the commands which include it
         val groupedIncludes = mutableMapOf<String, MutableList<LatexCommands>>()
 
-        LatexIncludesIndex.getItemsInFileSet(file).asSequence()
+        LatexIncludesIndex.Util.getItemsInFileSet(file).asSequence()
             .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
             .forEach { command ->
                 for (fileName in command.getIncludedFiles(false).map { it.name }) {
