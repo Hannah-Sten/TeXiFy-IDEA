@@ -568,13 +568,7 @@ l.4     \input{fakenews.tex}
 
 ### Font <name> not found
 
-```latex
 
-```
-
-```
-
-```
 
 ### Font <internal-name>=<external-name> not loadable: Metric (TFM) file not found
 
@@ -617,22 +611,10 @@ l.105 \fontencoding\encodingdefault\selectfont
 
 ### Font <internal-name>=<external> not loaded: Not enough room left
 
-```latex
 
-```
-
-```
-
-```
 
 ### Font shape <font shape> not found
-```latex
 
-```
-
-```
-
-```
 
 ### I can't find file `<name>'
 From the LaTeX Companion:
@@ -911,13 +893,7 @@ l.4     \limits
 
 ### \LoadClass in package file
 
-```latex
 
-```
-
-```
-
-```
 
 ### Lonely \item--perhaps a missing list environment
 
@@ -1229,43 +1205,19 @@ l.7     \end{align}
 
 ### No Cyrillic encoding definition files were found
 
-```latex
 
-```
-
-```
-
-```
 
 ### No declaration for shape <font shape>
 
-```latex
 
-```
-
-```
-
-```
 
 ### No driver specified
 
-```latex
 
-```
-
-```
-
-```
 
 ### No room for a new <register>
 
-```latex
 
-```
-
-```
-
-```
 
 ### No \title given
 
@@ -1674,13 +1626,7 @@ No file errors.aux.
 
 ### No characters defined by input encoding change to <name>
 
-```latex
 
-```
-
-```
-
-```
 
 ### No file <name>
 
@@ -1946,33 +1892,15 @@ t text text text text
 
 ### amsmath: Unable to redefine math accent <accent>
 
-```latex
 
-```
-
-```
-
-```
 
 ### Underfull \hbox (badness <number>) detected at line <line number>
 
-```latex
 
-```
-
-```
-
-```
 
 ### Underfull \hbox (badness <number>) has occurred while \output is active
 
-```latex
 
-```
-
-```
-
-```
 
 ### Underfull \hbox (badness <number>) in alignment at lines <line numbers>
 
@@ -2431,13 +2359,7 @@ Warning--I didn't find a database entry for "nothing"
 
 ### The literal stack isn't empty for entry <key>
 
-```latex
 
-```
-
-```
-
-```
 
 ### Too many commas in name
 
