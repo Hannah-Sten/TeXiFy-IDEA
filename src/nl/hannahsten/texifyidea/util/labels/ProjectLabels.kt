@@ -15,10 +15,10 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  * @return The found label commands.
  */
 fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
-    val commands = LatexCommandsIndex.getItems(this).findLatexCommandsLabels(this)
+    val commands = LatexCommandsIndex.Util.getItems(this).findLatexCommandsLabels(this)
     val bibtexIds = BibtexEntryIndex().getIndexedEntries(this)
-    val environments = LatexParameterLabeledEnvironmentsIndex.getItems(this)
-    val parameterLabeledCommands = LatexParameterLabeledCommandsIndex.getItems(this)
+    val environments = LatexParameterLabeledEnvironmentsIndex.Util.getItems(this)
+    val parameterLabeledCommands = LatexParameterLabeledCommandsIndex.Util.getItems(this)
     val result = ArrayList<PsiElement>(commands)
     result.addAll(bibtexIds)
     result.addAll(environments)

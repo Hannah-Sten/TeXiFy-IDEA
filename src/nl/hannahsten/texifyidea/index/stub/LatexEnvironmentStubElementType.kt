@@ -38,11 +38,11 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     }
 
     override fun indexStub(stub: LatexEnvironmentStub, sink: IndexSink) {
-        indexSinkOccurrence(sink, LatexEnvironmentsIndex, stub.environmentName)
+        indexSinkOccurrence(sink, LatexEnvironmentsIndex.Util, stub.environmentName)
 
         // only record environments with a label in the optional parameters
         if (stub.label.isNotEmpty() && EnvironmentMagic.labelAsParameter.contains(stub.environmentName)) {
-            indexSinkOccurrence(sink, LatexParameterLabeledEnvironmentsIndex, stub.label)
+            indexSinkOccurrence(sink, LatexParameterLabeledEnvironmentsIndex.Util, stub.label)
         }
     }
 }

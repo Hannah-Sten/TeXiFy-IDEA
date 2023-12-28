@@ -44,7 +44,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
-        val glossaryCommands = LatexGlossaryEntryIndex.getItemsInFileSet(parameters.originalFile)
+        val glossaryCommands = LatexGlossaryEntryIndex.Util.getItemsInFileSet(parameters.originalFile)
         val lookupItems = glossaryCommands.mapNotNull { command: LatexCommands ->
             when (command.name) {
                 NEWACRONYM.cmd, NEWABBREVIATION.cmd -> {

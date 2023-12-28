@@ -71,7 +71,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
-        val docClass = LatexCommandsIndex.getItems(element.getProject(), scope).asSequence()
+        val docClass = LatexCommandsIndex.Util.getItems(element.getProject(), scope).asSequence()
             .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.getRequiredParameters().isNotEmpty() }
             .map { cmd -> cmd.getRequiredParameters()[0] }
             .firstOrNull() ?: "article"

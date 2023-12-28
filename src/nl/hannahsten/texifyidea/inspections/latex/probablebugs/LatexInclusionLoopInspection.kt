@@ -26,7 +26,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val allIncludeCommands = LatexIncludesIndex.getItems(file.project)
+        val allIncludeCommands = LatexIncludesIndex.Util.getItems(file.project)
 
         // Maps every file to all the files it includes.
         val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
