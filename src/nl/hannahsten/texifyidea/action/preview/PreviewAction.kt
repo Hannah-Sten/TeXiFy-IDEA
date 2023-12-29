@@ -25,7 +25,7 @@ import javax.swing.Icon
  * @author Sergei Izmailov
  * @author FalseHonesty
  */
-abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name, icon) {
+abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name) {
 
     /**
      * This function is used to display the preview requested as the name suggests.

@@ -105,7 +105,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         // completion would be flooded with duplicate commands from packages that nobody uses.
         // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
         // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
-        val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(LatexPackage.DEFAULT)
+        val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.Util.getItems(project), project).plus(LatexPackage.DEFAULT)
 
         val lookupElementBuilders = mutableSetOf<LookupElementBuilder>()
 

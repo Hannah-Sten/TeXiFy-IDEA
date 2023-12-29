@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.parser.isLatexOrBibtex
-import javax.swing.Icon
 
 /**
  * @author Hannah Schellekens
@@ -18,10 +17,6 @@ open class InsertEditorAction(
      */
     name: String,
     /**
-     * The icon of the action.
-     */
-    icon: Icon?,
-    /**
      * The text to insert before the selection.
      */
     before: String?,
@@ -29,7 +24,7 @@ open class InsertEditorAction(
      * The text to insert after the selection.
      */
     after: String?
-) : EditorAction(name, icon) {
+) : EditorAction(name) {
 
     /**
      * What to insert before the selection.

@@ -51,7 +51,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
         if (LatexSdkUtil.isTlmgrAvailable(file.project)) {
             val installedPackages = TexLivePackages.packageList
-            val customPackages = LatexDefinitionIndex.getCommandsByName(
+            val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
                 "\\ProvidesPackage", file.project,
                 file.project
                     .projectSearchScope

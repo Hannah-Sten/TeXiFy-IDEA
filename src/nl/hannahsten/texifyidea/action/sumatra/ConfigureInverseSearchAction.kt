@@ -20,11 +20,7 @@ import javax.swing.SwingConstants
  * @author Sten Wessel
  * @since b0.4
  */
-open class ConfigureInverseSearchAction : AnAction(
-    "_Configure Inverse Search",
-    "Setup inverse search integration with SumatraPDF and TeXiFy IDEA.",
-    null
-) {
+open class ConfigureInverseSearchAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         DialogBuilder().apply {
