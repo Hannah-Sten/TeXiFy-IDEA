@@ -1,7 +1,12 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.codeInsight.completion.InsertionContext
+import com.intellij.codeInsight.lookup.Lookup
+import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import junit.framework.TestCase
+import junit.framework.TestCase.*
 import nl.hannahsten.texifyidea.file.LatexFileType
 import org.junit.Test
 
@@ -150,4 +155,12 @@ class LatexCompletionTest : BasePlatformTestCase() {
     //     assertFalse(result.any { it.lookupString == "section1" })
     //     assertFalse(result.any { it.lookupString == "sec:#2" })
     // }
+
+    fun `test completion of command in inline math`() {
+        myFixture.configureByText(LatexFileType, """$\al<caret>lambda$""")
+        myFixture.complete(CompletionType.BASIC)
+        myFixture.finishLookup(Lookup.REPLACE_SELECT_CHAR)
+        `test completion of command in inline math`()
+        myFixture.checkResult ("""$\aleph$""")
+    }
 }
