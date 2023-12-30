@@ -106,8 +106,8 @@ class ReferencedFileSetCache {
                 // Do NOT use a coroutine here, because then when typing (so the caller is e.g. gutter icons, inspections, line makers etc.) somehow the following (at least the runReadAction parts) will block the UI. Note that certain user-triggered actions (think run configuration) will still lead to this blocking the UI if not run in the background explicitly
                 mutex.withLock {
                     // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
-                    // Note that LatexIncludesIndex.getItems(file.project) may be a slow operation and should not be run on EDT
-                    val includes = LatexIncludesIndex.getItems(file.project)
+                    // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
+                    val includes = LatexIncludesIndex.Util.getItems(file.project)
                     val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
                         numberOfIncludes[file.project] = includes.size
                         dropAllCaches()

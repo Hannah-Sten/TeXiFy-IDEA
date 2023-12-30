@@ -5,4 +5,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Adam Williams
  */
-class InsertEmphasisAction : InsertEditorAction("Emphasis", null, "\\emph{", "}")
+class InsertEmphasisAction : InsertEditorAction("Emphasis", "\\emph{", "}")

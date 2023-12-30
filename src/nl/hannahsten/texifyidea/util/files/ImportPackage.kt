@@ -21,12 +21,12 @@ import kotlin.math.min
  */
 fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
     // Check if import commands are used (do this now, to only search for import paths when needed)
-    val allRelativeImportCommands = LatexIncludesIndex.getCommandsByNames(
+    val allRelativeImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
         CommandMagic.relativeImportCommands,
         command.project,
         GlobalSearchScope.projectScope(command.project)
     )
-    val allAbsoluteImportCommands = LatexIncludesIndex.getCommandsByNames(
+    val allAbsoluteImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
         CommandMagic.absoluteImportCommands,
         command.project,
         GlobalSearchScope.projectScope(command.project)
@@ -86,7 +86,7 @@ fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
 
 fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf("")): List<VirtualFile> {
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableSet()
-    val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
+    val allIncludeCommands = LatexIncludesIndex.Util.getItems(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
     var includingCommands = allIncludeCommands.filter {
             includeCommand ->

@@ -9,10 +9,9 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  */
 class LatexEnvironmentsIndex : StringStubIndexExtension<LatexEnvironment>() {
 
-    companion object : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.ENVIRONMENTS_KEY)
+    object Util : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.ENVIRONMENTS_KEY)
 
-    @Suppress("RedundantCompanionReference")
-    override fun getKey() = Companion.key()
+    override fun getKey() = Util.key()
 
     override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

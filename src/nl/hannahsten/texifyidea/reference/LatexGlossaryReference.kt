@@ -28,7 +28,7 @@ class LatexGlossaryReference(element: LatexParameterText) :
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val glossaryEntries = LatexGlossaryEntryIndex.getItemsInFileSet(myElement.containingFile.originalFile)
+        val glossaryEntries = LatexGlossaryEntryIndex.Util.getItemsInFileSet(myElement.containingFile.originalFile)
         return glossaryEntries
             .filter { LatexGlossariesCommand.extractGlossaryLabel(it) == myElement.name }
             .toSet()

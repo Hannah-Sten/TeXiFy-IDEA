@@ -8,9 +8,9 @@ import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 import java.io.IOException
 import java.util.regex.Pattern
 import java.util.stream.Collectors
@@ -91,19 +91,19 @@ class LatexCommandsStubElementType(debugName: String) :
         }
 
         val token = latexCommandsStub.commandToken
-        indexSinkOccurrence(indexSink, LatexCommandsIndex, token)
+        indexSinkOccurrence(indexSink, LatexCommandsIndex.Util, token)
         if (token in getIncludeCommands()) {
-            indexSinkOccurrence(indexSink, LatexIncludesIndex, token)
+            indexSinkOccurrence(indexSink, LatexIncludesIndex.Util, token)
         }
         if (token in CommandMagic.definitions) {
-            indexSinkOccurrence(indexSink, LatexDefinitionIndex, token)
+            indexSinkOccurrence(indexSink, LatexDefinitionIndex.Util, token)
         }
         if (token in CommandMagic.labelAsParameter && "label" in latexCommandsStub.optionalParams) {
             val label = latexCommandsStub.optionalParams["label"]!!
-            indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex, label)
+            indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex.Util, label)
         }
         if (token in CommandMagic.glossaryEntry && latexCommandsStub.requiredParams.isNotEmpty()) {
-            indexSinkOccurrence(indexSink, LatexGlossaryEntryIndex, latexCommandsStub.requiredParams[0])
+            indexSinkOccurrence(indexSink, LatexGlossaryEntryIndex.Util, latexCommandsStub.requiredParams[0])
         }
     }
 

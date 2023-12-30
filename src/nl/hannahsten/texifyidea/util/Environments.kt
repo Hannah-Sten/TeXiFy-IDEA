@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  * @return The found definition commands.
  */
 fun Project.findEnvironmentDefinitions(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItems(this).filter {
+    return LatexDefinitionIndex.Util.getItems(this).filter {
         it.name in CommandMagic.environmentDefinitions
     }
 }
