@@ -29,7 +29,7 @@ We assume that git, IntelliJ, java and LaTeX are installed. If not, follow the n
 * Check that in <ui-path>Settings | Build, Execution, Deployment | Compiler | Kotlin Compiler</ui-path> the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
 * Check that in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path> it is set to the required java version as specified at [https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions](https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#intellij-platform-based-products-of-recent-ide-versions)
 * Test it worked by executing the 'buildPlugin' task in <ui-path>Gradle | Tasks | intellij</ui-path>, or hit double control and run `gradle buildPLugin`
-* You can ignore deprecation warnings in the build output.
+* To view sources of IntelliJ Platform api classes, go to the Gradle tool window and click 'Download sources'.
 * If something doesn’t work, have a look at the [Troubleshooting](#Troubleshooting-build) section.
 
 #### To run directly from source
