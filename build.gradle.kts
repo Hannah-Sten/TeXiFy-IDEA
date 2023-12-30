@@ -206,7 +206,7 @@ intellij {
             "tanvd.grazi",
             "java",
             "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
-            "com.jetbrains.hackathon.indices.viewer:1.23"
+            "com.jetbrains.hackathon.indices.viewer:1.25"
         )
     )
 
@@ -218,7 +218,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2023.2")
+    version.set("2023.3")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
