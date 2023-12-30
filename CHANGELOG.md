@@ -3,8 +3,10 @@
 ## [Unreleased]
 
 ### Added
+* Improve plugin loading performance
 
 ### Fixed
+* Fix #3361: false positive on duplicate identifier on @string entries in bib files
 
 ## [0.9.2] - 2023-11-24
 
