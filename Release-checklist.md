@@ -1,10 +1,7 @@
 - [ ] Create branch bx.x.x
 - [ ] Run 'Usage of IntelliJ API not available in older IDEs' and 'Stateful extension' inspection (ctrl+alt+shift+i)
 - [ ] Increase stub version in LatexParserDefinition
-- [ ] Gradle clean, create new empty project and check that document compiles and pdf viewer is opened
-- [ ] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
-- [ ] Forward/backward search
-- [ ] Does it work in PyCharm?
+- [ ] Re-include Sumatra dlls in build.gradle.kts to enable forward search
 - [ ] Run ctan.py
 
 - [ ] Add welcome text to Changelog.md
