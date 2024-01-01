@@ -33,7 +33,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         toolWindow.contentManager.addContent(content)
     }
 
-    override fun isApplicable(project: Project) = project.isLatexProject()
+    override suspend fun isApplicableAsync(project: Project) = project.isLatexProject()
 
     /**
      * The tool window panel that contains the toolbar and the actual window (which is [RemoteLibraryToolWindow]).
