@@ -15,6 +15,8 @@ import com.intellij.openapi.editor.actions.SplitLineAction.SPLIT_LINE_KEY
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.parentOfType
+import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -82,8 +84,11 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         } ?: return null // when no label could befound.
 
         // Extract optional parameters.
-        val optionals = label.childrenOfType(LatexOptionalParam::class).firstOrNull() ?: return null
-        return optionals.text
+        val paramMap = label.getOptionalParameterMap()
+        if (paramMap.isEmpty())
+            return null
+        else
+            return paramMap.first().key.text ?: return null
     }
 
     /**
@@ -141,6 +146,12 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
 
         val isGluedToTheBeginCommand = element.hasParent(LatexBeginCommand::class)
         val isInsideAnEnumeration = element.inDirectEnvironment(EnvironmentMagic.listingEnvironments)
-        return isInsideAnEnumeration && !isGluedToTheBeginCommand
+        val environment = element.parentOfType(LatexEnvironment::class)
+        val isInsideRequiredParam =
+            if (environment != null)
+                element.firstParentOfType(LatexRequiredParam::class)?.isChildOf(getLastLabel(environment)) ?: false
+            else
+                false
+        return isInsideAnEnumeration && !isGluedToTheBeginCommand && !isInsideRequiredParam
     }
 }
