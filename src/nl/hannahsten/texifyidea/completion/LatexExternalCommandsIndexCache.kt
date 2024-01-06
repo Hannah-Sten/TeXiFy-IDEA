@@ -2,6 +2,9 @@ package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
@@ -34,17 +37,21 @@ object LatexExternalCommandsIndexCache {
      */
     fun fillCacheAsync(project: Project, packagesInProject: List<LatexPackage>) {
         scope.launch {
-            getIndexedCommandsNoCache(project, packagesInProject)
+            ProgressManager.getInstance().run(object : Backgroundable(project, "Getting commands from index...") {
+                override fun run(indicator: ProgressIndicator) {
+                    getIndexedCommandsNoCache(project, packagesInProject, indicator)
+                }
+            })
+
         }
     }
 
     /**
      * This may be a very expensive operation, up to one minute for texlive-full
-     * todo looks like this is being canceled if the completion is canceled
-     * todo progress
      */
-    private fun getIndexedCommandsNoCache(project: Project, packagesInProject: List<LatexPackage>) {
+    private fun getIndexedCommandsNoCache(project: Project, packagesInProject: List<LatexPackage>, indicator: ProgressIndicator) {
 
+        indicator.text = "Getting commands from index..."
         val commands = mutableListOf<String>()
         runReadAction {
             FileBasedIndex.getInstance().processAllKeys(
@@ -55,24 +62,30 @@ object LatexExternalCommandsIndexCache {
             )
         }
 
+        indicator.text = "Processing indexed commands..."
+        var progress = 0
         val commandsFromIndex = mutableListOf<Set<LatexCommand>>()
-        for (cmdWithSlash in commands) {
+        for ((index, cmdWithSlash) in commands.withIndex()) {
+            indicator.fraction = index.toDouble() / commands.size
             commandsFromIndex.add(LatexCommand.lookupInIndex(cmdWithSlash.substring(1), project))
         }
 
-        externalCommands = commandsFromIndex
+        externalCommands = commandsFromIndex // todo refactor
 
-        createLookupElements(commandsFromIndex, packagesInProject)
+        createLookupElements(commandsFromIndex, packagesInProject, indicator)
     }
 
     private fun createLookupElements(
         commandsFromIndex: MutableList<Set<LatexCommand>>,
-        packagesInProject: List<LatexPackage>
+        packagesInProject: List<LatexPackage>,
+        indicator: ProgressIndicator
     ) {
+        indicator.text = "Creating lookup elements..."
         val lookupElementBuilders = mutableSetOf<LookupElementBuilder>()
 
         // Process each set of command aliases (commands with the same name, but possibly with different arguments) separately.
-        commandsFromIndex.map { commandAliases ->
+        commandsFromIndex.mapIndexed { index, commandAliases ->
+            indicator.fraction = index.toDouble() / commandsFromIndex.size
             commandAliases.filter { command -> if (LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable) command.dependency in packagesInProject else true }
                 .forEach { cmd ->
                     createCommandLookupElements(cmd)
@@ -89,6 +102,8 @@ object LatexExternalCommandsIndexCache {
                         }.forEach { lookupElementBuilders.add(it) }
                 }
         }
+
+        completionElements = lookupElementBuilders
     }
 
 

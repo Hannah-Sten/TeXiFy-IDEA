@@ -73,9 +73,9 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     ) {
         when (mode) {
             LatexMode.NORMAL -> {
-                addIndexedCommands(result, parameters)
-                addNormalCommands(result, parameters.editor.project ?: return)
-                addCustomCommands(parameters, result)
+                val isIndexReady = addIndexedCommands(result, parameters)
+                addNormalCommands(result, parameters.editor.project ?: return, isIndexReady)
+//                addCustomCommands(parameters, result) // todo slow, but in background so does it matter?
             }
             LatexMode.MATH -> {
                 addMathCommands(result)
@@ -92,12 +92,14 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     /**
      * Add all indexed commands to the autocompletion.
      * This is a potentially long-running operation because it needs to process all keys in the index, hence it uses a cache.
+     *
+     * @return If any commands were added.
      */
-    private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
+    private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters): Boolean {
         val lookupElementBuilders = LatexExternalCommandsIndexCache.completionElements
-//        if (lookupElementBuilders.isEmpty()) { // todo debug
+        if (lookupElementBuilders.isEmpty()) {
             // Filling the cache can take a long time, and since we don't _really_ need the results right now and nobody is going to wait 60 seconds for autocompletion to pop up, we just trigger a cache fill and move on
-            val project = parameters.editor.project ?: return
+            val project = parameters.editor.project ?: return false
 
             // If using texlive, filter on commands which are in packages included in the project
             // The reason for doing this, is that the user probably is using texlive-full, in which case the
@@ -106,13 +108,18 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
             val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.Util.getItems(project), project).plus(LatexPackage.DEFAULT)
             LatexExternalCommandsIndexCache.fillCacheAsync(project, packagesInProject)
-            return
-//        }
+            return false
+        }
 
         result.addAllElements(lookupElementBuilders)
+        return true
     }
 
-    private fun addNormalCommands(result: CompletionResultSet, project: Project) {
+    /**
+     * Add any commands that were not found in the indexed commands but are hardcoded in LatexRegularCommand.
+     * If the index was not yet ready, add all of them.
+     */
+    private fun addNormalCommands(result: CompletionResultSet, project: Project, isIndexReady: Boolean) {
         val indexedKeys = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.Cache.id, project)
 
         result.addAllElements(
@@ -124,7 +131,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
                 // Avoid adding duplicates
                 // Prefer the indexed command (if it really is the same one), as that one has documentation
-                if (cmd.commandWithSlash in indexedKeys && alreadyIndexed()) {
+                if (isIndexReady && cmd.commandWithSlash in indexedKeys && alreadyIndexed()) {
                     emptyList()
                 }
                 else {
