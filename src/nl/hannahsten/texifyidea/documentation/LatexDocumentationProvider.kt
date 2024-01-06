@@ -184,10 +184,11 @@ class LatexDocumentationProvider : DocumentationProvider {
                 // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
                 listOf("texdoc", "-l", name)
             }
-            else {
+            else if (SystemEnvironment.isAvailable("mthelp")) {
                 // In some cases, texdoc may not be available but mthelp is
                 listOf("mthelp", "-l", name)
-            }
+            } else
+                raise(CommandFailure("Could not find mthelp or texdoc", 0))
         }
         val (output, exitCode) = runCommandWithExitCode(*command.toTypedArray(), returnExceptionMessage = true)
         if (exitCode != 0 || output?.isNotBlank() != true) {
