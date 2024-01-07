@@ -73,9 +73,12 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     ) {
         when (mode) {
             LatexMode.NORMAL -> {
+                // This can be really slow (one minute), so we don't wait until the cache is filled
                 val isIndexReady = addIndexedCommands(result, parameters)
+                // This should be quite fast (less than a second)
                 addNormalCommands(result, parameters.editor.project ?: return, isIndexReady)
-//                addCustomCommands(parameters, result) // todo slow, but in background so does it matter?
+                // Filling the cache can take two seconds, for now we wait on it
+                addCustomCommands(parameters, result)
             }
             LatexMode.MATH -> {
                 addMathCommands(result)

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.completion
 
+import arrow.atomic.AtomicBoolean
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
@@ -24,7 +25,8 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 object LatexExternalCommandsIndexCache {
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    var externalCommands = listOf<Set<LatexCommand>>()
+    private val isCacheFillInProgress = AtomicBoolean(false)
+
     var completionElements = setOf<LookupElementBuilder>()
 
     fun unload() {
@@ -33,23 +35,33 @@ object LatexExternalCommandsIndexCache {
 
     /**
      * Initiate a cache fill but do not wait for it to be filled.
-     * todo mutex
      */
     fun fillCacheAsync(project: Project, packagesInProject: List<LatexPackage>) {
+        if (isCacheFillInProgress.compareAndSet(expected=true, new=true)) {
+            return
+        }
+        isCacheFillInProgress.getAndSet(true)
+
         scope.launch {
-            ProgressManager.getInstance().run(object : Backgroundable(project, "Getting commands from index...") {
+            ProgressManager.getInstance().run(object : Backgroundable(project, "Retrieving LaTeX commands...") {
                 override fun run(indicator: ProgressIndicator) {
-                    getIndexedCommandsNoCache(project, packagesInProject, indicator)
+                    try {
+                        val commandsFromIndex = getIndexedCommandsNoCache(project, indicator)
+                        completionElements = createLookupElements(commandsFromIndex, packagesInProject, indicator)
+
+                    }
+                    finally {
+                        isCacheFillInProgress.getAndSet(false)
+                    }
                 }
             })
-
         }
     }
 
     /**
      * This may be a very expensive operation, up to one minute for texlive-full
      */
-    private fun getIndexedCommandsNoCache(project: Project, packagesInProject: List<LatexPackage>, indicator: ProgressIndicator) {
+    private fun getIndexedCommandsNoCache(project: Project, indicator: ProgressIndicator):  MutableList<Set<LatexCommand>> {
 
         indicator.text = "Getting commands from index..."
         val commands = mutableListOf<String>()
@@ -63,29 +75,28 @@ object LatexExternalCommandsIndexCache {
         }
 
         indicator.text = "Processing indexed commands..."
-        var progress = 0
         val commandsFromIndex = mutableListOf<Set<LatexCommand>>()
         for ((index, cmdWithSlash) in commands.withIndex()) {
+            indicator.checkCanceled()
             indicator.fraction = index.toDouble() / commands.size
             commandsFromIndex.add(LatexCommand.lookupInIndex(cmdWithSlash.substring(1), project))
         }
 
-        externalCommands = commandsFromIndex // todo refactor
-
-        createLookupElements(commandsFromIndex, packagesInProject, indicator)
+        return commandsFromIndex
     }
 
     private fun createLookupElements(
         commandsFromIndex: MutableList<Set<LatexCommand>>,
         packagesInProject: List<LatexPackage>,
         indicator: ProgressIndicator
-    ) {
-        indicator.text = "Creating lookup elements..."
+    ):  MutableSet<LookupElementBuilder> {
+        indicator.text = "Addings commands to autocompletion..."
         val lookupElementBuilders = mutableSetOf<LookupElementBuilder>()
 
         // Process each set of command aliases (commands with the same name, but possibly with different arguments) separately.
         commandsFromIndex.mapIndexed { index, commandAliases ->
             indicator.fraction = index.toDouble() / commandsFromIndex.size
+            indicator.checkCanceled()
             commandAliases.filter { command -> if (LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable) command.dependency in packagesInProject else true }
                 .forEach { cmd ->
                     createCommandLookupElements(cmd)
@@ -103,7 +114,7 @@ object LatexExternalCommandsIndexCache {
                 }
         }
 
-        completionElements = lookupElementBuilders
+        return lookupElementBuilders
     }
 
 
