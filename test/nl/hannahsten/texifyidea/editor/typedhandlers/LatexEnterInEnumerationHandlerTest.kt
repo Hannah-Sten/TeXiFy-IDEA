@@ -72,6 +72,7 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
             """
             \begin{itemize}
                 \item {This sentence is <caret>broken}
+                \item Second item
             \end{itemize}
             """.trimIndent()
         )
@@ -81,6 +82,7 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
             \begin{itemize}
                 \item {This sentence is 
                 <caret>broken}
+                \item Second item
             \end{itemize}
             """.trimIndent()
         )

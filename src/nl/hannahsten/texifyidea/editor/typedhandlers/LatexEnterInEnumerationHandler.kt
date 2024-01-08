@@ -15,7 +15,6 @@ import com.intellij.openapi.editor.actions.SplitLineAction.SPLIT_LINE_KEY
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -73,7 +72,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
      * Get the special marker that is used at the previous item (if any).
      */
     private fun getPreviousMarker(element: PsiElement): String? {
-        val environment = element.parentOfType(LatexEnvironment::class) ?: return null
+        val environment = element.parentOfTypes(LatexEnvironment::class) ?: return null
 
         // Last element in the list => Find last \item.
         val label = if (element.parent is LatexEnvironment) {
