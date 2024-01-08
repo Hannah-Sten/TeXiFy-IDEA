@@ -77,7 +77,7 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
 /**
  * Checks if the latex content objects is a display math environment.
  */
-fun LatexNoMathContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
+fun LatexNoMathContent.isDisplayMath() = children.firstOrNull() is LatexMathEnvironment
 
 /*
  * Technically it's impossible to determine for all cases whether a users wants to compile with biber or biblatex.

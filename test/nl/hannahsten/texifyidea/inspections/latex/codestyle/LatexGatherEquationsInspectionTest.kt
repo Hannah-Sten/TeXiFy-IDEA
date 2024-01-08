@@ -35,6 +35,19 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
         myFixture.checkHighlighting()
     }
 
+    fun `test two consecutive (non-display) math environments in item`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{enumerate}
+                \item{\[a=b\]}
+                \item{\[b=a\]}
+            \end{enumerate}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun `test quick fix`() {
         testQuickFix(
             """
