@@ -29,11 +29,11 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.0.2"
+    id("org.owasp.dependencycheck") version "9.0.7"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
-    id("org.jetbrains.grammarkit") version "2022.3.2"
+    id("org.jetbrains.grammarkit") version "2022.3.2.1"
 }
 
 group = "nl.hannahsten"
@@ -84,32 +84,32 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("org.slf4j:slf4j-simple:2.0.10")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.9.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.9.1")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.16.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.6")
-    implementation("io.ktor:ktor-client-cio:2.3.6")
-    implementation("io.ktor:ktor-client-auth:2.3.6")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.6")
-    implementation("io.ktor:ktor-server-core:2.3.6")
-    implementation("io.ktor:ktor-server-jetty:2.3.6")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.6")
+    implementation("io.ktor:ktor-client-core:2.3.7")
+    implementation("io.ktor:ktor-client-cio:2.3.7")
+    implementation("io.ktor:ktor-client-auth:2.3.7")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
+    implementation("io.ktor:ktor-server-core:2.3.7")
+    implementation("io.ktor:ktor-server-jetty:2.3.7")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-7")
+    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-10")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
@@ -206,7 +206,7 @@ intellij {
             "tanvd.grazi",
             "java",
             "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
-            "com.jetbrains.hackathon.indices.viewer:1.23"
+            "com.jetbrains.hackathon.indices.viewer:1.25"
         )
     )
 
@@ -218,7 +218,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2023.2")
+    version.set("2023.3")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
