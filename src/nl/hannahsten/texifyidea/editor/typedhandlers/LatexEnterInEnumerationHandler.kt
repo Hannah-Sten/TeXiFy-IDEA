@@ -16,6 +16,7 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.parentOfType
+import com.intellij.psi.util.parentOfTypes
 import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.*
@@ -146,7 +147,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
 
         val isGluedToTheBeginCommand = element.hasParent(LatexBeginCommand::class)
         val isInsideAnEnumeration = element.inDirectEnvironment(EnvironmentMagic.listingEnvironments)
-        val environment = element.parentOfType(LatexEnvironment::class)
+        val environment = element.parentOfTypes(LatexEnvironment::class)
         val isInsideRequiredParam =
             if (environment != null)
                 element.firstParentOfType(LatexRequiredParam::class)?.isChildOf(getLastLabel(environment)) ?: false
