@@ -37,7 +37,7 @@ object LatexExternalCommandsIndexCache {
      * Initiate a cache fill but do not wait for it to be filled.
      */
     fun fillCacheAsync(project: Project, packagesInProject: List<LatexPackage>) {
-        if (isCacheFillInProgress.compareAndSet(expected=true, new=true)) {
+        if (isCacheFillInProgress.compareAndSet(expected = true, new = true)) {
             return
         }
         isCacheFillInProgress.getAndSet(true)
@@ -48,7 +48,6 @@ object LatexExternalCommandsIndexCache {
                     try {
                         val commandsFromIndex = getIndexedCommandsNoCache(project, indicator)
                         completionElements = createLookupElements(commandsFromIndex, packagesInProject, indicator)
-
                     }
                     finally {
                         isCacheFillInProgress.getAndSet(false)
@@ -61,8 +60,7 @@ object LatexExternalCommandsIndexCache {
     /**
      * This may be a very expensive operation, up to one minute for texlive-full
      */
-    private fun getIndexedCommandsNoCache(project: Project, indicator: ProgressIndicator):  MutableList<Set<LatexCommand>> {
-
+    private fun getIndexedCommandsNoCache(project: Project, indicator: ProgressIndicator): MutableList<Set<LatexCommand>> {
         indicator.text = "Getting commands from index..."
         val commands = mutableListOf<String>()
         runReadAction {
@@ -89,8 +87,8 @@ object LatexExternalCommandsIndexCache {
         commandsFromIndex: MutableList<Set<LatexCommand>>,
         packagesInProject: List<LatexPackage>,
         indicator: ProgressIndicator
-    ):  MutableSet<LookupElementBuilder> {
-        indicator.text = "Addings commands to autocompletion..."
+    ): MutableSet<LookupElementBuilder> {
+        indicator.text = "Adding commands to autocompletion..."
         val lookupElementBuilders = mutableSetOf<LookupElementBuilder>()
 
         // Process each set of command aliases (commands with the same name, but possibly with different arguments) separately.
@@ -116,6 +114,4 @@ object LatexExternalCommandsIndexCache {
 
         return lookupElementBuilders
     }
-
-
 }

@@ -58,9 +58,9 @@ interface LatexCommand : Described, Dependend {
             runReadAction {
                 FileBasedIndex.getInstance().processValues(
                     LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
-                        filesAndValues.add(Pair(file, value))
-                        true
-                    },
+                    filesAndValues.add(Pair(file, value))
+                    true
+                },
                     GlobalSearchScope.everythingScope(project)
                 )
             }
