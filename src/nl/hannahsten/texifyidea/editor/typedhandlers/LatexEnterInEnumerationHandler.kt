@@ -38,7 +38,12 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         }
 
         // Don't insert \item when the enter was triggered by the word wrap
-        if (DataManager.getInstance().loadFromDataContext(context, LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY) == true || DataManager.getInstance().loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true) {
+        if (DataManager.getInstance().loadFromDataContext(
+                context,
+                LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY
+            ) == true || DataManager.getInstance()
+                .loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true
+        ) {
             return Result.Continue
         }
 
@@ -148,10 +153,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         val isInsideAnEnumeration = element.inDirectEnvironment(EnvironmentMagic.listingEnvironments)
         val environment = element.parentOfTypes(LatexEnvironment::class)
         val isInsideRequiredParam =
-            if (environment != null)
-                element.firstParentOfType(LatexRequiredParam::class)?.isChildOf(getLastLabel(environment)) ?: false
-            else
-                false
+            element.firstParentOfType(LatexRequiredParam::class)?.isChildOf(environment) ?: false
         return isInsideAnEnumeration && !isGluedToTheBeginCommand && !isInsideRequiredParam
     }
 }

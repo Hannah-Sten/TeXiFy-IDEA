@@ -88,6 +88,50 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
         )
     }
 
+    fun testItemizeBreakLineInCommand() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{itemize}
+                \item \textit{This sentence is <caret>broken}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+        myFixture.type("\n")
+        myFixture.checkResult(
+            """
+            \begin{itemize}
+                \item \textit{This sentence is 
+                <caret>broken}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+    }
+
+    fun testItemizeBreakLineInCommandExtraBrackets() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{itemize}
+                \item {\textit{This sentence is <caret>broken}}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+        myFixture.type("\n")
+        myFixture.checkResult(
+            """
+            \begin{itemize}
+                \item {\textit{This sentence is 
+                <caret>broken}}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+    }
+
     fun `test nested enumeration with prefix`() {
         myFixture.configureByText(
             LatexFileType,
