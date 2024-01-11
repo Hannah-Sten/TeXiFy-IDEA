@@ -87,10 +87,13 @@ $previewCode
                 previewForm
             ) ?: return
 
-            runInkscape(tempBasename, tempDirectory, waitTime, previewForm)
-            val image = ImageIO.read(File("$tempBasename.png"))
-            SwingUtilities.invokeLater {
-                previewForm.setPreview(image, latexStdoutText)
+            // Sets error message to the UI if any
+            val success = runInkscape(tempBasename, tempDirectory, waitTime, previewForm)
+            if (success) {
+                val image = ImageIO.read(File("$tempBasename.png"))
+                SwingUtilities.invokeLater {
+                    previewForm.setPreview(image, latexStdoutText)
+                }
             }
         }
         finally {
@@ -106,7 +109,7 @@ $previewCode
         waitTime: Long,
         previewForm: PreviewForm
     ): String? {
-        val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime)
+        val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime, returnExceptionMessage = true)
 
         if (result.second != 0) {
             previewForm.setLatexErrorMessage("$command exited with ${result.second}\n${result.first ?: ""}")
@@ -118,10 +121,12 @@ $previewCode
 
     /**
      * Run inkscape command to convert pdf to png, depending on the version of inkscape.
+     *
+     * @return If successful
      */
-    private fun runInkscape(tempBasename: String, tempDirectory: File, waitTime: Long, previewForm: PreviewForm) {
+    private fun runInkscape(tempBasename: String, tempDirectory: File, waitTime: Long, previewForm: PreviewForm): Boolean {
         // If 1.0 or higher
-        if (SystemEnvironment.inkscapeMajorVersion >= 1) {
+        if (SystemEnvironment.inkscapeMajorVersion >= 1 || !SystemEnvironment.isAvailable("inkscape")) {
             runPreviewFormCommand(
                 inkscapeExecutable(),
                 arrayOf(
@@ -135,7 +140,7 @@ $previewCode
                 tempDirectory,
                 waitTime,
                 previewForm
-            ) ?: throw AccessDeniedException(tempDirectory)
+            ) ?: return false
         }
         else {
             runPreviewFormCommand(
@@ -147,7 +152,7 @@ $previewCode
                 tempDirectory,
                 waitTime,
                 previewForm
-            ) ?: return
+            ) ?: return false
 
             runPreviewFormCommand(
                 inkscapeExecutable(),
@@ -161,8 +166,9 @@ $previewCode
                 tempDirectory,
                 waitTime,
                 previewForm
-            ) ?: throw AccessDeniedException(tempDirectory)
+            ) ?: return false
         }
+        return true
     }
 
     private fun inkscapeExecutable(): String {
