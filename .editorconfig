@@ -1,5 +1,14 @@
 [*.{kt,kts}]
-ktlint_disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,argument-list-wrapping,chain-wrapping,import-ordering,keyword-spacing,trailing-comma-on-call-site,trailing-comma-on-declaration-site,multiline-if-else
+ktlint_standard_final-newline=disabled
+ktlint_standard_no-wildcard-imports=disabled
+ktlint_standard_parameter-list-wrapping=disabled
+ktlint_standard_argument-list-wrapping=disabled
+ktlint_standard_chain-wrapping=disabled
+ktlint_standard_import-ordering=disabled
+ktlint_standard_keyword-spacing=disabled
+ktlint_standard_trailing-comma-on-call-site=disabled
+ktlint_standard_multiline-if-else=disabled
+
 insert_final_newline = false
 
 ij_kotlin_else_on_new_line = true
