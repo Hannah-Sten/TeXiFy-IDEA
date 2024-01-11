@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.action.preview
 
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -21,8 +22,8 @@ import javax.swing.SwingUtilities
 class InkscapePreviewer : Previewer {
 
     override fun preview(input: String, previewForm: PreviewForm, project: Project, preamble: String, waitTime: Long) {
-        runBlocking {
-            launch {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Generating preview...") {
+            override fun run(indicator: ProgressIndicator) {
                 try {
                     // Snap apps are confined to the users home directory
                     if (SystemEnvironment.isInkscapeInstalledAsSnap) {
@@ -46,7 +47,7 @@ class InkscapePreviewer : Previewer {
                     previewForm.setLatexErrorMessage("${exception.message}")
                 }
             }
-        }
+        })
     }
 
     /**
