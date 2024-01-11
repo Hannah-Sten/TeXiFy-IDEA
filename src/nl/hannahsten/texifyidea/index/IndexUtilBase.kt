@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -142,6 +143,9 @@ abstract class IndexUtilBase<T : PsiElement>(
         catch (e: Exception) {
             // For some reason, any issue from any plugin that causes an exception will be raised here and will be attributed to TeXiFy, flooding the backlog
             // Hence, we just ignore all of them and hope it's not important
+            if (e is ProcessCanceledException) {
+                throw e
+            }
             Log.warn(e.toString())
         }
         return emptySet()
@@ -160,6 +164,9 @@ abstract class IndexUtilBase<T : PsiElement>(
             }
             catch (e: Exception) {
                 // See above
+                if (e is ProcessCanceledException) {
+                    throw e
+                }
                 Log.warn(e.toString())
             }
         }

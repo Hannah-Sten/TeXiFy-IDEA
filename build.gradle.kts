@@ -29,7 +29,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.0.7"
+    id("org.owasp.dependencycheck") version "9.0.8"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
@@ -84,7 +84,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.10")
+    implementation("org.slf4j:slf4j-simple:2.0.11")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
@@ -138,7 +138,7 @@ dependencies {
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.10.1")
 
-    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("io.mockk:mockk:1.13.9")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
