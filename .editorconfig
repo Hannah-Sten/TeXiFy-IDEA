@@ -1,4 +1,6 @@
 [*.{kt,kts}]
+ktlint_code_style = intellij_idea
+
 ktlint_standard_final-newline=disabled
 ktlint_standard_no-wildcard-imports=disabled
 ktlint_standard_parameter-list-wrapping=disabled
@@ -7,9 +9,16 @@ ktlint_standard_chain-wrapping=disabled
 ktlint_standard_import-ordering=disabled
 ktlint_standard_keyword-spacing=disabled
 ktlint_standard_trailing-comma-on-call-site=disabled
+ktlint_standard_trailing-comma-on-declaration-site=disabled
 ktlint_standard_multiline-if-else=disabled
+ktlint_standard_function-naming=disabled
+ktlint_standard_multiline-expression-wrapping=disabled
+ktlint_standard_string-template-indent=disabled
+ktlint_standard_function-signature=disabled
+ktlint_standard_discouraged-comment-location=disabled
 
 insert_final_newline = false
+max_line_length = off
 
 ij_kotlin_else_on_new_line = true
 ij_kotlin_catch_on_new_line = true
