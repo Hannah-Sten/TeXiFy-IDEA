@@ -38,7 +38,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     // Non-idea has no concept of modules so we need to use some other criterion based on the project
-    override fun isApplicable(project: Project) = project.isLatexProject()
+    override suspend fun isApplicableAsync(project: Project) = project.isLatexProject()
 
     /**
      * The swing contents of the symbol tool window.

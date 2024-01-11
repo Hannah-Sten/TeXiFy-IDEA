@@ -38,6 +38,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         }
 
         // Don't insert \item when the enter was triggered by the word wrap
+        @Suppress("UnstableApiUsage") // This internal api is fine to use, see https://youtrack.jetbrains.com/issue/IDEA-324754
         if (DataManager.getInstance().loadFromDataContext(
                 context,
                 LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY

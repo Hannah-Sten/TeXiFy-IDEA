@@ -104,7 +104,7 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
         // setOptionalParameter should create an appropriate optionalArgument node with label={text} in it
         val parameterText =
             parameter?.keyValValue?.keyValContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
-                ?: throw AssertionError("parameter created by setOptionalParameter does not have the right structure")
+                ?: throw AssertionError("parameter created by setOptionalParameter for $command with text ${label.labelText} does not have the right structure: ${parameter?.text}")
         // Move the caret onto the label
         editor.caretModel.moveToOffset(parameterText.textOffset + label.prefix.length + 1)
         val renamer = LabelInplaceRenamer(parameterText, editor, label.prefixText, label.base, moveCaretTo)

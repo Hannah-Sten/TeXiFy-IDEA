@@ -21,6 +21,8 @@ exclude: # Some of these are valid inspections but not important or accurate eno
       - build
       - test
       - src/nl/hannahsten/texifyidea/action/preview/PreviewForm.form
+      # The class is unused, see TexifyProjectConfigurable
+      - src/nl/hannahsten/texifyidea/settings/TexifyProjectSettings.kt
   - name: BooleanMethodIsAlwaysInverted
   - name: SpellCheckingInspection
   - name: UseJBColor  # In many cases we're not defining theme-dependent colors
@@ -28,10 +30,6 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   - name: LanguageDetectionInspection
   - name: GrazieInspection
   - name: CheckDependencyLicenses # TeXiFy violates all sorts of licenses, don't care
-  - name: RetrievingService
-    paths:
-      # The class is unused, see TexifyProjectConfigurable
-      - src/nl/hannahsten/texifyidea/settings/TexifyProjectSettings.kt
   # Qodana false positives:
   - name: EmptyMethod
   - name: SameReturnValue

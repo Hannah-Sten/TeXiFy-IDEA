@@ -92,7 +92,7 @@ class LatexElementColorProvider : ElementColorProvider {
 
         return if (defaultHex != null) Color(defaultHex)
         else {
-            val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(
+            val colorDefiningCommands = LatexCommandsIndex.Util.getCommandsByNames(
                 file,
                 *ColorMagic.colorDefinitions.map { "\\${it.command}" }
                     .toTypedArray()

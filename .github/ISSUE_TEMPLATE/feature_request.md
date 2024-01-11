@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-<!-- Please check the wiki if your feature has already been implemented, to avoid duplicates: https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features -->
+<!-- Please check the documentation if your feature has already been implemented, to avoid duplicates: https://hannah-sten.github.io/TeXiFy-IDEA/welcome.html -->
