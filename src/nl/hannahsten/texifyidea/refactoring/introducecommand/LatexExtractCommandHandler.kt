@@ -275,6 +275,7 @@ interface ExtractExpressionUi {
 }
 
 // This allows us to run tests and mimic user input
+@Suppress("ktlint:standard:property-naming")
 var MOCK: ExtractExpressionUi? = null
 
 @TestOnly

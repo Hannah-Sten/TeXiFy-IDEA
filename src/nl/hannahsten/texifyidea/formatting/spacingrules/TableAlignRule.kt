@@ -24,10 +24,11 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
     if (left.node?.text?.endsWith("&") == false) return null
     if (left.node?.text?.endsWith("\\&") == true) return null
 
-    if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-        ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
-                parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-            )
+    if (
+        parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+            ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
+            parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+        )
     ) return null
 
     return createSpacing(
@@ -255,9 +256,9 @@ private fun getSpacesForRightBlock(
                         ?: 0
                     ) > LINE_LENGTH
                 if ((
-                    relativeIndices.getOrNull(i)?.getOrNull(level)
-                        ?: 0
-                    ) > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
+                        relativeIndices.getOrNull(i)?.getOrNull(level)
+                            ?: 0
+                        ) > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
                 ) return -1
                 return spacesPerCell.getOrNull(min(i, spacesPerCell.size - 1))?.getOrNull(level)
             }

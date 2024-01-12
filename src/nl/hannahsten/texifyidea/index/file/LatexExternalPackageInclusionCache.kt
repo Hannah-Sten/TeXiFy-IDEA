@@ -31,10 +31,10 @@ object LatexExternalPackageInclusionCache {
         FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project).forEach { indexKey ->
             FileBasedIndex.getInstance().processValues(
                 LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
-                val key = LatexPackage(file.name.removeFileExtension())
-                directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
-                true
-            },
+                    val key = LatexPackage(file.name.removeFileExtension())
+                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
+                    true
+                },
                 GlobalSearchScope.everythingScope(project)
             )
         }

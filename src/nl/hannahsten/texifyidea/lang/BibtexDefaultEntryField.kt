@@ -139,5 +139,5 @@ enum class BibtexDefaultEntryField(
     SORTTITLE("sorttitle", "A field used to modify the sorting order of the bibliography.", BIBLATEX),
     SORTYEAR("sortyear", "A field used to modify the sorting order of the bibliography.", BIBLATEX),
     XDATA("xdata", "This field inherits data from one or more @xdata entries.", BIBLATEX),
-    XREF("xref", "This field is an alternative cross-referencing mechanism.", BIBLATEX);
+    XREF("xref", "This field is an alternative cross-referencing mechanism.", BIBLATEX)
 }

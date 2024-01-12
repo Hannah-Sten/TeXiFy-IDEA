@@ -278,6 +278,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
      */
     enum class BFSAction {
 
-        CONTINUE, ABORT;
+        CONTINUE,
+        ABORT
     }
 }
