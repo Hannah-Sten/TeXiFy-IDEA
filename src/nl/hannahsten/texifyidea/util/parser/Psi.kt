@@ -17,7 +17,6 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import kotlin.reflect.KClass
 
@@ -178,15 +177,6 @@ fun PsiElement?.findOuterMathEnvironment(): PsiElement? {
 fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMMENT) || when (this) {
     is PsiComment -> true
     else -> this is LeafPsiElement && elementType == LatexTypes.COMMAND_TOKEN
-}
-
-/**
- * Check if the element is in a url command.
- */
-fun PsiElement?.inUrl(): Boolean {
-    return this?.hasParentMatching(100) {
-        (it as? LatexCommands)?.name in CommandMagic.urls
-    } ?: false
 }
 
 /**
