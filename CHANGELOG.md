@@ -6,6 +6,22 @@
 
 ### Fixed
 
+## [0.9.3-alpha.4] - 2024-01-12
+
+### Added
+
+* Improve autocompletion performance after starting IDE
+* Improve plugin loading performance
+
+### Fixed
+
+* Fix incorrectly inserted \items in enumeration environments, by @jojo2357
+* Fix false positives for equation gathering inspection, by @jojo2357
+* Don't attempt to use mthelp when it is not available, by @jojo2357
+* Fix #3361: false positive on duplicate identifier on @string entries in bib files
+* Replace code deprecated in 2023.3
+* Avoid creating output directories recursively and improve the cleanup process
+
 ## [0.9.3-alpha.3] - 2024-01-08
 
 ### Added
@@ -14,10 +30,10 @@
 
 ### Fixed
 
-* Avoid creating output directories recursively and improve the cleanup process
 * Don't attempt to use mthelp when it is not available, by @jojo2357
 * Fix #3361: false positive on duplicate identifier on @string entries in bib files
 * Replace code deprecated in 2023.3
+* Avoid creating output directories recursively and improve the cleanup process
 
 ## [0.9.2] - 2023-11-24
 
@@ -268,8 +284,9 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3-alpha.3...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3-alpha.4...HEAD
 [0.9.3-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2...v0.9.3-alpha.3
+[0.9.3-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3-alpha.3...v0.9.3-alpha.4
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...v0.9.0
