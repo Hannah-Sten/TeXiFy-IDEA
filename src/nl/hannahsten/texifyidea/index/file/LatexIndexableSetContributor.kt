@@ -32,15 +32,18 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         // Add source files
         val roots = LatexSdkUtil.getSdkSourceRoots(project) { sdk, homePath -> sdk.getDefaultSourcesPath(homePath) }.toMutableSet()
         // Check if we possibly need to extract files first
-        for (root in roots) {
-            if (root.path.contains("MiKTeX", ignoreCase = true) && !extractedFiles) {
-                try {
-                    if (!extractMiktexFiles(root)) return mutableSetOf()
-                }
-                catch (e: ArchiverException) {
-                    // Ignore permission errors, nothing we can do about that
-                    Log.debug("Exception when trying to extract MiKTeX source files: ${e.message}")
-                    return mutableSetOf()
+        if (!extractedFiles) {
+            extractedFiles = true
+            for (root in roots) {
+                if (root.path.contains("MiKTeX", ignoreCase = true)) {
+                    try {
+                        if (!extractMiktexFiles(root)) continue
+                    }
+                    catch (e: ArchiverException) {
+                        // Ignore permission errors, nothing we can do about that
+                        Log.debug("Exception when trying to extract MiKTeX source files: ${e.message}")
+                        continue
+                    }
                 }
             }
         }
@@ -63,7 +66,8 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
      */
     private fun extractMiktexFiles(root: VirtualFile): Boolean {
         val txArchiver = TarXZUnArchiver()
-        File(root.path).list { _, name -> name.endsWith("tar.xz") }?.forEach { zipName ->
+        val zips = File(root.path).list { _, name -> name.endsWith("tar.xz") } ?: return false
+        for ((index, zipName) in zips.withIndex()) {
             txArchiver.sourceFile = File(root.path, zipName)
             // Note that by keeping the target path the same for everything, some packages will install in source/latex and some in source/latex/latex depending on how they were zipped
             val destination = File(root.path, "latex")
