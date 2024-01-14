@@ -7,6 +7,7 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -20,9 +21,10 @@ const val LINE_LENGTH = 80
  * Align spaces to the right of &
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
-    // Only add spaces after &, unless escaped
+    // Only add spaces after &, unless escaped or inside url.
     if (left.node?.text?.endsWith("&") == false) return null
     if (left.node?.text?.endsWith("\\&") == true) return null
+    if (left.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
         ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
@@ -43,6 +45,8 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
  * Align spaces to the left of & or \\
  */
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
+    if (right.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
+
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
     val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject

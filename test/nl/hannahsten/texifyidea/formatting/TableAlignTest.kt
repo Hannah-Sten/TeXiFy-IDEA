@@ -375,6 +375,28 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testAmpersandsInUrl() {
+        """
+            \documentclass{article}
+            \usepackage{hyperref}
+            \begin{document}
+                \begin{tabular}{ll}
+                    a & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & c \\
+                    be & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & d
+                \end{tabular}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{article}
+            \usepackage{hyperref}
+            \begin{document}
+                \begin{tabular}{ll}
+                    a  & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & c \\
+                    be & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & d
+                \end{tabular}
+            \end{document}
+        """.trimIndent()
+    }
+
     fun testVeryWideTable() {
         val start = """
 \documentclass[11pt]{article}
