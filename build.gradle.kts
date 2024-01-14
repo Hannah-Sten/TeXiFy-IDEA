@@ -26,7 +26,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.7.5"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "9.0.8"

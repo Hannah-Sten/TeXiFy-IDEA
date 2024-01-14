@@ -21,9 +21,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.TexLivePackages
-import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
 
@@ -64,6 +64,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                 .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
             for (command in commands) {
+                @Suppress("ktlint:standard:property-naming")
                 val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
                 if (`package` !in packages) {
                     // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).

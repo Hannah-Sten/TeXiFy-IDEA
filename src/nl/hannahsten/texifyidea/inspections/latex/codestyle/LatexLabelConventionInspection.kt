@@ -41,13 +41,13 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                     }
 
                     if (label.inDirectEnvironmentMatching {
-                        val conventionSettings = TexifyConventionsSettingsManager.getInstance(label.project).getSettings()
-                        conventionSettings.getLabelConvention(
+                            val conventionSettings = TexifyConventionsSettingsManager.getInstance(label.project).getSettings()
+                            conventionSettings.getLabelConvention(
                                 it.getEnvironmentName(),
                                 LabelConventionType.ENVIRONMENT
                             ) != null &&
-                            !EnvironmentMagic.labelAsParameter.contains(it.getEnvironmentName())
-                    }
+                                !EnvironmentMagic.labelAsParameter.contains(it.getEnvironmentName())
+                        }
                     ) {
                         label.parentOfType(LatexEnvironment::class)
                     }
