@@ -175,10 +175,7 @@ object PackageUtils {
         if (PackageMagic.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages().toSet()
-                    .intersect(conflicts)
-                    .isNotEmpty()
-                ) {
+                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts).isNotEmpty()) {
                     return false
                 }
             }

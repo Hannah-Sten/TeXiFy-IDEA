@@ -17,8 +17,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> =
-    (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
+fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
 
 /**
  * Finds all the defined latex labels in the fileset of the file.

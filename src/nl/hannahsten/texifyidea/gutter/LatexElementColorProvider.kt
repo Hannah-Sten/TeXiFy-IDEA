@@ -11,9 +11,9 @@ import nl.hannahsten.texifyidea.lang.commands.LatexColorDefinitionCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.toHexString
 import java.awt.Color
 import java.util.*
 import kotlin.math.max
@@ -101,8 +101,9 @@ class LatexElementColorProvider : ElementColorProvider {
             // and we did not find it in the default colors (above), it should be in the
             // first parameter of a color definition command. If not, we can not find the
             // color (and return null in the end).
-            if (colorName.contains('!') || colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
-                .contains(colorName)
+            if (
+                colorName.contains('!') ||
+                colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }.contains(colorName)
             ) {
                 val colorDefinitionCommand =
                     colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
