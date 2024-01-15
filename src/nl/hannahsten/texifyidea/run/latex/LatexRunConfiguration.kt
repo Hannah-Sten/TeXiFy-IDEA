@@ -512,7 +512,7 @@ class LatexRunConfiguration(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = InternalPdfViewer.firstAvailable()
+        pdfViewer = InternalPdfViewer.firstAvailable
     }
 
     fun setDefaultOutputFormat() {
