@@ -6,7 +6,12 @@
 
 ### Fixed
 
-## [0.9.3-alpha.5] - 2024-01-14
+## [0.9.3] - 2024-01-16
+
+Welcome to TeXiFy IDEA 0.9.3! This release fixes some UI freezes related to package indexing and autocompletion, and fixes a few bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
 
 ### Added
 
@@ -20,35 +25,6 @@
 * Improve user feedback for equation preview when Inkscape is not installed
 * Fix incorrectly inserted \items in enumeration environments, by @jojo2357
 * Fix false positives for equation gathering inspection, by @jojo2357
-* Don't attempt to use mthelp when it is not available, by @jojo2357
-* Fix #3361: false positive on duplicate identifier on @string entries in bib files
-* Replace code deprecated in 2023.3
-* Avoid creating output directories recursively and improve the cleanup process
-
-## [0.9.3-alpha.4] - 2024-01-12
-
-### Added
-
-* Improve autocompletion performance after starting IDE
-* Improve plugin loading performance
-
-### Fixed
-
-* Fix incorrectly inserted \items in enumeration environments, by @jojo2357
-* Fix false positives for equation gathering inspection, by @jojo2357
-* Don't attempt to use mthelp when it is not available, by @jojo2357
-* Fix #3361: false positive on duplicate identifier on @string entries in bib files
-* Replace code deprecated in 2023.3
-* Avoid creating output directories recursively and improve the cleanup process
-
-## [0.9.3-alpha.3] - 2024-01-08
-
-### Added
-
-* Improve plugin loading performance
-
-### Fixed
-
 * Don't attempt to use mthelp when it is not available, by @jojo2357
 * Fix #3361: false positive on duplicate identifier on @string entries in bib files
 * Replace code deprecated in 2023.3
@@ -303,7 +279,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3-alpha.5...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...HEAD
+[0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3-alpha.5...v0.9.3
 [0.9.3-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3-alpha.3...v0.9.3-alpha.4
 [0.9.3-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2...v0.9.3-alpha.3
 [0.9.3-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3-alpha.4...v0.9.3-alpha.5
