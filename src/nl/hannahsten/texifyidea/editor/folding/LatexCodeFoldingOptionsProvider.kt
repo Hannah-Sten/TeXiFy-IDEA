@@ -12,6 +12,12 @@ class LatexCodeFoldingOptionsProvider : CodeFoldingOptionsProvider, BeanConfigur
         val settings = instance
         if (settings != null) {
             checkBox("Package imports", settings::collapseImports)
+            checkBox("Environments", settings::foldEnvironments)
+            checkBox("Escaped symbols", settings::foldEscapedSymbols)
+            checkBox("Footnotes", settings::foldFootnotes)
+            checkBox("Math symbols", settings::foldMathSymbols)
+            checkBox("Sections", settings::foldSections)
+            checkBox("Symbols", settings::foldSymbols)
         }
     }
 }

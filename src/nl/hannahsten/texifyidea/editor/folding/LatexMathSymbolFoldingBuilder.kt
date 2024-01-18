@@ -37,7 +37,7 @@ class LatexMathSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
         return descriptors.toTypedArray()
     }
 
-    override fun isCollapsedByDefault(node: ASTNode) = true
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldMathSymbols
 
     override fun getPlaceholderText(node: ASTNode): String? = null
 }

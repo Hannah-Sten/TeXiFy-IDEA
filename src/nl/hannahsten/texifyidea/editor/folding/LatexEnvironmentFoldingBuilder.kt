@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.util.parser.endOffset
  */
 class LatexEnvironmentFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
-    override fun isCollapsedByDefault(node: ASTNode) = false
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldEnvironments
 
     override fun getPlaceholderText(node: ASTNode) = "..."
 

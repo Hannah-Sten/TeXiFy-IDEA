@@ -11,9 +11,9 @@ import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.util.magic.CommandMagic.foldableFootnotes
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
-import nl.hannahsten.texifyidea.util.magic.CommandMagic.foldableFootnotes
 
 /**
  * Adds folding regions for LaTeX environments.
@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic.foldableFootnotes
  */
 class LatexFootnoteFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
-    override fun isCollapsedByDefault(node: ASTNode) = true
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldFootnotes
 
     override fun getPlaceholderText(node: ASTNode): String {
         val parsedText = node.text.substring(1).trim()

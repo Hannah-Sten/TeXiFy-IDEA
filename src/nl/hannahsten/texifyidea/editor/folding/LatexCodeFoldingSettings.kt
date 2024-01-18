@@ -14,7 +14,13 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "LatexCodeFoldingSettings", storages = [Storage("editor.xml")])
 class LatexCodeFoldingSettings : PersistentStateComponent<LatexCodeFoldingSettings> {
 
-    var collapseImports: Boolean = true
+    var collapseImports = true
+    var foldEnvironments = false
+    var foldEscapedSymbols = true
+    var foldFootnotes = true
+    var foldMathSymbols = true
+    var foldSections = false
+    var foldSymbols = true
 
     override fun getState() = this
 
