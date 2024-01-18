@@ -62,8 +62,9 @@ enum class InternalPdfViewer(
 
     companion object {
 
-        fun availableSubset(): List<InternalPdfViewer> = values().filter { it.isAvailable() }
+        // These properties may be used often when opening a project or during project use because of settings state initialization, so we cache them.
+        val availableSubset: List<InternalPdfViewer> = values().filter { it.isAvailable() }
 
-        fun firstAvailable(): InternalPdfViewer = availableSubset().first()
+        val firstAvailable: InternalPdfViewer = availableSubset.first()
     }
 }

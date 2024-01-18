@@ -95,16 +95,12 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
         }
         else {
             var output = ""
-            if (nonBlocking) {
-                if (proc.inputStream.bufferedReader().ready()) {
-                    output += proc.inputStream.bufferedReader().readText().trim()
-                }
-                if (proc.errorStream.bufferedReader().ready()) {
-                    output += proc.errorStream.bufferedReader().readText().trim()
-                }
+            // If the program has timed out, something is stuck so we are not going to wait until it prints its stdout/stderr, we just check if ready and otherwise are out of luck
+            if (proc.inputStream.bufferedReader().ready()) {
+                output += proc.inputStream.bufferedReader().readText().trim()
             }
-            else {
-                output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+            if (proc.errorStream.bufferedReader().ready()) {
+                output += proc.errorStream.bufferedReader().readText().trim()
             }
             proc.destroy()
             proc.waitFor()
