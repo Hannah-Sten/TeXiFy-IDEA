@@ -24,7 +24,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
     private val sectionCommandNames = CommandMagic.sectioningCommands.map { it.command }
     private val sectionCommands = sectionCommandNames.map { "\\$it" }.toTypedArray()
 
-    override fun isCollapsedByDefault(node: ASTNode) = false
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldSections
 
     override fun getPlaceholderText(node: ASTNode) = node.text + "..."
 
