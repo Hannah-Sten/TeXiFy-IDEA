@@ -68,7 +68,8 @@ The only place where the formatter does not insert blank lines is right after th
 When enabled, text inside sections, subsections, etc. will be indented.
 As an example,
 
-```latex
+<!-- ```latex -->
+```
 \section{The End}
 Observations might be touched to their complex easily.
 \subsection{Level 2, Bis}
@@ -86,7 +87,8 @@ The partial visual nods the inspiration of a camel for ludicrous call.
 
 will be reformatted as
 
-```latex
+<!-- ```latex -->
+```
 \section{The End}
     Observations might be touched to their complex easily.
 

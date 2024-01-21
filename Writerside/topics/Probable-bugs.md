@@ -8,7 +8,8 @@ In general, you should use LuaLaTeX or XeLaTeX when working with Unicode charact
 
 An example file which uses Unicode characters and is compilable with LuaLaTeX:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 % For this document you may need the following (texlive) packages: luatex luaotfload fontspec babel-greek greek-fontenc gfsporson
@@ -33,7 +34,8 @@ SmallCapsFont = GFSPorson-Regular]
 
 Another example, tested with XeLaTeX:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{fontspec}
 
@@ -58,7 +60,8 @@ Note that since TeX Live 2018 this is unnecessary: UTF-8 is assumed as the defau
 
 This will load
 
-```latex
+<!-- ```latex -->
+```
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 ```

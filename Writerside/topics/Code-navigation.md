@@ -54,7 +54,8 @@ An example of using the xr package is as follows.
 Note that you need to compile `presentation.tex` before `main.tex`, and that you can do so by specifying the run configuration for `presentation.tex` in the 'Before launch' section in the run configuration for `main.tex`.
 
 `main.tex`:
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \usepackage{xr}
 \usepackage{xr-hyper}
@@ -71,7 +72,8 @@ Note that you need to compile `presentation.tex` before `main.tex`, and that you
 ```
 
 `presentation.tex`
-```latex
+<!-- ```latex -->
+```
 \documentclass{beamer}
 \usepackage{hyperref}
 

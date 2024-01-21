@@ -21,7 +21,8 @@ If you use xindy but no `auxil/` or `out/` then in order to allow imakeidx to ru
 
 Example with an index using makeindex:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{imakeidx}
 \makeindex
@@ -33,7 +34,8 @@ Example with an index using makeindex:
 
 TeXiFy also supports using xindy (instead of makeindex) and a custom index name, for example:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage[xindy]{imakeidx}
 \makeindex[name=myindex]
@@ -62,7 +64,8 @@ For completeness we repeat these examples below, so you can easily copy paste an
 
 Option 1, using LaTeX.
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{glossaries}
@@ -78,7 +81,8 @@ Option 1, using LaTeX.
 
 Option 2, using makeindex.
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{glossaries}
@@ -93,7 +97,8 @@ Option 2, using makeindex.
 ```
 
 Option 3, using xindy (so Perl is required).
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage[xindy]{glossaries}
@@ -108,7 +113,8 @@ Option 3, using xindy (so Perl is required).
 ```
 
 Option 4, using bib2gls (requires at least Java 8).
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage[record]{glossaries-extra} % record -> bib2gls
@@ -129,7 +135,8 @@ sort={en-GB}% sort according to this locale
 
 Bonus example: you can even use both an index and a glossary.
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{imakeidx}
@@ -160,7 +167,8 @@ _Since b0.7.2_
 
 Pythontex is a LaTeX package which can, among other things, run Python code which you included in your LaTeX file and nicely format the code and the output as well.
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \usepackage{pythontex}
 \begin{document}
@@ -204,7 +212,8 @@ Also see [https://www.jetbrains.com/help/pycharm/template-languages.html](https:
 
 Then you can write for example a LaTeX file containing
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -275,7 +284,8 @@ with open('jinja2-test.tex', 'w') as f:
 
 and
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}

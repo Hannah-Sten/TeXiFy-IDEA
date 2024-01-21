@@ -29,7 +29,8 @@ TeXiFy will try to detect this, and automatically compile with the right compile
 #### Example {id="example-bibtex-compiler"}
 
 `main.tex`
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -59,7 +60,8 @@ For a downloadable example, see [https://github.com/PHPirates/bibtex-mwe](https:
 An example of using the biblatex package:
 
 `main.tex`
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage[giveninits=true]{biblatex}
@@ -168,7 +170,8 @@ For more information, see [https://ctan.org/pkg/chapterbib?lang=en](https://ctan
 Example:
 
 `main.tex`
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage[authoryear,sectionbib]{natbib}
 \usepackage{chapterbib}
@@ -180,7 +183,8 @@ Example:
 ```
 
 `introduction.tex`
-```latex
+<!-- ```latex -->
+```
 Introduction cites~\cite{knuth90}.
 
 \bibliographystyle{plainnat}
@@ -188,7 +192,8 @@ Introduction cites~\cite{knuth90}.
 ```
 
 `introduction.tex`
-```latex
+<!-- ```latex -->
+```
 Discrete shape cites~\cite{goossens93}.
 
 \bibliographystyle{plainnat}

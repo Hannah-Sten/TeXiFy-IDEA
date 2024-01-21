@@ -83,14 +83,16 @@ To find out what elements need to be renamed as well (definition and other usage
 
 You can also use the rename functionality to change an environment name in `\begin` and `\end` at the same time, i.e. replace
 
-```latex
+<!-- ```latex -->
+```
 \begin{center}
 \end{center}
 ```
 
 with
 
-```latex
+<!-- ```latex -->
+```
 \begin{abstract}
 \end{abstract}
 ```
@@ -157,7 +159,8 @@ Nearly every JetBrains IDE offers a refactoring tool called [Inline](https://www
 
 <compare>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
 
@@ -167,7 +170,8 @@ Nearly every JetBrains IDE offers a refactoring tool called [Inline](https://www
 \end{document}
 ```
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
 
@@ -213,7 +217,8 @@ See [Preview](Tool-Windows.md#equation-preview).
 If you want to temporarily switch off the parser for a part of your LaTeX, for example because there is a parse error which is causing other problems in your files, you can use the magic comments `%! parser = off` and `%! parser = on` to avoid parsing the text between these two comments.
 The syntax `% !TeX parser = off` is also supported.
 
-```latex
+<!-- ```latex -->
+```
 %! parser=off
     \catcode`#=14
     # Please don't do this
@@ -242,7 +247,8 @@ _Since b0.7_
 TeXiFy supports custom definitions of `label`-like, `\ref`-like and `\cite`-like commands.
 For example, if you write
 
-```latex
+<!-- ```latex -->
+```
 \newcommand{\mylabel}[1]{\label{#1}}
 
 \section{One}\mylabel{sec:one}
@@ -256,7 +262,8 @@ For definitions like `\newcommand{\mycite}[1]{\citeauthor{#1}\cite{#1}}`, this m
 In the case of definitions including a `\label` command, we check the parameter positions as well.
 For example,
 
-```latex
+<!-- ```latex -->
+```
 \newcommand{\mysectionlabel}[2]{\section{#1}\label{#2}}
 
 \mysectionlabel{One}{sec:one}
@@ -278,7 +285,8 @@ TeXiFy support using the `subfiles` package.
 This means that package imports will be placed in the main file when you are writing in a subfile, and imports will be detected correctly.
 An example of using the subfile package would be:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{subfiles}
@@ -290,7 +298,8 @@ An example of using the subfile package would be:
 
 `section1.tex`:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[main.tex]{subfiles}
 
 \begin{document}
@@ -313,7 +322,8 @@ You can use this to add extra directories in which graphicx will search for imag
 
 For example, if you have images in a path `/path/to/figures` you could write
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{graphicx}
 \graphicspath{{/path/to/figures/}}

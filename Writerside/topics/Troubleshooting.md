@@ -42,7 +42,8 @@ We intend to make the parser such that it will accept almost all LaTeX that we t
 If you do encounter a parse error that you think is incorrect, please raise an issue.
 As a workaround, if you want to keep syntax highlighting for that part you can use magic comments to disable the formatter (see [Code formatting](Code-formatting.md#disabling-the-formatter)) to avoid it incorrectly formatting your file:
 
-```latex
+<!-- ```latex -->
+```
 % @formatter:off
 ...
 % @formatter:on
@@ -51,7 +52,8 @@ As a workaround, if you want to keep syntax highlighting for that part you can u
 If you are fine without the syntax highlighting for that part, you can disable the parser entirely (see [Magic comments](Editing-a-LaTeX-file.md#magic-comments)).
 This will ensure that TeXiFy completely ignores this part of the code, and other parts should remain working fine.
 
-```latex
+<!-- ```latex -->
+```
 %! parser = off
 ...
 %! parser = on
@@ -63,7 +65,8 @@ We have two `\begin` commands but only one `\end` command, so the parser will be
 Since it isn’t clear which `\begin` should be matched with the `\end`, ideally it wouldn’t try to match them at all.
 But the only reason this is valid LaTeX at all is the `\if`, and whether we need to match depends on many things, for example whether the `\end` is inside the `\if` or not.
 
-```latex
+<!-- ```latex -->
+```
 \newenvironment{messageTable}[2]
 {
     \begin{center}
@@ -272,7 +275,8 @@ In general you have a main file which contains the documentclass and the documen
 From here you can include other files which can then include even more files and so on.
 An example is:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{exam}
 
 % Packages
@@ -301,7 +305,8 @@ An example is:
 
 where the files `introduction.tex` and `example-theorems.tex` contain just the content, for example these could be the complete file contents of `introduction.tex`:
 
-```latex
+<!-- ```latex -->
+```
 \begin{theorem}
     If the meanings of 'true' and 'false' were switched, then this sentence wouldn't be false.
 \end{theorem}
@@ -334,7 +339,8 @@ Note that you _have_ to disable both the `auxil/` (in case of MiKTeX) and `out/`
 In general we would recommend using the `imakeidx` package like below, but equivalent index packages should also work.
 
 Example:
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{imakeidx}
 \makeindex

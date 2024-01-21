@@ -144,7 +144,8 @@ To include an entire file (for example your `tikzsettings.sty`) in the preamble,
 
 For example, to include your custom command `\newcommand{\letters}{\alpha \beta \gamma \delta \epsilon}` in the preamble of the equation preview, use
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 %! begin preamble = math

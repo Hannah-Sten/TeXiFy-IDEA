@@ -23,7 +23,8 @@ By default, when you press <shortcut>Enter</shortcut> when in an itemize or enum
 
 For example, when in a situation like
 
-```latex
+<!-- ```latex -->
+```
 \begin{itemize}
     \item <cursor>
 \end{itemize}
@@ -31,7 +32,8 @@ For example, when in a situation like
 
 and you press <shortcut>Enter</shortcut>, it will result in
 
-```latex
+<!-- ```latex -->
+```
 \begin{itemize}
     \item
     \item <cursor>

@@ -11,7 +11,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 
 ### calc: `<character>' invalid at this point.
 
-```latex
+<!-- ```latex -->
+```
 \docmentclass{article}
 
 \usepackage{calc}
@@ -26,7 +27,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### amsfonts: <command> allowed only in math mode
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{amsfonts}
@@ -41,7 +43,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### <name> undefined
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \renewcommand{\bloop}{nothing}
@@ -56,7 +59,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### \< in mid line
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -72,7 +76,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### A <Box> was supposed to be here
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \newcommand{\mybox}
@@ -87,7 +92,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### textcomp: Accent <command> not provided by font family <name>
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{mathpazo}
@@ -105,7 +111,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### Argument of <command> has an extra }
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -118,7 +125,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### Bad \line or \vector argument
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -131,7 +139,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### Bad math environment delimiter
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -144,7 +153,8 @@ The logs here are when using `-file-line-error` flag when compiling.
 ```
 
 ### Bad register code (<code>)
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -158,7 +168,8 @@ hallo
 ```
 
 ### \begin{<env>} ended by \end{<other env>}
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -171,7 +182,8 @@ hallo
 ```
 
 ### amsmath: \begin{split} won't work here
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{amsmath}
@@ -188,7 +200,8 @@ hallo
 ```
 
 ### Can be used only in preamble
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -202,7 +215,8 @@ hallo
 ```
 
 ### Cannot be used in preamble
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \nocite{magic}
@@ -218,7 +232,8 @@ hallo
 ### graphicx/graphics: Cannot determine size of graphic in <file>
 Compile with pdflatex and `-output-format=dvi`
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{graphicx}
@@ -234,7 +249,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### graphicx/graphics: Cannot include graphics of type: <ext>
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{graphicx}
@@ -249,7 +265,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### \caption outside float
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -262,7 +279,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### Command <name> already defined
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \newcommand{\documentclass}{hahaha}
@@ -276,7 +294,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### Command <name> not defined as a math alphabet
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \SetMathAlphabet{\methit}{normal}{OT1}{ppl}{m}{it}
@@ -291,7 +310,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### Counter too large
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \renewcommand{\theequation}{\alph{equation}}
@@ -307,7 +327,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### Dimension too large
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -320,7 +341,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### amsmath: \displaybreak cannot be applied here
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{amsmath}
@@ -339,7 +361,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### graphicx/graphics: Division by 0
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{graphicx}
@@ -354,7 +377,8 @@ ound-black-cat.jpg (no BoundingBox).
 ```
 
 ### Double subscript
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -369,7 +393,8 @@ l.4     $x_i_
 ```
 
 ### Encoding scheme <name> unknown
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage[15]{fontenc}
@@ -391,7 +416,8 @@ enc Error: Encoding file `15enc.def' not found.
 ```
 
 ### Environment <name> undefined
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \renewenvironment{bla}{a}{b}
@@ -405,7 +431,8 @@ enc Error: Encoding file `15enc.def' not found.
 ```
 
 ### amsmath: Erroneous nesting of equation structures
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{amsmath}
@@ -426,7 +453,8 @@ s;
 ```
 
 ### Extra alignment tab has been changed to \cr
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -445,7 +473,8 @@ l.5         1 & 2 &
 ```
 
 ### Extra \endgroup
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -458,7 +487,8 @@ l.5         1 & 2 &
 ```
 
 ### Extra \or
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \or
@@ -470,7 +500,8 @@ l.3 \or
 ```
 
 ### Extra \right
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -485,7 +516,8 @@ l.4     $(\right)
 ```
 
 ### Extra }, or forgotten $
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -500,7 +532,8 @@ l.4     $x}
 ```
 
 ### Extra }, or forgotten \endgroup
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -516,7 +549,8 @@ l.5         text}
 ```
 
 ### File `<name>' not found
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -540,7 +574,8 @@ l.4     \input{fakenews.tex}
 ```
 
 ### Float(s) lost
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{graphicx}
 
@@ -556,7 +591,8 @@ l.4     \input{fakenews.tex}
 ```
 
 ### Font family <cdp>+<family> unknown
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \DeclareFontShape{T1}{bla}{}{}{}{}
@@ -572,7 +608,8 @@ l.4     \input{fakenews.tex}
 
 ### Font <internal-name>=<external-name> not loadable: Metric (TFM) file not found
 
-```latex
+<!-- ```latex -->
+```
 % To reproduce, tlmgr remove collection-fontsrecommended
 \documentclass{article}
 \usepackage[T1]{fontenc}
@@ -623,7 +660,8 @@ From the LaTeX Companion:
 
 It seemed easier to reproduce using just TeX instead of LaTeX.
 
-```latex
+<!-- ```latex -->
+```
 \input fake.tex
 \bye
 ```
@@ -644,7 +682,8 @@ l.3 \begin{document}
 ```
 
 ### Illegal character in array arg
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -659,7 +698,8 @@ l.3 \begin{document}
 ```
 
 ### Illegal parameter number in definition of <command>
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \newcommand{\breakstuff}{#1}
@@ -673,7 +713,8 @@ l.3 \newcommand{\breakstuff}{#1}
 ```
 
 ### Illegal unit of measure (pt inserted)
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -691,7 +732,8 @@ l.4     \rule{1}{3}
 ### Improper argument for math accent:
 According to [amsmath](#amsmath), the following example should trigger this error.
 However, it triggers a bunch of other errors...
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{amsmath}
@@ -724,7 +766,8 @@ l.415 \tilde k_{\lambda_j} = P_{\tilde \mathcal
 ```
 
 ### Improper discretionary list
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \discretionary
@@ -742,7 +785,8 @@ l.415 \tilde k_{\lambda_j} = P_{\tilde \mathcal
 ```
 
 ### Improper \hyphenation (will be flushed.)
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \hyphenation{bl\"oop-floop-gloop}
@@ -757,7 +801,8 @@ l.3 \hyphenation{bl\"o
 ```
 
 ### Improper \prevdepth
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \discretionary
@@ -775,7 +820,8 @@ l.7 \end{document}
 ```
 
 ### Improper \spacefactor
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -789,7 +835,8 @@ l.4     \showthe\spacefactor
 ```
 
 ### \include cannot be nested
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -802,7 +849,8 @@ l.4     \showthe\spacefactor
 ```
 
 ### Incompatible list can't be unboxed
-```latex
+<!-- ```latex -->
+```
 \setbox0\vbox{}\unhbox0
 ```
 
@@ -812,7 +860,8 @@ l.4     \setbox0\vbox{}\unhbox0
 ```
 
 ### Incomplete <conditional>; all text was ignored after line <number>
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \newcommand{\x}{3}
@@ -829,7 +878,8 @@ l.4     \setbox0\vbox{}\unhbox0
 ```
 
 ### Infinite glue shrinkage found in <somewhere>
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -842,7 +892,8 @@ l.4     \setbox0\vbox{}\unhbox0
 ```
 
 ### amsmath: Invalid use of <command>
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage{amsmath}
@@ -857,7 +908,8 @@ l.4     \setbox0\vbox{}\unhbox0
 ```
 
 ### babel: Language definition file <language>.ldf not found
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \usepackage[bla]{babel}
@@ -874,7 +926,8 @@ el Error: Unknown option `bla'. Either you misspelled it
 ```
 
 ### Limit controls must follow a math operator
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -897,7 +950,8 @@ l.4     \limits
 
 ### Lonely \item--perhaps a missing list environment
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \item
@@ -927,7 +981,8 @@ See the LaTeX manual or LaTeX Companion for explanation.
 
 ### Math version <name> is not defined
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \mathversion{GFS}
 \begin{document}
@@ -948,7 +1003,8 @@ l.2 \mathversion{GFS}
 ### Misplaced alignment tab character &
 Alternate forms: Misplaced \cr, \crcr, \noalign, \omit
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     &
@@ -962,7 +1018,8 @@ l.3     &
 
 ### Missing \begin{document}
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 Text.
 \begin{document}
@@ -983,7 +1040,8 @@ l.2 T
 
 ### Missing control sequence inserted
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \newcommand t
 
@@ -1010,7 +1068,8 @@ l.34         \end{tabularx}
 
 ### Missing delimiter (. inserted)
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \left
@@ -1026,7 +1085,8 @@ l.4 \end{document}
 
 ### Missing \endcsname inserted
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \newenvironment{Bl\"ode}
 \begin{document}
@@ -1040,7 +1100,8 @@ l.4 \end{document}
 
 ### Missing number, treated as zero
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
     Main.
@@ -1060,7 +1121,8 @@ l.5 \end{document}
 ### Missing @-exp in array arg
 ### Missing # inserted in alignment preamble.
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
     \begin{tabular}{p}
@@ -1090,7 +1152,8 @@ l.3     \begin{tabular}{p}
 ### Missing = inserted for \ifnum
 ### Missing = inserted for \ifdim
 
-```latex
+<!-- ```latex -->
+```
 ./main.tex:4: Missing = inserted for \ifnum.
 <to be read again>
                    \let
@@ -1106,7 +1169,8 @@ l.4 \end{document}
 
 ### Missing $ inserted {#missing-dollar}
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
     _
@@ -1139,7 +1203,8 @@ l.4 \end{document}
 ### Missing } inserted {#missing-close-brace}
 ### Missing { inserted {#missing-open-brace}
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
     \left(
@@ -1156,7 +1221,8 @@ l.4 \end{document}
 ### Multiple \label's: label <label> will be lost
 ### Multiple tag
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \usepackage{amsmath}
 \begin{document}
@@ -1181,7 +1247,8 @@ l.7     \end{align}
 
 ### No counter '<name>' defined
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
     \setcounter{name}
@@ -1210,7 +1277,8 @@ l.7     \end{align}
 
 ### No \title given
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[11pt]{article}
 \begin{document}
     \maketitle
@@ -1225,7 +1293,8 @@ l.7     \end{align}
 
 ### !pdfTeX error: pdflatex (file <file>): cannot open <type> file for reading
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage[urw-garamond]{mathdesign}
 \usepackage[T1]{fontenc}
@@ -1247,7 +1316,8 @@ ding
 
 ### Citation `<key>' on page <number> undefined
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1263,7 +1333,8 @@ LaTeX Warning: There were undefined references.
 
 ### Command <name> invalid in math mode
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1289,7 +1360,8 @@ l.4     $ö
 
 ### Empty `thebibliography' environment
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1304,7 +1376,8 @@ LaTeX Warning: Empty `thebibliography' environment on input line 5.
 
 ### (\end occurred inside a group at level <number)
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1321,7 +1394,8 @@ LaTeX Warning: Empty `thebibliography' environment on input line 5.
 
 ### (\end occurred when <condition> on line <line number> was incomplete)
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1329,7 +1403,8 @@ LaTeX Warning: Empty `thebibliography' environment on input line 5.
 \end{document}
 ```
 
-```latex
+<!-- ```latex -->
+```
 \end{document}
 ```
 
@@ -1340,7 +1415,8 @@ LaTeX Warning: Empty `thebibliography' environment on input line 5.
 
 ### File `<name>' already exists on the system. Not generating it from this source
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \begin{filecontents}{included.tex}
@@ -1355,7 +1431,8 @@ LaTeX Warning: File `included.tex' already exists on the system.
 
 ### Float too large for page by <value>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{graphicx}
 \begin{document}
@@ -1374,7 +1451,8 @@ LaTeX Warning: Float too large for page by 5.92273pt on input line 9.
 
 ### Font shape <font shape> in size <size> not available
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \fontsize{42pt}{50pt}
@@ -1392,7 +1470,8 @@ LaTeX Font Warning: Size substitutions with differences
 
 ### Font shape <font shape> undefined. Using `<other shape>' instead
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \fontseries{b}\ttfamily Text.
@@ -1408,7 +1487,8 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 ### amsmath: Foreign command <command>; \frac or \genfrac should be used instead
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{amsmath}
 \begin{document}
@@ -1424,7 +1504,8 @@ Package amsmath Warning: Foreign command \;
 
 ### Form feed has been converted to Blank Line
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \begin{filecontents}{filecontents.tex}
@@ -1446,7 +1527,8 @@ LaTeX Warning: Form Feed has been converted to Blank Line.
 
 ### `h' float specifier changed to `ht'
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{graphicx}
 \begin{document}
@@ -1468,7 +1550,8 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 ### Ignoring text `<text>' after \end{<env>}
 
-```latex
+<!-- ```latex -->
+```
 \begin{filecontents}{filecontents2.tex}
 \end{filecontents} Text.
 \documentclass{article}
@@ -1486,7 +1569,8 @@ LaTeX Warning: Ignoring text ` Text.' after \end{filecontents} on input line 2.
 
 ### Label `<key>' multiply defined
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     Text.
@@ -1504,7 +1588,8 @@ LaTeX Warning: There were multiply-defined labels.
 
 ### Label(s) may have changed. Rerun to get cross-references right
 
-```latex
+<!-- ```latex -->
+```
 % https://tex.stackexchange.com/a/169245/98850
 \documentclass{article}
 
@@ -1525,7 +1610,8 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 ### Loose \hbox (badness <number>) <somewhere>
 
-```latex
+<!-- ```latex -->
+```
 % https://tex.stackexchange.com/q/496596/98850
 \documentclass{article}
 
@@ -1547,7 +1633,8 @@ Loose \hbox (badness 0) in paragraph at lines 9--12
 
 ### Marginpar on page <number> moved
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1564,7 +1651,8 @@ LaTeX Warning: Marginpar on page 1 moved.
 
 ### Missing character: There is no <char> in font <name>!
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \tracingonline1
 \begin{document}
@@ -1579,7 +1667,8 @@ Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text
 
 ### No \author given
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \title{}
 \begin{document}
@@ -1593,7 +1682,8 @@ LaTeX Warning: No \author given.
 
 ### No auxiliary output files
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \nofiles
 \begin{document}
@@ -1619,7 +1709,8 @@ No file errors.aux.
 
 ### No file <name>
 
-```latex
+<!-- ```latex -->
+```
 % First delete .aux file
 \documentclass{article}
 \begin{document}
@@ -1633,7 +1724,8 @@ No file errors.aux.
 
 ### babel: No hyphenation patterns were loaded for the language `<language>'
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage[german]{babel}
 \begin{document}
@@ -1652,7 +1744,8 @@ t.
 
 ### babel: No input encoding specified for <language> language
 
-```latex
+<!-- ```latex -->
+```
 % Install babel-russian
 \documentclass[12pt]{article}
 
@@ -1677,7 +1770,8 @@ Package babel Warning: No Cyrillic font encoding has been loaded so far.
 
 ### No positions in optional float specifier. Default added ...
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1694,7 +1788,8 @@ LaTeX Warning: No positions in optional float specifier.
 
 ### textcomp: Oldstyle digits unavailable for family <name>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage[warn]{textcomp}
 \begin{document}
@@ -1709,7 +1804,8 @@ Package textcomp Warning: Oldstyle digits unavailable for family phv.
 
 ### Optional argument of \twocolumn too tall on page <number>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{lipsum}
 \begin{document}
@@ -1730,7 +1826,8 @@ LaTeX Warning: Text page 1 contains only floats.
 ### Overfull \hbox (<number>pt too wide) <somewhere>
 ### Overfull \vbox (<number>pt too wide) <somewhere>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \oval(1,1)
@@ -1752,7 +1849,8 @@ Overfull \hbox (2.99998pt too wide) detected at line 4
 
 ### Reference `<key>' on page <number> undefined
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \ref{test}
@@ -1765,7 +1863,8 @@ LaTeX Warning: Reference `test' on page 1 undefined on input line 3.
 
 ### Size substitutions with differences up to <size> have occurred
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \fontsize{100}{100} text
@@ -1779,7 +1878,8 @@ LaTeX Font Warning: Size substitutions with differences
 
 ### Some font shapes were not available, defaults substituted
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
@@ -1797,7 +1897,8 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 ### Tab has been converted to Blank Space
 
-```latex
+<!-- ```latex -->
+```
 \begin{filecontents}{test}
 	Text.
 \end{filecontents}
@@ -1817,7 +1918,8 @@ LaTeX Warning: Tab has been converted to Blank Space.
 
 ### Text page <number> contains only floats
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{lipsum}
 \begin{document}
@@ -1831,7 +1933,8 @@ LaTeX Warning: Text page 1 contains only floats.
 
 ### There were multiply-defined labels
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     Text.
@@ -1847,7 +1950,8 @@ LaTeX Warning: There were multiply-defined labels.
 
 ### There were undefined references.
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \ref{test}
@@ -1861,7 +1965,8 @@ LaTeX Warning: There were undefined references.
 ### Tight \hbox (badness <number>) <somewhere>
 ### Tight \vbox (badness <number>) <somewhere>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \hbadness=-1
 \begin{document}
@@ -1893,7 +1998,8 @@ t text text text text
 
 ### Underfull \hbox (badness <number>) in alignment at lines <line numbers>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \begin{tabular*}{0.9\textwidth}{l}
@@ -1911,7 +2017,8 @@ Underfull \hbox (badness 10000) in alignment at lines 3--7
 
 ### Underfull \hbox (badness <number>) in paragraph at lines <line numbers>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -1926,7 +2033,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 4--6
 
 ### Unused global option(s): [<option-list>]
 
-```latex
+<!-- ```latex -->
+```
 \documentclass[harf]{article}
 \begin{document}
     Text.
@@ -1940,7 +2048,8 @@ LaTeX Warning: Unused global option(s):
 
 ### Writing file `<name>'
 
-```latex
+<!-- ```latex -->
+```
 \begin{filecontents}{test423.tex}
     Test.
 \end{filecontents}
@@ -1956,7 +2065,8 @@ LaTeX Warning: Writing file `./test423.tex'.
 
 ### Writing text `<text>' before \end{<env>} as last line of <file>
 
-```latex
+<!-- ```latex -->
+```
 \begin{filecontents}{test424.tex}
     Test.\end{filecontents}
 \documentclass{article}
@@ -1972,7 +2082,8 @@ LaTeX Warning: Writing text `    Test.' before \end{filecontents}
 
 ### babel: You have more than once selected the attribute `<attrib>' for language <language>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage[british]{babel}
 \languageattribute{british}{test,test}
@@ -1991,7 +2102,8 @@ Package babel Warning: You have more than once selected the attribute 'test'
 
 ### You have requested <package-or-class> `<name>', but the <package-or-class> provides `<alternate-name>'
 
-```latex
+<!-- ```latex -->
+```
 \begin{filecontents}{test435.sty}
 \ProvidesPackage{Alternate name}
 \end{filecontents}
@@ -2010,7 +2122,8 @@ LaTeX Warning: You have requested package `test435',
 
 ### You have requested release `<date>' of LaTeX, but only release `<old-date>' is available
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \NeedsTeXFormat{LaTeX2e}[9999/99/99]
 \begin{document}
@@ -2025,7 +2138,8 @@ LaTeX Warning: You have requested release `9999/99/99' of LaTeX,
 
 ### You have requested, on line <num>, version `<date>' of <name>, but only version `<old-date>' is available
 
-```latex
+<!-- ```latex -->
+```
 \begin{filecontents}{test998.sty}
 \ProvidesPackage{test998}[2020/04/08]
 \end{filecontents}
@@ -2046,7 +2160,8 @@ LaTeX Warning: You have requested, on input line 5, version
 
 ### pdfTeX warning
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \usepackage{hyperref}
 
@@ -2088,7 +2203,8 @@ The following errors and warnings were extracted from bibtex.web, availabe for e
 ### I couldn't open database file <file>
 ### I couldn't open style file <file>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth19902}.
@@ -2115,7 +2231,8 @@ Process finished with exit code 2
 
 ### Sorry---you've exceeded BibTeX's <structure>
 
-```latex
+<!-- ```latex -->
+```
 % https://tex.stackexchange.com/questions/460183/bibtex-hash-size-exceeded
 ```
 
@@ -2128,7 +2245,8 @@ Aborted at line 291526 of file crypto.bib
 
 ### This database file appears more than once:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth19902}.
@@ -2150,7 +2268,8 @@ I'm skipping whatever remains of this command
 ### Illegal, another \bibdata command
 ### Illegal, another \bibstyle command
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth1990}.
@@ -2172,7 +2291,8 @@ This one complains when a command is missing its |right_brace|.
 
 ### Stuff after "}"
 
-```latex
+<!-- ```latex -->
+```
 % https://tex.stackexchange.com/a/408548/98850
 ```
 
@@ -2203,7 +2323,8 @@ I'm skipping whatever remains of this command
 
 ### Case mismatch error between cite keys <key> and <key>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth1990}.
@@ -2225,7 +2346,8 @@ I'm skipping whatever remains of this command
 
 ### Already encountered file <file>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth1990}.
@@ -2256,7 +2378,8 @@ I'm skipping whatever remains of this command
 
 ### I found no <type> while reading file <file>
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth1990}.
@@ -2274,7 +2397,8 @@ Warning--I didn't find a database entry for "knuth1990"
 
 ### <char> is missing in command: <command>
 
-```latex
+<!-- ```latex -->
+```
 % https://github.com/CarlOrff/apalike-german/issues/1
 ```
 
@@ -2286,7 +2410,8 @@ Warning--I didn't find a database entry for "knuth1990"
 
 ### <function> is already a type "<type>" function name
 
-```latex
+<!-- ```latex -->
+```
 % https://tex.stackexchange.com/questions/147607/article-is-already-a-type-wizard-defined-function-name
 ```
 
@@ -2302,7 +2427,8 @@ Database file #1: Publications.bib
 ### <something> is an unknown function
 ### <something> has bad function type
 
-```latex
+<!-- ```latex -->
+```
 % https://tex.stackexchange.com/questions/329696/bibtex-error-1-is-an-integra-literal-not-a-string
 ```
 
@@ -2312,7 +2438,8 @@ The style file: bibtex/harvardUK.bst url: is an unknown function---line 320 of f
 
 ### Curse you, wizard, before you recurse me: function <function> is illegal in its own definition
 
-```latex
+<!-- ```latex -->
+```
 % https://tex.stackexchange.com/questions/552323/how-to-show-at-most-three-authors-for-any-bibliographic-entry
 ```
 
@@ -2372,7 +2499,8 @@ while executing---line 1049 of file plain.bst
 
 ### I didn't find a database entry for "<reference>"
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth19902}.
@@ -2470,7 +2598,8 @@ while executing--line 939 of file prsty.bst
 
 ### I didn't find any fields
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 \begin{document}
     \cite{knuth1990}.

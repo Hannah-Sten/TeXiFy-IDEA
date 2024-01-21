@@ -11,7 +11,8 @@ Fill the paragraph that is currently under the cursor such that each line is fil
 ## Disabling the formatter
 To disable formatting on a portion of your `tex` file, wrap the code with
 
-```latex
+<!-- ```latex -->
+```
 % @formatter:off
 ...
 % @formatter:on
@@ -71,7 +72,8 @@ When writing pseudocode using the `algorithmicx` environment and the `algpseudoc
 
 <compare>
 
-```latex
+<!-- ```latex -->
+```
 \begin{algorithm}
 \begin{algorithmic}
 \State begin
@@ -88,7 +90,8 @@ When writing pseudocode using the `algorithmicx` environment and the `algpseudoc
 \end{algorithm}
 ```
 
-```latex
+<!-- ```latex -->
+```
 \begin{algorithm}
     \begin{algorithmic}
         \State begin

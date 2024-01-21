@@ -26,7 +26,8 @@ This inspection includes a quick fix to safe delete the figure environment.
 
 **Example file which triggers the inspection.**
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -85,7 +86,8 @@ _Since b0.7.1_
 
 A LaTeX root file has the following structure:
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 % Document preamble

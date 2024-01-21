@@ -30,7 +30,8 @@ a section heading. Any `\section{...}` command will trigger this. It turns
 
 **main.tex**
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -43,7 +44,8 @@ into the two files
 
 **main.tex**
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -54,7 +56,8 @@ into the two files
 
 **one.tex**
 
-```latex
+<!-- ```latex -->
+```
 First section.
 ```
 
@@ -64,7 +67,8 @@ location of the new file. Consider the following file:
 
 **main.tex**
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -77,7 +81,8 @@ your new file `content.tex` we have the following two files
 
 **main.tex**
 
-```latex
+<!-- ```latex -->
+```
 \documentclass{article}
 
 \begin{document}
@@ -87,7 +92,8 @@ your new file `content.tex` we have the following two files
 
 **content.tex**
 
-```latex
+<!-- ```latex -->
+```
 This is a selected sentence.
 ```
 
@@ -95,7 +101,8 @@ This is a selected sentence.
 
 Split `\usepackage{amsmath,amsthm}` into
 
-```latex
+<!-- ```latex -->
+```
 \usepackage{amsmath}
 \usepackage{amsthm}
 ```
