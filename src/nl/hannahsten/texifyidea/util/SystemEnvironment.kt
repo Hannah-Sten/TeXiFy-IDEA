@@ -7,6 +7,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import javax.swing.SwingUtilities
 
 /**
  * Information about the system other than the LatexDistribution or the OS.
@@ -70,7 +71,7 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null): String?
  * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
  */
 fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false): Pair<String?, Int> {
-    Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
+    Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
     return try {
         val proc = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
