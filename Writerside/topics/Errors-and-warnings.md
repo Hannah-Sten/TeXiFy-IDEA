@@ -7,7 +7,7 @@ Used by us for testing purposes, written down here for future reference.
 
 The logs here are when using `-file-line-error` flag when compiling.
 
-## Errors
+## LaTeX Errors
 
 ### calc: `<character>' invalid at this point.
 
@@ -918,9 +918,6 @@ l.4 \end
 
 ### Math alphabet identifier <id> is undefined in math version <name>
 
-```latex
-
-```
 
 ```
 ./Untitled.tex:50: LaTeX Error: Math alphabet identifier \mathrm is undefined in math version `GFS'.
@@ -1003,10 +1000,6 @@ l.3
 ```
 
 ### Missing \cr inserted
-
-```latex
-
-```
 
 ```
 ./errors.tex:34: Missing \cr inserted.
@@ -1111,7 +1104,7 @@ l.4 \end{document}
 l.4 \end{document}
 ```
 
-### Missing $ inserted
+### Missing $ inserted {#missing-dollar}
 
 ```latex
 \documentclass[11pt]{article}
@@ -1136,10 +1129,6 @@ l.4 \end{document}
 
 ### Missing \endgroup inserted
 
-```latex
-
-```
-
 ```
 ./main.tex:7: Missing \endgroup inserted.
 <inserted text>
@@ -1147,8 +1136,8 @@ l.4 \end{document}
 ```
 
 ### Missing \right. inserted
-### Missing } inserted
-### Missing { inserted
+### Missing } inserted {#missing-close-brace}
+### Missing { inserted {#missing-open-brace}
 
 ```latex
 \documentclass[11pt]{article}
@@ -1254,7 +1243,7 @@ ding
 
 ### (other warnings from the LaTeX Companion omitted)
 
-## Warnings
+## LaTeX Warnings
 
 ### Citation `<key>' on page <number> undefined
 
@@ -2524,5 +2513,5 @@ I'm skipping whatever remains of this entry
 ```
 
 ## References
-* [[[mittelbach2004, 1]]] Frank Mittelbach, Michel Goossens, Johannes Braams, and Chris Rowley. 2004. _The Latex Companion. 2nd ed._ Boston: Addison-Wesley.
-* [[[amsmath, 2]]] User’s Guide for the amsmath Package. _http://mirrors.ctan.org/macros/latex/required/amsmath/amsldoc.pdf_
+* Frank Mittelbach, Michel Goossens, Johannes Braams, and Chris Rowley. 2004. _The Latex Companion. 2nd ed._ Boston: Addison-Wesley. {#mittelbach2004}
+* User’s Guide for the amsmath Package. _http://mirrors.ctan.org/macros/latex/required/amsmath/amsldoc.pdf_ {#amsmath}

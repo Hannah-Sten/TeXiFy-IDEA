@@ -22,7 +22,7 @@ After connecting to a library the contents of this library will be shown in the 
 The items from a remote library are available to the autocompletion of `\cite`-like commands the same way bibliography items that are included in a bibliography file are.
 When using completion on an item that is not in the bibliography file it will be added by TeXiFy.
 
-<a name="img-citefromremote"></a>**Completion of a bibliography item from a remote library. LaTeX file on top, BibTeX file on bottom, Libraries tool window on the right.**
+**Completion of a bibliography item from a remote library. LaTeX file on top, BibTeX file on bottom, Libraries tool window on the right.**
 
 ![Cite from remote](citefromremote.gif)
 

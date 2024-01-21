@@ -64,7 +64,7 @@ When you add the flag `-pvc` it watches the files and recompiles automatically o
 triggered, when the window looses focus, or by <shortcut>Ctrl +S</shortcut>).
 
 For an automatic start of your pdf viewer you have to create a file in your users home directory.
-The path for the file is under Linux and Mac `$HOME/.latexmkrc` and under Windows `%USERPROFILE%\.latexmkrc`.
+The path for the file is under Linux and Mac `$HOME/.latexmkrc` and under Windows <code ignore-vars="true">\%USERPROFILE%\\.latexmkrc</code>.
 In this file you need to add the following line:
 
 ```
@@ -99,7 +99,7 @@ The documentation can be found at [https://tectonic-typesetting.github.io/book/l
 
 ## BibTeX compilers
 
-For more information about the bibtex compilers, see the [Bibtex](bibtex) page.
+For more information about the bibtex compilers, see the [Bibtex](BibTeX.md) page.
 
 
 ## Custom compiler path

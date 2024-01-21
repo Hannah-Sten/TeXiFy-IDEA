@@ -44,7 +44,7 @@ _Since b0.7.3_
 
 Helps you generate LaTeX for inserting graphics. The wizard also opens when dropping a supported image file into a .tex file. You can also paste an image directly from your clipboard into the editor. You’ll be prompted with the wizard after you have saved the image from your clipboard using another dialog. _Since b0.7.4_ you can also open the wizard in the Generate menu (<shortcut>Alt+Insert</shortcut>).
 
-![demo video](insert-graphic-wizard.gif).
+![demo video](insert-graphic-wizard.gif)
 
 ## Insert Dummy Text Wizard {id="insert-dummy-text"}
 
