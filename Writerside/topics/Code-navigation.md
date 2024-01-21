@@ -140,7 +140,8 @@ Autocompletion is also available (for any file type).
 
 An example:
 
-```bibtex
+<!-- ```bibtex -->
+```
 @book{knuth1990,
     author = {Knuth, Donald E.},
     title = {The {\TeX} book },

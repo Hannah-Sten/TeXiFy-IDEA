@@ -42,7 +42,8 @@ TeXiFy will try to detect this, and automatically compile with the right compile
 ```
 
 `references.bib`
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth1990,
     author    = {Knuth, Donald E.},
     title     = {The {\TeX}book },
@@ -74,7 +75,8 @@ An example of using the biblatex package:
 ```
 
 `references.bib`
-```bibtex
+<!-- ```bibtex -->
+```
 @article{greenwade1993,
     author  = "George D. Greenwade",
     title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",
@@ -136,7 +138,8 @@ When you select it, the bibtex id will be inserted.
 TeXiFy supports the use of `@string` variables in bibtex files, including syntax highlighting, autocompletion and 'go to source' navigation (<shortcut>Ctrl + B</shortcut> by default).
 
 A usage example is the following.
-```bibtex
+<!-- ```bibtex -->
+```
 @string{mytext = "This is a note."}
 
 @Article{greenwade1993,
@@ -201,7 +204,8 @@ Discrete shape cites~\cite{goossens93}.
 ```
 
 `references.bib`
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth1990,
     author    = {Knuth, Donald E.},
     title     = {The {\TeX}book },

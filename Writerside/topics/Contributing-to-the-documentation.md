@@ -15,7 +15,8 @@ Writerside syntax is based on Markdown, but with some extra features.
 
 * Display keyboard shortcuts:
 
-```markdown
+<!-- ```markdown -->
+```
 <shortcut>Ctrl + \\</shortcut>
 ```
 
@@ -23,7 +24,8 @@ results in <shortcut>Ctrl + \\</shortcut>
 
 * Display menu selections:
 
-```markdown
+<!-- ```markdown -->
+```
 <ui-path>File | New | LaTeX File</ui-path>
 ```
 
@@ -31,7 +33,8 @@ results in <ui-path>File | New | LaTeX File</ui-path>
 
 * Reference elements like [headings on the same page](#writerside-syntax-overview):
 
-```markdown
+<!-- ```markdown -->
+```
 [Refer to](#my-heading)
 
 ## My Heading
@@ -39,12 +42,14 @@ results in <ui-path>File | New | LaTeX File</ui-path>
 
 * Reference [other pages](Contributing-to-the-source-code.md):
 
-```markdown
+<!-- ```markdown -->
+```
 [Other page](Contributing-to-the-source-code.md)
 ```
 
 * To include images/gifs, put them in the `images` directory, possibly in a subdirectory, and use
 
-```markdown
+<!-- ```markdown -->
+```
 ![My Image](my-image.png)
 ```

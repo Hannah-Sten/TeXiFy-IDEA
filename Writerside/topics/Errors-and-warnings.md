@@ -2186,7 +2186,8 @@ bytes).
 Test file:
 
 `references.bib`
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth1990,
     author    = {Knuth, Donald E.},
     title     = {The {\TeX}book },
@@ -2304,7 +2305,8 @@ Stuff after "}"---line 2 of file strange.aux
 
 ### White space in argument
 
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth 1990,
     author    = {Knuth, Donald E.},
     title     = {The {\TeX}book },
@@ -2455,7 +2457,8 @@ function format.names is illegal in its own definition
 
 ### A bad cross reference--entry "<key>" refers to entry "<key>", which doesn't exist
 
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth1990,
     author    = {Knuth, Donald E.},
     title     = {The {\TeX}book },
@@ -2479,7 +2482,8 @@ Warning--I didn't find a database entry for "nothing"
 
 ### Too many commas in name
 
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth1990,
     author = {D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth},
     title = {The {\TeX} book },
@@ -2519,7 +2523,8 @@ Process finished with exit code 0
 
 ### I'm ignoring <something>
 
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth1990,
     author    = {Knuth, Donald E.},
     author    = {Knuth, Donald E.},
@@ -2539,7 +2544,8 @@ Warning--I'm ignoring knuth1990's extra "author" field
 
 ### entry type for "<key>" isn't style-file defined
 
-```bibtex
+<!-- ```bibtex -->
+```
 @online{knuth1990,
     author    = {Knuth, Donald E.},
     title     = {The {\TeX}book },
@@ -2556,7 +2562,8 @@ Warning--entry type for "knuth1990" isn't style-file defined
 
 ### You've nested cross references
 
-```bibtex
+<!-- ```bibtex -->
+```
 @Book{knuth1990,
     author    = {Knuth, Donald E.},
     title     = {The {\TeX}book },
@@ -2618,7 +2625,8 @@ Warning--I didn't find any fields--line 1 of file style.bst
 
 ### string name "<name>" is undefined
 
-```bibtex
+<!-- ```bibtex -->
+```
 @Article{greenwade1993,
     author  = ``George D. Greenwade'',
     title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",
