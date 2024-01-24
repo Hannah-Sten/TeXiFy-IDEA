@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.replaceFrom
 import java.io.File
 import java.util.regex.Pattern
 
@@ -56,6 +57,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         // Process the expanded text again
         finalCompleteText = processAutocompleteText(finalCompleteText)
         resultSet = result.withPrefixMatcher(finalCompleteText)
+//        resultSet = result
         selectScanRoots(parameters.originalFile).forEach {
             addByDirectory(it, finalCompleteText)
         }
@@ -233,7 +235,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      *
      * This does the following:
      * - Removes any start '{' and ending '}'
-     * - Remove 'IntelliJIdeaRulezz'
+     * - Remove 'IntelliJIdeaRulezzz'
      * - Removes any arguments before the last one (separated by ',')
      * - Remove starting './'
      * - Prevent '//' (removes the first '/')
@@ -244,8 +246,10 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         // When the last parameter is autocompleted, parameters before that may also be present in
         // autocompleteText so we split on commas and take the last one. If it is not the last
         // parameter, no commas will be present so the split will do nothing.
-        result = result.replace("IntellijIdeaRulezzz", "")
-            .split(",").last()
+        result = result.split(",").last()
+
+        // Remove everything that comes after and including IntellijIdeaRulezzz, as that is the dummy for the caret.
+        result = result.replaceFrom("IntellijIdeaRulezzz", "")
 
         // Prevent double ./
         if (result.startsWith("./")) {

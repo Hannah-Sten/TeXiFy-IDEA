@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 
@@ -35,6 +36,24 @@ class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         assert(result.any { it.lookupString == "inputted.tex" })
+    }
+
+    fun `test completion for partly entered filename`() {
+        myFixture.configureByText(LatexFileType, """\input{i<caret>.tex}""")
+
+        myFixture.complete(CompletionType.BASIC)
+        myFixture.finishLookup(Lookup.NORMAL_SELECT_CHAR)
+
+        myFixture.checkResult ("""\input{inputted.tex}""")
+    }
+
+    fun `test tab completion for partly entered filename`() {
+        myFixture.configureByText(LatexFileType, """\input{i<caret>.tex}""")
+
+        myFixture.complete(CompletionType.BASIC)
+        myFixture.finishLookup(Lookup.REPLACE_SELECT_CHAR)
+
+        myFixture.checkResult ("""\input{inputted}""")
     }
 
     fun `test completion in included file from subdirectory for files in main dir`() {
