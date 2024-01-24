@@ -44,7 +44,7 @@ class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
         myFixture.complete(CompletionType.BASIC)
         myFixture.finishLookup(Lookup.NORMAL_SELECT_CHAR)
 
-        myFixture.checkResult ("""\input{inputted.tex}""")
+        myFixture.checkResult("""\input{inputted.tex}""")
     }
 
     fun `test tab completion for partly entered filename`() {
@@ -53,7 +53,7 @@ class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
         myFixture.complete(CompletionType.BASIC)
         myFixture.finishLookup(Lookup.REPLACE_SELECT_CHAR)
 
-        myFixture.checkResult ("""\input{inputted}""")
+        myFixture.checkResult("""\input{inputted}""")
     }
 
     fun `test completion in included file from subdirectory for files in main dir`() {
