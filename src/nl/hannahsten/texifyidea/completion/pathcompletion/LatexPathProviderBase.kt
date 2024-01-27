@@ -177,7 +177,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default = FILE)
         resultSet?.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name)
-                .withPresentableText(foundFile.presentableName)
+                .withPresentableText(foundFile.nameWithoutExtension)
+                .withTailText(".${foundFile.extension}", true)
                 .withInsertHandler(
                     CompositeHandler(
                         LatexReferenceInsertHandler(),
