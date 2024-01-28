@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.VerticalFlowLayout
-import com.intellij.refactoring.util.RadioUpDownListener
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JRadioButton
@@ -27,7 +26,7 @@ class PandocStandaloneDialog(var isAddImports: Boolean? = null) {
             val onlyPaste = JRadioButton("Only paste pandoc translation")
             // todo check performance of pandoc. If bad, show this dialog once and save preference in settings
 
-            RadioUpDownListener(useInternalPaste, addImports, onlyPaste)
+//            RadioUpDownListener(useInternalPaste, addImports, onlyPaste) // todo
 
             val bg = ButtonGroup()
             bg.add(useInternalPaste)
