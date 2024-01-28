@@ -11,6 +11,9 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Node
 import java.util.*
 
+/**
+ * todo why does this not implement PasteProvider?
+ */
 class TablePasteProvider : LatexPasteProvider {
 
     override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {

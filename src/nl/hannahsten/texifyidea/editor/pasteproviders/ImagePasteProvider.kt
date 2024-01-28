@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.editor
+package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import com.intellij.ide.PasteProvider
 import com.intellij.openapi.actionSystem.ActionUpdateThread
