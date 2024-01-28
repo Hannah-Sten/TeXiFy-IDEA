@@ -142,12 +142,17 @@ class LatexBlock(
 
     override fun getIndent(): Indent? {
         val shouldIndentDocumentEnvironment = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
-        val shouldIndentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT && (
+        val shouldIndentEnvironments = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_ENVIRONMENTS
+        val isDocumentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT &&
             (myNode.psi as LatexEnvironmentContent)
                 .firstParentOfType(LatexEnvironment::class)
                 ?.firstChildOfType(LatexBeginCommand::class)
-                ?.firstChildOfType(LatexParameterText::class)?.text != "document" || shouldIndentDocumentEnvironment
-            )
+                ?.firstChildOfType(LatexParameterText::class)?.text == "document"
+        val shouldIndentEnvironment = when {
+            myNode.elementType !== LatexTypes.ENVIRONMENT_CONTENT -> false
+            isDocumentEnvironment -> shouldIndentDocumentEnvironment
+            else -> shouldIndentEnvironments
+        }
 
         if (shouldIndentEnvironment || myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
             // Fix for leading comments inside an environment, because somehow they are not placed inside environments.

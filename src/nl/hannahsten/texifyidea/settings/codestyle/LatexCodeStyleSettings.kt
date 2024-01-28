@@ -37,6 +37,8 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
      */
     @JvmField var INDENT_SECTIONS = false
 
+    @JvmField var INDENT_ENVIRONMENTS = true
+
     /**
      * Indent the document environment as a normal environment.
      */
