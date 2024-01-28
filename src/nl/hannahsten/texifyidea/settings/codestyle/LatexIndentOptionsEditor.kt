@@ -4,6 +4,7 @@ import com.intellij.application.options.IndentOptionsEditor
 import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
+import java.awt.event.ItemEvent
 import javax.swing.JCheckBox
 
 /**
@@ -16,6 +17,11 @@ class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider)
     private val sectionIndents = JCheckBox("Nested indent of sections")
     private val environmentIndent = JCheckBox("Indent environments")
     private val documentIndent = JCheckBox("Indent document environment")
+
+    init {
+        // (De)select the document environment checkbox whenever the environment checkbox is (de)selected.
+        environmentIndent.addItemListener { event -> documentIndent.isSelected = event.stateChange == ItemEvent.SELECTED }
+    }
 
     override fun addComponents() {
         super.addComponents()

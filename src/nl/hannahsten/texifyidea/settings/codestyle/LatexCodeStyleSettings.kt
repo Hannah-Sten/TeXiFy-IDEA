@@ -37,10 +37,13 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
      */
     @JvmField var INDENT_SECTIONS = false
 
+    /**
+     * Indent environments.
+     */
     @JvmField var INDENT_ENVIRONMENTS = true
 
     /**
-     * Indent the document environment as a normal environment.
+     * Indent the document environment, this overrides the [INDENT_ENVIRONMENTS] setting for the document environment.
      */
     @JvmField var INDENT_DOCUMENT_ENVIRONMENT = true
 
