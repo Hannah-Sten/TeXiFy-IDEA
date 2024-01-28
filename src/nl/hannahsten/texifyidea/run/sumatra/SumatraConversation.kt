@@ -16,8 +16,8 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
  */
 object SumatraConversation : ViewerConversation() {
 
-    private const val server = "SUMATRA"
-    private const val topic = "control"
+    private const val SERVER = "SUMATRA"
+    private const val TOPIC = "control"
     private var conversation: DDEClientConversation? = null
 
     private fun openConversation() {
@@ -74,7 +74,7 @@ object SumatraConversation : ViewerConversation() {
     private fun execute(vararg commands: String) {
         openConversation()
         try {
-            conversation!!.connect(server, topic)
+            conversation!!.connect(SERVER, TOPIC)
             conversation!!.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
@@ -95,7 +95,7 @@ object SumatraConversation : ViewerConversation() {
         BOOK_VIEW("book view"),
         CONTINUOUS("continuous"),
         CONTINUOUS_FACING("continuous facing"),
-        CONTINUOUS_BOOK_VIEW("continuous book view");
+        CONTINUOUS_BOOK_VIEW("continuous book view")
     }
 
     /**

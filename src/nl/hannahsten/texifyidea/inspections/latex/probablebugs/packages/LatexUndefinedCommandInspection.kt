@@ -43,10 +43,10 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
         val commandsInFile = file.commandsInFile()
         val commandNamesInFile = commandsInFile.map { it.name }
         // The number of indexed commands can be quite large (50k+) so we filter the large set based on the small one (in this file).
-        val indexedCommands = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, file.project)
+        val indexedCommands = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.Cache.id, file.project)
             .filter { it in commandNamesInFile }
             .associateWith { command ->
-                val containingPackages = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, command, GlobalSearchScope.everythingScope(file.project))
+                val containingPackages = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.Cache.id, command, GlobalSearchScope.everythingScope(file.project))
                     .map { LatexPackage.create(it) }
                     .toSet()
                 containingPackages

@@ -1,7 +1,10 @@
 package nl.hannahsten.texifyidea.util.parser
 
+import com.intellij.codeInsight.PsiEquivalenceUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiRecursiveElementVisitor
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -77,7 +80,7 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
 /**
  * Checks if the latex content objects is a display math environment.
  */
-fun LatexNoMathContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
+fun LatexNoMathContent.isDisplayMath() = children.firstOrNull() is LatexMathEnvironment && children.first().firstChild is LatexDisplayMath
 
 /*
  * Technically it's impossible to determine for all cases whether a users wants to compile with biber or biblatex.
@@ -130,6 +133,31 @@ val LatexParameterText.command: PsiElement?
         return this.firstParentOfType(LatexCommands::class)?.firstChild
     }
 
-// fun LatexOptionalKeyValPair.getKeyValValue() {
-//    PsiTreeUtil.getChildOfType(this, LatexKeyValValue::class.java)
-// }
+/**
+ * @see PsiElement.findOccurrences(PsiElement)
+ */
+fun PsiElement.findOccurrences(): List<LatexExtractablePSI> {
+    val parent = firstParentOfType(LatexFile::class)
+        ?: return emptyList()
+    return this.findOccurrences(parent)
+}
+
+/**
+ * Known weakness: since we will allow the user to extract portions of a text block, this will only extract text when the parent PSI's are identical.
+ * However, extracting a single word does not suffer from this as we are extracting an actual token.
+ */
+fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI> {
+    val visitor = object : PsiRecursiveElementVisitor() {
+        val foundOccurrences = ArrayList<PsiElement>()
+        override fun visitElement(element: PsiElement) {
+            if (PsiEquivalenceUtil.areElementsEquivalent(this@findOccurrences, element)) {
+                foundOccurrences.add(element)
+            }
+            else {
+                super.visitElement(element)
+            }
+        }
+    }
+    searchRoot.acceptChildren(visitor)
+    return visitor.foundOccurrences.map { it.asExtractable() }
+}

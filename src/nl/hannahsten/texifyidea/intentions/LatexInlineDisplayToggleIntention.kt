@@ -1,15 +1,12 @@
 package nl.hannahsten.texifyidea.intentions
 
-import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.editor.MathEnvironmentEditor
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.parser.hasParent
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
@@ -35,45 +32,11 @@ open class LatexInlineDisplayToggleIntention : TexifyIntentionBase("Toggle inlin
         val element = file.findElementAt(editor.caretModel.offset) ?: return
         val inline = element.parentOfType(LatexInlineMath::class)
         if (inline != null) {
-            applyForInlineMath(editor, inline)
+            MathEnvironmentEditor("inline", "display", editor, inline).apply()
         }
         else {
-            applyForDisplayMath(editor, element.parentOfType(LatexDisplayMath::class) ?: return)
-        }
-    }
-
-    private fun applyForInlineMath(editor: Editor, inline: LatexInlineMath) {
-        val document = editor.document
-        val indent = document.lineIndentationByOffset(inline.textOffset)
-        val endLength = inline.inlineMathEnd?.textLength ?: 0
-        val text = inline.text.trimRange(inline.inlineMathStart.textLength, endLength).trim()
-
-        runWriteAction {
-            val extra = if (document.getText(TextRange.from(inline.endOffset(), 1)) == " ") {
-                1
-            }
-            else 0
-
-            val result = "\n\\[\n    $text\n\\]\n".replace("\n", "\n$indent")
-            document.replaceString(inline.textOffset, inline.endOffset() + extra, result)
-            editor.caretModel.moveToOffset(inline.textOffset + result.length)
-        }
-    }
-
-    private fun applyForDisplayMath(editor: Editor, display: LatexDisplayMath) {
-        val document = editor.document
-        val indent = document.lineIndentationByOffset(display.textOffset)
-        val whitespace = indent.length + 1
-        val text = display.text.trimRange(2, 2).trim()
-
-        runWriteAction {
-            val leading = if (document.getText(TextRange.from(display.textOffset - whitespace - 1, 1)) != " ") " " else ""
-            val trailing = if (document.getText(TextRange.from(display.endOffset() + whitespace, 1)) != " ") " " else ""
-
-            val result = "$leading${'$'}$text${'$'}$trailing"
-                .replace("\n", " ")
-                .replace(Regex("\\s+"), " ")
-            document.replaceString(display.textOffset - whitespace, display.endOffset() + whitespace, result)
+            val display = element.parentOfType(LatexDisplayMath::class) ?: return
+            MathEnvironmentEditor("display", "inline", editor, display).apply()
         }
     }
 }

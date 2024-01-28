@@ -20,15 +20,12 @@ class LatexCharFilter : CharFilter() {
         }
     }
 
-    companion object {
-
-        private fun isInLatexContext(lookup: Lookup): Boolean {
-            if (!lookup.isCompletion) {
-                return false
-            }
-            val element = lookup.psiElement
-            val file = lookup.psiFile
-            return file is LatexFile && element != null
+    private fun isInLatexContext(lookup: Lookup): Boolean {
+        if (!lookup.isCompletion) {
+            return false
         }
+        val element = lookup.psiElement
+        val file = lookup.psiFile
+        return file is LatexFile && element != null
     }
 }

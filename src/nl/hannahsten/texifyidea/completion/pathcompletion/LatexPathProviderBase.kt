@@ -12,6 +12,7 @@ import com.intellij.psi.util.parentOfTypes
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.TexifyIcons.FILE
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
@@ -20,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.replaceAfterFrom
 import java.io.File
 import java.util.regex.Pattern
 
@@ -30,7 +32,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
 
     private var parameters: CompletionParameters? = null
     private var resultSet: CompletionResultSet? = null
-    private var validExtensions: Set<String>? = null
+    private var validExtensions: List<String>? = null
     private var absolutePathSupport = true
 
     companion object {
@@ -172,10 +174,11 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 
-        val icon = TexifyIcons.getIconFromExtension(foundFile.extension)
+        val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default = FILE)
         resultSet?.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name)
-                .withPresentableText(foundFile.presentableName)
+                .withPresentableText(foundFile.nameWithoutExtension)
+                .withTailText(".${foundFile.extension}", true)
                 .withInsertHandler(
                     CompositeHandler(
                         LatexReferenceInsertHandler(),
@@ -232,7 +235,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      *
      * This does the following:
      * - Removes any start '{' and ending '}'
-     * - Remove 'IntelliJIdeaRulezz'
+     * - Remove 'IntelliJIdeaRulezzz'
      * - Removes any arguments before the last one (separated by ',')
      * - Remove starting './'
      * - Prevent '//' (removes the first '/')
@@ -243,8 +246,10 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         // When the last parameter is autocompleted, parameters before that may also be present in
         // autocompleteText so we split on commas and take the last one. If it is not the last
         // parameter, no commas will be present so the split will do nothing.
-        result = result.replace("IntellijIdeaRulezzz", "")
-            .split(",").last()
+        result = result.split(",").last()
+
+        // Remove everything that comes after and including IntellijIdeaRulezzz, as that is the dummy for the caret.
+        result = result.replaceAfterFrom("IntellijIdeaRulezzz", "")
 
         // Prevent double ./
         if (result.startsWith("./")) {

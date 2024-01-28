@@ -1,12 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generator: Adobe Illustrator 16.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="13px" height="13px" viewBox="0 0 13 13" enable-background="new 0 0 13 13" xml:space="preserve">
-<g>
-	<path fill="#6F6E6E" d="M12.027,12H7.563v-1.489c1.648-1.178,2.474-2.642,2.474-4.392c0-1.088-0.325-1.949-0.977-2.583
-		c-0.65-0.634-1.49-0.951-2.518-0.951c-1.039,0-1.889,0.318-2.55,0.955S3,5.046,3,6.149c0,1.735,0.822,3.189,2.465,4.362V12H1
-		v-1.489h2.763C1.926,9.388,1.008,7.866,1.008,5.946c0-1.524,0.504-2.724,1.51-3.598C3.524,1.473,4.85,1.035,6.494,1.035
-		c1.682,0,3.024,0.434,4.027,1.301c1.005,0.867,1.507,2.065,1.507,3.595c0,1.92-0.929,3.447-2.787,4.58h2.787V12z"/>
-</g>
-</svg>
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Laag_1"
+   x="0px"
+   y="0px"
+   width="13px"
+   height="13px"
+   viewBox="0 0 13 13"
+   enable-background="new 0 0 13 13"
+   xml:space="preserve"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="symbols.svg"><metadata
+     id="metadata11"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+     id="defs9" /><sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="72.615384"
+     inkscape:cx="12.399218"
+     inkscape:cy="4.0722514"
+     inkscape:window-x="2552"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Laag_1" /><path
+     inkscape:connector-curvature="0"
+     style="fill:#6c707e;fill-opacity:1"
+     d="m 12.354719,11.870124 -2.501691,-5.2646631 2.50935,-5.4067118 -1.033785,0 -1.7801571,3.8441703 C 9.0700691,3.0398647 7.3535802,1.3296065 5.2993326,1.3296065 c -2.8052571,0 -4.63416833,2.0678905 -4.63416833,5.1979528 0,3.1300797 1.82891133,5.1979187 4.63416833,5.1979187 2.0719642,0 3.8396038,-1.428432 4.3032152,-3.46207 l 1.6297182,3.606716 z M 5.3549639,10.794183 c -2.554833,0 -3.7806017,-2.0224111 -3.7806017,-4.2666237 0,-2.2441953 1.593989,-4.1667424 3.6806017,-4.1667424 2.6039784,0 3.7753295,2.0417623 3.7753295,4.2859576 0,2.2442126 -1.8149952,4.1474085 -3.6753295,4.1474085 z"
+     id="path6"
+     sodipodi:nodetypes="cccccssscccsssss" /></svg>

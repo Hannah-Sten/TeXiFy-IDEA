@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory
-import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory.Companion.createFromTemplate
+import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory.Util.createFromTemplate
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.FileUtil.fileTypeByExtension
 import java.util.*
@@ -56,11 +56,11 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
 
         private fun getTemplateNameFromExtension(extensionWithoutDot: String): String {
             return when (extensionWithoutDot) {
-                OPTION_STY_FILE -> LatexTemplatesFactory.fileTemplateSty
-                OPTION_CLS_FILE -> LatexTemplatesFactory.fileTemplateCls
-                OPTION_BIB_FILE -> LatexTemplatesFactory.fileTemplateBib
-                OPTION_TIKZ_FILE -> LatexTemplatesFactory.fileTemplateTikz
-                else -> LatexTemplatesFactory.fileTemplateTex
+                OPTION_STY_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_STY
+                OPTION_CLS_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_CLS
+                OPTION_BIB_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_BIB
+                OPTION_TIKZ_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_TIKZ
+                else -> LatexTemplatesFactory.FILE_TEMPLATE_TEX
             }
         }
 

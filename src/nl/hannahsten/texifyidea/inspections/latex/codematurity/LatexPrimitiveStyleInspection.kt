@@ -42,7 +42,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ): List<ProblemDescriptor> {
         val descriptors = mutableListOf<ProblemDescriptor>()
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = LatexCommandsIndex.Util.getItems(file)
         for (command in commands) {
             val index = CommandMagic.stylePrimitives.indexOf(command.name)
             if (index < 0) {

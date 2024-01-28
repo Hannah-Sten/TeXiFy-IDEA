@@ -6,6 +6,7 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.TexifyIcons.FILE
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -57,7 +58,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
         }
         // Gutter requires a smaller icon per IJ SDK docs.
-        val icon = TexifyIcons.getIconFromExtension(extension, smaller = true)
+        val icon = TexifyIcons.getIconFromExtension(extension, default = FILE) ?: return
 
         try {
             val builder = NavigationGutterIconBuilder
@@ -80,6 +81,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
     }
 
     override fun getIcon(): Icon {
-        return TexifyIcons.LATEX_FILE_SMALLER
+        return TexifyIcons.LATEX_FILE
     }
 }

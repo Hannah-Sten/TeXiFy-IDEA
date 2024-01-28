@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.action.preview
 
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -21,8 +22,8 @@ import javax.swing.SwingUtilities
 class InkscapePreviewer : Previewer {
 
     override fun preview(input: String, previewForm: PreviewForm, project: Project, preamble: String, waitTime: Long) {
-        runBlocking {
-            launch {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Generating preview...") {
+            override fun run(indicator: ProgressIndicator) {
                 try {
                     // Snap apps are confined to the users home directory
                     if (SystemEnvironment.isInkscapeInstalledAsSnap) {
@@ -46,7 +47,7 @@ class InkscapePreviewer : Previewer {
                     previewForm.setLatexErrorMessage("${exception.message}")
                 }
             }
-        }
+        })
     }
 
     /**
@@ -87,10 +88,13 @@ $previewCode
                 previewForm
             ) ?: return
 
-            runInkscape(tempBasename, tempDirectory, waitTime, previewForm)
-            val image = ImageIO.read(File("$tempBasename.png"))
-            SwingUtilities.invokeLater {
-                previewForm.setPreview(image, latexStdoutText)
+            // Sets error message to the UI if any
+            val success = runInkscape(tempBasename, tempDirectory, waitTime, previewForm)
+            if (success) {
+                val image = ImageIO.read(File("$tempBasename.png"))
+                SwingUtilities.invokeLater {
+                    previewForm.setPreview(image, latexStdoutText)
+                }
             }
         }
         finally {
@@ -106,7 +110,7 @@ $previewCode
         waitTime: Long,
         previewForm: PreviewForm
     ): String? {
-        val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime)
+        val result = runCommandWithExitCode(command, *args, workingDirectory = workDirectory, timeout = waitTime, returnExceptionMessage = true)
 
         if (result.second != 0) {
             previewForm.setLatexErrorMessage("$command exited with ${result.second}\n${result.first ?: ""}")
@@ -118,10 +122,12 @@ $previewCode
 
     /**
      * Run inkscape command to convert pdf to png, depending on the version of inkscape.
+     *
+     * @return If successful
      */
-    private fun runInkscape(tempBasename: String, tempDirectory: File, waitTime: Long, previewForm: PreviewForm) {
+    private fun runInkscape(tempBasename: String, tempDirectory: File, waitTime: Long, previewForm: PreviewForm): Boolean {
         // If 1.0 or higher
-        if (SystemEnvironment.inkscapeMajorVersion >= 1) {
+        if (SystemEnvironment.inkscapeMajorVersion >= 1 || !SystemEnvironment.isAvailable("inkscape")) {
             runPreviewFormCommand(
                 inkscapeExecutable(),
                 arrayOf(
@@ -135,7 +141,7 @@ $previewCode
                 tempDirectory,
                 waitTime,
                 previewForm
-            ) ?: throw AccessDeniedException(tempDirectory)
+            ) ?: return false
         }
         else {
             runPreviewFormCommand(
@@ -147,7 +153,7 @@ $previewCode
                 tempDirectory,
                 waitTime,
                 previewForm
-            ) ?: return
+            ) ?: return false
 
             runPreviewFormCommand(
                 inkscapeExecutable(),
@@ -161,8 +167,9 @@ $previewCode
                 tempDirectory,
                 waitTime,
                 previewForm
-            ) ?: throw AccessDeniedException(tempDirectory)
+            ) ?: return false
         }
+        return true
     }
 
     private fun inkscapeExecutable(): String {

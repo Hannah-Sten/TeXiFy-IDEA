@@ -34,20 +34,20 @@ interface Environment : Dependend, Described {
         fun lookupInIndex(environmentName: String, project: Project): Set<Environment> {
             val envs = mutableSetOf<Environment>()
             FileBasedIndex.getInstance().processValues(
-                LatexExternalEnvironmentIndex.id, environmentName, null, { file, value ->
-                val dependency = file.name.removeFileExtension()
-                val env = object : Environment {
-                    override val arguments = extractArgumentsFromDocs(value)
-                    override val description = value
-                    override val dependency =
-                        if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage.create(file)
-                    override val context = Context.NORMAL
-                    override val initialContents = ""
-                    override val environmentName = environmentName
-                }
-                envs.add(env)
-                true
-            },
+                LatexExternalEnvironmentIndex.Cache.id, environmentName, null, { file, value ->
+                    val dependency = file.name.removeFileExtension()
+                    val env = object : Environment {
+                        override val arguments = extractArgumentsFromDocs(value)
+                        override val description = value
+                        override val dependency =
+                            if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage.create(file)
+                        override val context = Context.NORMAL
+                        override val initialContents = ""
+                        override val environmentName = environmentName
+                    }
+                    envs.add(env)
+                    true
+                },
                 GlobalSearchScope.everythingScope(project)
             )
 

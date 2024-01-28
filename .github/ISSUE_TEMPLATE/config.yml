@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: TeXiFy IDEA wiki
-    url: https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features
+  - name: TeXiFy IDEA documentation
+    url: https://hannah-sten.github.io/TeXiFy-IDEA
     about: List of features and documentation of TeXiFy IDEA.
+  - name: Troubleshooting
+    url: https://hannah-sten.github.io/TeXiFy-IDEA/troubleshooting.html
+    about: Troubleshooting common issues
   - name: Contributing to TeXiFy IDEA
-    url: https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Contributing-to-TeXiFy
+    url: https://hannah-sten.github.io/TeXiFy-IDEA/contributing-to-the-source-code.html
     about: Help in contributing to the source of TeXiFy IDEA

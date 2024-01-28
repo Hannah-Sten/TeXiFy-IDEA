@@ -13,7 +13,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion
  *
  * @author Thomas
  */
-class ReformatWithBibtexTidy : ExternalReformatAction("Reformat File with bibtex-tidy", { it.fileType == BibtexFileType }) {
+class ReformatWithBibtexTidy : ExternalReformatAction({ it.fileType == BibtexFileType }) {
 
     companion object {
 

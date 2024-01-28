@@ -175,7 +175,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         // base/lt... files are documented in source2e.pdf
         val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
-        val command = if (TexliveSdk.isAvailable) {
+        val command = if (TexliveSdk.Cache.isAvailable) {
             // -M to avoid texdoc asking to choose from the list
             listOf("texdoc", "-l", "-M", name)
         }
@@ -184,10 +184,11 @@ class LatexDocumentationProvider : DocumentationProvider {
                 // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
                 listOf("texdoc", "-l", name)
             }
-            else {
+            else if (SystemEnvironment.isAvailable("mthelp")) {
                 // In some cases, texdoc may not be available but mthelp is
                 listOf("mthelp", "-l", name)
-            }
+            } else
+                raise(CommandFailure("Could not find mthelp or texdoc", 0))
         }
         val (output, exitCode) = runCommandWithExitCode(*command.toTypedArray(), returnExceptionMessage = true)
         if (exitCode != 0 || output?.isNotBlank() != true) {
@@ -203,7 +204,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         validLines.toSet().mapNotNull {
             // Do some guesswork about the format
-            if (TexliveSdk.isAvailable) {
+            if (TexliveSdk.Cache.isAvailable) {
                 // Line consists of: name version path optional file description
                 it.split("\t").getOrNull(2)
             }

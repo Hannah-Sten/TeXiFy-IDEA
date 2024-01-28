@@ -20,6 +20,16 @@ import nl.hannahsten.texifyidea.util.replaceString
  */
 open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
 
+    private val commandToForbiddenPredecessors = mapOf(
+        """\part""" to emptyList(),
+        """\chapter""" to emptyList(),
+        """\section""" to emptyList(),
+        """\subsection""" to listOf("""\part""", """\chapter"""),
+        """\subsubsection""" to listOf("""\part""", """\chapter""", """\section"""),
+        """\paragraph""" to emptyList(),
+        """\subparagraph""" to listOf("""\part""", """\chapter""", """\section""", """\subsection""", """\subsubsection""")
+    )
+
     override val inspectionGroup = InsightGroup.LATEX
 
     override val inspectionId = "IncorrectSectionNesting"
@@ -27,7 +37,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Incorrect nesting"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        return LatexCommandsIndex.getCommandsByNames(file, *sectioningCommands())
+        return LatexCommandsIndex.Util.getCommandsByNames(file, *sectioningCommands())
             .sortedBy { it.textOffset }
             .zipWithNext()
             .filter { (first, second) ->
@@ -77,18 +87,5 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             val newParentCommand = command.commandToken.text.replaceFirst("sub", "")
             document.replaceString(range, newParentCommand)
         }
-    }
-
-    companion object {
-
-        val commandToForbiddenPredecessors = mapOf(
-            """\part""" to emptyList(),
-            """\chapter""" to emptyList(),
-            """\section""" to emptyList(),
-            """\subsection""" to listOf("""\part""", """\chapter"""),
-            """\subsubsection""" to listOf("""\part""", """\chapter""", """\section"""),
-            """\paragraph""" to emptyList(),
-            """\subparagraph""" to listOf("""\part""", """\chapter""", """\section""", """\subsection""", """\subsubsection""")
-        )
     }
 }

@@ -11,10 +11,7 @@ import kotlin.math.max
  */
 open class LatexToggleSmartQuotesIntention : TexifyIntentionBase("Toggle smart quotes") {
 
-    companion object {
-
-        private val triggerCharacters = setOf('\'', '"', '`')
-    }
+    private val triggerCharacters = setOf('\'', '"', '`')
 
     /**
      * Contains the preferred setting of the user if they have already selected one.

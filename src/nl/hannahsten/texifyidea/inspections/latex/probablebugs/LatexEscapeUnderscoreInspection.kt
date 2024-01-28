@@ -5,9 +5,9 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.inMathContext
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -29,7 +29,6 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
         return super.checkContext(matcher, element)
     }
 
-    @Suppress("RedundantIf")
     private fun PsiElement.isUnderscoreAllowed(): Boolean {
         if (this.inMathContext()) return true
         if (this.firstParentOfType(LatexNormalText::class) != null) return false
@@ -37,9 +36,6 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
         return true
     }
 
-    companion object {
-
-        private val commandsDisallowingUnderscore =
-            CommandMagic.sectionMarkers + CommandMagic.textStyles + setOf("""\caption""")
-    }
+    private val commandsDisallowingUnderscore =
+        CommandMagic.sectionMarkers + CommandMagic.textStyles + setOf("""\caption""")
 }

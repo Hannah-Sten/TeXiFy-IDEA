@@ -46,6 +46,92 @@ class LatexEnterInEnumerationHandlerTest : BasePlatformTestCase() {
         )
     }
 
+    fun testItemizeBreakLine() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{itemize}
+                \item This sentence is <caret>broken
+            \end{itemize}
+            """.trimIndent()
+        )
+        myFixture.type("\n")
+        myFixture.checkResult(
+            """
+            \begin{itemize}
+                \item This sentence is 
+                \item <caret>broken
+            \end{itemize}
+            """.trimIndent()
+        )
+    }
+
+    fun testItemizeBreakLineNoItem() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{itemize}
+                \item {This sentence is <caret>broken}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+        myFixture.type("\n")
+        myFixture.checkResult(
+            """
+            \begin{itemize}
+                \item {This sentence is 
+                <caret>broken}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+    }
+
+    fun testItemizeBreakLineInCommand() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{itemize}
+                \item \textit{This sentence is <caret>broken}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+        myFixture.type("\n")
+        myFixture.checkResult(
+            """
+            \begin{itemize}
+                \item \textit{This sentence is 
+                <caret>broken}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+    }
+
+    fun testItemizeBreakLineInCommandExtraBrackets() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{itemize}
+                \item {\textit{This sentence is <caret>broken}}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+        myFixture.type("\n")
+        myFixture.checkResult(
+            """
+            \begin{itemize}
+                \item {\textit{This sentence is 
+                <caret>broken}}
+                \item Second item
+            \end{itemize}
+            """.trimIndent()
+        )
+    }
+
     fun `test nested enumeration with prefix`() {
         myFixture.configureByText(
             LatexFileType,

@@ -27,7 +27,7 @@ import nl.hannahsten.texifyidea.util.parser.*
  */
 open class LatexAnnotator : Annotator {
 
-    companion object {
+    object Cache {
         /**
          * All user defined commands, cached because it requires going over all commands, which we don't want to do for every command we need to annotate.
          */
@@ -196,12 +196,12 @@ open class LatexAnnotator : Annotator {
         annotateStyle(command, annotationHolder)
 
         // Make user-defined commands highlighting customizable
-        if (allUserDefinedCommands.isEmpty()) {
-            allUserDefinedCommands = LatexDefinitionIndex.getItems(command.project)
+        if (Cache.allUserDefinedCommands.isEmpty()) {
+            Cache.allUserDefinedCommands = LatexDefinitionIndex.Util.getItems(command.project)
                 .filter { it.isCommandDefinition() }
                 .mapNotNull { it.definedCommandName() }
         }
-        if (command.name in allUserDefinedCommands) {
+        if (command.name in Cache.allUserDefinedCommands) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .textAttributes(LatexSyntaxHighlighter.USER_DEFINED_COMMAND_KEY)
                 .range(command.commandToken)

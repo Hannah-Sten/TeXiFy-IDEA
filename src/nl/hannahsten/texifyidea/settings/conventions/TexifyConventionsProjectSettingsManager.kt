@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.settings.conventions
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
 /**
@@ -10,7 +8,8 @@ import com.intellij.openapi.project.Project
  *
  * The class is internal because clients should use the [TexifyConventionsSettingsManager] facade.
  */
-@State(name = "Conventions", storages = [Storage("texifySettings.xml")])
+@State(name = "Conventions", storages = [Storage("texifySettings.xml", roamingType = RoamingType.DEFAULT)])
+@Service(Service.Level.PROJECT)
 internal class TexifyConventionsProjectSettingsManager(var project: Project? = null) :
     PersistentStateComponent<TexifyConventionsProjectState> {
 

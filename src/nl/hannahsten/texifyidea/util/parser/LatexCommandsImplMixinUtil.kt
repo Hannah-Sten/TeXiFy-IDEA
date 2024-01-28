@@ -64,7 +64,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
-            inputFileReferences.add(InputFileReference(this, range.shrink(1), setOf("tex"), "tex"))
+            inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), "tex"))
         }
     }
 
@@ -135,7 +135,7 @@ fun stripGroup(text: String): String {
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
-fun<K : PsiElement, V : PsiElement> Map<K, V?>.toStringMap(): LinkedHashMap<String, String> {
+fun <K : PsiElement, V : PsiElement> Map<K, V?>.toStringMap(): LinkedHashMap<String, String> {
     val parameterMap = LinkedHashMap<String, String>()
     this.forEach { (k, v) -> parameterMap[k.toString()] = v?.toString() ?: "" }
     return parameterMap

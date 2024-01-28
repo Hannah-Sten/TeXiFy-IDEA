@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.util.files.commandsInFile
  */
 class LatexEscapedSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
-    override fun isCollapsedByDefault(node: ASTNode) = true
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldEscapedSymbols
 
     override fun getPlaceholderText(node: ASTNode): String? = null
 
@@ -28,8 +28,5 @@ class LatexEscapedSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
             .toTypedArray()
     }
 
-    companion object {
-
-        val commandsToFold = setOf("%", "#", "&", "_", "$").map { "\\" + it }
-    }
+    private val commandsToFold = setOf("%", "#", "&", "_", "$").map { "\\" + it }
 }

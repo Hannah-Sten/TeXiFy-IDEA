@@ -57,7 +57,9 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
 
     class MockContent(val file: PsiFile) : FileContent {
 
-        override fun <T : Any?> getUserData(key: Key<T>): T? { return null }
+        override fun <T : Any?> getUserData(key: Key<T>): T? {
+            return null
+        }
 
         override fun <T : Any?> putUserData(key: Key<T>, value: T?) { }
 

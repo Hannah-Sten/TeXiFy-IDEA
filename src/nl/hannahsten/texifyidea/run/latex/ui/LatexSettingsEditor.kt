@@ -187,7 +187,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
         }
 
-        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable()
+        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable
 
         // Apply custom pdf viewer command
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
@@ -345,7 +345,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                     )
             )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.MAIN_FILE_STRING} or ${LatexOutputPath.PROJECT_DIR_STRING} as placeholders:")
         panel.add(outputPath)
     }
 
@@ -381,7 +381,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     }
 
     private fun updatePdfViewerComboBox() {
-        val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
+        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
             ExternalPdfViewers.getExternalPdfViewers() +
             listOf(InternalPdfViewer.NONE)
 
@@ -446,7 +446,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
+        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
             ExternalPdfViewers.getExternalPdfViewers() +
             listOf(InternalPdfViewer.NONE)
 

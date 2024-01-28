@@ -14,8 +14,8 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
+import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFile
@@ -32,9 +32,8 @@ import java.util.*
  */
 open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        private fun getLabeledCommand(label: PsiElement): PsiElement? {
+    object Util {
+        fun getLabeledCommand(label: PsiElement): PsiElement? {
             return when (label) {
                 is LatexCommands -> {
                     if (CommandMagic.labelAsParameter.contains(label.name)) {
@@ -42,14 +41,13 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                     }
 
                     if (label.inDirectEnvironmentMatching {
-                        val conventionSettings = TexifyConventionsSettingsManager
-                            .getInstance(label.project).getSettings()
-                        conventionSettings.getLabelConvention(
+                            val conventionSettings = TexifyConventionsSettingsManager.getInstance(label.project).getSettings()
+                            conventionSettings.getLabelConvention(
                                 it.getEnvironmentName(),
                                 LabelConventionType.ENVIRONMENT
                             ) != null &&
-                            !EnvironmentMagic.labelAsParameter.contains(it.getEnvironmentName())
-                    }
+                                !EnvironmentMagic.labelAsParameter.contains(it.getEnvironmentName())
+                        }
                     ) {
                         label.parentOfType(LatexEnvironment::class)
                     }
@@ -69,7 +67,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         /**
          * Finds the expected prefix for the supplied label
          */
-        private fun getLabelPrefix(labeledCommand: PsiElement): String? {
+        fun getLabelPrefix(labeledCommand: PsiElement): String? {
             val conventionSettings =
                 TexifyConventionsSettingsManager.getInstance(labeledCommand.project).getSettings()
 
@@ -110,8 +108,8 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         descriptors: MutableList<ProblemDescriptor>
     ) {
         file.findLatexLabelingElementsInFile().forEach { label ->
-            val labeledCommand = getLabeledCommand(label) ?: return@forEach
-            val expectedPrefix = getLabelPrefix(labeledCommand)
+            val labeledCommand = Util.getLabeledCommand(label) ?: return@forEach
+            val expectedPrefix = Util.getLabelPrefix(labeledCommand)
             val labelName = label.extractLabelName()
             if (!expectedPrefix.isNullOrBlank() && !labelName.startsWith("$expectedPrefix:")) {
                 descriptors.add(
@@ -139,10 +137,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             val baseFile = command.containingFile
             val oldLabel = command.extractLabelName()
             val latexPsiHelper = LatexPsiHelper(project)
-            val labeledCommand = getLabeledCommand(command) ?: return
+            val labeledCommand = Util.getLabeledCommand(command) ?: return
 
             // Determine label name.
-            val prefix: String = getLabelPrefix(labeledCommand) ?: return
+            val prefix: String = Util.getLabelPrefix(labeledCommand) ?: return
             val labelName = oldLabel.formatAsLabel()
             val createdLabelBase = if (labelName.contains(":")) {
                 PatternMagic.labelPrefix.matcher(labelName).replaceAll("$prefix:")

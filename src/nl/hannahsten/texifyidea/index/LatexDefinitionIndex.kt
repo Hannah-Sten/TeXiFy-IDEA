@@ -9,10 +9,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 open class LatexDefinitionIndex : StringStubIndexExtension<LatexCommands>() {
 
-    companion object : IndexCommandsUtilBase(IndexKeys.DEFINITIONS_KEY)
+    object Util : IndexCommandsUtilBase(IndexKeys.DEFINITIONS_KEY)
 
-    @Suppress("RedundantCompanionReference")
-    override fun getKey() = Companion.key()
+    override fun getKey() = Util.key()
 
-    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
+    override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

@@ -92,7 +92,7 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
             minimumSize = dimension
         }
 
-        val popup = PopupChooserBuilder(list).setItemChoosenCallback { onChosen(list.selectedValue ?: return@setItemChoosenCallback) }
+        val popup = PopupChooserBuilder(list).setItemChosenCallback(Runnable { onChosen(list.selectedValue ?: return@Runnable) })
             .setFilteringEnabled { language -> (language as Injectable).displayName }
             .setMinSize(dimension)
             .createPopup()

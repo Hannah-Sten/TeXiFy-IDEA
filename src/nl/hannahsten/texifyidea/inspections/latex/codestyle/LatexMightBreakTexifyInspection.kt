@@ -36,7 +36,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = LatexCommandsIndex.Util.getItems(file)
         for (command in commands) {
             // Error when \newcommand is used on existing command
             if (CommandMagic.commandRedefinitions.contains(command.name)) {

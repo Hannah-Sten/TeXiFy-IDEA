@@ -24,7 +24,7 @@ open class LatexDiacriticIJInspection : TexifyRegexInspection(
     inspectionDisplayName = "Dotless versions of i and j should be used with diacritics",
     inspectionId = "DiacriticIJ",
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    errorMessage = { "Diacritic must be placed upon a dotless ${letter(it)}" },
+    errorMessage = { "Diacritic must be placed upon a dotless ${Util.letter(it)}" },
     pattern = Pattern.compile(
         "(${Diacritic.allValues().joinToString("|") {
             it.command.replace("\\", "\\\\")
@@ -32,13 +32,12 @@ open class LatexDiacriticIJInspection : TexifyRegexInspection(
                 .replace(".", "\\.")
         }})\\{?([ij])}?"
     ),
-    replacement = this::replacement,
-    replacementRange = this::replaceRange,
-    quickFixName = { "Change to dotless ${letter(it)}" }
+    replacement = Util::replacement,
+    replacementRange = Util::replaceRange,
+    quickFixName = { "Change to dotless ${Util.letter(it)}" }
 ) {
 
-    companion object {
-
+    object Util {
         fun replacement(it: Matcher, file: PsiFile): String {
             val group = it.group(2)
             val element = file.findElementAt(it.start())
@@ -59,7 +58,6 @@ open class LatexDiacriticIJInspection : TexifyRegexInspection(
         }
 
         fun replaceRange(it: Matcher) = it.groupRange(2)
-
         fun letter(it: Matcher) = it.group(2)!!
     }
 

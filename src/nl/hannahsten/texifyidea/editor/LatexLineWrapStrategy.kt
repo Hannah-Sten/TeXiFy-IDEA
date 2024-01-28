@@ -17,10 +17,9 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
  *
  * @author Thomas
  */
-class LatexLineWrapStrategy : PsiAwareDefaultLineWrapPositionStrategy(true, *enabledTypes) {
+class LatexLineWrapStrategy : PsiAwareDefaultLineWrapPositionStrategy(true, *Util.enabledTypes) {
 
-    companion object {
-
+    object Util {
         // The types that are allowed to be wrapped.
         // (I think only lowest level elements count, unless a parent element contains only one child?)
         val enabledTypes = arrayOf(

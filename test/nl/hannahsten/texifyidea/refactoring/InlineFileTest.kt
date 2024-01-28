@@ -11,9 +11,9 @@ import com.intellij.refactoring.inline.InlineOptions
 import com.intellij.testFramework.LightPlatformCodeInsightTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler.Companion.getReference
-import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Companion.canInlineLatexElement
-import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Companion.resolveInlineFile
+import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler.Util.getReference
+import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.canInlineLatexElement
+import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.resolveInlineFile
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileProcessor
 import nl.hannahsten.texifyidea.util.runWriteAction
 import org.jetbrains.annotations.NonNls

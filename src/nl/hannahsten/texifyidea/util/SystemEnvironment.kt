@@ -7,6 +7,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import javax.swing.SwingUtilities
 
 /**
  * Information about the system other than the LatexDistribution or the OS.
@@ -74,7 +75,7 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null): String?
  * @param inputString If provided, this will be written to the process outputStream before starting the process.
  */
 fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false, inputString: String = ""): Pair<String?, Int> {
-    Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
+    Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
     return try {
         val proc = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
@@ -94,7 +95,14 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             return Pair(output, proc.exitValue())
         }
         else {
-            val output = readInputStream(nonBlocking, proc)
+            var output = ""
+            // If the program has timed out, something is stuck so we are not going to wait until it prints its stdout/stderr, we just check if ready and otherwise are out of luck
+            if (proc.inputStream.bufferedReader().ready()) {
+                output += proc.inputStream.bufferedReader().readText().trim()
+            }
+            if (proc.errorStream.bufferedReader().ready()) {
+                output += proc.errorStream.bufferedReader().readText().trim()
+            }
             proc.destroy()
             proc.waitFor()
             Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")

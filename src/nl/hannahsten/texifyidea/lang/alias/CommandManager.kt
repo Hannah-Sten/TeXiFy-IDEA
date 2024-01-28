@@ -2,9 +2,9 @@ package nl.hannahsten.texifyidea.lang.alias
 
 import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import java.io.Serializable
@@ -35,6 +35,7 @@ import kotlin.collections.set
  */
 // Currently it is a singleton, in the future this may be one instance per fileset
 object CommandManager : Iterable<String?>, Serializable, AliasManager() {
+    private fun readResolve(): Any = CommandManager
 
     /**
      * Maps an original command to the set of current aliases.

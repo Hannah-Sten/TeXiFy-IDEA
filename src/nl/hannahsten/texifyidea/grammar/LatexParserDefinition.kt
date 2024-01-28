@@ -26,7 +26,7 @@ class LatexParserDefinition : ParserDefinition {
 
     override fun createParser(project: Project): PsiParser = LatexParser()
 
-    override fun getFileNodeType(): IStubFileElementType<*> = FILE
+    override fun getFileNodeType(): IStubFileElementType<*> = Cache.FILE
 
     override fun getWhitespaceTokens(): TokenSet = LatexTokenSets.WHITE_SPACES
 
@@ -43,13 +43,12 @@ class LatexParserDefinition : ParserDefinition {
         right: ASTNode
     ): SpaceRequirements = SpaceRequirements.MAY
 
-    companion object {
-
+    object Cache {
         // debugName is required to let IntelliJ distinguish between this FILE and BibtexParserDefinition.FILE
         val FILE: IStubFileElementType<*> = object : IStubFileElementType<LatexFileStub>(
             "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
         ) {
-            override fun getStubVersion(): Int = 58
+            override fun getStubVersion(): Int = 60
         }
     }
 

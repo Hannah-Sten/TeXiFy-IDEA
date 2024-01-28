@@ -1,5 +1,5 @@
 version: "1.0"
-linter: jetbrains/qodana-jvm:latest
+linter: jetbrains/qodana-jvm-community:latest
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
@@ -21,6 +21,8 @@ exclude: # Some of these are valid inspections but not important or accurate eno
       - build
       - test
       - src/nl/hannahsten/texifyidea/action/preview/PreviewForm.form
+      # The class is unused, see TexifyProjectConfigurable
+      - src/nl/hannahsten/texifyidea/settings/TexifyProjectSettings.kt
   - name: BooleanMethodIsAlwaysInverted
   - name: SpellCheckingInspection
   - name: UseJBColor  # In many cases we're not defining theme-dependent colors

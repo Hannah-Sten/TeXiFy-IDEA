@@ -9,10 +9,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 class LatexGlossaryEntryIndex : StringStubIndexExtension<LatexCommands>() {
 
-    companion object : IndexUtilBase<LatexCommands>(LatexCommands::class.java, IndexKeys.GLOSSARY_ENTRIES_KEY)
+    object Util : IndexUtilBase<LatexCommands>(LatexCommands::class.java, IndexKeys.GLOSSARY_ENTRIES_KEY)
 
-    @Suppress("RedundantCompanionReference") // Avoid type checking issues
-    override fun getKey() = Companion.key()
+    override fun getKey() = Util.key()
 
-    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
+    override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

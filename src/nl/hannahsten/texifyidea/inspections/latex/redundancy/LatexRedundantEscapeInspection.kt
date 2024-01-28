@@ -29,8 +29,7 @@ import java.util.*
  */
 open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
 
-    companion object {
-
+    object Util {
         fun getNormalTextSibling(command: LatexCommands): LatexNormalText? {
             val content = PsiTreeUtil.getParentOfType(command, LatexNoMathContent::class.java)
             val siblingContent = PsiTreeUtil.getNextSiblingOfType(content, LatexNoMathContent::class.java)
@@ -48,7 +47,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
-        if (!LatexUnicodeInspection.unicodeEnabled(file)) {
+        if (!LatexUnicodeInspection.Util.unicodeEnabled(file)) {
             return descriptors
         }
 
@@ -61,7 +60,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             }
 
             val diacritic = Diacritic.Normal.fromCommand(command.commandToken.text) ?: continue
-            if (diacritic.isTypeable && (command.getRequiredParameters().isNotEmpty() || getNormalTextSibling(command) != null)) {
+            if (diacritic.isTypeable && (command.getRequiredParameters().isNotEmpty() || Util.getNormalTextSibling(command) != null)) {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         command,
@@ -102,7 +101,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             }
             else {
                 // Now find a sibling
-                val siblingText = getNormalTextSibling(command)
+                val siblingText = Util.getNormalTextSibling(command)
 
                 if (siblingText != null) {
                     base = siblingText.text

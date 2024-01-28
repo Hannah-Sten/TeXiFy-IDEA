@@ -8,8 +8,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
@@ -21,13 +21,10 @@ import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
  */
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
-    companion object {
+    private val sectionCommandNames = CommandMagic.sectioningCommands.map { it.command }
+    private val sectionCommands = sectionCommandNames.map { "\\$it" }.toTypedArray()
 
-        private val sectionCommandNames = CommandMagic.sectioningCommands.map { it.command }
-        private val sectionCommands = sectionCommandNames.map { "\\$it" }.toTypedArray()
-    }
-
-    override fun isCollapsedByDefault(node: ASTNode) = false
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldSections
 
     override fun getPlaceholderText(node: ASTNode) = node.text + "..."
 

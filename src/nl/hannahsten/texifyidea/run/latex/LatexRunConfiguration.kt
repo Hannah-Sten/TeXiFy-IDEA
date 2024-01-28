@@ -37,14 +37,14 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import org.jdom.Element
 import java.io.File
@@ -176,6 +176,7 @@ class LatexRunConfiguration(
     // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
+    val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(project)
@@ -205,7 +206,7 @@ class LatexRunConfiguration(
 
         // Updates the SumatraAvailabilityChecker with the path in sumatraPath after change.
         // Also checks if the path leads to a correct directory containing Sumatra.
-        if (!SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second && enableSumatraPath == true) {
+        if (enableSumatraPath == true && !SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second) {
             throw RuntimeConfigurationError("Run configuration is invalid: custom Sumatra path doesn't point to a valid directory")
         }
     }
@@ -511,7 +512,7 @@ class LatexRunConfiguration(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = InternalPdfViewer.firstAvailable()
+        pdfViewer = InternalPdfViewer.firstAvailable
     }
 
     fun setDefaultOutputFormat() {

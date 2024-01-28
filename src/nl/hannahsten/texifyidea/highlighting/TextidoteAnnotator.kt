@@ -54,13 +54,14 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
 
         return TextidoteAnnotatorInitialInfo(
             file.virtualFile.name,
-            File(file.containingDirectory.virtualFile.path),
+            File(file.containingDirectory?.virtualFile?.path ?: return null),
             file.project,
             editor.document,
         )
     }
 
-    override fun doAnnotate(collectedInfo: TextidoteAnnotatorInitialInfo): TextidoteAnnotationResult {
+    override fun doAnnotate(collectedInfo: TextidoteAnnotatorInitialInfo?): TextidoteAnnotationResult? {
+        if (collectedInfo == null) return null
         if (!TexifySettings.getInstance().enableTextidote) {
             return TextidoteAnnotationResult(emptyList(), collectedInfo.document)
         }
@@ -75,7 +76,6 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
         )
 
         // Since the user has explicitly enabled this inspection, we should raise an error if we cannot actually run textidote
-        // todo add setting
         if (output == null) {
             Notification("LaTeX", "Could not run textidote", NotificationType.ERROR).notify(collectedInfo.project)
             return TextidoteAnnotationResult(emptyList(), collectedInfo.document)
@@ -109,7 +109,8 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
         return TextidoteAnnotationResult(warnings, collectedInfo.document)
     }
 
-    override fun apply(file: PsiFile, annotationResult: TextidoteAnnotationResult, holder: AnnotationHolder) {
+    override fun apply(file: PsiFile, annotationResult: TextidoteAnnotationResult?, holder: AnnotationHolder) {
+        if (annotationResult == null) return
         for (warning in annotationResult.warnings) {
             val document = annotationResult.document
 

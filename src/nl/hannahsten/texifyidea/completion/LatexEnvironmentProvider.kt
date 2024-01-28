@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
@@ -26,12 +25,12 @@ object LatexEnvironmentProvider {
         val project = parameters.editor.project ?: return
 
         val usesTexlive = LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable
-        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(
+        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.Util.getItems(project), project).plus(
             LatexPackage.DEFAULT
         )
 
         result.addAllElements(
-            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.id, project)
+            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.Cache.id, project)
                 .flatMap { envText ->
                     Environment.lookupInIndex(envText, project)
                         .filter { if (usesTexlive) it.dependency in packagesInProject else true }
@@ -54,7 +53,7 @@ object LatexEnvironmentProvider {
         // Find all environments.
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
-        LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
+        LatexDefinitionIndex.Util.getItemsInFileSet(parameters.originalFile).stream()
             .map { it as LatexCommands }
             .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
             .map { cmd -> cmd.requiredParameter(0) }
@@ -64,7 +63,7 @@ object LatexEnvironmentProvider {
 
         // Create autocomplete elements.
         result.addAllElements(
-            ContainerUtil.map2List(environments) { env: Environment ->
+            environments.map { env: Environment ->
                 createEnvironmentLookupElement(env)
             }
         )
