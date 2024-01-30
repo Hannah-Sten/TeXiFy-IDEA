@@ -11,27 +11,19 @@ import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
 
-/**
- * Paste providers which can handle certain html tags.
- */
-private val childHandlers = hashMapOf(
-    "table" to TableHtmlToLatexConverter(),
-    "img" to ImageHtmlToLatexConverter(),
-)
-
 
 /**
- * Parse given HTML nodes to LaTeX using direct hardcoded mappings.
+ * Parse html to LaTeX using various converters.
  */
 fun parseToString(nodes: List<Node>, latexFile: LatexFile): String {
-    val out = StringBuilder()
+    var out = ""
 
     for (node in nodes) {
         if (node.childNodeSize() == 0) {
             when (node) {
-                is TextNode -> out.append(escapeText(node.text()))
+                is TextNode -> out += escapeText(node.text())
                 is Element -> {
-                    handleElement(node, out, latexFile)
+                    out += handleElement(node, latexFile)
                 }
                 else -> {
                     Log.error("Did not plan for " + node.javaClass.name + " please implement a case for this")
@@ -39,41 +31,35 @@ fun parseToString(nodes: List<Node>, latexFile: LatexFile): String {
             }
         }
         else {
-            if (node is Element) {
-                handleElement(node, out, latexFile)
+            out += if (node is Element) {
+                handleElement(node, latexFile)
             }
             else
-                out.append(parseToString(node.childNodes(), latexFile))
+                parseToString(node.childNodes(), latexFile)
         }
     }
 
-    return out.toString()
+    return out
 }
 
 /**
  * Convert one html element to LaTeX and append to the given StringBuilder.
- * todo work out the dataContext everywhere
  */
-private fun handleElement(element: Element, out: StringBuilder, psiFile: LatexFile) {
+private fun handleElement(element: Element, psiFile: LatexFile): String {
     if (tagDependencies[element.tagName()] != null)
         (psiFile).insertUsepackage(tagDependencies[element.tagName()]!!)
 
-    if (hasSpecialHandler(element)) {
-        // todo simply use if/else checks to defer to the right handler
-        out.append(childHandlers[element.tagName()]?.convertHtmlToLatex(element, psiFile))
+    val htmlConverter = when (element.tagName()) {
+        "table" -> TableHtmlToLatexConverter()
+        "img" -> ImageHtmlToLatexConverter()
+        else -> StyledTextHtmlToLatexConverter()
     }
-    else {
-        out.append(StyledTextHtmlToLatexConverter().convertHtmlToLatex(element, psiFile))
-    }
+    return htmlConverter.convertHtmlToLatex(element, psiFile)
 }
 
 private val tagDependencies = hashMapOf(
     "a" to LatexPackage.HYPERREF
 )
-
-private fun hasSpecialHandler(element: Element): Boolean {
-    return childHandlers.keys.contains(element.tagName())
-}
 
 fun htmlTextIsFormattable(htmlIn: String): Boolean =
     (PandocHtmlToLatexConverter.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
