@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.SaveImageFromWebDialog
-import org.jsoup.nodes.Node
+import org.jsoup.nodes.Element
 import java.awt.image.BufferedImage
 import java.net.URL
 import javax.imageio.ImageIO
@@ -31,7 +31,7 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
     }
 
     // todo this looks very much like ImagePasteProvider#performPaste
-    override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
+    override fun convertHtmlToLatex(htmlIn: Element, dataContext: DataContext): String {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return ""
         val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return ""
         val url = URL(htmlIn.attr("src"))

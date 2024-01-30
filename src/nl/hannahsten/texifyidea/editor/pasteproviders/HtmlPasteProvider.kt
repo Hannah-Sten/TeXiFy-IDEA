@@ -69,7 +69,7 @@ class HtmlPasteProvider : PasteProvider {
         // could be inlined, but kept out for neatness
         fun default() = parseToString(htmlIn.childNodes(), dataContext)
 
-        return if (!PandocPasteTranslator.isPandocInPath) {
+        return if (!PandocHtmlToLatexConverter.isPandocInPath) {
             default()
         }
         else {
@@ -81,8 +81,9 @@ class HtmlPasteProvider : PasteProvider {
             else {
                 val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return default()
 
-                val latexText = PandocPasteTranslator(isStandalone).translateHtml(htmlIn.toString()) ?: return default()
+                val latexText = PandocHtmlToLatexConverter(isStandalone).translateHtml(htmlIn.toString()) ?: return default()
 
+                // If Pandoc decided a preamble is needed, insert it in the correct place
                 if ("\\begin{document}" in latexText) {
                     val (preamble, content) = latexText.split("\\begin{document}")
                     insertPreambleText(

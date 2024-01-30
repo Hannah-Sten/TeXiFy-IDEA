@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
  *
  * This is not a HtmlToLatexConverter because it operates on the whole html at once, not on individual nodes.
  */
-class PandocPasteTranslator(private val isStandalone: Boolean = false) {
+class PandocHtmlToLatexConverter(private val isStandalone: Boolean = false) {
 
     companion object {
 
