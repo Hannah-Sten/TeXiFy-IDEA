@@ -14,8 +14,8 @@ import org.jsoup.nodes.TextNode
  * Paste providers which can handle certain html tags.
  */
 private val childHandlers = hashMapOf(
-    "table" to TablePasteProvider(),
-    "img" to ClipboardHtmlImagePasteProvider(),
+    "table" to TableHtmlToLatexConverter(),
+    "img" to ImageHtmlToLatexConverter(),
 )
 
 /**

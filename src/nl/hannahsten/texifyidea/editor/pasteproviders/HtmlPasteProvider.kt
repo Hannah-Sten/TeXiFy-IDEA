@@ -21,7 +21,7 @@ import java.awt.datatransfer.DataFlavor
  *
  * @author jojo2357
  */
-class StyledTextPasteProvider : PasteProvider, LatexPasteProvider {
+class HtmlPasteProvider : PasteProvider {
 
     override fun isPastePossible(dataContext: DataContext): Boolean {
         val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
@@ -40,8 +40,6 @@ class StyledTextPasteProvider : PasteProvider, LatexPasteProvider {
         // dont bother with expensive operations unless the gimmes have passed
 
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
-        println(html)
-
         val textToInsert = convertHtmlToLatex(Jsoup.parse(html).select("body")[0], dataContext)
 
         val writeAction = Runnable { EditorModificationUtil.insertStringAtCaret(editor, textToInsert) }
@@ -63,7 +61,11 @@ class StyledTextPasteProvider : PasteProvider, LatexPasteProvider {
         else null
     }
 
-    override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
+    /**
+     * Use various converters to convert all the tables, image references and styled text to LaTeX.
+     * todo this we can unit test
+     */
+    private fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
         // could be inlined, but kept out for neatness
         fun default() = parseToString(htmlIn.childNodes(), dataContext)
 
@@ -71,7 +73,8 @@ class StyledTextPasteProvider : PasteProvider, LatexPasteProvider {
             default()
         }
         else {
-            // todo why put a dialog?
+            // Pandoc is available, so we ask the user for their preference
+            // todo make sure to ask only once and add a setting
             val pandocStandaloneDialog = PandocStandaloneDialog()
             if (pandocStandaloneDialog.abort)
                 default()

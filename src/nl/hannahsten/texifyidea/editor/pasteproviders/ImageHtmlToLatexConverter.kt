@@ -15,7 +15,7 @@ import javax.imageio.ImageIO
  * When there is an image inside html in the clipboard, this paste provider will start the InsertGraphicWizardAction
  * todo this class is very similar to ImagePasteProvider but for a third type of image (embedded in html (?) )
  */
-open class ClipboardHtmlImagePasteProvider : LatexPasteProvider {
+open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
 
     // todo this seems to duplicate the other ImagePasteProvider#pasteRawImage
     private fun pasteRawImage(project: Project, file: VirtualFile, clipboard: BufferedImage, sourceUrl: URL): String {

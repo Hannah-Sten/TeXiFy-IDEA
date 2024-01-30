@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 /**
  * todo
  *
- * This is not a LatexPasteProvider because it operates on the whole html at once, not on individual nodes.
+ * This is not a HtmlToLatexConverter because it operates on the whole html at once, not on individual nodes.
  */
 class PandocPasteTranslator(private val isStandalone: Boolean = false) {
 

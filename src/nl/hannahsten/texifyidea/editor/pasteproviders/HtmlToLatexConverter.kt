@@ -3,7 +3,10 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 import com.intellij.openapi.actionSystem.DataContext
 import org.jsoup.nodes.Node
 
-interface LatexPasteProvider {
+/**
+ * Convert html to LaTeX, for example styled text, images or tables.
+ */
+interface HtmlToLatexConverter {
 
     /**
      * Translate HTML (e.g. from a clipboard) to LaTeX.

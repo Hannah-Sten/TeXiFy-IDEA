@@ -14,7 +14,7 @@ import java.util.*
 /**
  * todo why does this not implement PasteProvider?
  */
-class TablePasteProvider : LatexPasteProvider {
+class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
     override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
         return LatexTableWizardAction().executeAction(
