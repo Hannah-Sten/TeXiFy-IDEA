@@ -1,10 +1,9 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.file.SaveImageFromWebDialog
 import org.jsoup.nodes.Element
 import java.awt.image.BufferedImage
@@ -31,12 +30,10 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
     }
 
     // todo this looks very much like ImagePasteProvider#performPaste
-    override fun convertHtmlToLatex(htmlIn: Element, dataContext: DataContext): String {
-        val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return ""
-        val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return ""
+    override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         val url = URL(htmlIn.attr("src"))
 
         val image = ImageIO.read(url)
-        return pasteRawImage(project, file, image, url)
+        return pasteRawImage(file.project, file.virtualFile, image, url)
     }
 }

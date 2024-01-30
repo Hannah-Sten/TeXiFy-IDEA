@@ -1,27 +1,24 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import nl.hannahsten.texifyidea.action.wizard.table.ColumnType
 import nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction
 import nl.hannahsten.texifyidea.action.wizard.table.TableCreationDialogWrapper
 import nl.hannahsten.texifyidea.action.wizard.table.TableCreationTableModel
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.util.toVector
 import org.jsoup.nodes.Document
-import org.jsoup.nodes.Node
+import org.jsoup.nodes.Element
 import java.util.*
 
 /**
- * todo why does this not implement PasteProvider?
+ * todo
  */
 class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
-    override fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
+    override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         return LatexTableWizardAction().executeAction(
-            dataContext.getData(PlatformDataKeys.PROJECT) ?: return "",
-            htmlIn.ownerDocument()?.toTableDialogWrapper(
-                dataContext
-            ) ?: return ""
+            file.project,
+            htmlIn.ownerDocument()?.toTableDialogWrapper(file) ?: return ""
         )
     }
 
@@ -29,7 +26,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
      * Creates the Table Creation Dialog filled in with the data from the clipboard.
      */
     @Suppress("USELESS_CAST")
-    private fun Document.toTableDialogWrapper(dataContext: DataContext): TableCreationDialogWrapper? {
+    private fun Document.toTableDialogWrapper(latexFile: LatexFile): TableCreationDialogWrapper? {
         val rows = select("table tr")
         val height = rows.size
         val width = rows.firstOrNull()?.select("td, th")?.size ?: 0
@@ -39,7 +36,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
         // Convert html to data vector Vector<Vector<Any?>> and headers.
         val header = rows.firstOrNull()?.select("td, th")?.mapNotNull { it.text() }?.toVector() ?: return null
         val content: Vector<Vector<Any?>> = rows.drop(1).map { tr ->
-            tr.select("td, th").map { td -> parseToString(td.children(), dataContext) as Any? }.toVector()
+            tr.select("td, th").map { td -> parseToString(td.children(), latexFile) as Any? }.toVector()
         }.toVector()
 
         // Find the type of column automatically.

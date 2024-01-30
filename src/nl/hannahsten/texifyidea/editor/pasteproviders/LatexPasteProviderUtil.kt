@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.closingTags
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.escapeText
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.openingTags
@@ -25,7 +23,7 @@ private val childHandlers = hashMapOf(
 /**
  * Parse given HTML nodes to LaTeX using direct hardcoded mappings.
  */
-fun parseToString(nodes: List<Node>, dataContext: DataContext): String {
+fun parseToString(nodes: List<Node>, latexFile: LatexFile): String {
     val out = StringBuilder()
 
     for (node in nodes) {
@@ -33,7 +31,7 @@ fun parseToString(nodes: List<Node>, dataContext: DataContext): String {
             when (node) {
                 is TextNode -> out.append(escapeText(node.text()))
                 is Element -> {
-                    handleElement(node, out, dataContext)
+                    handleElement(node, out, latexFile)
                 }
                 else -> {
                     Log.error("Did not plan for " + node.javaClass.name + " please implement a case for this")
@@ -42,10 +40,10 @@ fun parseToString(nodes: List<Node>, dataContext: DataContext): String {
         }
         else {
             if (node is Element) {
-                handleElement(node, out, dataContext)
+                handleElement(node, out, latexFile)
             }
             else
-                out.append(parseToString(node.childNodes(), dataContext))
+                out.append(parseToString(node.childNodes(), latexFile))
         }
     }
 
@@ -56,16 +54,16 @@ fun parseToString(nodes: List<Node>, dataContext: DataContext): String {
  * Convert one html element to LaTeX and append to the given StringBuilder.
  * todo work out the dataContext everywhere
  */
-private fun handleElement(element: Element, out: StringBuilder, dataContext: DataContext) {
+private fun handleElement(element: Element, out: StringBuilder, psiFile: LatexFile) {
     if (tagDependencies[element.tagName()] != null)
-        (dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile)?.insertUsepackage(tagDependencies[element.tagName()]!!)
+        (psiFile).insertUsepackage(tagDependencies[element.tagName()]!!)
 
     if (hasSpecialHandler(element)) {
         // todo simply use if/else checks to defer to the right handler
-        out.append(childHandlers[element.tagName()]?.convertHtmlToLatex(element, dataContext))
+        out.append(childHandlers[element.tagName()]?.convertHtmlToLatex(element, psiFile))
     }
     else {
-        out.append(StyledTextHtmlToLatexConverter().convertHtmlToLatex(element, dataContext))
+        out.append(StyledTextHtmlToLatexConverter().convertHtmlToLatex(element, psiFile))
     }
 }
 

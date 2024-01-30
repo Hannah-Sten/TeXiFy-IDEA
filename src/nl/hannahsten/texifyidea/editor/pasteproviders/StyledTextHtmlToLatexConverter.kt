@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import com.intellij.openapi.actionSystem.DataContext
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.util.Log
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
@@ -73,7 +73,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
     }
 
 
-    override fun convertHtmlToLatex(htmlIn: Element, dataContext: DataContext): String {
+    override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         var latexString = ""
         val environ = getCentering(htmlIn)
         if (environ != "") {
@@ -82,7 +82,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         latexString += getPrefix(htmlIn)
 
         if (htmlIn.childNodeSize() > 0)
-            latexString += parseToString(htmlIn.childNodes(), dataContext)
+            latexString += parseToString(htmlIn.childNodes(), file)
         else
             latexString += escapeText(htmlIn.text())
 

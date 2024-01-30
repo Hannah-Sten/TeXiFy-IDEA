@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import com.intellij.openapi.actionSystem.DataContext
-import org.jsoup.nodes.Node
+import nl.hannahsten.texifyidea.file.LatexFile
 import org.jsoup.nodes.Element
 
 /**
@@ -12,5 +11,5 @@ interface HtmlToLatexConverter {
     /**
      * Translate HTML (e.g. from a clipboard) to LaTeX.
      */
-    fun convertHtmlToLatex(htmlIn: Element, dataContext: DataContext): String
+    fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String
 }

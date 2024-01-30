@@ -7,11 +7,11 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.EditorModificationUtil
 import com.intellij.openapi.editor.actions.PasteAction
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.PackageUtils.insertPreambleText
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.files.psiFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Node
 import java.awt.datatransfer.DataFlavor
@@ -36,11 +36,12 @@ class HtmlPasteProvider : PasteProvider {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return
         val clipboardHtml = dataContext.transferableHtml() ?: return
         val editor = project.currentTextEditor()?.editor ?: return
+        val latexFile = dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile ?: return
 
         // dont bother with expensive operations unless the gimmes have passed
 
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
-        val textToInsert = convertHtmlToLatex(Jsoup.parse(html).select("body")[0], dataContext)
+        val textToInsert = convertHtmlToLatex(Jsoup.parse(html).select("body")[0], latexFile)
 
         val writeAction = Runnable { EditorModificationUtil.insertStringAtCaret(editor, textToInsert) }
         WriteCommandAction.runWriteCommandAction(project, writeAction)
@@ -65,9 +66,9 @@ class HtmlPasteProvider : PasteProvider {
      * Use various converters to convert all the tables, image references and styled text to LaTeX.
      * todo this we can unit test
      */
-    private fun convertHtmlToLatex(htmlIn: Node, dataContext: DataContext): String {
+    private fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String {
         // could be inlined, but kept out for neatness
-        fun default() = parseToString(htmlIn.childNodes(), dataContext)
+        fun default() = parseToString(htmlIn.childNodes(), latexFile)
 
         return if (!PandocHtmlToLatexConverter.isPandocInPath) {
             default()
@@ -86,11 +87,7 @@ class HtmlPasteProvider : PasteProvider {
                 // If Pandoc decided a preamble is needed, insert it in the correct place
                 if ("\\begin{document}" in latexText) {
                     val (preamble, content) = latexText.split("\\begin{document}")
-                    insertPreambleText(
-                        dataContext.getData(PlatformDataKeys.VIRTUAL_FILE)
-                            ?.psiFile(dataContext.getData(PlatformDataKeys.PROJECT)!!)!!,
-                        preamble
-                    )
+                    insertPreambleText(latexFile, preamble)
                     content
                 }
                 else {
