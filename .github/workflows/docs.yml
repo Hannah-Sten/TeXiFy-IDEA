@@ -86,6 +86,7 @@ jobs:
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
+        if: github.ref == 'refs/heads/master'
         with:
           path: dir
       - name: Deploy to GitHub Pages
