@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.formatting.LatexBlock
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 /**
  * Configure the indent after pressing enter.
