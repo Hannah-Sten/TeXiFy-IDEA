@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v3
       - name: Upload documentation
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: docs
       - name: Unzip artifact
@@ -96,7 +96,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v3
         with:
           name: algolia-indexes
       - uses: montudor/action-zip@v1
