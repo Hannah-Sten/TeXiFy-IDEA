@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
- * todo
+ * todo docs
  *
  * This is not a HtmlToLatexConverter because it operates on the whole html at once, not on individual nodes.
  */

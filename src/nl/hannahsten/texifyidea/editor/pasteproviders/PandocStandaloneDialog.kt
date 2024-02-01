@@ -8,7 +8,7 @@ import javax.swing.JPanel
 import javax.swing.JRadioButton
 
 /**
- * todo
+ * todo docs
  */
 class PandocStandaloneDialog(var isAddImports: Boolean? = null) {
 

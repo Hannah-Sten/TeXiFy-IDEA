@@ -11,7 +11,7 @@ import org.jsoup.nodes.Element
 import java.util.*
 
 /**
- * todo
+ * todo docs
  */
 class TableHtmlToLatexConverter : HtmlToLatexConverter {
 

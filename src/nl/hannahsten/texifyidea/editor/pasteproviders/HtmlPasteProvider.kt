@@ -64,13 +64,12 @@ class HtmlPasteProvider : PasteProvider {
 
     /**
      * Use various converters to convert all the tables, image references and styled text to LaTeX.
-     * todo this we can unit test
      */
-    private fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String {
+    fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile, canUseExternalTools: Boolean=true): String {
         // could be inlined, but kept out for neatness
         fun default() = parseToString(htmlIn.childNodes(), latexFile)
 
-        return if (!PandocHtmlToLatexConverter.isPandocInPath) {
+        return if (!canUseExternalTools || !PandocHtmlToLatexConverter.isPandocInPath) {
             default()
         }
         else {
