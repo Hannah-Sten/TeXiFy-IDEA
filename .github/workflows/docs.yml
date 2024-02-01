@@ -1,8 +1,12 @@
 name: Build docs
 
 on:
-  push:
   workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    types: [opened, synchronize]
+  merge_group:
 
 # Gives the workflow permissions to clone the repo and create a page deployment
 permissions:
@@ -91,7 +95,7 @@ jobs:
       image: registry.jetbrains.team/p/writerside/builder/algolia-publisher:2.0.32-2
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v4
         with:
           name: algolia-indexes
