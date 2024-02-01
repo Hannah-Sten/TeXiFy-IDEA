@@ -2,7 +2,6 @@ name: Build docs
 
 on:
   push:
-    branches: ["master", "docs"]
   workflow_dispatch:
 
 # Gives the workflow permissions to clone the repo and create a page deployment
