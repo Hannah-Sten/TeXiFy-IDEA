@@ -23,7 +23,12 @@ This can be particularly useful if you have to adhere to formatting conventions 
 
 ## Indents in (math) environments
 
+By default all environments are indented, and manual indents will be removed by the formatter.
+
 ![indent-environment](indent-environment.gif)
+
+This can be disabled in the code style settings, where indenting the document environment can have a different setting than other environments.
+
 
 ## Indents in groups
 
