@@ -73,6 +73,7 @@ jobs:
     # Requires the build results
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -86,7 +87,6 @@ jobs:
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
-        if: github.ref == 'refs/heads/master'
         with:
           path: dir
       - name: Deploy to GitHub Pages
