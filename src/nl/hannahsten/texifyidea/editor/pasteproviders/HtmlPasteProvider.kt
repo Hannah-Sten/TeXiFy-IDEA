@@ -8,8 +8,8 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.EditorModificationUtil
 import com.intellij.openapi.editor.actions.PasteAction
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Clipboard
-import nl.hannahsten.texifyidea.util.PackageUtils.insertPreambleText
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import org.jsoup.Jsoup
@@ -47,7 +47,7 @@ class HtmlPasteProvider : PasteProvider {
         WriteCommandAction.runWriteCommandAction(project, writeAction)
     }
 
-    override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
+    override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext) && TexifySettings.getInstance().htmlPasteTranslator != TexifySettings.HtmlPasteTranslator.DISABLED
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
@@ -65,35 +65,11 @@ class HtmlPasteProvider : PasteProvider {
     /**
      * Use various converters to convert all the tables, image references and styled text to LaTeX.
      */
-    fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile, canUseExternalTools: Boolean=true): String {
-        // could be inlined, but kept out for neatness
-        fun default() = parseToString(htmlIn.childNodes(), latexFile)
-
-        return if (!canUseExternalTools || !PandocHtmlToLatexConverter.isPandocInPath) {
-            default()
+    fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String {
+        return when(TexifySettings.getInstance().htmlPasteTranslator) {
+            TexifySettings.HtmlPasteTranslator.BUILTIN -> convertHtmlToLatex(htmlIn.childNodes(), latexFile)
+            TexifySettings.HtmlPasteTranslator.PANDOC -> PandocHtmlToLatexConverter().translateHtml(htmlIn.toString()) ?: convertHtmlToLatex(htmlIn.childNodes(), latexFile)
+            TexifySettings.HtmlPasteTranslator.DISABLED -> htmlIn.toString() // Should not happen
         }
-        else {
-            // Pandoc is available, so we ask the user for their preference
-            // todo make sure to ask only once and add a setting
-            val pandocStandaloneDialog = PandocStandaloneDialog()
-            if (pandocStandaloneDialog.abort)
-                default()
-            else {
-                val isStandalone: Boolean = pandocStandaloneDialog.isAddImports ?: return default()
-
-                val latexText = PandocHtmlToLatexConverter(isStandalone).translateHtml(htmlIn.toString()) ?: return default()
-
-                // If Pandoc decided a preamble is needed, insert it in the correct place
-                if ("\\begin{document}" in latexText) {
-                    val (preamble, content) = latexText.split("\\begin{document}")
-                    insertPreambleText(latexFile, preamble)
-                    content
-                }
-                else {
-                    latexText
-                }
-            }
-        }
-
     }
 }

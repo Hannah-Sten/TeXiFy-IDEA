@@ -3,11 +3,11 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
- * todo docs
+ * Use Pandoc to convert HTML to LaTeX.
  *
  * This is not a HtmlToLatexConverter because it operates on the whole html at once, not on individual nodes.
  */
-class PandocHtmlToLatexConverter(private val isStandalone: Boolean = false) {
+class PandocHtmlToLatexConverter {
 
     companion object {
 
@@ -29,19 +29,11 @@ class PandocHtmlToLatexConverter(private val isStandalone: Boolean = false) {
                 "html",
                 "-t",
                 "latex"
-            ) + (if (isStandalone) arrayOf("--standalone") else arrayOf())
+            )
             val (output, exitCode) = runCommandWithExitCode(*commands, inputString = htmlIn)
             if (exitCode != 0 || output == null) return null
-            return sanitizeOutput(output, isStandalone)
+            return output
         }
         else null
-    }
-
-    private fun sanitizeOutput(rawOutput: String, hasDefinitions: Boolean = false): String {
-        return if (!hasDefinitions)
-            rawOutput
-        else {
-            rawOutput.replace("\\end{document}", "").replace("\\\\documentclass\\[\\s*]\\{article}".toRegex(), "")
-        }
     }
 }

@@ -36,7 +36,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
         // Convert html to data vector Vector<Vector<Any?>> and headers.
         val header = rows.firstOrNull()?.select("td, th")?.mapNotNull { it.text() }?.toVector() ?: return null
         val content: Vector<Vector<Any?>> = rows.drop(1).map { tr ->
-            tr.select("td, th").map { td -> parseToString(td.children(), latexFile) as Any? }.toVector()
+            tr.select("td, th").map { td -> convertHtmlToLatex(td.children(), latexFile) as Any? }.toVector()
         }.toVector()
 
         // Find the type of column automatically.

@@ -12,7 +12,7 @@ class HtmlPasteProviderTest : BasePlatformTestCase() {
         myFixture.configureByText("main.tex", "")
         val html = "<i>italic</i>"
         val node = Jsoup.parse(html).select("body")[0]
-        val latex = HtmlPasteProvider().convertHtmlToLatex(node, myFixture.file as LatexFile, canUseExternalTools = false)
+        val latex = HtmlPasteProvider().convertHtmlToLatex(node, myFixture.file as LatexFile)
         TestCase.assertEquals("\\textit{italic}", latex)
     }
 

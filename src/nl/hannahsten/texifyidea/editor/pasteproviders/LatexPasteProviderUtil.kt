@@ -15,7 +15,7 @@ import org.jsoup.nodes.TextNode
 /**
  * Parse html to LaTeX using various converters.
  */
-fun parseToString(nodes: List<Node>, latexFile: LatexFile): String {
+fun convertHtmlToLatex(nodes: List<Node>, latexFile: LatexFile): String {
     var out = ""
 
     for (node in nodes) {
@@ -35,7 +35,7 @@ fun parseToString(nodes: List<Node>, latexFile: LatexFile): String {
                 handleElement(node, latexFile)
             }
             else
-                parseToString(node.childNodes(), latexFile)
+                convertHtmlToLatex(node.childNodes(), latexFile)
         }
     }
 

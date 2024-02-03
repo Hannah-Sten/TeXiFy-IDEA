@@ -34,7 +34,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
             "i" to "}",
             "b" to "}",
             "u" to "}",
-            "p" to "\n\\par\n",
+            "p" to "\n\n",
             "ol" to "\\end{enumerate}\n",
             "ul" to "\\end{itemize}\n",
             "li" to "\n",
@@ -82,7 +82,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         latexString += getPrefix(htmlIn)
 
         if (htmlIn.childNodeSize() > 0)
-            latexString += parseToString(htmlIn.childNodes(), file)
+            latexString += convertHtmlToLatex(htmlIn.childNodes(), file)
         else
             latexString += escapeText(htmlIn.text())
 
