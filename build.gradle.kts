@@ -29,7 +29,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.0.8"
+    id("org.owasp.dependencycheck") version "9.0.9"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
@@ -101,12 +101,12 @@ dependencies {
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.8")
-    implementation("io.ktor:ktor-client-cio:2.3.7")
-    implementation("io.ktor:ktor-client-auth:2.3.7")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
-    implementation("io.ktor:ktor-server-core:2.3.7")
+    implementation("io.ktor:ktor-client-cio:2.3.8")
+    implementation("io.ktor:ktor-client-auth:2.3.8")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
+    implementation("io.ktor:ktor-server-core:2.3.8")
     implementation("io.ktor:ktor-server-jetty:2.3.8")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-12")
