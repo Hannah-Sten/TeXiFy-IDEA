@@ -16,7 +16,6 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.table.TableView
-import com.intellij.ui.util.preferredWidth
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.ListTableModel
@@ -24,6 +23,7 @@ import com.intellij.util.ui.table.TableModelEditor
 import nl.hannahsten.texifyidea.TexifyIcons
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTable
@@ -214,8 +214,8 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
      */
     private fun createAddLabelConventionDialog() {
         val typeField = ComboBox(LabelConventionType.values())
-        val elementField = JBTextField().apply { preferredWidth = 200 }
-        val prefixField = JBTextField().apply { preferredWidth = 200 }
+        val elementField = JBTextField().apply { preferredSize = Dimension(200, preferredSize.height) }
+        val prefixField = JBTextField().apply { preferredSize = Dimension(200, preferredSize.height) }
         val labelField = JBCheckBox()
 
         DialogBuilder().apply {

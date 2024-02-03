@@ -29,7 +29,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.0.8"
+    id("org.owasp.dependencycheck") version "9.0.9"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
@@ -101,12 +101,12 @@ dependencies {
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.8")
-    implementation("io.ktor:ktor-client-cio:2.3.7")
-    implementation("io.ktor:ktor-client-auth:2.3.7")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
-    implementation("io.ktor:ktor-server-core:2.3.7")
+    implementation("io.ktor:ktor-client-cio:2.3.8")
+    implementation("io.ktor:ktor-client-auth:2.3.8")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
+    implementation("io.ktor:ktor-server-core:2.3.8")
     implementation("io.ktor:ktor-server-jetty:2.3.8")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-12")
@@ -205,7 +205,7 @@ intellij {
         listOf(
             "tanvd.grazi",
             "java",
-            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
+//            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
             "com.jetbrains.hackathon.indices.viewer:1.25"
         )
     )
@@ -218,7 +218,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2023.3")
+    version.set("241.10840-EAP-CANDIDATE-SNAPSHOT")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
@@ -290,6 +290,11 @@ tasks.useLatestVersions {
 }
 
 tasks {
+
+    // https://github.com/JetBrains/gradle-grammar-kit-plugin/issues/168
+    withType<GenerateParserTask> {
+        classpath(setupDependencies.flatMap { it.idea.map { idea -> idea.classes.resolve("lib/opentelemetry.jar") } })
+    }
 
     val generateLatexParserTask = register<GenerateParserTask>("generateLatexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
