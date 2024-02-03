@@ -123,6 +123,9 @@ dependencies {
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.1")
     implementation("io.arrow-kt:arrow-resilience:1.2.1")
 
+    implementation("io.opentelemetry:opentelemetry-api-trace:0.13.1")
+
+
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -205,7 +208,7 @@ intellij {
         listOf(
             "tanvd.grazi",
             "java",
-            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
+//            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
             "com.jetbrains.hackathon.indices.viewer:1.25"
         )
     )
@@ -218,7 +221,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2023.3")
+    version.set("241.10840-EAP-CANDIDATE-SNAPSHOT")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
@@ -290,6 +293,11 @@ tasks.useLatestVersions {
 }
 
 tasks {
+
+    // https://github.com/JetBrains/gradle-grammar-kit-plugin/issues/168
+    withType<GenerateParserTask> {
+        classpath(setupDependencies.flatMap { it.idea.map { idea -> idea.classes.resolve("lib/opentelemetry.jar") } })
+    }
 
     val generateLatexParserTask = register<GenerateParserTask>("generateLatexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
