@@ -125,7 +125,6 @@ dependencies {
 
     implementation("io.opentelemetry:opentelemetry-api-trace:0.13.1")
 
-
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
