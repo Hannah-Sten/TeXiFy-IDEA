@@ -10,16 +10,11 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.ImageUtil
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.ui.ImagePanel
-import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import nl.hannahsten.texifyidea.util.formatAsFileName
-import org.apache.commons.io.FilenameUtils
-import org.jsoup.Jsoup
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Image
-import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.Transferable
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
@@ -28,33 +23,30 @@ import javax.swing.BoxLayout
 import javax.swing.JPanel
 
 /**
+ * Show a dialog to ask the user where and how to save the given image.
+ * Afterwards, execute the onOkFunction, for example the InsertGraphicWizardAction to insert the relevant LaTeX to include the image.
+ *
  * @author Hannah Schellekens
  */
-class SaveImageFromClipboardDialog(
+class SaveImageDialog(
 
     /**
      * The current project.
      */
     val project: Project,
 
-    /**
-     * The transferable data from the clipboard.
-     * Must support the image data flavor [DataFlavor.imageFlavor].
-     */
-    private val transferable: Transferable,
+    val image: BufferedImage,
+    val imageName: String?,
+    val extension: String?,
 
     /**
      * The function to execute when the dialog is succesfully closed.
      * Does not execute when cancelled.
      */
-    onOkFunction: (SaveImageFromClipboardDialog) -> Unit
+    onOkFunction: (File) -> Unit
 ) : DialogWrapper(true) {
 
     companion object {
-
-        fun supportsImage(transferable: Transferable): Boolean {
-            return transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && transferable.getTransferData(DataFlavor.imageFlavor) is BufferedImage
-        }
 
         // Default or lasted used resource folder.
         private var resourceFolder: String? = null
@@ -73,11 +65,6 @@ class SaveImageFromClipboardDialog(
     }
 
     /**
-     * The image data from the clipboard. Only supports BufferedImages currently, see [supportsImage].
-     */
-    private val image = transferable.getTransferData(DataFlavor.imageFlavor) as BufferedImage
-
-    /**
      * The width of the image in pixels.
      */
     private val imageWidth = image.width
@@ -90,18 +77,7 @@ class SaveImageFromClipboardDialog(
     /**
      * The image format of the original image, if known.
      */
-    private var imageFormat: ImageFormat? = null
-
-    /**
-     * The name of the original image, if known.
-     */
-    private var imageName: String? = null
-
-    /**
-     * The image file that was saved, `null` when no image was saved.
-     */
-    var savedImage: File? = null
-        private set
+    private var imageFormat: ImageFormat? = extension?.let { ImageFormat.imageFormatFromExtension(it) }
 
     /**
      * Shows a preview of the image to paste.
@@ -143,10 +119,8 @@ class SaveImageFromClipboardDialog(
     }
 
     init {
-        require(transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) { "Image flavor not supported." }
 
         // Fill in meta data.
-        findMetaData()
         imageName?.let { txtImageName.text = it }
         imageFormat?.let { cboxImageFormat.selectedItem = it }
 
@@ -156,8 +130,7 @@ class SaveImageFromClipboardDialog(
         myPreferredFocusedComponent = txtImageName
 
         if (showAndGet()) {
-            saveImage()
-            onOkFunction(this@SaveImageFromClipboardDialog)
+            saveImage()?.let { onOkFunction(it) }
         }
     }
 
@@ -192,19 +165,24 @@ class SaveImageFromClipboardDialog(
     /**
      * Saves the pasted image.
      */
-    private fun saveImage() {
-        val imageFormat = cboxImageFormat.selectedItem as? ImageFormat ?: return
-        val destination = destinationFile() ?: return
+    private fun saveImage(): File? {
+        val imageFormat = cboxImageFormat.selectedItem as? ImageFormat ?: return null
+        val destination = destinationFile() ?: return null
 
         createDirectories()
 
-        if (ImageIO.write(image, imageFormat.extension, destination)) {
-            savedImage = destination
+        val savedImage = if (ImageIO.write(image, imageFormat.extension, destination)) {
             LocalFileSystem.getInstance().refresh(true)
+            destination
+        }
+        else {
+            null
         }
 
         // Store user-entered text for next time
         resourceFolder = txtResourceFolder.text
+
+        return savedImage
     }
 
     /**
@@ -246,7 +224,7 @@ class SaveImageFromClipboardDialog(
             <table>
                 <tr>
                     <td><b>Size:</b> </td>
-                    <td>${this@SaveImageFromClipboardDialog.imageWidth} x ${this@SaveImageFromClipboardDialog.imageHeight} pixels</td>
+                    <td>${this@SaveImageDialog.imageWidth} x ${this@SaveImageDialog.imageHeight} pixels</td>
                 </tr>
                 <tr>
                     <td width="64"><b>Format:</b> </td>
@@ -271,27 +249,6 @@ class SaveImageFromClipboardDialog(
         addLabeledComponent(txtResourceFolder, "Resource folder:", labelWidth)
         addLabeledComponent(txtImageName, "Image name:", labelWidth)
         addLabeledComponent(cboxImageFormat, "Image format:", labelWidth)
-    }
-
-    /**
-     * Checks if there is HTML data present on the clipboard, and extract meta data of the image from this
-     * data when present.
-     */
-    private fun findMetaData() {
-        // Check if there is HTML image metadata present.
-        if (transferable.isDataFlavorSupported(DataFlavor.fragmentHtmlFlavor).not()) return
-
-        // Parse clipboard data.
-        val clipboardData = transferable.getTransferData(DataFlavor.fragmentHtmlFlavor) as String
-        val html = Clipboard.extractHtmlFragmentFromClipboard(clipboardData)?.let {
-            Jsoup.parse(it)
-        } ?: return
-        val image = html.select("img").firstOrNull() ?: return
-
-        // Handle data.
-        val source = image.attr("src") ?: return
-        imageFormat = ImageFormat.imageFormatFromExtension(FilenameUtils.getExtension(source))
-        imageName = FilenameUtils.getBaseName(source)
     }
 
     /**

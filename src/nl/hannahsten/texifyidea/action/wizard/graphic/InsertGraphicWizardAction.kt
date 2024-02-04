@@ -53,6 +53,7 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
      * Opens and handles the graphic insertion wizard.
      * // todo method name does not match, what does it do?
      * // todo why are we adding a method about pasting images when the PR is about styled text?
+     * todo duplicates method above
      *
      * @return The string to insert into the file when pasting an image.
      */
