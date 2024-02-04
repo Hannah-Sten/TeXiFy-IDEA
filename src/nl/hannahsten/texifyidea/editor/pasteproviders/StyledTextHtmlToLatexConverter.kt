@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.util.Log
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 
@@ -14,6 +13,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
          */
         val openingTags = hashMapOf(
             "i" to "\\textit{",
+            "em" to "\\textit{",
             "b" to "\\textbf{",
             "u" to "\\underline{",
             "p" to "",
@@ -32,6 +32,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
 
         val closingTags = hashMapOf(
             "i" to "}",
+            "em" to "}",
             "b" to "}",
             "u" to "}",
             "p" to "\n\n",
@@ -106,8 +107,6 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
 
 
     private fun getPrefix(element: Element): String {
-        if (specialOpeningTags[element.tagName()] == null && openingTags[element.tagName()] == null)
-            Log.warn("Couldn't find a home for " + element.tagName())
         return specialOpeningTags[element.tagName()]?.invoke(element) ?: openingTags[element.tagName()] ?: ""
     }
 

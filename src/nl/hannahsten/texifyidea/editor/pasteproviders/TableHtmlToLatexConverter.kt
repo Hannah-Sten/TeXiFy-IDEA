@@ -11,7 +11,7 @@ import org.jsoup.nodes.Element
 import java.util.*
 
 /**
- * todo docs
+ * Convert HTML tables to LaTeX using the [TableCreationDialogWrapper].
  */
 class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
@@ -33,10 +33,10 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
         if (height == 0 && width == 0) return null
 
-        // Convert html to data vector Vector<Vector<Any?>> and headers.
+        // Convert html to data vector Vector<Vector<Any?>> as required by DefaultTableModel
         val header = rows.firstOrNull()?.select("td, th")?.mapNotNull { it.text() }?.toVector() ?: return null
         val content: Vector<Vector<Any?>> = rows.drop(1).map { tr ->
-            tr.select("td, th").map { td -> convertHtmlToLatex(td.children(), latexFile) as Any? }.toVector()
+            tr.select("td, th").map { td -> convertHtmlToLatex(listOf(td), latexFile) as Any? }.toVector()
         }.toVector()
 
         // Find the type of column automatically.
