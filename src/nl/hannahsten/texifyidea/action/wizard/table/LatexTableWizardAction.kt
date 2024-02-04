@@ -62,7 +62,6 @@ class LatexTableWizardAction : AnAction() {
             { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
             file.psiFile(project)
         )
-
     }
 
     override fun update(e: AnActionEvent) {

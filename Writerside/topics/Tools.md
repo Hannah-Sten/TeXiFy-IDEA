@@ -58,7 +58,11 @@ You can also access this action via the Generate menu by pressing <shortcut>Alt 
 
 ## Paste HTML into LaTeX
 
-[//]: # (todo)
+If you copy HTML to your clipboard, when pasting into a LaTeX file the html will be automatically converted to LaTeX.
+In particular, for tables or images the table or image wizard will show.
+You can also use Pandoc instead of the built-in translator, you can configure this in [settings](TeXiFy-settings.md).
+
+![html to latex](html-paste.gif)
 
 ## Clear Auxiliary Files {id="clear-aux-files"}
 

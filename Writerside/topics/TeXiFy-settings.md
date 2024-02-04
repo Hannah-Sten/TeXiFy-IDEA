@@ -133,10 +133,9 @@ Whenever the next character is not a closing brace, we assume you want opening q
 
 For more advantages, see [https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f](https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f)
 
-## Option to select default PDF viewer
-_Since b0.6.7_
+## Pasting HTML
 
-Note: As of _b0.7.2_ this setting has been moved to the [run configuration (template) settings](Run-configuration-settings.md#choose-pdf-viewer).
+Choose what method to use to convert HTML to LaTeX when pasting from clipboard, see [Tools](Tools.md#paste-html-into-latex)
 
 ## Conventions
 These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy | Conventions</ui-path> and allow you to configure Latex code conventions that apply either globally or for the current project.

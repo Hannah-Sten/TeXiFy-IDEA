@@ -65,8 +65,6 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null): String?
     return runCommandWithExitCode(*commands, workingDirectory = workingDirectory).first
 }
 
-
-
 /**
  * See [runCommand], but also returns exit code.
  *

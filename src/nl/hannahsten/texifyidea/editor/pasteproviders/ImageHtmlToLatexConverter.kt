@@ -30,8 +30,8 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
         val imageName = FilenameUtils.getBaseName(sourceUrl.file).take(100)
 
         val editor = project.currentTextEditor() ?: return ""
-        SaveImageDialog(project, image, imageName, extension) {
-            imageFile -> outstring = InsertGraphicWizardAction(imageFile).showDialogAndGetText(editor, file, project) ?: ""
+        SaveImageDialog(project, image, imageName, extension) { imageFile ->
+            outstring = InsertGraphicWizardAction(imageFile).showDialogAndGetText(editor, file, project) ?: ""
         }
 
         return outstring

@@ -47,9 +47,7 @@ open class ImagePasteProvider : PasteProvider {
         // Check if there is HTML image metadata present.
         val (imageName, extension) = extractMetaData(clipboard)
 
-        SaveImageDialog(project, image, imageName, extension) {
-            imageFile -> InsertGraphicWizardAction(imageFile).executeAction(file, project)
-        }
+        SaveImageDialog(project, image, imageName, extension) { imageFile -> InsertGraphicWizardAction(imageFile).executeAction(file, project) }
     }
 
     /**

@@ -15,5 +15,4 @@ class HtmlPasteProviderTest : BasePlatformTestCase() {
         val latex = HtmlPasteProvider().convertHtmlToLatex(node, myFixture.file as LatexFile)
         TestCase.assertEquals("\\textit{italic}", latex)
     }
-
 }

@@ -63,7 +63,6 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
             "−" to "-"
         )
 
-
         fun escapeText(stringin: String): String {
             var out = stringin.replace("\\", "\\textbackslash ")
 
@@ -72,7 +71,6 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
             return out
         }
     }
-
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         var latexString = ""
@@ -102,9 +100,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
             latexString += "\\end{$environ}"
         }
         return latexString
-
     }
-
 
     private fun getCentering(node: Node) = when {
         node.attr("align") == "center" -> "center"
@@ -115,7 +111,6 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         else -> ""
     }
 
-
     private fun getPrefix(element: Element): String {
         return specialOpeningTags[element.tagName()]?.invoke(element) ?: openingTags[element.tagName()] ?: ""
     }
@@ -123,7 +118,6 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
     private fun getPostfix(element: Element): String {
         return specialClosingTags[element.tagName()]?.invoke(element) ?: closingTags[element.tagName()] ?: ""
     }
-
 
     private val specialOpeningTags = hashMapOf<String, (Element) -> String>(
         "a" to { element ->
@@ -149,5 +143,4 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
                 ""
         }
     )
-
 }
