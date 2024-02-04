@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
@@ -32,33 +32,18 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
      */
     fun executeAction(file: VirtualFile, project: Project) {
         val editor = project.currentTextEditor() ?: return
-        val document = editor.editor.document
-
-        // Get the indentation from the current line.
-        val indent = document.lineIndentationByOffset(editor.editor.caretOffset())
-
-        // Create the dialog.
-        val dialogWrapper = InsertGraphicWizardDialogWrapper(initialFilePath = initialFile?.absolutePath ?: "")
-
-        // If the user pressed OK, do stuff.
-        if (!dialogWrapper.showAndGet()) return
-
-        // Handle result.
-        val graphicData = dialogWrapper.extractData()
-        file.psiFile(project)?.let { graphicData.importPackages(it) }
-        editor.editor.insertGraphic(project, graphicData, indent)
+        val text = showDialogAndGetText(editor, file, project) ?: return
+        editor.editor.insertAtCaretAndMove(text)
     }
 
     /**
-     * Opens and handles the graphic insertion wizard.
-     * // todo method name does not match, what does it do?
-     * // todo why are we adding a method about pasting images when the PR is about styled text?
-     * todo duplicates method above
-     *
-     * @return The string to insert into the file when pasting an image.
+     * Show user dialog and get the text to insert.
      */
-    fun getGraphicString(file: VirtualFile, project: Project): String {
-        val editor = project.currentTextEditor() ?: return ""
+    fun showDialogAndGetText(
+        editor: TextEditor,
+        file: VirtualFile,
+        project: Project
+    ): String? {
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -68,7 +53,7 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
         val dialogWrapper = InsertGraphicWizardDialogWrapper(initialFilePath = initialFile?.absolutePath ?: "")
 
         // If the user pressed OK, do stuff.
-        if (!dialogWrapper.showAndGet()) return ""
+        if (!dialogWrapper.showAndGet()) return null
 
         // Handle result.
         val graphicData = dialogWrapper.extractData()
@@ -91,10 +76,6 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
-
-    private fun Editor.insertGraphic(project: Project, data: InsertGraphicData, indent: String, tab: String = "    ") {
-        insertAtCaretAndMove(buildGraphicString(project, data, indent, tab))
-    }
 
     private fun buildGraphicString(
         project: Project,

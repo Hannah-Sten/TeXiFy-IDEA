@@ -56,6 +56,10 @@ Tool for inserting `blindtext` and `lipsum` commands. Also provides a `raw text`
 
 You can also access this action via the Generate menu by pressing <shortcut>Alt + Insert</shortcut> in a LaTeX document.
 
+## Paste HTML into LaTeX
+
+[//]: # (todo)
+
 ## Clear Auxiliary Files {id="clear-aux-files"}
 
 <ui-path>Tools | LaTeX | Clear Auxiliary Files</ui-path>

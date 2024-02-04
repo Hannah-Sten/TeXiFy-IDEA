@@ -80,14 +80,24 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         if (environ != "") {
             latexString += "\\begin{$environ}"
         }
-        latexString += getPrefix(htmlIn)
 
-        if (htmlIn.childNodeSize() > 0)
-            latexString += convertHtmlToLatex(htmlIn.childNodes(), file)
+        val prefix = getPrefix(htmlIn)
+
+        val content = if (htmlIn.childNodeSize() > 0)
+            convertHtmlToLatex(htmlIn.childNodes(), file)
         else
-            latexString += escapeText(htmlIn.text())
+            escapeText(htmlIn.text())
 
-        latexString += getPostfix(htmlIn)
+        val postfix = getPostfix(htmlIn)
+
+        // Special case: since the <img> tag will trigger the InsertGraphicWizardAction, the image maybe be placed in a figure environment so we don't want to put that in a href
+        latexString += if (htmlIn.tagName() == "a" && (htmlIn.childNodes().firstOrNull() as? Element)?.tagName() == "img") {
+            content
+        }
+        else {
+            prefix + content + postfix
+        }
+
         if (environ != "") {
             latexString += "\\end{$environ}"
         }

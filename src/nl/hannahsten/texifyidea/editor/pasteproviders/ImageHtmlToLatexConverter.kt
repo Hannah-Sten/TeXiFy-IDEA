@@ -7,6 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.file.SaveImageDialog
+import nl.hannahsten.texifyidea.util.currentTextEditor
 import org.apache.commons.io.FilenameUtils
 import org.jsoup.nodes.Element
 import java.awt.image.BufferedImage
@@ -27,8 +28,10 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
 
         val extension = FilenameUtils.getExtension(sourceUrl.file)
         val imageName = FilenameUtils.getBaseName(sourceUrl.file).take(100)
+
+        val editor = project.currentTextEditor() ?: return ""
         SaveImageDialog(project, image, imageName, extension) {
-            imageFile -> outstring = InsertGraphicWizardAction(imageFile).getGraphicString(file, project)
+            imageFile -> outstring = InsertGraphicWizardAction(imageFile).showDialogAndGetText(editor, file, project) ?: ""
         }
 
         return outstring
