@@ -74,6 +74,14 @@ tasks.compileTestKotlin {
     }
 }
 
+// https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
+configurations {
+    all {
+        exclude(group="xml-apis")
+        exclude(group="xerces")
+    }
+}
+
 dependencies {
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
@@ -113,11 +121,8 @@ dependencies {
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
-    // https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
-    implementation("org.apache.xmlgraphics:batik-codec:1.17") {
-        exclude("xml-apis", "xml-apis")
-        exclude("xml-apis", "xml-apis-ext")
-    }
+    implementation("org.apache.xmlgraphics:batik-all:1.17")
+    implementation("batik:batik-svg-dom:1.6-1")
 
     implementation("io.arrow-kt:arrow-core:1.2.1")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.1")
