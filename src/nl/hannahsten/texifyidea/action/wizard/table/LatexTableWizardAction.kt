@@ -4,10 +4,15 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.action.insert.InsertTable
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import java.util.*
 
@@ -19,7 +24,10 @@ import java.util.*
  */
 class LatexTableWizardAction : AnAction() {
 
-    fun executeAction(project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null): String {
+    /**
+     * Show a dialog and get the text to insert.
+     */
+    fun getTableTextWithDialog(project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null): String {
         val editor = project.currentTextEditor() ?: return ""
         val document = editor.editor.document
 
@@ -30,22 +38,31 @@ class LatexTableWizardAction : AnAction() {
         val dialogWrapper = defaultDialogWrapper ?: TableCreationDialogWrapper()
 
         // If the user pressed OK, do stuff.
-        if (dialogWrapper.showAndGet()) {
-            // Get the table information from the dialog, and convert it to latex.
-            with(dialogWrapper.tableInformation) {
-                return convertTableToLatex(indent)
-            }
+        if (!dialogWrapper.showAndGet()) return ""
 
-            // todo the code that executed the action is removed, so this executeAction does not execute an action?
-            // todo check if booktabs package is inserted correctly wherever this code moved to
+        // Get the table information from the dialog, and convert it to latex.
+        with(dialogWrapper.tableInformation) {
+            return convertTableToLatex(indent)
         }
-
-        return ""
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT) ?: return
-        executeAction(project)
+        val editor = project.currentTextEditor() ?: return
+        val tableTextToInsert = getTableTextWithDialog(project)
+        // Use an insert action to insert the table.
+        InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
+
+        // Insert the booktabs package.
+        WriteCommandAction.runWriteCommandAction(
+            project,
+            "Insert Table",
+            "LaTeX",
+            { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
+            file.psiFile(project)
+        )
+
     }
 
     override fun update(e: AnActionEvent) {
@@ -59,11 +76,10 @@ class LatexTableWizardAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     /**
-     * Local function to process the contents of the table, i.e. the header text and table entries. The indentation
+     * Function to process the contents of the table, i.e. the header text and table entries. The indentation
      * is the same throughout the table contents.
      */
-    fun TableInformation.processTableContent(indent: String): String {
-
+    private fun TableInformation.processTableContent(indent: String): String {
         val headers = tableModel.getColumnNames()
             .joinToString(
                 prefix = "$indent\\toprule\n$indent",
@@ -71,19 +87,18 @@ class LatexTableWizardAction : AnAction() {
                 postfix = " \\\\\n$indent\\midrule\n"
             ) { "\\textbf{$it}" }
 
-        val rows =
-            tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
-                (row as Vector<*>).joinToString(
-                    prefix = indent,
-                    separator = " & ",
-                    postfix = " \\\\"
-                ) {
-                    // Enclose with $ if the type of this column is math.
-                    val index = row.indexOf(it)
-                    val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
-                    encloseWith + it.toString() + encloseWith
-                }
+        val rows = tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
+            (row as Vector<*>).joinToString(
+                prefix = indent,
+                separator = " & ",
+                postfix = " \\\\"
+            ) {
+                // Enclose with $ if the type of this column is math.
+                val index = row.indexOf(it)
+                val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
+                encloseWith + it.toString() + encloseWith
             }
+        }
         return headers + rows
     }
 
@@ -95,11 +110,7 @@ class LatexTableWizardAction : AnAction() {
      * @param tabIndent
      *          The continuation indent.
      */
-    private fun TableInformation.convertTableToLatex(
-        lineIndent: String,
-        tabIndent: String = "    "
-    ): String {
-
+    private fun TableInformation.convertTableToLatex(lineIndent: String, tabIndent: String = "    "): String {
         // The tex(t) for a table consists of three parts: the open commands, the actual content, and the closing commands
         // (this includes the caption and label).
         val openTableCommand = "\\begin{table}\n" +

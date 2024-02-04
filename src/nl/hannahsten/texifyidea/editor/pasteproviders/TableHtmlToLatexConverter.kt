@@ -16,7 +16,7 @@ import java.util.*
 class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
-        return LatexTableWizardAction().executeAction(
+        return LatexTableWizardAction().getTableTextWithDialog(
             file.project,
             htmlIn.ownerDocument()?.toTableDialogWrapper(file) ?: return ""
         )
