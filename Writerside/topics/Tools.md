@@ -56,7 +56,7 @@ Tool for inserting `blindtext` and `lipsum` commands. Also provides a `raw text`
 
 You can also access this action via the Generate menu by pressing <shortcut>Alt + Insert</shortcut> in a LaTeX document.
 
-## Paste HTML into LaTeX
+## Pasting HTML into a LaTeX file
 
 If you copy HTML to your clipboard, when pasting into a LaTeX file the html will be automatically converted to LaTeX.
 In particular, for tables or images the table or image wizard will show.
