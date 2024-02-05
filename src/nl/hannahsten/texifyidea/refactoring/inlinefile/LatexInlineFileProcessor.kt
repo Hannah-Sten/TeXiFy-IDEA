@@ -72,7 +72,7 @@ class LatexInlineFileProcessor(
      * @param psiElement The element to remove and replace with the contents of the file
      */
     private fun replaceUsage(psiElement: PsiElement) {
-        val nonEmptyChildren = inlineFile.children.filter { it.text.trim().length > 0 }
+        val nonEmptyChildren = inlineFile.children.filter { it.text.trim().isNotEmpty() }
 
         val root = psiElement.replace(
             nonEmptyChildren[0]
