@@ -44,6 +44,7 @@ jobs:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
   test:
     runs-on: ${{ matrix.os }}
+    if: github.event.pull_request.draft == false
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

@@ -12,10 +12,10 @@ object Clipboard {
      * @return null when it could not find html
      */
     @JvmStatic
-    fun extractHtmlFromClipboard(clipboardContents: String): String? {
+    fun extractHtmlFromClipboard(clipboardContents: String): String {
         return clipboardContents.indexOf("<html", ignoreCase = true)
-            .takeIf { it >= 0 }
-            ?.let { clipboardContents.substring(it) }
+            .coerceAtLeast(0)
+            .let { clipboardContents.substring(it) }
     }
 
     /**

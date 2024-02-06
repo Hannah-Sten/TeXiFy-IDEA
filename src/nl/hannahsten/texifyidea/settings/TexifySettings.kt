@@ -22,13 +22,20 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         fun getInstance(): TexifySettings = ApplicationManager.getApplication().getService(TexifySettings::class.java)
     }
 
-    // Options for smart quote replacement, in the order as they appear in the combobox
+    /** Options for smart quote replacement, in the order as they appear in the combobox **/
     enum class QuoteReplacement {
 
         NONE,
         LIGATURES,
         COMMANDS,
         CSQUOTES // Context Sensitive quotes from the csquotes package
+    }
+
+    /** Paste provider configuration, similar to Editor > General > Smart Keys **/
+    enum class HtmlPasteTranslator {
+        BUILTIN,
+        PANDOC,
+        DISABLED,
     }
 
     var automaticSecondInlineMathSymbol = true
@@ -45,6 +52,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var textidoteOptions = "--check en --output singleline --no-color"
     var latexIndentOptions = ""
     var automaticQuoteReplacement = QuoteReplacement.NONE
+    var htmlPasteTranslator = HtmlPasteTranslator.BUILTIN
 
     /**
      * Backwards compatibility. This value is never altered, only read from/to memory.
@@ -70,6 +78,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             textidoteOptions = textidoteOptions,
             latexIndentOptions = latexIndentOptions,
             automaticQuoteReplacement = automaticQuoteReplacement,
+            htmlPasteTranslator = htmlPasteTranslator,
             pdfViewer = pdfViewer
         )
     }
@@ -89,6 +98,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         textidoteOptions = state.textidoteOptions
         latexIndentOptions = state.latexIndentOptions
         automaticQuoteReplacement = state.automaticQuoteReplacement
+        htmlPasteTranslator = state.htmlPasteTranslator
         pdfViewer = state.pdfViewer
     }
 }

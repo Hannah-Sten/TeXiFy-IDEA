@@ -77,10 +77,28 @@ object PackageUtils {
      * @param parameters
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
-    @JvmStatic
-    fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
-        if (!file.isWritable) return
+    private fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
+        val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
 
+        var command = commandName
+        command += if (parameters == null || "" == parameters) "" else "[$parameters]"
+        command += "{$packageName}"
+
+        return insertPreambleText(file, command)
+    }
+
+    /**
+     * Inserts text into the preamble. See [insertUsepackage] for more user-friendly versions.
+     *
+     * This exists strictly for pandoc
+     *
+     * @param file
+     *          The file to add the string to.
+     * @param resolvedInsertText
+     *          The string to insert to the end of the preamble.
+     */
+    @JvmStatic
+    fun insertPreambleText(file: PsiFile, resolvedInsertText: String) {
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
         }
@@ -104,11 +122,7 @@ object PackageUtils {
 
         val (anchorAfter, prependNewLine) = getDefaultInsertAnchor(commands, last)
 
-        var command = commandName
-        command += if (parameters == null || "" == parameters) "" else "[$parameters]"
-        command += "{$packageName}"
-
-        val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
+        val newNode = LatexPsiHelper(file.project).createFromText(resolvedInsertText).firstChild.node
 
         insertNodeAfterAnchor(file, anchorAfter, prependNewLine, newNode)
     }
@@ -141,6 +155,7 @@ object PackageUtils {
                 if (prependNewLine || prependBlankLine) {
                     anchorAfter.parent.node.addChild(newLine, anchorBefore)
                 }
+
                 anchorAfter.parent.node.addChild(newNode, anchorBefore)
             }
             else {

@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.caretOffset
@@ -25,8 +24,11 @@ import java.util.*
  */
 class LatexTableWizardAction : AnAction() {
 
-    fun executeAction(file: VirtualFile, project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null) {
-        val editor = project.currentTextEditor() ?: return
+    /**
+     * Show a dialog and get the text to insert.
+     */
+    fun getTableTextWithDialog(project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null): String {
+        val editor = project.currentTextEditor() ?: return ""
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -36,30 +38,30 @@ class LatexTableWizardAction : AnAction() {
         val dialogWrapper = defaultDialogWrapper ?: TableCreationDialogWrapper()
 
         // If the user pressed OK, do stuff.
-        if (dialogWrapper.showAndGet()) {
-            // Get the table information from the dialog, and convert it to latex.
-            with(dialogWrapper.tableInformation) {
-                val tableTextToInsert = convertTableToLatex(indent)
+        if (!dialogWrapper.showAndGet()) return ""
 
-                // Use an insert action to insert the table.
-                InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
-            }
-
-            // Insert the booktabs package.
-            WriteCommandAction.runWriteCommandAction(
-                project,
-                "Insert Table",
-                "LaTeX",
-                { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
-                file.psiFile(project)
-            )
+        // Get the table information from the dialog, and convert it to latex.
+        with(dialogWrapper.tableInformation) {
+            return convertTableToLatex(indent)
         }
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT) ?: return
-        executeAction(file, project)
+        val editor = project.currentTextEditor() ?: return
+        val tableTextToInsert = getTableTextWithDialog(project)
+        // Use an insert action to insert the table.
+        InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
+
+        // Insert the booktabs package.
+        WriteCommandAction.runWriteCommandAction(
+            project,
+            "Insert Table",
+            "LaTeX",
+            { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
+            file.psiFile(project)
+        )
     }
 
     override fun update(e: AnActionEvent) {
