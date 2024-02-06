@@ -77,8 +77,8 @@ tasks.compileTestKotlin {
 // https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
 configurations {
     all {
-        exclude(group="xml-apis")
-        exclude(group="xerces")
+        exclude(group = "xml-apis")
+        exclude(group = "xerces")
     }
 }
 
