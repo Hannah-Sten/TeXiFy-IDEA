@@ -15,6 +15,8 @@ import com.intellij.openapi.editor.actions.SplitLineAction.SPLIT_LINE_KEY
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.parentOfTypes
+import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -36,7 +38,13 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         }
 
         // Don't insert \item when the enter was triggered by the word wrap
-        if (DataManager.getInstance().loadFromDataContext(context, LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY) == true || DataManager.getInstance().loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true) {
+        @Suppress("UnstableApiUsage") // This internal api is fine to use, see https://youtrack.jetbrains.com/issue/IDEA-324754
+        if (DataManager.getInstance().loadFromDataContext(
+                context,
+                LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY
+            ) == true || DataManager.getInstance()
+                .loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true
+        ) {
             return Result.Continue
         }
 
@@ -70,7 +78,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
      * Get the special marker that is used at the previous item (if any).
      */
     private fun getPreviousMarker(element: PsiElement): String? {
-        val environment = element.parentOfType(LatexEnvironment::class) ?: return null
+        val environment = element.parentOfTypes(LatexEnvironment::class) ?: return null
 
         // Last element in the list => Find last \item.
         val label = if (element.parent is LatexEnvironment) {
@@ -82,8 +90,11 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         } ?: return null // when no label could befound.
 
         // Extract optional parameters.
-        val optionals = label.childrenOfType(LatexOptionalParam::class).firstOrNull() ?: return null
-        return optionals.text
+        val paramMap = label.getOptionalParameterMap()
+        if (paramMap.isEmpty())
+            return null
+        else
+            return paramMap.first().key.text ?: return null
     }
 
     /**
@@ -141,6 +152,9 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
 
         val isGluedToTheBeginCommand = element.hasParent(LatexBeginCommand::class)
         val isInsideAnEnumeration = element.inDirectEnvironment(EnvironmentMagic.listingEnvironments)
-        return isInsideAnEnumeration && !isGluedToTheBeginCommand
+        val environment = element.parentOfTypes(LatexEnvironment::class)
+        val isInsideRequiredParam =
+            element.firstParentOfType(LatexRequiredParam::class)?.isChildOf(environment) ?: false
+        return isInsideAnEnumeration && !isGluedToTheBeginCommand && !isInsideRequiredParam
     }
 }

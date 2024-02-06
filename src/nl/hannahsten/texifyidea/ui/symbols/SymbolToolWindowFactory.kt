@@ -38,7 +38,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     // Non-idea has no concept of modules so we need to use some other criterion based on the project
-    override fun isApplicable(project: Project) = project.isLatexProject()
+    override suspend fun isApplicableAsync(project: Project) = project.isLatexProject()
 
     /**
      * The swing contents of the symbol tool window.
@@ -164,7 +164,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             val latex = symbol.generatedLatex
             val caretLocationInGeneratedLatex = latex.indexOf("<caret>")
 
-            // When there is is a selection and a <caret> position is defined in the generated latex,
+            // When there is a selection and a <caret> position is defined in the generated latex,
             // then the generated latex can be seen as 2 parts. If there is text selected, enclose the
             // selected text by these two parts. When there is no caret, it is interpreted as ending at the end
             // of the generated latex which means just appending
@@ -173,7 +173,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
                     val parts = latex.split("<caret>")
                     editor.document.insertString(selection.selectionEnd, parts[1])
                     editor.document.insertString(selection.selectionStart, parts[0])
-                    editor.caretModel.moveToOffset(selection.selectionEnd + latex.length - 7 /* <caret> */)
+                    editor.caretModel.moveToOffset(selection.selectionEnd + latex.length - 7)
                 }
             }
             // Nothing needs to be enclosed: just append.

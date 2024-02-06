@@ -45,7 +45,7 @@ val Project.sourceSetSearchScope: GlobalSearchScope
  * Looks for all defined document classes in the project.
  */
 fun Project.findAvailableDocumentClasses(): Set<String> {
-    val defines = LatexDefinitionIndex.getCommandsByName("ProvidesClass", this, sourceSetSearchScope)
+    val defines = LatexDefinitionIndex.Util.getCommandsByName("ProvidesClass", this, sourceSetSearchScope)
     return defines.asSequence()
         .map { it.getRequiredParameters() }
         .filter { it.isNotEmpty() }
@@ -136,6 +136,6 @@ fun Project.isTestProject() = name.contains("_temp_") || basePath?.contains("uni
  *
  * @return A list containing all the section marker [LatexCommands].
  */
-fun Project.findSectionMarkers() = LatexCommandsIndex.getItems(this).filter {
+fun Project.findSectionMarkers() = LatexCommandsIndex.Util.getItems(this).filter {
     it.commandToken.text in CommandMagic.sectionMarkers
 }

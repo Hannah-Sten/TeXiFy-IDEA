@@ -126,6 +126,18 @@ enum class DefaultEnvironment(
     VSMALLMATRIX_STAR(environmentName = "vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
     VSMALLMATRIX_CAPITAL(environmentName = "Vsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
     VSMALLMATRIX_CAPITAL_STAR(environmentName = "Vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    OPTIDEF_MAXI(environmentName = "maxi", context = Context.MATH),
+    OPTIDEF_MAXI_NO_REFERENCES(environmentName = "maxi*", context = Context.MATH),
+    OPTIDEF_MAXI_MULTI_REFERENCES(environmentName = "maxi!", context = Context.MATH),
+    OPTIDEF_ARGMAXI(environmentName = "argmaxi", context = Context.MATH),
+    OPTIDEF_ARGMAXI_NO_REFERENCES(environmentName = "argmaxi*", context = Context.MATH),
+    OPTIDEF_ARGMAXI_MULTI_REFERENCES(environmentName = "argmaxi!", context = Context.MATH),
+    OPTIDEF_MINI(environmentName = "mini", context = Context.MATH),
+    OPTIDEF_MINI_NO_REFERENCES(environmentName = "mini*", context = Context.MATH),
+    OPTIDEF_MINI_MULTI_REFERENCES(environmentName = "mini!", context = Context.MATH),
+    OPTIDEF_ARGMINI(environmentName = "argmini", context = Context.MATH),
+    OPTIDEF_ARGMINI_NO_REFERENCES(environmentName = "argmini*", context = Context.MATH),
+    OPTIDEF_ARGMINI_MULTI_REFERENCES(environmentName = "argmini!", context = Context.MATH),
 
     // other
     ALGORITHM("algorithm"),

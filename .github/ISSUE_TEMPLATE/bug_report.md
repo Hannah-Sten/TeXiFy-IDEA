@@ -41,4 +41,4 @@ assignees: ''
 
 ```
 
-<!-- If you see a minor issue related to commands or environments metadata, e.g. which commands are cite or verbatim commands, you are encouraged to try to add the missing information yourself, see https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Contributing-to-TeXiFy#editing-magic -->
+<!-- If you see a minor issue related to commands or environments metadata, e.g. which commands are cite or verbatim commands, you are encouraged to try to add the missing information yourself, see https://hannah-sten.github.io/TeXiFy-IDEA/contributing-to-the-source-code.html -->

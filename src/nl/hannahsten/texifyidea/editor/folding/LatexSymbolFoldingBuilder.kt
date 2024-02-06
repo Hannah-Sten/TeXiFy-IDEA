@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.util.toTextRange
  */
 class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
-    override fun isCollapsedByDefault(node: ASTNode) = true
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldSymbols
 
     override fun getPlaceholderText(node: ASTNode): String? = null
 

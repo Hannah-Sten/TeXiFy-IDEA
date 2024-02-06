@@ -197,7 +197,7 @@ open class LatexAnnotator : Annotator {
 
         // Make user-defined commands highlighting customizable
         if (Cache.allUserDefinedCommands.isEmpty()) {
-            Cache.allUserDefinedCommands = LatexDefinitionIndex.getItems(command.project)
+            Cache.allUserDefinedCommands = LatexDefinitionIndex.Util.getItems(command.project)
                 .filter { it.isCommandDefinition() }
                 .mapNotNull { it.definedCommandName() }
         }

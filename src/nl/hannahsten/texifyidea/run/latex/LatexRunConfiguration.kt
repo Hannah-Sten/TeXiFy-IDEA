@@ -176,6 +176,7 @@ class LatexRunConfiguration(
     // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
+    val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(project)
@@ -511,7 +512,7 @@ class LatexRunConfiguration(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = InternalPdfViewer.firstAvailable()
+        pdfViewer = InternalPdfViewer.firstAvailable
     }
 
     fun setDefaultOutputFormat() {

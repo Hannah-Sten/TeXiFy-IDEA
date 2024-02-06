@@ -9,10 +9,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 open class LatexCommandsIndex : StringStubIndexExtension<LatexCommands>() {
 
-    companion object : IndexCommandsUtilBase(IndexKeys.COMMANDS_KEY)
+    object Util : IndexCommandsUtilBase(IndexKeys.COMMANDS_KEY)
 
-    @Suppress("RedundantCompanionReference") // Avoid type checking issues
-    override fun getKey() = Companion.key()
+    override fun getKey() = Util.key()
 
     override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

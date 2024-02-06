@@ -44,7 +44,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = LatexCommandsIndex.Util.getItems(file)
         for (command in commands) {
             if ("\\over" == command.name) {
                 descriptors.add(

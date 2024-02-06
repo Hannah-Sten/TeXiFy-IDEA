@@ -20,5 +20,5 @@ data class TexifySettingsState(
     var latexIndentOptions: String = "",
     var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
     var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
-    var pdfViewer: InternalPdfViewer = InternalPdfViewer.firstAvailable()
+    var pdfViewer: InternalPdfViewer = InternalPdfViewer.firstAvailable
 )

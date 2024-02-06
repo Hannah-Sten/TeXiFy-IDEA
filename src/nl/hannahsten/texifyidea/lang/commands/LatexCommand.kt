@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.runBlocking
@@ -12,8 +14,8 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.length
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
 
@@ -52,8 +54,18 @@ interface LatexCommand : Described, Dependend {
             val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
 
             // Look up in index
-            FileBasedIndex.getInstance().processValues(
-                LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
+            val filesAndValues = mutableListOf<Pair<VirtualFile, String>>()
+            runReadAction {
+                FileBasedIndex.getInstance().processValues(
+                    LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
+                        filesAndValues.add(Pair(file, value))
+                        true
+                    },
+                    GlobalSearchScope.everythingScope(project)
+                )
+            }
+
+            for ((file, value) in filesAndValues) {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
@@ -80,10 +92,7 @@ interface LatexCommand : Described, Dependend {
                     }
                 }
                 cmds.add(cmd)
-                true
-            },
-                GlobalSearchScope.everythingScope(project)
-            )
+            }
 
             // Now we might have duplicates, some of which might differ only in description.
             // Of those, we just want to take any command which doesn't have an empty description if it exists

@@ -25,7 +25,7 @@ object LatexEnvironmentProvider {
         val project = parameters.editor.project ?: return
 
         val usesTexlive = LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable
-        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.getItems(project), project).plus(
+        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.Util.getItems(project), project).plus(
             LatexPackage.DEFAULT
         )
 
@@ -53,7 +53,7 @@ object LatexEnvironmentProvider {
         // Find all environments.
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
-        LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
+        LatexDefinitionIndex.Util.getItemsInFileSet(parameters.originalFile).stream()
             .map { it as LatexCommands }
             .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
             .map { cmd -> cmd.requiredParameter(0) }

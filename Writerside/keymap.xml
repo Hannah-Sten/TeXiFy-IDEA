@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Keymap id="texify-docs">
+    <Action id="$Reformat">
+        <Shortcut layout="primary_Windows_Linux">Ctrl+Alt+L</Shortcut>
+        <Shortcut layout="primary_macOS">Meta+Alt+L</Shortcut>
+    </Action>
+    <Action id="$Commit">
+        <Shortcut layout="primary_Windows_Linux">Ctrl+K</Shortcut>
+        <Shortcut layout="primary_macOS">Meta+K</Shortcut>
+    </Action>
+    <Action id="$Pull">
+        <Shortcut layout="primary_Windows_Linux">Ctrl+T</Shortcut>
+        <Shortcut layout="primary_macOS">Meta+T</Shortcut>
+    </Action>
+</Keymap>

@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.refactoring.inlinecommand
 
-import com.intellij.java.refactoring.JavaRefactoringBundle
 import com.intellij.psi.PsiElement
 import com.intellij.usageView.UsageViewBundle
 import com.intellij.usageView.UsageViewDescriptor
@@ -27,9 +26,6 @@ class LatexInlineCommandDescriptor(private val myElement: PsiElement) : UsageVie
     }
 
     override fun getCodeReferencesText(usagesCount: Int, filesCount: Int): String {
-        return JavaRefactoringBundle.message(
-            "invocations.to.be.inlined",
-            UsageViewBundle.getReferencesString(usagesCount, filesCount)
-        )
+        return "Invocations to be inlined: ${UsageViewBundle.getReferencesString(usagesCount, filesCount)}"
     }
 }
