@@ -9,7 +9,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.17.0"
+    id("org.jetbrains.intellij") version "1.17.1"
     kotlin("jvm") version ("1.9.20")
     kotlin("plugin.serialization") version ("1.9.20")
 
@@ -79,12 +79,12 @@ dependencies {
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
     // These lines can sometimes be problematic on Linux, but are required for SumatraPDF
     // TODO Temporarily disabled to fix Linux builds
-//    implementation(files("lib/JavaDDE.dll"))
-//    implementation(files("lib/JavaDDEx64.dll"))
+    implementation(files("lib/JavaDDE.dll"))
+    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.11")
+    implementation("org.slf4j:slf4j-simple:2.0.12")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
@@ -129,14 +129,14 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.1")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.2")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.10.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
 
     testImplementation("io.mockk:mockk:1.13.9")
 
