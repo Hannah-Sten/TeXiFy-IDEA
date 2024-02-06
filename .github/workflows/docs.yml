@@ -1,5 +1,6 @@
 name: Build docs
 
+# See main.yml
 on:
   workflow_dispatch:
   push:
