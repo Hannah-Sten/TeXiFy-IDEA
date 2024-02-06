@@ -10,7 +10,7 @@ on:
   merge_group:
 # Cancel builds if a new commit is pushed, except on master
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 # Gives the workflow permissions to clone the repo and create a page deployment
