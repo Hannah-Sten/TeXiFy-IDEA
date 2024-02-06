@@ -21,10 +21,10 @@ class LatexMathSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = listOf<FoldingDescriptor>().toMutableList()
-        val mathEnvironments = root.childrenOfType(LatexMathEnvironment::class)
-        val mathThings = root.childrenOfType(LatexEnvironmentContent::class).filter{ it.inMathContext() }
+        val inlineOrDisplayMath = root.childrenOfType(LatexMathEnvironment::class)
+        val mathEnvironments = root.childrenOfType(LatexEnvironmentContent::class).filter { it.inMathContext() }
 
-        for (mathEnvironment in arrayOf(mathEnvironments, mathThings).toList().flatten()) {
+        for (mathEnvironment in inlineOrDisplayMath + mathEnvironments) {
             val group = FoldingGroup.newGroup("latexMathSymbol")
             val commands = mathEnvironment.childrenOfType(LatexCommands::class)
 
