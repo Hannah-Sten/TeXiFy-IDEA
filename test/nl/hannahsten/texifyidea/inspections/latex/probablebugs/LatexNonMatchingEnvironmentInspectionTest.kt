@@ -4,39 +4,49 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexNonMatchingEnvironmentInspectionTest : TexifyInspectionTestBase(LatexNonMatchingEnvironmentInspection()) {
 
-    fun `test no warning`() = testHighlighting("""
+    fun `test no warning`() = testHighlighting(
+        """
         \begin{center}
             bla
         \end{center}
-    """.trimIndent())
+        """.trimIndent()
+    )
 
-    fun `test warnings`() = testHighlighting("""
+    fun `test warnings`() = testHighlighting(
+        """
         <error descr="DefaultEnvironment name does not match with the name in \end.">\begin{center}</error>
             bla
         <error descr="DefaultEnvironment name does not match with the name in \begin.">\end{left}</error>
-    """.trimIndent())
+        """.trimIndent()
+    )
 
-    fun `test begin quick fix`() = testNamedQuickFix("""
+    fun `test begin quick fix`() = testNamedQuickFix(
+        """
         \begin{center}
             bla
         \end{left}
-    """.trimIndent(), """
+        """.trimIndent(),
+        """
         \begin{left}
             bla
         \end{left}
-    """.trimIndent(),
-    quickFixName = "Change \\begin environment to 'left'",
-    numberOfFixes = 2)
+        """.trimIndent(),
+        quickFixName = "Change \\begin environment to 'left'",
+        numberOfFixes = 2
+    )
 
-    fun `test end quick fix`() = testNamedQuickFix("""
+    fun `test end quick fix`() = testNamedQuickFix(
+        """
         \begin{center}
             bla
         \end{left}
-    """.trimIndent(), """
+        """.trimIndent(),
+        """
         \begin{center}
             bla
         \end{center}
-    """.trimIndent(),
-    quickFixName = "Change \\end environment to 'center'",
-    numberOfFixes = 2)
+        """.trimIndent(),
+        quickFixName = "Change \\end environment to 'center'",
+        numberOfFixes = 2
+    )
 }

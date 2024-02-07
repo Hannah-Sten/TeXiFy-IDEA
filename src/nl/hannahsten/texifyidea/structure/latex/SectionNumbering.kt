@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.structure.latex
 
 import nl.hannahsten.texifyidea.util.toRoman
+import java.util.*
 import kotlin.math.max
 
 /**
@@ -66,7 +67,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
         ARTICLE(2);
 
         val className: String
-            get() = name.toLowerCase()
+            get() = name.lowercase(Locale.getDefault())
 
         companion object {
 

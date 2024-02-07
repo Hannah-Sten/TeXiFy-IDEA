@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.intentions
 import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.testutils.updateConvention
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexAddLabelIntentionTest : BasePlatformTestCase() {
@@ -18,7 +20,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label to command" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """
@@ -40,7 +42,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label to command" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """
@@ -62,7 +64,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label to command" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """
@@ -74,6 +76,9 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
     }
 
     fun testLabelForItem() {
+        myFixture.updateConvention { s ->
+            s.getLabelConvention("\\item", LabelConventionType.COMMAND)!!.enabled = true
+        }
         myFixture.configureByText(
             LatexFileType,
             """
@@ -87,7 +92,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         TemplateManagerImpl.setTemplateTesting(myFixture.projectDisposable)
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label to command" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """
@@ -112,7 +117,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label to environment" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """

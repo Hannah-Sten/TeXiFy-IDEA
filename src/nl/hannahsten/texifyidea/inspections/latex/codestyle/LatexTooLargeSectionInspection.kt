@@ -17,66 +17,58 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import org.intellij.lang.annotations.Language
-import java.io.File
+import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
+import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
-import java.util.regex.Pattern
 
 /**
  * @author Hannah Schellekens
  */
 open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        @Language("RegExp")
-        private val SECTION_COMMAND = Pattern.compile("\\\\(section|chapter)\\{[^{}]+}")
+    object Util {
 
         /**
          * All commands that count as inspected sections in order of hierarchy.
          */
-        private val SECTION_NAMES = listOf("\\chapter", "\\section")
-
-        /**
-         * The amount of characters it takes before a section is considered 'too long'.
-         */
-        private const val TOO_LONG_LIMIT = 4000
+        val SECTION_NAMES = listOf(LatexGenericRegularCommand.CHAPTER.cmd, LatexGenericRegularCommand.SECTION.cmd)
 
         /**
          * Looks up the section command that comes after the given command.
          *
          * The next commands has the same or higher level as the given one,
          * meaning that a \section will stop only  on \section and higher.
+         *
+         * This was written to require that a chpter or section command be passed
+         *
+         * As previously written, this would just match the first and second matching sections, but now
+         * it will search ahead to find the first equal or bigger section, or EOF, whichever comes first
          */
         fun findNextSection(command: LatexCommands): PsiElement? {
             // Scan all commands.
-            val commands = command.containingFile.commandsInFile().toList()
+            var commands = command.containingFile.commandsInFile().toList()
+            commands = commands.subList(commands.indexOf(command) + 1, commands.size)
 
-            for (i in commands.indices) {
-                val cmd = commands[i]
+            val indexOfCurrent = SECTION_NAMES.indexOf(command.name)
 
-                val indexOfCurrent = SECTION_NAMES.indexOf(cmd.name)
-                if (indexOfCurrent < 0) {
-                    continue
-                }
+            for (j in commands.indices) {
+                val next = commands[j]
 
-                if (cmd == command && i + 1 < commands.size) {
-                    val next = commands[i + 1]
-
-                    val indexOfNext = SECTION_NAMES.indexOf(next.name)
-                    if (indexOfNext in 0..indexOfCurrent) {
-                        return commands[i + 1]
-                    }
+                val indexOfNext = SECTION_NAMES.indexOf(next.name)
+                if (indexOfNext in 0..indexOfCurrent) {
+                    return commands[j]
                 }
             }
 
             // If no command was found, find the end of the document.
-            return command.containingFile.childrenOfType(LatexEndCommand::class).lastOrNull()
+            return command.containingFile.childrenOfType(LatexEndCommand::class)
+                .lastOrNull { it.environmentName() == "document" }
         }
     }
 
@@ -92,10 +84,10 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-            .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
+            .filter { cmd -> Util.SECTION_NAMES.contains(cmd.name) }
 
         for (i in commands.indices) {
-            if (!isTooLong(commands[i], findNextSection(commands[i]))) {
+            if (!isTooLong(commands[i], Util.findNextSection(commands[i]))) {
                 continue
             }
 
@@ -132,10 +124,10 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      *         The section command to start checking from.
      * @param nextCommand
      *         The section command after the `command` one, or `null` when there is no such command.
-     * @return `true` when the command starts a section that is too long (see [TOO_LONG_LIMIT])
+     * @return `true` when the command starts a section that is too long.
      */
     private fun isTooLong(command: LatexCommands, nextCommand: PsiElement?): Boolean {
-        if (!SECTION_NAMES.contains(command.name)) {
+        if (!Util.SECTION_NAMES.contains(command.name)) {
             return false
         }
 
@@ -143,7 +135,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val startIndex = command.textOffset + command.textLength
         val endIndex = nextCommand?.textOffset ?: file.textLength
 
-        return (endIndex - startIndex) >= TOO_LONG_LIMIT
+        val conventionSettings = TexifyConventionsSettingsManager.getInstance(command.project).getSettings()
+        val maxSectionSize = conventionSettings.currentScheme.maxSectionSize
+        return (endIndex - startIndex) >= maxSectionSize
     }
 
     /**
@@ -170,7 +164,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands
-            val nextCmd = findNextSection(cmd)
+            val nextCmd = Util.findNextSection(cmd)
             val label = findLabel(cmd)
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
@@ -189,18 +183,16 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
-            val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
-                .newFileFullPath ?: return
+            val filePath =
+                CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
+                    .newFileFullPath ?: return
 
             runWriteAction {
-                val createdFile = createFile("$filePath.tex", text)
+                val fn = writeToFileUndoable(project, filePath, text, root)
                 document.deleteString(startIndex, endIndex)
                 LocalFileSystem.getInstance().refresh(true)
-                val fileNameRelativeToRoot = createdFile.absolutePath
-                    .replace(File.separator, "/")
-                    .replace("$root/", "")
                 val indent = cmd.findIndentation()
-                document.insertString(startIndex, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
+                document.insertString(startIndex, "\n$indent\\input{${fn.dropLast(4)}}\n\n")
             }
         }
     }

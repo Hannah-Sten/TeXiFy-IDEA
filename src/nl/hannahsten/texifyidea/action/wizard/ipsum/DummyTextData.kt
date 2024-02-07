@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.action.wizard.ipsum
 
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.util.text.Ipsum
+import java.util.*
 import kotlin.random.Random
 
 /**
@@ -48,7 +49,7 @@ data class DummyTextData(
         ENUMERATE("blindlist{enumerate}"),
         DESCRIPTION("blindlist{description}");
 
-        override fun toString() = name.toLowerCase()
+        override fun toString() = name.lowercase(Locale.getDefault())
     }
 
     /**
@@ -59,6 +60,6 @@ data class DummyTextData(
         PARAGRAPH,
         SPACE;
 
-        override fun toString() = name.toLowerCase()
+        override fun toString() = name.lowercase(Locale.getDefault())
     }
 }

@@ -4,12 +4,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.findFirstChild
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChild
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 /**
  * As the IntelliJ SDK docs say, to replace or insert text it is easiest to create a dummy file,
@@ -42,18 +44,18 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createKeyValuePairs(parameter: String): LatexKeyvalPair {
+    private fun createKeyValuePairs(parameter: String): LatexOptionalKeyValPair {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.keyvalPairList[0]
+        return optionalParam.optionalKeyValPairList[0]
     }
 
     /**
      * Create a PsiFile containing the given text.
      */
     fun createFromText(text: String): PsiFile =
-        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
+        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
 
     /**
      * Adds the supplied element to the content of the environment.
@@ -82,22 +84,28 @@ class LatexPsiHelper(private val project: Project) {
         return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
     }
 
+    fun createOptionalParameter(content: String): LatexOptionalParam? {
+        val commandText = "\\section[$content]{$content}"
+        return createFromText(commandText).firstChildOfType(LatexOptionalParam::class)
+    }
+
     /**
      * Returns the LatexOptionalParam node that is supposed to contain the label key for the command.
      * If no such node exists yet, a new one is created at the correct position.
      */
     private fun getOrCreateLabelOptionalParameters(command: LatexCommandWithParams): LatexOptionalParam {
-
         // This is only a heuristic. We would actually need detailed information on which optional parameter is
         // supposed to hold the label key.
-        val existingParameters = command.optionalParameterMap
+        val existingParameters = command.getOptionalParameterMap()
         if (existingParameters.isEmpty()) {
             if (command is LatexCommands) {
                 // For commands insert an optional parameter right after the command name (in case the command has a
                 // star, insert the parameter after the start)
-                command.addAfter(createLatexOptionalParam(),
+                command.addAfter(
+                    createLatexOptionalParam(),
                     command.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == STAR }
-                        ?: command.commandToken)
+                        ?: command.commandToken
+                )
             }
             else {
                 // Otherwise assume that the command belongs to an environment and insert the optional parameter after
@@ -111,13 +119,13 @@ class LatexPsiHelper(private val project: Project) {
     }
 
     /**
-     * Set the value of the optional parameter with the givevn key name. If the the parameter already exists,
+     * Set the value of the optional parameter with the given key name. If the parameter already exists,
      * its value is changed. If no key with the given name exists yet, a new one is created with the given value.
      *
      * @param name The name of the parameter to change
      * @param value The new parameter value. If the value is null, the parameter will have a key only.
      */
-    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexKeyvalPair {
+    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexOptionalKeyValPair? {
         val optionalParam = getOrCreateLabelOptionalParameters(command)
 
         val parameterText = if (value != null) {
@@ -128,26 +136,38 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val pair = createKeyValuePairs(parameterText)
-        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().first { it.elementType == CLOSE_BRACKET }
-        return if (optionalParam.keyvalPairList.isNotEmpty()) {
-            val existing = optionalParam.keyvalPairList.find { kv -> kv.keyvalKey.text == name }
-            if (existing != null && value != null) {
-                existing.keyvalValue?.delete()
+        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == CLOSE_BRACKET }
+        return if (optionalParam.optionalKeyValPairList.isNotEmpty()) {
+            val existing = optionalParam.optionalKeyValPairList.find { kv -> kv.optionalKeyValKey.text == name }
+            if (existing != null && pair.keyValValue != null) {
+                existing.keyValValue?.delete()
                 existing.addAfter(
-                    pair.keyvalValue!!,
-                    existing.childrenOfType<LeafPsiElement>().first { it.elementType == EQUALS })
+                    pair.keyValValue!!,
+                    existing.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == EQUALS }
+                )
                 existing
             }
             else {
+                if (closeBracket?.treeParent != optionalParam.node) {
+                    Log.debug("Close bracket is not a child of the optional parameter for ${command.text}, name=$name, value=$value")
+                    return null
+                }
                 val comma = createFromText(",").firstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
                 optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
-                closeBracket.prevSibling as LatexKeyvalPair
+                closeBracket?.prevSibling as? LatexOptionalKeyValPair
             }
         }
         else {
             optionalParam.addBefore(pair, closeBracket)
-            closeBracket.prevSibling as LatexKeyvalPair
+            closeBracket?.prevSibling as? LatexOptionalKeyValPair
         }
     }
+
+    /**
+     * Create a [PsiWhiteSpace] element that contains the first spacing of the string [space].
+     */
+    fun createSpacing(space: String = " "): PsiWhiteSpace? = LatexPsiHelper(project)
+        .createFromText(space)
+        .firstChildOfType(PsiWhiteSpace::class)
 }

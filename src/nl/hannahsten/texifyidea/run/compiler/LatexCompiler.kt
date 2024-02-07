@@ -2,19 +2,23 @@ package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
+import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
-import nl.hannahsten.texifyidea.util.splitWhitespace
+import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-@Suppress("unused", "DuplicatedCode")
+@Suppress("DuplicatedCode")
 enum class LatexCompiler(private val displayName: String, val executableName: String) {
 
     PDFLATEX("pdfLaTeX", "pdflatex") {
@@ -28,23 +32,23 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
             // For now only support custom executable for TeX Live
             // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
-            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project)
+            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.getLatexDistributionType())
             val command = mutableListOf(runConfig.compilerPath ?: executable)
 
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
             // -aux-directory only exists on MiKTeX
-            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex(project = runConfig.project)) {
                 command.add("-aux-directory=$auxilPath")
             }
 
             // Prepend root paths to the input search path
-            if (runConfig.getLatexDistributionType().isMiktex()) {
+            if (runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -63,13 +67,19 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(
+                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                    executableName,
+                    runConfig.project,
+                    runConfig.getLatexDistributionType()
+                )
+            )
 
             // Some commands are the same as for pdflatex
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
@@ -95,7 +105,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(
+                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                    executableName,
+                    runConfig.project,
+                    runConfig.getLatexDistributionType()
+                )
+            )
 
             val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
 
@@ -109,12 +125,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             if (runConfig.outputFormat != Format.DEFAULT) {
-                command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+                command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
             }
 
             command.add("-output-directory=$outputPath")
 
-            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
                 command.add("-aux-directory=$auxilPath")
             }
 
@@ -134,7 +150,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(
+                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                    executableName,
+                    runConfig.project,
+                    runConfig.getLatexDistributionType()
+                )
+            )
 
             // As usual, available command line options can be viewed with xelatex --help
             // On TeX Live, installing collection-xetex should be sufficient to get xelatex
@@ -148,12 +170,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("-output-directory=$outputPath")
 
-            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
                 command.add("-aux-directory=$auxilPath")
             }
 
             // Prepend root paths to the input search path
-            if (runConfig.getLatexDistributionType().isMiktex()) {
+            if (runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -174,7 +196,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(
+                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                    executableName,
+                    runConfig.project,
+                    runConfig.getLatexDistributionType()
+                )
+            )
 
             // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
             // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
@@ -203,13 +231,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
-            val command = mutableListOf(runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(executableName, runConfig.project))
+            val command = mutableListOf(runConfig.compilerPath ?: executableName)
 
             command.add("--synctex")
 
-            command.add("--outfmt=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
             if (outputPath != null) {
                 command.add("--outdir=$outputPath")
@@ -217,7 +244,29 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             return command
         }
-    };
+    },
+
+    ARARA("Arara", "arara") {
+
+        override val includesBibtex = true
+
+        override val handlesNumberOfCompiles = true
+
+        override val outputFormats = arrayOf(Format.PDF)
+
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
+            // Arara handles everything as configured by magic comments in the file.
+            // We cannot use --verbose because it relies on user input
+            return mutableListOf(runConfig.compilerPath ?: executableName)
+        }
+    },
+    ;
 
     /**
      * Convert Windows paths to WSL paths.
@@ -267,7 +316,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             dockerAuxilDir
         }
 
-        var command = createCommand(
+        val command = createCommand(
             runConfig,
             auxilPath,
             outputPath,
@@ -276,7 +325,17 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         )
 
         if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
-            command = mutableListOf("bash", "-ic", GeneralCommandLine(command).commandLineString)
+            var wslCommand = GeneralCommandLine(command).commandLineString
+
+            // Custom compiler arguments specified by the user
+            runConfig.compilerArguments?.let { arguments ->
+                ParametersListUtil.parse(arguments)
+                    .forEach { wslCommand += " $it" }
+            }
+
+            wslCommand += " ${mainFile.path.toPath(runConfig)}"
+
+            return mutableListOf("bash", "-ic", wslCommand)
         }
 
         if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
@@ -285,17 +344,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->
-            arguments.splitWhitespace()
-                .dropLastWhile { it.isEmpty() }
+            ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }
 
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
-            command[command.size - 1] = command.last() + " ${mainFile.path.toPath(runConfig)}"
-        }
-        else {
-            command.add(mainFile.name)
-        }
+        command.add(mainFile.name)
 
         return command
     }
@@ -305,8 +358,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         // See https://hub.docker.com/r/miktex/miktex
         "docker volume create --name miktex".runCommand()
 
+        // Find the sdk corresponding to the type the user has selected in the run config
+        val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull { it.sdkType is DockerSdk }
+
         val parameterList = mutableListOf(
-            "docker", // Could be improved by getting executable name based on SDK
+            if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),
             "run",
             "--rm",
             "-v",
@@ -322,10 +378,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         if (runConfig.auxilPath.getAndCreatePath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()}:$dockerAuxilDir"))
+            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()?.path}:$dockerAuxilDir"))
         }
 
-        parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
+        parameterList.add((sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName ?: "miktex:latest")
 
         command.addAll(0, parameterList)
     }

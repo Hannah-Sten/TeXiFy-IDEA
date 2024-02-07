@@ -6,60 +6,32 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
+ * Provide syntax highlighting for composite elements.
+ *
  * @author Hannah Schellekens
  */
 open class LatexAnnotator : Annotator {
 
-    companion object {
-
+    object Cache {
         /**
-         * The maximum amount of times the cache may be used before doing another lookup.
+         * All user defined commands, cached because it requires going over all commands, which we don't want to do for every command we need to annotate.
          */
-        private const val MAX_CACHE_COUNT = 40
-    }
-
-    // Cache to prevent many PsiFile#isUsed and PsiFile#definitions() lookups.
-    private var definitionCache: Collection<LatexCommands>? = null
-    private var definitionCacheFile: PsiFile? = null
-    private var definitionCacheCount: Int = 0
-
-    /**
-     * Looks up all the definitions in the file set.
-     *
-     * It does cache all the definitions for [MAX_CACHE_COUNT] lookups.
-     * See also members [definitionCache], [definitionCacheFile], and [definitionCacheCount]
-     */
-    private fun PsiFile.definitionCache(): Collection<LatexCommands> {
-        // Initialise.
-        if (definitionCache == null) {
-            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
-            definitionCacheFile = this
-            definitionCacheCount = 0
-            return definitionCache!!
-        }
-
-        // Check if the file is the same.
-        if (definitionCacheFile != this) {
-            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
-            definitionCacheCount = 0
-            definitionCacheFile = this
-        }
-
-        // Re-evaluate after the count has been reached times.
-        if (++definitionCacheCount > MAX_CACHE_COUNT) {
-            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
-            definitionCacheCount = 0
-        }
-
-        return definitionCache!!
+        var allUserDefinedCommands = emptyList<String>()
     }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
@@ -85,13 +57,23 @@ open class LatexAnnotator : Annotator {
                     .create()
             }
         }
-        // Optional parameters
+        // Key value pairs. Match on the common interface so we catch LatexKeyValPair and LatexStrictKeyValPair.
+        else if (psiElement is LatexOptionalKeyValPair) {
+            annotateKeyValuePair(psiElement, annotationHolder)
+        }
+        // Optional parameters.
         else if (psiElement is LatexOptionalParam) {
             annotateOptionalParameters(psiElement, annotationHolder)
         }
-        // Commands
+        // Commands.
         else if (psiElement is LatexCommands) {
             annotateCommands(psiElement, annotationHolder)
+        }
+        else if (psiElement.isComment()) {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(psiElement.textRange)
+                .textAttributes(LatexSyntaxHighlighter.COMMENT)
+                .create()
         }
     }
 
@@ -106,7 +88,7 @@ open class LatexAnnotator : Annotator {
         inlineMathElement: LatexInlineMath,
         annotationHolder: AnnotationHolder
     ) {
-        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(inlineMathElement)
             .textAttributes(LatexSyntaxHighlighter.INLINE_MATH)
             .create()
@@ -128,7 +110,7 @@ open class LatexAnnotator : Annotator {
         displayMathElement: PsiElement,
         annotationHolder: AnnotationHolder
     ) {
-        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(displayMathElement)
             .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
             .create()
@@ -159,18 +141,29 @@ open class LatexAnnotator : Annotator {
 
             val token = element.commandToken
 
-            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(token)
                 .textAttributes(highlighter)
                 .create()
 
-            if (element.name == "\\text" || element.name == "\\intertext") {
-                annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                    .range(element.requiredParameters().firstOrNull() ?: continue)
+            if (element.name == TEXT.cmd || element.name == INTERTEXT.name) {
+                // Avoid creating an Annotation without calling the create() method
+                val range = element.requiredParameters().firstOrNull() ?: continue
+                annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(range)
                     .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
                     .create()
             }
         }
+    }
+
+    private fun annotateKeyValuePair(element: LatexOptionalKeyValPair, annotationHolder: AnnotationHolder) {
+        val value = element.keyValValue ?: return
+
+        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            .range(TextRange(element.optionalKeyValKey.endOffset, value.startOffset))
+            .textAttributes(LatexSyntaxHighlighter.SEPARATOR_EQUALS)
+            .create()
     }
 
     /**
@@ -181,7 +174,7 @@ open class LatexAnnotator : Annotator {
         annotationHolder: AnnotationHolder
     ) {
         for (
-            element in optionalParamElement.optionalParamContentList
+        element in optionalParamElement.optionalKeyValPairList
         ) {
             if (element !is LatexOptionalParamContent) {
                 continue
@@ -189,7 +182,7 @@ open class LatexAnnotator : Annotator {
 
             val toStyle = element.parameterText ?: continue
 
-            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(toStyle)
                 .textAttributes(LatexSyntaxHighlighter.OPTIONAL_PARAM)
                 .create()
@@ -201,6 +194,19 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateCommands(command: LatexCommands, annotationHolder: AnnotationHolder) {
         annotateStyle(command, annotationHolder)
+
+        // Make user-defined commands highlighting customizable
+        if (Cache.allUserDefinedCommands.isEmpty()) {
+            Cache.allUserDefinedCommands = LatexDefinitionIndex.Util.getItems(command.project)
+                .filter { it.isCommandDefinition() }
+                .mapNotNull { it.definedCommandName() }
+        }
+        if (command.name in Cache.allUserDefinedCommands) {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .textAttributes(LatexSyntaxHighlighter.USER_DEFINED_COMMAND_KEY)
+                .range(command.commandToken)
+                .create()
+        }
 
         // Label references.
         val style = when (command.name) {
@@ -219,6 +225,7 @@ open class LatexAnnotator : Annotator {
             in CommandMagic.bibliographyItems -> {
                 LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
             }
+
             else -> return
         }
 
@@ -232,14 +239,14 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateStyle(command: LatexCommands, annotationHolder: AnnotationHolder) {
         val style = when (command.name) {
-            "\\textbf" -> LatexSyntaxHighlighter.STYLE_BOLD
-            "\\textit" -> LatexSyntaxHighlighter.STYLE_ITALIC
-            "\\underline" -> LatexSyntaxHighlighter.STYLE_UNDERLINE
-            "\\sout" -> LatexSyntaxHighlighter.STYLE_STRIKETHROUGH
-            "\\textsc" -> LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS
-            "\\overline" -> LatexSyntaxHighlighter.STYLE_OVERLINE
-            "\\texttt" -> LatexSyntaxHighlighter.STYLE_TYPEWRITER
-            "\\textsl" -> LatexSyntaxHighlighter.STYLE_SLANTED
+            TEXTBF.cmd -> LatexSyntaxHighlighter.STYLE_BOLD
+            TEXTIT.cmd -> LatexSyntaxHighlighter.STYLE_ITALIC
+            LatexGenericRegularCommand.UNDERLINE.cmd -> LatexSyntaxHighlighter.STYLE_UNDERLINE
+            SOUT.cmd -> LatexSyntaxHighlighter.STYLE_STRIKETHROUGH
+            TEXTSC.cmd -> LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS
+            OVERLINE.cmd -> LatexSyntaxHighlighter.STYLE_OVERLINE
+            TEXTTT.cmd -> LatexSyntaxHighlighter.STYLE_TYPEWRITER
+            TEXTSL.cmd -> LatexSyntaxHighlighter.STYLE_SLANTED
             else -> return
         }
 
@@ -251,11 +258,31 @@ open class LatexAnnotator : Annotator {
     /**
      * Annotates the contents of the given parameter with the given style.
      */
+    @Suppress("USELESS_CAST")
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
-        val content = parameter.firstChildOfType(LatexContent::class) ?: return
-        this.newAnnotation(HighlightSeverity.INFORMATION, "")
-            .range(content)
-            .textAttributes(style)
-            .create()
+        val firstContentChild = parameter.firstChildOfType(LatexContent::class)
+        val firstParamChild = parameter.firstChildOfType(LatexRequiredParamContent::class)
+
+        if (firstContentChild != null) {
+            this.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(firstContentChild)
+                .textAttributes(style)
+                .create()
+        }
+        else if (firstParamChild != null) {
+            parameter.childrenOfType(LeafPsiElement::class)
+                .filter {
+                    it.elementType == LatexTypes.NORMAL_TEXT_WORD
+                }
+                .map {
+                    it as PsiElement
+                }
+                .forEach {
+                    this.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(it)
+                        .textAttributes(style)
+                        .create()
+                }
+        }
     }
 }

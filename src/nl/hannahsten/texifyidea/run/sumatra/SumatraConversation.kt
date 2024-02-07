@@ -1,63 +1,10 @@
 package nl.hannahsten.texifyidea.run.sumatra
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
-import nl.hannahsten.texifyidea.util.Log
-import java.io.IOException
-
-/**
- * Indicates whether SumatraPDF is installed and DDE communication is enabled.
- *
- * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
- * install SumatraPDF while running TeXiFy.
- */
-val isSumatraAvailable: Boolean by lazy {
-    if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
-
-    // Try if native bindings are available
-    try {
-        DDEClientConversation()
-    }
-    catch (e: UnsatisfiedLinkError) {
-        Log.logf("Native library DLLs could not be found.")
-        return@lazy false
-    }
-    catch (e: NoClassDefFoundError) {
-        Log.logf("Native library DLLs could not be found.")
-        return@lazy false
-    }
-
-    true
-}
-
-private fun isSumatraInstalled(): Boolean {
-    // Look up SumatraPDF registry key
-    val process = Runtime.getRuntime().exec(
-        "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
-    )
-
-    val br = process.inputStream.bufferedReader()
-    val firstLine = br.readLine() ?: return false
-    br.close()
-
-    val sumatraInRegistry = !firstLine.startsWith("ERROR:")
-
-    if (sumatraInRegistry) {
-        return true
-    }
-
-    // Try if Sumatra is in PATH
-    return try {
-        Runtime.getRuntime().exec("start SumatraPDF")
-        true
-    }
-    catch (e: IOException) {
-        false
-    }
-}
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
  * Send commands to SumatraPDF.
@@ -67,14 +14,14 @@ private fun isSumatraInstalled(): Boolean {
  * @author Sten Wessel
  * @since b0.4
  */
-class SumatraConversation : ViewerConversation() {
+object SumatraConversation : ViewerConversation() {
 
-    private val server = "SUMATRA"
-    private val topic = "control"
+    private const val SERVER = "SUMATRA"
+    private const val TOPIC = "control"
     private var conversation: DDEClientConversation? = null
 
-    init {
-        if (isSumatraAvailable) {
+    private fun openConversation() {
+        if (SumatraAvailabilityChecker.isSumatraAvailable && conversation == null) {
             try {
                 conversation = DDEClientConversation()
             }
@@ -87,17 +34,15 @@ class SumatraConversation : ViewerConversation() {
     /**
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
-            // In case the user provided a custom path to SumatraPDF, add it to the path before executing
-            val processBuilder = ProcessBuilder("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath)
-            if (sumatraPath != null) {
-                processBuilder.environment()["Path"] = sumatraPath
+            // Make sure Windows popup error doesn't appear and we will still open Sumatra
+            if (SumatraAvailabilityChecker.isSumatraAvailable) {
+                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = SumatraAvailabilityChecker.sumatraDirectory, nonBlocking = true)
             }
-            processBuilder.start()
         }
     }
 
@@ -127,8 +72,9 @@ class SumatraConversation : ViewerConversation() {
     }
 
     private fun execute(vararg commands: String) {
+        openConversation()
         try {
-            conversation!!.connect(server, topic)
+            conversation!!.connect(SERVER, TOPIC)
             conversation!!.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
@@ -149,7 +95,7 @@ class SumatraConversation : ViewerConversation() {
         BOOK_VIEW("book view"),
         CONTINUOUS("continuous"),
         CONTINUOUS_FACING("continuous facing"),
-        CONTINUOUS_BOOK_VIEW("continuous book view");
+        CONTINUOUS_BOOK_VIEW("continuous book view")
     }
 
     /**

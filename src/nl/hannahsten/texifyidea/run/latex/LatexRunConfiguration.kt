@@ -34,24 +34,26 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.usesBiber
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.hasBibliography
+import nl.hannahsten.texifyidea.util.parser.usesBiber
 import org.jdom.Element
 import java.io.File
+import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexRunConfiguration constructor(
+class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
@@ -84,6 +86,7 @@ class LatexRunConfiguration constructor(
     var compiler: LatexCompiler? = null
     var compilerPath: String? = null
     var sumatraPath: String? = null
+    var enableSumatraPath: Boolean? = false
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
@@ -102,6 +105,8 @@ class LatexRunConfiguration constructor(
             field = value
             this.outputPath.mainFile = value
             this.outputPath.contentRoot = getMainFileContentRoot()
+            this.auxilPath.mainFile = value
+            this.auxilPath.contentRoot = getMainFileContentRoot()
         }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
@@ -171,6 +176,7 @@ class LatexRunConfiguration constructor(
     // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
+    val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(project)
@@ -196,6 +202,12 @@ class LatexRunConfiguration constructor(
         }
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
+        }
+
+        // Updates the SumatraAvailabilityChecker with the path in sumatraPath after change.
+        // Also checks if the path leads to a correct directory containing Sumatra.
+        if (enableSumatraPath == true && !SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second) {
+            throw RuntimeConfigurationError("Run configuration is invalid: custom Sumatra path doesn't point to a valid directory")
         }
     }
 
@@ -239,12 +251,15 @@ class LatexRunConfiguration constructor(
         // Read SumatraPDF custom path
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
+        // Updates the SumatraAvailabilityChecker at startup
+        SumatraAvailabilityChecker.isSumatraPathAvailable(this.sumatraPath)
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
         try {
             this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
-                ?: InternalPdfViewer.valueOf(viewerName ?: "")
+                ?: InternalPdfViewer.values().firstOrNull { it.name == viewerName && it.isAvailable() }
+                ?: InternalPdfViewer.NONE
         }
         catch (e: IllegalArgumentException) {
             // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
@@ -326,7 +341,7 @@ class LatexRunConfiguration constructor(
         // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
         // Assume the list is of the form [id 1,id 2]
-        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
+        this.bibRunConfigIds = bibRunConfigElt?.drop(1)?.dropLast(1)?.split(", ")?.toMutableSet() ?: mutableSetOf()
 
         // Read makeindex run configurations
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
@@ -388,10 +403,12 @@ class LatexRunConfiguration constructor(
         bibtexRunConfiguration.setSuggestedName()
 
         // On non-MiKTeX systems, add bibinputs for bibtex to work
-        if (!latexDistribution.isMiktex()) {
+        if (!latexDistribution.isMiktex(project)) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + ":"))
+                // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
+                // however it may be necessary on Mac/Linux as seen in #2249.
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + File.pathSeparator))
             }
         }
 
@@ -413,7 +430,7 @@ class LatexRunConfiguration constructor(
                     .toString()
             }
             else runCommand
-            val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
+            val compiler = BibliographyCompiler.valueOf(compilerString.uppercase(Locale.getDefault()))
             val compilerArguments = runCommand.removePrefix(compilerString)
                 .trim()
             Pair(compiler, compilerArguments)
@@ -440,7 +457,7 @@ class LatexRunConfiguration constructor(
             // that do have one can have it in any included file
             psiFile!!.allCommands()
                 .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
-                .flatMap { command -> command.requiredParameters }
+                .flatMap { command -> command.getRequiredParameters() }
                 .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
                     val chapterMainFile = psiFile!!.findFile(filename)
@@ -495,7 +512,7 @@ class LatexRunConfiguration constructor(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = InternalPdfViewer.firstAvailable()
+        pdfViewer = InternalPdfViewer.firstAvailable
     }
 
     fun setDefaultOutputFormat() {
@@ -524,7 +541,7 @@ class LatexRunConfiguration constructor(
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return if (latexDistribution.isMiktex()) {
+        return if (latexDistribution.isMiktex(project)) {
             auxilPath.getAndCreatePath()
         }
         else {
@@ -549,8 +566,9 @@ class LatexRunConfiguration constructor(
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath()
         return "${outputDir?.path}/" + mainFile!!
-            .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf" else outputFormat.toString()
-            .toLowerCase()
+            .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf"
+        else outputFormat.toString()
+            .lowercase(Locale.getDefault())
     }
 
     /**
@@ -570,6 +588,7 @@ class LatexRunConfiguration constructor(
      */
     fun getMainFileContentRoot(): VirtualFile? {
         if (mainFile == null) return null
+        if (!project.isInitialized) return null
         return runReadAction {
             return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         }

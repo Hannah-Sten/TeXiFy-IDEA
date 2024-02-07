@@ -12,21 +12,18 @@ import nl.hannahsten.texifyidea.util.containsKeyOrValue
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.findKeys
-import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 
 /**
  * @author Hannah Schellekens
  */
 open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \\left..\\right") {
 
-    companion object {
-
-        private val brackets = mapOf(
-            "(" to ")",
-            "[" to "]",
-            "<" to ">"
-        )
-    }
+    private val brackets = mapOf(
+        "(" to ")",
+        "[" to "]",
+        "<" to ">"
+    )
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {
@@ -99,7 +96,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
             }
 
             // Whenever met at correct closure
-            if (char == close && nested <= 0) {
+            if (char == close) {
                 closeOffset = current
                 break
             }
@@ -153,7 +150,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
             }
 
             // Whenever met at correct closure
-            if (char == open && nested <= 0) {
+            if (char == open) {
                 openOffset = current
                 break
             }

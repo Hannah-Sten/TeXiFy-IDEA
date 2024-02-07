@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.file.BibtexFile
 /**
  * @author Hannah Schellekens
  */
-open class BibtexContext : TemplateContextType("BIBTEX", "BibTeX") {
+open class BibtexContext : TemplateContextType("BibTeX") {
 
     override fun isInContext(context: TemplateActionContext) = context.file is BibtexFile
 }

@@ -7,14 +7,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
+import java.util.*
 
 /**
  * TeX Live, as installed in the recommended way by https://www.tug.org/texlive/quickinstall.html (Windows or Linux).
  */
 open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
-    companion object {
-
+    object Cache {
         /**
          * Returns year of texlive installation, 0 if it is not texlive.
          * Assumes the pdflatex version output contains something like (TeX Live 2019).
@@ -49,27 +49,32 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
     override fun suggestHomePath(): String {
         // This method should work fast and allow running from the EDT thread.
         // It will be the starting point when someone opens the file explorer dialog to select an SDK of this type
-        return "~/texlive"
+        // Guess defaults without accessing file system
+        val year = Calendar.getInstance().weekYear
+        return if (SystemInfo.isMac) "/usr/local/texlive/$year" else "~/texlive/$year"
     }
 
     override fun suggestHomePaths(): MutableCollection<String> {
         // Note that suggested paths appear under "Detected SDK's" when adding an SDK
-        val results = mutableSetOf<String>()
+        val results = mutableSetOf(suggestHomePath())
         val paths = if (SystemInfo.isWindows) "where pdflatex".runCommand() else "which pdflatex".runCommand()
         if (!paths.isNullOrEmpty()) {
             for (path in paths.split("\\s+".toRegex())) {
+                // Resolve symlinks
+                val resolvedPath = runCommand("readlink", "-f", path) ?: path
+
                 // We don't know for sure whether this path contains 'texlive':
                 // e.g. C:\texnolive\2021\bin\pdflatex.exe can be perfectly valid
-                if (path.contains("miktex", ignoreCase = true)) {
+                if (resolvedPath.contains("miktex", ignoreCase = true)) {
                     continue
                 }
+
                 // Let's just assume that there is only one /bin/ in this path
-                val index = path.findLastAnyOf(setOf(File.separator + "bin" + File.separator))?.first ?: (path.length - 1)
-                results.add(path.substring(0, index))
+                val index = resolvedPath.findLastAnyOf(setOf(File.separator + "bin" + File.separator))?.first ?: (resolvedPath.length - 1)
+                if (index > 0) {
+                    results.add(resolvedPath.substring(0, index))
+                }
             }
-        }
-        else {
-            results.add(suggestHomePath())
         }
 
         return results
@@ -80,13 +85,15 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
         // If this is a valid LaTeX installation, pdflatex should be present in a subfolder in bin, e.g. $path/bin/x86_64-linux/pdflatex
         val parent = LatexSdkUtil.getPdflatexParentPath(path)
-        return "$parent/pdflatex --version".runCommand()?.contains("pdfTeX") == true
+        return LatexSdkUtil.isPdflatexPresent(parent)
     }
+
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/bin/*/pdflatex"
 
     override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
 
-    override fun getVersionString(sdkHome: String?): String {
-        return "TeX Live " + sdkHome?.split("/")?.lastOrNull { it.isNotBlank() }
+    override fun getVersionString(sdkHome: String): String {
+        return "TeX Live " + sdkHome.split("/").lastOrNull { it.isNotBlank() }
     }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? {

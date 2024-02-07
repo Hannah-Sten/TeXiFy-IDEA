@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.action.wizard.graphic
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
@@ -12,9 +13,11 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.files.relativizePath
+import nl.hannahsten.texifyidea.util.files.removeFileExtension
 import java.io.File
-import java.util.*
 
 /**
  * Action that shows a dialog with a graphic insertion wizard, and inserts the graphic as latex at the location of the
@@ -22,13 +25,25 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
-class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
+class InsertGraphicWizardAction(private val initialFile: File? = null) : AnAction() {
 
     /**
      * Opens and handles the graphic insertion wizard.
      */
     fun executeAction(file: VirtualFile, project: Project) {
         val editor = project.currentTextEditor() ?: return
+        val text = showDialogAndGetText(editor, file, project) ?: return
+        editor.editor.insertAtCaretAndMove(text)
+    }
+
+    /**
+     * Show user dialog and get the text to insert.
+     */
+    fun showDialogAndGetText(
+        editor: TextEditor,
+        file: VirtualFile,
+        project: Project
+    ): String? {
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -38,12 +53,12 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         val dialogWrapper = InsertGraphicWizardDialogWrapper(initialFilePath = initialFile?.absolutePath ?: "")
 
         // If the user pressed OK, do stuff.
-        if (!dialogWrapper.showAndGet()) return
+        if (!dialogWrapper.showAndGet()) return null
 
         // Handle result.
         val graphicData = dialogWrapper.extractData()
         file.psiFile(project)?.let { graphicData.importPackages(it) }
-        editor.editor.insertGraphic(project, graphicData, indent)
+        return buildGraphicString(project, graphicData, indent)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -60,7 +75,14 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         e.presentation.isVisible = shouldDisplayMenu
     }
 
-    private fun Editor.insertGraphic(project: Project, data: InsertGraphicData, indent: String, tab: String = "    ") {
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
+    private fun buildGraphicString(
+        project: Project,
+        data: InsertGraphicData,
+        indent: String,
+        tab: String = "    "
+    ): String {
         // Only the graphics (non-centered).
         val toInsert = if (data.center.not() && data.placeInFigure.not()) {
             data.includeCommand(project)
@@ -76,7 +98,7 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         // Insert figure.
         else data.figure(project, indent, tab)
 
-        insertAtCaretAndMove(toInsert)
+        return toInsert
     }
 
     private fun InsertGraphicData.figure(project: Project, indent: String, tab: String) = buildString {

@@ -1,19 +1,24 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.lang.ASTNode
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.TreeUtil
 import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
  * @author Hannah Schellekens
@@ -27,10 +32,40 @@ object PackageUtils {
      */
     val CTAN_PACKAGE_NAMES: List<String> = javaClass
         .getResourceAsStream("/nl/hannahsten/texifyidea/packages/package.list")
-        .bufferedReader()
-        .readLine()
-        .split(";")
-        .toList()
+        ?.bufferedReader()
+        ?.readLine()
+        ?.split(";")
+        ?.toList() ?: emptyList()
+
+    /**
+     * Get the default psi element to insert new packages/definitions after.
+     * The anchor will be the given preferred anchor if not null.
+     */
+    fun getDefaultInsertAnchor(commands: Collection<LatexCommands>, preferredAnchor: LatexCommands?): Pair<PsiElement?, Boolean> {
+        val classHuh = commands.asSequence()
+            .filter { cmd ->
+                cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd || cmd.name == LatexGenericRegularCommand.LOADCLASS.cmd
+            }
+            .firstOrNull()
+        val anchorAfter: PsiElement?
+        val prependNewLine: Boolean
+        if (classHuh != null) {
+            anchorAfter = classHuh
+            prependNewLine = true
+        }
+        else {
+            // No other sensible location can be found
+            anchorAfter = null
+            prependNewLine = false
+        }
+
+        return if (preferredAnchor == null) {
+            Pair(anchorAfter, prependNewLine)
+        }
+        else {
+            Pair(preferredAnchor, true)
+        }
+    }
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
@@ -42,9 +77,28 @@ object PackageUtils {
      * @param parameters
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
-    @JvmStatic
-    fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
+    private fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
+        val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
 
+        var command = commandName
+        command += if (parameters == null || "" == parameters) "" else "[$parameters]"
+        command += "{$packageName}"
+
+        return insertPreambleText(file, command)
+    }
+
+    /**
+     * Inserts text into the preamble. See [insertUsepackage] for more user-friendly versions.
+     *
+     * This exists strictly for pandoc
+     *
+     * @param file
+     *          The file to add the string to.
+     * @param resolvedInsertText
+     *          The string to insert to the end of the preamble.
+     */
+    @JvmStatic
+    fun insertPreambleText(file: PsiFile, resolvedInsertText: String) {
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
         }
@@ -57,7 +111,7 @@ object PackageUtils {
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
                 // Do not insert below the subfiles package, it should stay last
-                if (cmd.requiredParameters.contains("subfiles")) {
+                if (cmd.getRequiredParameters().contains("subfiles")) {
                     break
                 }
                 else {
@@ -66,56 +120,49 @@ object PackageUtils {
             }
         }
 
-        val prependNewLine: Boolean
-        // The anchor after which the new element will be inserted
-        val anchorAfter: PsiElement?
+        val (anchorAfter, prependNewLine) = getDefaultInsertAnchor(commands, last)
 
-        // When there are no usepackage commands: insert below documentclass.
-        if (last == null) {
-            val classHuh = commands.asSequence()
-                .filter { cmd ->
-                    "\\documentclass" == cmd.commandToken
-                        .text || "\\LoadClass" == cmd.commandToken.text
-                }
-                .firstOrNull()
-            if (classHuh != null) {
-                anchorAfter = classHuh
-                prependNewLine = true
-            }
-            else {
-                // No other sensible location can be found
-                anchorAfter = null
-                prependNewLine = false
-            }
-        }
-        // Otherwise, insert below the lowest usepackage.
-        else {
-            anchorAfter = last
-            prependNewLine = true
-        }
+        val newNode = LatexPsiHelper(file.project).createFromText(resolvedInsertText).firstChild.node
 
-        var command = commandName
-        command += if (parameters == null || "" == parameters) "" else "[$parameters]"
-        command += "{$packageName}"
+        insertNodeAfterAnchor(file, anchorAfter, prependNewLine, newNode)
+    }
 
-        val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
+    /**
+     * Insert an AST node after a certain anchor, possibly with a newline.
+     *
+     * @param prependBlankLine If prependNewLine is true, you can set this to true to insert an additional blank line.
+     */
+    fun insertNodeAfterAnchor(
+        file: PsiFile,
+        anchorAfter: PsiElement?,
+        prependNewLine: Boolean,
+        newNode: ASTNode,
+        prependBlankLine: Boolean = false
+    ) {
+        // Don't run in a write action, as that will produce a SideEffectsNotAllowedException for INVOKE_LATER
 
+        // Avoid "Attempt to modify PSI for non-committed Document"
         // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
-        // Avoid 'Write access is allowed inside write-action only' exception
+        PsiDocumentManager.getInstance(file.project)
+            .doPostponedOperationsAndUnblockDocument(file.document() ?: return)
+        PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return)
         runWriteAction {
-            // Avoid "Attempt to modify PSI for non-committed Document"
-            PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
-            PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
-            if (anchorAfter != null) {
+            val newlineText = if (prependBlankLine) "\n\n" else "\n"
+            val newLine = LatexPsiHelper(file.project).createFromText(newlineText).firstChild.node
+            // Avoid NPE, see #3083 (cause unknown)
+            if (anchorAfter != null && TreeUtil.getFileElement(anchorAfter.parent.node) != null) {
                 val anchorBefore = anchorAfter.node.treeNext
-                if (prependNewLine) {
-                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                if (prependNewLine || prependBlankLine) {
                     anchorAfter.parent.node.addChild(newLine, anchorBefore)
                 }
+
                 anchorAfter.parent.node.addChild(newNode, anchorBefore)
             }
             else {
                 // Insert at beginning
+                if (prependNewLine || prependBlankLine) {
+                    file.node.addChild(newLine, file.firstChild.node)
+                }
                 file.node.addChild(newNode, file.firstChild.node)
             }
         }
@@ -143,10 +190,7 @@ object PackageUtils {
         if (PackageMagic.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages().toSet()
-                        .intersect(conflicts)
-                        .isNotEmpty()
-                ) {
+                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts).isNotEmpty()) {
                     return false
                 }
             }
@@ -205,7 +249,7 @@ object PackageUtils {
     /**
      * Analyses all the given commands and reduces it to a set of all included packages, libraries or whatever is imported
      * with the given [packageCommands].
-     * Classes will not be included.
+     * Classes will be included.
      *
      * Note that not all elements returned may be valid package names.
      */
@@ -215,34 +259,24 @@ object PackageUtils {
         initial: T
     ): T {
         for (cmd in commands) {
-            if (cmd.commandToken.text !in packageCommands) {
+            if (cmd.name !in packageCommands) {
                 continue
             }
 
             // Just skip conditionally included packages, because it is too expensive to determine whether
             // they are really included or not
-            if (cmd.parent.firstParentOfType(LatexCommands::class)?.name == "\\" + LatexGenericRegularCommand.ONLYIFSTANDALONE.command) {
+            if (cmd.parent?.firstParentOfType(LatexCommands::class)?.name == "\\" + LatexGenericRegularCommand.ONLYIFSTANDALONE.command) {
                 continue
             }
 
             // Assume packages can be included in both optional and required parameters
-            // Except a class, because a class is not a package
-            val packages = if (cmd.commandToken
-                    .text == "\\documentclass" || cmd.commandToken
-                    .text == "\\LoadClass"
-            ) {
-                setOf(cmd.optionalParameterMap.toStringMap().keys.toList())
-            }
-            else {
-                setOf(
-                    cmd.requiredParameters,
-                    cmd.optionalParameterMap.toStringMap().keys
-                        .toList()
-                )
-            }
+            // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
+            val packages = setOf(
+                cmd.getRequiredParameters(),
+                cmd.getOptionalParameterMap().toStringMap().keys.toList()
+            )
 
             for (list in packages) {
-
                 if (list.isEmpty()) {
                     continue
                 }
@@ -282,6 +316,13 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  */
 fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexPackage> {
     val commands = this.commandsInFileSet()
+    return includedPackages(commands, project, onlyDirectInclusions)
+}
+
+/**
+ * See [includedPackages].
+ */
+fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
     val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
         .map { LatexPackage(it) }
     return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()

@@ -11,10 +11,12 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 
 object LatexErrorHandler : LatexMessageHandler(
     LatexLogMessageType.ERROR,
-    """^$FILE_LINE_REGEX (?<message>.+)""".toRegex(),
+    """$FILE_LINE_REGEX (?<message>.+)""".toRegex(),
     """^$LATEX_ERROR_REGEX (?<message>.+)""".toRegex(),
     """^$PDFTEX_ERROR_REGEX (?<message>.+)""".toRegex(),
-    directLuaError
+    directLuaError,
+    "(?<message>makeindex: .+)".toRegex(),
+    "(?<message>Can't create output index file .+)".toRegex(),
 ) {
 
     private val messageProcessors = listOf(LatexPackageErrorProcessor, LatexRemoveErrorTextProcessor)
@@ -38,10 +40,9 @@ object LatexErrorHandler : LatexMessageHandler(
                 }
 
                 // Process a found error message (e.g. remove "LaTeX Error:")
-                val processedMessage = messageProcessors.mapNotNull { p ->
+                val processedMessage = messageProcessors.firstNotNullOfOrNull { p ->
                     if (p.regex.any { r -> r.containsMatchIn(message) }) p.postProcess(p.process(message)) else null
-                }
-                    .firstOrNull() ?: message
+                } ?: message
                     .replace("<inserted text>", "")
                     .replace("<to be read again>", "")
 

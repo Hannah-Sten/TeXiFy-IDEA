@@ -1,8 +1,11 @@
 package nl.hannahsten.texifyidea.documentation
 
+import arrow.core.Either
+import arrow.core.raise.either
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import nl.hannahsten.texifyidea.CommandFailure
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.Environment
@@ -10,12 +13,11 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
+import nl.hannahsten.texifyidea.util.SystemEnvironment
+import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.parentsOfType
-import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
-import java.io.IOException
-import java.io.InputStream
+import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
  * @author Sten Wessel
@@ -33,18 +35,35 @@ class LatexDocumentationProvider : DocumentationProvider {
         else -> null
     }
 
-    override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
+    /**
+     * Check if this is a command which includes a package, in which case we should show docs for the package that is included instead of the command itself.
+     */
+    private fun isPackageInclusionCommand(element: PsiElement?): Boolean {
         if (element !is LatexCommands) {
-            return null
+            return false
+        }
+
+        val command = LatexCommand.lookup(element)
+        if (command.isNullOrEmpty()) return false
+        return command.first().commandWithSlash in CommandMagic.packageInclusionCommands
+    }
+
+    override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
+        return getUrlForElement(element).getOrNull()
+    }
+
+    private fun getUrlForElement(element: PsiElement?): Either<CommandFailure, List<String>?> = either {
+        if (element !is LatexCommands) {
+            return@either null
         }
 
         val command = LatexCommand.lookup(element)
 
-        if (command.isNullOrEmpty()) return null
+        if (command.isNullOrEmpty()) return@either null
 
         // Special case for package inclusion commands
-        if (command.first().commandWithSlash in CommandMagic.packageInclusionCommands) {
-            val pkg = element.requiredParameters.getOrNull(0) ?: return null
+        if (isPackageInclusionCommand(element)) {
+            val pkg = element.getRequiredParameters().getOrNull(0) ?: return@either null
             return runTexdoc(LatexPackage(pkg))
         }
 
@@ -64,10 +83,10 @@ class LatexDocumentationProvider : DocumentationProvider {
             return "$first $last"
         }
 
-        val stringBuilder = StringBuilder("<h3>${entry.title} (${entry.year})</h3>")
-        stringBuilder.append(entry.authors.joinToString(", ") { a -> formatAuthor(a) })
+        val stringBuilder = StringBuilder("<h3>${entry.getTitle()} (${entry.getYear()})</h3>")
+        stringBuilder.append(entry.getAuthors().joinToString(", ") { a -> formatAuthor(a) })
         stringBuilder.append("<br/><br/>")
-        stringBuilder.append(entry.abstract)
+        stringBuilder.append(entry.getAbstract())
         return stringBuilder.toString()
     }
 
@@ -93,23 +112,20 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         // Link to package docs
         originalElement ?: return null
-        val urls = if (lookup is Dependend) runTexdoc((lookup as Dependend).dependency) else getUrlFor(element, originalElement)
+        val urlsMaybe = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as? Dependend)?.dependency) else getUrlForElement(
+            element
+        )
+        val urlsText = urlsMaybe.fold(
+            { it.output },
+            { urls -> urls?.joinToString(separator = "<br>") { "<a href=\"file:///$it\">$it</a>" } }
+        )
 
-        if (docString?.isNotBlank() == true && !urls.isNullOrEmpty()) {
-            docString += "<br/>"
+        // Add a line break if necessary
+        if (docString?.isNotBlank() == true && urlsText?.isNotBlank() == true) {
+            docString += "<br>"
         }
 
-        if (urls != null) {
-            for (url in urls) {
-                // Propagate the warning
-                docString += if (url.contains("install the texdoc package")) {
-                    url
-                }
-                else {
-                    "<a href=\"file:///$url\">$url</a><br/>"
-                }
-            }
-        }
+        docString += urlsText
 
         if (element.previousSiblingIgnoreWhitespace() == null) {
             lookup = null
@@ -150,45 +166,51 @@ class LatexDocumentationProvider : DocumentationProvider {
         psiElement: PsiElement?
     ): PsiElement? = null
 
-    private fun runTexdoc(pkg: LatexPackage): List<String> {
+    /**
+     * Find list of documentation urls.
+     */
+    private fun runTexdoc(pkg: LatexPackage?): Either<CommandFailure, List<String>> = either {
+        if (pkg == null) return@either emptyList()
+
         // base/lt... files are documented in source2e.pdf
         val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
-        val stream: InputStream
-        try {
+        val command = if (TexliveSdk.Cache.isAvailable) {
             // -M to avoid texdoc asking to choose from the list
-            val command = if (TexliveSdk.isAvailable) {
-                "texdoc -l -M $name"
-            }
-            else {
-                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
-                "texdoc -l $name"
-            }
-            stream = Runtime.getRuntime().exec(command).inputStream
-        }
-        catch (e: IOException) {
-            return if (e.message?.contains("Cannot run program \"texdoc\"") == true) {
-                listOf("<br><i>Tip: install the texdoc package to get links to package documentation here</i>")
-            }
-            else {
-                emptyList()
-            }
-        }
-
-        val lines = stream.bufferedReader().use { it.readLines() }
-
-        return if (lines.getOrNull(0)?.endsWith("could not be found.") == true) {
-            emptyList()
+            listOf("texdoc", "-l", "-M", name)
         }
         else {
-            if (TexliveSdk.isAvailable) {
-                lines.map {
-                    // Line consists of: name version path optional file description
-                    it.split("\t")[2]
-                }
+            if (SystemEnvironment.isAvailable("texdoc")) {
+                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
+                listOf("texdoc", "-l", name)
+            }
+            else if (SystemEnvironment.isAvailable("mthelp")) {
+                // In some cases, texdoc may not be available but mthelp is
+                listOf("mthelp", "-l", name)
+            } else
+                raise(CommandFailure("Could not find mthelp or texdoc", 0))
+        }
+        val (output, exitCode) = runCommandWithExitCode(*command.toTypedArray(), returnExceptionMessage = true)
+        if (exitCode != 0 || output?.isNotBlank() != true) {
+            raise(CommandFailure(output ?: "", exitCode))
+        }
+
+        // Assume that if there are no path delimiters in the output, the output is some sort of error message (could be in any language)
+        val validLines = output.split("\n").filter { it.containsAny(setOf("\\", "/")) }
+
+        if (validLines.isEmpty()) {
+            raise(CommandFailure(output, exitCode))
+        }
+
+        validLines.toSet().mapNotNull {
+            // Do some guesswork about the format
+            if (TexliveSdk.Cache.isAvailable) {
+                // Line consists of: name version path optional file description
+                it.split("\t").getOrNull(2)
             }
             else {
-                lines
+                // mthelp seems to just output the paths itself
+                it
             }
         }
     }

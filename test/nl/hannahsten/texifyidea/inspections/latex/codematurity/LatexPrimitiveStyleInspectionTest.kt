@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.inspections.latex.codematurity
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiveStyleInspection()) {
 
@@ -16,23 +15,70 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
         myFixture.checkHighlighting()
     }
 
-    fun testQuickfix() {
+    fun `test simple quickfix`() {
+        testQuickFix("""{\it is italic}""", """\textit{is italic}""")
+    }
+
+    fun `test empty quickfix`() {
+        testQuickFix("""\it""", """\textit""")
+    }
+
+    fun `test implicit rexuired argument quickfix`() {
+        testQuickFix("""\it test""", """\textit test""")
+    }
+
+    fun `test quickfix in group`() {
+        testQuickFix("""{help abc \it is italic}""", """help abc \textit{is italic}""")
+    }
+
+    fun `test file`() {
+        testQuickFix(
+            """
+            \documentclass{article}
+
+            \begin{document}
+                asdf {my \bf bold text} not bold
+            \end{document}
+            """.trimIndent(),
+            """
+            \documentclass{article}
+
+            \begin{document}
+                asdf my \textbf{bold text} not bold
+            \end{document}
+            """.trimIndent()
+        )
+    }
+
+    fun `test bf`() {
         myFixture.configureByText(
             LatexFileType,
             """
-            {\it is italic}
+            \begin{center}
+            {\Large <warning descr="Use of TeX primitive \bf is discouraged">\bf{Instructions for formatting (S)PC list}</warning>}
+            \end{center}
+
+            The format of the text file should be as follows. \\
             """.trimIndent()
         )
+        myFixture.checkHighlighting()
+    }
 
-        val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
-        writeCommand(myFixture.project) {
-            quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
-        }
-
-        myFixture.checkResult(
+    fun `test quick fix`() {
+        testQuickFix(
             """
-            {\textit{is italic} }
+            \begin{center}
+            {\Large \bf{Instructions for formatting (S)PC list}}
+            \end{center}
+
+            The format of the text file should be as follows. \\
+            """.trimIndent(),
+            """
+            \begin{center}
+            {\Large \textbf{Instructions for formatting (S)PC list}}
+            \end{center}
+
+            The format of the text file should be as follows. \\
             """.trimIndent()
         )
     }

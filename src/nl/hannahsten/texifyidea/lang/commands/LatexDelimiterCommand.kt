@@ -8,12 +8,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.STMARYRD
  * @author Hannah Schellekens
  */
 enum class LatexDelimiterCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = true,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = true,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     LEFT_PARENTH("left(", display = "("),
@@ -56,6 +56,6 @@ enum class LatexDelimiterCommand(
     RIGHT_PARENTHESIS_BOLD("rrparenthesis", display = "⦆", dependency = STMARYRD),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

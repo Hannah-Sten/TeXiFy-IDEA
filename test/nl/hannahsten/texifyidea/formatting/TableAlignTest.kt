@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.formatting
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
@@ -361,6 +361,42 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testEscapedAmpersands2() {
+        """
+            \begin{tabular}{lll}
+                Lorem ipsum & Dolor sit           & Consectetur   \\
+                Ut \& & Dapibus placerat \& lacus & Ac vestibulum \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{lll}
+                Lorem ipsum & Dolor sit                 & Consectetur   \\
+                Ut \&       & Dapibus placerat \& lacus & Ac vestibulum \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testAmpersandsInUrl() {
+        """
+            \documentclass{article}
+            \usepackage{hyperref}
+            \begin{document}
+                \begin{tabular}{ll}
+                    a & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & c \\
+                    be & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & d
+                \end{tabular}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{article}
+            \usepackage{hyperref}
+            \begin{document}
+                \begin{tabular}{ll}
+                    a  & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & c \\
+                    be & \url{https://youtu.be/dQw4w9WgXcQ?si=SHq6ADlwRNZ1hwOB&t=18} & d
+                \end{tabular}
+            \end{document}
+        """.trimIndent()
+    }
+
     fun testVeryWideTable() {
         val start = """
 \documentclass[11pt]{article}
@@ -394,7 +430,7 @@ class TableAlignTest : BasePlatformTestCase() {
 \end{document}
         """.trimIndent()
         myFixture.configureByText(LatexFileType, start)
-        CodeStyleSettings.getLocalCodeStyleSettings(myFixture.editor, 0).WRAP_ON_TYPING = 1
+        CodeStyle.getLanguageSettings(myFixture.editor)?.WRAP_ON_TYPING = 1
         writeCommand(project) {
             // That's a bug.
             CodeStyleManager.getInstance(project).reformat(myFixture.file)

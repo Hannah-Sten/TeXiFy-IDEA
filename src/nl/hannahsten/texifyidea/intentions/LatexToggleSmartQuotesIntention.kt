@@ -11,17 +11,12 @@ import kotlin.math.max
  */
 open class LatexToggleSmartQuotesIntention : TexifyIntentionBase("Toggle smart quotes") {
 
-    companion object {
-
-        private val settings = TexifySettings.getInstance()
-
-        private val triggerCharacters = setOf('\'', '"', '`')
-    }
+    private val triggerCharacters = setOf('\'', '"', '`')
 
     /**
      * Contains the preferred setting of the user if they have already selected one.
      */
-    private var selectedSmartQuoteSetting = when (val replacement = settings.automaticQuoteReplacement) {
+    private var selectedSmartQuoteSetting = when (val replacement = TexifySettings.getInstance().automaticQuoteReplacement) {
         TexifySettings.QuoteReplacement.NONE -> TexifySettings.QuoteReplacement.LIGATURES
         else -> replacement
     }
@@ -41,6 +36,7 @@ open class LatexToggleSmartQuotesIntention : TexifyIntentionBase("Toggle smart q
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
+        val settings = TexifySettings.getInstance()
         val result = when (settings.automaticQuoteReplacement) {
             TexifySettings.QuoteReplacement.NONE -> selectedSmartQuoteSetting
             else -> TexifySettings.QuoteReplacement.NONE

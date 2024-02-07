@@ -7,9 +7,12 @@ class LatexBibinputsRelativePathInspectionTest : TexifyInspectionTestBase(LatexB
 
     fun testWarning() {
         // Unfortunately I don't yet know how to trigger this inspection in tests because it depends on run configurations
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \bibliography{../references}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 }

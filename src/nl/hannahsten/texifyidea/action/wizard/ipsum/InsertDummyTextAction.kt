@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.action.wizard.ipsum
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -10,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.text.TexifyIpsumGenerator
-import java.lang.StringBuilder
 import kotlin.random.Random
 
 /**
@@ -21,7 +21,7 @@ open class InsertDummyTextAction : AnAction() {
     /**
      * Opens and handles the dummy text UI.
      */
-    fun executeAction(file: PsiFile) {
+    private fun executeAction(file: PsiFile) {
         val project = file.project
         val editor = project.currentTextEditor()?.editor ?: return
 
@@ -50,6 +50,8 @@ open class InsertDummyTextAction : AnAction() {
         e.presentation.isVisible = shouldDisplayMenu
     }
 
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
+
     private fun Editor.insertDummyText(file: PsiFile, data: DummyTextData, indent: String) = when (data.ipsumType) {
         DummyTextData.IpsumType.BLINDTEXT -> insertBlindtext(file, data)
         DummyTextData.IpsumType.LIPSUM -> insertLipsum(file, data)
@@ -64,9 +66,7 @@ open class InsertDummyTextAction : AnAction() {
 
         // When itemize/enumerate/description is selected the level can be selected as well when larger than 1.
         val type = data.blindtextType
-        if ((type == DummyTextData.BlindtextType.ITEMIZE || type == DummyTextData.BlindtextType.ENUMERATE ||
-                    type == DummyTextData.BlindtextType.DESCRIPTION) && data.blindtextLevel > 1
-        ) {
+        if ((type == DummyTextData.BlindtextType.ITEMIZE || type == DummyTextData.BlindtextType.ENUMERATE || type == DummyTextData.BlindtextType.DESCRIPTION) && data.blindtextLevel > 1) {
             val command = "\\" + type.commandNoSlash.replace("list", "listlist[${data.blindtextLevel}]")
             insertAtCaretAndMove(command)
             return

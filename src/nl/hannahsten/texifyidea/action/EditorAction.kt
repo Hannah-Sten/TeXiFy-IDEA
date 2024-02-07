@@ -15,14 +15,13 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.file.LatexFile
 import java.util.*
-import javax.swing.Icon
 
 /**
  * Action that fetches the required information beforehand.
  *
  * @author Hannah Schellekens
  */
-abstract class EditorAction(val name: String, icon: Icon?) : AnAction(name, null, icon) {
+abstract class EditorAction(val name: String) : AnAction() {
 
     /**
      * Gets called every time the action gets executed.
@@ -50,9 +49,11 @@ abstract class EditorAction(val name: String, icon: Icon?) : AnAction(name, null
         return PsiManager.getInstance(project).findFile(file)
     }
 
-    protected fun runWriteAction(project: Project, writeAction: () -> Unit) {
-        ApplicationManager.getApplication().runWriteAction {
-            CommandProcessor.getInstance().executeCommand(project, writeAction, name, "Texify")
+    protected fun runWriteAction(project: Project, file: VirtualFile, writeAction: () -> Unit) {
+        if (file.isWritable) {
+            ApplicationManager.getApplication().runWriteAction {
+                CommandProcessor.getInstance().executeCommand(project, writeAction, name, "Texify")
+            }
         }
     }
 

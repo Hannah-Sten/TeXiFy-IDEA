@@ -16,9 +16,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
-import nl.hannahsten.texifyidea.util.isComment
-import nl.hannahsten.texifyidea.util.name
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.isComment
+import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * @author Hannah Schellekens
@@ -79,7 +79,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
      */
     protected open fun PsiElement.isSuppressed(): Boolean {
         return magicComment()?.containsPair("suppress", inspectionId) == true ||
-                allParentMagicComments().containsPair("suppress", inspectionId)
+            allParentMagicComments().containsPair("suppress", inspectionId)
     }
 
     override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {

@@ -1,17 +1,21 @@
 package nl.hannahsten.texifyidea.gutter
 
+import arrow.core.max
+import arrow.core.nonEmptyListOf
 import com.intellij.openapi.editor.ElementColorProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexXcolorCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexColorDefinitionCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
+import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.toHexString
 import java.awt.Color
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -20,7 +24,7 @@ import kotlin.math.min
  *
  * @author Abby
  */
-object LatexElementColorProvider : ElementColorProvider {
+class LatexElementColorProvider : ElementColorProvider {
 
     /**
      * Set the color in the document based on changes in the color picker from the gutter.
@@ -31,12 +35,12 @@ object LatexElementColorProvider : ElementColorProvider {
     override fun setColorTo(element: PsiElement, color: Color) {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
-            val commandTemplate = LatexXcolorCommand.values().firstOrNull {
+            val commandTemplate = LatexColorDefinitionCommand.values().firstOrNull {
                 it.commandWithSlash == command?.name
             } ?: return
             val colorModel = command?.getRequiredArgumentValueByName("model-list") ?: return
             val oldColor = command.getRequiredArgumentValueByName("spec-list") ?: return
-            val newColorString = when (colorModel.toLowerCase()) {
+            val newColorString = when (colorModel.lowercase(Locale.getDefault())) {
                 "rgb" -> color.toRgbString(integer = oldColor.split(",").firstOrNull()?.contains('.') == false)
                 "hsb" -> color.toHsbString()
                 "html" -> color.toHtmlStsring()
@@ -88,7 +92,7 @@ object LatexElementColorProvider : ElementColorProvider {
 
         return if (defaultHex != null) Color(defaultHex)
         else {
-            val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(
+            val colorDefiningCommands = LatexCommandsIndex.Util.getCommandsByNames(
                 file,
                 *ColorMagic.colorDefinitions.map { "\\${it.command}" }
                     .toTypedArray()
@@ -97,19 +101,26 @@ object LatexElementColorProvider : ElementColorProvider {
             // and we did not find it in the default colors (above), it should be in the
             // first parameter of a color definition command. If not, we can not find the
             // color (and return null in the end).
-            if (colorName.contains('!') || colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
-                    .contains(colorName)) {
-
+            if (
+                colorName.contains('!') ||
+                colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }.contains(colorName)
+            ) {
                 val colorDefinitionCommand =
                     colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
                 when (colorDefinitionCommand?.name?.substring(1)) {
-                    LatexXcolorCommand.COLORLET.command -> {
+                    LatexColorDefinitionCommand.COLORLET.command -> {
                         getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"))
                     }
-                    LatexXcolorCommand.DEFINECOLOR.command, LatexXcolorCommand.PROVIDECOLOR.command -> {
+                    LatexColorDefinitionCommand.DEFINECOLOR.command, LatexColorDefinitionCommand.PROVIDECOLOR.command -> {
                         getColorFromDefineColor(
                             colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
                             colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
+                        )
+                    }
+                    LatexColorDefinitionCommand.DEFINECOLORSERIES.command -> {
+                        getColorFromDefineColor(
+                            colorDefinitionCommand.getOptionalArgumentValueByName("b-model") ?: colorDefinitionCommand.getRequiredArgumentValueByName("core model"),
+                            colorDefinitionCommand.getRequiredArgumentValueByName("b-spec")
                         )
                     }
                     else -> getColorFromColorParameter(file, colorName)
@@ -145,7 +156,7 @@ object LatexElementColorProvider : ElementColorProvider {
         modelText ?: return null
         specText ?: return null
         return try {
-            when (modelText.toLowerCase()) {
+            when (modelText.lowercase(Locale.getDefault())) {
                 "rgb" -> fromRgbString(specText)
                 "hsb" -> fromHsbString(specText)
                 "cmy" -> fromCmyString(specText)
@@ -214,8 +225,11 @@ object LatexElementColorProvider : ElementColorProvider {
     private fun fromHsbString(hsbText: String): Color {
         val hsb = hsbText.split(",").map { it.trim() }
         return hsb.map { it.toFloat().projectOnto(0..1) }
-            .let { Color.getHSBColor(
-                it[0], it[1], it[2]) }
+            .let {
+                Color.getHSBColor(
+                    it[0], it[1], it[2]
+                )
+            }
     }
 
     /**
@@ -239,9 +253,9 @@ object LatexElementColorProvider : ElementColorProvider {
     /**
      * Convert a [Color] object to a cmyk string.
      */
-    private fun Color.toCmykString(): String? {
-        val rgb = listOf(red, green, blue).map { it / 255.0 }
-        val k: Double = 1.0 - (rgb.maxOrNull() ?: return null)
+    private fun Color.toCmykString(): String {
+        val rgb = nonEmptyListOf(red, green, blue).map { it / 255.0 }
+        val k: Double = 1.0 - rgb.max()
         return rgb.map { (1.0 - it - k) / (1.0 - k) }.joinToString(", ") { it.format() } + ", $k"
     }
 
@@ -279,7 +293,7 @@ object LatexElementColorProvider : ElementColorProvider {
      */
     private fun Color.toGrayString() = listOf(0.2126, 0.7152, 0.0722)
         .zip(listOf(red, green, blue))
-        .sumByDouble { (weight, rgb) -> weight * (rgb / 255.0) }
+        .sumOf { (weight, rgb): Pair<Double, Int> -> weight * (rgb / 255.0) }
         .format()
 
     /**

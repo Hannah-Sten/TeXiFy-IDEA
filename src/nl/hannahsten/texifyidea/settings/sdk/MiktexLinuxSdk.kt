@@ -5,7 +5,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
-import java.io.File
 import java.nio.file.Paths
 
 /**
@@ -17,8 +16,7 @@ import java.nio.file.Paths
  */
 class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
 
-    companion object {
-
+    object Cache {
         // Cache version
         var version: String? = null
     }
@@ -39,31 +37,37 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         return listOf(
             Paths.get(System.getProperty("user.home"), "bin").toString(),
             "/usr/local/bin"
-        ).filter { isValidSdkHome(it) }.toMutableList()
+        ).toMutableList()
     }
 
     override fun isValidSdkHome(path: String): Boolean {
         // We just want a path where pdflatex is present
-        return "$path${File.separator}pdflatex --version".runCommand()?.contains("pdfTeX") == true
+        return LatexSdkUtil.isPdflatexPresent(path)
     }
+
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/pdflatex"
 
     override fun getVersionString(sdk: Sdk): String? {
-        return getVersionString(sdk.homePath)
+        return getVersionString(sdk.homePath ?: return null)
     }
 
-    override fun getVersionString(sdkHome: String?): String? {
-        version?.let { return version }
+    override fun getVersionString(sdkHome: String): String? {
+        Cache.version?.let { return Cache.version }
 
-        val executable = sdkHome?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
+        val executable = getExecutableName("pdflatex", sdkHome)
         val output = "$executable --version".runCommand() ?: ""
-        version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
+        Cache.version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
 
-        return version
+        return Cache.version
     }
 
     override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
         // This was the path on the tested Arch installation
         // Note that also these files are zipped
         return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "source").toString())
+    }
+
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
+        return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "tex", "latex").toString())
     }
 }

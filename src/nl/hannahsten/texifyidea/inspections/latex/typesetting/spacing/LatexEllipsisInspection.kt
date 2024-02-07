@@ -7,14 +7,20 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.util.parser.isComment
 
 /**
  * @author Sten Wessel
@@ -27,6 +33,11 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
 
     override val inspectionId = "Ellipsis"
 
+    private fun shouldIgnore(elementAtCaret: PsiElement?): Boolean {
+        if (elementAtCaret == null) return false
+        return elementAtCaret.isComment() || elementAtCaret.inDirectEnvironment(DefaultEnvironment.TIKZPICTURE.environmentName)
+    }
+
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
         val texts = file.childrenOfType(LatexNormalText::class)
@@ -35,8 +46,7 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
             ProgressManager.checkCanceled()
 
             for (match in PatternMagic.ellipsis.findAll(text.text)) {
-                // Ignore the inspection when the ellipsis is inside a comment.
-                if (file.findElementAt(match.range.first + text.startOffset)?.isComment() == true) {
+                if (shouldIgnore(file.findElementAt(match.range.first + text.startOffset))) {
                     continue
                 }
 

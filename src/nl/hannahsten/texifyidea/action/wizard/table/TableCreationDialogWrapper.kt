@@ -1,11 +1,10 @@
 package nl.hannahsten.texifyidea.action.wizard.table
 
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.KeyboardShortcut
-import com.intellij.openapi.actionSystem.ShortcutSet
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AnActionButton
+import com.intellij.ui.JBColor
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
@@ -15,7 +14,8 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.util.addLabeledComponent
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Dimension
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
@@ -25,9 +25,9 @@ import javax.swing.*
  *
  * @author Abby Berkers
  */
-open class TableCreationDialogWrapper(
-        initialColumnTypes: List<ColumnType>? = null,
-        initialTableModel: TableCreationTableModel? = null
+class TableCreationDialogWrapper(
+    initialColumnTypes: List<ColumnType>? = null,
+    initialTableModel: TableCreationTableModel? = null
 ) : DialogWrapper(true) {
 
     /**
@@ -68,7 +68,7 @@ open class TableCreationDialogWrapper(
     init {
         // Initialise the dialog, otherwise it shows as a line (i.e., infinitely small) and without any of the elements.
         init()
-        title = "Insert table"
+        title = "Insert Table"
     }
 
     /**
@@ -111,33 +111,34 @@ open class TableCreationDialogWrapper(
         add(createTablePanelContainer(), BorderLayout.CENTER)
 
         // Create labels.
-        add(JPanel(VerticalLayout(8)).apply {
-            addLabeledComponent(txtCaption, "Caption:", labelWidth = 64, leftPadding = 0)
-            addLabeledComponent(txtReference, "Label:", labelWidth = 64, leftPadding = 0)
-        }, BorderLayout.SOUTH)
+        add(
+            JPanel(VerticalLayout(8)).apply {
+                addLabeledComponent(txtCaption, "Caption:", labelWidth = 64, leftPadding = 0)
+                addLabeledComponent(txtReference, "Label:", labelWidth = 64, leftPadding = 0)
+            },
+            BorderLayout.SOUTH
+        )
     }
 
     /**
      * Generates table and the toolbaar buttons.
      */
     private fun createToolbarDecorator() = ToolbarDecorator.createDecorator(table)
-            .setAddAction {
-                TableCreationEditColumnDialog(
-                        { title, columnType, _ -> addTableColumn(title, columnType) },
-                        tableModel.columnCount
-                )
-            }
-            .setAddActionName("Add Column")
-            .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
-            .addExtraAction(getRemoveColumnActionButton())
-            .addExtraAction(getEditColumnActionButton())
-            .addExtraAction(getAddRowActionButton())
-            .addExtraAction(getRemoveRowActionButton().apply {
-                shortcut = ShortcutSet {
-                    arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null))
-                }
-            })
-            .createPanel()
+        .setAddAction {
+            TableCreationEditColumnDialog(
+                { title, columnType, _ -> addTableColumn(title, columnType) },
+                tableModel.columnCount
+            )
+        }
+        .setAddActionName("Add Column")
+        .setAddIcon(addText(IconUtil.addIcon, "C"))
+        .addExtraAction(getRemoveColumnActionButton() as AnAction)
+        .addExtraAction(getEditColumnActionButton() as AnAction)
+        .addExtraAction(getAddRowActionButton() as AnAction)
+        .addExtraAction(
+            getRemoveRowActionButton() as AnAction
+        )
+        .createPanel()
 
     /**
      * Panel containing the table and its controls.
@@ -151,7 +152,7 @@ open class TableCreationDialogWrapper(
      */
     private fun createHelpText() = JBLabel().apply {
         text = "<html>Press tab to go to the next cell or row, press enter to go to the next row.</html>"
-        foreground = Color.GRAY
+        foreground = JBColor.GRAY
     }
 
     /**
@@ -189,7 +190,7 @@ open class TableCreationDialogWrapper(
 
                 // When we're in the last column of the last row, add a new row before calling the usual action.
                 if (table.selectionModel.leadSelectionIndex == table.rowCount - 1 &&
-                        table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1
+                    table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1
                 ) {
                     tableModel.addEmptyRow()
                 }
@@ -239,62 +240,77 @@ open class TableCreationDialogWrapper(
      */
     override fun doValidate(): ValidationInfo? {
         tableInformation = TableInformation(
-                tableModel,
-                columnTypes,
-                txtCaption.text.trim(),
-                txtReference.text.trim()
+            tableModel,
+            columnTypes,
+            txtCaption.text.trim(),
+            txtReference.text.trim()
         )
         return null
     }
 
     private fun getEditColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Edit column header", addText(IconUtil.getEditIcon(), "C")) {
+        return object : AnActionButton("Edit Column Header", addText(IconUtil.editIcon, "C")) {
 
             override fun isEnabled() = table.columnCount > 0
 
             override fun actionPerformed(e: AnActionEvent) {
                 if (table.selectedColumn >= 0) {
                     TableCreationEditColumnDialog(
-                            { title, columnType, columnIndex -> editTableColumn(title, columnType, columnIndex) },
-                            table.selectedColumn,
-                            table.getColumnName(table.selectedColumn),
-                            columnTypes[table.selectedColumn]
+                        { title, columnType, columnIndex -> editTableColumn(title, columnType, columnIndex) },
+                        table.selectedColumn,
+                        table.getColumnName(table.selectedColumn),
+                        columnTypes[table.selectedColumn]
                     )
                 }
             }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 
     private fun getAddRowActionButton(): AnActionButton {
-        return object : AnActionButton("Add Row", addText(IconUtil.getAddIcon(), "R")) {
+        return object : AnActionButton("Add Row", addText(IconUtil.addIcon, "R")) {
 
             override fun isEnabled() = table.columnCount > 0
 
             override fun actionPerformed(e: AnActionEvent) {
                 tableModel.addEmptyRow()
             }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 
     private fun getRemoveRowActionButton(): AnActionButton {
-        return object : AnActionButton("Remove Row", addText(IconUtil.getRemoveIcon(), "R")) {
+        return object : AnActionButton("Remove Row", addText(IconUtil.removeIcon, "R")) {
 
             override fun isEnabled() = table.selectedRow > -1
 
             override fun actionPerformed(e: AnActionEvent) {
                 tableModel.removeRow(table.selectedRow)
             }
+
+            override fun getShortcut(): ShortcutSet {
+                // Not sure if this is the way to set shortcuts, should we use the keymap?
+                return ShortcutSet {
+                    arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null))
+                }
+            }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 
     private fun getRemoveColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Remove Column", addText(IconUtil.getRemoveIcon(), "C")) {
+        return object : AnActionButton("Remove Column", addText(IconUtil.removeIcon, "C")) {
 
             override fun isEnabled() = table.selectedColumn > -1
 
             override fun actionPerformed(e: AnActionEvent) {
                 tableModel.removeColumn(table.selectedColumn)
             }
+
+            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
     }
 }

@@ -9,32 +9,33 @@ import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.name
+import nl.hannahsten.texifyidea.util.parser.name
 import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-        override val environmentName: String,
-        override val initialContents: String = "",
-        override val context: Context = Context.NORMAL,
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override vararg val arguments: Argument,
-        override val description: String = ""
+    override val environmentName: String,
+    override val initialContents: String = "",
+    override val context: Context = Context.NORMAL,
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override vararg val arguments: Argument,
+    override val description: String = ""
 ) : Environment {
 
     // Vanilla LaTeX
     ABSTRACT(environmentName = "abstract"),
     ALLTT(environmentName = "alltt"),
-    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols"))),
+    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols")), context = Context.MATH),
     CENTER(environmentName = "center"),
     DESCRIPTION(environmentName = "description", initialContents = "\\item "),
     DISPLAYMATH(environmentName = "displaymath", context = Context.MATH),
     DOCUMENT(environmentName = "document"),
     ENUMERATE(environmentName = "enumerate", initialContents = "\\item "),
     EQUATION(environmentName = "equation", context = Context.MATH),
-    EQNARRAY(environmentName = "eqnarray"),
+    EQNARRAY(environmentName = "eqnarray", context = Context.MATH),
+    EQNARRAY_STAR(environmentName = "eqnarray*", context = Context.MATH),
     FIGURE(environmentName = "figure", arguments = arrayOf(OptionalArgument("placement"))),
     FIGURE_STAR(environmentName = "figure*", arguments = arrayOf(OptionalArgument("placement"))),
     FILECONTENTS(environmentName = "filecontents"),
@@ -64,6 +65,7 @@ enum class DefaultEnvironment(
     TABU(environmentName = "tabu", arguments = arrayOf(RequiredArgument("cols"))),
     TABULAR(environmentName = "tabular", arguments = arrayOf(OptionalArgument("pos"), RequiredArgument("cols"))),
     TABULARX(environmentName = "tabularx", arguments = arrayOf(RequiredArgument("width"), RequiredArgument("cols"))),
+    TABULARY(environmentName = "tabulary", arguments = arrayOf(RequiredArgument("length"), RequiredArgument("pream"))),
     TABULAR_STAR(environmentName = "tabular*", arguments = arrayOf(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"))),
     THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = arrayOf(RequiredArgument("widestlabel"))),
     THEINDEX(environmentName = "theindex"),
@@ -124,17 +126,37 @@ enum class DefaultEnvironment(
     VSMALLMATRIX_STAR(environmentName = "vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
     VSMALLMATRIX_CAPITAL(environmentName = "Vsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
     VSMALLMATRIX_CAPITAL_STAR(environmentName = "Vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    OPTIDEF_MAXI(environmentName = "maxi", context = Context.MATH),
+    OPTIDEF_MAXI_NO_REFERENCES(environmentName = "maxi*", context = Context.MATH),
+    OPTIDEF_MAXI_MULTI_REFERENCES(environmentName = "maxi!", context = Context.MATH),
+    OPTIDEF_ARGMAXI(environmentName = "argmaxi", context = Context.MATH),
+    OPTIDEF_ARGMAXI_NO_REFERENCES(environmentName = "argmaxi*", context = Context.MATH),
+    OPTIDEF_ARGMAXI_MULTI_REFERENCES(environmentName = "argmaxi!", context = Context.MATH),
+    OPTIDEF_MINI(environmentName = "mini", context = Context.MATH),
+    OPTIDEF_MINI_NO_REFERENCES(environmentName = "mini*", context = Context.MATH),
+    OPTIDEF_MINI_MULTI_REFERENCES(environmentName = "mini!", context = Context.MATH),
+    OPTIDEF_ARGMINI(environmentName = "argmini", context = Context.MATH),
+    OPTIDEF_ARGMINI_NO_REFERENCES(environmentName = "argmini*", context = Context.MATH),
+    OPTIDEF_ARGMINI_MULTI_REFERENCES(environmentName = "argmini!", context = Context.MATH),
 
     // other
     ALGORITHM("algorithm"),
     ALGORITHMIC("algorithmic", dependency = ALGORITHMICX),
+    BLOCKARRAY(environmentName = "blockarray", dependency = LatexPackage.BLKARRAY),
+    BLOCK(environmentName = "block", dependency = LatexPackage.BLKARRAY),
     GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = LatexPackage.COMMENT),
     LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),
+    LONGTBLR(environmentName = "longtblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
     LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
+    PYCODE(environmentName = "pycode", dependency = LatexPackage.PYTHONTEX),
+    TALLTBLR(environmentName = "talltblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
+    TBLR(environmentName = "tblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
     TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
+    WIDETABULAR(environmentName = "widetabular", dependency = LatexPackage.WIDETABLE),
+    WIDETABLE(environmentName = "widetable", dependency = LatexPackage.WIDETABLE),
     ;
 
     companion object {
@@ -156,7 +178,7 @@ enum class DefaultEnvironment(
         @JvmStatic
         fun fromPsi(latexEnvironment: LatexEnvironment): DefaultEnvironment? {
             val text: String = latexEnvironment.name()?.text ?: return null
-            return get(text.toLowerCase())
+            return get(text.lowercase(Locale.getDefault()))
         }
 
         /**

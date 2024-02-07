@@ -15,17 +15,17 @@ class LatexTrimWhiteSpaceInspectionTest : TexifyInspectionTestBase(LatexTrimWhit
     fun `test warning whitespace front and back`() = testHighlighting("""\section{<weak_warning descr="Unnecessary whitespace"> test </weak_warning>}""")
 
     fun `test quick fix front`() = testQuickFix(
-            before = """\section{ test}""",
-            after = """\section{test}"""
+        before = """\section{ test}""",
+        after = """\section{test}"""
     )
 
     fun `test quick fix back`() = testQuickFix(
-            before = """\section{test }""",
-            after = """\section{test}"""
+        before = """\section{test }""",
+        after = """\section{test}"""
     )
 
     fun `test quick fix front and back`() = testQuickFix(
-            before = """\section{ test }""",
-            after = """\section{test}"""
+        before = """\section{ test }""",
+        after = """\section{test}"""
     )
 }

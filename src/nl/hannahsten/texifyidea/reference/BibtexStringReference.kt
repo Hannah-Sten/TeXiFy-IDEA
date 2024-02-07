@@ -3,10 +3,11 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.*
 import nl.hannahsten.texifyidea.psi.BibtexDefinedString
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.tags
 import nl.hannahsten.texifyidea.util.toTextRange
 import nl.hannahsten.texifyidea.util.tokenName
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -21,7 +22,7 @@ open class BibtexStringReference(
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         return string.containingFile.childrenOfType(BibtexEntry::class).asSequence()
-            .filter { it.tokenName()?.toLowerCase() == "string" }
+            .filter { it.tokenName().lowercase(Locale.getDefault()) == "string" }
             .map { it.tags() }
             .filter { !it.isEmpty() }
             .map { it.first().key }

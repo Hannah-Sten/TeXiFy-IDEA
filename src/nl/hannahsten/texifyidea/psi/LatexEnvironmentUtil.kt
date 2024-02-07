@@ -1,9 +1,13 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
+import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /*
 * LatexEnvironment
@@ -14,17 +18,26 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
  *
  * @return the label name if any, null otherwise
  */
-fun getLabel(element: LatexEnvironment): String? {
-    val stub = element.stub
+fun LatexEnvironment.getLabel(): String? {
+    val stub = this.stub
     if (stub != null) return stub.label
-    return if (EnvironmentMagic.labelAsParameter.contains(element.environmentName)) {
+    return if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
         // See if we can find a label option
-        val optionalParameters = getOptionalParameterMap(element.beginCommand.parameterList).toStringMap()
+        val optionalParameters = getOptionalParameterMapFromParameters(this.beginCommand.parameterList).toStringMap()
         optionalParameters.getOrDefault("label", null)
     }
     else {
-        if (!EnvironmentMagic.labeled.containsKey(element.environmentName)) return null
-        val content = element.environmentContent ?: return null
+        // Not very clean. We don't really need the conventions here, but determine which environments *can* have a
+        // label. However, if we didn't use the conventions, we would have to duplicate the information in
+        // EnvironmentMagic
+        val conventionSettings = TexifyConventionsSettingsManager.getInstance(this.project).getSettings()
+        if (conventionSettings.getLabelConvention(
+                this.getEnvironmentName(),
+                LabelConventionType.ENVIRONMENT
+            ) == null
+        ) return null
+
+        val content = this.environmentContent ?: return null
 
         // See if we can find a label command inside the environment
         val children = PsiTreeUtil.findChildrenOfType(content, LatexCommands::class.java)
@@ -34,7 +47,7 @@ fun getLabel(element: LatexEnvironment): String? {
             val labelCommands = CommandMagic.labelDefinitionsWithoutCustomCommands
             val labelCommand =
                 children.firstOrNull { c: LatexCommands -> labelCommands.contains(c.name) } ?: return null
-            val requiredParameters = labelCommand.requiredParameters
+            val requiredParameters = labelCommand.getRequiredParameters()
             if (requiredParameters.isEmpty()) return null
             val info = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.name, null) ?: return null
             if (!info.labelsPreviousCommand) return null
@@ -45,10 +58,10 @@ fun getLabel(element: LatexEnvironment): String? {
     }
 }
 
-fun getEnvironmentName(element: LatexEnvironment): String? {
-    val stub = element.stub
+fun LatexEnvironment.getEnvironmentName(): String {
+    val stub = this.stub
     if (stub != null) return stub.environmentName
-    val parameters = element.beginCommand.parameterList
+    val parameters = this.beginCommand.parameterList
     if (parameters.isEmpty()) return ""
     val environmentNameParam = parameters[0]
     val requiredParam = environmentNameParam.requiredParam ?: return ""

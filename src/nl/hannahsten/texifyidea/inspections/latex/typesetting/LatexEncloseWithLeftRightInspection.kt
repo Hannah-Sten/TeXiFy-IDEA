@@ -7,17 +7,19 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.*
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyLineOptionsInspection
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.get
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import java.util.*
 
 /**
@@ -25,9 +27,8 @@ import java.util.*
  */
 open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Custom commands") {
 
-    companion object {
-
-        private val brackets = mapOf(
+    object Util {
+        val brackets = mapOf(
             "(" to ")",
             "[" to "]"
         )
@@ -51,7 +52,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
             // Scan all characters in math mode. (+2/-2 to ignore \[ and \]).
             for (openOffset in mathMode.textOffset + 2 until mathMode.endOffset() - 2) {
                 val char = document[openOffset]
-                if (!brackets.containsKey(char)) {
+                if (!Util.brackets.containsKey(char)) {
                     continue
                 }
                 if (ignore(document, openOffset)) {
@@ -61,6 +62,9 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                 val closeOffset = seek(document, openOffset, file) ?: continue
                 val openElement = file.findElementAt(openOffset) ?: continue
                 val closeElement = file.findElementAt(closeOffset) ?: continue
+                // Create one fix that is passed to both the descriptors because this fix shares some state: it needs to
+                // know whether it has been applied or not.
+                val fix = InsertLeftRightFix(SmartPointerManager.createPointer(openElement), SmartPointerManager.createPointer(closeElement), document[openOffset])
 
                 descriptors.add(
                     manager.createProblemDescriptor(
@@ -69,7 +73,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                         "Parentheses pair could be replaced by \\left(..\\right)",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
+                        fix
                     )
                 )
 
@@ -80,7 +84,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                         "Parentheses pair could be replaced by \\left(..\\right)",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
+                        fix
                     )
                 )
             }
@@ -123,7 +127,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     private fun seek(document: Document, offset: Int, file: PsiFile): Int? {
         // Scan document.
         val open = document[offset]
-        val close = brackets[open]
+        val close = Util.brackets[open]
 
         var current = offset
         var nested = 0
@@ -166,7 +170,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
             }
 
             // Whenever met at correct closure
-            if (char == close && nested <= 0) {
+            if (char == close) {
                 closeOffset = current
                 break
             }
@@ -182,18 +186,40 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     private fun affectedCommands() = CommandMagic.high + lines
 
     /**
+     * Use references to the [PsiElement]s of the open and close brackets because text offsets are not reliable when
+     * applying all fixes.
+     *
      * @author Hannah Schellekens
      */
-    private open class InsertLeftRightFix(val openOffset: Int, val closeOffset: Int, val open: String) : LocalQuickFix {
+    private open class InsertLeftRightFix(val openElement: SmartPsiElementPointer<PsiElement>, val closeElement: SmartPsiElementPointer<PsiElement>, val open: String) : LocalQuickFix {
+
+        /**
+         * Keep track of whether this fix has been applied.
+         *
+         * There are two descriptors per fix (one for the open bracket and one for the close bracket). Whenever the user
+         * applies one of those fixes by hand, all is good. But when the user uses the "fix all" action, both fixes will
+         * be applied. Which, when not keeping track of a fix being applied or not, means that the fix will be applied twice.
+         */
+        private var applied = false
 
         override fun getFamilyName() = "Convert (..) to \\left(..\\right)"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val file = descriptor.psiElement.containingFile
-            val document = file.document() ?: return
+            if (!applied) {
+                val psiHelper = LatexPsiHelper(project)
+                val openReplacement = psiHelper.createFromText("\\left$open").firstChild
+                val closeReplacement = psiHelper.createFromText("\\right${Util.brackets[open]}").firstChild
 
-            document[closeOffset] = "\\right${brackets[open]}"
-            document[openOffset] = "\\left$open"
+                // Get the elements from the psi pointers before replacing elements, because the pointers are not accurate
+                // anymore after changing the psi structure.
+                val openElement = openElement.element ?: return
+                val closeElement = closeElement.element ?: return
+
+                openElement.replace(openReplacement)
+                closeElement.replace(closeReplacement)
+
+                applied = true
+            }
         }
     }
 }

@@ -18,11 +18,11 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.allCommands
+import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
-import nl.hannahsten.texifyidea.util.getIncludedFiles
+import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -44,12 +44,12 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase()
+        return (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
             ?: if (element is PsiNameIdentifierOwner) {
-                element.name!!.toLowerCase()
+                element.name!!.lowercase(Locale.getDefault())
             }
             else {
-                element.text.toLowerCase()
+                element.text.lowercase(Locale.getDefault())
             }
     }
 
@@ -71,9 +71,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
-        val docClass = LatexCommandsIndex.getItems(element.getProject(), scope).asSequence()
-            .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.requiredParameters.isNotEmpty() }
-            .map { cmd -> cmd.requiredParameters[0] }
+        val docClass = LatexCommandsIndex.Util.getItems(element.getProject(), scope).asSequence()
+            .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.getRequiredParameters().isNotEmpty() }
+            .map { cmd -> cmd.getRequiredParameters()[0] }
             .firstOrNull() ?: "article"
 
         // Fetch all commands in the active file.
@@ -100,7 +100,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                 continue
             }
 
-            if (currentCmd.requiredParameters.isEmpty()) {
+            if (currentCmd.getRequiredParameters().isEmpty()) {
                 continue
             }
 
@@ -117,7 +117,6 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val currentIndex = order(current(sections) ?: continue)
             val nextIndex = order(currentCmd)
 
-            // Same level.
             when {
                 currentIndex == nextIndex -> registerSameLevel(sections, child, currentCmd, treeElements, numbering)
                 nextIndex > currentIndex -> registerDeeper(sections, child, numbering)
@@ -126,7 +125,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add command definitions.
-        CommandMagic.commandDefinitions.forEach {
+        CommandMagic.commandDefinitionsAndRedefinitions.forEach {
             addFromCommand(treeElements, commands, it)
         }
 
@@ -188,15 +187,16 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val indexInsert = order(currentCmd)
         while (!sections.isEmpty()) {
             pop(sections)
-            val index = order(current(sections) ?: continue)
+            val index = current(sections)?.let { order(it) }
 
-            if (index == indexInsert) {
-                registerSameLevel(sections, child, currentCmd, treeElements, numbering)
+            if (index != null && indexInsert > index) {
+                registerDeeper(sections, child, numbering)
                 break
             }
-
-            if (indexInsert > index) {
-                registerDeeper(sections, child, numbering)
+            // Avoid that an element is not added at all by adding it one level up anyway.
+            // If index is null, that means that the tree currently only has elements with a higher order.
+            else if (index == null || indexInsert == index) {
+                registerSameLevel(sections, child, currentCmd, treeElements, numbering)
                 break
             }
         }
@@ -220,7 +220,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         treeElements: MutableList<TreeElement>,
         numbering: SectionNumbering
     ) {
-        sections.removeFirst()
+        sections.pollFirst()
         val parent = sections.peekFirst()
         parent?.addChild(child)
         sections.addFirst(child)
@@ -244,8 +244,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun updateNumbering(cmd: LatexCommands, numbering: SectionNumbering) {
         val token = cmd.commandToken.text
-        val required = cmd.requiredParameters
-
+        val required = cmd.getRequiredParameters()
         if (required.size < 2) {
             return
         }

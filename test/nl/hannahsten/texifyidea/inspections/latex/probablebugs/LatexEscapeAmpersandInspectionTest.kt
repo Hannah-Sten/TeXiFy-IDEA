@@ -29,7 +29,22 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
             \end{document}
             """.trimIndent()
         )
-        myFixture.checkHighlighting(false, false, false, false)
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
+    fun `test that ampersand in custom tabular environment does not trigger a warning`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newenvironment{kwak}{ \begin{tabular}{lc} }{ \end{tabular} }
+            \begin{document}
+                \begin{kwak}
+                    kwik & kwek \\
+                \end{kwak}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(true, false, false, false)
     }
 
     fun `test that ampersand in math environment does trigger a warning`() {
@@ -59,7 +74,7 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-    fun `test that ampersand in in matrix environments does not trigger a warning`() {
+    fun `test that ampersand in matrix environments does not trigger a warning`() {
         EnvironmentMagic.matrixEnvironments.forEach { environment ->
             myFixture.configureByText(
                 LatexFileType,

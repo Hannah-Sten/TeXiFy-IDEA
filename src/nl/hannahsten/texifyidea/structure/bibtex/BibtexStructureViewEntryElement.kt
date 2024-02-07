@@ -1,35 +1,37 @@
 package nl.hannahsten.texifyidea.structure.bibtex
 
+import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
-import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
 import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import java.util.*
 
 /**
  * @author Hannah Schellekens
  */
 open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureViewTreeElement, SortableTreeElement {
 
-    private val entryPresentation: ItemPresentation = object : ItemPresentation {
+    private val entryPresentation: PresentationData = object : PresentationData() {
 
-        override fun getLocationString() = when (entry.tokenName()?.toLowerCase()) {
+        override fun getLocationString() = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "string" -> entry.tags().first().content?.text.orEmpty()
             "preamble" -> ""
             else -> entry.tokenName()
         }
 
-        override fun getPresentableText() = when (entry.tokenName()?.toLowerCase()) {
+        override fun getPresentableText() = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "preamble" -> "preamble"
             "string" -> entry.tags().firstOrNull()?.keyName()
-            else -> entry.identifier()
+            else -> entry.getIdentifier()
         } ?: ""
 
-        override fun getIcon(b: Boolean) = when (entry.tokenName()?.toLowerCase()) {
+        override fun getIcon(b: Boolean) = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "string" -> TexifyIcons.STRING
             "preamble" -> PlatformIcons.PROPERTY_ICON
             else -> PlatformIcons.ANNOTATION_TYPE_ICON
@@ -52,7 +54,7 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
         "preamble" -> "a"
         "string" -> "b"
         else -> "c"
-    } + entry.identifier()
+    } + entry.getIdentifier()
 
     override fun getPresentation() = entryPresentation
 

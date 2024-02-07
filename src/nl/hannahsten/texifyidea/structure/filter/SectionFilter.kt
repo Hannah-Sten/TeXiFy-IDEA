@@ -32,7 +32,7 @@ class SectionFilter : Filter {
 
         override fun getText() = "Show Sectioning"
 
-        override fun getDescription() = "Show Sectioning"
+        override fun getDescription() = "Show sectioning"
 
         override fun getIcon() = TexifyIcons.DOT_SECTION
     }

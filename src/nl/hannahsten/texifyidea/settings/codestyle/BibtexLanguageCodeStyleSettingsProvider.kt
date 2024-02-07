@@ -5,16 +5,13 @@ import com.intellij.lang.Language
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.extractor.values.Value
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.removeHtmlTags
 
 class BibtexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
-    companion object {
-
-        private val demoText = GeneralMagic.bibtexDemoText.removeHtmlTags()
-    }
+    private val demoText = GeneralMagic.bibtexDemoText.removeHtmlTags()
 
     override fun getLanguage(): Language = BibtexLanguage
 

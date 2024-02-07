@@ -9,13 +9,15 @@ class MagicCommentPsiTest : BasePlatformTestCase() {
 
     fun `test get magic comment for command`() {
         myFixture.configureByText(LatexFileType, "%! suppress = FileNotFound\n\\documentclass{article}")
-        val command = LatexCommandsIndex.getCommandsByName("\\documentclass", myFixture.file).first()
+        val command = LatexCommandsIndex.Util.getCommandsByName("\\documentclass", myFixture.file).first()
         val magic = command.magicComment()
         Assertions.assertEquals(arrayListOf("suppress = FileNotFound"), magic.toCommentString())
     }
 
     fun `test get magic comment for file`() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             %!compiler = xelatex
             \documentclass{article}
 
@@ -23,8 +25,22 @@ class MagicCommentPsiTest : BasePlatformTestCase() {
             \begin{document}
                 ...
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         val magic = myFixture.file.magicComment()
         assertEquals(arrayListOf("compiler = xelatex"), magic.toCommentString())
+    }
+
+    fun `test get multiple magic comments for file`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            %! suppress = NonBreakingSpace
+            %! suppress = UnresolvedReference
+            I \ref{nolabel}
+            """.trimIndent()
+        )
+        val magic = myFixture.file.magicComment()
+        assertEquals(arrayListOf("suppress = NonBreakingSpace", "suppress = UnresolvedReference"), magic.toCommentString())
     }
 }

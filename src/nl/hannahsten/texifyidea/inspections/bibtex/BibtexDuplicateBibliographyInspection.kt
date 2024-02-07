@@ -8,6 +8,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -15,6 +17,8 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Sten Wessel
@@ -31,7 +35,6 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Same bibliography is included multiple times"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         // Chapterbib allows multiple bibliographies
         if (file.includedPackages().any { it == LatexPackage.CHAPTERBIB }) {
             return emptyList()
@@ -42,7 +45,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         // Map each bibliography file to all the commands which include it
         val groupedIncludes = mutableMapOf<String, MutableList<LatexCommands>>()
 
-        LatexIncludesIndex.getItemsInFileSet(file).asSequence()
+        LatexIncludesIndex.Util.getItemsInFileSet(file).asSequence()
             .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
             .forEach { command ->
                 for (fileName in command.getIncludedFiles(false).map { it.name }) {
@@ -66,7 +69,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                             "Bibliography file '$fileName' is included multiple times",
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly,
-                            RemoveOtherCommandsFix(fileName, commands)
+                            RemoveOtherCommandsFix(fileName, commands.map { it.createSmartPointer() })
                         )
                     )
                 }
@@ -78,7 +81,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     /**
      * @author Sten Wessel
      */
-    class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<LatexCommands>) :
+    class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<SmartPsiElementPointer<LatexCommands>>) :
         LocalQuickFix {
 
         override fun getFamilyName(): String {
@@ -91,7 +94,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
             // For all commands to be fixed, remove the matching bibName
             // Handle commands by descending offset, to make sure the replaceString calls work correctly
-            for (command in commandsToFix.sortedByDescending { it.textOffset }) {
+            for (command in commandsToFix.mapNotNull { it.element }.sortedByDescending { it.textOffset }) {
                 val document = command.containingFile.document() ?: continue
                 val param = command.parameterList.first()
 

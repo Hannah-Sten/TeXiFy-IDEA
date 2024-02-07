@@ -1,16 +1,19 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection.EscapeUnicodeFix
@@ -22,12 +25,14 @@ import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.selectedRunConfig
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -50,9 +55,8 @@ import java.util.regex.Pattern
  */
 class LatexUnicodeInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
+    object Util {
+        internal val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
 
         /**
          * Checks whether Unicode support is enabled for the file.
@@ -66,11 +70,16 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
-            val compilerCompat = file.project.selectedRunConfig()?.compiler ?: return false
-            if (compilerCompat == LatexCompiler.LUALATEX || compilerCompat == LatexCompiler.XELATEX || TexliveSdk.version >= 2018) {
+            val compilerCompat = file.project.selectedRunConfig()?.compiler
+            if (compilerCompat == LatexCompiler.LUALATEX ||
+                compilerCompat == LatexCompiler.XELATEX ||
+                TexliveSdk.Cache.version >= 2018 ||
+                MiktexWindowsSdk().getVersion(null) >= DefaultArtifactVersion("2.9.7350")
+            ) {
                 return true
             }
 
+            // If we can't figure it out by compiler, check included packages
             val included = file.includedPackages()
             return PackageMagic.unicode.stream().allMatch { p -> included.contains(p) }
         }
@@ -86,8 +95,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     override val inspectionId = "Unicode"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
-        val hasUnicode = unicodeEnabled(file)
+        val hasUnicode = Util.unicodeEnabled(file)
 
         val descriptors = descriptorList()
 
@@ -102,6 +110,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                     continue
                 }
 
+                val fix = if (inMathMode) {
+                    null
+                }
+                else {
+                    InsertUnicodePackageFix()
+                }
+                val fixes = listOfNotNull(fix).toTypedArray()
+
                 descriptors.add(
                     manager.createProblemDescriptor(
                         text,
@@ -110,12 +126,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         EscapeUnicodeFix(inMathMode),
-                        if (inMathMode) {
-                            null
-                        }
-                        else {
-                            InsertUnicodePackageFix()
-                        }
+                        *fixes
                     )
                 )
             }
@@ -177,15 +188,48 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
             val editor = FileEditorManager.getInstance(project).selectedTextEditor
+            val replacement = getReplacementFromProblemDescriptor(descriptor)
+
+            // When no replacement is found, show error message
+            val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+            if (replacement == null) {
+                if (editor != null) {
+                    runInEdt {
+                        HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                    }
+                }
+                return
+            }
+
+            // Fill in replacement
+            // To improve this, this should be done by replacing psi elements using LatexPsiHelper
+            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
+            document?.replaceString(range.startOffset, range.endOffset, replacement)
+        }
+
+        /**
+         * Extend the heuristics implemented in [LocalQuickFix.generatePreview] that predict that the fix can not be applied.
+         * We cannot use the automatically generated preview because in the applyFix we sometimes show a UI element, which breaks the preview
+         */
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
+            val replacement = getReplacementFromProblemDescriptor(previewDescriptor) ?: return IntentionPreviewInfo.EMPTY
+            val element = previewDescriptor.psiElement
+            // We don't directly work on the document, as in a preview that is not available
+            val origText = element.text
+            val range = previewDescriptor.textRangeInElement
+            val modifiedText = origText.replaceRange(range.startOffset, range.endOffset, replacement)
+
+            return IntentionPreviewInfo.CustomDiff(LatexFileType, element.containingFile.name, origText, modifiedText)
+        }
+
+        private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): String? {
+            val element = descriptor.psiElement
 
             val c = try {
                 descriptor.textRangeInElement.substring(element.text)
             }
             catch (e: IndexOutOfBoundsException) {
-                if (editor != null) {
-                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
-                }
-                return
+                return null
             }
 
             // Try to find in lookup for special command
@@ -204,26 +248,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             else {
                 findReplacement(c)
             }
-
-            // When no replacement is found, show error message
-            val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
-            if (replacement == null) {
-                if (editor != null) {
-                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
-                }
-                return
-            }
-
-            // Fill in replacement
-            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
-            document?.replaceString(range.startOffset, range.endOffset, replacement)
+            return replacement
         }
 
         private fun findReplacement(c: String): String? {
             val n = Normalizer.normalize(c, Normalizer.Form.NFD)
 
             // Extract base characters
-            val matcher = BASE_PATTERN.matcher(n)
+            val matcher = Util.BASE_PATTERN.matcher(n)
             matcher.find()
             val base = matcher.group()
 
@@ -231,15 +263,15 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val mods = n.substring(matcher.end()).split("".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
             val diacritics = (mods.indices)
-                    // Modifiers in reversed order
-                    .map { mods[mods.size - 1 - it] }
-                    .mapNotNull {
-                        @Suppress("USELESS_CAST")
-                        if (inMathMode)
-                            Diacritic.Math.fromUnicode(it) as? Diacritic
-                        else
-                            Diacritic.Normal.fromUnicode(it) as? Diacritic
-                    }
+                // Modifiers in reversed order
+                .map { mods[mods.size - 1 - it] }
+                .mapNotNull {
+                    @Suppress("USELESS_CAST")
+                    if (inMathMode)
+                        Diacritic.Math.fromUnicode(it) as? Diacritic
+                    else
+                        Diacritic.Normal.fromUnicode(it) as? Diacritic
+                }
 
             return Diacritic.buildChain(base, diacritics)
         }

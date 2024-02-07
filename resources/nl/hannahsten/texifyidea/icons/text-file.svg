@@ -1,21 +1,7 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16">
-	<rect fill="rgb(255,255,255)" fill-opacity="0" stroke="none" width="16" height="16"/>
-	<defs>
-		<clipPath id="clip_0">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_0)">
-		<path fill="rgb(154,167,176)" fill-opacity="0.80000001" stroke="none" transform="translate(3 1)" d="M0 4L4 0L4 4L0 4ZM5 5L5 0L10 0L10 14L0 14L0 5L5 5Z" fill-rule="evenodd"/>
-	</g>
-	<defs>
-		<clipPath id="clip_1">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_1)">
-		<path fill="rgb(35,31,32)" fill-opacity="0.69803923" stroke="none" transform="translate(5 7)" d="M0 0L6 0L6 1L0 1L0 0ZM0 2L6 2L6 3L0 3L0 2ZM4 4L0 4L0 5L4 5L4 4Z" fill-rule="evenodd"/>
-	</g>
-
+<!-- Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="2" y="12" width="8" height="1" rx="0.5" fill="#6C707E"/>
+<rect x="2" y="6" width="8" height="1" rx="0.5" fill="#6C707E"/>
+<rect x="2" y="9" width="12" height="1" rx="0.5" fill="#6C707E"/>
+<rect x="2" y="3" width="12" height="1" rx="0.5" fill="#6C707E"/>
 </svg>

@@ -30,19 +30,14 @@ class RunMakeindexListener(
 
     override fun processTerminated(event: ProcessEvent) {
         try {
-
             // Only create new one if there is none yet
             val runConfigSettingsList =
-                if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
+                latexRunConfig.makeindexRunConfigs.ifEmpty {
                     generateIndexConfigs()
-                }
-                else {
-                    latexRunConfig.makeindexRunConfigs
                 }
 
             // Run all run configurations
             for (runConfigSettings in runConfigSettingsList) {
-
                 val makeindexRunConfig = runConfigSettings.configuration as MakeindexRunConfiguration
                 val options = getMakeindexOptions(makeindexRunConfig.mainFile, makeindexRunConfig.project)
                 val baseFileName = options.getOrDefault("name", makeindexRunConfig.mainFile?.nameWithoutExtension) ?: return
@@ -138,7 +133,6 @@ class RunMakeindexListener(
      * @return List of files that should be cleaned up.
      */
     private fun copyIndexOutputFiles(baseFileName: String, indexFileExtensions: Set<String>) {
-
         val mainFile = latexRunConfig.mainFile ?: return
         val auxilDir = latexRunConfig.getAuxilDirectory() ?: return
         val sourceDir = auxilDir.path + '/'
@@ -149,7 +143,6 @@ class RunMakeindexListener(
         // Just try all extensions for files that need to be copied
         // Skips files that do not exist
         for (extension in indexFileExtensions) {
-
             val indexFileName = baseFileName.appendExtension(extension)
             val indexFileSource = File(sourceDir + indexFileName)
             if (!indexFileSource.isFile) continue

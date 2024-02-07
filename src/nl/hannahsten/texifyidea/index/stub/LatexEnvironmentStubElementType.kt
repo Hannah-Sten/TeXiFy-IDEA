@@ -1,25 +1,28 @@
 package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
+import nl.hannahsten.texifyidea.index.indexSinkOccurrence
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.getLabel
 import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.io.IOException
 
-open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage.INSTANCE) {
+open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage) {
 
     override fun createPsi(stub: LatexEnvironmentStub): LatexEnvironment {
         return LatexEnvironmentImpl(stub, this)
     }
 
     override fun createStub(psi: LatexEnvironment, parentStub: StubElement<*>): LatexEnvironmentStub {
-        return LatexEnvironmentStubImpl(parentStub, this, psi.environmentName, psi.label ?: "")
+        return LatexEnvironmentStubImpl(parentStub, this, psi.getEnvironmentName(), psi.getLabel() ?: "")
     }
 
-    override fun getExternalId() = "ENVIRONMENT"
+    override fun getExternalId() = "texify.latex." + super.toString()
 
     @Throws(IOException::class)
     override fun serialize(stub: LatexEnvironmentStub, dataStream: StubOutputStream) {
@@ -35,11 +38,11 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     }
 
     override fun indexStub(stub: LatexEnvironmentStub, sink: IndexSink) {
-        sink.occurrence(LatexEnvironmentsIndex.key(), stub.environmentName)
+        indexSinkOccurrence(sink, LatexEnvironmentsIndex.Util, stub.environmentName)
 
         // only record environments with a label in the optional parameters
         if (stub.label.isNotEmpty() && EnvironmentMagic.labelAsParameter.contains(stub.environmentName)) {
-            sink.occurrence(LatexParameterLabeledEnvironmentsIndex.key(), stub.label)
+            indexSinkOccurrence(sink, LatexParameterLabeledEnvironmentsIndex.Util, stub.label)
         }
     }
 }

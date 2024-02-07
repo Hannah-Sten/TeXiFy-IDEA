@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.text
 
 import nl.hannahsten.texifyidea.util.capitalizeFirst
+import java.util.regex.Pattern
 import kotlin.random.Random
 
 /**
@@ -38,13 +39,13 @@ open class TexifyIpsumGenerator(
      * minimum amount of paragraphs..maximum amount of paragraphs.
      * Definitive amount is randomly determined.
      */
-    val numberOfParagraphs: IntRange = 3..7,
+    private val numberOfParagraphs: IntRange = 3..7,
 
     /**
      * minimum amount of sentences in a paragraph..maximum amount of sentences in a paragraph.
      * Definitive amount is randomly determined for each paragraph.
      */
-    val numberOfSentences: IntRange = 2..20,
+    private val numberOfSentences: IntRange = 2..20,
 
     /**
      * The random object to use to generate randomness.
@@ -63,7 +64,8 @@ open class TexifyIpsumGenerator(
      */
     private val template: Map<String, List<String>> by lazy {
         val input = ipsum.generateInput()
-        val parts = input.split(System.lineSeparator() + System.lineSeparator())
+        // Whether the newlines are Windows or Unix style depends on which system the plugin was built, so catch both
+        val parts = input.split(Pattern.compile("(\\r?\\n){2,}"))
 
         parts.associate { templatePart ->
             val lines = templatePart.lines()

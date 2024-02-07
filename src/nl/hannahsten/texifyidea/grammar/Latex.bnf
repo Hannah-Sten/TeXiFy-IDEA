@@ -14,14 +14,10 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
-    psiImplUtilClass="nl.hannahsten.texifyidea.psi.LatexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.LatexElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
-
-    extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
-    implements("commands")= ["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
     implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
@@ -33,7 +29,8 @@
     implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
     implements("parameter")="com.intellij.psi.PsiLanguageInjectionHost"
-    // See the lexer
+
+    // Used for displaying something else than the token name in the psi tree
     tokens=[
         WHITE_SPACE='regexp:\s+'
         DISPLAY_MATH_START='\['
@@ -48,13 +45,7 @@
         STAR='*'
         AMPERSAND='&'
         NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=&]+'
-        NORMAL_TEXT_CHAR='regexp:[|!"=&]'
-        // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
-        COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
-        RAW_TEXT_TOKEN='RAW_TEXT'
-        BEGIN_PSEUDOCODE_BLOCK='BEGIN_PSEUDOCODE_BLOCK'
-        MIDDLE_PSEUDOCODE_BLOCK='MIDDLE_PSEUDOCODE_BLOCK'
-        END_PSEUDOCODE_BLOCK='END_PSEUDOCODE_BLOCK'
+        NORMAL_TEXT_CHAR='regexp:[|!"=&-]'
     ]
 }
 
@@ -65,16 +56,15 @@ latexFile ::= content
 // Make sure that there is a root element with multiple children, for example for Grazie to allow ignoring certain types of no_math_content
 content ::= no_math_content*
 
-no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
-    OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
+no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA )+
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | ANGLE_PARAM)+
 
 environment ::= begin_command environment_content? end_command {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
-    methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImplMixin"
  }
 
 // There cannot be empty content in an environment, because it will break formatting related things
@@ -89,20 +79,21 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
-    mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getReference getOptionalParameterMap getRequiredParameters hasLabel getTextOffset getName setName]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexCommandsImplMixin"
+    extends="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
+    implements=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }
 
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
-    methods=[getOptionalParameterMap getRequiredParameters]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexBeginCommandImplMixin"
 }
 
 end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 
-parameter ::= optional_param | required_param | picture_param {
-    methods=[isValidHost updateText createLiteralTextEscaper]
+parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterImplMixin"
 }
 
 // pin=3 makes sure that an optional parameter is only matched successfully when
@@ -110,27 +101,38 @@ parameter ::= optional_param | required_param | picture_param {
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET (optional_key_val_pair? (COMMA optional_key_val_pair?)*) CLOSE_BRACKET { pin=3 }
+optional_key_val_pair ::= optional_key_val_key (EQUALS key_val_value?)?
+// This should not contain a comma, except when in a group. E.g., "\lstinputlisting[{param3,param4}=value3]{some/file}" is allowed
+optional_key_val_key ::= optional_param_content+ {
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValKeyImplMixin"
+}
 
-required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
+// Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
+// Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both
+// a key and a value.
+required_param ::= OPEN_BRACE (strict_key_val_pair (COMMA strict_key_val_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=1 }
 
 picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 
 // These are like content, but no brackets and with parameter_text instead of normal_text
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
-optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH
-picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
+optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
+// Cannot contain ( or )
+picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
 
-keyval_pair ::= keyval_key (EQUALS keyval_value?)?
-keyval_key ::= keyval_content+ {
-    methods=[toString]
+strict_key_val_pair ::= key_val_key EQUALS key_val_value?
+
+// Keys in a key/val list are typically no commands and don't need to be references
+key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValKeyImplMixin"
 }
-keyval_value ::= keyval_content+ {
-    methods=[toString]
+key_val_value ::= key_val_content+ {
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValValueImplMixin"
 }
-keyval_content ::= parameter_text | parameter_group
+key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
 
 
 // The lowest level of a parameter must have the getReferences etc. implemented
@@ -138,8 +140,8 @@ keyval_content ::= parameter_text | parameter_group
 // So, the following is like normal_text
 // This assumes that parameter text which is a reference, appears directly under param_content
 // Commands is here instead of in required_param_content because it can be part of reference text for example to a file
-parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
-   methods=[getReferences getReference getNameIdentifier getName setName delete]
+parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterTextImplMixin"
 }
 
 group ::= OPEN_BRACE content CLOSE_BRACE { pin=1 }
@@ -150,7 +152,7 @@ parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }
 // Be sure to capture the whitespace before and after the actual content as groups are meant to capture
 // *everything* inside them.
 // This element is needed instead of parameter_text in order to avoid parse errors for various other tokens that do not appear in parameter_text because they are not usually part of the reference
-parameter_group_text ::= (parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
+parameter_group_text ::= (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
 
 comment ::= COMMENT_TOKEN
 

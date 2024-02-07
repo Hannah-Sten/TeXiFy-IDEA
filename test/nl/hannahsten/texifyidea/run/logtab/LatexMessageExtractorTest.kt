@@ -210,6 +210,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected, newText)
     }
 
+    fun `test unused global option`() {
+        val newText = "    [a4]."
+        val text = "LaTeX Warning: Unused global option(s):$newText"
+        val expected = LatexLogMessage("Unused global option(s): [a4].", "test.tex", -1, WARNING)
+        testMessageExtractor(text, expected, newText)
+    }
+
     /**
      * @param text Line 1 joined with line 2 (line 2 can be empty)
      * @param newText Line 2

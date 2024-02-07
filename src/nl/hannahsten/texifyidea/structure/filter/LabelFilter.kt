@@ -5,7 +5,7 @@ import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
-import nl.hannahsten.texifyidea.util.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import javax.swing.Icon
 
 /**
@@ -33,7 +33,7 @@ class LabelFilter : Filter {
 
         override fun getText(): String = "Show Labels"
 
-        override fun getDescription(): String = "Show Labels"
+        override fun getDescription(): String = "Show labels"
 
         override fun getIcon(): Icon = TexifyIcons.DOT_LABEL
 

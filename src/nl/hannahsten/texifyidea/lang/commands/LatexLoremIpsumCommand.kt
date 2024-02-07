@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.lang.commands
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BLINDTEXT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LIPSUM
 
 /**
  * @author Hannah Schellekens
@@ -33,6 +32,6 @@ enum class LatexLoremIpsumCommand(
     LIPSUM_AS_SINGLE_PARAGRAPH("lipsum*", "paragraph range".asOptional(), "sentence range".asOptional(), dependency = LatexPackage.LIPSUM),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

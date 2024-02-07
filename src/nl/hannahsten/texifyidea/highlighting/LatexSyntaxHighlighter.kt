@@ -6,10 +6,12 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
-import nl.hannahsten.texifyidea.LatexLexerAdapter
+import nl.hannahsten.texifyidea.grammar.LatexLexerAdapter
 import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
+ * Syntax highlighting for lexer tokens (for composite elements, see [LatexAnnotator]).
+ *
  * @author Hannah Schellekens, Sten Wessel
  */
 class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
@@ -34,12 +36,6 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         else if (COMMAND_TOKENS.contains(tokenType)) {
             COMMAND_KEYS
         }
-        else if (tokenType == LatexTypes.INLINE_MATH_END) {
-            INLINE_MATH_KEYS
-        }
-        else if (tokenType == LatexTypes.DISPLAY_MATH_START || tokenType == LatexTypes.DISPLAY_MATH_END) {
-            DISPLAY_MATH_KEYS
-        }
         else if (tokenType == LatexTypes.STAR) {
             STAR_KEYS
         }
@@ -57,6 +53,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val BRACKETS = createKey("LATEX_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
         val OPTIONAL_PARAM = createKey("LATEX_OPTIONAL_PARAM", DefaultLanguageHighlighterColors.PARAMETER)
         val COMMAND = createKey("LATEX_COMMAND", DefaultLanguageHighlighterColors.KEYWORD)
+        val USER_DEFINED_COMMAND = createKey("LATEX_USER_DEFINED_COMMAND", DefaultLanguageHighlighterColors.KEYWORD)
         val COMMAND_MATH_INLINE = createKey("LATEX_COMMAND_MATH_INLINE", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
         val COMMAND_MATH_DISPLAY = createKey("LATEX_COMMAND_MATH_DISPLAY", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
         val COMMENT = createKey("LATEX_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
@@ -64,6 +61,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val INLINE_MATH = createKey("LATEX_INLINE_MATH", DefaultLanguageHighlighterColors.STRING)
         val DISPLAY_MATH = createKey("LATEX_DISPLAY_MATH", DefaultLanguageHighlighterColors.STRING)
         val STAR = createKey("LATEX_STAR", DefaultLanguageHighlighterColors.DOT)
+        val SEPARATOR_EQUALS = createKey("SEPARATOR_EQUALS", DefaultLanguageHighlighterColors.IDENTIFIER)
         val LABEL_DEFINITION = createKey("LATEX_LABEL_DEFINITION", DefaultLanguageHighlighterColors.IDENTIFIER)
         val LABEL_REFERENCE = createKey("LATEX_LABEL_REFERENCE", DefaultLanguageHighlighterColors.IDENTIFIER)
         val BIBLIOGRAPHY_DEFINITION = createKey("LATEX_BIBLIOGRAPHY_DEFINITION", LABEL_DEFINITION)
@@ -94,6 +92,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         private val BRACES_KEYS = keys(BRACES)
         private val BRACKET_KEYS = keys(BRACKETS)
         private val COMMAND_KEYS = keys(COMMAND)
+        val USER_DEFINED_COMMAND_KEY = USER_DEFINED_COMMAND
         private val COMMENT_KEYS = keys(COMMENT)
         private val MAGIC_COMMENT_KEYS = keys(MAGIC_COMMENT)
         private val INLINE_MATH_KEYS = keys(INLINE_MATH)

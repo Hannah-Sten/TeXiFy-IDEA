@@ -7,11 +7,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.ui.PreviewFormUpdater
 import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.environmentName
-import nl.hannahsten.texifyidea.util.hasParent
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.environmentName
+import nl.hannahsten.texifyidea.util.parser.hasParent
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import java.util.*
 
 /**
  * The [ShowTikzPreview] class describes an Action in the editor that will display a rendered
@@ -40,15 +40,19 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
 
             preamble += "\\usepackage{tikz, pgfplots, amsmath}\n"
 
-            // Add all of the tikz libs included in related packages (via \usetikzlibrary{}) to the produced document.
+            // Add all the tikz libs included in related packages (via \\usetikzlibrary{}) to the produced document.
             val tikzLibs = PackageUtils.getIncludedTikzLibraries(psiFile)
-            preamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
+            if (tikzLibs.isNotEmpty()) {
+                userPreamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
+            }
 
-            // Add all of the pgfplots libs included in related packages (via \usepgfplotslibrary{}) to the produced document.
+            // Add all the pgfplots libs included in related packages (via \\usepgfplotslibrary{}) to the produced document.
             val pgfLibs = PackageUtils.getIncludedPgfLibraries(psiFile)
-            preamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
+            if (pgfLibs.isNotEmpty()) {
+                userPreamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
+            }
 
-            preamble += findPreamblesFromMagicComments(psiFile, "tikz")
+            userPreamble += findPreamblesFromMagicComments(psiFile, "tikz")
             waitTime = 5L
         }
     }
@@ -66,10 +70,10 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
             currElement = currElement.parentOfType(LatexEnvironment::class)!!
         }
 
-        // Finally, decide whether or not the outermost environment is tikz.
+        // Finally, decide whether the outermost environment is tikz.
         return if (currElement.isTikz()) currElement else null
     }
 
     private fun LatexEnvironment.isTikz() = beginCommand.environmentName()
-        ?.toLowerCase() == "tikzpicture"
+        ?.lowercase(Locale.getDefault()) == "tikzpicture"
 }

@@ -28,6 +28,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var environmentVariables: EnvironmentVariablesComponent
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
+
     /** Keep track of the the working directory for bibtex, i.e., where bibtex should find the files it needs.
      * Is automatically set based on the LaTeX run config when created. */
     private lateinit var bibWorkingDir: LabeledComponent<TextFieldWithBrowseButton>
@@ -107,7 +108,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose the main .tex file", ".tex")
+                        FileTypeDescriptor("Choose the Main .tex File", ".tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
                     )
                 )
@@ -120,7 +121,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             workingDirField.addBrowseFolderListener(
                 TextBrowseFolderListener(
                     FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Choose the BibTeX working directory")
+                        .withTitle("Choose the BibTeX Working Directory")
                         .withRoots(
                             *ProjectRootManager.getInstance(project)
                                 .contentRootsFromAllModules

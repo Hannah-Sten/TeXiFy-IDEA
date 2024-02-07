@@ -38,8 +38,8 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
          *
          * Similar: \DeclareTextSymbol, \DeclareTextAccent, \DeclareTextComposite, \DeclareTextCompositeCommand
          */
-        val declareTextSymbolRegex = """\\DeclareText(?:Symbol|Accent)\{(?<key>[^}]+)\}(?<value>\{(?<encoding>[^}]+)\}(?:.+)*?\{(?<slot>[^}]+)\})""".toRegex()
-        val declareTextCommandRegex = """\\DeclareTextCommand\{(?<key>[^}]+)\}\{(?<value>[^}]+)\}""".toRegex()
+        val declareTextSymbolRegex = """\\DeclareText(?:Symbol|Accent)\{(?<key>[^}]+)}(?<value>\{(?<encoding>[^}]+)}(?:.+)*?\{(?<slot>[^}]+)})""".toRegex()
+        val declareTextCommandRegex = """\\DeclareTextCommand\{(?<key>[^}]+)}\{(?<value>[^}]+)}""".toRegex()
     }
 
     override fun map(inputData: FileContent): MutableMap<String, String> {

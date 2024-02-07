@@ -2,6 +2,7 @@
     <actions>
         <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <override-text place="GoToAction" text="_LaTeX Tools"/>
 
             <!-- Clear files -->
             <action class="nl.hannahsten.texifyidea.action.DeleteAuxFiles" id="texify.ClearAuxFiles" text="Delete Auxiliary Files">
@@ -13,19 +14,19 @@
             <separator/>
             <!-- Show equation preview -->
             <action class="nl.hannahsten.texifyidea.action.preview.ShowEquationPreview" id="texify.ShowEquationPreview"
-                    text="Preview _Equation">
+                    text="Preview _Equation" icon="nl.hannahsten.texifyidea.TexifyIcons.EQUATION_PREVIEW">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
             </action>
 
             <!-- Show tikz preview -->
             <action class="nl.hannahsten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview"
-                    text="Preview _Tikz Picture">
+                    text="Preview _Tikz Picture" icon="nl.hannahsten.texifyidea.TexifyIcons.TIKZ_PREVIEW">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
 
             <separator/>
             <!-- Forward search -->
-            <action class="nl.hannahsten.texifyidea.action.ForwardSearchAction" id="texify.ForwardSearch" text="_Forward Search">
+            <action class="nl.hannahsten.texifyidea.action.ForwardSearchAction" id="texify.ForwardSearch" text="_Forward Search" icon="nl.hannahsten.texifyidea.TexifyIcons.RIGHT">
                 <keyboard-shortcut first-keystroke="ctrl shift alt PERIOD" keymap="$default"/>
             </action>
 

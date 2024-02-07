@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.file
 
 import com.intellij.openapi.fileTypes.LanguageFileType
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.TexifyIcons
 
 /**
@@ -16,4 +16,6 @@ object BibtexFileType : LanguageFileType(BibtexLanguage) {
     override fun getDefaultExtension() = "bib"
 
     override fun getIcon() = TexifyIcons.BIBLIOGRAPHY_FILE
+
+    override fun getDisplayName() = name
 }

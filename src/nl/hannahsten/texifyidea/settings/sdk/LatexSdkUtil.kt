@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 
 /**
@@ -65,13 +66,13 @@ object LatexSdkUtil {
      * In this case we assume the user wants to use Dockerized MiKTeX.
      */
     private fun defaultIsDockerMiktex() =
-        (!isMiktexAvailable && !TexliveSdk.isAvailable && DockerSdk.isAvailable)
+        (!isMiktexAvailable && !TexliveSdk.Cache.isAvailable && DockerSdk.Availability.isAvailable)
 
     fun isAvailable(type: LatexDistributionType, project: Project): Boolean {
         if (type == LatexDistributionType.PROJECT_SDK && getLatexProjectSdk(project) != null) return true
         if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
-        if (type == LatexDistributionType.TEXLIVE && TexliveSdk.isAvailable) return true
-        if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.isAvailable) return true
+        if (type == LatexDistributionType.TEXLIVE && TexliveSdk.Cache.isAvailable) return true
+        if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.Availability.isAvailable) return true
         if (type == LatexDistributionType.WSL_TEXLIVE && isWslTexliveAvailable) return true
         return false
     }
@@ -80,6 +81,16 @@ object LatexSdkUtil {
      * Given the path to the LaTeX home, find the parent path of the executables, e.g. /bin/x86_64-linux/
      */
     fun getPdflatexParentPath(homePath: String) = File("$homePath/bin").listFiles()?.firstOrNull()?.path
+
+    /**
+     * Run pdflatex in the given directory and check if it is present and valid.
+     */
+    fun isPdflatexPresent(directory: String?): Boolean {
+        // .exe is optional on windows
+        val output = runCommandWithExitCode("$directory${File.separator}pdflatex", "--version", returnExceptionMessage = true).first ?: "No output given by $directory${File.separator}pdflatex --version"
+
+        return output.contains("pdfTeX")
+    }
 
     /**
      * Find the full name of the distribution in use, e.g. TeX Live 2019.
@@ -113,7 +124,7 @@ object LatexSdkUtil {
         return when {
             getLatexProjectSdk(project) != null -> LatexDistributionType.PROJECT_SDK
             isMiktexAvailable -> LatexDistributionType.MIKTEX
-            TexliveSdk.isAvailable -> LatexDistributionType.TEXLIVE
+            TexliveSdk.Cache.isAvailable -> LatexDistributionType.TEXLIVE
             defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
             else -> LatexDistributionType.TEXLIVE
         }
@@ -122,7 +133,10 @@ object LatexSdkUtil {
     /**
      * Get executable name of pdflatex, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
      */
-    fun getExecutableName(executableName: String, project: Project): String {
+    fun getExecutableName(executableName: String, project: Project, latexDistributionType: LatexDistributionType? = null): String {
+        // Prefixing the LaTeX compiler is not relevant for Docker MiKTeX (perhaps the path to the docker executable)
+        if (latexDistributionType == LatexDistributionType.DOCKER_MIKTEX) return executableName
+
         // Give preference to the project SDK if a valid LaTeX SDK is selected
         getLatexProjectSdk(project)?.let { sdk ->
             if (sdk.homePath != null) {
@@ -160,7 +174,7 @@ object LatexSdkUtil {
     /**
      * If a LaTeX SDK is selected as project SDK, return it, otherwise return null.
      */
-    private fun getLatexProjectSdk(project: Project): Sdk? {
+    fun getLatexProjectSdk(project: Project): Sdk? {
         val sdk = ProjectRootManager.getInstance(project).projectSdk
         if (sdk?.sdkType is LatexSdk) {
             return sdk
@@ -176,33 +190,23 @@ object LatexSdkUtil {
     }
 
     /**
-     * Similar to [getSdkSourceRoots] but for package style files.
-     * Only works when a LaTeX project sdk is selected.
-     */
-    fun getSdkStyleFileRoots(project: Project): Set<VirtualFile> {
-        getLatexProjectSdk(project)?.let { sdk ->
-            return if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultStyleFilesPath(sdk.homePath!!)).filterNotNull().toSet() else emptySet()
-        }
-        return emptySet()
-    }
-
-    /**
      * Collect SDK source paths, so paths to texmf-dist/source/latex, based on Project SDK if available (combining the default
      * for the SDK type and any user-added source roots) and otherwise on a random guess (ok not really).
+     *
+     * @param getRoots Given an sdk type and a home path, return a list of source roots.
      */
-    fun getSdkSourceRoots(project: Project): Set<VirtualFile> {
+    fun getSdkSourceRoots(project: Project, getRoots: (LatexSdk, String) -> VirtualFile?): Set<VirtualFile> {
         // Get user provided and default source roots
         getLatexProjectSdk(project)?.let { sdk ->
+            if (sdk.sdkType !is LatexSdk) return@let
             val userProvided = sdk.rootProvider.getFiles(OrderRootType.SOURCES).toSet()
-            val default = if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultSourcesPath(sdk.homePath!!)).filterNotNull() else emptySet()
+            val default = if (sdk.homePath != null) setOf(getRoots(sdk.sdkType as LatexSdk, sdk.homePath!!)).filterNotNull() else emptySet()
             return userProvided + default
         }
 
         // If no sdk is known, guess something
         for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexWindowsSdk())) {
-            val roots = sdkType.suggestHomePaths().mapNotNull { homePath ->
-                sdkType.getDefaultSourcesPath(homePath)
-            }.toSet()
+            val roots = sdkType.suggestHomePaths().mapNotNull { homePath -> getRoots(sdkType, homePath) }.toSet()
             if (roots.isNotEmpty()) return roots
         }
         return emptySet()

@@ -8,18 +8,17 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.getParentOfType
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.getParentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * @author Hannah Schellekens
  */
-class LatexToggleStarAction : EditorAction("Toggle Star", TexifyIcons.TOGGLE_STAR) {
+class LatexToggleStarAction : EditorAction("Toggle Star") {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         val element = getElement(file, project, textEditor)
@@ -32,7 +31,7 @@ class LatexToggleStarAction : EditorAction("Toggle Star", TexifyIcons.TOGGLE_STA
 
         val commands = getParentOfType(element, LatexCommands::class.java) ?: return
 
-        runWriteAction(project) { toggleStar(editor, psiFile, commands) }
+        runWriteAction(project, file) { toggleStar(editor, psiFile, commands) }
     }
 
     /**

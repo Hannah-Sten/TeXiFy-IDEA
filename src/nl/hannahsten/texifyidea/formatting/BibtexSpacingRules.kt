@@ -2,15 +2,13 @@ package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CodeStyleSettings
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.psi.BibtexTypes.*
 
 fun createBibtexSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
-
     val bibtexCommonSettings = settings.getCommonSettings(BibtexLanguage)
 
     return rules(bibtexCommonSettings) {
-
         simple {
             around(ASSIGNMENT).spaces(1)
             before(SEPARATOR).spaces(0)
@@ -20,6 +18,7 @@ fun createBibtexSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             after(OPEN_PARENTHESIS).spaces(1)
             around(CONCATENATE).spaces(1)
             between(ENTRY_CONTENT, ENDTRY).spaces(1)
+            before(ENTRY).blankLines(1)
         }
 
         custom {

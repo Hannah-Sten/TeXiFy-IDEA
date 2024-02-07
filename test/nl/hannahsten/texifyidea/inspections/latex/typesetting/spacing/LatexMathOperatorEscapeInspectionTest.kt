@@ -13,14 +13,16 @@ class LatexMathOperatorEscapeInspectionTest : TexifyInspectionTestBase(LatexMath
     }
 
     fun `test trigger in math inside text`() {
-        testHighlighting("""
+        testHighlighting(
+            """
             \[
                 \begin{cases}
                     1 & \text{if ${'$'}<warning descr="Non-escaped math operator">cos</warning>(x) = 1${'$'}} \\
                     0 & \text{otherwise}
                 \end{cases}
             \]
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun `test no trigger inside text in inline math`() {

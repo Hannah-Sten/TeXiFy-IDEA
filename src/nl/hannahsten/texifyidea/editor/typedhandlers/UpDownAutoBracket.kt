@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * In the situation $a_3<caret>$, typing 'b' should end up in $a_{32}$ as that is probably what the user intended to type.
@@ -21,19 +21,16 @@ import nl.hannahsten.texifyidea.util.*
  */
 open class UpDownAutoBracket : TypedHandlerDelegate() {
 
-    companion object {
+    /**
+     * Symbols that denote whether a {} block has to be inserted when having more than 1 character.
+     */
+    private val insertSymbols = setOf("_", "^")
 
-        /**
-         * Symbols that denote whether a {} block has to be inserted when having more than 1 character.
-         */
-        private val insertSymbols = setOf("_", "^")
-
-        /**
-         * Matches the suffix that denotes that braces may be inserted.
-         */
-        private val insertOnly =
-            """^[a-zA-Z0-9]$""".toRegex()
-    }
+    /**
+     * Matches the suffix that denotes that braces may be inserted.
+     */
+    private val insertOnly =
+        """^[a-zA-Z0-9]$""".toRegex()
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
         if (!TexifySettings.getInstance().automaticUpDownBracket) {

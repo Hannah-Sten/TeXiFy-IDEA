@@ -1,21 +1,19 @@
 package nl.hannahsten.texifyidea.util
 
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import java.util.*
 
 /**
  * Get the lowercase token type (including `@`) of the BibTeX entry (e.g. `@article`).
  */
-fun BibtexEntry.tokenType(): String? = type.text.toLowerCase()
+fun BibtexEntry.tokenType(): String = type.text.lowercase(Locale.getDefault())
 
 /**
  * Get the token type (excluding `@`) of the BibTeX entry (e.g. `article`).
  */
-fun BibtexEntry.tokenName(): String? = tokenType()?.substring(1)
-
-/**
- * Get the identifier/label of the BibTeX entry (e.g. `someAuthor:23b`).
- */
-fun BibtexEntry.identifier(): String? = firstChildOfType(BibtexId::class)?.text
+fun BibtexEntry.tokenName(): String = tokenType().substring(1)
 
 /**
  * Get all the tags in the entry.
@@ -30,13 +28,7 @@ fun BibtexEntry.keys(): Collection<BibtexKey> = childrenOfType(BibtexKey::class)
 /**
  * Get the first key in the entry, or `null` when there are no keys in the entry.
  */
-fun BibtexEntry.firstKey(): BibtexKey? {
-    val keys = keys()
-    if (keys.isEmpty()) {
-        return null
-    }
-    return keys.first()
-}
+fun BibtexEntry.firstKey() = keys().firstOrNull()
 
 /**
  * Get all the names of all entry's keys.
@@ -46,12 +38,12 @@ fun BibtexEntry.keyNames(): Collection<String> = keys().map { it.text }
 /**
  * Checks if the entry is a @string.
  */
-fun BibtexEntry.isString() = tokenName()?.toLowerCase() == "string"
+fun BibtexEntry.isString() = tokenName().lowercase(Locale.getDefault()) == "string"
 
 /**
  * Checks if the entry is a @preamble.
  */
-fun BibtexEntry.isPreamble() = tokenName()?.toLowerCase() == "preamble"
+fun BibtexEntry.isPreamble() = tokenName().lowercase(Locale.getDefault()) == "preamble"
 
 /**
  * Get the key of the BibTeX tag.
@@ -121,7 +113,7 @@ fun BibtexDefinedString.evaluate(): String {
 
     // Look up all string entries.
     for (entry in file.childrenOfType(BibtexEntry::class)) {
-        val token = entry.tokenName()?.toLowerCase()
+        val token = entry.tokenName().lowercase(Locale.getDefault())
         if (token != "string") {
             continue
         }

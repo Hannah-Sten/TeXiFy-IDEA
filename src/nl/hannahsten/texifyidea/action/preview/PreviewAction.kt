@@ -2,15 +2,12 @@ package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.ui.content.ContentFactory
 import nl.hannahsten.texifyidea.action.EditorAction
-import nl.hannahsten.texifyidea.ui.EquationPreviewToolWindow
-import nl.hannahsten.texifyidea.ui.PreviewFormUpdater
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.util.*
 import javax.swing.Icon
@@ -28,7 +25,7 @@ import javax.swing.Icon
  * @author Sergei Izmailov
  * @author FalseHonesty
  */
-abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name, icon) {
+abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name) {
 
     /**
      * This function is used to display the preview requested as the name suggests.
@@ -47,9 +44,13 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         val toolWindowId = name
         val toolWindowManager = ToolWindowManager.getInstance(project)
 
-        val task = RegisterToolWindowTask(toolWindowId, contentFactory = PreviewToolWindowFactory(), icon = icon)
         // Avoid adding it twice
-        val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: toolWindowManager.registerToolWindow(task)
+        // Note: the plugin verifier claims this is Internal api, but it's not:
+        // https://intellij-support.jetbrains.com/hc/en-us/community/posts/11533368171026-Registering-a-tool-window-programmatically
+        val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: toolWindowManager.registerToolWindow(toolWindowId) {
+            contentFactory = PreviewToolWindowFactory()
+            icon = this@PreviewAction.icon
+        }
 
         val containingFile = element.containingFile
         val psiDocumentManager = PsiDocumentManager.getInstance(project)
@@ -73,7 +74,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             }
         }
 
-        val contentFactory = ContentFactory.SERVICE.getInstance()
+        val contentFactory = ContentFactory.getInstance()
 
         if (!replaced) {
             val previewToolWindow = EquationPreviewToolWindow()

@@ -10,27 +10,24 @@ import nl.hannahsten.texifyidea.TexifyIcons
  */
 open class BibtexColorSettingsPage : ColorSettingsPage {
 
-    companion object {
+    private val descriptors = arrayOf(
+        AttributesDescriptor("Assignment", BibtexSyntaxHighlighter.ASSIGNMENT),
+        AttributesDescriptor("Braces", BibtexSyntaxHighlighter.BRACES),
+        AttributesDescriptor("Comments", BibtexSyntaxHighlighter.COMMENTS),
+        AttributesDescriptor("Concatenation", BibtexSyntaxHighlighter.CONCATENATION),
+        AttributesDescriptor("Identifier", BibtexSyntaxHighlighter.IDENTIFIER),
+        AttributesDescriptor("Key", BibtexSyntaxHighlighter.KEY),
+        AttributesDescriptor("Number", BibtexSyntaxHighlighter.NUMBER),
+        AttributesDescriptor("String", BibtexSyntaxHighlighter.STRING),
+        AttributesDescriptor("Type token", BibtexSyntaxHighlighter.TYPE_TOKEN),
+        AttributesDescriptor("Value", BibtexSyntaxHighlighter.VALUE)
+    )
 
-        private val descriptors = arrayOf(
-            AttributesDescriptor("Assignment", BibtexSyntaxHighlighter.ASSIGNMENT),
-            AttributesDescriptor("Braces", BibtexSyntaxHighlighter.BRACES),
-            AttributesDescriptor("Comments", BibtexSyntaxHighlighter.COMMENTS),
-            AttributesDescriptor("Concatenation", BibtexSyntaxHighlighter.CONCATENATION),
-            AttributesDescriptor("Identifier", BibtexSyntaxHighlighter.IDENTIFIER),
-            AttributesDescriptor("Key", BibtexSyntaxHighlighter.KEY),
-            AttributesDescriptor("Number", BibtexSyntaxHighlighter.NUMBER),
-            AttributesDescriptor("String", BibtexSyntaxHighlighter.STRING),
-            AttributesDescriptor("Type token", BibtexSyntaxHighlighter.TYPE_TOKEN),
-            AttributesDescriptor("Value", BibtexSyntaxHighlighter.VALUE)
-        )
-
-        private val demoTags = mapOf(
-            "key" to BibtexSyntaxHighlighter.KEY,
-            "string" to BibtexSyntaxHighlighter.STRING,
-            "value" to BibtexSyntaxHighlighter.VALUE
-        )
-    }
+    private val demoTags = mapOf(
+        "key" to BibtexSyntaxHighlighter.KEY,
+        "string" to BibtexSyntaxHighlighter.STRING,
+        "value" to BibtexSyntaxHighlighter.VALUE
+    )
 
     override fun getIcon() = TexifyIcons.BIBLIOGRAPHY_FILE
 
@@ -60,7 +57,8 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
                 |    <key>year</key> = 1997,
                 |    <key>volume</key> = -1,
                 |    <key>note</key> = <value>{to appear}</value>,
-                |}""".trimMargin()
+                |}
+        """.trimMargin()
 
     override fun getAdditionalHighlightingTagToDescriptorMap() = demoTags
 

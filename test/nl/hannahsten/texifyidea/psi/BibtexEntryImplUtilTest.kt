@@ -6,9 +6,10 @@ import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.getIdentifier
+import nl.hannahsten.texifyidea.util.parser.getTagContent
 import org.intellij.lang.annotations.Language
-import org.junit.Test
 
 class BibtexEntryImplUtilTest : BasePlatformTestCase() {
 
@@ -36,15 +37,29 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
         myFixture.configureByText(BibtexFileType, entryText)
     }
 
-    @Test
     fun testEntryGetReferences() {
         listOf(WebReference(entryElement, url)).map { it.url }.forEach {
             UsefulTestCase.assertContainsElements(entryElement.references.map { reference -> (reference as WebReference).url }, it)
         }
     }
 
-    @Test
     fun testGetTagContent() {
         TestCase.assertEquals("TeXiFy IDEA", entryElement.getTagContent("title"))
+    }
+
+    fun `test get id of 'empty' element`() {
+        myFixture.configureByText(
+            BibtexFileType,
+            """
+                @misc{identifier,
+                }
+            """.trimIndent()
+        )
+        TestCase.assertEquals("identifier", entryElement.getIdentifier())
+    }
+
+    fun `test get id of @string element`() {
+        myFixture.configureByText(BibtexFileType, "@string{a = b}")
+        TestCase.assertEquals("a", entryElement.getIdentifier())
     }
 }

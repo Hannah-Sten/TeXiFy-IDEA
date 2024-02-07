@@ -6,11 +6,14 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
+import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
+import java.io.IOException
 import java.security.PrivilegedActionException
 
 /**
@@ -36,13 +39,14 @@ class DeleteGeneratedFiles : AnAction() {
             .flatMap { listOf(it.outputPath.getAndCreatePath(), it.auxilPath.getAndCreatePath()) }
             // There's no reason to delete files outside the project
             .filter { it?.path?.contains(project.basePath!!) == true }
+            .filterNotNull()
 
         val result = showOkCancelDialog(
             "Delete Auxiliary and Output Files",
-        "Do you really want to delete all files in LaTeX output directories, " +
+            "Do you really want to delete all files in LaTeX output directories, " +
                 "and all auxiliary and generated files? \n" +
                 "All files in the following output directories will be deleted: \n" +
-                customOutput.mapNotNull { it?.path }.joinToString { "  $it\n" } +
+                customOutput.map { it.path }.joinToString { "  $it\n" } +
                 "plus auxiliary and generated files in src/, auxil/ and out/.\n" +
                 "Be careful when doing this, you might not be able to fully undo this operation!",
             "Delete"
@@ -67,11 +71,31 @@ class DeleteGeneratedFiles : AnAction() {
             path.walk().maxDepth(1).forEach { it.delete() }
         }
 
+        val notDeleted = mutableListOf<String>()
+
         // Custom out/aux dirs
         runWriteAction {
             for (path in customOutput) {
-                path?.children?.forEach { it.delete(this) }
+                try {
+                    path.children?.forEach {
+                        try {
+                            it.delete(this)
+                        }
+                        catch (e: IOException) {
+                            Log.warn(e.message ?: e.toString())
+                            notDeleted.add(it.path)
+                        }
+                    }
+                }
+                catch (e: InvalidVirtualFileAccessException) {
+                    Log.warn(e.message ?: e.toString())
+                    notDeleted.add(path.path)
+                }
             }
+        }
+
+        if (notDeleted.isNotEmpty()) {
+            Notification("LaTeX", "Could not delete some files", "The following files need to be deleted manually: $notDeleted", NotificationType.WARNING).notify(project)
         }
 
         // Generated minted files

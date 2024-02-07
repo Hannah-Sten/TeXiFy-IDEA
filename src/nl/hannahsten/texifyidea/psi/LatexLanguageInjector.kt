@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.lang.Language
+import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
@@ -10,7 +11,10 @@ import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.util.camelCase
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.toStringMap
+import nl.hannahsten.texifyidea.util.remove
+import java.util.*
 
 /**
  * Inject language based on magic comments.
@@ -21,7 +25,6 @@ class LatexLanguageInjector : LanguageInjector {
 
     override fun getLanguagesToInject(host: PsiLanguageInjectionHost, registrar: InjectedLanguagePlaces) {
         if (host is LatexEnvironment) {
-
             val magicComment = host.magicComment()
             val hasMagicCommentKey = magicComment.containsKey(DefaultMagicKeys.INJECT_LANGUAGE)
 
@@ -29,15 +32,25 @@ class LatexLanguageInjector : LanguageInjector {
                 hasMagicCommentKey -> {
                     magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
                 }
-                host.environmentName == "lstlisting" -> {
-                    host.beginCommand.optionalParameterMap.toStringMap().getOrDefault("language", null)
+                host.getEnvironmentName() == "lstlisting" -> {
+                    host.beginCommand.getOptionalParameterMap().toStringMap().getOrDefault("language", null)
+                }
+                host.getEnvironmentName() in EnvironmentMagic.languageInjections.keys -> {
+                    EnvironmentMagic.languageInjections[host.getEnvironmentName()]
+                }
+                host.getEnvironmentName().endsWith("code", ignoreCase = false) -> {
+                    // Environment may have been defined with the \newminted shortcut (see minted documentation)
+                    host.getEnvironmentName().remove("code")
                 }
                 else -> {
-                    EnvironmentMagic.languageInjections[host.environmentName]
+                    null
                 }
-            }
+            } ?: return
 
             val language = findLanguage(languageId) ?: return
+
+            // A parser definition is required
+            if (LanguageParserDefinitions.INSTANCE.forLanguage(language) == null) return
 
             val range = host.environmentContent?.textRange?.shiftRight(-host.textOffset) ?: TextRange.EMPTY_RANGE
 
@@ -49,6 +62,7 @@ class LatexLanguageInjector : LanguageInjector {
 
             val languageId = CommandMagic.languageInjections[parent.commandToken.text.substring(1)]
             val language = findLanguage(languageId) ?: return
+            if (LanguageParserDefinitions.INSTANCE.forLanguage(language) == null) return
             val range = host.textRange
                 .shiftRight(-host.textOffset)
                 .let { TextRange(it.startOffset + 1, it.endOffset - 1) }
@@ -61,8 +75,8 @@ class LatexLanguageInjector : LanguageInjector {
         return if (id.isNullOrBlank()) null
         else {
             Language.findLanguageByID(id)
-                ?: Language.findLanguageByID(id.toLowerCase())
-                ?: Language.findLanguageByID(id.toUpperCase())
+                ?: Language.findLanguageByID(id.lowercase(Locale.getDefault()))
+                ?: Language.findLanguageByID(id.uppercase(Locale.getDefault()))
                 ?: Language.findLanguageByID(id.camelCase())
         }
     }

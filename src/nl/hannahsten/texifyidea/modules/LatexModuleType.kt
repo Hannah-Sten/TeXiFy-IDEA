@@ -1,10 +1,13 @@
 package nl.hannahsten.texifyidea.modules
 
 import com.intellij.openapi.module.ModuleType
-import com.intellij.openapi.module.ModuleTypeManager
 import nl.hannahsten.texifyidea.TexifyIcons
 
 /**
+ * Note: ModuleTypes are deprecated, see [ModuleType].
+ * Therefore, we do not register it in plugin.xml, so it won't show to the user.
+ * We still use it for new project creation though.
+ *
  * @author Sten Wessel
  */
 class LatexModuleType : ModuleType<LatexModuleBuilder>(ID) {
@@ -13,8 +16,7 @@ class LatexModuleType : ModuleType<LatexModuleBuilder>(ID) {
 
         const val ID = "LATEX_MODULE_TYPE"
 
-        val INSTANCE: LatexModuleType
-            get() = ModuleTypeManager.getInstance().findByID(ID) as LatexModuleType
+        val INSTANCE = LatexModuleType()
     }
 
     override fun createModuleBuilder() = LatexModuleBuilder()

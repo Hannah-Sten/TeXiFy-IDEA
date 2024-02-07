@@ -57,4 +57,25 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertEquals(1, result.size)
         assertTrue(result.any { l -> l.lookupString == "lst:inputlisting" })
     }
+
+    fun testSecondLabelParameter() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \label{blub}
+                \label{kameel}
+                \crefrange{blub}{<caret>}
+            \end{document}
+            """.trimIndent()
+        )
+
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(2, result.size)
+        assertTrue(result.any { l -> l.lookupString == "kameel" })
+    }
 }

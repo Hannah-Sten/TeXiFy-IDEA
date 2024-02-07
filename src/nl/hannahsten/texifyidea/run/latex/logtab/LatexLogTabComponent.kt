@@ -20,6 +20,7 @@ import javax.swing.JComponent
 class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
     private val latexMessageList = mutableListOf<LatexLogMessage>()
+
     // bibtex messages that need to be shown in the latex log tab (latexmk)
     private val bibtexMessageList = mutableListOf<BibtexLogMessage>()
     private val treeView = LatexCompileMessageTreeView(project, latexMessageList, bibtexMessageList)
@@ -29,7 +30,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
         startedProcess.addProcessListener(LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView), this)
     }
 
-    override fun getTabTitle() = "Log messages"
+    override fun getTabTitle() = "Log Messages"
 
     override fun dispose() {}
 
@@ -39,7 +40,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
 
     override fun getToolbarContextComponent(): JComponent? = null
 
-    override fun getToolbarPlace(): String? = "top"
+    override fun getToolbarPlace(): String = "top"
 
     override fun getSearchComponent(): JComponent? = null
 

@@ -7,12 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
  * @author Hannah Schellekens
  */
 enum class LatexGreekCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = true,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = true,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     ALPHA("alpha", display = "α", collapse = true),
@@ -55,8 +55,8 @@ enum class LatexGreekCommand(
     UPSILON("upsilon", display = "υ", collapse = true),
     CAPITAL_UPSILON("Upsilon", display = "ϒ", collapse = true),
     CAPITAL_UPSILON_VARIANT("Upsilon", dependency = AMSMATH, collapse = true),
-    PHI_STRAIGHT("phi", display = "φ", collapse = true),
-    PHI_CURLY("varphi", display = "ϕ", collapse = true),
+    PHI_STRAIGHT("phi", display = "ϕ", collapse = true),
+    PHI_CURLY("varphi", display = "φ", collapse = true),
     CAPITAL_PHI("Phi", display = "Φ", collapse = true),
     CAPITAL_PHI_VARIANT("varPhi", dependency = AMSMATH, collapse = true),
     CHI("chi", display = "χ", collapse = true),
@@ -68,6 +68,6 @@ enum class LatexGreekCommand(
     CAPITAL_OMEGA_VARIANT("varOmega", dependency = AMSMATH, collapse = true),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

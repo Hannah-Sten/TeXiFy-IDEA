@@ -6,8 +6,8 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
+import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 
 /**
@@ -23,7 +23,7 @@ object LatexMagicCommentKeyProvider : CompletionProvider<CompletionParameters>()
                     .withCaseSensitivity(false)
                     .withPresentableText(it.key)
                     .bold()
-                    .withIcon(PlatformIcons.PROTECTED_ICON)
+                    .withIcon(TexifyIcons.KEY_USER_DEFINED)
                     .withInsertHandler(InsertHandler)
             }
         )

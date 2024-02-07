@@ -5,11 +5,8 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.launch
-import nl.hannahsten.texifyidea.util.runCommand
+import kotlinx.coroutines.*
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -23,34 +20,22 @@ import java.io.InputStreamReader
  */
 object EvinceInverseSearchListener {
 
-    private var currentCoroutineJob: Job? = null
+    private var currentCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     /**
      * Starts a listener which listens for inverse search actions from Evince.
      */
     fun start(project: Project) {
         // Check if Evince version supports dbus
-        // Technically only version 2.32 is needed, but since 3.0 was released back
-        // in 2011 we just check for major version 3, much easier
-
-        try {
-            // Assumes version will be given in the format GNOME Document Viewer 3.34.2
-            val majorVersion = "evince --version".runCommand()
-                ?.split(" ")
-                ?.lastOrNull()
-                ?.split(".")
-                ?.firstOrNull()
-                ?.toInt()
-            if (majorVersion != null && majorVersion < 3) {
-                Notification("LaTeX", "Old Evince version found", "Please update Evince to at least version 3 to use forward/backward search", NotificationType.ERROR).notify(project)
-                return
-            }
+        // The exact version required is not know, but 3.28 works and 3.0.2 does not (#2087), even though dbus is supported since 2.32
+        if (SystemEnvironment.evinceVersion.majorVersion <= 3 && SystemEnvironment.evinceVersion.minorVersion <= 28) {
+            Notification("LaTeX", "Old Evince version found", "Please update Evince to at least version 3.28 to use forward/backward search", NotificationType.ERROR).notify(project)
+            return
         }
-        catch (ignored: NumberFormatException) {}
 
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
-        currentCoroutineJob = GlobalScope.launch {
+        currentCoroutineScope.launch {
             startListening()
         }
     }
@@ -66,7 +51,7 @@ object EvinceInverseSearchListener {
             val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
             var line: String? = bufferedReader.readLine()
 
-            while (line != null && currentCoroutineJob?.isActive == true) {
+            while (line != null && currentCoroutineScope.isActive) {
                 // Check if a SyncSource signal appeared from Evince and if so, read the contents
                 if (line.contains("interface=org.gnome.evince.Window; member=SyncSource")) {
                     // Get the value between quotes
@@ -90,7 +75,7 @@ object EvinceInverseSearchListener {
                 // This is to ensure we can quickly stop this coroutine on plugin unload
                 while (!bufferedReader.ready()) {
                     Thread.sleep(100)
-                    if (currentCoroutineJob?.isActive == false) return
+                    if (!currentCoroutineScope.isActive) return
                 }
                 line = bufferedReader.readLine()
             }
@@ -120,7 +105,7 @@ object EvinceInverseSearchListener {
         }
     }
 
-    suspend fun unload() {
-        currentCoroutineJob?.cancelAndJoin()
+    fun unload() {
+        currentCoroutineScope.cancel(CancellationException(("Unloading the plugin")))
     }
 }

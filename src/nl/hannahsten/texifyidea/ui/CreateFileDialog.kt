@@ -14,19 +14,19 @@ import javax.swing.JTextField
  *
  * @param currentFilePath The path of the file we are currently in, e.g., the file from which an intention was triggered
  *      that creates a new file.
- * @param newFileName The name of the new file, with or without the extension.
+ * @param newFileName The name of the new file, with or without the extension. Will be reformatted before being shown to the user.
  * @param newFileFullPath The full path of the new file, without tex extension.
  */
 class CreateFileDialog(private val currentFilePath: String?, private val newFileName: String, var newFileFullPath: String? = null) {
 
     init {
         DialogBuilder().apply {
-            setTitle("Create new file")
+            setTitle("Create New File")
             val panel = JPanel()
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Field to enter the name of the new file.
-            val nameField = JTextField(newFileName)
+            val nameField = JTextField(newFileName.formatAsFileName())
             // Field to select the folder/location of the new file.
             val pathField = TextFieldWithBrowseButton()
             pathField.text = currentFilePath ?: return@apply
@@ -37,7 +37,7 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             pathField.addBrowseFolderListener(
                 TextBrowseFolderListener(
                     FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Select folder of new file")
+                        .withTitle("Select Folder of New File")
                 )
             )
 
@@ -69,7 +69,8 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
                 // Create the directories, if they do not yet exist.
                 File(path).mkdirs()
                 // Format the text from the name field as a file name (e.g. " " -> "-") and remove the (double) tex extension.
-                newFileFullPath = "$path/${nameField.text.substring(pathEndIndex + 1).formatAsFileName()}"
+                // We do not check the filename here, as we already suggested a valid name so if the user decides to change it, it's not our problem.
+                newFileFullPath = "$path/${nameField.text.substring(pathEndIndex + 1)}"
                     .replace(Regex("(\\.tex)+$", RegexOption.IGNORE_CASE), "")
             }
         }

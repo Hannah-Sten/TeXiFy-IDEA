@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.parser.endOffset
 
 class MathEnvironmentEditor(
     private val oldEnvironmentName: String,
@@ -22,27 +23,29 @@ class MathEnvironmentEditor(
     fun apply() {
         val document = editor.document
         val indent = document.lineIndentationByOffset(environment.textOffset)
+        val currentStartLineNumber = document.getLineNumber(environment.textOffset)
+        val currentEndLineNumber = document.getLineNumber(environment.endOffset())
 
         // The number of characters to replace before the begin block of the old environment starts.
-        val whitespace = if (newEnvironmentName == "inline") indent.length + 1
-        else if (oldEnvironmentName == "inline") 1
+        val whitespace = if (newEnvironmentName == "inline" && environment.textOffset > 0) indent.length + 1
+        else if (oldEnvironmentName == "inline" && environment.textOffset > 0) 1
         else 0
 
         // Extra white space to be added to the beginning of the new environment, when converting from/to inline.
-        val extraWhiteSpace = if (newEnvironmentName == "inline") {
+        val extraWhiteSpace = if (newEnvironmentName == "inline" && environment.textOffset > 0) {
             // Add indentation if indentation of old environment is bigger than the previous line.
-            val indentOfPreviousLine = document.lineIndentation(document.getLineNumber(environment.textOffset) - 1)
+            val indentOfPreviousLine = if (currentStartLineNumber > 0) document.lineIndentation(currentStartLineNumber - 1) else ""
             // Get the previous line, so we can check if it ends with a sentence separator. In that case the inline should not move to the previous line.
-            val previousLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset) - 1), environment.textOffset))
+            val previousLine = if (currentStartLineNumber > 0) document.getText(TextRange(document.getLineStartOffset(currentStartLineNumber - 1), environment.textOffset)) else ""
             when {
                 indentOfPreviousLine.length < indent.length -> "\n$indent"
                 PatternMagic.sentenceSeparatorAtLineEnd.matcher(previousLine).find() -> "\n$indent"
                 else -> " "
             }
         }
-        else if (oldEnvironmentName == "inline") {
+        else if (oldEnvironmentName == "inline" && environment.textOffset > 0) {
             // Add a newline if there is no text on the line before the inline environment.
-            val prefixOnLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset)), environment.textOffset))
+            val prefixOnLine = document.getText(TextRange(document.getLineStartOffset(currentStartLineNumber), environment.textOffset))
             if (prefixOnLine.matches(Regex("^\\s*"))) " " else "\n$indent"
         }
         else ""
@@ -51,21 +54,19 @@ class MathEnvironmentEditor(
         val extra = if (newEnvironmentName == "inline") {
             // Only add the indentation if the next line is indented by at least the same amount as the end command
             // of the old environment.
-            val nextLineIndent = document.lineIndentation(
-                document.getLineNumber(environment.endOffset()) + 1
-            )
+            val nextLineIndent = if (currentEndLineNumber < document.lineCount - 1) document.lineIndentation(currentEndLineNumber + 1) else ""
             if (nextLineIndent.length < indent.length) 0 else indent.length
         }
-        else if (oldEnvironmentName == "inline") 1
+        else if (oldEnvironmentName == "inline" && environment.endOffset() < document.textLength - 1) 1
         else 0
 
         // Extra new line to be added at the end of the new environment if the old environment was inline.
-        val extraNewLine = if (oldEnvironmentName == "inline") {
+        val extraNewLine = if (oldEnvironmentName == "inline" && environment.endOffset() < document.textLength - 1) {
             // If the rest of the line is empty, add a new line without indentation.
             val restOfLine = document.getText(
                 TextRange(
                     environment.endOffset(),
-                    document.getLineEndOffset(document.getLineNumber(environment.endOffset()))
+                    document.getLineEndOffset(currentEndLineNumber)
                 )
             )
             if (restOfLine.matches(Regex("^\\s*"))) "\n" else "\n$indent"

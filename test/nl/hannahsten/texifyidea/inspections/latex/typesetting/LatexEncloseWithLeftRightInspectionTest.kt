@@ -36,4 +36,46 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
             """.trimIndent()
         )
     }
+
+    fun testAllQuickFixes() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            ${'$'} ((\frac 1 2))${'$'}
+            """.trimIndent()
+        )
+
+        val quickFixes = myFixture.getAllQuickFixes()
+        assertEquals(4, quickFixes.size)
+        writeCommand(myFixture.project) {
+            quickFixes.forEach { it.invoke(myFixture.project, myFixture.editor, myFixture.file) }
+        }
+
+        myFixture.checkResult(
+            """
+            ${'$'} \left(\left(\frac 1 2\right)\right)${'$'}
+            """.trimIndent()
+        )
+    }
+
+    fun testAllQuickFixesWithPictureArgument() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            ${'$'} (\frac {\cos(\frac{1}{2} \pi)}{2})${'$'}
+            """.trimIndent()
+        )
+
+        val quickFixes = myFixture.getAllQuickFixes()
+        assertEquals(4, quickFixes.size)
+        writeCommand(myFixture.project) {
+            quickFixes.forEach { it.invoke(myFixture.project, myFixture.editor, myFixture.file) }
+        }
+
+        myFixture.checkResult(
+            """
+            ${'$'} \left(\frac {\cos\left(\frac{1}{2} \pi\right)}{2}\right)${'$'}
+            """.trimIndent()
+        )
+    }
 }

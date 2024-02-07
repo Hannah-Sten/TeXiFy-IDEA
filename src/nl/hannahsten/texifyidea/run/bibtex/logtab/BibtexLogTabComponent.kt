@@ -22,7 +22,7 @@ class BibtexLogTabComponent(val project: Project, val mainFile: VirtualFile?, st
         startedProcess.addProcessListener(BibtexOutputListener(project, mainFile, bibtexMessageList, treeView), this)
     }
 
-    override fun getTabTitle() = "Log messages"
+    override fun getTabTitle() = "Log Messages"
 
     override fun dispose() {
     }

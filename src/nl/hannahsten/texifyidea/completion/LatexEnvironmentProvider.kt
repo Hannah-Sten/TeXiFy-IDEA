@@ -3,18 +3,17 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Dependend
-import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.lang.SimpleEnvironment
+import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Kindness
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.util.*
 
 /**
@@ -23,12 +22,21 @@ import java.util.*
 object LatexEnvironmentProvider {
 
     fun addIndexedEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
+        val project = parameters.editor.project ?: return
+
+        val usesTexlive = LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable
+        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(LatexIncludesIndex.Util.getItems(project), project).plus(
+            LatexPackage.DEFAULT
+        )
+
         result.addAllElements(
-            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.id, parameters.editor.project ?: return)
+            FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.Cache.id, project)
                 .flatMap { envText ->
-                    Environment.lookupInIndex(envText, parameters.editor.project ?: return).map { env ->
-                        createEnvironmentLookupElement(env)
-                    }
+                    Environment.lookupInIndex(envText, project)
+                        .filter { if (usesTexlive) it.dependency in packagesInProject else true }
+                        .map { env ->
+                            createEnvironmentLookupElement(env)
+                        }
                 }
         )
     }
@@ -45,7 +53,8 @@ object LatexEnvironmentProvider {
         // Find all environments.
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
-        LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
+        LatexDefinitionIndex.Util.getItemsInFileSet(parameters.originalFile).stream()
+            .map { it as LatexCommands }
             .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
             .map { cmd -> cmd.requiredParameter(0) }
             .filter { obj -> Objects.nonNull(obj) }
@@ -54,7 +63,7 @@ object LatexEnvironmentProvider {
 
         // Create autocomplete elements.
         result.addAllElements(
-            ContainerUtil.map2List(environments) { env: Environment ->
+            environments.map { env: Environment ->
                 createEnvironmentLookupElement(env)
             }
         )

@@ -986,19 +986,21 @@ object SymbolCategories {
      * @param requireLeftRight
      *          True if the commands should be preceded with \left and \right. False if the commands alone suffice.
      */
-    fun MutableList<SymbolUiEntry>.addLeftRight(
-            left: LatexCommand, right: LatexCommand, description: String, fileName: String, requireLeftRight: Boolean = true
+    private fun MutableList<SymbolUiEntry>.addLeftRight(
+        left: LatexCommand, right: LatexCommand, description: String, fileName: String, requireLeftRight: Boolean = true
     ) {
         val leftCmd = if (requireLeftRight) "\\left" else ""
         val rightCmd = if (requireLeftRight) "\\right" else ""
-        add(DryUiEntry(
+        add(
+            DryUiEntry(
                 description = description,
                 generatedLatex = "$leftCmd${left.commandWithSlash} <caret> $rightCmd${right.commandWithSlash}",
                 fileName = fileName,
                 imageLatex = "$leftCmd${left.commandWithSlash}...$rightCmd${right.commandWithSlash}",
                 isMathSymbol = true,
                 dependency = left.dependency
-        ))
+            )
+        )
     }
 
     /**
@@ -1006,30 +1008,30 @@ object SymbolCategories {
      * For the parameters see [CommandUiEntry].
      */
     private fun MutableList<SymbolUiEntry>.add(
-            command: LatexCommand,
-            latex: String? = null,
-            fileName: String? = null,
-            description: String? = null,
-            image: String? = null
+        command: LatexCommand,
+        latex: String? = null,
+        fileName: String? = null,
+        description: String? = null,
+        image: String? = null
     ) = add(command.toEntry(latex, fileName, description, image))
 
     /**
      * Turns the command into a ui entry.
      */
     private fun LatexCommand.toEntry(
-            latex: String? = null,
-            fileName: String? = null,
-            description: String? = null,
-            image: String? = null
+        latex: String? = null,
+        fileName: String? = null,
+        description: String? = null,
+        image: String? = null
     ) = CommandUiEntry(this, latex, fileName, description, image)
 
     /**
      * Adds a new category to the map and initializes the symbols.
      */
     private fun MutableMap<SymbolCategory, List<SymbolUiEntry>>.createCategory(
-            name: String,
-            description: String = name,
-            symbolInitializer: MutableList<SymbolUiEntry>.() -> Unit
+        name: String,
+        description: String = name,
+        symbolInitializer: MutableList<SymbolUiEntry>.() -> Unit
     ) {
         val category = SymbolCategory(name, description)
         this[category] = ArrayList<SymbolUiEntry>().apply {

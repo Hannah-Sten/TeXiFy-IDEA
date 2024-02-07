@@ -4,25 +4,29 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NTHEOREM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.VARIOREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 
 /**
  * @author Hannah Schellekens
  */
 enum class LatexGenericRegularCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = false,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = false,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
@@ -33,8 +37,8 @@ enum class LatexGenericRegularCommand(
     CAPITAL_AE("AE", display = "Æ"),
     APPENDIX("appendix"),
     AUTHOR("author", "name".asRequired(Argument.Type.TEXT)),
-    AUTOREF("autoref", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.HYPERREF),
-    AUTOREF_CAPITAL("Autoref", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.HYPERREF),
+    AUTOREF("autoref", "label".asRequired(Argument.Type.LABEL), dependency = LatexPackage.HYPERREF),
+    AUTOREF_CAPITAL("Autoref", "label".asRequired(Argument.Type.LABEL), dependency = LatexPackage.HYPERREF),
     BEGIN("begin", "environment".asRequired()),
     END("end", "environment".asRequired()),
     ENSUREMATH("ensuremath", "text".asRequired()),
@@ -57,9 +61,9 @@ enum class LatexGenericRegularCommand(
     CITE("cite", "extratext".asOptional(), "keys".asRequired()),
     CLEARDOUBLEPAGE("cleardoublepage"),
     CLEARPAGE("clearpage"),
-    COLOR("color", "color".asRequired(), dependency = LatexPackage.COLOR),
+    COLOR_CMD("color", "color".asRequired(), dependency = COLOR),
     COLOR2("color", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
-    COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = COLOR),
     COLORBOX2("colorbox", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     COLORMASK("colormask", dependency = XCOLOR),
     COLORSERIESCYCLE("colorseriescycle", dependency = XCOLOR),
@@ -68,15 +72,11 @@ enum class LatexGenericRegularCommand(
     CONTENTSLINE("contentsline", "type".asRequired(), "text".asRequired(Argument.Type.TEXT), "page".asRequired()),
     CONTENTSNAME("contentsname", "name".asRequired()),
     CONVERTCOLORSPEC("convertcolorspec", "model".asRequired(), "spec".asRequired(), "target model".asRequired(), "cmd".asRequired(), dependency = XCOLOR),
-    CPAGEREF("cpageref", "key".asRequired(), dependency = CLEVEREF),
-    CREF("cref", "label".asRequired(), dependency = CLEVEREF),
-    CREF_CAPITAL("Cref", "label".asRequired(), dependency = CLEVEREF),
     TEXT_DAGGER("dag", display = "†"),
     TEXT_DOUBLE_DAGGER("ddag", display = "‡"),
     DATE("date", "text".asRequired(Argument.Type.TEXT)),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Argument.Type.TEXT), dependency = AMSMATH),
     DEF("def"),
-    DIRECTLUA("directlua", "luacode".asRequired()),
     DOCUMENTCLASS("documentclass", "options".asOptional(), RequiredFileArgument("class", true, false, "cls")),
     DOLLAR_SIGN("$", display = "$"),
     DOTFILL("dotfill"),
@@ -86,14 +86,14 @@ enum class LatexGenericRegularCommand(
     ENLARGETHISPAGE_STAR("enlargethispage*", "size".asRequired()),
     ENQUOTE("enquote", dependency = CSQUOTES),
     ENQUOTE_STAR("enquote*", dependency = CSQUOTES),
-    EQREF("eqref", "eqLabel".asRequired(Argument.Type.TEXT), dependency = AMSMATH),
+    EQREF("eqref", "eqLabel".asRequired(Argument.Type.LABEL), dependency = AMSMATH),
     EVENSIDEMARGIN("evensidemargin"),
-    EXTERNALDOCUMENT("externaldocument", "prefix".asOptional(), "file".asRequired()),
+    EXTERNALDOCUMENT("externaldocument", "prefix".asOptional(), RequiredFileArgument("file", false, false, "tex")),
     EXTRACTCOLORSPEC("extractcolorspec", "color".asRequired(), "cmd".asRequired(), dependency = XCOLOR),
     EXTRACTCOLORSPECS("extractcolorspecs", "color".asRequired(), "model-cmd".asRequired(), "color-cmd".asRequired(), dependency = XCOLOR),
     FAMILY("family"),
     FBOX("fbox", "text".asRequired(Argument.Type.TEXT)),
-    FCOLORBOX("fcolorbox", "frame color".asRequired(), "background color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    FCOLORBOX("fcolorbox", "frame color".asRequired(), "background color".asRequired(), "text".asRequired(), dependency = COLOR),
     FCOLORBOX2("fcolorbox", "model-list".asOptional(), "frame spec-list".asRequired(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     FCOLORBOX3("fcolorbox", "frame model-list".asOptional(), "frame spec-list".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     FCOLORBOX4("fcolorbox", "frame color".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
@@ -116,7 +116,7 @@ enum class LatexGenericRegularCommand(
     FRAME("frame", "text".asRequired(Argument.Type.TEXT)),
     FRQ("frq", display = "›"),
     FRQQ("frqq", display = "»"),
-    FULLREF("fullref", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.HYPERREF),
+    FULLREF("fullref", "label".asRequired(Argument.Type.LABEL), dependency = LatexPackage.HYPERREF),
     GLOSSARYENTRY("glossaryentry", "text".asRequired(Argument.Type.TEXT), "pagenum".asRequired()),
     GLOSSARY("glossary", "text".asRequired(Argument.Type.TEXT)),
     GLQ("glq", display = ","),
@@ -144,7 +144,7 @@ enum class LatexGenericRegularCommand(
     INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INPUT("input", RequiredFileArgument("sourcefile", true, false, "tex")),
     INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
-    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", true, false, "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
+    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", isAbsolutePathSupported = true, commaSeparatesArguments = false, FileMagic.graphicFileExtensions), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, true, "tex")),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),
@@ -153,7 +153,6 @@ enum class LatexGenericRegularCommand(
     ITEM("item", "label".asOptional()),
     ITSHAPE("itshape"),
     LABEL("label", "key".asRequired()),
-    LABELCREF("labelcref", "key".asRequired(), dependency = CLEVEREF),
     LARGE("large"),
     CAPITAL_LARGE("Large"),
     SCREAMING_LARGE("LARGE"),
@@ -177,7 +176,6 @@ enum class LatexGenericRegularCommand(
     LOADCLASSWITHOPTIONS("LoadClassWithOptions", RequiredFileArgument("class", true, false, "cls")),
     LOWERCASE("lowercase", "text".asRequired(Argument.Type.TEXT)),
     LQ("lq", display = "‘"),
-    LUAEXEC("luaexec", "luacode".asRequired()),
     MARG("marg", "arg".asRequired()),
     MAKEGLOSSARY("makeglossary"),
     MAKEINDEX("makeindex"),
@@ -190,7 +188,7 @@ enum class LatexGenericRegularCommand(
     MDSERIES("mdseries"),
     MEDSKIP("medskip"),
     MULTICOLUMN("multicolumn", "cols".asRequired(), "pos".asRequired(), "text".asRequired(Argument.Type.TEXT)),
-    NAMEREF("nameref", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.HYPERREF),
+    NAMEREF("nameref", "label".asRequired(Argument.Type.LABEL), dependency = LatexPackage.HYPERREF),
     NEWLABEL("newlabel"),
     NEWLENGTH("newlength", "length".asRequired()),
     NEWLINE("newline"),
@@ -202,8 +200,8 @@ enum class LatexGenericRegularCommand(
     NOLINEBREAK("nolinebreak", "number".asOptional()),
     NONUMBER("nonumber"),
     NOPAGEBREAK("nopagebreak", "number".asOptional()),
-    NOPAGECOLOR("nopagecolor", dependency = XCOLOR),
-    NORMALCOLOR("normalcolor"),
+    NOPAGECOLOR("nopagecolor", dependency = COLOR),
+    NORMALCOLOR("normalcolor", dependency = COLOR),
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
     OARG("oarg", "arg".asRequired()),
@@ -214,11 +212,11 @@ enum class LatexGenericRegularCommand(
     ODDSIDEMARGIN("oddsidemargin"),
     ONECOLUMN("onecolumn"),
     PAGEBREAK("pagebreak", "number".asOptional()),
-    PAGECOLOR("pagecolor", "color".asRequired(), dependency = XCOLOR),
+    PAGECOLOR("pagecolor", "color".asRequired(), dependency = COLOR),
     PAGECOLOR2("pagecolor", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     PAGENAME("pagename"),
     PAGENUMBERING("pagenumbering", "numstyle".asRequired()),
-    PAGEREF("pageref", "label".asRequired()),
+    PAGEREF("pageref", "label".asRequired(Argument.Type.LABEL)),
     PAGESTYLE("pagestyle", "style".asRequired()),
     PAGETOTAL("pagetotal"),
     PAPERWIDTH("paperwidth"),
@@ -243,7 +241,7 @@ enum class LatexGenericRegularCommand(
     R("r", display = "˚ (accent)"),
     RBRACK("rbrack", display = "]"),
     RPAREN("rparen", display = ")", dependency = MATHTOOLS),
-    REF("ref", "label".asRequired()),
+    REF("ref", "label".asRequired(Argument.Type.LABEL)),
     REFNAME("refname", "name".asRequired(Argument.Type.TEXT)),
     REQUIREPACKAGE("RequirePackage", "options".asOptional(), RequiredFileArgument("package", true, true, "sty")),
     RESETCOLORSERIES("resetcolorseries", "div".asOptional(), "name".asRequired(), dependency = XCOLOR),
@@ -318,7 +316,7 @@ enum class LatexGenericRegularCommand(
     TEXTBRACERIGHT("textbraceright", display = "}"),
     TEXT_BULLET("textbullet", display = "•"),
     CIRCLED_TEXT("textcircled", "a".asRequired()),
-    TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = COLOR),
     TEXTCOLOR2("textcolor", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     TEXT_COPYRIGHT("textcopyright", display = "©"),
     TEXTDAGGER("textdagger", display = "†"),
@@ -365,6 +363,7 @@ enum class LatexGenericRegularCommand(
     THICKLINES("thicklines"),
     THINLINES("thinlines"),
     THISPAGESTYLE("thispagestyle", "style".asRequired()),
+    THREF("thref", "label".asRequired(), dependency = NTHEOREM),
     TIME("time"),
     TINY("tiny"),
     TITLE("title", "text".asRequired(Argument.Type.TEXT)),
@@ -384,13 +383,31 @@ enum class LatexGenericRegularCommand(
     USETIKZLIBRARY("usetikzlibrary", "libraries".asRequired()),
     VDOTS("vdots", display = "⋮"),
     VLINE("vline"),
-    VREF("vref", "key".asRequired(), dependency = CLEVEREF),
+    VREF("vref", "key".asRequired(Argument.Type.LABEL), dependency = VARIOREF),
+    VREFRANGE("vrefrange", "start".asRequired(), "end".asRequired(), "text".asOptional(), dependency = VARIOREF),
     VSPACE("vspace", "length".asRequired()),
     VSPACE_STAR("vspace*", "length".asRequired()),
     WIDTH("width"),
     XGLOBAL("xglobal", dependency = XCOLOR),
+
+    // Cleveref
+    CREF("cref", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    CREF_CAPITAL("Cref", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    CREFRANGE("crefrange", "label1".asRequired(Argument.Type.LABEL), "label2".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    CPAGEREF("cpageref", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    CPAGEREF_CAPITAL("Cpageref", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    CPAGEREFRANGE("cpagerefrange", "label1".asRequired(Argument.Type.LABEL), "label2".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    CPAGEREFRANGE_CAPITAL("Cpagerefrange", "label1".asRequired(Argument.Type.LABEL), "label2".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    NAMECREF("namecref", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    NAMECREF_CAPITAL("nameCref", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    LCNAMECREF("lcnamecref", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    NAMECREFS("namecrefs", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    NAMECREFS_CAPITAL("nameCrefs", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    LCNAMECREFS("lcnamecrefs", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    LABELCREF("labelcref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+    LABELCPAGEREF("labelcpageref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

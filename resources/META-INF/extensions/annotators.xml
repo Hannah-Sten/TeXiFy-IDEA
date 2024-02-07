@@ -2,5 +2,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <annotator language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexAnnotator"/>
         <annotator language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexAnnotator"/>
+        <externalAnnotator language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.TextidoteAnnotator" />
     </extensions>
 </idea-plugin>

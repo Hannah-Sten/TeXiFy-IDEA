@@ -12,16 +12,18 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory
-import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory.Companion.createFromTemplate
+import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory.Util.createFromTemplate
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.FileUtil.fileTypeByExtension
+import java.util.*
+import java.util.function.Consumer
 
 /**
  * @author Hannah Schellekens
  */
 class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE) {
 
-    override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: java.util.function.Consumer<Array<PsiElement>>) {
+    override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: Consumer<in Array<PsiElement>>) {
         val fileCreator = LatexFileCreator(project, psiDirectory)
         val builder = CreateFileFromTemplateDialog.createDialog(project)
         builder.setTitle("Create a New LaTeX File")
@@ -30,8 +32,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE)
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE)
         builder.addKind("TikZ (.tikz)", TexifyIcons.TIKZ_FILE, OPTION_TIKZ_FILE)
-        val consumer = com.intellij.util.Consumer<PsiElement> { }
-        builder.show<PsiElement>("", null, fileCreator, consumer)
+        builder.show<PsiElement>("", null, fileCreator) {}
     }
 
     override fun create(s: String, psiDirectory: PsiDirectory): Array<PsiElement> {
@@ -55,16 +56,16 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
 
         private fun getTemplateNameFromExtension(extensionWithoutDot: String): String {
             return when (extensionWithoutDot) {
-                OPTION_STY_FILE -> LatexTemplatesFactory.fileTemplateSty
-                OPTION_CLS_FILE -> LatexTemplatesFactory.fileTemplateCls
-                OPTION_BIB_FILE -> LatexTemplatesFactory.fileTemplateBib
-                OPTION_TIKZ_FILE -> LatexTemplatesFactory.fileTemplateTikz
-                else -> LatexTemplatesFactory.fileTemplateTex
+                OPTION_STY_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_STY
+                OPTION_CLS_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_CLS
+                OPTION_BIB_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_BIB
+                OPTION_TIKZ_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_TIKZ
+                else -> LatexTemplatesFactory.FILE_TEMPLATE_TEX
             }
         }
 
         private fun getFileType(fileName: String, option: String): FileType {
-            val smallFileName = fileName.toLowerCase()
+            val smallFileName = fileName.lowercase(Locale.getDefault())
             if (smallFileName.endsWith(".$OPTION_TEX_FILE")) {
                 return LatexFileType
             }
@@ -84,14 +85,14 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         }
 
         private fun getNewFileName(fileName: String, fileType: FileType): String {
-            val smallFileName = fileName.toLowerCase()
+            val smallFileName = fileName.lowercase(Locale.getDefault())
             return if (smallFileName.endsWith("." + fileType.defaultExtension)) {
                 smallFileName
             }
             else fileName.appendExtension(fileType.defaultExtension)
         }
 
-        override fun createFile(fileName: String, option: String): PsiElement? {
+        override fun createFile(fileName: String, option: String): PsiElement {
             val fileType = getFileType(fileName, option)
             val newFileName = getNewFileName(fileName, fileType)
             val templateName = getTemplateNameFromExtension(fileType.defaultExtension)

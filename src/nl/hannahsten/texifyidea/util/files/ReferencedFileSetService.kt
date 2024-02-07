@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 
@@ -13,7 +13,7 @@ interface ReferencedFileSetService {
 
         @JvmStatic
         fun getInstance(): ReferencedFileSetService {
-            return ServiceManager.getService(ReferencedFileSetService::class.java)
+            return ApplicationManager.getApplication().getService(ReferencedFileSetService::class.java)
         }
     }
 

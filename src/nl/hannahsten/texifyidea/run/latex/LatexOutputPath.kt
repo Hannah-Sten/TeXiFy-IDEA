@@ -4,17 +4,12 @@ import com.intellij.execution.ExecutionException
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.FileUtil
-import nl.hannahsten.texifyidea.util.files.createExcludedDir
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 
 /**
@@ -31,8 +26,8 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
 
     companion object {
 
-        const val projectDirString = "{projectDir}"
-        const val mainFileString = "{mainFileParent}"
+        const val PROJECT_DIR_STRING = "{projectDir}"
+        const val MAIN_FILE_STRING = "{mainFileParent}"
     }
 
     fun clone(): LatexOutputPath {
@@ -42,7 +37,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
 
-    var pathString: String = "$projectDirString/$variant"
+    var pathString: String = "$PROJECT_DIR_STRING/$variant"
 
     /**
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
@@ -55,7 +50,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
 
         // Just to be sure, avoid using jetbrains /bin path as output
         if (pathString.isBlank()) {
-            pathString = "$projectDirString/$variant"
+            pathString = "$PROJECT_DIR_STRING/$variant"
         }
 
         // Caching of the result
@@ -74,13 +69,13 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             return virtualFile!!
         }
         else {
-            val pathString = if (pathString.contains(projectDirString)) {
+            val pathString = if (pathString.contains(PROJECT_DIR_STRING)) {
                 if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
-                pathString.replace(projectDirString, contentRoot?.path ?: return null)
+                pathString.replace(PROJECT_DIR_STRING, contentRoot?.path ?: return null)
             }
             else {
                 if (mainFile == null) return null
-                pathString.replace(mainFileString, mainFile?.parent?.path ?: return null)
+                pathString.replace(MAIN_FILE_STRING, mainFile?.parent?.path ?: return null)
             }
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
             if (path != null && path.isDirectory) {
@@ -133,7 +128,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
-        val module = fileIndex.getModuleForFile(mainFile, false)
+        val module = runReadAction { fileIndex.getModuleForFile(mainFile, false) }
         if (File(outPath).mkdirs()) {
             module?.createExcludedDir(outPath)
             return LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)
@@ -142,24 +137,35 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     }
 
     /**
-     * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems
+     * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems.
+     *
+     * @return Set of directories that were created and did not exist already.
      */
     @Throws(ExecutionException::class)
-    fun updateOutputSubDirs() {
+    fun updateOutputSubDirs(): Set<File> {
         val includeRoot = mainFile?.parent
-        val outPath = virtualFile?.path ?: return
+        val outPath = virtualFile?.path ?: return emptySet()
 
-        val files: Set<PsiFile>
-        try {
-            files = mainFile?.psiFile(project)?.referencedFileSet() ?: emptySet()
-        }
-        catch (e: IndexNotReadyException) {
-            throw ExecutionException("Please wait until the indices are built.", e)
-        }
+        // We cannot take the time to figure out the file set at this point, because it would take too long (up to 30 seconds for large projects).
+        // However, we really want the most up-to-date directory structure from the source, because compilation would fail if we miss a subdirectory, so we cannot just do this once when generating the run configuration.
+        // Therefore, creating a superset of the directories we need is probably best we can do (and maybe clean them up later)
+        val files: Set<VirtualFile> = includeRoot?.allChildDirectories() ?: emptySet()
+        val createdDirectories = mutableSetOf<File>()
 
         // Create output paths (see issue #70 on GitHub)
         files.asSequence()
-            .mapNotNull { FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.virtualFile.parent.path) }
-            .forEach { File(outPath + it).mkdirs() }
+            // Ignore all output directories to avoid exponential recursion
+            .filter { !it.path.contains(outPath) }
+            .mapNotNull {
+                FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.path)
+            }
+            .forEach {
+                val file = File(outPath + it)
+                if (file.mkdirs()) {
+                    createdDirectories.add(file)
+                }
+            }
+
+        return createdDirectories
     }
 }

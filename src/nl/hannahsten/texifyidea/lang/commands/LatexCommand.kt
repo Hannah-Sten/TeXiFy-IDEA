@@ -1,16 +1,21 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-import nl.hannahsten.texifyidea.lang.Dependend
+import arrow.core.NonEmptySet
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
+import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.length
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
 
@@ -28,7 +33,7 @@ interface LatexCommand : Described, Dependend {
          *          The command name to look up. Can start with or without `\`
          * @return The found commands, or `null` when the command doesn't exist.
          */
-        fun lookup(commandName: String?): Set<LatexCommand>? {
+        fun lookup(commandName: String?): NonEmptySet<LatexCommand>? {
             var result = commandName ?: return null
             if (result.startsWith("\\")) {
                 result = result.substring(1)
@@ -41,10 +46,26 @@ interface LatexCommand : Described, Dependend {
          * Create a [LatexCommand] for the given command name, or merge with existing one.
          */
         fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
-            val cmds = mutableSetOf<LatexCommand>()
+            // Don't try to access index when in dumb mode
+            if (DumbService.isDumb(project)) return emptySet()
             val cmdWithSlash = "\\$cmdWithoutSlash"
+
+            // Make sure to look up the hardcoded commands, to have something in case nothing is found in the index
+            val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
+
             // Look up in index
-            FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
+            val filesAndValues = mutableListOf<Pair<VirtualFile, String>>()
+            runReadAction {
+                FileBasedIndex.getInstance().processValues(
+                    LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
+                        filesAndValues.add(Pair(file, value))
+                        true
+                    },
+                    GlobalSearchScope.everythingScope(project)
+                )
+            }
+
+            for ((file, value) in filesAndValues) {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
@@ -71,9 +92,17 @@ interface LatexCommand : Described, Dependend {
                     }
                 }
                 cmds.add(cmd)
-                true
-            }, GlobalSearchScope.everythingScope(project))
-            return cmds
+            }
+
+            // Now we might have duplicates, some of which might differ only in description.
+            // Of those, we just want to take any command which doesn't have an empty description if it exists
+            // Since an interface cannot override equals, and it has to be an interface because enums implement it, filter duplicates first
+            return cmds.distinctBy { listOf(it.command, it.dependency, it.isMathMode, it.description).plus(it.arguments) }
+                // Do not group by arguments, because if there is a difference in arguments, probably the command with better (non-empty) docs is also the one with better argument info
+                .groupBy { listOf(it.command, it.dependency, it.isMathMode) }
+                // Assume empty descriptions appear first when sorted
+                .mapValues { it.value.maxByOrNull { cmd -> cmd.description }!! }
+                .values.toSet()
         }
 
         /**
@@ -164,20 +193,23 @@ interface LatexCommand : Described, Dependend {
                 LatexMathCommand[cmdWithoutSlash]
             }
             else {
-                lookupInIndex(cmdWithoutSlash, command.project)
+                // Attempt to avoid an error about slow operations on EDT
+                runBlocking {
+                    lookupInIndex(cmdWithoutSlash, command.project)
+                }
             }
         }
     }
 
     /**
-     * Uniquely identifies the command, when two commands are the same, but from different packages, the identifyer
+     * Uniquely identifies the command, when two commands are the same, but from different packages, the identifier
      * should be different.
      */
-    val identifyer: String
+    val identifier: String
         get() = commandWithSlash
 
     override val description: String
-        get() = identifyer
+        get() = identifier
 
     /**
      * Get the name of the command without the first backslash.
@@ -222,7 +254,7 @@ interface LatexCommand : Described, Dependend {
      *
      * @return `true` to insert automatically, `false` not to insert.
      */
-    fun autoInsertRequired() = arguments.filterIsInstance<RequiredArgument>().count() >= 1
+    fun autoInsertRequired() = arguments.filterIsInstance<RequiredArgument>().isNotEmpty()
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Argument> getArgumentsOf(clazz: KClass<T>): List<T> {

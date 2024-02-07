@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.ui.symbols
 
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.util.formatAsFileName
+import java.util.*
 
 /**
  * Quickly creates a SymbolUiEntry from a command with the following consequences:
@@ -17,30 +18,30 @@ import nl.hannahsten.texifyidea.util.formatAsFileName
  *
  * @author Hannah Schellekens
  */
-open class CommandUiEntry(
-        command: LatexCommand,
-        generatedLatex: String? = null,
-        customFileName: String? = null,
-        customDescription: String? = null,
-        customImageLatex: String? = null
+class CommandUiEntry(
+    override val command: LatexCommand,
+    generatedLatex: String? = null,
+    customFileName: String? = null,
+    customDescription: String? = null,
+    customImageLatex: String? = null
 ) : SymbolUiEntry {
-
-    override val command: LatexCommand? = command
 
     override val generatedLatex: String = generatedLatex ?: command.commandWithSlash
 
     override val fileName = customFileName ?: if (command.isMathMode) {
-        "math_${command.identifyer.formatAsFileName()}.png"
+        "math_${command.identifier.formatAsFileName()}.png"
     }
-    else "text_${command.identifyer.formatAsFileName()}.png"
+    else "text_${command.identifier.formatAsFileName()}.png"
 
     override val imagePath = "/nl/hannahsten/texifyidea/symbols/$fileName"
 
     override val imageLatex = customImageLatex ?: command.commandWithSlash
 
-    override val description = customDescription ?: command.identifyer
-            .toLowerCase()
+    override val description = customDescription ?: (
+        command.identifier
+            .lowercase(Locale.getDefault())
             .replace("_", " ") + if (command.isMathMode) " (math)" else ""
+        )
 
     override val isMathSymbol = command.isMathMode
 }

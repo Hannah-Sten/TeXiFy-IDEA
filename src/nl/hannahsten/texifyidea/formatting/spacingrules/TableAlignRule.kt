@@ -2,13 +2,16 @@ package nl.hannahsten.texifyidea.formatting.spacingrules
 
 import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import kotlin.math.min
 
 /** At this length, we put table cells on their own line. */
@@ -18,14 +21,17 @@ const val LINE_LENGTH = 80
  * Align spaces to the right of &
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
-
-    if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments
-    ) return null
-
-    // Only add spaces after &, unless escaped
+    // Only add spaces after &, unless escaped or inside url.
     if (left.node?.text?.endsWith("&") == false) return null
     if (left.node?.text?.endsWith("\\&") == true) return null
+    if (left.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
+
+    if (
+        parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+            ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
+            parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+        )
+    ) return null
 
     return createSpacing(
         minSpaces = 1,
@@ -40,9 +46,15 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
  * Align spaces to the left of & or \\
  */
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
+    if (right.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
+
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in EnvironmentMagic.tableEnvironments) return null
+    val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
+            project
+        )
+    ) return null
 
     val tableLineSeparator = "\\\\"
     if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
@@ -92,7 +104,8 @@ fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: Mu
     return contentLines.map { line ->
         val indices = mutableListOf<Int>()
         line.withIndex().forEach { (i, it) ->
-            if (it == '&') indices.add(currentOffset)
+            // Do not count escaped ampersands: \&
+            if ((it == '&') && (i == 0 || line[i - 1] != '\\')) indices.add(currentOffset)
             if (it == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false) indices.add(currentOffset)
             currentOffset++
         }
@@ -124,7 +137,6 @@ fun getNumberOfSpaces(
     absoluteAmpersandIndicesPerLine: List<List<Int>>,
     indent: String
 ): Int? {
-
     val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator)
         .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
         .toMutableList()
@@ -159,7 +171,8 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
                 }
                 value in setOf(' ', '\n') -> {
                     if (i > 0 && i < line.length - 1) {
-                        val isAfterSpaceOrSeparator = line[i - 1] in setOf(' ', '&', '\n')
+                        // Spaces after an ignored ampersand are not removed
+                        val isAfterSpaceOrSeparator = (line[i - 1] in setOf(' ', '&', '\n') && (i < 2 || line[i - 2] != '\\'))
                         val isBeforeSpaceOrSeparator = line[i + 1] in setOf(' ', '&', '\n')
                         val isBeforeDoubleBackslash = i < line.length - 2 && line[i + 1] == '\\' && line[i + 2] == '\\'
                         if (isAfterSpaceOrSeparator || isBeforeSpaceOrSeparator || isBeforeDoubleBackslash) removedSpaces++
@@ -184,7 +197,7 @@ private fun getSpacesPerCell(
     relativeIndices: List<List<Int>>,
     contentLinesWithoutRules: MutableList<String>
 ): List<List<Int>> {
-    val nrLevels = relativeIndices.map { it.size }.maxOrNull() ?: 0
+    val nrLevels = relativeIndices.maxOfOrNull { it.size } ?: 0
 
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.
@@ -242,8 +255,15 @@ private fun getSpacesForRightBlock(
             if (absoluteIndices[level] == rightElementOffset) {
                 // For very long lines, it's a lot more readable to start & on a new line instead of inserting a whole bunch of spaces
                 // Make sure not to only put the \\ on a new line
-                val didPreviousCellGetNewline = if (level == 0) true else relativeIndices.getOrNull(i)?.getOrNull(level - 1) ?: 0 > LINE_LENGTH
-                if (relativeIndices.getOrNull(i)?.getOrNull(level) ?: 0 > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)) return -1
+                val didPreviousCellGetNewline = if (level == 0) true else (
+                    relativeIndices.getOrNull(i)?.getOrNull(level - 1)
+                        ?: 0
+                    ) > LINE_LENGTH
+                if ((
+                        relativeIndices.getOrNull(i)?.getOrNull(level)
+                            ?: 0
+                        ) > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
+                ) return -1
                 return spacesPerCell.getOrNull(min(i, spacesPerCell.size - 1))?.getOrNull(level)
             }
         }

@@ -21,23 +21,14 @@ import java.util.*
  */
 open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
 
-    companion object {
-
-        const val descriptor = "LaTeX"
-        const val fileTemplateTex = "LaTeX Source.tex"
-        const val fileTemplateTexWithBib = "LaTeX Source With BibTeX.tex"
-        const val fileTemplateSty = "LaTeX Package.sty"
-        const val fileTemplateCls = "LaTeX Document class.cls"
-        const val fileTemplateBib = "BibTeX Bibliography.bib"
-        const val fileTemplateTikz = "TikZ Picture.tikz"
-
+    object Util {
         @JvmStatic
         fun createFromTemplate(
             directory: PsiDirectory, fileName: String,
             templateName: String, fileType: FileType
         ): PsiFile {
             val project = directory.project
-            val templateText = getTemplateText(project, templateName)
+            val templateText = getTemplateText(project, templateName, fileName)
 
             val fileFactory = PsiFileFactory.getInstance(project)
             val file = fileFactory.createFileFromText(fileName, fileType, templateText)
@@ -60,10 +51,11 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
          * @return The contents of the template with applied properties.
          */
         @JvmStatic
-        fun getTemplateText(project: Project, templateName: String): String {
+        fun getTemplateText(project: Project, templateName: String, fileName: String): String {
             val templateManager = FileTemplateManager.getInstance(project)
             val template = templateManager.getInternalTemplate(templateName)
             val properties = Properties(templateManager.defaultProperties)
+            properties["FILE_NAME"] = fileName
 
             try {
                 return template.getText(properties)
@@ -74,18 +66,29 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
         }
     }
 
+    companion object {
+
+        const val DESCRIPTOR = "LaTeX"
+        const val FILE_TEMPLATE_TEX = "LaTeX Source.tex"
+        const val FILE_TEMPLATE_TEX_WITH_BIB = "LaTeX Source With BibTeX.tex"
+        const val FILE_TEMPLATE_STY = "LaTeX Package.sty"
+        const val FILE_TEMPLATE_CLS = "LaTeX Document class.cls"
+        const val FILE_TEMPLATE_BIB = "BibTeX Bibliography.bib"
+        const val FILE_TEMPLATE_TIKZ = "TikZ Picture.tikz"
+    }
+
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {
         val descriptor = FileTemplateGroupDescriptor(
-            descriptor,
+            DESCRIPTOR,
             TexifyIcons.LATEX_FILE
         )
 
-        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTex, TexifyIcons.LATEX_FILE))
-        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTexWithBib, TexifyIcons.LATEX_FILE))
-        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateSty, TexifyIcons.STYLE_FILE))
-        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateCls, TexifyIcons.CLASS_FILE))
-        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateBib, TexifyIcons.BIBLIOGRAPHY_FILE))
-        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTikz, TexifyIcons.TIKZ_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(FILE_TEMPLATE_TEX, TexifyIcons.LATEX_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(FILE_TEMPLATE_TEX_WITH_BIB, TexifyIcons.LATEX_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(FILE_TEMPLATE_STY, TexifyIcons.STYLE_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(FILE_TEMPLATE_CLS, TexifyIcons.CLASS_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(FILE_TEMPLATE_BIB, TexifyIcons.BIBLIOGRAPHY_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(FILE_TEMPLATE_TIKZ, TexifyIcons.TIKZ_FILE))
 
         return descriptor
     }

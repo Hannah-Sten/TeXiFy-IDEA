@@ -20,7 +20,12 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.TexLivePackages
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.projectSearchScope
+import nl.hannahsten.texifyidea.util.runCommand
+import java.util.*
 
 /**
  * Check if a LaTeX package is not installed (only for TeX Live, since MiKTeX downloads them automatically).
@@ -46,20 +51,21 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
         if (LatexSdkUtil.isTlmgrAvailable(file.project)) {
             val installedPackages = TexLivePackages.packageList
-            val customPackages = LatexDefinitionIndex.getCommandsByName(
+            val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
                 "\\ProvidesPackage", file.project,
                 file.project
                     .projectSearchScope
             )
                 .map { it.requiredParameter(0) }
-                .mapNotNull { it?.toLowerCase() }
+                .mapNotNull { it?.lowercase(Locale.getDefault()) }
             val packages = installedPackages + customPackages
 
             val commands = file.childrenOfType(LatexCommands::class)
                 .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
             for (command in commands) {
-                val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
+                @Suppress("ktlint:standard:property-naming")
+                val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
                 if (`package` !in packages) {
                     // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
                     if (
@@ -70,7 +76,11 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                             manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed or \\ProvidesPackage is missing",
-                                InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`, knownNotInstalledPackages),
+                                InstallPackage(
+                                    SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
+                                    `package`,
+                                    knownNotInstalledPackages
+                                ),
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly
                             )

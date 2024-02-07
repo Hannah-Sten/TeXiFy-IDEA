@@ -9,12 +9,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.WASYSYM
  * @author Hannah Schellekens
  */
 enum class LatexGenericMathCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = true,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = true,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     ACUTE("acute", "a".asRequired()),
@@ -111,6 +111,7 @@ enum class LatexGenericMathCommand(
     IMAGINARY("Im", display = "ℑ", collapse = true),
     DOTLESS_I("imath", display = "ı", collapse = true),
     INFINUM("inf"),
+    INTERTEXT("intertext", "text".asRequired(), dependency = AMSMATH),
     INVERSE_F("Finv", dependency = AMSSYMB, display = "Ⅎ", collapse = true),
     INVERSED_NOT_SIGN("invneg", dependency = WASYSYM),
     DOTLESS_J("jmath", display = "ȷ", collapse = true),
@@ -202,6 +203,6 @@ enum class LatexGenericMathCommand(
     ABOVE_RIGHT_ARROW("xrightarrow", "text".asRequired(), dependency = AMSMATH),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

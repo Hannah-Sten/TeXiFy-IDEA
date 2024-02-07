@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.redundancy
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 
 class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicateLabelInspection()) {
 
@@ -72,6 +72,28 @@ class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicat
             \end{lstlisting}
             \begin{lstlisting}[label=<error descr="Duplicate label 'some-label'">some-label</error>]
             \end{lstlisting}                        
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoErrorForDuplicateLabelInCommandDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\dummy}{\label{#1}}
+            \newcommand{\dummy}{\label{#1}}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoErrorForDuplicateLabelInEnvironmentDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newenvironment{\dummy}[1]{\label{#1}}{}
+            \newenvironment{\dummy}[1]{\label{#1}}{}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

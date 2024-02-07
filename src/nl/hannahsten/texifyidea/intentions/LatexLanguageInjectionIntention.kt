@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.intentions
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.lang.Language
+import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -10,14 +12,14 @@ import com.intellij.psi.injection.Injectable
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.components.JBList
 import com.intellij.util.ui.EmptyIcon
-import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
 import nl.hannahsten.texifyidea.lang.magic.addMagicComment
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.SwingConstants
@@ -50,19 +52,33 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
             return
         }
 
-        val element = file.findElementAt(editor.caretModel.offset) ?: return
-
         chooseLanguage(editor) { language ->
-            val comment = MutableMagicComment<String, String>().apply { addValue(DefaultMagicKeys.INJECT_LANGUAGE, language.id) }
             WriteCommandAction.runWriteCommandAction(project) {
-                element.firstParentOfType(LatexEnvironment::class)?.addMagicComment(comment)
+                inject(file, editor, language)
             }
         }
     }
 
+    override fun generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo {
+        // Choose random language for the preview, as we cannot show a popup
+        val language = injectableLanguages().firstOrNull() ?: return IntentionPreviewInfo.EMPTY
+        inject(file, editor, language)
+        return IntentionPreviewInfo.DIFF
+    }
+
+    private fun inject(
+        file: PsiFile,
+        editor: Editor,
+        language: Injectable
+    ) {
+        val element = file.findElementAt(editor.caretModel.offset)
+        val comment = MutableMagicComment<String, String>().apply { addValue(DefaultMagicKeys.INJECT_LANGUAGE, language.id) }
+        element?.firstParentOfType(LatexEnvironment::class)?.addMagicComment(comment)
+    }
+
     private fun chooseLanguage(editor: Editor, onChosen: (language: Injectable) -> Unit) {
         // Dummy to determine height of single cell
-        val dimension = JLabel(LatexLanguage.INSTANCE.displayName, EmptyIcon.ICON_16, SwingConstants.LEFT).minimumSize
+        val dimension = JLabel(LatexLanguage.displayName, EmptyIcon.ICON_16, SwingConstants.LEFT).minimumSize
         dimension.height *= 4
 
         val list = JBList(injectableLanguages()).apply {
@@ -76,7 +92,7 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
             minimumSize = dimension
         }
 
-        val popup = PopupChooserBuilder<Injectable>(list).setItemChoosenCallback { onChosen(list.selectedValue ?: return@setItemChoosenCallback) }
+        val popup = PopupChooserBuilder(list).setItemChosenCallback(Runnable { onChosen(list.selectedValue ?: return@Runnable) })
             .setFilteringEnabled { language -> (language as Injectable).displayName }
             .setMinSize(dimension)
             .createPopup()
@@ -84,5 +100,8 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
         popup.showInBestPositionFor(editor)
     }
 
-    private fun injectableLanguages(): List<Injectable> = Language.getRegisteredLanguages().map { Injectable.fromLanguage(it) }
+    private fun injectableLanguages(): List<Injectable> = Language.getRegisteredLanguages()
+        // A parser definition is required for injection
+        .filter { LanguageParserDefinitions.INSTANCE.forLanguage(it) != null }
+        .map { Injectable.fromLanguage(it) }
 }

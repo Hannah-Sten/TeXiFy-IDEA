@@ -7,12 +7,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
-import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import java.lang.Integer.max
 import java.util.*
 
@@ -41,11 +43,11 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             }
 
             // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions) {
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitionsAndRedefinitions) {
                 continue
             }
 
-            val required = command.requiredParameters
+            val required = command.getRequiredParameters()
             if (required.isEmpty()) {
                 continue
             }
@@ -56,14 +58,14 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                 if (part == "*") continue
 
                 // The cleveref package allows empty items to customize enumerations
-                if (part.isEmpty() && (command.commandToken.text == "\\cref" || command.commandToken.text == "\\Cref")) continue
+                if (part.isEmpty() && (command.name == LatexGenericRegularCommand.CREF.cmd || command.name == LatexGenericRegularCommand.CREF_CAPITAL.cmd)) continue
 
                 // If there is no label with this required label parameter value
                 if (!labels.contains(part.trim())) {
                     // We have to subtract from the total length, because we do not know whether optional
                     // parameters were included with [a][b][c] or [a,b,c] in which case the
                     // indices of the parts are different with respect to the start of the command
-                    var offset = command.textLength - parts.sumBy { it.length + 1 }
+                    var offset = command.textLength - parts.sumOf { it.length + 1 }
                     for (j in 0 until i) {
                         offset += parts[j].length + 1
                     }

@@ -1,14 +1,17 @@
-@file:Suppress("UnusedImport")
-
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
+import com.intellij.refactoring.suggested.createSmartPointer
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
@@ -29,9 +32,12 @@ abstract class IndexUtilBase<T : PsiElement>(
     private val indexKey: StubIndexKey<String, T>
 ) {
 
+    /** Cache the index items to avoid unnecessary get actions from the index, which take a long time (50-100ms) even for a small index, which can be problematic if index is accessed many times per second. */
+    var cache: MutableMap<Project, MutableMap<GlobalSearchScope, Collection<SmartPsiElementPointer<T>>>> = mutableMapOf()
+
     /**
      * Get all the items in the index in the given file set.
-     * Consider using [PsiFile.commandsInFileSet] where applicable.
+     * Consider using [nl.hannahsten.texifyidea.util.files.commandsInFileSet] where applicable.
      *
      * @param baseFile
      *          The file from which to look.
@@ -54,13 +60,13 @@ abstract class IndexUtilBase<T : PsiElement>(
         }
 
         // Search index.
-        val scope = GlobalSearchScope.filesScope(project, searchFiles)
+        val scope = GlobalSearchScope.filesScope(project, searchFiles.filterNotNull())
         return getItems(project, scope)
     }
 
     /**
      * Get all the items in the index in the given file set, as well as the files where those items are.
-     * Consider using [PsiFile.commandsAndFilesInFileSet] where applicable.
+     * Consider using [nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet] where applicable.
      *
      * @param baseFile The file from which to look.
      * @return List of pairs consisting of a file and the items in that file.
@@ -110,16 +116,18 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param scope
      *          The scope in which to search for the items.
      */
-    fun getItems(project: Project, scope: GlobalSearchScope): Collection<T> {
-        val result = ArrayList<T>()
-        for (key in getKeys(project)) {
-            result.addAll(getItemsByName(key, project, scope))
+    fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
+        if (useCache) {
+            cache[project]?.get(scope)?.let { return runReadAction { it.mapNotNull { pointer -> pointer.element } } }
         }
+        val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
+        runReadAction { cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() } }
         return result
     }
 
     /**
      * Get all the items in the index that have the given name.
+     * WARNING This takes significant time because of index access. Be very careful about performance when calling it many times.
      *
      * @param name
      *          The name of the items to get.
@@ -128,8 +136,19 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param scope
      *          The scope in which to search for the items.
      */
-    fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
-        return StubIndex.getElements(indexKey, name, project, scope, elementClass)
+    private fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
+        try {
+            return runReadAction { StubIndex.getElements(indexKey, name, project, scope, elementClass) }
+        }
+        catch (e: Exception) {
+            // For some reason, any issue from any plugin that causes an exception will be raised here and will be attributed to TeXiFy, flooding the backlog
+            // Hence, we just ignore all of them and hope it's not important
+            if (e is ProcessCanceledException) {
+                throw e
+            }
+            Log.warn(e.toString())
+        }
+        return emptySet()
     }
 
     /**
@@ -138,13 +157,20 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param project
      *          The project instance.
      */
-    fun getKeys(project: Project): Array<String> {
-        return if (!DumbService.isDumb(project)) {
-            StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray()
+    private fun getKeys(project: Project): Array<String> {
+        if (!DumbService.isDumb(project) && !project.isDefault) {
+            try {
+                return runReadAction { StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray() }
+            }
+            catch (e: Exception) {
+                // See above
+                if (e is ProcessCanceledException) {
+                    throw e
+                }
+                Log.warn(e.toString())
+            }
         }
-        else {
-            emptyArray()
-        }
+        return emptyArray()
     }
 
     /**

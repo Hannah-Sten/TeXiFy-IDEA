@@ -6,18 +6,18 @@ import com.intellij.application.options.TabbedLanguageCodeStylePanel
 import com.intellij.psi.codeStyle.CodeStyleConfigurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
-import nl.hannahsten.texifyidea.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 
 class BibtexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
-    override fun createCustomSettings(settings: CodeStyleSettings?) = settings?.let { BibtexCodeStyleSettings(it) }
+    override fun createCustomSettings(settings: CodeStyleSettings) = BibtexCodeStyleSettings(settings)
 
     override fun getConfigurableDisplayName() = BibtexLanguage.displayName
 
     override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): CodeStyleConfigurable {
         return object : CodeStyleAbstractConfigurable(settings, originalSettings, configurableDisplayName) {
 
-            override fun createPanel(settings: CodeStyleSettings?): CodeStyleAbstractPanel {
+            override fun createPanel(settings: CodeStyleSettings): CodeStyleAbstractPanel {
                 val language = BibtexLanguage
 
                 return object : TabbedLanguageCodeStylePanel(language, currentSettings, settings) {

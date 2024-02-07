@@ -1,8 +1,28 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.remotelibraries.RemoteLibrariesToolWindowFactory"
+                    id="Libraries" secondary="false" anchor="right" icon="AllIcons.ObjectBrowser.ShowLibraryContents" order="before Symbols"/>
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.symbols.SymbolToolWindowFactory"
                     id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg" order="before Detexify"/>
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
-                    id="Detexify" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/search_13x13.svg"/>
+                    id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
     </extensions>
+
+    <actions>
+        <group id="texify.remotelibraries" text="_Remote Libraries">
+            <action class="nl.hannahsten.texifyidea.action.library.SyncLibraryAction" id="texify.library.Sync"
+                    text="Sync Selected Library" icon="AllIcons.Actions.Refresh"/>
+            <action class="nl.hannahsten.texifyidea.action.library.RemoveLibraryAction" id="texify.library.Remove"
+                    text="Remove Selected Library" icon="AllIcons.General.Remove"/>
+        </group>
+
+        <group id="texify.remotelibraries.add" icon="AllIcons.General.Add" text="Add Remote Library" popup="true">
+            <add-to-group group-id="texify.remotelibraries" anchor="first"/>
+            <action class="nl.hannahsten.texifyidea.action.library.zotero.AddZoteroAction" id="texify.zotero.add"
+                    text="Zotero"/>
+            <action class="nl.hannahsten.texifyidea.action.library.mendeley.AddMendeleyAction" id="texify.mendeley.add"
+                    text="Mendeley"/>
+        </group>
+
+    </actions>
 </idea-plugin>

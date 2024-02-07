@@ -3,10 +3,10 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.isCommandDefinition
+import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.parentsOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import java.util.regex.Pattern
 
 class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
@@ -19,6 +19,6 @@ class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
 ) {
 
     override fun checkContext(element: PsiElement): Boolean {
-        return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isCommandDefinition() } && element.parentOfType(LatexCommands::class)?.name !in CommandMagic.urls
+        return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isDefinitionOrRedefinition() } && element.parentOfType(LatexCommands::class)?.name !in CommandMagic.urls
     }
 }

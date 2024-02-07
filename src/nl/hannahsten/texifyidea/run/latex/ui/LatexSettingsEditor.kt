@@ -26,10 +26,10 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.awt.event.ItemEvent
-import javax.swing.JComponent
-import javax.swing.JPanel
+import javax.swing.*
 
 /**
  * @author Sten Wessel
@@ -44,6 +44,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var environmentVariables: EnvironmentVariablesComponent
     private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
     private lateinit var outputPath: LabeledComponent<ComponentWithBrowseButton<*>>
+
     // Not shown on non-MiKTeX systems
     private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
 
@@ -101,7 +102,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         if (auxilPath != null) {
             val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
-            auxilPathTextField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
+            auxilPathTextField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
@@ -182,9 +183,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         if (::sumatraPath.isInitialized) {
             // Apply custom SumatraPDF path if applicable
             runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
+
+            runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
         }
 
-        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable()
+        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable
 
         // Apply custom pdf viewer command
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
@@ -233,6 +236,17 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Apply LaTeX distribution
         runConfiguration.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
+
+        if (chosenCompiler == LatexCompiler.ARARA) {
+            outputPath.isVisible = false
+            auxilPath?.isVisible = false
+            outputFormat.isVisible = false
+        }
+        else {
+            outputPath.isVisible = true
+            auxilPath?.isVisible = true
+            outputFormat.isVisible = true
+        }
     }
 
     override fun createEditor(): JComponent {
@@ -305,7 +319,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private fun addOutputPathField(panel: JPanel) {
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
         if (LatexSdkUtil.isMiktexAvailable) {
-
             val auxilPathField = TextFieldWithBrowseButton()
             auxilPathField.addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -332,7 +345,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                     )
             )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.MAIN_FILE_STRING} or ${LatexOutputPath.PROJECT_DIR_STRING} as placeholders:")
         panel.add(outputPath)
     }
 
@@ -367,10 +380,31 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compilerPath)
     }
 
+    private fun updatePdfViewerComboBox() {
+        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
+            ExternalPdfViewers.getExternalPdfViewers() +
+            listOf(InternalPdfViewer.NONE)
+
+        pdfViewer.component.removeAllItems()
+        for (i in viewers.indices) {
+            @Suppress("UNCHECKED_CAST")
+            (pdfViewer.component as ComboBox<PdfViewer>).addItem(viewers[i])
+        }
+        pdfViewer.updateUI()
+    }
+
     /**
      * Optional custom path for SumatraPDF.
      */
     private fun addSumatraPathField(panel: JPanel) {
+        class PathInputVerifier : InputVerifier() {
+
+            override fun verify(input: JComponent?): Boolean {
+                updatePdfViewerComboBox()
+                return true
+            }
+        }
+
         if (SystemInfo.isWindows) {
             enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
             panel.add(enableSumatraPath)
@@ -393,7 +427,16 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 }
             }
 
-            enableSumatraPath.addItemListener { e -> sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
+            sumatraPath.textField.inputVerifier = PathInputVerifier()
+
+            enableSumatraPath.addItemListener { e ->
+                if (e.stateChange != ItemEvent.SELECTED) {
+                    // Removes the custom Sumatra path from SumatraAvailabilityChecker when unchecked
+                    SumatraAvailabilityChecker.isSumatraPathAvailable(null)
+                    updatePdfViewerComboBox()
+                }
+                sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED
+            }
 
             panel.add(sumatraPath)
         }
@@ -403,9 +446,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
-                ExternalPdfViewers.getExternalPdfViewers() +
-                listOf(InternalPdfViewer.NONE)
+        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
+            ExternalPdfViewers.getExternalPdfViewers() +
+            listOf(InternalPdfViewer.NONE)
 
         val viewerField = ComboBox(viewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")

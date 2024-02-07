@@ -15,7 +15,11 @@ import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.magic.PatternMagic.sentenceEndPrefix
+import nl.hannahsten.texifyidea.util.magic.PatternMagic.SENTENCE_END_PREFIX
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.util.parser.isComment
+import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
 import kotlin.math.min
 
 /**
@@ -59,8 +63,9 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 // It may be that this inspection is incorrectly triggered on an abbreviation.
                 // However, that means that the correct user action is to write a normal space after the abbreviation,
                 // which is what we suggest with this quickfix.
-                val dotPlusSpace = "^$sentenceEndPrefix(\\.\\s)".toRegex().find(text.text.substring(startOffset, matcher.end()))?.groups?.get(0)?.range?.shiftRight(startOffset + 1)
+                val dotPlusSpace = "^$SENTENCE_END_PREFIX(\\.\\s)".toRegex().find(text.text.substring(startOffset, matcher.end()))?.groups?.get(0)?.range?.shiftRight(startOffset + 1)
                 val normalSpaceFix = if (dotPlusSpace != null) LatexSpaceAfterAbbreviationInspection.NormalSpaceFix(dotPlusSpace) else null
+                val fixes = listOfNotNull(InspectionFix(), normalSpaceFix).toTypedArray()
 
                 descriptors.add(
                     manager.createProblemDescriptor(
@@ -69,7 +74,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                         "Sentence does not start on a new line",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InspectionFix(), normalSpaceFix
+                        *fixes
                     )
                 )
             }

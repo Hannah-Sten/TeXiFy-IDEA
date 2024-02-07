@@ -31,8 +31,8 @@ class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPac
     }
 
     private fun texliveWithTlmgr(texlive: Boolean = true, tlmgr: Boolean = true) {
-        mockkObject(TexliveSdk)
-        every { TexliveSdk.isAvailable } returns texlive
+        mockkObject(TexliveSdk.Cache)
+        every { TexliveSdk.Cache.isAvailable } returns texlive
 
         mockkObject(LatexSdkUtil)
         every { LatexSdkUtil.isTlmgrInstalled } returns tlmgr

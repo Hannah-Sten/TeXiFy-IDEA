@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.awt.datatransfer.Transferable
 import java.io.File
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -20,7 +21,7 @@ open class GraphicsDragAndDropHandler : CustomFileDropHandler() {
      * Whether the file can be dropped using this handler.
      */
     private fun File.isDroppable(): Boolean {
-        return extension.toLowerCase() in FileMagic.graphicFileExtensions
+        return extension.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions
     }
 
     override fun canHandle(transferable: Transferable, editor: Editor?): Boolean {

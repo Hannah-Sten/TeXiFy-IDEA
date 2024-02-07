@@ -25,7 +25,11 @@ jobs:
   add-youtrack-issue-links:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          cd ./.github/actions/insert-youtrack-link
+          npm install
       - id: replace
         uses: ./.github/actions/insert-youtrack-link
         with:

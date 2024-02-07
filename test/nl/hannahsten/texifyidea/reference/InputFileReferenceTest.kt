@@ -13,7 +13,7 @@ class InputFileReferenceTest : BasePlatformTestCase() {
         myFixture.configureByFile("oldname.tex")
         myFixture.configureByText(LatexFileType, "\\input{oldname<caret>.tex}")
         myFixture.renameElementAtCaret("newname.tex")
-        myFixture.checkResult("\\input{newname.tex}")
+        myFixture.checkResult("\\input{newname}")
     }
 
     fun testRenameInclude() {

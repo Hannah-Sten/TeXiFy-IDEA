@@ -15,10 +15,10 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 /**
  * @author Hannah Schellekens
@@ -35,19 +35,19 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         file.commandsInFile("\\text").asSequence()
-                .filter { it.inMathContext() }
-                .filter { it.requiredParameter(0)?.trim() in AFFECTED_COMMANDS }
-                .forEach { affectedTextCommand ->
-                    descriptors.add(
-                            manager.createProblemDescriptor(
-                                    affectedTextCommand,
-                                    "Use math function instead of \\text",
-                                    MathFunctionFix(SmartPointerManager.createPointer(affectedTextCommand)),
-                                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                    isOntheFly
-                            )
+            .filter { it.inMathContext() }
+            .filter { it.requiredParameter(0)?.trim() in affectedCommands }
+            .forEach { affectedTextCommand ->
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        affectedTextCommand,
+                        "Use math function instead of \\text",
+                        MathFunctionFix(SmartPointerManager.createPointer(affectedTextCommand)),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly
                     )
-                }
+                )
+            }
 
         return descriptors
     }
@@ -67,10 +67,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
         }
     }
 
-    companion object {
-
-        private val AFFECTED_COMMANDS = CommandMagic.slashlessMathOperators.asSequence()
-                .map { it.command }
-                .toSet()
-    }
+    private val affectedCommands = CommandMagic.slashlessMathOperators.asSequence()
+        .map { it.command }
+        .toSet()
 }

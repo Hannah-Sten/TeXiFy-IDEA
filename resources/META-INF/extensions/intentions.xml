@@ -1,75 +1,81 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexAddLabelIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexAddLabelToEnvironmentIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexDisplayMathIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexDisplayMathIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggle</className>
+            <language>Latex</language>
+            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggleIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexInlineDisplayToggleIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexInsertFormatterCommentsIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexInsertFormatterCommentsIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLeftRightParenthesesIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggle</className>
+            <language>Latex</language>
+            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggleIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMathToggleIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMoveSectionToFileIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexMoveSelectionToFileIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMoveSelectionToFileIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexToggleSmartQuotesIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexUnpackUsepackageIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexLanguageInjectionIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLanguageInjectionIntention</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <language>Latex</language>
+            <className>nl.hannahsten.texifyidea.intentions.LatexVerbatimToggleIntention</className>
+            <category>LaTeX</category>
         </intentionAction>
     </extensions>
 </idea-plugin>

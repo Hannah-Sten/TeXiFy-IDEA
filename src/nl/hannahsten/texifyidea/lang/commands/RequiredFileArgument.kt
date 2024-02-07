@@ -2,13 +2,14 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.file.FileExtensionMatcher
 import nl.hannahsten.texifyidea.file.FileNameMatcher
+import java.util.*
 import java.util.regex.Pattern
 
 /**
  * A required file argument with a given name and a pattern that matches
  * corresponding file names.
  * Ignores case: everything will be converted to lower case.
- * Type will be [nl.hannahsten.texifyidea.lang.Argument.Type.NORMAL].
+ * Type will be [nl.hannahsten.texifyidea.lang.commands.Argument.Type.NORMAL].
  *
  * @param name
  * The name of the required argument.
@@ -19,7 +20,7 @@ import java.util.regex.Pattern
  */
 open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported: Boolean = true, open val commaSeparatesArguments: Boolean, vararg extensions: String) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
 
-    lateinit var supportedExtensions: Set<String>
+    lateinit var supportedExtensions: List<String>
     lateinit var defaultExtension: String
         private set
     private var pattern: Pattern? = null
@@ -37,7 +38,7 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
      * extensions, all files will match.
      */
     private fun setExtensions(vararg extensions: String) {
-        val supportedExtensions = mutableSetOf<String>()
+        val supportedExtensions = mutableListOf<String>()
         val regex = StringBuilder(".*")
         if (extensions.isEmpty()) {
             setRegex(regex.toString())
@@ -51,7 +52,7 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
         regex.append("(")
         for (extension in extensions) {
             regex.append("\\.")
-            val extensionLower = extension.toLowerCase()
+            val extensionLower = extension.lowercase(Locale.getDefault())
             regex.append(extensionLower)
             supportedExtensions.add(extensionLower)
             if (extension != extensions[extensions.size - 1]) {
@@ -69,10 +70,10 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
     }
 
     override fun matchesName(fileName: String): Boolean {
-        return pattern!!.matcher(fileName.toLowerCase()).matches()
+        return pattern!!.matcher(fileName.lowercase(Locale.getDefault())).matches()
     }
 
     override fun matchesExtension(extension: String): Boolean {
-        return supportedExtensions.contains(extension)
+        return supportedExtensions.contains(extension.lowercase(Locale.getDefault()))
     }
 }

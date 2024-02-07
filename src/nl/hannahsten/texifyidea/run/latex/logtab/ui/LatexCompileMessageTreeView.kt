@@ -4,10 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.errorTreeView.ErrorTreeElement
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -15,20 +12,21 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
+import java.util.*
 
+@Suppress("UnstableApiUsage") // As far as I know, there is no alternative
 class LatexCompileMessageTreeView(
-    val project: Project,
-    val latexMessageList: MutableList<LatexLogMessage>,
-    val bibtexMessageList: MutableList<BibtexLogMessage>
-) :
-    NewErrorTreeViewPanel(project, null) {
+    project: Project,
+    private val latexMessageList: MutableList<LatexLogMessage>,
+    private val bibtexMessageList: MutableList<BibtexLogMessage>
+) : NewErrorTreeViewPanel(project, null) {
 
-    fun config(): LatexErrorTreeViewConfiguration = LatexErrorTreeViewConfiguration.getInstance(myProject)
+    fun config(): LatexErrorTreeViewConfiguration = LatexErrorTreeViewConfiguration.getInstance(project)
 
     override fun fillRightToolbarGroup(group: DefaultActionGroup) {
         // Use myProject (from NewErrorTreeViewPanel) because somehow project is null
-        LatexKeywordFilter.values().forEach { group.add(FilterKeywordAction(it, myProject)) }
-        group.addAll(FilterBibtexAction(myProject), ExpandAllAction(), CollapseAllAction())
+        LatexKeywordFilter.values().forEach { group.add(FilterKeywordAction(it, project)) }
+        group.addAll(FilterBibtexAction(project), ExpandAllAction(), CollapseAllAction())
 
         // Search for the information action toggle so we can remove it (as we don't use it).
         val informationAction = group.childActionsOrStubs.find {
@@ -94,7 +92,7 @@ class LatexCompileMessageTreeView(
      * Apply all filters to [logMessage].
      */
     fun applyFilters(logMessage: LatexLogMessage) {
-        val hide = logMessage.message.toLowerCase().containsAny(
+        val hide = logMessage.message.lowercase(Locale.getDefault()).containsAny(
             LatexKeywordFilter.values()
                 .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
                 .map { f -> f.triggers }.flatten().toSet()
@@ -143,10 +141,12 @@ class LatexCompileMessageTreeView(
             config().showKeywordWarnings[keyword] = state
             applyFiltersToAllMessages()
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
     inner class FilterBibtexAction(val project: Project) :
-        ToggleAction("Show bibtex messages by latexmk", "", TexifyIcons.DOT_BIB), DumbAware {
+        ToggleAction("Show Bibtex Messages by Latexmk", "", TexifyIcons.DOT_BIB), DumbAware {
 
         override fun isSelected(e: AnActionEvent): Boolean = config().showBibtexWarnings
 
@@ -154,6 +154,8 @@ class LatexCompileMessageTreeView(
             config().showBibtexWarnings = state
             applyFiltersToAllMessages()
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
     inner class ExpandAllAction : AnAction("Expand All", "", AllIcons.Actions.Expandall), DumbAware {

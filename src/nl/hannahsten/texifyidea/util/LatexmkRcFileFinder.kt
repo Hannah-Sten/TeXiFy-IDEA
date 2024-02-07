@@ -1,62 +1,83 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.io.File
+import kotlin.io.path.Path
 
 /**
  * Try to find a latexmkrc file (see the latexmk man page).
  */
 object LatexmkRcFileFinder {
 
-    private val isSystemLatexmkRcFilePresent: Boolean by lazy {
-        // 1
-        if (SystemInfo.isLinux) {
-            listOf(
-                "/opt/local/share/latexmk/LatexMk",
-                "/usr/local/share/latexmk/LatexMk",
-                "/usr/local/lib/latexmk/LatexMk",
-                "/cygdrive/local/share/latexmk/LatexMk"
-            ).forEach {
-                if (LocalFileSystem.getInstance().findFileByPath(it) != null) return@lazy true
-                if (LocalFileSystem.getInstance().findFileByPath(it.replace("LatexMk", "latexmkrc")) != null) return@lazy true
+    // Note: this cannot be a lazy val because then if there is any exception, the stacktrace will not be shown but be hidden by a NoClassDefFoundError. This way, we will have an ExceptionInInitializerError with will have the original stacktrace as well.
+    private var systemLatexmkRcFile: VirtualFile? = null
+        get() {
+            val paths = mutableListOf<String?>()
+            // 1
+            if (SystemInfo.isLinux) {
+                paths += listOf(
+                    "/opt/local/share/latexmk/",
+                    "/usr/local/share/latexmk/",
+                    "/usr/local/lib/latexmk/",
+                    "/cygdrive/local/share/latexmk/"
+                ).flatMap { listOf(it + "latexMk", it + "latexmkrc") }
             }
-        }
-        else if (SystemInfo.isWindows) {
-            listOf(
-                "C:\\latexmk\\LatexMk",
-                "C:\\latexmk\\latexmkrc"
-            ).forEach {
-                if (LocalFileSystem.getInstance().findFileByPath(it) != null) return@lazy true
+            else if (SystemInfo.isWindows) {
+                paths += listOf(
+                    "C:\\latexmk\\LatexMk",
+                    "C:\\latexmk\\latexmkrc"
+                )
             }
-        }
-        System.getenv("LATEXMKRCSYS")?.let {
-            if (LocalFileSystem.getInstance().findFileByPath(it) != null) return@lazy true
+
+            System.getenv("LATEXMKRCSYS")?.let { paths.add(it) }
+
+            // 2
+            paths += listOf(
+                System.getenv("XDG_CONFIG_HOME")?.let { Path(it, "latexmk", "latexmkrc").toString() },
+                System.getenv("HOME")?.let { Path(it, ".latexmkrc").toString() },
+                System.getenv("USERPROFILE")?.let { Path(it, ".latexmkrc").toString() },
+                System.getenv("HOME")?.let { Path(it, ".config", ".latexmkrc").toString() },
+            )
+
+            try {
+                paths.filterNotNull()
+                    .forEach {
+                        LocalFileSystem.getInstance().findFileByIoFile(File(it))?.let { file ->
+                            field = file
+                            return file
+                        }
+                    }
+            }
+            // No idea why
+            catch (e: ProcessCanceledException) {
+                return null
+            }
+
+            return null
         }
 
-        // 2
-        listOf(
-            "${System.getenv("XDG_CONFIG_HOME")}/latexmk/latexmkrc",
-            "${System.getenv("HOME")}/.latexmkrc",
-            "${System.getenv("USERPROFILE")}/.latexmkrc",
-            "${System.getenv("HOME")}/.config/.latexmkrc"
-        ).forEach {
-            if (LocalFileSystem.getInstance().findFileByPath(it) != null) return@lazy true
-        }
+    private val isSystemLatexmkRcFilePresent: Boolean = systemLatexmkRcFile != null
 
-        false
-    }
+    private fun isLocalLatexmkRcFilePresent(compilerArguments: String?, workingDir: String?) = getLocalLatexmkRcFile(compilerArguments, workingDir) != null
 
-    private fun isLocalLatexmkRcFilePresent(compilerArguments: String?, workingDir: String?): Boolean {
+    /**
+     * Get the first latexmkrc file we can find locally (in the project).
+     */
+    private fun getLocalLatexmkRcFile(compilerArguments: String?, workingDir: String?): VirtualFile? {
         // 3
         if (workingDir != null) {
             listOf(
                 workingDir + File.separator + "latexmkrc",
                 workingDir + File.separator + ".latexmkrc"
             ).forEach {
-                if (LocalFileSystem.getInstance().findFileByPath(it) != null) return true
+                LocalFileSystem.getInstance().findFileByPath(it)?.let { file -> return file }
             }
         }
 
@@ -65,11 +86,11 @@ object LatexmkRcFileFinder {
             val arguments = compilerArguments.splitWhitespace().dropWhile { it.isBlank() }
             if (arguments.contains("-r") && arguments.last() != "-r") {
                 val path = arguments[arguments.indexOf("-r") + 1]
-                if (LocalFileSystem.getInstance().findFileByPath(path) != null) return true
+                LocalFileSystem.getInstance().findFileByPath(path)?.let { file -> return file }
             }
         }
 
-        return false
+        return null
     }
 
     fun isLatexmkRcFilePresent(runConfig: LatexRunConfiguration): Boolean {
@@ -80,5 +101,59 @@ object LatexmkRcFileFinder {
             runConfig.outputFormat = LatexCompiler.Format.DEFAULT
         }
         return isPresent
+    }
+
+    /**
+     * Get TEXINPUTS from latexmkrc.
+     */
+    private fun getTexinputs(file: VirtualFile): String? {
+        return """ensure_path\(\s*'TEXINPUTS',\s*'(?<path>[^']+)'\s*\)""".toRegex().find(file.inputStream.reader().readText())?.groups?.get("path")?.value
+    }
+
+    private var usesLatexmkrc: Boolean? = null
+
+    /**
+     * Get the first TEXINPUTS we can find in latexmkrc files.
+     * Cached because searching involves quite some system calls, and it's a rarely used feature.
+     */
+    fun getTexinputsVariable(someFile: PsiFile?, runConfig: LatexRunConfiguration?): String? {
+        return if (usesLatexmkrc == false) {
+            null
+        }
+        else {
+            val texinputs = getTexinputsVariableNoCache(someFile, runConfig)
+            if (usesLatexmkrc == null) {
+                usesLatexmkrc = texinputs != null
+            }
+            texinputs
+        }
+    }
+
+    /**
+     * Check the (first) latexmkrc file for any additions to TEXINPUTS and return that if present.
+     *
+     * @param someFile Any file, the parent directories will be searched.
+     * @param runConfig Run configuration to check for working directory and arguments.
+     */
+    private fun getTexinputsVariableNoCache(someFile: PsiFile?, runConfig: LatexRunConfiguration?): String? {
+        systemLatexmkRcFile?.let { return getTexinputs(it) }
+        if (runConfig != null) {
+            getLocalLatexmkRcFile(runConfig.compilerArguments, runConfig.mainFile?.parent?.path)?.let { return getTexinputs(it) }
+        }
+        // File could be anywhere if run configurations are not used, but searching the whole project could be too expensive
+        someFile?.virtualFile?.parent?.let { parentDir ->
+            parentDir.findChild(".latexmkrc")?.let { return getTexinputs(it) }
+            parentDir.findChild("latexmkrc")?.let { return getTexinputs(it) }
+        }
+        val project = someFile?.project ?: return null
+        val projectDir = project.guessProjectDir()
+        if (projectDir?.isValid == false) return null
+        projectDir?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
+        projectDir?.findChild("latexmkrc")?.let { return getTexinputs(it) }
+        projectDir?.children?.forEach { directory ->
+            directory?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
+            directory?.findChild("latexmkrc")?.let { return getTexinputs(it) }
+        }
+        return null
     }
 }

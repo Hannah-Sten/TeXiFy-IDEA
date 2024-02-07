@@ -5,8 +5,8 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.labels.extractLabelName
 
 /**
  * Reference to a bibtex id.
@@ -24,7 +24,7 @@ class BibtexIdReference(element: LatexParameterText) : PsiReferenceBase<LatexPar
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return BibtexEntryIndex.getIndexedEntriesInFileSet(myElement.containingFile)
+        return BibtexEntryIndex().getIndexedEntriesInFileSet(myElement.containingFile)
             .filter { it.extractLabelName() == myElement.name }
             .mapNotNull {
                 // Resolve to the id, similarly as why we resolve to the label text for latex labels

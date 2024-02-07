@@ -15,26 +15,26 @@ import javax.swing.JPanel
  */
 class TableCreationEditColumnDialog(
 
-        /**
-         * The function to execute when clicking the OK button.
-         */
-        private val onOkFunction: (title: String, columnType: ColumnType, columnIndex: Int) -> Unit,
+    /**
+     * The function to execute when clicking the OK button.
+     */
+    private val onOkFunction: (title: String, columnType: ColumnType, columnIndex: Int) -> Unit,
 
-        /**
-         * The index of the column being edited.
-         */
-        private val editingColumn: Int,
+    /**
+     * The index of the column being edited.
+     */
+    private val editingColumn: Int,
 
-        /**
-         * The name of the column that is being edited. Default is the empty string, the title of a column that does
-         * not yet exist.
-         */
-        private val columnName: String = "",
+    /**
+     * The name of the column that is being edited. Default is the empty string, the title of a column that does
+     * not yet exist.
+     */
+    private val columnName: String = "",
 
-        /**
-         * The [ColumnType] of the column that is being edited. Default is a text column.
-         */
-        private val columnType: ColumnType = ColumnType.TEXT_COLUMN
+    /**
+     * The [ColumnType] of the column that is being edited. Default is a text column.
+     */
+    private val columnType: ColumnType = ColumnType.TEXT_COLUMN
 ) {
 
     init {
@@ -60,10 +60,10 @@ class TableCreationEditColumnDialog(
             }
 
             if (columnName.isBlank()) {
-                title("Add column")
+                title("Add Column")
             }
             else {
-                title("Edit column")
+                title("Edit Column")
             }
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {

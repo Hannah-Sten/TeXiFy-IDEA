@@ -7,18 +7,24 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.lastChildOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
 
 /**
@@ -28,15 +34,27 @@ import java.util.*
  */
 open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
-    companion object {
+    /**
+     * All commands that should not have a forced breaking space.
+     */
+    private val ignoredCommands = setOf(
+        "\\citet",
+        "\\citet*",
+        "\\Citet",
+        "\\Citet*",
+        "\\cref",
+        "\\Cref",
+        "\\cpageref",
+        "\\autoref",
+        "\\citeauthor",
+        "\\textcite",
+        "\\Textcite"
+    )
 
-        /**
-         * All commands that should not have a forced breaking space.
-         */
-        val IGNORED_COMMANDS = setOf(
-            "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\Cref", "\\cpageref", "\\autoref", "\\citeauthor", "\\textcite", "\\Textcite"
-        )
-    }
+    /**
+     * Commands redefined by cleveref, such that no non-breaking space is needed anymore.
+     */
+    private val cleverefRedefinitions = setOf(THREF, VREF, VREFRANGE, FULLREF).map { it.commandWithSlash }
 
     override val inspectionGroup = InsightGroup.LATEX
 
@@ -48,6 +66,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
+        val isCleverefLoaded = file.includedPackages().contains(LatexPackage.CLEVEREF)
 
         val commands = file.commandsInFile()
         for (command in commands) {
@@ -55,25 +74,36 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             if (!CommandMagic.reference.contains(command.name)) continue
 
             // Don't consider certain commands.
-            if (command.name in IGNORED_COMMANDS) continue
+            if (command.name in ignoredCommands) continue
+
+            // Don't out-clever cleveref
+            if (isCleverefLoaded && command.name in cleverefRedefinitions) continue
 
             // Get the NORMAL_TEXT in front of the command.
             val sibling = command.prevSibling
-                    ?: command.parent?.prevSibling
-                    ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
-                    ?: continue
+                ?: command.parent?.prevSibling
+                ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
+                ?: continue
 
-            // When sibling is whitespace, it's obviously bad news.
+            val previousSentence = sibling.prevSibling
+                ?: sibling.parent?.prevSibling
+                ?: sibling.parentOfType(LatexNoMathContent::class)?.prevSibling
+                ?: continue
+
+            // When sibling is whitespace, it's obviously bad news. Must not have a newline
             if (sibling is PsiWhiteSpace) {
-                descriptors.add(
-                    manager.createProblemDescriptor(
-                        sibling,
-                        "Reference without a non-breaking space",
-                        WhitespaceReplacementFix(),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly
+                val lastBitOfText = previousSentence.lastChildOfType(LatexNormalText::class) ?: previousSentence.lastChildOfType(LatexParameterText::class) ?: continue
+                if (!PatternMagic.sentenceSeparatorAtLineEnd.matcher(file.text.subSequence(lastBitOfText.startOffset, lastBitOfText.endOffset)).find()) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            sibling,
+                            "Reference without a non-breaking space",
+                            WhitespaceReplacementFix(),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly
+                        )
                     )
-                )
+                }
                 continue
             }
         }
@@ -110,24 +140,6 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
             // Otherwise, just replace all the whitespace by a tilde.
             document.replaceString(offset, offset + whitespace.textLength, replacement)
-        }
-    }
-
-    /**
-     * Replaces the ending of [LatexNormalText] element with `~`.
-     *
-     * @author Hannah Schellekens
-     */
-    private class TextReplacementFix : LocalQuickFix {
-
-        override fun getFamilyName() = "Insert non-breaking space"
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val command = descriptor.psiElement as LatexCommands
-            val file = command.containingFile
-            val document = file.document() ?: return
-
-            document.insertString(command.textOffset, "~")
         }
     }
 }

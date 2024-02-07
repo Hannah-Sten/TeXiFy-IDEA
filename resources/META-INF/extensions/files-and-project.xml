@@ -1,13 +1,14 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex;glstex" />
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.StyleFileType" name="LaTeX style file" language="Latex" extensions="sty;dbx;bbx;cbx" /> <!-- dbx is a Biblatex Data Model, bbx a Biblatex Style -->
-        <fileType name="LaTeX style file" fileNames="biblatex.cfg;biblatex-dm.cfg" /> <!-- Biblatex configuration -->
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.ClassFileType" name="LaTeX class file" language="Latex" extensions="cls" />
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.BibtexFileType" name="BibTeX bibliography file" language="Bibtex" extensions="bib" />
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.TikzFileType" name="TikZ picture file" language="Latex" extensions="tikz" />
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexSourceFileType" name="LaTeX source file (dtx)" language="TEXT" extensions="dtx" />
+        <moduleBuilder builderClass="nl.hannahsten.texifyidea.modules.LatexModuleBuilder" />
+        <!-- The fieldName="INSTANCE" is required since 2021.2, if not present then all tests relying on automatic file type detection based on file name will fail if run all together via gradle check, and succeed when run a single test at a time,  -->
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex;glstex" fieldName="INSTANCE" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.StyleFileType" name="LaTeX style file" language="Latex" extensions="sty;dbx;bbx;cbx" fieldName="INSTANCE" /> <!-- dbx is a Biblatex Data Model, bbx a Biblatex Style -->
+        <fileType name="LaTeX style file" fileNames="biblatex.cfg;biblatex-dm.cfg" fieldName="INSTANCE" /> <!-- Biblatex configuration -->
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.ClassFileType" name="LaTeX class file" language="Latex" extensions="cls" fieldName="INSTANCE" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.BibtexFileType" name="BibTeX bibliography file" language="Bibtex" extensions="bib" fieldName="INSTANCE" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.TikzFileType" name="TikZ picture file" language="Latex" extensions="tikz" fieldName="INSTANCE" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexSourceFileType" name="LaTeX source file (dtx)" language="TEXT" extensions="dtx" fieldName="INSTANCE" />
         <!-- Register module type for new project creation in non-IntelliJ IDEs -->
         <directoryProjectGenerator implementation="nl.hannahsten.texifyidea.modules.LatexProjectGenerator"/>
 

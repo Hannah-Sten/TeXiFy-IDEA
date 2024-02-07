@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import java.io.File
 import kotlin.math.max
@@ -34,7 +34,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
             .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
-            val parameter = command.requiredParameters.firstOrNull() ?: continue
+            val parameter = command.getRequiredParameters().firstOrNull() ?: continue
             val lastSlashIndex = parameter.indexOfLast { it == '/' }
             val providedDir = parameter.removeRange(max(0, lastSlashIndex), parameter.length)
             val rootDir = file.findRootFile().containingDirectory ?: continue

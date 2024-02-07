@@ -11,6 +11,10 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.LatexRawText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.hasParent
+import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.util.parser.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -167,7 +171,6 @@ abstract class TexifyRegexInspection(
         }
 
         if (replacementRanges.isNotEmpty()) {
-
             // We cannot give one TextRange because there are multiple,
             // but it does not matter since the user won't see this anyway.
             val problemDescriptor = manager.createProblemDescriptor(
@@ -206,6 +209,10 @@ abstract class TexifyRegexInspection(
 
             val groups = groupFetcher(matcher)
             val textRange = highlightRange(matcher)
+            val startOffset = if (textRange.startOffset < 0) 0 else textRange.startOffset
+            val endOffset = if (textRange.endOffset > file.textLength) file.textLength else textRange.endOffset
+            val textRangeFixed = TextRange(startOffset, endOffset)
+
             val range = replacementRange(matcher)
             val error = errorMessage(matcher)
             val quickFix = quickFixName(matcher)
@@ -220,7 +227,7 @@ abstract class TexifyRegexInspection(
             descriptors.add(
                 manager.createProblemDescriptor(
                     file,
-                    textRange,
+                    textRangeFixed,
                     error,
                     highlight,
                     true,

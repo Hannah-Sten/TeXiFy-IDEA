@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.toStringMap
-import nl.hannahsten.texifyidea.util.nextCommand
+import nl.hannahsten.texifyidea.util.parser.toStringMap
+import nl.hannahsten.texifyidea.util.parser.nextCommand
 
 /**
  * @author Hannah Schellekens
@@ -16,7 +18,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
     init {
         // Fetch parameter amount.
-        val optional = newCommand.optionalParameterMap.toStringMap().keys.toList()
+        val optional = newCommand.getOptionalParameterMap().toStringMap().keys.toList()
         var params = -1
         if (optional.isNotEmpty()) {
             try {
@@ -28,8 +30,8 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
         val suffix = if (params != -1) "{x$params}" else ""
 
         // Get command name.
-        val required = newCommand.requiredParameters
-        val command = if (required.size > 0) {
+        val required = newCommand.getRequiredParameters()
+        val command = if (required.isNotEmpty()) {
             required.first()
         }
         else {
@@ -37,17 +39,14 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
             newCommand.nextCommand()?.commandToken?.text
         }
 
-        this.newCommandName = command ?: "" + suffix
+        this.newCommandName = command ?: ("" + suffix)
 
-        // Get value.
-        locationString = if (required.size > 1) {
-            when (newCommand.commandToken.text) {
-                "\\newcommand" -> required[1]
-                "\\NewDocumentCommand" -> required[2]
-                else -> ""
-            }
+        // Get the definition to show in place of the location string.
+        locationString = when {
+            newCommand.commandToken.text == "\\" + LatexNewDefinitionCommand.NEWCOMMAND.command && required.size >= 2 -> required[1]
+            newCommand.commandToken.text == "\\" + LatexXparseCommand.NEWDOCUMENTCOMMAND.command && required.size >= 3 -> required[2]
+            else -> ""
         }
-        else ""
     }
 
     override fun getPresentableText() = newCommandName

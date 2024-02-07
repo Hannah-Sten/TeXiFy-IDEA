@@ -1,39 +1,80 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16">
-	<rect fill="rgb(255,255,255)" fill-opacity="0" stroke="none" width="16" height="16"/>
-	<defs>
-		<clipPath id="clip_0">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_0)">
-		<path fill="rgb(154,167,176)" fill-opacity="0.80000001" stroke="none" transform="translate(3 1)" d="M0 4L4 4L4 0L0 4Z"/>
-	</g>
-	<defs>
-		<clipPath id="clip_1">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_1)">
-		<path fill="rgb(154,167,176)" fill-opacity="0.80000001" stroke="none" transform="translate(3 1)" d="M0 7L0 5L5 5L5 0L10 0L10 7L0 7Z"/>
-	</g>
-	<defs>
-		<clipPath id="clip_2">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_2)">
-		<path fill="rgb(233,160,85)" stroke="none" transform="translate(1 9)" d="M0 0L15 0L15 7L0 7L0 0Z"/>
-	</g>
-	<defs>
-		<clipPath id="clip_3">
-			<rect width="16" height="16" clip-rule="evenodd"/>
-		</clipPath>
-	</defs>
-	<g clip-path="url(#clip_3)">
-		<text fill="rgb(35,31,32)" fill-opacity="0.69803923" stroke="none" transform="translate(1.5 12.5)" font-size="7" font-weight="bold" font-family="Gotham" x="0" y="2.45">
-				BIB
-		</text>
-	</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="bibliography-file.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="59"
+     inkscape:cx="6.022606"
+     inkscape:cy="7.8647321"
+     inkscape:window-x="2552"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <rect
+     x="2.5"
+     y="2.5"
+     width="11"
+     height="11"
+     rx="1.5"
+     fill="#FAF5FF"
+     stroke="#834DF0"
+     id="rect4"
+     style="stroke:#e66d17;stroke-opacity:1;fill:#fff4eb;fill-opacity:1" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="7.6101694"
+     y="4.2203388"
+     id="text4140"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan4142"
+       x="7.6101694"
+       y="4.2203388" /></text>
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#e66d17"
+     d="m 8.4003995,11.533899 c -0.84379,0 -1.50746,-0.37098 -1.8881596,-0.99832 l 0,0.87551 -0.98245,0 0,-6.8771907 1.00292,0 0,2.4796807 c 0.3837696,-0.60688 1.0387396,-0.9650797 1.8676896,-0.9650797 1.45829,0 2.4765895,1.1155197 2.4765895,2.7427097 0,1.62719 -1.0182995,2.74269 -2.4765895,2.74269 z m -0.2098,-4.5848 c -0.97734,0 -1.6578896,0.7522 -1.6578896,1.84211 0,1.08991 0.6805496,1.84211 1.6578896,1.84211 0.97223,0 1.64259,-0.7522 1.64259,-1.84211 0,-1.08991 -0.67036,-1.84211 -1.64259,-1.84211 z"
+     id="path6-5" />
 </svg>

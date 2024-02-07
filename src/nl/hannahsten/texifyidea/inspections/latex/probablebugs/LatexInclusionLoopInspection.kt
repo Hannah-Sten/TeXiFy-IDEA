@@ -9,8 +9,6 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.util.files.findIncludedFile
-import nl.hannahsten.texifyidea.util.files.searchFileByImportPaths
-import java.util.*
 
 /**
  * This inspection only detects inclusion loops involving two files.
@@ -28,7 +26,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val allIncludeCommands = LatexIncludesIndex.getItems(file.project)
+        val allIncludeCommands = LatexIncludesIndex.Util.getItems(file.project)
 
         // Maps every file to all the files it includes.
         val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
@@ -38,27 +36,20 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
             // Find included files
             val declaredIn = command.containingFile
 
-            // Check if import package is used
-            val fileMaybe = searchFileByImportPaths(command)
-            if (fileMaybe != null) {
-                inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(fileMaybe)
-            }
-            else {
-                for (referenced in declaredIn.findIncludedFile(command)) {
+            // Do not use ImportPackage#searchFileByImportPaths, because if we would do that for every command, that would be way too expensive.
+            for (referenced in declaredIn.findIncludedFile(command)) {
+                inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
 
-                    inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
-
-                    if (declaredIn == file && inclusions.getOrDefault(referenced, mutableSetOf()).contains(declaredIn)) {
-                        descriptors.add(
-                            manager.createProblemDescriptor(
-                                command,
-                                TextRange(0, command.textLength - 1),
-                                "File inclusion loop found for files ${referenced.name} and ${declaredIn.name}.",
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                isOntheFly
-                            )
+                if (declaredIn == file && inclusions.getOrDefault(referenced, mutableSetOf()).contains(declaredIn)) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            command,
+                            TextRange(0, command.textLength - 1),
+                            "File inclusion loop found for files ${referenced.name} and ${declaredIn.name}.",
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly
                         )
-                    }
+                    )
                 }
             }
         }

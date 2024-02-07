@@ -7,12 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.EUROSYM
  * @author Hannah Schellekens
  */
 enum class LatexEuroCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = false,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = false,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     EURO_SYMBOL("euro", dependency = EUROSYM, display = "€"),
@@ -23,6 +23,6 @@ enum class LatexEuroCommand(
     OFFICIAL_EURO("officialeuro", dependency = EUROSYM, display = "€"),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

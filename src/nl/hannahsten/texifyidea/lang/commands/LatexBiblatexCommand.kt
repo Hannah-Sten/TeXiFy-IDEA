@@ -7,12 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
  * @author Hannah Schellekens
  */
 enum class LatexBiblatexCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: LatexPackage = LatexPackage.DEFAULT,
-        override val display: String? = null,
-        override val isMathMode: Boolean = false,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val display: String? = null,
+    override val isMathMode: Boolean = false,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     CITE_CAPITALIZED("Cite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
@@ -56,7 +56,7 @@ enum class LatexBiblatexCommand(
     AVOLCITE("avolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     AVOLCITE_CAPITALIZED("Avolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     FULLCITE("fullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
-    FOOTFULLCITE("footcullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FOOTFULLCITE("footfullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     BIBLATEX_NOCITE("nocite", "key".asRequired(), dependency = BIBLATEX),
     NOTECITE("notecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     NOTECITE_CAPITALIZED("Notecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
@@ -67,6 +67,6 @@ enum class LatexBiblatexCommand(
     BRACKETTEXT("brackettext", "text".asRequired(Argument.Type.TEXT), dependency = BIBLATEX),
     ;
 
-    override val identifyer: String
+    override val identifier: String
         get() = name
 }

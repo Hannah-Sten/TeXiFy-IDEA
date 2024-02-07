@@ -9,14 +9,19 @@ import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.util.labels.findBibitemCommands
+import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
+import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.lang.Integer.max
 import java.util.*
 
@@ -37,9 +42,8 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      * checks if any label is used more than once
      */
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         val duplicateLabels =
-            getProblemDescriptors(file.findLatexLabelPsiElementsInFileSetAsSequence(), isOntheFly, manager, file) {
+            getProblemDescriptors(file.findLatexLabelingElementsInFileSet(), isOntheFly, manager, file) {
                 when (this) {
                     is LatexCommands -> {
                         val name = this.name ?: return@getProblemDescriptors null
@@ -54,7 +58,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                         }
                     }
                     is LatexEnvironment -> {
-                        if (EnvironmentMagic.labelAsParameter.contains(this.environmentName)) {
+                        if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
                             return@getProblemDescriptors getParameterLabelDescriptor(this)
                         }
 
@@ -76,7 +80,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(env: LatexEnvironment): LabelDescriptor? {
         val label =
-            env.beginCommand.optionalParameterMap.entries.firstOrNull() { e -> e.key.toString() == "label" }?.value
+            env.beginCommand.getOptionalParameterMap().entries.firstOrNull { e -> e.key.toString() == "label" }?.value
                 ?: return null
         val labelString = label.toString()
         return LabelDescriptor(env, labelString, TextRange.from(label.startOffset - env.startOffset, label.textLength))
@@ -87,7 +91,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     private fun getParameterLabelDescriptor(cmd: LatexCommands): LabelDescriptor? {
         val label =
-            cmd.optionalParameterMap.entries.firstOrNull() { e -> e.key.toString() == "label" }?.value ?: return null
+            cmd.getOptionalParameterMap().entries.firstOrNull { e -> e.key.toString() == "label" }?.value ?: return null
         val labelString = label.toString()
         return LabelDescriptor(cmd, labelString, TextRange.from(label.startOffset - cmd.startOffset, label.textLength))
     }
@@ -100,8 +104,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
             latexParameter.text
         }
         val toIgnore = parameterStrings.indexOf("{$searched}")
-        return parameterStrings.subList(0, max(0, toIgnore)).map { it.length }
-            .sum()
+        return parameterStrings.subList(0, max(0, toIgnore)).sumOf { it.length }
     }
 
     /**
@@ -121,10 +124,10 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     private fun getProblemDescriptors(
         commands: Sequence<PsiElement>, isOntheFly: Boolean, manager: InspectionManager, file: PsiFile,
         getLabelDescriptor: PsiElement.() -> LabelDescriptor?
-    ): List<ProblemDescriptor> = commands
+    ): List<ProblemDescriptor> = commands.toSet() // We don't want duplicate psi elements
         .mapNotNull { command ->
-            // When the label is defined in \newcommand ignore it, because there could be more than one with #1 as parameter
-            if (command.parentOfType(LatexCommands::class)?.name == "\\newcommand") return@mapNotNull null
+            // When the label is defined in a command definition ignore it, because there could be more than one with #1 as parameter
+            if (command.parentOfType(LatexCommands::class).isDefinitionOrRedefinition()) return@mapNotNull null
             command.getLabelDescriptor()
         }
         .groupBy { it.label }
@@ -139,8 +142,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     /**
      * make the mapping from command etc. to ProblemDescriptor
      */
-    private fun createProblemDescriptor(desc: LabelDescriptor, isOntheFly: Boolean, manager: InspectionManager):
-            ProblemDescriptor {
+    private fun createProblemDescriptor(desc: LabelDescriptor, isOntheFly: Boolean, manager: InspectionManager): ProblemDescriptor {
         return manager.createProblemDescriptor(
             desc.element,
             desc.textRange,

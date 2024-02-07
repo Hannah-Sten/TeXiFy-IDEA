@@ -10,4 +10,23 @@ class CommandDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("\\mooizo")
         myFixture.checkResult("""\newcommand{\mooizo}{} \mooizo""")
     }
+
+    fun testResolveInDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\MyCommand}{Hello World!}
+            \newcommand{\AnotherCommand}{\MyCommand<caret>}
+            \AnotherCommand
+            """.trimIndent()
+        )
+        myFixture.renameElementAtCaret("\\floep")
+        myFixture.checkResult(
+            """
+            \newcommand{\floep}{Hello World!}
+            \newcommand{\AnotherCommand}{\floep<caret>}
+            \AnotherCommand
+            """.trimIndent()
+        )
+    }
 }

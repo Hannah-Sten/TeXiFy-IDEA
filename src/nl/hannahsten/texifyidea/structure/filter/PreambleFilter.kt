@@ -6,6 +6,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.util.tokenName
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -17,7 +18,7 @@ object PreambleFilter : Filter {
             return true
         }
 
-        return treeElement.entry.tokenName()?.toLowerCase() != "preamble"
+        return treeElement.entry.tokenName().lowercase(Locale.getDefault()) != "preamble"
     }
 
     override fun isReverted() = true
@@ -26,6 +27,7 @@ object PreambleFilter : Filter {
 
     override fun getPresentation() = object : ActionPresentation {
 
+        @Suppress("DialogTitleCapitalization")
         override fun getText() = "Show @preamble"
 
         override fun getDescription() = "Show @preamble"

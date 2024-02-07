@@ -11,7 +11,7 @@ class NonAsciiCharactersInspectionTest : TexifyInspectionTestBase(NonAsciiCharac
             LatexFileType,
             """
             \textbf{erhöhen}
-            \label{<warning descr="Non-ASCII characters in an identifier"><warning descr="Symbols from different languages found: [LATIN, CYRILLIC]">sec:Название</warning></warning>}
+            \label{sec:<warning descr="Non-ASCII characters"><warning descr="Non-ASCII symbols in ASCII word">Название</warning></warning>}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

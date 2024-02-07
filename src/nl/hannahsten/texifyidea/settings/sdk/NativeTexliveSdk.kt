@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.runCommand
 
 /**
@@ -15,8 +18,7 @@ import nl.hannahsten.texifyidea.util.runCommand
  */
 class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
-    companion object {
-
+    object Cache {
         // Path to texmf-dist, e.g. /usr/share/texmf-dist/ for texlive-core on Arch or /opt/texlive/2020/texmf-dist/ for texlive-full
         val texmfDistPath: String by lazy {
             "kpsewhich article.sty".runCommand()?.substringBefore("texmf-dist") + "texmf-dist"
@@ -30,37 +32,38 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
     }
 
     override fun suggestHomePaths(): MutableCollection<String> {
-        // Note that suggested paths appear under "Detected SDK's" when adding an SDK
-        val results = mutableSetOf<String>()
-        val path = "which pdflatex".runCommand()
-
-        // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
-        if (!path.isNullOrEmpty() && !path.contains("x86_64-linux")) {
-            results.add(path.substringBefore("/pdflatex"))
-        }
-        results.add(suggestHomePath())
-        return results
+        return TexliveSdk().suggestHomePaths().plus(suggestHomePath())
+            // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
+            .filter { path -> !path.containsAny(setOf("x86_64-linux", "universal-darwin")) }
+            .toMutableSet()
     }
 
     override fun isValidSdkHome(path: String): Boolean {
         // We expect the location of the executables, wherever that is.
         // This is different from a TexliveSdk installation, where we have the parent directory of the TeX Live installation and find everything there.
-
-        // If this is a valid LaTeX installation, pdflatex should be present
-        return "$path/pdflatex --version".runCommand()?.contains("pdfTeX") == true
+        return LatexSdkUtil.isPdflatexPresent(path)
     }
 
-    override fun getVersionString(sdkHome: String?): String {
+    override fun getInvalidHomeMessage(path: String) = "Could not find $path/pdflatex"
+
+    override fun getVersionString(sdkHome: String): String {
         // Assume pdflatex --version contains output of the form
         // pdfTeX 3.14159265-2.6-1.40.21 (TeX Live 2020/mydistro)
-        return """TeX Live (\d\d\d\d\/.+)""".toRegex().find(LatexSdkUtil.pdflatexVersionText)?.value ?: "Unknown version"
+        val output = LatexSdkUtil.parsePdflatexOutput(runCommand("$sdkHome/pdflatex", "--version") ?: "")
+        return """TeX Live (\d\d\d\d).*""".toRegex().find(output)?.value ?: "Unknown version"
     }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String {
-        return "$texmfDistPath/doc"
+        return "${Cache.texmfDistPath}/doc"
     }
 
     override fun getExecutableName(executable: String, homePath: String): String {
         return "$homePath/$executable"
+    }
+
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
+        val articlePath = runCommand("$homePath/kpsewhich", "article.sty") ?: return null
+        // Assume article.sty is in tex/latex/base/article.sty
+        return LocalFileSystem.getInstance().findFileByPath(articlePath)?.parent?.parent
     }
 }

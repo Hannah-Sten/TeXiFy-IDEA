@@ -6,9 +6,9 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import java.io.File
 
 /**
@@ -19,8 +19,8 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
     override fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile> {
         val paths = getProjectRoots()
 
-        val rootDirectory = file.findRootFile().containingDirectory.virtualFile
-        getGraphicsPaths(file).forEach {
+        val rootDirectory = file.findRootFile().containingDirectory?.virtualFile ?: return arrayListOf()
+        getGraphicsPathsInFileSet(file).forEach {
             paths.add(rootDirectory.findVirtualFileByAbsoluteOrRelativePath(it) ?: return@forEach)
         }
 
@@ -31,7 +31,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      * When using \includegraphics from graphicx package, a path prefix can be set with \graphicspath.
      * @return Graphicspaths defined in the fileset.
      */
-    private fun getGraphicsPaths(file: PsiFile): List<String> {
+    fun getGraphicsPathsInFileSet(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
         val graphicsPathCommands = file.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.GRAPHICSPATH.cmd }
 
@@ -58,9 +58,9 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
         // First find all graphicspaths commands in the file of the given command
         val graphicsPaths = graphicsPathsInFile(command.containingFile).toMutableList()
 
-        val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
+        val allIncludeCommands = LatexIncludesIndex.Util.getItems(command.project)
         // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
-        var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(command.containingFile.name.removeFileExtension()) } }
+        var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) } }
 
         // Avoid endless loop (in case of a file inclusion loop)
         val maxDepth = allIncludeCommands.size
@@ -78,7 +78,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
                 // Find files/commands to search next
                 val file = includingCommand.containingFile
                 if (file !in handledFiles) {
-                    val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(file.name) } }
+                    val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(file.name) } }
                     newIncludingCommands.addAll(commandsIncludingThisFile)
                     handledFiles.add(file)
                 }
@@ -95,13 +95,14 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      * Get all the graphics paths defined by one \graphicspaths command.
      */
     private fun LatexCommands.getGraphicsPaths(): List<String> {
-        if (name != "\\graphicspath") return emptyList()
-        return parameterList.mapNotNull { it.requiredParam }.first()
+        if (name != LatexGenericRegularCommand.GRAPHICSPATH.cmd) return emptyList()
+        return parameterList.firstNotNullOfOrNull { it.requiredParam }
             // Each graphics path is in a group.
-            .childrenOfType(LatexNormalText::class)
-            .map { it.text }
+            ?.childrenOfType(LatexNormalText::class)
+            ?.map { it.text }
             // Relative paths (not starting with /) have to be appended to the directory of the file of the given command.
-            .map { if (it.startsWith('/')) it else containingFile.containingDirectory.virtualFile.path + File.separator + it }
+            ?.mapNotNull { if (it.startsWith('/')) it else (containingFile.containingDirectory?.virtualFile?.path ?: return@mapNotNull null) + File.separator + it }
+            ?: emptyList()
     }
 
     override fun searchFolders(): Boolean = true

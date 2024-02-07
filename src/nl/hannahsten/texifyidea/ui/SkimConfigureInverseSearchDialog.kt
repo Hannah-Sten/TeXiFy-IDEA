@@ -14,9 +14,9 @@ class SkimConfigureInverseSearchDialog {
 
     init {
         DialogBuilder().apply {
-            setTitle("Configure inverse search")
+            setTitle("Configure Inverse Search")
 
-            val body = JLabel("<html>In the Skim settings, go to the Sync tab. Select Custom as Preset, and as a command provide 'idea' and set arguments to '--line %line %file' <br><br>See the wiki for more information.</html>")
+            val body = JLabel("<html>In the Skim settings, go to the Sync tab. Select Custom as Preset, and as a command provide 'idea' and set arguments to '--line %line %file' <br><br>See the documentation for more information.</html>")
             // Create panel.
             val panel = JPanel()
             panel.layout = BorderLayout()

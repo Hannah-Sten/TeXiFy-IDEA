@@ -3,20 +3,23 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.lang.commands.*
+import com.intellij.ui.Gray
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.*
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
-import java.awt.Color
 
 object CommandMagic {
 
@@ -24,36 +27,27 @@ object CommandMagic {
      * LaTeX commands that make the text take up more vertical space.
      */
     val high = hashSetOf(
-            FRAC.cmd, DFRAC.cmd, SQUARE_ROOT.cmd, SUM.cmd, INTEGRAL.cmd, DOUBLE_INTEGRAL.cmd, TRIPLE_INTEGRAL.cmd,
-            QUADRUPLE_INTEGRAL.cmd, N_ARY_PRODUCT.cmd, N_ARY_UNION.cmd, N_ARY_INTERSECTION.cmd,
-            N_ARY_SQUARE_UNION.cmd, BIG_SQUARE_CAP.cmd
-    )
-
-    /**
-     * Maps commands to their expected label prefix. Which commands are expected to have a label at all is determined in settings.
-     */
-    val labeledPrefixes = mapOf(
-            CHAPTER.cmd to "ch",
-            SECTION.cmd to "sec",
-            SUBSECTION.cmd to "subsec",
-            SUBSUBSECTION.cmd to "subsubsec",
-            ITEM.cmd to "itm",
-            LSTINPUTLISTING.cmd to "lst",
+        FRAC.cmd, DFRAC.cmd, SQUARE_ROOT.cmd, SUM.cmd, INTEGRAL.cmd, DOUBLE_INTEGRAL.cmd, TRIPLE_INTEGRAL.cmd,
+        QUADRUPLE_INTEGRAL.cmd, N_ARY_PRODUCT.cmd, N_ARY_UNION.cmd, N_ARY_INTERSECTION.cmd,
+        N_ARY_SQUARE_UNION.cmd, BIG_SQUARE_CAP.cmd
     )
 
     /**
      * Level of labeled commands.
      */
     val labeledLevels: Map<LatexCommand, Int> = mapOf(
-            // See page 23 of the LaTeX Companion
-            PART to -1, // actually, it is level 0 in classes that do not define \chapter and -1 in book and report
-            CHAPTER to 0,
-            SECTION to 1,
-            SUBSECTION to 2,
-            SUBSUBSECTION to 3,
-            PARAGRAPH to 4,
-            SUBPARAGRAPH to 5
+        // See page 23 of the LaTeX Companion
+        PART to -1, // actually, it is level 0 in classes that do not define \chapter and -1 in book and report
+        CHAPTER to 0,
+        SECTION to 1,
+        SUBSECTION to 2,
+        SUBSUBSECTION to 3,
+        PARAGRAPH to 4,
+        SUBPARAGRAPH to 5
     )
+
+    /** Section commands sorted from large to small. */
+    val sectioningCommands = labeledLevels.entries.sortedBy { it.value }.map { it.key }
 
     /**
      * Commands that define a label via an optional parameter
@@ -65,56 +59,121 @@ object CommandMagic {
      * All commands that mark some kind of section.
      */
     val sectionMarkers = listOf(
-            PART,
-            CHAPTER,
-            SECTION,
-            SUBSECTION,
-            SUBSUBSECTION,
-            PARAGRAPH,
-            SUBPARAGRAPH
+        PART,
+        CHAPTER,
+        SECTION,
+        SUBSECTION,
+        SUBSUBSECTION,
+        PARAGRAPH,
+        SUBPARAGRAPH
     ).map { it.cmd }
 
     /**
      * The colours that each section separator has.
      */
     val sectionSeparatorColors = mapOf(
-            PART.cmd to Color(152, 152, 152),
-            CHAPTER.cmd to Color(172, 172, 172),
-            SECTION.cmd to Color(182, 182, 182),
-            SUBSECTION.cmd to Color(202, 202, 202),
-            SUBSUBSECTION.cmd to Color(212, 212, 212),
-            PARAGRAPH.cmd to Color(222, 222, 222),
-            SUBPARAGRAPH.cmd to Color(232, 232, 232)
+        PART.cmd to Gray._152,
+        CHAPTER.cmd to Gray._172,
+        SECTION.cmd to Gray._182,
+        SUBSECTION.cmd to Gray._202,
+        SUBSUBSECTION.cmd to Gray._212,
+        PARAGRAPH.cmd to Gray._222,
+        SUBPARAGRAPH.cmd to Gray._232
     )
 
     /**
      * LaTeX commands that increase a counter that can be labeled.
      */
-    val increasesCounter = hashSetOf(CAPTION.cmd, CAPTIONOF.cmd) + labeledPrefixes.keys
+    val increasesCounter =
+        hashSetOf(CAPTION.cmd, CAPTIONOF.cmd, CHAPTER.cmd, SECTION.cmd, SUBSECTION.cmd, ITEM.cmd, LSTINPUTLISTING.cmd)
 
     /**
      * All commands that represent a reference to a label, excluding user defined commands.
      */
-    val labelReferenceWithoutCustomCommands = hashSetOf(
-            REF, EQREF, NAMEREF, AUTOREF, FULLREF, PAGEREF, VREF, AUTOREF_CAPITAL, CREF, CREF_CAPITAL, LABELCREF, CPAGEREF
-    ).map { it.cmd }.toSet()
+    val labelReferenceWithoutCustomCommands = LatexRegularCommand.ALL
+        .filter { cmd -> cmd.arguments.any { it.type == Argument.Type.LABEL } }
+        .map { it.cmd }.toSet()
 
     /**
      * All commands that represent a reference to a bibliography entry/item.
      */
     val bibliographyReference = hashSetOf(
-            CITE, NOCITE, CITEP, CITEP_STAR, CITET, CITET_STAR, CITEP,
-            CITEP_STAR_CAPITALIZED, CITET_CAPITALIZED, CITET_STAR_CAPITALIZED, CITEALP, CITEALP_STAR, CITEALT, CITEALT_STAR,
-            CITEALP_CAPITALIZED, CITEALP_STAR_CAPITALIZED, CITEALT_CAPITALIZED, CITEALT_STAR_CAPITALIZED, CITEAUTHOR, CITEAUTHOR_STAR,
-            CITEAUTHOR_CAPITALIZED, CITEAUTHOR_STAR_CAPITALIZED, CITEYEAR, CITEYEARPAR, PARENCITE, PARENCITE_CAPITALIZED,
-            FOOTCITE, FOOTCITETEXT, TEXTCITE, TEXTCITE_CAPITALIZED, SMARTCITE, SMARTCITE_CAPITALIZED,
-            CITE_STAR, PARENCITE_STAR, SUPERCITE, AUTOCITE, AUTOCITE_CAPITALIZED, AUTOCITE_STAR,
-            AUTOCITE_STAR_CAPITALIZED, CITETITLE, CITETITLE_STAR, CITEYEAR_STAR, CITEDATE, CITEDATE_STAR,
-            CITEURL, VOLCITE, VOLCITE_CAPITALIZED, PVOLCITE, PVOLCITE_CAPITALIZED, FVOLCITE,
-            FVOLCITE_CAPITALIZED, FTVOLCITE, SVOLCITE, SVOLCITE_CAPITALIZED, TVOLCITE, TVOLCITE_CAPITALIZED,
-            AVOLCITE, AVOLCITE_CAPITALIZED, FULLCITE, FOOTFULLCITE, NOTECITE, NOTECITE_CAPITALIZED,
-            PNOTECITE, FNOTECITE
+        CITE,
+        NOCITE,
+        CITEP,
+        CITEP_STAR,
+        CITET,
+        CITET_STAR,
+        CITEP,
+        CITEP_STAR_CAPITALIZED,
+        CITET_CAPITALIZED,
+        CITET_STAR_CAPITALIZED,
+        CITEALP,
+        CITEALP_STAR,
+        CITEALT,
+        CITEALT_STAR,
+        CITEALP_CAPITALIZED,
+        CITEALP_STAR_CAPITALIZED,
+        CITEALT_CAPITALIZED,
+        CITEALT_STAR_CAPITALIZED,
+        CITEAUTHOR,
+        CITEAUTHOR_STAR,
+        CITEAUTHOR_CAPITALIZED,
+        CITEAUTHOR_STAR_CAPITALIZED,
+        CITEYEAR,
+        CITEYEARPAR,
+        PARENCITE,
+        PARENCITE_CAPITALIZED,
+        FOOTCITE,
+        FOOTCITETEXT,
+        TEXTCITE,
+        TEXTCITE_CAPITALIZED,
+        SMARTCITE,
+        SMARTCITE_CAPITALIZED,
+        CITE_STAR,
+        PARENCITE_STAR,
+        SUPERCITE,
+        AUTOCITE,
+        AUTOCITE_CAPITALIZED,
+        AUTOCITE_STAR,
+        AUTOCITE_STAR_CAPITALIZED,
+        CITETITLE,
+        CITETITLE_STAR,
+        CITEYEAR_STAR,
+        CITEDATE,
+        CITEDATE_STAR,
+        CITEURL,
+        VOLCITE,
+        VOLCITE_CAPITALIZED,
+        PVOLCITE,
+        PVOLCITE_CAPITALIZED,
+        FVOLCITE,
+        FVOLCITE_CAPITALIZED,
+        FTVOLCITE,
+        SVOLCITE,
+        SVOLCITE_CAPITALIZED,
+        TVOLCITE,
+        TVOLCITE_CAPITALIZED,
+        AVOLCITE,
+        AVOLCITE_CAPITALIZED,
+        FULLCITE,
+        FOOTFULLCITE,
+        NOTECITE,
+        NOTECITE_CAPITALIZED,
+        PNOTECITE,
+        FNOTECITE
     ).map { it.cmd }.toSet()
+
+    /**
+     * All commands that define a glossary entry of the glossaries package (e.g. \newacronym).
+     */
+    val glossaryEntry =
+        hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION).map { it.cmd }.toSet()
+
+    /**
+     * All commands that reference a glossary entry from the glossaries package (e.g. \gls).
+     */
+    val glossaryReference = hashSetOf(GLS, GLSUPPER, GLSPLURAL, GLSPLURALUPPER).map { it.cmd }.toSet()
 
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
@@ -143,7 +202,7 @@ object CommandMagic {
      *
      * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
      */
-    fun getLabelDefinitionCommands(project: Project): Set<String>? {
+    fun getLabelDefinitionCommands(project: Project): Set<String> {
         // Check if updates are needed
         CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
         return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
@@ -166,59 +225,69 @@ object CommandMagic {
      */
     @JvmField
     val slashlessMathOperators = hashSetOf(
-            INVERSE_COSINE, INVERSE_SINE, INVERSE_TANGENT, ARGUMENT, BMOD, COSINE, HYPERBOLIC_COSINE, COTANGENT,
-            HYPERBOLIC_COTANGENT, COSECANT, DEGREES, DERMINANT, DIMENSION, EXPONENTIAL, GREATEST_COMMON_DIVISOR,
-            HOMOMORPHISM, INFINUM, KERNEL, BASE_2_LOGARITHM, LIMIT, LIMIT_INFERIOR, LIMIT_SUPERIOR,
-            NATURAL_LOGARITHM, LOGARITHM, MAXIMUM, MINIMUM, PMOD, PROBABILITY, SECANT, SINE,
-            HYPERBOLIC_SINE, SUPREMUM, TANGENT, HBOLICTANGENT
+        INVERSE_COSINE, INVERSE_SINE, INVERSE_TANGENT, ARGUMENT, BMOD, COSINE, HYPERBOLIC_COSINE, COTANGENT,
+        HYPERBOLIC_COTANGENT, COSECANT, DEGREES, DERMINANT, DIMENSION, EXPONENTIAL, GREATEST_COMMON_DIVISOR,
+        HOMOMORPHISM, INFINUM, KERNEL, BASE_2_LOGARITHM, LIMIT, LIMIT_INFERIOR, LIMIT_SUPERIOR,
+        NATURAL_LOGARITHM, LOGARITHM, MAXIMUM, MINIMUM, PMOD, PROBABILITY, SECANT, SINE,
+        HYPERBOLIC_SINE, SUPREMUM, TANGENT, HBOLICTANGENT
     )
 
     /**
      * All commands that define regular commands, and that require that the command is not already defined.
      */
     val regularStrictCommandDefinitions = hashSetOf(
-            NEWCOMMAND.cmd,
-            NEWCOMMAND_STAR.cmd,
-            NEWIF.cmd,
-            NEWDOCUMENTCOMMAND.cmd,
+        NEWCOMMAND.cmd,
+        NEWCOMMAND_STAR.cmd,
+        NEWIF.cmd,
+        NEWDOCUMENTCOMMAND.cmd,
     )
+
+    /**
+     * Commands that define other command but don't complain if it is already defined.
+     */
+    val flexibleCommandDefinitions = setOf(
+        PROVIDECOMMAND, // Does nothing if command exists
+        PROVIDECOMMAND_STAR,
+        PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
+        DECLAREDOCUMENTCOMMAND,
+        DEF,
+        LET,
+    ).map { it.cmd }
 
     /**
      * All commands that define or redefine other commands, whether it exists or not.
      */
-    val redefinitions = hashSetOf(
-            RENEWCOMMAND,
-            RENEWCOMMAND_STAR,
-            PROVIDECOMMAND, // Does nothing if command exists
-            PROVIDECOMMAND_STAR,
-            PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
-            DECLAREDOCUMENTCOMMAND,
-            DEF,
-            LET,
-            RENEWENVIRONMENT,
-            CATCODE, // Not really redefining commands, but characters
-    ).map { it.cmd }
+    val commandRedefinitions = setOf(
+        RENEWCOMMAND,
+        RENEWCOMMAND_STAR,
+        CATCODE, // Not really redefining commands, but characters
+    ).map { it.cmd } + flexibleCommandDefinitions
 
     /**
      * All commands that define or redefine regular commands.
      */
-    val regularCommandDefinitions = regularStrictCommandDefinitions + redefinitions
+    val regularCommandDefinitionsAndRedefinitions = regularStrictCommandDefinitions + commandRedefinitions
 
     /**
      * All commands that define commands that should be used exclusively
      * in math mode.
      */
     val mathCommandDefinitions = hashSetOf(
-            DECLARE_MATH_OPERATOR.cmd,
-            DECLARE_PAIRED_DELIMITER.cmd,
-            DECLARE_PAIRED_DELIMITER_X.cmd,
-            DECLARE_PAIRED_DELIMITER_XPP.cmd
+        DECLARE_MATH_OPERATOR.cmd,
+        DECLARE_PAIRED_DELIMITER.cmd,
+        DECLARE_PAIRED_DELIMITER_X.cmd,
+        DECLARE_PAIRED_DELIMITER_XPP.cmd
     )
 
     /**
-     * All commands that define new commands.
+     * All commands that can define regular commands.
      */
-    val commandDefinitions = regularCommandDefinitions + mathCommandDefinitions
+    val commandDefinitions = regularStrictCommandDefinitions + mathCommandDefinitions + flexibleCommandDefinitions
+
+    /**
+     * All commands that (re)define new commands.
+     */
+    val commandDefinitionsAndRedefinitions = regularCommandDefinitionsAndRedefinitions + mathCommandDefinitions
 
     /**
      * All commands that define new documentclasses.
@@ -234,45 +303,60 @@ object CommandMagic {
      * All commands that define new environments.
      */
     val environmentDefinitions = hashSetOf(
-            NEWENVIRONMENT,
-            NEWTHEOREM,
-            NEWDOCUMENTENVIRONMENT,
-            PROVIDEDOCUMENTENVIRONMENT,
-            DECLAREDOCUMENTENVIRONMENT
+        NEWENVIRONMENT,
+        NEWTHEOREM,
+        NEWDOCUMENTENVIRONMENT,
+        PROVIDEDOCUMENTENVIRONMENT,
+        DECLAREDOCUMENTENVIRONMENT,
+        NEWTCOLORBOX,
+        DECLARETCOLORBOX,
+        NEWTCOLORBOX_,
+        PROVIDETCOLORBOX,
     ).map { it.cmd }
+
+    /**
+     * All commands that define or redefine other environments, whether it exists or not.
+     */
+    val environmentRedefinitions = hashSetOf(
+        RENEWENVIRONMENT.cmd,
+        RENEWTCOLORBOX.cmd,
+        RENEWTCOLORBOX_.cmd,
+    )
 
     /**
      * All commands that define stuff like classes, environments, and definitions.
      */
-    val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
+    val definitions = commandDefinitionsAndRedefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
     /**
      * Commands for which TeXiFy-IDEA has essential custom behaviour and which should not be redefined.
      */
     val fragile = hashSetOf(
-            "\\addtocounter", "\\begin", "\\chapter", "\\def", "\\documentclass", "\\end",
-            "\\include", "\\includeonly", "\\input", "\\label", "\\let", "\\newcommand",
-            "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
-            "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
-            "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
-            "\\newenvironment", "\\bibitem",
-            "\\NewDocumentCommand",
-            "\\ProvideDocumentCommand",
-            "\\DeclareDocumentCommand",
-            "\\NewDocumentEnvironment",
-            "\\ProvideDocumentEnvironment",
-            "\\DeclareDocumentEnvironment"
+        "\\addtocounter", "\\begin", "\\chapter", "\\def", "\\documentclass", "\\end",
+        "\\include", "\\includeonly", "\\input", "\\label", "\\let", "\\newcommand",
+        "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
+        "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
+        "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
+        "\\newenvironment", "\\bibitem",
+        "\\NewDocumentCommand",
+        "\\ProvideDocumentCommand",
+        "\\DeclareDocumentCommand",
+        "\\NewDocumentEnvironment",
+        "\\ProvideDocumentEnvironment",
+        "\\DeclareDocumentEnvironment"
     )
 
     /**
      * Commands that should not have the given file extensions.
      */
     val illegalExtensions = mapOf(
-            INCLUDE.cmd to listOf(".tex"),
-            SUBFILEINCLUDE.cmd to listOf(".tex"),
-            BIBLIOGRAPHY.cmd to listOf(".bib"),
-            INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
-            USEPACKAGE.cmd to listOf(".sty"),
+        INPUT.cmd to listOf(".tex"),
+        INCLUDE.cmd to listOf(".tex"),
+        SUBFILEINCLUDE.cmd to listOf(".tex"),
+        BIBLIOGRAPHY.cmd to listOf(".bib"),
+        INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
+        USEPACKAGE.cmd to listOf(".sty"),
+        EXTERNALDOCUMENT.cmd to listOf(".tex"),
     )
 
     /**
@@ -290,24 +374,24 @@ object CommandMagic {
      * Commands that should have the given file extensions.
      */
     val requiredExtensions = mapOf(
-            ADDBIBRESOURCE.cmd to listOf("bib")
+        ADDBIBRESOURCE.cmd to listOf("bib")
     )
 
     /**
      * Extensions that should only be scanned for the provided include commands.
      */
     val includeOnlyExtensions: Map<String, Set<String>> = mapOf(
-            INCLUDE.cmd to hashSetOf("tex"),
-            INCLUDEONLY.cmd to hashSetOf("tex"),
-            SUBFILE.cmd to hashSetOf("tex"),
-            SUBFILEINCLUDE.cmd to hashSetOf("tex"),
-            BIBLIOGRAPHY.cmd to hashSetOf("bib"),
-            ADDBIBRESOURCE.cmd to hashSetOf("bib"),
-            REQUIREPACKAGE.cmd to hashSetOf("sty"),
-            USEPACKAGE.cmd to hashSetOf("sty"),
-            DOCUMENTCLASS.cmd to hashSetOf("cls"),
-            LOADCLASS.cmd to hashSetOf("cls"),
-            EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels
+        INCLUDE.cmd to hashSetOf("tex"),
+        INCLUDEONLY.cmd to hashSetOf("tex"),
+        SUBFILE.cmd to hashSetOf("tex"),
+        SUBFILEINCLUDE.cmd to hashSetOf("tex"),
+        BIBLIOGRAPHY.cmd to hashSetOf("bib"),
+        ADDBIBRESOURCE.cmd to hashSetOf("bib"),
+        REQUIREPACKAGE.cmd to hashSetOf("sty"),
+        USEPACKAGE.cmd to hashSetOf("sty"),
+        DOCUMENTCLASS.cmd to hashSetOf("cls"),
+        LOADCLASS.cmd to hashSetOf("cls"),
+        EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels. Technically it references an aux file
     )
 
     /**
@@ -317,12 +401,12 @@ object CommandMagic {
 
     @Suppress("unused")
     val startIfs = hashSetOf(
-            IF, IFCAT, IFX,
-            IFCASE, IFNUM, IFODD,
-            IFHMODE, IFVMODE, IFMMODE,
-            IFINNER, IFDIM, IFVOID,
-            IFHBOX, IFVBOX, IFEOF,
-            IFTRUE, IFFALSE
+        IF, IFCAT, IFX,
+        IFCASE, IFNUM, IFODD,
+        IFHMODE, IFVMODE, IFMMODE,
+        IFINNER, IFDIM, IFVOID,
+        IFHBOX, IFVBOX, IFEOF,
+        IFTRUE, IFFALSE
     ).map { it.cmd }
 
     /**
@@ -339,25 +423,25 @@ object CommandMagic {
      * List of all TeX style primitives.
      */
     val stylePrimitives = listOf(
-            RM.cmd, SF.cmd, TT.cmd, IT.cmd, SL.cmd, SC.cmd, BF.cmd
+        RM.cmd, SF.cmd, TT.cmd, IT.cmd, SL.cmd, SC.cmd, BF.cmd
     )
 
     /**
-     * The LaTeX counterparts of all [stylePrimitives] commands where %s is the content.
+     * The LaTeX counterparts of all [stylePrimitives] commands.
      */
-    val stylePrimitveReplacements = listOf(
-            "\\textrm{%s}", "\\textsf{%s}", "\\texttt{%s}", "\\textit{%s}",
-            "\\textsl{%s}", "\\textsc{%s}", "\\textbf{%s}"
+    val stylePrimitiveReplacements = mapOf(
+        RM.cmd to "\\textrm", SF.cmd to "\\textsf", TT.cmd to "\\texttt", IT.cmd to "\\textit",
+        SL.cmd to "\\textsl", SC.cmd to "\\textsc", BF.cmd to "\\textbf"
     )
 
     /**
      * Set of text styling commands
      */
     val textStyles = setOf(
-            TEXTRM.cmd, TEXTSF.cmd, TEXTTT.cmd, TEXTIT.cmd,
-            TEXTSL.cmd, TEXTSC.cmd, TEXTBF.cmd, EMPH.cmd,
-            TEXTUP.cmd, TEXTMD.cmd
-    )
+        TEXTRM, TEXTSF, TEXTTT, TEXTIT,
+        TEXTSL, TEXTSC, TEXTBF, EMPH,
+        TEXTUP, TEXTMD
+    ).map { it.cmd }
 
     /**
      * All LaTeX commands that contain a url (in their first parameter).
@@ -375,7 +459,27 @@ object CommandMagic {
      * Maps the name of the command to the registered Language id.
      */
     val languageInjections = hashMapOf(
-            DIRECTLUA.cmd to "Lua",
-            LUAEXEC.cmd to "Lua"
+        DIRECTLUA.cmd to "Lua",
+        LUAEXEC.cmd to "Lua"
+    )
+
+    /**
+     * Commands that have a verbatim argument.
+     *
+     * Maps a command to a boolean that is true when the required argument can be specified with any pair of characters.
+     */
+    val verbatim = hashMapOf(
+        "verb" to true,
+        "verb*" to true,
+        "directlua" to false,
+        "luaexec" to false,
+        "lstinline" to true
+    )
+
+    /**
+     *
+     */
+    val foldableFootnotes = listOf(
+        FOOTNOTE.cmd, FOOTCITE.cmd
     )
 }

@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.files.openedEditor
+import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.lineIndentation
 import nl.hannahsten.texifyidea.util.replaceString
 
@@ -20,6 +20,16 @@ import nl.hannahsten.texifyidea.util.replaceString
  */
 open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
 
+    private val commandToForbiddenPredecessors = mapOf(
+        """\part""" to emptyList(),
+        """\chapter""" to emptyList(),
+        """\section""" to emptyList(),
+        """\subsection""" to listOf("""\part""", """\chapter"""),
+        """\subsubsection""" to listOf("""\part""", """\chapter""", """\section"""),
+        """\paragraph""" to emptyList(),
+        """\subparagraph""" to listOf("""\part""", """\chapter""", """\section""", """\subsection""", """\subsubsection""")
+    )
+
     override val inspectionGroup = InsightGroup.LATEX
 
     override val inspectionId = "IncorrectSectionNesting"
@@ -27,11 +37,12 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Incorrect nesting"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
-        return LatexCommandsIndex.getCommandsByNames(file, *sectioningCommands())
+        return LatexCommandsIndex.Util.getCommandsByNames(file, *sectioningCommands())
             .sortedBy { it.textOffset }
             .zipWithNext()
-            .filter { (first, second) -> first.commandName() in commandToForbiddenPredecessors[second.commandName()] ?: error("Unexpected command") }
+            .filter { (first, second) ->
+                first.commandName() in (commandToForbiddenPredecessors[second.commandName()] ?: error("Unexpected command"))
+            }
             .map {
                 manager.createProblemDescriptor(
                     it.second,
@@ -59,7 +70,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             val lineNumber = document.getLineNumber(offset)
             val newParentCommand = command.commandToken.text.replaceFirst("sub", "")
             val replacement = "$newParentCommand{}\n${document.lineIndentation(lineNumber)}"
-            val caret = command.containingFile.openedEditor()?.caretModel
+            val caret = command.containingFile.openedTextEditor()?.caretModel
             document.insertString(offset, replacement)
             caret?.moveToOffset(offset + newParentCommand.length + 1)
         }
@@ -76,18 +87,5 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             val newParentCommand = command.commandToken.text.replaceFirst("sub", "")
             document.replaceString(range, newParentCommand)
         }
-    }
-
-    companion object {
-
-        val commandToForbiddenPredecessors = mapOf(
-            """\part""" to emptyList(),
-            """\chapter""" to emptyList(),
-            """\section""" to emptyList(),
-            """\subsection""" to listOf("""\part""", """\chapter"""),
-            """\subsubsection""" to listOf("""\part""", """\chapter""", """\section"""),
-            """\paragraph""" to emptyList(),
-            """\subparagraph""" to listOf("""\part""", """\chapter""", """\section""", """\subsection""", """\subsubsection""")
-        )
     }
 }

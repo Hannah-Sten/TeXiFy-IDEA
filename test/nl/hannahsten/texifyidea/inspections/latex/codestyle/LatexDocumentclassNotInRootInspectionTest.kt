@@ -11,8 +11,8 @@ class LatexDocumentclassNotInRootInspectionTest : TexifyInspectionTestBase(Latex
 
     fun testNoWarning() {
         myFixture.configureByText(
-                LatexFileType,
-                """
+            LatexFileType,
+            """
                     \documentclass{article}
                     
                     \begin{document}
@@ -24,8 +24,9 @@ class LatexDocumentclassNotInRootInspectionTest : TexifyInspectionTestBase(Latex
     }
 
     fun `test no warning with environment in preamble`() {
-        myFixture.configureByText(LatexFileType,
-        """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \documentclass{article}
             
             \begin{filecontents}{a}
@@ -35,7 +36,8 @@ class LatexDocumentclassNotInRootInspectionTest : TexifyInspectionTestBase(Latex
             \begin{document}
                 contents
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 

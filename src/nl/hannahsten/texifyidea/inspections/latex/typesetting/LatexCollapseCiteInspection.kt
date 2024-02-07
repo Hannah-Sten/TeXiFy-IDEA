@@ -7,6 +7,8 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.refactoring.suggested.endOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -15,6 +17,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
@@ -43,7 +46,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             .filter { it.name in CommandMagic.bibliographyReference }
 
         for (cmd in commands) {
-            val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
+            val bundle = cmd.findCiteBundle().filter { it.getOptionalParameterMap().isEmpty() }
             if (bundle.size < 2 || !bundle.contains(cmd)) {
                 continue
             }
@@ -52,7 +55,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     cmd,
                     "Citations can be collapsed",
-                    InspectionFix(bundle),
+                    InspectionFix(bundle.map { SmartPointerManager.createPointer(it) }),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )
@@ -138,14 +141,14 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      * in this bundle have only required parameters, as cites with optional parameters should not
      * be collapsed.
      */
-    private inner class InspectionFix(val citeBundle: List<LatexCommands>) : LocalQuickFix {
+    private inner class InspectionFix(val citeBundle: List<SmartPsiElementPointer<LatexCommands>>) : LocalQuickFix {
 
         override fun getFamilyName(): String {
             return "Collapse citations"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val sortedBundle = citeBundle.sortedBy { it.textOffset }
+            val sortedBundle = citeBundle.mapNotNull { it.element }.sortedBy { it.textOffset }
             // The bundle can contain a gap when the cite commands in it surround a cite command
             // that is not in the bundle, e.g., a cite command that has an optional parameter.
             val bundleContainsGap = sortedBundle
@@ -154,7 +157,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
             // Create the content of the required parameter of the new cite command.
             val bundle = sortedBundle
-                .flatMap { it.requiredParameters }
+                .flatMap { it.getRequiredParameters() }
                 .joinToString(",")
 
             // Find the cite command that has to be replaced. When the bundle contains a gap, this is the command

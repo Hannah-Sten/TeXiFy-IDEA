@@ -6,7 +6,7 @@ import com.intellij.application.options.TabbedLanguageCodeStylePanel
 import com.intellij.psi.codeStyle.CodeStyleConfigurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 
 /**
  * Provides the LaTeX code style settings.
@@ -18,15 +18,15 @@ import nl.hannahsten.texifyidea.LatexLanguage
  */
 class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
-    override fun createCustomSettings(settings: CodeStyleSettings?) = settings?.let { LatexCodeStyleSettings(it) }
+    override fun createCustomSettings(settings: CodeStyleSettings) = LatexCodeStyleSettings(settings)
 
-    override fun getConfigurableDisplayName() = LatexLanguage.INSTANCE.displayName
+    override fun getConfigurableDisplayName() = LatexLanguage.displayName
 
     override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): CodeStyleConfigurable {
         return object : CodeStyleAbstractConfigurable(settings, originalSettings, configurableDisplayName) {
 
-            override fun createPanel(settings: CodeStyleSettings?): CodeStyleAbstractPanel {
-                val language = LatexLanguage.INSTANCE
+            override fun createPanel(settings: CodeStyleSettings): CodeStyleAbstractPanel {
+                val language = LatexLanguage
 
                 return object : TabbedLanguageCodeStylePanel(language, currentSettings, settings) {
 
@@ -37,7 +37,7 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
                         // Adds the Code Generation tab.
                         for (provider in EXTENSION_POINT_NAME.extensions) {
-                            if (provider.language === LatexLanguage.INSTANCE && !provider.hasSettingsPage()) {
+                            if (provider.language === LatexLanguage && !provider.hasSettingsPage()) {
                                 createTab(provider)
                             }
                         }

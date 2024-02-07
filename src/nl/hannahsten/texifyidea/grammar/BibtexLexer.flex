@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.grammar;
 
+import java.util.*;
+
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 
@@ -19,7 +21,20 @@ import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 %eof}
 
 %{
+    private Deque<Integer> stack = new ArrayDeque<>();
+
+
+    public void yypushState(int newState) {
+        stack.push(yystate());
+        yybegin(newState);
+    }
+
+    public void yypopState() {
+        yybegin(stack.pop());
+    }
+
     int braceCount = 0;
+    boolean verbatim = false;
 %}
 
 WHITE_SPACE=([\ \t\f]|"\r"|"\n"|"\r\n")+
@@ -37,9 +52,11 @@ TYPE_TOKEN=@[a-zA-Z_]+
 COMMENT_TOKEN=%[^\r\n]*
 // Characters disallowed by bibtex or biber (non-ascii or not depends on LaTeX compiler)
 IDENTIFIER=[^,{}\(\)\"#%'=~\\ \n]+
+VERBATIM_IDENTIFIER="url"
 NUMBER=[0-9-]+
 NORMAL_TEXT_WORD=([^\"]|\\\" )+
 NORMAL_TEXT_BRACED_STRING=[^{} ]+
+ANY_CHAR=[^]
 
 %state XXAFTERTYPETOKEN
 %state XXENTRY
@@ -52,6 +69,10 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 %state XXPREAMBLE
 %state XXPREAMBLE_STRING
 
+%xstate XXCOMMENT
+%xstate XXCOMMENT_STRING
+%xstate XXQUOTED_VERBATIM
+%xstate XXBRACED_VERBATIM
 %%
 {COMMENT_TOKEN}                 { return COMMENT_TOKEN; }
 
@@ -67,6 +88,10 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
                                   else if ("@preamble".equalsIgnoreCase(sequence)) {
                                     yybegin(XXPREAMBLE);
                                   }
+                                  else if ("@comment".equalsIgnoreCase(sequence)) {
+                                    yybegin(XXCOMMENT);
+                                    return COMMENT_TOKEN;
+                                  }
                                   else {
                                     yybegin(XXAFTERTYPETOKEN);
                                   }
@@ -76,6 +101,15 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 
 <XXAFTERTYPETOKEN> {
     {OPEN_BRACE}                { yybegin(XXENTRYIDENTIFIER); return OPEN_BRACE; }
+}
+
+<XXCOMMENT> {
+    {OPEN_BRACE}                { yybegin(XXCOMMENT_STRING); return COMMENT_TOKEN; }
+}
+
+<XXCOMMENT_STRING> {
+    {CLOSE_BRACE}               { yybegin(XXAFTERENTRY); return COMMENT_TOKEN; }
+    {ANY_CHAR}                  { return COMMENT_TOKEN; }
 }
 
 // Preamble: @preamble{ "some string" }
@@ -118,10 +152,11 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 // Complete entry.
 <XXENTRY> {
     {NUMBER}                    { return NUMBER; }
+    {VERBATIM_IDENTIFIER}       { verbatim = true; return VERBATIM_IDENTIFIER; }
     {IDENTIFIER}                { return IDENTIFIER; }
     {ASSIGNMENT}                { return ASSIGNMENT; }
-    {OPEN_BRACE}                { yybegin(XXBRACED_STRING); return OPEN_BRACE; }
-    {QUOTES}                    { yybegin(XXQUOTED_STRING); return QUOTES; }
+    {OPEN_BRACE}                { if (verbatim) yypushState(XXBRACED_VERBATIM); else yybegin(XXBRACED_STRING); return OPEN_BRACE; }
+    {QUOTES}                    { if (verbatim) yypushState(XXQUOTED_VERBATIM); else yybegin(XXQUOTED_STRING); return QUOTES; }
     {CONCATENATE}               { return CONCATENATE; }
     {SEPARATOR}                 { return SEPARATOR; }
     {CLOSE_BRACE}               { yybegin(XXAFTERENTRY); return CLOSE_BRACE; }
@@ -145,6 +180,18 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
                                   yybegin(XXENTRY);
                                   return CLOSE_BRACE; }
     {NORMAL_TEXT_BRACED_STRING} { return NORMAL_TEXT_WORD; }
+}
+
+// { Braced text } in an entry where all characters are allowed.
+<XXBRACED_VERBATIM> {
+    {CLOSE_BRACE}       { yypopState(); verbatim = false; return CLOSE_BRACE; }
+    {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
+}
+
+// "Quoted text" in an entry where all characters are allowed.
+<XXQUOTED_VERBATIM> {
+    {QUOTES}       { yypopState(); verbatim = false; return END_QUOTES; }
+    {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
 }
 
 {WHITE_SPACE}                   { return WHITE_SPACE; }

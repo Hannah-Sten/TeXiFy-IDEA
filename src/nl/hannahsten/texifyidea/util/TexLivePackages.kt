@@ -30,7 +30,7 @@ object TexLivePackages {
         // Find the package name for tlmgr.
         task.title = "Searching for $packageName..."
         val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
-        // Assume that you can not use the bundle name in a \usepackage if it is different from the package name (otherwise this search won't work and we would need to use tlmgr search --global $packageName
+        // Assume that you can not use the bundle name in a \\usepackage if it is different from the package name (otherwise this search won't work and we would need to use tlmgr search --global $packageName
         val searchResult = "$tlmgrExecutable search --file --global /$packageName.sty".runCommand()
             ?: return null
 
@@ -48,10 +48,10 @@ object TexLivePackages {
         val tlFrozen = Regex(
             """
             TeX Live \d{4} is frozen forever and will no
-            longer be updated\.  This happens in preparation for a new release\.
+            longer be updated\.\s+This happens in preparation for a new release\.
 
             If you're interested in helping to pretest the new release \(when
-            pretests are available\), please read https:\/\/tug\.org\/texlive\/pretest\.html\.
+            pretests are available\), please read https://tug\.org/texlive/pretest\.html\.
             Otherwise, just wait, and the new release will be ready in due time\.
             """.trimIndent()
         )

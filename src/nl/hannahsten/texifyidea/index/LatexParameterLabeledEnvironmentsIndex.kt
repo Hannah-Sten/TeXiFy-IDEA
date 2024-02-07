@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StringStubIndexExtension
-import nl.hannahsten.texifyidea.LatexParserDefinition
+import nl.hannahsten.texifyidea.grammar.LatexParserDefinition
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 
 /**
@@ -10,10 +10,9 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  */
 class LatexParameterLabeledEnvironmentsIndex : StringStubIndexExtension<LatexEnvironment>() {
 
-    companion object : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.LABELED_ENVIRONMENTS_KEY)
+    object Util : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.LABELED_ENVIRONMENTS_KEY)
 
-    @Suppress("RedundantCompanionReference")
-    override fun getKey() = Companion.key()
+    override fun getKey() = Util.key()
 
-    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
+    override fun getVersion() = LatexParserDefinition.Cache.FILE.stubVersion
 }

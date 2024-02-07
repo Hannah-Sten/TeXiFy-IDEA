@@ -1,10 +1,19 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
+import io.mockk.every
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNotReferencedInspection()) {
+
+    override fun setUp() {
+        super.setUp()
+        mockkStatic(::runCommandWithExitCode)
+        every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+    }
 
     fun testFigureNotReferencedWarning() {
         myFixture.configureByText(

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.intentions
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.Project
@@ -13,13 +14,10 @@ import com.intellij.refactoring.rename.RenameProcessor
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.endOffset
-import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
 import kotlin.math.max
 
-abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
+abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) {
 
     /**
      * This class handles the rename of a label parameter after insertion
@@ -60,9 +58,9 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         val offset = editor?.caretModel?.offset ?: return null
         val element = file?.findElementAt(offset) ?: return null
         // Also check one position back, because we want it to trigger in \section{a}<caret>
-        return element as? T ?: element.parentOfType<T>()
-        ?: file.findElementAt(max(0, offset - 1)) as? T
-        ?: file.findElementAt(max(0, offset - 1))?.parentOfType<T>()
+        return element as? T ?: element.parentOfType()
+            ?: file.findElementAt(max(0, offset - 1)) as? T
+            ?: file.findElementAt(max(0, offset - 1))?.parentOfType()
     }
 
     protected fun getUniqueLabelName(base: String, prefix: String, file: PsiFile): LabelWithPrefix {
@@ -103,10 +101,10 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         val parameter = helper.setOptionalParameter(command, "label", "{${label.labelText}}")
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
 
-        // setOptionalParameter should create an appropriate optionaArgument node with label={text} in it
+        // setOptionalParameter should create an appropriate optionalArgument node with label={text} in it
         val parameterText =
-            parameter.keyvalValue?.keyvalContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
-                ?: throw AssertionError("parameter created by setOptionalParameter does not have the right structure")
+            parameter?.keyValValue?.keyValContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
+                ?: throw AssertionError("parameter created by setOptionalParameter for $command with text ${label.labelText} does not have the right structure: ${parameter?.text}")
         // Move the caret onto the label
         editor.caretModel.moveToOffset(parameterText.textOffset + label.prefix.length + 1)
         val renamer = LabelInplaceRenamer(parameterText, editor, label.prefixText, label.base, moveCaretTo)
@@ -114,4 +112,10 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
     }
 
     override fun startInWriteAction() = true
+
+    // Not clear to me why the default implementation does not work, but this avoids the "Intention preview fallback is used for action" error
+    override fun generatePreview(project: Project, editor: Editor, file: PsiFile): IntentionPreviewInfo {
+        invoke(project, editor, file)
+        return IntentionPreviewInfo.DIFF
+    }
 }

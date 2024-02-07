@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.application.options.CodeStyle
 import com.intellij.psi.codeStyle.CodeStyleManager
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
@@ -55,6 +53,20 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun `test environment parameters`() {
+        """
+            \begin{enumerate*}[label=(\roman*)]
+                \item item1
+                \item item2
+            \end{enumerate*}
+        """.trimIndent() `should be reformatted to` """
+            \begin{enumerate*}[label=(\roman*)]
+                \item item1
+                \item item2
+            \end{enumerate*}
+        """.trimIndent()
+    }
+
     fun `test leading comment in environment`() {
         """
             \begin{document}
@@ -65,6 +77,36 @@ class LatexFormattingTest : BasePlatformTestCase() {
             \begin{document}
                 % This is a comment.
                 This is real text.
+            \end{document}
+        """.trimIndent()
+    }
+
+    fun `test angle parameter formatting`() {
+        """
+            \documentclass{beamer}
+            
+            \begin{document}
+                \begin{frame}
+                    \begin{block}{Title}<1->
+                    Appel.
+                    \end{block}
+                    \begin{block}{Title}<2->
+                    Peer.
+                    \end{block}
+                \end{frame}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{beamer}
+            
+            \begin{document}
+                \begin{frame}
+                    \begin{block}{Title}<1->
+                        Appel.
+                    \end{block}
+                    \begin{block}{Title}<2->
+                        Peer.
+                    \end{block}
+                \end{frame}
             \end{document}
         """.trimIndent()
     }
@@ -188,20 +230,34 @@ fun Int?.ifPositiveAddTwo(): Int =
         """.trimIndent()
     }
 
-    fun testComments() {
-        // Wanted to test line breaking, but not sure how to enable it in test
-        val text = """
-            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
+    fun `test section used in command definition`() {
+        """
+            \documentclass{article}
+            \newcommand{\sectionlorem}[2]{\section{#1}\label{#2}}
+
+            \begin{document}
+                \sectionlorem{Title}{sec:label}
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \documentclass{article}
+            \newcommand{\sectionlorem}[2]{\section{#1}\label{#2}}
+
+            \begin{document}
+                \sectionlorem{Title}{sec:label}
+            \end{document}
         """.trimIndent()
-        val file = myFixture.configureByText(LatexFileType, text)
-        CodeStyle.getLanguageSettings(file).RIGHT_MARGIN = 50
-        CodeStyle.getLanguageSettings(file).WRAP_ON_TYPING = CommonCodeStyleSettings.WrapOnTyping.WRAP.intValue
-//        CodeStyle.getDefaultSettings().WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN = true
-        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
-        val expected = """
-            % Calculated protections are able to develop anxious insurances when they prick notes and relate identities and rejects.
+    }
+
+    fun `test newlines before sectioning commands`() {
+        """
+            Text.
+            \section{New section}
+        """.trimIndent() `should be reformatted to` """
+            Text.
+            
+            
+            \section{New section}
         """.trimIndent()
-        myFixture.checkResult(expected)
     }
 
     private infix fun String.`should be reformatted to`(expected: String) {

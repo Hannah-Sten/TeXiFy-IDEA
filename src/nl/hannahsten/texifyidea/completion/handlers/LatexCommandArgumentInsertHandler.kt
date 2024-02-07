@@ -11,9 +11,9 @@ import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * @author Hannah Schellekens
@@ -31,8 +31,8 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         val offset = caret.offset
         // When not followed by { or [ (whichever the first parameter starts with) insert the parameters.
         if (arguments != null && (
-            offset >= document.textLength - 1 || document.getText(TextRange.from(offset, 1)) !in setOf("{", "[")
-            )
+                offset >= document.textLength - 1 || document.getText(TextRange.from(offset, 1)) !in setOf("{", "[")
+                )
         ) {
             insertParametersLiveTemplate(editor)
         }

@@ -37,52 +37,7 @@
             welcome on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA">plugin's GitHub page</a>.
             If you want to directly chat with us, take a peek at the project's
             <a href="https://gitter.im/TeXiFy-IDEA">gitter</a>.
+            If you like the project, please <a href="https://www.paypal.me/HannahSchellekens">donate</a> to support ongoing development!
         </p>
     ]]></description>
-
-    <!-- Changelog -->
-    <change-notes><![CDATA[
-        <p><strong>Beta 0.7.8</strong></p>
-        <p>
-            Welcome to TeXiFy IDEA 0.7.8! This release will automatically detect the TeX Live SDK on Windows, and fixes some bugs related to Sumatra forward search and WSL2.
-        <p>
-        <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
-        </p>
-        <br>
-        <p>
-            <em>Additions</em>
-        </p>
-        <ul>
-            <li> Auto-detect TeX Live SDK on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1912">#1912</a>)</li>
-            <li> Implement the 'build project' button to run all run configurations. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1966">#1966</a>)</li>
-            <li> Add inspection to encourage replacing usepackage by requirepackage in package files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
-        </ul>
-        <br>
-<!--        <p>-->
-<!--            <em>Changes</em>-->
-<!--        </p>-->
-<!--        <ul>-->
-<!--            <li> Ignore permission problems when extracting package zips on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894"><a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1894">#1894</a></a>)</li>-->
-<!--        </ul>-->
-<!--        <br>-->
-        <p>
-            <em>Bug fixes</em>
-        </p>
-        <ul>
-            <li> Fix incorrect output path when using WSL 2 on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1963">#1963</a>)</li>
-            <li> Fix Sumatra forward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1961">#1961</a>)</li>
-            <li> Fix crash when inserting optional label parameter in environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1959">#1959</a>)</li>
-            <li> Fix requirepackage commands collapsing as usepackage. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1970">#1970</a>)</li>
-        </ul>
-        <br>
-<!--        <p>-->
-<!--            Thanks to ... for contributing to this release.-->
-<!--        </p>-->
-<!--        <br>-->
-        <p>
-            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
-        </p>
-    ]]></change-notes>
 </idea-plugin>

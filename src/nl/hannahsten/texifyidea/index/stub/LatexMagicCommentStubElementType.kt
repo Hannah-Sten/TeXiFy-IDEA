@@ -1,15 +1,16 @@
 package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.LatexMagicCommentIndex
+import nl.hannahsten.texifyidea.index.indexSinkOccurrence
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.psi.impl.LatexMagicCommentImpl
 import nl.hannahsten.texifyidea.psi.key
 import nl.hannahsten.texifyidea.psi.value
 import java.io.IOException
 
-open class LatexMagicCommentStubElementType(debugName: String) : IStubElementType<LatexMagicCommentStub, LatexMagicComment>(debugName, LatexLanguage.INSTANCE) {
+open class LatexMagicCommentStubElementType(debugName: String) : IStubElementType<LatexMagicCommentStub, LatexMagicComment>(debugName, LatexLanguage) {
 
     override fun createPsi(stub: LatexMagicCommentStub): LatexMagicComment = LatexMagicCommentImpl(stub, this)
 
@@ -17,7 +18,7 @@ open class LatexMagicCommentStubElementType(debugName: String) : IStubElementTyp
         return LatexMagicCommentStubImpl(parentStub, this, psi.key().toString(), psi.value())
     }
 
-    override fun getExternalId(): String = "MAGIC_COMMENT"
+    override fun getExternalId() = "texify.latex." + super.toString()
 
     @Throws(IOException::class)
     override fun serialize(stub: LatexMagicCommentStub, dataStream: StubOutputStream) {
@@ -32,6 +33,6 @@ open class LatexMagicCommentStubElementType(debugName: String) : IStubElementTyp
     }
 
     override fun indexStub(stub: LatexMagicCommentStub, sink: IndexSink) {
-        sink.occurrence(LatexMagicCommentIndex.key(), stub.key)
+        indexSinkOccurrence(sink, LatexMagicCommentIndex.Util, stub.key)
     }
 }

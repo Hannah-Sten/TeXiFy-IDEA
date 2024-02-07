@@ -4,20 +4,22 @@ import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.text.Normalizer
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Capitalises the first character of the string.
+ * Capitalises the first character of the string, if present.
  */
-fun String.capitalizeFirst(): String = this[0].toUpperCase() + substring(1, length)
+fun String.capitalizeFirst(): String = if (this.isEmpty()) this else this[0].uppercaseChar() + substring(1, length)
 
 /**
  * Converts the string to camel case.
  */
 fun String.camelCase(): String {
     @Language("RegExp")
-    val parts = toLowerCase().split(Regex("[_\\s]+"))
+    val parts = lowercase(Locale.getDefault()).split(Regex("[_\\s]+"))
 
     val sb = StringBuilder(parts[0])
     for (i in 1 until parts.size) {
@@ -80,8 +82,8 @@ fun String.getIndent(): String {
 fun String.appendExtension(extensionWithoutDot: String): String {
     if (extensionWithoutDot == "") return this
 
-    val dottedExtension = ".${extensionWithoutDot.toLowerCase()}"
-    val thisLower = toLowerCase()
+    val dottedExtension = ".${extensionWithoutDot.lowercase(Locale.getDefault())}"
+    val thisLower = lowercase(Locale.getDefault())
 
     return when {
         thisLower.endsWith(dottedExtension) -> this
@@ -104,7 +106,7 @@ fun List<String>.removeIndents(): List<String> {
 
     val list = ArrayList<String>(size)
     val (maxIndent, _) = asSequence()
-        .filter { !it.isBlank() }
+        .filter { it.isNotBlank() }
         .map { Pair(it.getIndent().length, it) }
         .minByOrNull { it.first } ?: return this
 
@@ -153,29 +155,36 @@ fun String.removeAll(vararg strings: String): String {
 fun String.remove(string: String): String = this.replace(string, "")
 
 /**
+ * Replace everything after [string] - including [string] - from [this].
+ */
+fun String.replaceAfterFrom(string: String, replacement: String) = this.replaceAfter(string, replacement).remove(string)
+
+/**
  * Formats the string as a valid filename, removing not-allowed characters, in TeX-style with - as separator.
  */
 fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "\\")
 
 /**
- * Formats the string as a valid filepath, removing not-allowed characters, in TeX-style with - as separator. Any / or \ characters are not removed.
+ * Formats the string as a valid filepath in our recommended LaTeX style, removing not-allowed characters, in TeX-style with - as separator. Any / or \ characters are not removed.
  */
 fun String.formatAsFilePath(): String {
     val formatted = this.replace(" ", "-")
         .removeAll("<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
-        .toLowerCase()
+        .lowercase(Locale.getDefault())
 
     // If there are no valid characters left, use a default name.
-    return if (formatted.isEmpty()) "myfile" else formatted
+    return formatted.ifEmpty { "myfile" }
 }
 
 /**
  * Formats the string as a valid LaTeX label name.
  */
 fun String.formatAsLabel(): String {
-    return replace(" ", "-")
+    return this.let { Normalizer.normalize(it, Normalizer.Form.NFKD) }
+        .replace(" ", "-")
         .removeAll("%", "~", "#", "\\", ",")
-        .toLowerCase()
+        .replace("[^\\x00-\\x7F]".toRegex(), "")
+        .lowercase(Locale.getDefault())
 }
 
 /**
@@ -188,16 +197,21 @@ fun String.splitWhitespace() = split(Regex("\\s+"))
  *
  * @return The string with HTML tags removed.
  *
- * @see [Magic.Pattern.htmlTag]
+ * @see [PatternMagic.htmlTag]
  */
 fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 
 /**
  * Run a command in the terminal.
+ * You can only use this if you are sure you don't have paths and other escaped things with spaces.
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun String.runCommand(workingDirectory: File? = null) = runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+fun String.runCommand(workingDirectory: File? = null) =
+    runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+
+fun String.runCommandWithExitCode(workingDirectory: File? = null) =
+    runCommandWithExitCode(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 /**
  * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.

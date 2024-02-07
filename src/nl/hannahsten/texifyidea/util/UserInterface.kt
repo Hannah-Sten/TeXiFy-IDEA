@@ -1,13 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.MessageType
-import com.intellij.openapi.ui.popup.Balloon
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.wm.WindowManager
-import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.panels.HorizontalLayout
+import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.KeyAdapter
@@ -15,59 +10,9 @@ import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.text.JTextComponent
-
-/**
- * Shows a toast message above the loading bar.
- *
- * @param project
- *          The current project.
- * @param type
- *          The type of toast to toast.
- * @param htmlMessage
- *          What to show in the toast. Supports HTML.
- */
-fun toast(project: Project, type: MessageType, htmlMessage: String) {
-    val statusBar = WindowManager.getInstance().getStatusBar(project)
-    JBPopupFactory.getInstance()
-            .createHtmlTextBalloonBuilder(htmlMessage, type, null)
-            .setFadeoutTime(7500)
-            .createBalloon()
-            .show(RelativePoint.getCenterOf(statusBar.component), Balloon.Position.above)
-}
-
-/**
- * Shows an information toast message above the loading bar.
- *
- * @param project
- *          The current project.
- * @param htmlMessage
- *          What to show in the toast. Supports HTML.
- */
-fun toastInfo(project: Project, htmlMessage: String) = toast(project, MessageType.INFO, htmlMessage)
-
-/**
- * Shows an error toast message above the loading bar.
- *
- * @param project
- *          The current project.
- * @param htmlMessage
- *          What to show in the toast. Supports HTML.
- */
-fun toastError(project: Project, htmlMessage: String) = toast(project, MessageType.ERROR, htmlMessage)
-
-/**
- * Shows a warning information toast message above the loading bar.
- *
- * @param project
- *          The current project.
- * @param htmlMessage
- *          What to show in the toast. Supports HTML.
- */
-fun toastWarning(project: Project, htmlMessage: String) = toast(project, MessageType.WARNING, htmlMessage)
 
 /**
  * Adds a text listener to the component.
@@ -150,17 +95,17 @@ fun JTextComponent.setInputFilter(allowedCharacters: Set<Char>) = addKeyTypedLis
  *          The fixed label width, or `null` to use the label's inherent size.
  */
 fun JPanel.addLabeledComponent(
-        component: JComponent,
-        description: String,
-        labelWidth: Int? = null,
-        leftPadding: Int = 16
+    component: JComponent,
+    description: String,
+    labelWidth: Int? = null,
+    leftPadding: Int = 16
 ): JPanel {
     // Uses a border layout with West for the label and Center for the control itself.
     // East is reserved for suffix elements.
     val pane = JPanel(BorderLayout()).apply {
         val label = JBLabel(description).apply {
             // Left padding.
-            border = EmptyBorder(0, leftPadding, 0, 0)
+            border = JBUI.Borders.emptyLeft(leftPadding)
 
             // Custom width if specified.
             labelWidth?.let {

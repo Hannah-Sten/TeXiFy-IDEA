@@ -8,6 +8,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
@@ -117,7 +118,6 @@ fun PsiElement.magicCommentLookup(
     next: PsiElement.() -> PsiElement?,
     reversed: Boolean = false
 ): MagicComment<String, String> {
-
     val commentLines = LinkedList<String>()
 
     // Scan (backward) through all the magic comments preceding the element.
@@ -126,7 +126,6 @@ fun PsiElement.magicCommentLookup(
     // Stop searching when an element is found that is not a magic comment or that is null
     // (the scan ends at the first element that is not a magic comment).
     while (current.containsMagicComment()) {
-
         // Only consider magic comments
         val commentText = current?.text ?: continue
         current = current.next()
@@ -151,7 +150,7 @@ fun PsiElement.magicCommentLookup(
  */
 fun PsiElement.forwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?) = magicCommentLookup(
     initial,
-    PsiElement::nextSiblingIgnoreWhitespace,
+    PsiElement::nextLeafIgnoreWhitespace,
     reversed = false
 )
 

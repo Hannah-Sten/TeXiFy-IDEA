@@ -8,12 +8,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.suggested.createSmartPointer
-import nl.hannahsten.texifyidea.inspections.SafeDeleteFix
 import nl.hannahsten.texifyidea.inspections.InsightGroup
+import nl.hannahsten.texifyidea.inspections.SafeDeleteFix
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexId
-import nl.hannahsten.texifyidea.util.childrenOfType
-import org.jetbrains.annotations.NotNull
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 
 class BibtexUnusedEntryInspection : TexifyInspectionBase() {
 
@@ -36,7 +35,7 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
             }
             .toList()
 
-    class RemoveBibtexEntryFix(private val id: SmartPsiElementPointer<BibtexId>) : SafeDeleteFix(id.element as @NotNull PsiElement) {
+    class RemoveBibtexEntryFix(private val id: SmartPsiElementPointer<BibtexId>) : SafeDeleteFix(id.element as PsiElement) {
 
         override fun getText(): String = "Safe delete ${id.element?.text}"
     }

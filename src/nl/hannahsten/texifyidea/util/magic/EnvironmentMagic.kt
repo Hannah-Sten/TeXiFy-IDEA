@@ -1,26 +1,22 @@
 package nl.hannahsten.texifyidea.util.magic
 
+import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
+import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 
 object EnvironmentMagic {
 
     val listingEnvironments = hashSetOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }
 
-    val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU, MATRIX, BMATRIX, PMATRIX, VMATRIX, VMATRIX_CAPITAL).map { it.env }
+    private val tableEnvironmentsWithoutCustomEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, TABULARY, ARRAY, LONGTABLE, TABU, MATRIX, MATRIX_STAR, BMATRIX, BMATRIX_STAR, PMATRIX, PMATRIX_STAR, VMATRIX, VMATRIX_STAR, VMATRIX_CAPITAL, VMATRIX_CAPITAL_STAR, WIDETABULAR, BLOCKARRAY, BLOCK, TBLR, LONGTBLR, TALLTBLR).map { it.env }
 
     /**
-     * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
-     *
-     * environment name `=>` label prefix without colon
+     * Get all table environments in the project, including any user defined aliases.
      */
-    val labeled = mapOf(
-            FIGURE.env to "fig",
-            TABLE.env to "tab",
-            EQUATION.env to "eq",
-            ALGORITHM.env to "alg",
-            LISTINGS.env to "lst",
-            VERBATIM_CAPITAL.env to "verb",
-    )
+    fun getAllTableEnvironments(project: Project): Set<String> {
+        EnvironmentManager.updateAliases(tableEnvironmentsWithoutCustomEnvironments, project)
+        return EnvironmentManager.getAliases(tableEnvironmentsWithoutCustomEnvironments.first())
+    }
 
     /**
      * Environments that define their label via an optional parameter
@@ -34,9 +30,22 @@ object EnvironmentMagic {
 
     // Note: used in the lexer
     @JvmField
-    val verbatim = hashSetOf(VERBATIM.env, VERBATIM_CAPITAL.env, LISTINGS.env, "plantuml", LUACODE.env,
-        LUACODE_STAR.env, "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted"
+    val verbatim = hashSetOf(
+        VERBATIM.env, VERBATIM_CAPITAL.env, LISTINGS.env, "plantuml", LUACODE.env, LUACODE_STAR.env, PYCODE.env,
+        "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted"
     )
+
+    /**
+     * Do a guess whether the environment is a verbatim environment.
+     * Note: used in the lexer, so it should be fast.
+     */
+    @JvmStatic
+    fun isProbablyVerbatim(environmentName: String): Boolean {
+        // It might use \newminted environments, which always end in code
+        // There are other environments that have 'code' in their name, if they are all verbatim environments is unclear
+        // See https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2847#issuecomment-1347941386
+        return verbatim.contains(environmentName) || environmentName.endsWith("code")
+    }
 
     /**
      * Environments that always contain a certain language.
@@ -44,8 +53,8 @@ object EnvironmentMagic {
      * Maps the name of the environment to the registered Language id.
      */
     val languageInjections = hashMapOf(
-            LUACODE.env to "Lua",
-            LUACODE_STAR.env to "Lua"
+        LUACODE.env to "Lua",
+        LUACODE_STAR.env to "Lua"
     )
 
     val algorithmEnvironments = setOf(ALGORITHMIC.env)
@@ -54,20 +63,20 @@ object EnvironmentMagic {
      * All environments that define a matrix.
      */
     val matrixEnvironments = setOf(
-            "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
-            "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
-            "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
-            "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
-            "gmatrix", "tikz-cd"
+        "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
+        "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
+        "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
+        "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
+        "gmatrix", "tikz-cd"
     )
 
     val alignableEnvironments = setOf(
-            "eqnarray", "eqnarray*",
-            "split",
-            "align", "align*",
-            "alignat", "alignat*",
-            "flalign", "flalign*",
-            "aligned", "alignedat",
-            "cases", "dcases"
+        "eqnarray", "eqnarray*",
+        "split",
+        "align", "align*",
+        "alignat", "alignat*",
+        "flalign", "flalign*",
+        "aligned", "alignedat",
+        "cases", "dcases"
     ) + matrixEnvironments
 }

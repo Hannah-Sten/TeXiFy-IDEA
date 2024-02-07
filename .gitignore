@@ -1,4 +1,5 @@
 .gradle
+!.idea/icon.svg
 .idea
 out
 build
@@ -6,3 +7,6 @@ build
 idea-flex.skeleton
 jflex-*.jar
 scripts/venv
+results/
+gen/
+**/node_modules

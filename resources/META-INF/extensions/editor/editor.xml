@@ -1,14 +1,23 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <extensions defaultExtensionNs="com.intellij">
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEscapedSymbolFoldingBuilder"/>
-        <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.folding.BibtexEntryFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEnvironmentFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexFootnoteFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCommentFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEscapedSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCustomFoldingBuilder"/>
+        <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.folding.BibtexEntryFoldingBuilder"/>
+        <codeFoldingOptionsProvider instance="nl.hannahsten.texifyidea.editor.folding.LatexCodeFoldingOptionsProvider" />
+        <applicationService serviceImplementation="nl.hannahsten.texifyidea.editor.folding.LatexCodeFoldingSettings" />
+
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
+        <lang.lineWrapStrategy language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexLineWrapStrategy"/>
+        <codeInsight.fillParagraph language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexParagraphFillHandler"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.LatexCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.BibtexCompletionContributor"/>
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
@@ -18,10 +27,9 @@
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInCommentHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexParameterInfoHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexTypedHandler"/>
         <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
-        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InsertEnumerationItem"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterInEnumerationHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.UpDownAutoBracket"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexQuoteInsertHandler"/>
@@ -33,9 +41,12 @@
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
         <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
-        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.TablePasteProvider"/>
-        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.pasteproviders.ImagePasteProvider"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.pasteproviders.HtmlPasteProvider"/>
+        <vfs.asyncListener implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileVfsListener"/>
 
+        <inlineActionHandler implementation="nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler"/>
+        <inlineActionHandler implementation="nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler"/>
     </extensions>
 
     <xi:include href="/META-INF/extensions/editor/colors.xml" xpointer="xpointer(/idea-plugin/*)"/>

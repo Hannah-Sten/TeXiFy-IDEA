@@ -8,7 +8,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.DisplayPriority
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.util.ui.JBInsets
-import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -27,12 +27,12 @@ class LatexGenerationSettingsProvider : CodeStyleSettingsProvider() {
     override fun getConfigurableDisplayName(): String = ApplicationBundle.message("title.code.generation")
     override fun getPriority(): DisplayPriority = DisplayPriority.CODE_SETTINGS
     override fun hasSettingsPage() = false
-    override fun getLanguage(): LatexLanguage = LatexLanguage.INSTANCE
+    override fun getLanguage(): LatexLanguage = LatexLanguage
 }
 
 class LatexCodeStyleGenerationConfigurable(private val mySettings: CodeStyleSettings) : CodeStyleConfigurable {
 
-    private val myCommenterForm: CommenterForm = CommenterForm(LatexLanguage.INSTANCE)
+    private val myCommenterForm: CommenterForm = CommenterForm(LatexLanguage)
 
     override fun getDisplayName(): String = ApplicationBundle.message("title.code.generation")
 

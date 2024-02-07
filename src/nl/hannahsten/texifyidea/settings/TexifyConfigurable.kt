@@ -2,14 +2,14 @@ package nl.hannahsten.texifyidea.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import java.awt.Component
+import java.awt.Dimension
 import java.awt.FlowLayout
-import javax.swing.*
+import javax.swing.BoxLayout
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -24,11 +24,33 @@ class TexifyConfigurable : SearchableConfigurable {
     private var automaticItemInItemize: JBCheckBox? = null
     private var automaticDependencyCheck: JBCheckBox? = null
     private var autoCompile: JBCheckBox? = null
+    private var autoCompileOnSaveOnly: JBCheckBox? = null
     private var continuousPreview: JBCheckBox? = null
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
+    private var enableExternalIndex: JBCheckBox? = null
+    private var enableTextidote: JBCheckBox? = null
+    private var textidoteOptions: RawCommandLineEditor? = null
+    private var latexIndentOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
-    private var missingLabelMinimumLevel: ComboBox<LatexCommand>? = null
+    private var htmlPasteTranslator: ComboBox<String>? = null
+
+    /**
+     * Map UI variables to underlying setting variables
+     */
+    private val booleanSettings = listOf(
+        Pair(::automaticSecondInlineMathSymbol, settings::automaticSecondInlineMathSymbol),
+        Pair(::automaticUpDownBracket, settings::automaticUpDownBracket),
+        Pair(::automaticItemInItemize, settings::automaticItemInItemize),
+        Pair(::automaticDependencyCheck, settings::automaticDependencyCheck),
+        Pair(::autoCompile, settings::autoCompile),
+        Pair(::autoCompileOnSaveOnly, settings::autoCompileOnSaveOnly),
+        Pair(::continuousPreview, settings::continuousPreview),
+        Pair(::includeBackslashInSelection, settings::includeBackslashInSelection),
+        Pair(::showPackagesInStructureView, settings::showPackagesInStructureView),
+        Pair(::enableExternalIndex, settings::enableExternalIndex),
+        Pair(::enableTextidote, settings::enableTextidote),
+    )
 
     override fun getId() = "TexifyConfigurable"
 
@@ -45,12 +67,16 @@ class TexifyConfigurable : SearchableConfigurable {
                     automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
                     automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
                     autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
+                    autoCompileOnSaveOnly = addCheckbox("Automatic compilation only after document save")
                     continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
-                    automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
-                    missingLabelMinimumLevel = addMissingLabelMinimumLevel()
-                    addPdfViewerText()
+                    enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
+                    enableTextidote = addCheckbox("Enable the Textidote linter")
+                    textidoteOptions = addCommandLineEditor("Textidote", TexifySettingsState().textidoteOptions)
+                    latexIndentOptions = addCommandLineEditor("Latexindent", TexifySettingsState().latexIndentOptions)
+                    automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
+                    htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
                 }
             )
         }
@@ -59,41 +85,39 @@ class TexifyConfigurable : SearchableConfigurable {
     /**
      * Add the options for the smart quote substitution.
      */
-    private fun JPanel.addSmartQuotesOptions(vararg values: String): ComboBox<String> {
+    private fun JPanel.addComboBox(title: String, vararg values: String): ComboBox<String> {
         val list = ComboBox(values)
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JBLabel("Smart quote substitution: "))
+                add(JBLabel(title))
                 add(list)
             }
         )
         return list
     }
 
-    private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexCommand> {
-        val list = ComboBox(CommandMagic.labeledLevels.keys.toTypedArray())
-        add(
-            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JBLabel("Minimum sectioning level which should trigger the missing label inspection: "))
-                add(list)
-            }
-        )
-        list.renderer = object : DefaultListCellRenderer() {
-            override fun getListCellRendererComponent(list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, celHasFocus: Boolean): Component {
-                val item = (value as? LatexCommand)?.command ?: value
-                return super.getListCellRendererComponent(list, item, index, isSelected, celHasFocus)
-            }
-        }
-        return list
-    }
+    /**
+     * Add a field for command options
+     *
+     * @param label Name of the command
+     * @param initialValue Only used to guess a good field width
+     */
+    private fun JPanel.addCommandLineEditor(label: String, initialValue: String): RawCommandLineEditor {
+        val cmdEditor = RawCommandLineEditor()
 
-    private fun JPanel.addPdfViewerText() {
-        val oldPdfViewer = TexifySettings.getInstance().pdfViewer
+        // It's magic
+        val width = cmdEditor.getFontMetrics(cmdEditor.font).stringWidth(initialValue) + 170
+        cmdEditor.minimumSize = Dimension(width, cmdEditor.preferredSize.height)
+        cmdEditor.size = Dimension(width, cmdEditor.preferredSize.height)
+        cmdEditor.preferredSize = Dimension(width, cmdEditor.preferredSize.height)
+
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JLabel("<html>PDF viewer: This setting has been moved to the run configuration (template). See the wiki for details.<br/>Old PDF viewer: $oldPdfViewer <br/> See for example (IntelliJ) File > New Projects Settings > Run Configuration Templates, or Edit Configurations > Templates > LaTeX for the current project.</html>"))
+                add(JBLabel("$label command line options: "))
+                add(cmdEditor)
             }
         )
+        return cmdEditor
     }
 
     private fun JPanel.addCheckbox(message: String): JBCheckBox {
@@ -107,41 +131,30 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     override fun isModified(): Boolean {
-        return automaticSecondInlineMathSymbol?.isSelected != settings.automaticSecondInlineMathSymbol ||
-            automaticUpDownBracket?.isSelected != settings.automaticUpDownBracket ||
-            automaticItemInItemize?.isSelected != settings.automaticItemInItemize ||
-            automaticDependencyCheck?.isSelected != settings.automaticDependencyCheck ||
-            autoCompile?.isSelected != settings.autoCompile ||
-            continuousPreview?.isSelected != settings.continuousPreview ||
-            includeBackslashInSelection?.isSelected != settings.includeBackslashInSelection ||
-            showPackagesInStructureView?.isSelected != settings.showPackagesInStructureView ||
+        return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
+            textidoteOptions?.text != settings.textidoteOptions ||
+            latexIndentOptions?.text != settings.latexIndentOptions ||
             automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-            missingLabelMinimumLevel?.selectedItem != settings.missingLabelMinimumLevel
+            htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal
     }
 
     override fun apply() {
-        settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol?.isSelected == true
-        settings.automaticUpDownBracket = automaticUpDownBracket?.isSelected == true
-        settings.automaticItemInItemize = automaticItemInItemize?.isSelected == true
-        settings.automaticDependencyCheck = automaticDependencyCheck?.isSelected == true
-        settings.autoCompile = autoCompile?.isSelected == true
-        settings.continuousPreview = continuousPreview?.isSelected == true
-        settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
-        settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
+        for (setting in booleanSettings) {
+            setting.second.set(setting.first.get()?.isSelected == true)
+        }
+        settings.textidoteOptions = textidoteOptions?.text ?: ""
+        settings.latexIndentOptions = latexIndentOptions?.text ?: ""
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
-        settings.missingLabelMinimumLevel = missingLabelMinimumLevel?.selectedItem as? LatexCommand ?: LatexGenericRegularCommand.SUBSECTION
+        settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.values()[htmlPasteTranslator?.selectedIndex ?: 0]
     }
 
     override fun reset() {
-        automaticSecondInlineMathSymbol?.isSelected = settings.automaticSecondInlineMathSymbol
-        automaticUpDownBracket?.isSelected = settings.automaticUpDownBracket
-        automaticItemInItemize?.isSelected = settings.automaticItemInItemize
-        automaticDependencyCheck?.isSelected = settings.automaticDependencyCheck
-        autoCompile?.isSelected = settings.autoCompile
-        continuousPreview?.isSelected = settings.continuousPreview
-        includeBackslashInSelection?.isSelected = settings.includeBackslashInSelection
-        showPackagesInStructureView?.isSelected = settings.showPackagesInStructureView
+        for (setting in booleanSettings) {
+            setting.first.get()?.isSelected = setting.second.get()
+        }
+        textidoteOptions?.text = settings.textidoteOptions
+        latexIndentOptions?.text = settings.latexIndentOptions
         automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
-        missingLabelMinimumLevel?.selectedItem = settings.missingLabelMinimumLevel
+        htmlPasteTranslator?.selectedIndex = settings.htmlPasteTranslator.ordinal
     }
 }

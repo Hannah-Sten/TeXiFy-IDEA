@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -9,16 +10,17 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
-import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 
 /**
  * Uses the fileset cache to find all root files in the fileset.
  * Note that each root file induces a fileset, so a file could be in multiple filesets.
  */
 fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
-    val magicComment = magicComment()
+    val magicComment = runReadAction { magicComment() }
     val roots = mutableSetOf<PsiFile>()
 
     if (magicComment.contains(DefaultMagicKeys.ROOT)) {
@@ -63,19 +65,19 @@ fun PsiFile.isRoot(): Boolean {
     }
 
     // Function to avoid unnecessary evaluation
-    fun documentClass() = this.commandsInFile().find { it.commandToken.text == LatexGenericRegularCommand.DOCUMENTCLASS.cmd }
+    fun documentClass() = this.commandsInFile().find { it.name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd }
 
-    fun documentEnvironment() = this.childrenOfType(LatexEnvironment::class).any { it.environmentName == DefaultEnvironment.DOCUMENT.environmentName }
+    fun documentEnvironment() = this.childrenOfType(LatexEnvironment::class).any { it.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName }
 
     // If the file uses the subfiles documentclass, then it is a root file in the sense that all file inclusions
     // will be relative to this file. Note that it may include the preamble of a different file (using optional parameter of \documentclass)
-    fun usesSubFiles() = documentClass()?.requiredParameters?.contains(SUBFILES.name) == true
+    fun usesSubFiles() = documentClass()?.getRequiredParameters()?.contains(SUBFILES.name) == true
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
     val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.mainFile == this.virtualFile }
 
-    return isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles()
+    return runReadAction { isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles() }
 }
 
 /**
@@ -83,7 +85,7 @@ fun PsiFile.isRoot(): Boolean {
  * e.g. \mycommand{arg1,arg2}{arg3} will return [arg1, arg2, arg3].
  */
 fun LatexCommands.getAllRequiredArguments(): List<String>? {
-    val required = requiredParameters
+    val required = getRequiredParameters()
     if (required.isEmpty()) return null
     return required.flatMap { it.split(',') }
 }

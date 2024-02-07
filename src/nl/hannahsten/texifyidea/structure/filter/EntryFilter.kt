@@ -6,6 +6,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewEntryElement
 import nl.hannahsten.texifyidea.util.tokenName
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -17,7 +18,7 @@ object EntryFilter : Filter {
             return true
         }
 
-        val name = treeElement.entry.tokenName()?.toLowerCase()
+        val name = treeElement.entry.tokenName().lowercase(Locale.getDefault())
         return name == "string" || name == "preamble"
     }
 
@@ -29,7 +30,7 @@ object EntryFilter : Filter {
 
         override fun getText() = "Show Entries"
 
-        override fun getDescription() = "Show Entries"
+        override fun getDescription() = "Show entries"
 
         override fun getIcon() = PlatformIcons.ANNOTATION_TYPE_ICON
     }

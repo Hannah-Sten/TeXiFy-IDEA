@@ -10,10 +10,10 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.files.openedEditor
+import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 
 /**
@@ -64,7 +64,7 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
             val document = file.document() ?: return
-            val editor = file.openedEditor() ?: return
+            val editor = file.openedTextEditor() ?: return
 
             val offset = command.endOffset()
             val indent = document.lineIndentationByOffset(offset)

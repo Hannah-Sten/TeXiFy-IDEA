@@ -8,6 +8,7 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.BibtexFile
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -27,16 +28,13 @@ open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTr
     override fun canNavigateToSource() = element is NavigationItem && element.canNavigateToSource()
 
     override fun getAlphaSortKey() = when (element) {
-        is PsiFile -> element.name.toLowerCase()
-        else -> element.text.toLowerCase()
+        is PsiFile -> element.name.lowercase(Locale.getDefault())
+        else -> element.text.lowercase(Locale.getDefault())
     }
 
     override fun getPresentation(): ItemPresentation {
-        if (element is BibtexFile) {
-            return BibtexFilePresentation(element)
-        }
-
-        throw AssertionError("Should not happen: element !is BibtexFile.")
+        assert(element is BibtexFile) { "Expected BibtexFile, got ${element.javaClass}" }
+        return BibtexFilePresentation(element as BibtexFile)
     }
 
     override fun getChildren(): Array<TreeElement> {

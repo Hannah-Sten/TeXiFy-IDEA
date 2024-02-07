@@ -1,12 +1,14 @@
 package nl.hannahsten.texifyidea.action.sumatra
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.ui.DialogBuilder
-import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -18,15 +20,11 @@ import javax.swing.SwingConstants
  * @author Sten Wessel
  * @since b0.4
  */
-open class ConfigureInverseSearchAction : AnAction(
-    "_Configure Inverse Search",
-    "Setup inverse search integration with SumatraPDF and TeXiFy IDEA.",
-    null
-) {
+open class ConfigureInverseSearchAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         DialogBuilder().apply {
-            setTitle("Configure inverse search")
+            setTitle("Configure Inverse Search")
             setCenterPanel(
                 JLabel(
                     "<html>To enable inverse search (from PDF to source file), the inverse search setting in SumatraPDF must be changed.<br/>" +
@@ -45,6 +43,7 @@ open class ConfigureInverseSearchAction : AnAction(
 
                 val path = PathManager.getBinPath()
                 var name = ApplicationNamesInfo.getInstance().scriptName
+                val sumatraWorkingDir = SumatraAvailabilityChecker.sumatraDirectory
 
                 // If we can find a 64-bits Java, then we can start (the equivalent of) idea64.exe since that will use the 64-bits Java
                 // see issue 104 and https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/809
@@ -53,10 +52,10 @@ open class ConfigureInverseSearchAction : AnAction(
                     // We will assume that since the user is using a 64-bit IDEA that name64 exists, this is at least true for idea64.exe and pycharm64.exe on Windows
                     name += "64"
                     // We also remove an extra "" because it opens an empty IDEA instance when present
-                    Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" --line %l \\\"%f\\\"\"")
+                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, nonBlocking = true)
                 }
                 else {
-                    Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" \\\"\\\" --line %l \\\"%f\\\"\"")
+                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, nonBlocking = true)
                 }
 
                 dialogWrapper.close(0)
@@ -67,6 +66,8 @@ open class ConfigureInverseSearchAction : AnAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = isSumatraAvailable
+        e.presentation.isEnabledAndVisible = SumatraAvailabilityChecker.isSumatraAvailable
     }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

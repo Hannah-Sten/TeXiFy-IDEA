@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiFile
 import java.util.regex.Pattern
 
 /**
@@ -12,30 +13,14 @@ import java.util.regex.Pattern
 val Boolean.int: Int
     get() = if (this) 1 else 0
 
+// Copied from grazie utils
+fun Boolean?.orTrue() = this ?: true
+fun Boolean?.orFalse() = this ?: false
+
 /**
  * Creates a pair of two objects, analogous to [to].
  */
 infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
-
-/**
- * Prints the object in default string presentation to the console.
- */
-fun Any.print() = print(this)
-
-/**
- * Prints the object in default string presentation to the console including line feed.
- */
-fun Any.println() = println(this)
-
-/**
- * Prints `message: OBJECT` to the console.
- */
-infix fun Any.debug(message: Any) = print("$message: $this")
-
-/**
- * Prints `message: OBJECT` to the console including line feed.
- */
-infix fun Any.debugln(message: Any) = println("$message: $this")
 
 /**
  * Executes the given run write action.
@@ -46,6 +31,16 @@ fun runWriteAction(writeAction: () -> Unit) {
 
 fun runWriteCommandAction(project: Project, writeCommandAction: () -> Unit) {
     WriteCommandAction.runWriteCommandAction(project, writeCommandAction)
+}
+
+fun <T> runWriteCommandAction(
+    project: Project,
+    commandName: String,
+    vararg files: PsiFile,
+    writeCommandAction: () -> T
+): T {
+    return WriteCommandAction.writeCommandAction(project, *files).withName(commandName)
+        .compute<T, RuntimeException>(writeCommandAction)
 }
 
 /**
@@ -63,7 +58,8 @@ val IntRange.length: Int
  * Converts the range to a range representation with the given seperator.
  * When the range has size 0, it will only print the single number.
  */
-fun IntRange.toRangeString(separator: String = "-") = if (start == endInclusive) start else "$start$separator$endInclusive"
+fun IntRange.toRangeString(separator: String = "-") =
+    if (start == endInclusive) start else "$start$separator$endInclusive"
 
 /**
  * Shift the range to the right by the number of places given.
@@ -75,7 +71,7 @@ fun IntRange.shiftRight(displacement: Int): IntRange {
 /**
  * Converts a [TextRange] to [IntRange].
  */
-fun TextRange.toIntRange() = startOffset..endOffset
+fun TextRange.toIntRange() = startOffset until endOffset
 
 /**
  * Easy access to [java.util.regex.Matcher.matches].

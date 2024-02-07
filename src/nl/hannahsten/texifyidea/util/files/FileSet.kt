@@ -1,12 +1,13 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.isDefinition
+import nl.hannahsten.texifyidea.util.parser.isDefinition
 
 /**
  * Finds all the files in the project that are somehow related using includes.
@@ -23,7 +24,7 @@ import nl.hannahsten.texifyidea.util.isDefinition
 internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
     // Setup.
     val project = this.project
-    val includes = LatexIncludesIndex.getItems(project)
+    val includes = LatexIncludesIndex.Util.getItems(project)
 
     // Find all root files.
     val roots = includes.asSequence()
@@ -35,7 +36,7 @@ internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
     // Map root to all directly referenced files.
     val sets = HashMap<PsiFile, Set<PsiFile>>()
     for (root in roots) {
-        val referenced = root.referencedFiles(root.virtualFile) + root
+        val referenced = runReadAction { root.referencedFiles(root.virtualFile) } + root
 
         if (referenced.contains(this)) {
             return referenced + this
@@ -68,24 +69,23 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> {
 /**
  * @see [BibtexEntryIndex.getIndexedEntriesInFileSet]
  */
-@Suppress("unused")
-fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
+fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet(this)
 
 /**
- * @see [LatexCommandsIndex.getItemsInFileSet]
+ * @see [LatexCommandsIndex.Util.getItemsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.Util.getItemsInFileSet(this)
 
 /**
- * @see [LatexCommandsIndex.getItemsAndFilesInFileSet]
+ * @see [LatexCommandsIndex.Util.getItemsAndFilesInFileSet]
  */
-fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexCommands>>> = LatexCommandsIndex.getItemsAndFilesInFileSet(this)
+fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexCommands>>> = LatexCommandsIndex.Util.getItemsAndFilesInFileSet(this)
 
 /**
  * Get all the definitions in the file set.
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItemsInFileSet(this)
+    return LatexDefinitionIndex.Util.getItemsInFileSet(this)
         .filter { it.isDefinition() }
 }
 
@@ -93,5 +93,5 @@ fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
  * Get all the definitions and redefinitions in the file set.
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItemsInFileSet(this)
+    return LatexDefinitionIndex.Util.getItemsInFileSet(this)
 }
