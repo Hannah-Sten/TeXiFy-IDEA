@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.util.indexing.FileBasedIndex
+import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
 import com.intellij.util.indexing.FileContent
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
@@ -117,9 +117,7 @@ object LatexDocsRegexer {
     /**
      * Determine which files to index.
      */
-    val inputFilter = FileBasedIndex.InputFilter { file ->
-        // sty files are included, because in some cases there are no dtx files, or the dtx files have a different name, so we use the sty file to find out which package should be imported.
-        // This does mean we get many duplicates in the index.
-        file.fileType is LatexSourceFileType || file.fileType is StyleFileType || file.fileType is ClassFileType
-    }
+    // sty files are included, because in some cases there are no dtx files, or the dtx files have a different name, so we use the sty file to find out which package should be imported.
+    // This does mean we get many duplicates in the index.
+    val inputFilter = DefaultFileTypeSpecificInputFilter(LatexSourceFileType, StyleFileType, ClassFileType)
 }
