@@ -29,8 +29,14 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
  * @see [PsiTreeUtil.getChildrenOfType]
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
-    if (project.isDisposed || !this.isValid) return emptyList()
-    return runReadAction { PsiTreeUtil.findChildrenOfType(this, clazz.java) }
+    return runReadAction {
+        if (project.isDisposed || !this.isValid) {
+            emptyList()
+        }
+        else {
+            PsiTreeUtil.findChildrenOfType(this, clazz.java)
+        }
+    }
 }
 
 /**

@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.remotelibraries.mendeley
 
+import arrow.core.Either
+import arrow.core.raise.either
+import arrow.core.raise.ensure
 import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -7,7 +10,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
@@ -45,9 +48,9 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
         }
     }
 
-    override suspend fun getBibtexString(): Pair<HttpResponse, String> {
+    override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> = either {
         MendeleyAuthenticator.getAccessToken()
-        return client.get(urlString = "https://api.mendeley.com/documents") {
+        val (response, content) = client.get(urlString = "https://api.mendeley.com/documents") {
             header("Accept", "application/x-bibtex")
             parameter("view", "bib")
             parameter("limit", 50)
@@ -56,6 +59,10 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
                 header("Accept", "application/x-bibtex")
             }
         }
+        ensure(response.status.value in 200 until 300) {
+            RemoteLibraryRequestFailure(displayName, "${response.status.value}: ${response.status.description}")
+        }
+        content
     }
 
     override fun destroyCredentials() {

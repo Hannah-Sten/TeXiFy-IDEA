@@ -2,12 +2,10 @@ package nl.hannahsten.texifyidea.remotelibraries
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.raise.ensure
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
-import io.ktor.client.statement.*
 import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
@@ -19,9 +17,8 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
 
     companion object {
 
-        fun showNotification(project: Project, libraryName: String, response: HttpResponse) {
+        fun showNotification(project: Project, libraryName: String, statusMessage: String) {
             val title = "Could not connect to $libraryName"
-            val statusMessage = "${response.status.value}: ${response.status.description}"
             Notification("LaTeX", title, statusMessage, NotificationType.ERROR).notify(project)
         }
     }
@@ -32,11 +29,7 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
      * When the request has a non-OK status code, return a failure instead.
      */
     suspend fun getCollection(): Either<RemoteLibraryRequestFailure, List<BibtexEntry>> = either {
-        val (response, body) = getBibtexString()
-
-        ensure(response.status.value in 200 until 300) {
-            RemoteLibraryRequestFailure(displayName, response)
-        }
+        val body = getBibtexString().bind()
 
         // Reading the dummy bib file needs to happen in a place where we have read access.
         runReadAction {
@@ -47,7 +40,7 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
     /**
      * Get the bib items from the remote library in bibtex format.
      */
-    abstract suspend fun getBibtexString(): Pair<HttpResponse, String>
+    abstract suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String>
 
     /**
      * Remove any credentials from the password safe.
