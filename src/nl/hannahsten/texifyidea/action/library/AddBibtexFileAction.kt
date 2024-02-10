@@ -20,6 +20,9 @@ import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
 import nl.hannahsten.texifyidea.util.CredentialAttributes
 import javax.swing.JComponent
 
+/**
+ * Action to add a [BibtexFileLibrary] to the libraries tool window.
+ */
 class AddBibtexFileAction : AddLibraryAction<BibtexFileLibrary, AddBibtexFileAction.AddBibtexFileDialogWrapper>() {
 
     class AddBibtexFileDialogWrapper(val project: Project) : AddLibDialogWrapper(BibtexFileLibrary.NAME) {
