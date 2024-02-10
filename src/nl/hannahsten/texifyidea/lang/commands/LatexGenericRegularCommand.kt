@@ -187,6 +187,7 @@ enum class LatexGenericRegularCommand(
     MBOX("mbox", "text".asRequired()),
     MDSERIES("mdseries"),
     MEDSKIP("medskip"),
+    META("meta", "arg".asRequired()),
     MULTICOLUMN("multicolumn", "cols".asRequired(), "pos".asRequired(), "text".asRequired(Argument.Type.TEXT)),
     NAMEREF("nameref", "label".asRequired(Argument.Type.LABEL), dependency = LatexPackage.HYPERREF),
     NEWLABEL("newlabel"),

@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.util.indexing.FileBasedIndex
+import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
 import com.intellij.util.indexing.FileContent
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
@@ -75,13 +75,19 @@ object LatexDocsRegexer {
         val macrosBeingOverloaded = mutableSetOf<String>()
 
         regex.findAll(inputData.contentAsText).forEach loop@{ macroWithDocsResult ->
-            val key = macroWithDocsResult.groups["key"]?.value ?: macroWithDocsResult.groups["key1"]?.value ?: return@loop
+            val macro = macroWithDocsResult.groups["key"]?.value ?: macroWithDocsResult.groups["key1"]?.value ?: return@loop
+
+            // If we're supposedly defining \begin or \end, it's probably an obfuscated way of documenting an environment, so skip it.
+            if (macro == "\\begin" || macro == "\\end") {
+                return@loop
+            }
+
             // The string that hopefully contains some documentation about the macro
             val containsDocs = macroWithDocsResult.groups["value"]?.value ?: ""
 
             // If we are overloading macros, just save this one to fill with documentation later.
             if (containsDocs.trim(' ', '%').startsWithAny("\\begin{macro}", "\\DescribeMacro")) {
-                macrosBeingOverloaded.add(key)
+                macrosBeingOverloaded.add(macro)
             }
             else {
                 var docs = ""
@@ -92,10 +98,16 @@ object LatexDocsRegexer {
                         if (line.trim().startsWithAny(*skipLines)) {
                             return@forEach
                         }
-                        else if (!line.containsAny(stopsDocs) && line.trim(' ', '%').isNotBlank()) {
+                        // Definitely stop if we should
+                        else if (line.containsAny(stopsDocs)) {
+                            return@breaker
+                        }
+                        else if (line.trim(' ', '%').isNotBlank()) {
                             docs += " $line"
                         }
-                        else {
+                        // Don't stop on blank lines if we don't have much info yet, otherwise do stop
+                        // Make sure to remove the arguments to see if there's any real content
+                        else if (docs.replace("\\\\([mop]arg|meta)\\{[^}]+}".toRegex(), "").length > 10) {
                             return@breaker
                         }
                     }
@@ -103,9 +115,9 @@ object LatexDocsRegexer {
 
                 // Avoid overwriting existing docs with an empty string
                 val formatted = format(docs.trim())
-                if (key in map.keys && formatted.isBlank()) return@loop
+                if (macro in map.keys && formatted.isBlank()) return@loop
 
-                map[key] = formatted
+                map[macro] = formatted
                 if (macrosBeingOverloaded.isNotEmpty()) {
                     macrosBeingOverloaded.forEach { map[it] = format(docs.trim()) }
                     macrosBeingOverloaded.clear()
@@ -117,9 +129,7 @@ object LatexDocsRegexer {
     /**
      * Determine which files to index.
      */
-    val inputFilter = FileBasedIndex.InputFilter { file ->
-        // sty files are included, because in some cases there are no dtx files, or the dtx files have a different name, so we use the sty file to find out which package should be imported.
-        // This does mean we get many duplicates in the index.
-        file.fileType is LatexSourceFileType || file.fileType is StyleFileType || file.fileType is ClassFileType
-    }
+    // sty files are included, because in some cases there are no dtx files, or the dtx files have a different name, so we use the sty file to find out which package should be imported.
+    // This does mean we get many duplicates in the index.
+    val inputFilter = DefaultFileTypeSpecificInputFilter(LatexSourceFileType, StyleFileType, ClassFileType)
 }

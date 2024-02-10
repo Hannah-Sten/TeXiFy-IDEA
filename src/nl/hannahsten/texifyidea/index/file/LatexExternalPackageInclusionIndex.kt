@@ -44,9 +44,7 @@ class LatexExternalPackageInclusionIndex : FileBasedIndexExtension<String, Strin
     override fun getVersion() = 2
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return FileBasedIndex.InputFilter {
-            it.fileType is StyleFileType || it.fileType is ClassFileType
-        }
+        return DefaultFileTypeSpecificInputFilter(StyleFileType, ClassFileType)
     }
 
     override fun dependsOnFileContent() = true

@@ -60,7 +60,7 @@ interface Environment : Dependend, Described {
 
         fun extractArgumentsFromDocs(docs: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs
-            val argCommands = arrayOf(OARG, MARG, PARG).map { it.commandWithSlash }.toTypedArray()
+            val argCommands = arrayOf(OARG, MARG, PARG, META).map { it.commandWithSlash }.toTypedArray()
             if (docs.startsWithAny(*argCommands)) {
                 return LatexCommand.getArgumentsFromStartOfString(docs, 0)
             }
