@@ -50,14 +50,14 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
      * This function also starts the creation and compilation of the temporary preview document, and will then
      * either display the preview, or if something failed, the error produced.
      */
-    fun compilePreview(previewCode: String, project: Project) {
+    fun compilePreview(previewCode: String, project: Project, canUseJlatexmath: Boolean) {
         previewForm.setEquation(previewCode)
 
         // Combine default and user defined preamble. Cannot be used if we decide to run latexmath.
         val preamble = preamble + userPreamble
 
         // jlatexmath cannot handle a custom preamble
-        val previewer = if (userPreamble.isBlank()) {
+        val previewer = if (userPreamble.isBlank() && canUseJlatexmath) {
             JlatexmathPreviewer()
         }
         else {

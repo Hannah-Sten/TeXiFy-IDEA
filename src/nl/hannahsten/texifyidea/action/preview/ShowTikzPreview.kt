@@ -34,7 +34,8 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         // Make sure we're currently in a tikz environment.
         val tikzEnvironment = findTikzEnvironment(element) ?: return
 
-        displayPreview(project, tikzEnvironment, FORM_KEY) {
+        // jlatexmath cannot display tikz
+        displayPreview(project, tikzEnvironment, FORM_KEY, canUseJlatexmath = false) {
             resetPreamble()
             val psiFile = getPsiFile(file, project) ?: return@displayPreview
 
