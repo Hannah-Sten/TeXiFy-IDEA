@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.remotelibraries
 
 import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyLibrary
+import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroGroupLibrary
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
@@ -20,6 +21,7 @@ object RemoteBibLibraryFactory {
         val libraryState = RemoteLibraryManager.getInstance().getLibraries()[identifier ?: return null] ?: return null
         return when (libraryState.libraryType.simpleName) {
             ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, libraryState.displayName)
+            ZoteroGroupLibrary::class.simpleName -> ZoteroGroupLibrary(identifier, libraryState.displayName)
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, libraryState.displayName)
             BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(identifier, libraryState.displayName)
             else -> null
@@ -34,6 +36,7 @@ object RemoteBibLibraryFactory {
 
         return when (T::class.simpleName) {
             ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, displayName) as T
+            ZoteroGroupLibrary::class.simpleName -> ZoteroGroupLibrary(identifier, displayName) as T
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, displayName) as T
             BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(identifier, displayName) as T
             else -> null
