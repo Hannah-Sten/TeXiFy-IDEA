@@ -10,9 +10,11 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
+import io.ktor.http.parsing.*
 import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
 
 /**
@@ -48,8 +50,25 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
         }
     }
 
-    override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> = either {
+    override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> {
         MendeleyAuthenticator.getAccessToken()
+        return try {
+            getBibtexStringWithoutRetry()
+        }
+        catch (e: ParseException) {
+            // If the token is invalid, the http auth header will be "Invalid token" and ktor can't parse it, so we delete credentials and retry
+            // https://github.com/orgs/Hannah-Sten/projects/1/views/2?pane=issue&itemId=48414574
+            // https://youtrack.jetbrains.com/issue/KTOR-4759/Auth-BearerAuthProvider-caches-result-of-loadToken-until-process-death
+            Log.debug(e.message)
+            destroyCredentials()
+            client.plugin(Auth).providers
+                .filterIsInstance<BearerAuthProvider>()
+                .first().clearToken()
+            getBibtexStringWithoutRetry()
+        }
+    }
+
+    private suspend fun getBibtexStringWithoutRetry() = either {
         val (response, content) = client.get(urlString = "https://api.mendeley.com/documents") {
             header("Accept", "application/x-bibtex")
             parameter("view", "bib")

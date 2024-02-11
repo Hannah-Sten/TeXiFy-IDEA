@@ -6,6 +6,23 @@
 
 ### Fixed
 
+## [0.9.5-alpha.2] - 2024-02-10
+
+### Added
+
+* Improve file filters for the LaTeX package index
+* Improve \DescribeMacro handling for the package doocumentation index
+* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
+* Add option to disable indentation of environments, by @slideclimb
+
+### Fixed
+
+* Fix exception #3274 in the equation preview
+* Never use jlatexmath for the TikZ preview
+* Destroy invalid tokens for the remote libraries tool windows
+* Fix missing folding for commands in math environments, by @jojo2357
+* Fix an issue when inlining files with whitespace, by @jojo2357
+
 ## [0.9.5-alpha.1] - 2024-02-06
 
 ### Added
@@ -308,8 +325,9 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.1...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.2...HEAD
 [0.9.5-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5-alpha.1
+[0.9.5-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.1...v0.9.5-alpha.2
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.2
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
