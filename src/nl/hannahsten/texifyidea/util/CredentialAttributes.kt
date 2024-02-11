@@ -16,6 +16,11 @@ object CredentialAttributes {
         val userAttributes = createCredentialsAttributes(ZoteroLibrary.NAME)
     }
 
+    object ZoteroGroup {
+
+        val groupAttributes = createCredentialsAttributes(ZoteroLibrary.NAME)
+    }
+
     object Mendeley {
 
         val tokenAttributes = createCredentialsAttributes("${MendeleyLibrary.NAME}-token")
