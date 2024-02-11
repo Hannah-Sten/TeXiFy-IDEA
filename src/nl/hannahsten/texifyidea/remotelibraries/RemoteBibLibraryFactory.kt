@@ -21,6 +21,7 @@ object RemoteBibLibraryFactory {
         return when (libraryState.libraryType.simpleName) {
             ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, libraryState.displayName)
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, libraryState.displayName)
+            BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(identifier, libraryState.displayName)
             else -> null
         }
     }
@@ -34,6 +35,7 @@ object RemoteBibLibraryFactory {
         return when (T::class.simpleName) {
             ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, displayName) as T
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, displayName) as T
+            BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(identifier, displayName) as T
             else -> null
         }
     }

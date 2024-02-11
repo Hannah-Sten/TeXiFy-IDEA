@@ -1,11 +1,14 @@
 package nl.hannahsten.texifyidea.remotelibraries.zotero
 
+import arrow.core.Either
+import arrow.core.raise.either
+import arrow.core.raise.ensure
 import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
@@ -22,9 +25,9 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
         }
     }
 
-    override suspend fun getBibtexString(): Pair<HttpResponse, String> {
+    override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> = either {
         val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)
-        return client.get("$BASE_URL/users/${credentials?.userName}/items") {
+        val (response, content) = client.get("$BASE_URL/users/${credentials?.userName}/items") {
             headers {
                 append("Zotero-API-version", VERSION.toString())
                 append("Zotero-API-key", credentials?.password.toString())
@@ -39,6 +42,11 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
                 }
             }
         }
+
+        ensure(response.status.value in 200 until 300) {
+            RemoteLibraryRequestFailure(displayName, "${response.status.value}: ${response.status.description}")
+        }
+        content
     }
 
     override fun destroyCredentials() {

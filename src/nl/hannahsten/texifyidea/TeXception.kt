@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea
 
-import io.ktor.client.statement.*
-
 /**
  * Exception that is thrown by problems within TeXiFy-IDEA.
  * Consider using PluginException if the exception is not caught within TeXiFy, otherwise the real exception message will be hidden.
@@ -19,7 +17,7 @@ open class TeXception : RuntimeException {
 /**
  * Represents a signal that a request to one of the remote libraries failed.
  */
-data class RemoteLibraryRequestFailure(val libraryName: String, val response: HttpResponse)
+data class RemoteLibraryRequestFailure(val libraryName: String, val message: String)
 
 /**
  * A system command/program that failed to run successfully.

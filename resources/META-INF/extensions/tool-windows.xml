@@ -22,6 +22,8 @@
                     text="Zotero"/>
             <action class="nl.hannahsten.texifyidea.action.library.mendeley.AddMendeleyAction" id="texify.mendeley.add"
                     text="Mendeley"/>
+            <action class="nl.hannahsten.texifyidea.action.library.AddBibtexFileAction" id="texify.bibtexfile.add"
+                    text="BibTeX File"/>
         </group>
 
     </actions>

@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.remotelibraries.mendeley
 
+import arrow.core.Either
+import arrow.core.raise.either
+import arrow.core.raise.ensure
 import com.intellij.ide.passwordSafe.PasswordSafe
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -7,8 +10,8 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.parsing.*
+import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley
 import nl.hannahsten.texifyidea.util.Log
@@ -47,7 +50,7 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
         }
     }
 
-    override suspend fun getBibtexString(): Pair<HttpResponse, String> {
+    override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> {
         MendeleyAuthenticator.getAccessToken()
         return try {
             getBibtexStringWithoutRetry()
@@ -65,14 +68,20 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
         }
     }
 
-    private suspend fun getBibtexStringWithoutRetry() = client.get(urlString = "https://api.mendeley.com/documents") {
-        header("Accept", "application/x-bibtex")
-        parameter("view", "bib")
-        parameter("limit", 50)
-    }.paginateViaLinkHeader {
-        client.get(it) {
+    private suspend fun getBibtexStringWithoutRetry() = either {
+        val (response, content) = client.get(urlString = "https://api.mendeley.com/documents") {
             header("Accept", "application/x-bibtex")
+            parameter("view", "bib")
+            parameter("limit", 50)
+        }.paginateViaLinkHeader {
+            client.get(it) {
+                header("Accept", "application/x-bibtex")
+            }
         }
+        ensure(response.status.value in 200 until 300) {
+            RemoteLibraryRequestFailure(displayName, "${response.status.value}: ${response.status.description}")
+        }
+        content
     }
 
     override fun destroyCredentials() {
