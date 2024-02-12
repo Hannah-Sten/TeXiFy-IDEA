@@ -67,12 +67,12 @@ class SyncLibraryAction : AnAction() {
             override fun onSuccess() {
                 // If the tree is null the user hasn't opened the library tool window yet, so there is no tree to update.
                 // The tree will be drawn with the updated library elements once the user opens the tool window.
-                tree?.let {
+                tree?.let { tree ->
                     ProgressManager.getInstance().run(object : Backgroundable(project, "Updating tree...") {
                         override fun run(indicator: ProgressIndicator) {
-                            val model = it.model as DefaultTreeModel
+                            val model = tree.model as DefaultTreeModel
                             val root = model.root as? DefaultMutableTreeNode ?: return
-                            val libraryNode: LibraryMutableTreeNode = it.findLibraryNode(library.identifier)
+                            val libraryNode: LibraryMutableTreeNode = tree.findLibraryNode(library.identifier)
                                 ?: LibraryMutableTreeNode(library.identifier, library.displayName)
                             libraryNode.children().asSequence()
                                 .map { it as DefaultMutableTreeNode }
@@ -97,7 +97,7 @@ class SyncLibraryAction : AnAction() {
 
                             if (!root.children().contains(libraryNode)) root.add(libraryNode)
                             runInEdt { model.nodeStructureChanged(root) }
-                            expandedPaths.asIterator().forEach(it::expandPath)
+                            expandedPaths.asIterator().forEach(tree::expandPath)
                         }
                     })
                 }
