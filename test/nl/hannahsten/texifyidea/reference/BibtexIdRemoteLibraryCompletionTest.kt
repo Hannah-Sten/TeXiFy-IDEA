@@ -99,7 +99,7 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
         val path = getTestName(false)
 
         mockkObject(RemoteLibraryManager)
-        every { RemoteLibraryManager.getInstance().getLibraries() } returns mutableMapOf("aaa" to LibraryState("mocked", ZoteroLibrary::class.java, BibtexEntryListConverter().fromString(remoteBib)))
+        every { RemoteLibraryManager.getInstance().getLibraries() } returns mutableMapOf("aaa" to LibraryState("mocked", ZoteroLibrary::class.java, BibtexEntryListConverter().fromString(remoteBib), "test url"))
 
         myFixture.configureByFiles("$path/before.tex", "$path/bibtex_before.bib")
 
