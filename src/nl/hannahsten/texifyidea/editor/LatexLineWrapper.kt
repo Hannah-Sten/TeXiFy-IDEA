@@ -125,7 +125,7 @@ object LatexLineWrapper {
      * @return negative value if no wrapping should be performed for the target line;
      * preferred wrap position otherwise
      */
-    fun calculatePreferredWrapPosition(
+    private fun calculatePreferredWrapPosition(
         editor: Editor,
         text: CharSequence,
         tabSize: Int,
