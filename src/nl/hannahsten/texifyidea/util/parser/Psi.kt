@@ -98,6 +98,18 @@ fun <T : PsiElement> PsiElement.firstParentOfType(clazz: KClass<T>): T? {
     return null
 }
 
+// Kotlin version of the above
+inline fun <reified T : PsiElement> PsiElement.firstParentOfType(): T? {
+    var current: PsiElement? = this
+    while (current != null) {
+        if (current is T) {
+            return current
+        }
+        current = current.parent
+    }
+    return null
+}
+
 /**
  * Finds the last child of a certain type.
  */
