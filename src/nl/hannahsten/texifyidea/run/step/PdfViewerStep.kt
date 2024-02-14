@@ -12,10 +12,11 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.ui.TextBrowseFolderListener
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.fields.ExtendableTextField
-import com.intellij.ui.layout.CCFlags
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
@@ -23,7 +24,6 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.macro.OutputDirMacro
-import nl.hannahsten.texifyidea.run.macro.sortOutMacros
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
@@ -108,41 +108,56 @@ class PdfViewerStep internal constructor(
             isPassParentEnvs = state.isPassParentEnvs
         }
 
+        val browseField = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileTypeDescriptor("PDF File", ".pdf", ".dvi")
+                    //                            FileChooserDescriptor(true, false, false, false, false, false)
+                    //                                .withFileFilter { it.extension == "pdf" }
+                    //                                .withTitle("Select PDF File"
+                )
+            )
+        }
+
         val panel = panel {
             row("PDF viewer:") {
-                cell {
-                    component(viewerEditor)
-                    viewerArguments(CCFlags.growX, CCFlags.pushX)
-                }
+                cell(viewerEditor)
+                cell(viewerArguments)
             }
 
             row("PDF file:") {
-                val textFieldBuilder = textFieldWithBrowseButton(
-                    getter = {
-                        val path = state.pdfFilePath.pathWithMacro
-                        // If using default, setter will not be called
-                        if (path == null) {
-                            val default = getDefaultPdfFilePathWithMacro().resolvedPath!!
-                            state.pdfFilePath = LatexRunConfigurationPathOption(default, default)
-                        }
-                        state.pdfFilePath.pathWithMacro!!
-                     },
-                    setter = {
-                        // We have to get the data context in the setter, any data component will do
-                        val anyDataComponent = viewerEditor.component
-                        val (resolvedPath, pathWithMacro) = sortOutMacros(anyDataComponent?.getComponent(0) ?: return@textFieldWithBrowseButton, configuration, it)
-                        state.pdfFilePath = LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
-                    },
-                    fileChooserDescriptor = FileTypeDescriptor("PDF File", ".pdf", ".dvi")
-                )
+//                cell(browseField).bind(
+//                    componentGet = {
+//                        val path = state.pdfFilePath.pathWithMacro
+//                        // If using default, setter will not be called
+//                        if (path == null) {
+//                            val default = getDefaultPdfFilePathWithMacro().resolvedPath!!
+//                            state.pdfFilePath = LatexRunConfigurationPathOption(default, default)
+//                        }
+//                        state.pdfFilePath.pathWithMacro!!
+//                    },
+//                    componentSet = { textFieldWithBrowseButton: TextFieldWithBrowseButton, s: String ->
+//                        // We have to get the data context in the setter, any data component will do
+//                        val anyDataComponent = viewerEditor.component
+//                        val (resolvedPath, pathWithMacro) = sortOutMacros(anyDataComponent?.getComponent(0) ?: return@bind, configuration, it)
+//                        state.pdfFilePath = LatexRunConfigurationPathOption(resolvedPath, pathWithMacro)
+//
+//                    },
+//                    // todo ??
+//                )
+
+//                    getter = {
+//                     },
+//                    setter = {
+//                    },
                 MacrosDialog.addMacroSupport(
-                    textFieldBuilder.component.textField as ExtendableTextField,
+                    browseField.textField as ExtendableTextField,
                     MacrosDialog.Filters.DIRECTORY_PATH
                 ) { false }
-                setMonospaced(textFieldBuilder.component.textField)
+                setMonospaced(browseField.textField)
             }
             row("Environment variables:") {
-                component(environmentVariables)
+                cell(environmentVariables)
                     .comment("For this step only. Separate variables with semicolon: VAR=value; VAR1=value1")
             }
         }

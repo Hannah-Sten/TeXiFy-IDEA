@@ -83,8 +83,8 @@ object SumatraConversation : ViewerConversation() {
     private fun execute(vararg commands: String) {
         openConversation()
         try {
-            CONVERSATION?.connect(SERVER, TOPIC)
-            CONVERSATION?.execute(commands.joinToString(separator = "") { "[$it]" })
+            conversation?.connect(SERVER, TOPIC)
+            conversation?.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)

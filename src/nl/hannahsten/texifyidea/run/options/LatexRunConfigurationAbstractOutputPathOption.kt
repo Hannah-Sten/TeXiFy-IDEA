@@ -109,6 +109,8 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
 
         // Create output paths (see issue #70 on GitHub)
         files.asSequence()
+            // Ignore all output directories to avoid exponential recursion
+            .filter { !it.virtualFile.path.contains(outPath) }
             .mapNotNull { FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.virtualFile.parent.path) }
             .forEach { File(outPath + it).mkdirs() }
     }

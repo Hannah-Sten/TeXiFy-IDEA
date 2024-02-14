@@ -112,10 +112,9 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
                 if (!nonBlocking) {
                     output = proc.getOutput()
                 }
-                exitValue = proc.exitValue()
                 Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
             }
-            Pair(output, exitValue)
+            Pair(output, proc.exitValue())
         }
     }
     catch (e: IOException) {
