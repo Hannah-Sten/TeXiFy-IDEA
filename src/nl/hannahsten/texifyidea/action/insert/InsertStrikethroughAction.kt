@@ -4,7 +4,6 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
-import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.action.InsertEditorAction
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
 import nl.hannahsten.texifyidea.util.insertUsepackage
@@ -14,8 +13,8 @@ import nl.hannahsten.texifyidea.util.insertUsepackage
  */
 class InsertStrikethroughAction : InsertEditorAction(
     "Strikethrough (ulem package)",
-    TexifyIcons.FONT_STRIKETHROUGH,
-    "\\sout{", "}"
+    "\\sout{",
+    "}"
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {

@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.index.file
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
@@ -20,8 +23,6 @@ import java.nio.file.Path
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
 
-    private var extractedFiles = false
-
     override fun getAdditionalProjectRootsToIndex(project: Project): MutableSet<VirtualFile> {
         // Avoid indexing in tests
         if (ApplicationManager.getApplication().isUnitTestMode) {
@@ -32,16 +33,24 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
 
         // Add source files
         val roots = LatexSdkUtil.getSdkSourceRoots(project) { sdk, homePath -> sdk.getDefaultSourcesPath(homePath) }.toMutableSet()
-        // Check if we possibly need to extract files first
-        for (root in roots) {
-            if (root.path.contains("MiKTeX", ignoreCase = true) && !extractedFiles) {
-                try {
-                    if (!extractMiktexFiles(root)) return mutableSetOf()
-                }
-                catch (e: ArchiverException) {
-                    // Ignore permission errors, nothing we can do about that
-                    Log.debug("Exception when trying to extract MiKTeX source files: ${e.message}")
-                    return mutableSetOf()
+        // Check if we possibly need to extract files first, but don't try more than once
+        if (!extractedFiles) {
+            extractedFiles = true
+            for (root in roots) {
+                if (root.path.contains("MiKTeX", ignoreCase = true)) {
+                    // Run in the background with progress, we cannot wait for completion because that would block this thread,
+                    // so in the worst case the files will only be indexed the next time indexing is triggered
+                    ProgressManager.getInstance().run(object : Backgroundable(project, "Extracting MiKTeX package source files", true) {
+                        override fun run(indicator: ProgressIndicator) {
+                            try {
+                                extractMiktexFiles(root, indicator)
+                            }
+                            catch (e: ArchiverException) {
+                                // Ignore permission errors, nothing we can do about that
+                                Log.debug("Exception when trying to extract MiKTeX source files: ${e.stackTraceToString()}")
+                            }
+                        }
+                    })
                 }
             }
         }
@@ -62,9 +71,11 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
      *
      * @return If succeeded.
      */
-    private fun extractMiktexFiles(root: VirtualFile): Boolean {
+    private fun extractMiktexFiles(root: VirtualFile, indicator: ProgressIndicator): Boolean {
         val txArchiver = TarXZUnArchiver()
-        File(root.path).list { _, name -> name.endsWith("tar.xz") }?.forEach { zipName ->
+        val zips = File(root.path).list { _, name -> name.endsWith("tar.xz") } ?: return false
+        for ((index, zipName) in zips.withIndex()) {
+            indicator.fraction = index.toDouble() / zips.size
             txArchiver.sourceFile = File(root.path, zipName)
             // Note that by keeping the target path the same for everything, some packages will install in source/latex and some in source/latex/latex depending on how they were zipped
             val destination = File(root.path, "latex")
@@ -99,3 +110,5 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
 
     override fun getAdditionalRootsToIndex() = mutableSetOf<VirtualFile>()
 }
+
+private var extractedFiles = false

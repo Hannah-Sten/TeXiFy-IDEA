@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class KtorUtilKtTest {

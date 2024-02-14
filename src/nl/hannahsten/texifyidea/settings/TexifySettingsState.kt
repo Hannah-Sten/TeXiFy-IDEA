@@ -19,5 +19,6 @@ data class TexifySettingsState(
     var textidoteOptions: String = "--check en --output singleline --no-color",
     var latexIndentOptions: String = "",
     var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
+    var htmlPasteTranslator: TexifySettings.HtmlPasteTranslator = TexifySettings.HtmlPasteTranslator.BUILTIN,
     var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
 )

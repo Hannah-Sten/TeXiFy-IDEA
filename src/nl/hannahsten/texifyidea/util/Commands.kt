@@ -26,7 +26,7 @@ import java.util.stream.Collectors
  * @return The found commands.
  */
 fun Project.findCommandDefinitions(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItems(this).filter {
+    return LatexDefinitionIndex.Util.getItems(this).filter {
         it.isCommandDefinition()
     }
 }
@@ -90,7 +90,7 @@ fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): Str
 
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
-        val commandExpansion = LatexCommandsIndex.getCommandsByNames(
+        val commandExpansion = LatexCommandsIndex.Util.getCommandsByNames(
             file ?: return null,
             *CommandMagic.commandDefinitionsAndRedefinitions.toTypedArray()
         )
@@ -124,5 +124,5 @@ fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Colle
         .collect(Collectors.toSet())
     searchFiles.add(originalFile.virtualFile)
     val scope = GlobalSearchScope.filesScope(project, searchFiles)
-    return LatexCommandsIndex.getItems(project, scope)
+    return LatexCommandsIndex.Util.getItems(project, scope)
 }

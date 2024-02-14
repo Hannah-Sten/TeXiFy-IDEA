@@ -15,6 +15,7 @@ object LatexPackageWarningHandler : LatexMessageHandler(
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {
+                @Suppress("ktlint:standard:property-naming")
                 val `package` = groups["package"]?.value
                 val unProcessedMessage = groups["message"]?.value ?: return@apply
                 // Remove the (package) occurrences in the rest of the warning message.

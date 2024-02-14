@@ -30,6 +30,7 @@ object LatexPackageErrorProcessor : LatexErrorMessageProcessor("""^Package ${Lat
 
     override fun process(message: String): String? {
         regex.forEach {
+            @Suppress("ktlint:standard:property-naming")
             val `package` = it.find(message)?.groups?.get("package")?.value ?: return@forEach
             return "${`package`}: ${it.replace(message, "").trim()}"
         }

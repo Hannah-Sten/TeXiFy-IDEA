@@ -23,8 +23,7 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
-    name = "_Forward Search",
-    icon = TexifyIcons.RIGHT
+    name = "_Forward Search"
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {

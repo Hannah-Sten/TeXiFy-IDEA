@@ -20,18 +20,17 @@ import java.util.*
  * todo remove
  */
 class LatexCompileMessageTreeView(
-    val project: Project,
+    project: Project,
     private val latexMessageList: MutableList<LatexLogMessage>,
     private val bibtexMessageList: MutableList<BibtexLogMessage>
-) :
-    NewErrorTreeViewPanel(project, null) {
+) : NewErrorTreeViewPanel(project, null) {
 
-    fun config(): LatexErrorTreeViewConfiguration = LatexErrorTreeViewConfiguration.getInstance(myProject)
+    fun config(): LatexErrorTreeViewConfiguration = LatexErrorTreeViewConfiguration.getInstance(project)
 
     override fun fillRightToolbarGroup(group: DefaultActionGroup) {
         // Use myProject (from NewErrorTreeViewPanel) because somehow project is null
-        LatexKeywordFilter.values().forEach { group.add(FilterKeywordAction(it, myProject)) }
-        group.addAll(FilterBibtexAction(myProject), ExpandAllAction(), CollapseAllAction())
+        LatexKeywordFilter.values().forEach { group.add(FilterKeywordAction(it, project)) }
+        group.addAll(FilterBibtexAction(project), ExpandAllAction(), CollapseAllAction())
 
         // Search for the information action toggle so we can remove it (as we don't use it).
         val informationAction = group.childActionsOrStubs.find {

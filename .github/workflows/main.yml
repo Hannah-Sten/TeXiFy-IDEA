@@ -7,6 +7,10 @@ on:
   pull_request:
     types: [opened, synchronize]
   merge_group:
+# Cancel builds if a new commit is pushed, except on master
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   qodana:
@@ -39,11 +43,12 @@ jobs:
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
   test:
     runs-on: ${{ matrix.os }}
+    if: github.event.pull_request.draft == false
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

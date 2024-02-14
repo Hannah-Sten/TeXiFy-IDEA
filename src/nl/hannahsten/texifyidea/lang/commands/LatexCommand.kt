@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.runBlocking
@@ -12,8 +14,8 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.length
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
 
@@ -52,8 +54,18 @@ interface LatexCommand : Described, Dependend {
             val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
 
             // Look up in index
-            FileBasedIndex.getInstance().processValues(
-                LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
+            val filesAndValues = mutableListOf<Pair<VirtualFile, String>>()
+            runReadAction {
+                FileBasedIndex.getInstance().processValues(
+                    LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
+                        filesAndValues.add(Pair(file, value))
+                        true
+                    },
+                    GlobalSearchScope.everythingScope(project)
+                )
+            }
+
+            for ((file, value) in filesAndValues) {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
@@ -80,10 +92,7 @@ interface LatexCommand : Described, Dependend {
                     }
                 }
                 cmds.add(cmd)
-                true
-            },
-                GlobalSearchScope.everythingScope(project)
-            )
+            }
 
             // Now we might have duplicates, some of which might differ only in description.
             // Of those, we just want to take any command which doesn't have an empty description if it exists
@@ -106,17 +115,19 @@ interface LatexCommand : Described, Dependend {
         /**
          * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).
          */
-        fun getArgumentsFromStartOfString(docs: String, counterInit: Int): Array<Argument> {
+        fun getArgumentsFromStartOfString(docs: String, counterInit: Int = 0): Array<Argument> {
             val arguments = mutableListOf<Argument>()
             var counter = counterInit
             run breaker@{
                 // Only use the ones at the beginning of the string to avoid matching too much
-                """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
+                // I don't know what the \meta command is intended for, but it's used instead of \marg in pythontex at least
+                """\s*\\(?<command>[omp]arg|meta)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
                     if (it.range.first == counter) {
-                        when (it.groups["command"]?.value) {
-                            OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
-                            MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
-                            PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                        if (it.groups["command"]?.value == OARG.command) {
+                            arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
+                        }
+                        else {
+                            arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
                         }
                         counter += it.range.length + 1
                     }
@@ -157,7 +168,7 @@ interface LatexCommand : Described, Dependend {
             // Maybe the arguments are given right at the beginning of the docs
             val argCommands = arrayOf(OARG, MARG, PARG).map { it.commandWithSlash }.toTypedArray()
             if (docs.startsWithAny(*argCommands)) {
-                return getArgumentsFromStartOfString(docs, 0)
+                return getArgumentsFromStartOfString(docs)
             }
 
             // Maybe the command appears somewhere in the docs with all the arguments after it

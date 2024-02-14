@@ -7,6 +7,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import javax.swing.SwingUtilities
 
 /**
  * Information about the system other than the LatexDistribution or the OS.
@@ -71,42 +72,38 @@ fun Process.getOutput() = inputStream.bufferedReader().readText().trim() + error
  *
  * @param killAfterTimeout If true, process will be killed after timeout. If false, just return output.
  * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
+ * @param nonBlocking If true, the function will not block waiting for output
+ * @param inputString If provided, this will be written to the process outputStream before starting the process.
  */
-fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, killAfterTimeout: Boolean = true, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false): Pair<String?, Int> {
-    Log.debug("Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
+fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, killAfterTimeout: Boolean = true, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false, inputString: String = ""): Pair<String?, Int> {
+    Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
     return try {
         val proc = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withWorkDirectory(workingDirectory)
             .createProcess()
 
+        if (inputString.isNotBlank()) {
+            proc.outputStream.bufferedWriter().apply {
+                write(inputString)
+                close()
+            }
+        }
+
         if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
-            var output = ""
-            if (nonBlocking) {
-                if (proc.inputStream.bufferedReader().ready()) {
-                    output += proc.inputStream.bufferedReader().readText().trim()
-                }
-                if (proc.errorStream.bufferedReader().ready()) {
-                    output += proc.errorStream.bufferedReader().readText().trim()
-                }
-            }
-            else {
-                output = proc.getOutput()
-            }
+            val output = readInputStream(nonBlocking, proc)
             Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
             Pair(output, proc.exitValue())
         }
         else {
             // todo find a way to get output of alive process
             var output = ""
-            var exitValue = 0
-            if (nonBlocking) {
-                if (proc.inputStream.bufferedReader().ready()) {
-                    output += proc.inputStream.bufferedReader().readText().trim()
-                }
-                if (proc.errorStream.bufferedReader().ready()) {
-                    output += proc.errorStream.bufferedReader().readText().trim()
-                }
+            // If the program has timed out, something is stuck so we are not going to wait until it prints its stdout/stderr, we just check if ready and otherwise are out of luck
+            if (proc.inputStream.bufferedReader().ready()) {
+                output += proc.inputStream.bufferedReader().readText().trim()
+            }
+            if (proc.errorStream.bufferedReader().ready()) {
+                output += proc.errorStream.bufferedReader().readText().trim()
             }
             if (killAfterTimeout) {
                 proc.destroy()
@@ -140,4 +137,23 @@ fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = nu
             Pair(e.message, -1)
         }
     }
+}
+
+/**
+ * Read input and error streams. If non-blocking, we will skip reading the streams if they are not ready.
+ */
+private fun readInputStream(nonBlocking: Boolean, proc: Process): String {
+    var output = ""
+    if (nonBlocking) {
+        if (proc.inputStream.bufferedReader().ready()) {
+            output += proc.inputStream.bufferedReader().readText().trim()
+        }
+        if (proc.errorStream.bufferedReader().ready()) {
+            output += proc.errorStream.bufferedReader().readText().trim()
+        }
+    }
+    else {
+        output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+    }
+    return output
 }

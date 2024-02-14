@@ -35,19 +35,19 @@ interface Environment : Dependend, Described {
             val envs = mutableSetOf<Environment>()
             FileBasedIndex.getInstance().processValues(
                 LatexExternalEnvironmentIndex.Cache.id, environmentName, null, { file, value ->
-                val dependency = file.name.removeFileExtension()
-                val env = object : Environment {
-                    override val arguments = extractArgumentsFromDocs(value)
-                    override val description = value
-                    override val dependency =
-                        if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage.create(file)
-                    override val context = Context.NORMAL
-                    override val initialContents = ""
-                    override val environmentName = environmentName
-                }
-                envs.add(env)
-                true
-            },
+                    val dependency = file.name.removeFileExtension()
+                    val env = object : Environment {
+                        override val arguments = extractArgumentsFromDocs(value)
+                        override val description = value
+                        override val dependency =
+                            if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage.create(file)
+                        override val context = Context.NORMAL
+                        override val initialContents = ""
+                        override val environmentName = environmentName
+                    }
+                    envs.add(env)
+                    true
+                },
                 GlobalSearchScope.everythingScope(project)
             )
 
@@ -60,7 +60,7 @@ interface Environment : Dependend, Described {
 
         fun extractArgumentsFromDocs(docs: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs
-            val argCommands = arrayOf(OARG, MARG, PARG).map { it.commandWithSlash }.toTypedArray()
+            val argCommands = arrayOf(OARG, MARG, PARG, META).map { it.commandWithSlash }.toTypedArray()
             if (docs.startsWithAny(*argCommands)) {
                 return LatexCommand.getArgumentsFromStartOfString(docs, 0)
             }

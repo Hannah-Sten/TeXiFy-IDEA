@@ -33,6 +33,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var textidoteOptions: RawCommandLineEditor? = null
     private var latexIndentOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
+    private var htmlPasteTranslator: ComboBox<String>? = null
 
     /**
      * Map UI variables to underlying setting variables
@@ -74,7 +75,8 @@ class TexifyConfigurable : SearchableConfigurable {
                     enableTextidote = addCheckbox("Enable the Textidote linter")
                     textidoteOptions = addCommandLineEditor("Textidote", TexifySettingsState().textidoteOptions)
                     latexIndentOptions = addCommandLineEditor("Latexindent", TexifySettingsState().latexIndentOptions)
-                    automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
+                    automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
+                    htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
                 }
             )
         }
@@ -83,11 +85,11 @@ class TexifyConfigurable : SearchableConfigurable {
     /**
      * Add the options for the smart quote substitution.
      */
-    private fun JPanel.addSmartQuotesOptions(vararg values: String): ComboBox<String> {
+    private fun JPanel.addComboBox(title: String, vararg values: String): ComboBox<String> {
         val list = ComboBox(values)
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JBLabel("Smart quote substitution: "))
+                add(JBLabel(title))
                 add(list)
             }
         )
@@ -132,7 +134,8 @@ class TexifyConfigurable : SearchableConfigurable {
         return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
             textidoteOptions?.text != settings.textidoteOptions ||
             latexIndentOptions?.text != settings.latexIndentOptions ||
-            automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal
+            automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+            htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal
     }
 
     override fun apply() {
@@ -142,6 +145,7 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.textidoteOptions = textidoteOptions?.text ?: ""
         settings.latexIndentOptions = latexIndentOptions?.text ?: ""
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
+        settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.values()[htmlPasteTranslator?.selectedIndex ?: 0]
     }
 
     override fun reset() {
@@ -151,5 +155,6 @@ class TexifyConfigurable : SearchableConfigurable {
         textidoteOptions?.text = settings.textidoteOptions
         latexIndentOptions?.text = settings.latexIndentOptions
         automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
+        htmlPasteTranslator?.selectedIndex = settings.htmlPasteTranslator.ordinal
     }
 }

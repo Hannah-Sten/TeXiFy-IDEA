@@ -34,6 +34,13 @@ class LatexFoldingTest : BasePlatformTestCase() {
         }
     }
 
+    fun testMathSymbolFoldingInEnvironment() {
+        // Unicode issues on windows
+        if (!SystemInfo.isWindows) {
+            myFixture.testFolding("$testDataPath/math-symbols-environment.tex")
+        }
+    }
+
     fun testSectionFolding() {
         myFixture.testFolding("$testDataPath/sections.tex")
     }

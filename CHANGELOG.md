@@ -8,6 +8,76 @@ This beta release contains a completely new LaTeX run configuration. However, cu
 
 ### Fixed
 
+## [0.9.5-alpha.2] - 2024-02-10
+
+### Added
+
+* Improve file filters for the LaTeX package index
+* Improve \DescribeMacro handling for the package doocumentation index
+* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
+* Add option to disable indentation of environments, by @slideclimb
+
+### Fixed
+
+* Fix exception #3274 in the equation preview
+* Never use jlatexmath for the TikZ preview
+* Destroy invalid tokens for the remote libraries tool windows
+* Fix missing folding for commands in math environments, by @jojo2357
+* Fix an issue when inlining files with whitespace, by @jojo2357
+
+## [0.9.5-alpha.1] - 2024-02-06
+
+### Added
+
+* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
+* Add option to disable indentation of environments, by @slideclimb
+
+### Fixed
+
+* Fix missing folding for commands in math environments, by @jojo2357
+* Fix an issue when inlining files with whitespace, by @jojo2357
+
+## [0.9.4] - 2024-02-06
+
+Welcome to TeXiFy IDEA 0.9.4! This release ensures that TeXiFy works well in the upcoming 2024.1 IntelliJ release.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Add support for IDEA 2024.1
+* Add folding settings for all folding builders
+* Improve internal logging
+
+### Fixed
+
+* Fix autocompletion of file path arguments when text is already present
+
+## [0.9.3] - 2024-01-16
+
+Welcome to TeXiFy IDEA 0.9.3! This release fixes some UI freezes related to package indexing and autocompletion, and fixes a few bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve MiKTeX package source files extraction
+* Add optidev environments as math environments, by @leandrolerena
+* Improve autocompletion performance after starting IDE
+* Improve plugin loading performance
+
+### Fixed
+
+* Improve user feedback for equation preview when Inkscape is not installed
+* Fix incorrectly inserted \items in enumeration environments, by @jojo2357
+* Fix false positives for equation gathering inspection, by @jojo2357
+* Don't attempt to use mthelp when it is not available, by @jojo2357
+* Fix #3361: false positive on duplicate identifier on @string entries in bib files
+* Replace code deprecated in 2023.3
+* Avoid creating output directories recursively and improve the cleanup process
+
 ## [0.9.2] - 2023-11-24
 
 Welcome to TeXiFy IDEA 0.9.2! This release introduces a new 'extract value' functionality to easily create custom commands from a text selection, and fixes some minor bugs.
@@ -257,7 +327,11 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.2...HEAD
+[0.9.5-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5-alpha.1
+[0.9.5-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.1...v0.9.5-alpha.2
+[0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
+[0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.2
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...v0.9.0

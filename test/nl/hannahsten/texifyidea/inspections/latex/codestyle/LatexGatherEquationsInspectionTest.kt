@@ -20,6 +20,33 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
         myFixture.checkHighlighting()
     }
 
+    fun `test two consecutive inline math environments`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            ${"$"}a=b$
+            ${"$"}b=a$
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun `test display math seperated by inline math environments`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \[
+                a=b
+            \]
+            ${"$"}c=d$
+            \[
+                e=f
+            \]
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun `test two consecutive (non-display) math environments`() {
         myFixture.configureByText(
             LatexFileType,
@@ -30,6 +57,19 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
             \begin{equation}\label{eq:yx}
                 y = x            
             \end{equation}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun `test two consecutive (non-display) math environments in item`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{enumerate}
+                \item{\[a=b\]}
+                \item{\[b=a\]}
+            \end{enumerate}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

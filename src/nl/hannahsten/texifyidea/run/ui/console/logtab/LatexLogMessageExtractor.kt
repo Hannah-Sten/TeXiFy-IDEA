@@ -66,10 +66,11 @@ object LatexLogMessageExtractor {
         // Look for warnings that need special treatment.
         specialWarningHandlersList.forEach { handler ->
             // Check if the match starts in 'text', because if not then we will encounter it again the next time
-            if (handler.regex.any { r ->
-                r.containsMatchIn(text) &&
-                    r.find(text)?.range?.start?.let { it <= text.removeSuffix(newText).length - 1 } == true
-            }
+            if (
+                handler.regex.any { r ->
+                    r.containsMatchIn(text) &&
+                        r.find(text)?.range?.start?.let { it <= text.removeSuffix(newText).length - 1 } == true
+                }
             ) {
                 return handler.findMessage(text, newText, currentFile)
             }

@@ -30,6 +30,7 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
             if (Cache.fileLocationCache == null) {
                 Cache.fileLocationCache = File("$homePath/urls").listFiles()
                     // Get manifest names
+                    ?.asSequence()
                     ?.mapNotNull { it.readText().trim() }
                     // Get manifest contents
                     ?.flatMap { File("$homePath/manifests/$it.txt").readLines().map { line -> line.trim() } }

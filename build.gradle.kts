@@ -9,12 +9,12 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.16.1"
+    id("org.jetbrains.intellij") version "1.17.1"
     kotlin("jvm") version ("1.9.20")
     kotlin("plugin.serialization") version ("1.9.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.50.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -26,14 +26,14 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.7.5"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.0.2"
+    id("org.owasp.dependencycheck") version "9.0.9"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
-    id("org.jetbrains.grammarkit") version "2022.3.2"
+    id("org.jetbrains.grammarkit") version "2022.3.2.1"
 }
 
 group = "nl.hannahsten"
@@ -74,6 +74,14 @@ tasks.compileTestKotlin {
     }
 }
 
+// https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
+configurations {
+    all {
+        exclude(group = "xml-apis")
+        exclude(group = "xerces")
+    }
+}
+
 dependencies {
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
@@ -84,40 +92,37 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("org.slf4j:slf4j-simple:2.0.12")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.9.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.9.1")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.16.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.6")
-    implementation("io.ktor:ktor-client-cio:2.3.6")
-    implementation("io.ktor:ktor-client-auth:2.3.6")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.6")
-    implementation("io.ktor:ktor-server-core:2.3.6")
-    implementation("io.ktor:ktor-server-jetty:2.3.6")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.6")
+    implementation("io.ktor:ktor-client-core:2.3.8")
+    implementation("io.ktor:ktor-client-cio:2.3.8")
+    implementation("io.ktor:ktor-client-auth:2.3.8")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
+    implementation("io.ktor:ktor-server-core:2.3.8")
+    implementation("io.ktor:ktor-server-jetty:2.3.8")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-7")
+    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-12")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
-    // https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
-    implementation("org.apache.xmlgraphics:batik-codec:1.17") {
-        exclude("xml-apis", "xml-apis")
-        exclude("xml-apis", "xml-apis-ext")
-    }
+    implementation("org.apache.xmlgraphics:batik-all:1.17")
+    implementation("batik:batik-svg-dom:1.6-1")
 
     implementation("io.arrow-kt:arrow-core:1.2.1")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.1")
@@ -129,16 +134,16 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.1")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.2")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.10.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
 
-    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("io.mockk:mockk:1.13.9")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -206,8 +211,8 @@ intellij {
         listOf(
             "tanvd.grazi",
             "java",
-            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
-            "com.jetbrains.hackathon.indices.viewer:1.23"
+//            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
+            "com.jetbrains.hackathon.indices.viewer:1.25"
         )
     )
 
@@ -219,7 +224,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2023.2")
+    version.set("241.10840-EAP-CANDIDATE-SNAPSHOT")
 //    type = "PY"
 
     // Example to use a different, locally installed, IDE
@@ -291,6 +296,11 @@ tasks.useLatestVersions {
 }
 
 tasks {
+
+    // https://github.com/JetBrains/gradle-grammar-kit-plugin/issues/168
+    withType<GenerateParserTask> {
+        classpath(setupDependencies.flatMap { it.idea.map { idea -> idea.classes.resolve("lib/opentelemetry.jar") } })
+    }
 
     val generateLatexParserTask = register<GenerateParserTask>("generateLatexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))

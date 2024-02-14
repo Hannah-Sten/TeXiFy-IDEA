@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
@@ -71,29 +72,31 @@ fun BibtexId.idName(): String = text.substringEnd(1)
  * E.g. `{Bambi} # space # "Broodje"` with `@string{space=" "}` will become `Bambi Broodje`.
  */
 fun BibtexContent.evaluate(): String {
-    val result = StringBuilder()
+    var result = ""
 
-    for (string in childrenOfType(BibtexString::class)) {
-        val braced = string.bracedString
-        val quoted = string.quotedString
-        val defined = string.definedString
+    runReadAction {
+        for (string in childrenOfType(BibtexString::class)) {
+            val braced = string.bracedString
+            val quoted = string.quotedString
+            val defined = string.definedString
 
-        if (braced != null) {
-            result.append(braced.evaluate())
+            if (braced != null) {
+                result += braced.evaluate()
+            }
+            else if (quoted != null) {
+                result += quoted.evaluate()
+            }
+            else if (defined != null) {
+                result += defined.evaluate()
+            }
         }
-        else if (quoted != null) {
-            result.append(quoted.evaluate())
-        }
-        else if (defined != null) {
-            result.append(defined.evaluate())
+
+        if (result.isEmpty()) {
+            result += text
         }
     }
 
-    if (result.isEmpty()) {
-        result.append(text)
-    }
-
-    return result.toString()
+    return result
 }
 
 /**

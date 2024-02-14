@@ -23,7 +23,11 @@ fun BibtexEntry.getYear(): String {
 
 fun BibtexEntry.getIdentifier(): String {
     val stub = this.stub
-    return stub?.identifier ?: (firstChildOfType(BibtexId::class)?.text ?: return "")
+    return stub?.identifier
+        ?: firstChildOfType(BibtexId::class)?.text
+        ?: this.entryContent?.tagList?.firstOrNull()?.key?.text
+        ?: this.preamble?.text
+        ?: ""
 }
 
 fun BibtexEntry.getAbstract(): String {

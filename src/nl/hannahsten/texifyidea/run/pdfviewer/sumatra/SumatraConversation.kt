@@ -19,12 +19,12 @@ object SumatraConversation : ViewerConversation() {
 
     private const val SERVER = "SUMATRA"
     private const val TOPIC = "control"
-    private var CONVERSATION: DDEClientConversation? = null
+    private var conversation: DDEClientConversation? = null
 
     private fun openConversation() {
-        if (SumatraAvailabilityChecker.isSumatraAvailable && CONVERSATION == null) {
+        if (SumatraAvailabilityChecker.isSumatraAvailable && conversation == null) {
             try {
-                CONVERSATION = DDEClientConversation()
+                conversation = DDEClientConversation()
             }
             catch (e: NoClassDefFoundError) {
                 throw TeXception("Native library DLLs could not be found.", e)
@@ -90,7 +90,7 @@ object SumatraConversation : ViewerConversation() {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
         }
         finally {
-            CONVERSATION?.disconnect()
+            conversation?.disconnect()
         }
     }
 
@@ -104,7 +104,7 @@ object SumatraConversation : ViewerConversation() {
         BOOK_VIEW("book view"),
         CONTINUOUS("continuous"),
         CONTINUOUS_FACING("continuous facing"),
-        CONTINUOUS_BOOK_VIEW("continuous book view");
+        CONTINUOUS_BOOK_VIEW("continuous book view")
     }
 
     /**

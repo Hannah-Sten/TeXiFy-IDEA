@@ -1,0 +1,119 @@
+name: Build docs
+
+# See main.yml
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    types: [opened, synchronize]
+  merge_group:
+# Cancel builds if a new commit is pushed, except on master
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+# Gives the workflow permissions to clone the repo and create a page deployment
+permissions:
+  id-token: write
+  pages: write
+
+env:
+  PRODUCT: Writerside/texify-docs
+  DOC_ARTIFACT: webHelpTEXIFY-DOCS2-all.zip
+  ALGOLIA_ARTIFACT: algolia-indexes-TEXIFY-DOCS.zip
+  ALGOLIA_APP_NAME: D5M21MXSWC
+  ALGOLIA_INDEX_NAME: TeXiFy-IDEA
+  ALGOLIA_KEY: ${{ secrets.ALGOLIA_KEY }}
+  CONFIG_JSON_PRODUCT: texify-docs
+  CONFIG_JSON_VERSION: master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build Writerside docs using Docker
+        uses: JetBrains/writerside-github-action@v3
+      - name: Upload documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: |
+            artifacts/${{ env.DOC_ARTIFACT }}
+            artifacts/report.json
+          retention-days: 7
+      - name: Upload algolia-indexes
+        uses: actions/upload-artifact@v3
+        with:
+          name: algolia-indexes
+          path: artifacts/${{ env.ALGOLIA_ARTIFACT }}
+          retention-days: 7
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: docs
+          path: artifacts
+
+      - name: Test documentation
+        uses: JetBrains/writerside-checker-action@v1
+        with:
+          instance: ${{ env.INSTANCE }}
+
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Requires the build results
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docs
+      - name: Unzip artifact
+        uses: montudor/action-zip@v1
+        with:
+          args: unzip -qq ${{ env.DOC_ARTIFACT }} -d dir
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: dir
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+
+  publish-indexes:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: registry.jetbrains.team/p/writerside/builder/algolia-publisher:2.0.32-2
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: algolia-indexes
+      - uses: montudor/action-zip@v1
+        with:
+          args: unzip -qq ${{ env.ALGOLIA_ARTIFACT }} -d algolia-indexes
+      - run: |
+          env "algolia-key=${{env.ALGOLIA_KEY}}" java -jar /opt/builder/help-publication-agent.jar \
+          update-index \
+          --application-name ${{env.ALGOLIA_APP_NAME}} \
+          --index-name ${{env.ALGOLIA_INDEX_NAME}} \
+          --product ${{env.CONFIG_JSON_PRODUCT}} \
+          --version ${{env.CONFIG_JSON_VERSION}} \
+          --index-directory algolia-indexes/ \
+          2>&1 | tee algolia-update-index-log.txt

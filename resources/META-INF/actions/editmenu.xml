@@ -8,7 +8,7 @@
 
             <!-- Toggle Star -->
             <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
-                    description="Adds/removes a star from a LaTeX command.">
+                    description="Adds/removes a star from a LaTeX command." icon="nl.hannahsten.texifyidea.TexifyIcons.TOGGLE_STAR">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default"/>
             </action>
 
@@ -38,19 +38,19 @@
             <add-to-group group-id="texify.LatexMenuEdit" anchor="first"/>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
-                    text="_Part" description="Insert the part command."/>
+                    text="_Part" description="Insert the part command." icon="nl.hannahsten.texifyidea.TexifyIcons.DOT_PART" />
             <action class="nl.hannahsten.texifyidea.action.insert.InsertChapterAction" id="texify.insert.sectioning.Chapter"
-                    text="_Chapter" description="Insert the chapter command."/>
+                    text="_Chapter" description="Insert the chapter command." icon="nl.hannahsten.texifyidea.TexifyIcons.DOT_CHAPTER"/>
             <action class="nl.hannahsten.texifyidea.action.insert.InsertSectionAction" id="texify.insert.sectioning.Section"
-                    text="_Section" description="Insert the section command."/>
+                    text="_Section" description="Insert the section command." icon="nl.hannahsten.texifyidea.TexifyIcons.DOT_SECTION" />
             <action class="nl.hannahsten.texifyidea.action.insert.InsertSubSectionAction" id="texify.insert.sectioning.Subsection"
-                    text="S_ubsection" description="Insert the subsection command."/>
+                    text="S_ubsection" description="Insert the subsection command." icon="nl.hannahsten.texifyidea.TexifyIcons.DOT_SUBSECTION" />
             <action class="nl.hannahsten.texifyidea.action.insert.InsertSubSubSectionAction" id="texify.insert.sectioning.Subsubsection"
-                    text="Su_bsubsection" description="Insert the subsubsection command."/>
+                    text="Su_bsubsection" description="Insert the subsubsection command." icon="nl.hannahsten.texifyidea.TexifyIcons.DOT_SUBSUBSECTION" />
             <action class="nl.hannahsten.texifyidea.action.insert.InsertParagraphAction" id="texify.insert.sectioning.Paragraph"
-                    text="_Paragraph" description="Insert the paragraph command."/>
+                    text="_Paragraph" description="Insert the paragraph command." icon="nl.hannahsten.texifyidea.TexifyIcons.DOT_PARAGRAPH" />
             <action class="nl.hannahsten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
-                    text="Subp_aragraph" description="Insert the subparagraph command."/>
+                    text="Subp_aragraph" description="Insert the subparagraph command." icon="nl.hannahsten.texifyidea.TexifyIcons.DOT_SUBPARAGRAPH" />
         </group>
 
         <!-- Insert: Font Style -->
@@ -59,43 +59,45 @@
             <add-to-group group-id="texify.LatexMenuEdit" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning"/>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
-                    text="_Bold" description="Insert the command to make text appear bold.">
+                    text="_Bold" description="Insert the command to make text appear bold." icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_BOLD">
                 <keyboard-shortcut first-keystroke="control alt shift B" keymap="$default"/>
             </action>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertItalicsAction" id="texify.insert.fontstyle.Italics"
-                    text="_Italics" description="Insert the command to make text appear in italics.">
+                    text="_Italics" description="Insert the command to make text appear in italics." icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_ITALICS">
                 <keyboard-shortcut first-keystroke="control alt shift I" keymap="$default"/>
             </action>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertUnderlineAction" id="texify.insert.fontstyle.Underline"
-                    text="_Underline" description="Insert the command to underline text.">
+                    text="_Underline" description="Insert the command to underline text." icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_UNDERLINE" >
                 <keyboard-shortcut first-keystroke="control alt shift U" keymap="$default"/>
             </action>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertOverlineAction" id="texify.insert.fontstyle.Overline"
-                    text="_Overline" description="Insert the command to overline text.">
+                    text="_Overline" description="Insert the command to overline text." icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_OVERLINE">
                 <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default"/>
             </action>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertSmallCapsAction" id="texify.insert.fontstyle.SmallCaps"
-                    text="Small _Capitals" description="Insert the command to underline text.">
+                    text="Small _Capitals" description="Insert the command to underline text." icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_SMALLCAPS">
                 <keyboard-shortcut first-keystroke="control alt shift C" keymap="$default"/>
             </action>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertTypewriterAction" id="texify.insert.fontstyle.Typewriter"
-                    text="_Typewriter (Monospace)" description="Insert the command to make text monospace.">
+                    text="_Typewriter (Monospace)" description="Insert the command to make text monospace." icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_TYPEWRITER">
                 <keyboard-shortcut first-keystroke="control alt shift T" keymap="$default"/>
             </action>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertStrikethroughAction" id="texify.insert.fontstyle.Strikethrough"
                     text="_Strikethrough (Ulem Package)"
-                    description="Insert the command to strikethrough text (inclusion of ulem package required).">
+                    description="Insert the command to strikethrough text (inclusion of ulem package required)." icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_STRIKETHROUGH">
                 <keyboard-shortcut first-keystroke="control alt shift S" keymap="$default"/>
             </action>
 
             <action class="nl.hannahsten.texifyidea.action.insert.InsertSlantedAction" id="texify.insert.fontstyle.Slanted"
-                    text="S_lanted" description="Insert the command to make text appear slanted.">
+                    text="S_lanted"
+                    description="Insert the command to make text appear slanted."
+                    icon="nl.hannahsten.texifyidea.TexifyIcons.FONT_SLANTED">
                 <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default"/>
             </action>
 

@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.util.parser.isDefinition
 internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
     // Setup.
     val project = this.project
-    val includes = LatexIncludesIndex.getItems(project)
+    val includes = LatexIncludesIndex.Util.getItems(project)
 
     // Find all root files.
     val roots = includes.asSequence()
@@ -72,20 +72,20 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> {
 fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet(this)
 
 /**
- * @see [LatexCommandsIndex.getItemsInFileSet]
+ * @see [LatexCommandsIndex.Util.getItemsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.Util.getItemsInFileSet(this)
 
 /**
- * @see [LatexCommandsIndex.getItemsAndFilesInFileSet]
+ * @see [LatexCommandsIndex.Util.getItemsAndFilesInFileSet]
  */
-fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexCommands>>> = LatexCommandsIndex.getItemsAndFilesInFileSet(this)
+fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexCommands>>> = LatexCommandsIndex.Util.getItemsAndFilesInFileSet(this)
 
 /**
  * Get all the definitions in the file set.
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItemsInFileSet(this)
+    return LatexDefinitionIndex.Util.getItemsInFileSet(this)
         .filter { it.isDefinition() }
 }
 
@@ -93,5 +93,5 @@ fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
  * Get all the definitions and redefinitions in the file set.
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItemsInFileSet(this)
+    return LatexDefinitionIndex.Util.getItemsInFileSet(this)
 }

@@ -1,10 +1,8 @@
 package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.application.options.CodeStyle
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexFormattingTest : BasePlatformTestCase() {
@@ -260,62 +258,6 @@ fun Int?.ifPositiveAddTwo(): Int =
             
             \section{New section}
         """.trimIndent()
-    }
-
-    fun `test indentation of environments`() {
-        val text = """
-            \begin{document}
-            Don't indent this if turned off.
-            \begin{some-env}
-            Indent this.
-            \end{some-env}
-            \end{document}
-        """.trimIndent()
-        val file = myFixture.configureByText(LatexFileType, text)
-        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT = false
-        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
-
-        val expected = """
-            \begin{document}
-            Don't indent this if turned off.
-            \begin{some-env}
-                Indent this.
-            \end{some-env}
-            \end{document}
-        """.trimIndent()
-        myFixture.checkResult(expected)
-
-        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT = true
-        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
-
-        val expected2 = """
-            \begin{document}
-                Don't indent this if turned off.
-                \begin{some-env}
-                    Indent this.
-                \end{some-env}
-            \end{document}
-        """.trimIndent()
-        myFixture.checkResult(expected2)
-    }
-
-    fun `test enter handler for unindented document`() {
-        val text = """
-            \begin{document}
-            Don't indent this if turned off.<caret>
-            \end{document}
-        """.trimIndent()
-        val file = myFixture.configureByText(LatexFileType, text)
-        CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT = false
-        myFixture.type("\nDon't indent this either")
-
-        val expected = """
-            \begin{document}
-            Don't indent this if turned off.
-            Don't indent this either<caret>
-            \end{document}
-        """.trimIndent()
-        myFixture.checkResult(expected)
     }
 
     private infix fun String.`should be reformatted to`(expected: String) {

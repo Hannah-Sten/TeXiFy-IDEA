@@ -21,13 +21,20 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         fun getInstance(): TexifySettings = ApplicationManager.getApplication().getService(TexifySettings::class.java)
     }
 
-    // Options for smart quote replacement, in the order as they appear in the combobox
+    /** Options for smart quote replacement, in the order as they appear in the combobox **/
     enum class QuoteReplacement {
 
         NONE,
         LIGATURES,
         COMMANDS,
         CSQUOTES // Context Sensitive quotes from the csquotes package
+    }
+
+    /** Paste provider configuration, similar to Editor > General > Smart Keys **/
+    enum class HtmlPasteTranslator {
+        BUILTIN,
+        PANDOC,
+        DISABLED,
     }
 
     var automaticSecondInlineMathSymbol = true
@@ -44,6 +51,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var textidoteOptions = "--check en --output singleline --no-color"
     var latexIndentOptions = ""
     var automaticQuoteReplacement = QuoteReplacement.NONE
+    var htmlPasteTranslator = HtmlPasteTranslator.BUILTIN
 
     override fun getState(): TexifySettingsState {
         return TexifySettingsState(

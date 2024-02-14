@@ -25,7 +25,7 @@ import javax.swing.Icon
  * @author Sergei Izmailov
  * @author FalseHonesty
  */
-abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name, icon) {
+abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name) {
 
     /**
      * This function is used to display the preview requested as the name suggests.
@@ -39,6 +39,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         project: Project,
         element: PsiElement,
         key: Key<PreviewFormUpdater>,
+        canUseJlatexmath: Boolean = true,
         config: PreviewFormUpdater.() -> Unit
     ) {
         val toolWindowId = name
@@ -67,7 +68,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             if (!content.isPinned) {
                 val form = content.getUserData(key) ?: continue
                 form.config()
-                form.compilePreview(element.text, project)
+                form.compilePreview(element.text, project, canUseJlatexmath)
                 content.displayName = displayName
                 replaced = true
                 break
@@ -89,7 +90,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             updater.config()
 
             newContent.putUserData(key, updater)
-            updater.compilePreview(element.text, project)
+            updater.compilePreview(element.text, project, canUseJlatexmath)
         }
         // Show but not focus the window
         toolWindow.activate(null, false)

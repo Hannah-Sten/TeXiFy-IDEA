@@ -99,8 +99,9 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         val command = this.firstParentOfType(LatexCommands::class)
         val environment = this.firstParentOfType(LatexEnvironment::class)
         // If we want to rename a label
-        if (CommandMagic.reference.contains(command?.name) || this.project.getLabelDefinitionCommands()
-            .contains(command?.name)
+        if (
+            CommandMagic.reference.contains(command?.name) ||
+            this.project.getLabelDefinitionCommands().contains(command?.name)
         ) {
             // Get a new psi this for the complete label command (\label included),
             // because if we replace the complete command instead of just the normal text

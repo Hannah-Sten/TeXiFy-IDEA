@@ -33,11 +33,8 @@ open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTr
     }
 
     override fun getPresentation(): ItemPresentation {
-        if (element is BibtexFile) {
-            return BibtexFilePresentation(element)
-        }
-
-        throw AssertionError("Should not happen: element !is BibtexFile.")
+        assert(element is BibtexFile) { "Expected BibtexFile, got ${element.javaClass}" }
+        return BibtexFilePresentation(element as BibtexFile)
     }
 
     override fun getChildren(): Array<TreeElement> {

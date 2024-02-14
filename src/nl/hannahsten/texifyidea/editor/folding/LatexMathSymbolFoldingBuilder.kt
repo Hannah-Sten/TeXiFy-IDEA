@@ -9,8 +9,10 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.inMathContext
 
 /**
  * @author Sten Wessel
@@ -19,9 +21,10 @@ class LatexMathSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = listOf<FoldingDescriptor>().toMutableList()
-        val mathEnvironments = root.childrenOfType(LatexMathEnvironment::class)
+        val inlineOrDisplayMath = root.childrenOfType(LatexMathEnvironment::class)
+        val mathEnvironments = root.childrenOfType(LatexEnvironmentContent::class).filter { it.inMathContext() }
 
-        for (mathEnvironment in mathEnvironments) {
+        for (mathEnvironment in inlineOrDisplayMath + mathEnvironments) {
             val group = FoldingGroup.newGroup("latexMathSymbol")
             val commands = mathEnvironment.childrenOfType(LatexCommands::class)
 
@@ -37,7 +40,7 @@ class LatexMathSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
         return descriptors.toTypedArray()
     }
 
-    override fun isCollapsedByDefault(node: ASTNode) = true
+    override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldMathSymbols
 
     override fun getPlaceholderText(node: ASTNode): String? = null
 }

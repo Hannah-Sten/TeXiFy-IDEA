@@ -137,6 +137,22 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals("An analogous macro \\DescribeEnv should be used to indicate<br> that a \\LaTeX{} environment is explained. It will produce a somewhat<br> different index entry. Below I used \\DescribeEnv{verbatim}.", map["\\DescribeEnv"])
     }
 
+    fun testDescribeMacroWithParameters() {
+        val text = """
+            % The text returned by Python must be valid \LaTeX\ code. (...)
+            %
+            % \DescribeMacro{\pyc\oarg{session}\meta{opening~delim}\meta{code}\meta{closing~delim}}
+            %
+            % This command is used for executing but not typesetting \meta{code} (...)
+            %
+            % \DescribeMacro{\pys\oarg{session}\meta{opening~delim}\meta{code}\meta{closing~delim}}
+        """.trimIndent()
+        val file = myFixture.configureByText("pythontex.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(2, map.size)
+        assertEquals("\\oarg{session}\\meta{opening~delim}\\meta{code}\\meta{closing~delim}}<br> This command is used for executing but not typesetting \\meta{code} (...)", map["\\pyc"])
+    }
+
     fun testDescribeMacros() {
         val text = """
             % \DescribeMacro\DontCheckModules \DescribeMacro\CheckModules
@@ -242,7 +258,9 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
 
     class MockContent(val file: PsiFile) : FileContent {
 
-        override fun <T : Any?> getUserData(key: Key<T>): T? { return null }
+        override fun <T : Any?> getUserData(key: Key<T>): T? {
+            return null
+        }
 
         override fun <T : Any?> putUserData(key: Key<T>, value: T?) { }
 

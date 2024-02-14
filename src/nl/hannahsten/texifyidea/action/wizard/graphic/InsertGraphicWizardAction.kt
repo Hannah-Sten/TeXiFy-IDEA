@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
@@ -32,6 +32,18 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
      */
     fun executeAction(file: VirtualFile, project: Project) {
         val editor = project.currentTextEditor() ?: return
+        val text = showDialogAndGetText(editor, file, project) ?: return
+        editor.editor.insertAtCaretAndMove(text)
+    }
+
+    /**
+     * Show user dialog and get the text to insert.
+     */
+    fun showDialogAndGetText(
+        editor: TextEditor,
+        file: VirtualFile,
+        project: Project
+    ): String? {
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -41,12 +53,12 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
         val dialogWrapper = InsertGraphicWizardDialogWrapper(initialFilePath = initialFile?.absolutePath ?: "")
 
         // If the user pressed OK, do stuff.
-        if (!dialogWrapper.showAndGet()) return
+        if (!dialogWrapper.showAndGet()) return null
 
         // Handle result.
         val graphicData = dialogWrapper.extractData()
         file.psiFile(project)?.let { graphicData.importPackages(it) }
-        editor.editor.insertGraphic(project, graphicData, indent)
+        return buildGraphicString(project, graphicData, indent)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -65,7 +77,12 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-    private fun Editor.insertGraphic(project: Project, data: InsertGraphicData, indent: String, tab: String = "    ") {
+    private fun buildGraphicString(
+        project: Project,
+        data: InsertGraphicData,
+        indent: String,
+        tab: String = "    "
+    ): String {
         // Only the graphics (non-centered).
         val toInsert = if (data.center.not() && data.placeInFigure.not()) {
             data.includeCommand(project)
@@ -81,7 +98,7 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
         // Insert figure.
         else data.figure(project, indent, tab)
 
-        insertAtCaretAndMove(toInsert)
+        return toInsert
     }
 
     private fun InsertGraphicData.figure(project: Project, indent: String, tab: String) = buildString {
