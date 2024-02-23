@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.action.library
 import arrow.core.getOrElse
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -67,39 +67,37 @@ class SyncLibraryAction : AnAction() {
             override fun onSuccess() {
                 // If the tree is null the user hasn't opened the library tool window yet, so there is no tree to update.
                 // The tree will be drawn with the updated library elements once the user opens the tool window.
-                tree?.let {
+                tree?.let { tree ->
                     ProgressManager.getInstance().run(object : Backgroundable(project, "Updating tree...") {
                         override fun run(indicator: ProgressIndicator) {
-                            runReadAction {
-                                val model = it.model as DefaultTreeModel
-                                val root = model.root as? DefaultMutableTreeNode ?: return@runReadAction
-                                val libraryNode: LibraryMutableTreeNode = it.findLibraryNode(library.identifier)
-                                    ?: LibraryMutableTreeNode(library.identifier, library.displayName)
-                                libraryNode.children().asSequence()
-                                    .map { it as DefaultMutableTreeNode }
-                                    .filter { (it.userObject as BibtexStructureViewEntryElement).entry.getIdentifier() !in bibItems.map { bib -> bib.getIdentifier() } }
-                                    .forEach { libraryNode.remove(it) }
+                            val model = tree.model as DefaultTreeModel
+                            val root = model.root as? DefaultMutableTreeNode ?: return
+                            val libraryNode: LibraryMutableTreeNode = tree.findLibraryNode(library.identifier)
+                                ?: LibraryMutableTreeNode(library.identifier, library.displayName)
+                            libraryNode.children().asSequence()
+                                .map { it as DefaultMutableTreeNode }
+                                .filter { (it.userObject as BibtexStructureViewEntryElement).entry.getIdentifier() !in bibItems.map { bib -> bib.getIdentifier() } }
+                                .forEach { libraryNode.remove(it) }
 
-                                val itemsInLib = libraryNode.children().asSequence()
-                                    .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.getIdentifier() }
-                                    .toList()
-                                bibItems.forEach { bib ->
-                                    if (bib.getIdentifier() !in itemsInLib) {
-                                        val entryElement = BibtexStructureViewEntryElement(bib)
-                                        val entryNode = DefaultMutableTreeNode(entryElement)
-                                        libraryNode.add(entryNode)
+                            val itemsInLib = libraryNode.children().asSequence()
+                                .map { ((it as DefaultMutableTreeNode).userObject as BibtexStructureViewEntryElement).entry.getIdentifier() }
+                                .toList()
+                            bibItems.forEach { bib ->
+                                if (bib.getIdentifier() !in itemsInLib) {
+                                    val entryElement = BibtexStructureViewEntryElement(bib)
+                                    val entryNode = DefaultMutableTreeNode(entryElement)
+                                    libraryNode.add(entryNode)
 
-                                        // Each bib item has tags that show information, e.g., the author.
-                                        entryElement.children.forEach {
-                                            entryNode.add(DefaultMutableTreeNode(it))
-                                        }
+                                    // Each bib item has tags that show information, e.g., the author.
+                                    entryElement.children.forEach {
+                                        entryNode.add(DefaultMutableTreeNode(it))
                                     }
                                 }
-
-                                if (!root.children().contains(libraryNode)) root.add(libraryNode)
-                                model.nodeStructureChanged(root)
-                                expandedPaths.asIterator().forEach(it::expandPath)
                             }
+
+                            if (!root.children().contains(libraryNode)) root.add(libraryNode)
+                            runInEdt { model.nodeStructureChanged(root) }
+                            expandedPaths.asIterator().forEach(tree::expandPath)
                         }
                     })
                 }

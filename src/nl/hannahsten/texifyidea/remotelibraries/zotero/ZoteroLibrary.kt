@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibrary
 import nl.hannahsten.texifyidea.util.CredentialAttributes
 import nl.hannahsten.texifyidea.util.paginateViaLinkHeader
 
-class ZoteroLibrary(override val identifier: String = NAME, override val displayName: String = "Zotero") :
+class ZoteroLibrary(val url: String?, override val identifier: String = NAME, override val displayName: String = "Zotero") :
     RemoteBibLibrary(identifier, displayName) {
 
     private val client by lazy {
@@ -27,12 +27,13 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
 
     override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> = either {
         val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)
-        val (response, content) = client.get("$BASE_URL/users/${credentials?.userName}/items") {
+        // Backwards compatibility, url may be null
+        val cleanedUrl = if (url.isNullOrBlank()) DEFAULT_URL else url
+        val (response, content) = client.get(cleanedUrl.replace(USER_ID_MACRO, credentials?.userName ?: "")) {
             headers {
                 append("Zotero-API-version", VERSION.toString())
                 append("Zotero-API-key", credentials?.password.toString())
             }
-            parameter("format", "bibtex")
             parameter("limit", PAGINATION_LIMIT)
         }.paginateViaLinkHeader {
             client.get(it) {
@@ -56,8 +57,9 @@ class ZoteroLibrary(override val identifier: String = NAME, override val display
     companion object {
 
         const val VERSION = 3
-        const val BASE_URL = "https://api.zotero.org"
         const val PAGINATION_LIMIT = 50
         const val NAME = "Zotero"
+        const val USER_ID_MACRO = "\$USER_ID\$"
+        const val DEFAULT_URL = "https://api.zotero.org/users/$USER_ID_MACRO/items?format=bibtex"
     }
 }

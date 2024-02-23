@@ -20,8 +20,6 @@
             <add-to-group group-id="texify.remotelibraries" anchor="first"/>
             <action class="nl.hannahsten.texifyidea.action.library.zotero.AddZoteroAction" id="texify.zotero.add"
                     text="Zotero"/>
-            <action class="nl.hannahsten.texifyidea.action.library.zotero.AddZoteroGroupAction" id="texify.zoterogroup.add"
-                    text="Zotero Group"/>
             <action class="nl.hannahsten.texifyidea.action.library.mendeley.AddMendeleyAction" id="texify.mendeley.add"
                     text="Mendeley"/>
             <action class="nl.hannahsten.texifyidea.action.library.AddBibtexFileAction" id="texify.bibtexfile.add"

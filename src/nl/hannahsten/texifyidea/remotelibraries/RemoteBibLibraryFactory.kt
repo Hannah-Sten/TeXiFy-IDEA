@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.remotelibraries
 
 import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyLibrary
-import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroGroupLibrary
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
@@ -20,10 +19,9 @@ object RemoteBibLibraryFactory {
     fun fromStorage(identifier: String?): RemoteBibLibrary? {
         val libraryState = RemoteLibraryManager.getInstance().getLibraries()[identifier ?: return null] ?: return null
         return when (libraryState.libraryType.simpleName) {
-            ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, libraryState.displayName)
-            ZoteroGroupLibrary::class.simpleName -> ZoteroGroupLibrary(identifier, libraryState.displayName)
+            ZoteroLibrary::class.simpleName -> ZoteroLibrary(libraryState.url, identifier, libraryState.displayName)
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, libraryState.displayName)
-            BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(identifier, libraryState.displayName)
+            BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(libraryState.url, identifier, libraryState.displayName)
             else -> null
         }
     }
@@ -31,14 +29,13 @@ object RemoteBibLibraryFactory {
     /**
      * Create a new library with a random unique id. This doesn't use the password safe.
      */
-    inline fun <reified T : RemoteBibLibrary> create(displayName: String): T? {
+    inline fun <reified T : RemoteBibLibrary> create(displayName: String, url: String? = null): T? {
         val identifier = generateId()
 
         return when (T::class.simpleName) {
-            ZoteroLibrary::class.simpleName -> ZoteroLibrary(identifier, displayName) as T
-            ZoteroGroupLibrary::class.simpleName -> ZoteroGroupLibrary(identifier, displayName) as T
+            ZoteroLibrary::class.simpleName -> ZoteroLibrary(url, identifier, displayName) as T
             MendeleyLibrary::class.simpleName -> MendeleyLibrary(identifier, displayName) as T
-            BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(identifier, displayName) as T
+            BibtexFileLibrary::class.simpleName -> BibtexFileLibrary(url, identifier, displayName) as T
             else -> null
         }
     }
