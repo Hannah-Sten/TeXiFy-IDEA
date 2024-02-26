@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
+import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -270,7 +271,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val argumentsLabel = JLabel("Custom compiler arguments")
         val argumentsEditor = EditorTextField("", project, PlainTextFileType.INSTANCE)
         argumentsLabel.labelFor = argumentsEditor
-        LatexArgumentsCompletionProvider().apply(argumentsEditor)
+        val selectedCompiler = compiler.component.selectedItem as LatexCompiler
+        project?.let { project ->
+            val options = LatexCommandLineOptionsCache.getOptionsOrFillCache(selectedCompiler.executableName, project)
+            LatexArgumentsCompletionProvider(options).apply(argumentsEditor)
+        }
 
         compilerArguments = argumentsEditor
         panel.add(compilerArguments)
@@ -301,7 +306,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compileTwice)
 
         // Output format.
-        val selectedCompiler = compiler.component.selectedItem as LatexCompiler
         val cboxFormat = ComboBox(selectedCompiler.outputFormats)
         outputFormat = LabeledComponent.create(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
