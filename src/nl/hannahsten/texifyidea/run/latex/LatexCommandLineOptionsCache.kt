@@ -13,7 +13,6 @@ import org.apache.commons.cli.Options
 
 /**
  * Automatically get available command line options for all the LaTeX compilers.
- * todo refactor with LatexExternalCommandsIndexCache
  */
 object LatexCommandLineOptionsCache {
     // Map compiler name to list of (name, description) pairs where name is without the - or -- prefix
