@@ -90,6 +90,29 @@ But the only reason this is valid LaTeX at all is the `\if`, and whether we need
 
 ```
 
+A similar example is using the `before` and `after` parameters of `setlist`,
+
+<!-- ```latex -->
+```
+\newlist{myitemize}{itemize}{1}
+\setlist[myitemize]{label=\textbullet, nosep, left=0pt,
+before={\begin{minipage}[t]{\hsize}},
+after ={\end{minipage}} }
+```
+
+In this case, it may be rewritten to something that can be parsed by TeXiFy, for example,
+
+<!-- ```latex -->
+```
+\newlist{nosepitemize}{itemize}{1}
+\setlist[nosepitemize]{label=\textbullet, nosep, left=0pt}
+\newenvironment{myitemize}{
+    \begin{minipage}[t]{\hsize} \begin{nosepitemize}
+}{
+    \end{nosepitemize} \end{minipage}
+}
+```
+
 ## Pasting images and tables into LaTeX
 
 If you drag and drop an image file into a LaTeX file, or paste an image or table from your clipboard, TeXiFy will start a wizard to help you inserting the image or table into your document.
