@@ -111,6 +111,9 @@ Select a path to a LaTeX compiler.
 Extra arguments to pass to the compiler.
 It depends on the compiler which ones are there by default.
 For more info, check the implementation at [https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/src/nl/hannahsten/texifyidea/run/compiler/LatexCompiler.kt](https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/src/nl/hannahsten/texifyidea/run/compiler/LatexCompiler.kt)
+This field has autocompletion, where the available options depend on the compiler that was selected when you opened the dialog.
+
+![Compiler autocompletion](run-config-autocomplete.png)
 
 ## Environment variables
 
