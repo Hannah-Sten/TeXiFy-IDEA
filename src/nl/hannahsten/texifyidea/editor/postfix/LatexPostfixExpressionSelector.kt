@@ -9,6 +9,9 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 
+/**
+ * This class is also used by https://github.com/xylo/intellij-postfix-templates/blob/idea-232/src/de/endrullis/idea/postfixtemplates/languages/latex/LatexPostfixTemplateProvider.java
+ */
 class LatexPostfixExpressionSelector(private val mathOnly: Boolean = false, private val textOnly: Boolean = false) : PostfixTemplateExpressionSelector {
 
     override fun hasExpression(context: PsiElement, copyDocument: Document, newOffset: Int): Boolean {

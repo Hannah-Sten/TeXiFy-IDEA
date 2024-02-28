@@ -348,7 +348,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 .forEach { command.add(it) }
         }
 
-        command.add(mainFile.name)
+        // Run some code before running the document, which pdflatex supports by being able to run commands in the given string and then using \input to run the actual document
+        if (runConfig.beforeRunCommand?.isNotBlank() == true) {
+            command.add(runConfig.beforeRunCommand + " \\input{${mainFile.name}}")
+        }
+        else {
+            command.add(mainFile.name)
+        }
+
 
         return command
     }
