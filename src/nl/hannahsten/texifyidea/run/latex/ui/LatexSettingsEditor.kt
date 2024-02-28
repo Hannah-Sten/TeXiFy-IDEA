@@ -3,13 +3,14 @@ package nl.hannahsten.texifyidea.run.latex.ui
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.ui.RawCommandLineEditor
+import com.intellij.ui.EditorTextField
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
@@ -18,6 +19,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
+import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -40,7 +42,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var compiler: LabeledComponent<ComboBox<LatexCompiler>>
     private lateinit var enableCompilerPath: JBCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
-    private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
+    private lateinit var compilerArguments: EditorTextField
     private lateinit var environmentVariables: EnvironmentVariablesComponent
     private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
     private lateinit var outputPath: LabeledComponent<ComponentWithBrowseButton<*>>
@@ -91,7 +93,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
-        compilerArguments.component.text = args ?: ""
+        compilerArguments.text = args ?: ""
 
         // Reset environment variables
         environmentVariables.envData = runConfiguration.environmentVariables
@@ -193,7 +195,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
 
         // Apply custom compiler arguments
-        runConfiguration.compilerArguments = compilerArguments.component.text
+        runConfiguration.compilerArguments = compilerArguments.text
 
         // Apply environment variables
         runConfiguration.environmentVariables = environmentVariables.envData
@@ -266,10 +268,16 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         addPdfViewerCommandField(panel)
 
         // Optional custom compiler arguments
-        val argumentsTitle = "Custom compiler arguments"
-        val argumentsField = RawCommandLineEditor()
+        val argumentsLabel = JLabel("Custom compiler arguments")
+        val argumentsEditor = EditorTextField("", project, PlainTextFileType.INSTANCE)
+        argumentsLabel.labelFor = argumentsEditor
+        val selectedCompiler = compiler.component.selectedItem as LatexCompiler
+        project?.let { project ->
+            val options = LatexCommandLineOptionsCache.getOptionsOrFillCache(selectedCompiler.executableName, project)
+            LatexArgumentsCompletionProvider(options).apply(argumentsEditor)
+        }
 
-        compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
+        compilerArguments = argumentsEditor
         panel.add(compilerArguments)
 
         environmentVariables = EnvironmentVariablesComponent()
@@ -298,7 +306,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compileTwice)
 
         // Output format.
-        val selectedCompiler = compiler.component.selectedItem as LatexCompiler
         val cboxFormat = ComboBox(selectedCompiler.outputFormats)
         outputFormat = LabeledComponent.create(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
