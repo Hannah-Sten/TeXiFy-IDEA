@@ -42,9 +42,7 @@ enum class DefaultMagicKeys(
         """
         The name of the typesetting engine to use for the current file.
         The following programs are supported:
-        ${
-            BibliographyCompiler.entries
-            .joinToString(", ") { it.executableName }}
+        ${BibliographyCompiler.entries.joinToString(", ") { it.executableName }}
         """.trimIndent().trim(),
         MagicCommentScope.FILE.singleScope()
     ),
