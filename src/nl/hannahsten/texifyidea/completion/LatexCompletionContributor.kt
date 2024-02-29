@@ -232,7 +232,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         extendMagicCommentValues(
             "compiler",
             compilerRegex,
-            LatexMagicCommentValueProvider(compilerRegex, LatexCompiler.values().map { it.executableName }.toHashSet())
+            LatexMagicCommentValueProvider(compilerRegex, LatexCompiler.entries.map { it.executableName }.toHashSet())
         )
     }
 
@@ -246,7 +246,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             bibtexCompilerRegex,
             LatexMagicCommentValueProvider(
                 bibtexCompilerRegex,
-                BibliographyCompiler.values().map { it.executableName }.toHashSet()
+                BibliographyCompiler.entries.map { it.executableName }.toHashSet()
             )
         )
     }
@@ -311,7 +311,7 @@ open class LatexCompletionContributor : CompletionContributor() {
      * Adds autocompletion for parameters that have been given a default [Argument.Type].
      * When the type contains a completion contributor, it will be registered to the correct6 argument.
      */
-    private fun registerLatexArgumentTypeCompletion() = Argument.Type.values().forEach { type ->
+    private fun registerLatexArgumentTypeCompletion() = Argument.Type.entries.forEach { type ->
         val completionProvider = type.completionProvider ?: return@forEach
         extend(
             CompletionType.BASIC,

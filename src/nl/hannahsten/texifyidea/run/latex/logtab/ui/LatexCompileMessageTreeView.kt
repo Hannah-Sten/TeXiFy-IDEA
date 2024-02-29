@@ -25,7 +25,7 @@ class LatexCompileMessageTreeView(
 
     override fun fillRightToolbarGroup(group: DefaultActionGroup) {
         // Use myProject (from NewErrorTreeViewPanel) because somehow project is null
-        LatexKeywordFilter.values().forEach { group.add(FilterKeywordAction(it, project)) }
+        LatexKeywordFilter.entries.forEach { group.add(FilterKeywordAction(it, project)) }
         group.addAll(FilterBibtexAction(project), ExpandAllAction(), CollapseAllAction())
 
         // Search for the information action toggle so we can remove it (as we don't use it).
@@ -93,7 +93,7 @@ class LatexCompileMessageTreeView(
      */
     fun applyFilters(logMessage: LatexLogMessage) {
         val hide = logMessage.message.lowercase(Locale.getDefault()).containsAny(
-            LatexKeywordFilter.values()
+            LatexKeywordFilter.entries
                 .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
                 .map { f -> f.triggers }.flatten().toSet()
         )

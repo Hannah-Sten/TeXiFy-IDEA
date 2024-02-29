@@ -92,7 +92,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
         pushKeyValuePair()
     }
 
-    private fun String.asKey() = DefaultMagicKeys.values().find { it.key == this } ?: CustomMagicKey(this)
+    private fun String.asKey() = DefaultMagicKeys.entries.find { it.key == this } ?: CustomMagicKey(this)
 }
 
 /**

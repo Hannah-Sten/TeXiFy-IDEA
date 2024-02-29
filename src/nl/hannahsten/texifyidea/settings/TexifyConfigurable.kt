@@ -144,8 +144,8 @@ class TexifyConfigurable : SearchableConfigurable {
         }
         settings.textidoteOptions = textidoteOptions?.text ?: ""
         settings.latexIndentOptions = latexIndentOptions?.text ?: ""
-        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
-        settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.values()[htmlPasteTranslator?.selectedIndex ?: 0]
+        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.entries.toTypedArray()[automaticQuoteReplacement?.selectedIndex ?: 0]
+        settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
     }
 
     override fun reset() {

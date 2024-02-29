@@ -56,7 +56,7 @@ open class LatexMathToggleIntention : TexifyIntentionBase("Convert to other math
         } ?: return
 
         val availableEnvironments: List<String> = arrayOf(
-            DefaultEnvironment.values()
+            DefaultEnvironment.entries
                 .filter { it.context == Environment.Context.MATH }
                 .map { it.environmentName }
                 .toTypedArray(),

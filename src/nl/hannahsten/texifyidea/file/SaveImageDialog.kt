@@ -114,7 +114,7 @@ class SaveImageDialog(
     /**
      * Stores the format of the created image.
      */
-    private val cboxImageFormat = ComboBox(ImageFormat.values()).apply {
+    private val cboxImageFormat = ComboBox(ImageFormat.entries.toTypedArray()).apply {
         selectedItem = ImageFormat.PNG
     }
 

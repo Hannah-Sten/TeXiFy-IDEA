@@ -35,7 +35,7 @@ class LatexElementColorProvider : ElementColorProvider {
     override fun setColorTo(element: PsiElement, color: Color) {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
-            val commandTemplate = LatexColorDefinitionCommand.values().firstOrNull {
+            val commandTemplate = LatexColorDefinitionCommand.entries.firstOrNull {
                 it.commandWithSlash == command?.name
             } ?: return
             val colorModel = command?.getRequiredArgumentValueByName("model-list") ?: return
