@@ -303,28 +303,26 @@ tasks {
 
     val generateLatexParserTask = register<GenerateParserTask>("generateLatexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
-        targetRoot.set("gen")
+        targetRootOutputDir.set(File("gen"))
         pathToParser.set("nl/hannahsten/texifyidea/parser/LatexParser.java")
         pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
     }
 
     val generateBibtexParserTask = register<GenerateParserTask>("generateBibtexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Bibtex.bnf"))
-        targetRoot.set("gen")
+        targetRootOutputDir.set(File("gen"))
         pathToParser.set("nl/hannahsten/texifyidea/parser/BibtexParser.java")
         pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
     }
 
     val generateLatexLexerTask = register<GenerateLexerTask>("generateLatexLexer") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/LatexLexer.flex"))
-        targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
-        targetClass.set("LatexLexer")
+        targetOutputDir.set(File("gen/nl/hannahsten/texifyidea/grammar/"))
     }
 
     val generateBibtexLexerTask = register<GenerateLexerTask>("generateBibtexLexer") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/BibtexLexer.flex"))
-        targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
-        targetClass.set("BibtexLexer")
+        targetOutputDir.set(File("gen/nl/hannahsten/texifyidea/grammar/"))
     }
 
     initializeIntelliJPlugin {
