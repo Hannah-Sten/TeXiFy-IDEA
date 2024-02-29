@@ -52,7 +52,7 @@ object LatexEnvironmentProvider {
     fun addEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
         // Find all environments.
         val environments: MutableList<Environment> = ArrayList()
-        Collections.addAll(environments, *DefaultEnvironment.values())
+        Collections.addAll(environments, *DefaultEnvironment.entries.toTypedArray())
         LatexDefinitionIndex.Util.getItemsInFileSet(parameters.originalFile).stream()
             .map { it as LatexCommands }
             .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }

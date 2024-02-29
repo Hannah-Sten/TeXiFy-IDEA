@@ -28,7 +28,7 @@ enum class LatexDistributionType(val displayName: String) {
     companion object {
 
         fun valueOfIgnoreCase(value: String?): LatexDistributionType {
-            return values().firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
+            return entries.firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
         }
     }
 }

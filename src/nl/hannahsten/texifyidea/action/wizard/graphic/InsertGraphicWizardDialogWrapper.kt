@@ -99,7 +99,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Where to put the caption in the figure environment.
      */
-    private val cboxCaptionLocation = ComboBox(CaptionLocation.values()).apply {
+    private val cboxCaptionLocation = ComboBox(CaptionLocation.entries.toTypedArray()).apply {
         selectedItem = CaptionLocation.BELOW_GRAPHIC
     }
 
@@ -132,7 +132,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * The check boxes for the figure locations.
      */
-    private val checkPosition = FigureLocation.values().asSequence()
+    private val checkPosition = FigureLocation.entries.asSequence()
         .map { location ->
             location.symbol to JBCheckBox(location.description).apply {
                 addActionListener { event ->

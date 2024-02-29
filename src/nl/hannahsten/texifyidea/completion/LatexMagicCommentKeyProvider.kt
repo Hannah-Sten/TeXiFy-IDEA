@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 object LatexMagicCommentKeyProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-        val keys = DefaultMagicKeys.values()
+        val keys = DefaultMagicKeys.entries.toTypedArray()
         result.addAllElements(
             keys.map {
                 LookupElementBuilder.create(it, it.displayKey)

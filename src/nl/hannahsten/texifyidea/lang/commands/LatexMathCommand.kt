@@ -9,13 +9,13 @@ import arrow.core.nonEmptySetOf
  */
 object LatexMathCommand {
 
-    private val GREEK_ALPHABET: Set<LatexCommand> = LatexGreekCommand.values().toSet()
-    private val OPERATORS: Set<LatexCommand> = LatexOperatorCommand.values().toSet()
-    private val MATHTOOLS_COLONEQ: Set<LatexCommand> = LatexColoneqCommand.values().toSet()
-    private val DELIMITERS: Set<LatexCommand> = LatexDelimiterCommand.values().toSet()
-    private val ARROWS: Set<LatexCommand> = LatexArrowCommand.values().toSet()
-    private val GENERIC_COMMANDS: Set<LatexCommand> = LatexGenericMathCommand.values().toSet()
-    private val UNCATEGORIZED_STMARYRD_SYMBOLS: Set<LatexCommand> = LatexUncategorizedStmaryrdSymbols.values().toSet()
+    private val GREEK_ALPHABET: Set<LatexCommand> = LatexGreekCommand.entries.toSet()
+    private val OPERATORS: Set<LatexCommand> = LatexOperatorCommand.entries.toSet()
+    private val MATHTOOLS_COLONEQ: Set<LatexCommand> = LatexColoneqCommand.entries.toSet()
+    private val DELIMITERS: Set<LatexCommand> = LatexDelimiterCommand.entries.toSet()
+    private val ARROWS: Set<LatexCommand> = LatexArrowCommand.entries.toSet()
+    private val GENERIC_COMMANDS: Set<LatexCommand> = LatexGenericMathCommand.entries.toSet()
+    private val UNCATEGORIZED_STMARYRD_SYMBOLS: Set<LatexCommand> = LatexUncategorizedStmaryrdSymbols.entries.toSet()
 
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
         GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS

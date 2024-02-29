@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ex.InspectionToolRegistrar
  */
 val ALL_TEXIFY_INSPECTIONS: Map<InsightGroup, List<String>> by lazy {
     val inspections = InspectionToolRegistrar.getInstance().createTools()
-    val insightGroups = InsightGroup.values()
+    val insightGroups = InsightGroup.entries.toTypedArray()
     HashMap<InsightGroup, List<String>>().apply {
         for (group in insightGroups) {
             val groupInspections = ArrayList<String>()
