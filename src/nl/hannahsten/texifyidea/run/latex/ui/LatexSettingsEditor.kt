@@ -43,7 +43,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var compiler: LabeledComponent<ComboBox<LatexCompiler>>
     private lateinit var enableCompilerPath: JBCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
-    private lateinit var compilerArguments: EditorTextField
+    private lateinit var compilerArguments: LabeledComponent<EditorTextField>
     private lateinit var environmentVariables: EnvironmentVariablesComponent
     private lateinit var beforeRunCommand: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
@@ -95,7 +95,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
-        compilerArguments.text = args ?: ""
+        compilerArguments.component.text = args ?: ""
 
         // Reset environment variables
         environmentVariables.envData = runConfiguration.environmentVariables
@@ -199,7 +199,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
 
         // Apply custom compiler arguments
-        runConfiguration.compilerArguments = compilerArguments.text
+        runConfiguration.compilerArguments = compilerArguments.component.text
 
         // Apply environment variables
         runConfiguration.environmentVariables = environmentVariables.envData
@@ -283,7 +283,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             LatexArgumentsCompletionProvider(options).apply(argumentsEditor)
         }
 
-        compilerArguments = argumentsEditor
+        compilerArguments = LabeledComponent.create(argumentsEditor, "Custom compiler arguments")
         panel.add(compilerArguments)
 
         environmentVariables = EnvironmentVariablesComponent()

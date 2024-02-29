@@ -348,14 +348,21 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 .forEach { command.add(it) }
         }
 
-        // Run some code before running the document, which pdflatex supports by being able to run commands in the given string and then using \input to run the actual document
+        // Run some code before running the document
         if (runConfig.beforeRunCommand?.isNotBlank() == true) {
-            command.add(runConfig.beforeRunCommand + " \\input{${mainFile.name}}")
+            if (runConfig.compiler == LATEXMK) {
+                // latexmk has its own flag to do this
+                command.add("-usepretex=" + runConfig.beforeRunCommand)
+                command.add(mainFile.name)
+            }
+            else {
+                // pdflatex, lualatex and xelatex support this by being able to run on a given string as if it was in a file
+                command.add(runConfig.beforeRunCommand + " \\input{${mainFile.name}}")
+            }
         }
         else {
             command.add(mainFile.name)
         }
-
 
         return command
     }
