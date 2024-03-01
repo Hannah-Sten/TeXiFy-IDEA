@@ -126,7 +126,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:1.2.2")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.2")
-    implementation("io.arrow-kt:arrow-resilience:1.2.2")
+    implementation("io.arrow-kt:arrow-resilience:1.2.3")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
