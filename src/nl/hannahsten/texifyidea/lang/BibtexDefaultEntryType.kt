@@ -370,7 +370,7 @@ enum class BibtexDefaultEntryType(
         private val lookup: MutableMap<String, BibtexEntryType> = HashMap()
 
         init {
-            for (entry in values()) {
+            for (entry in entries) {
                 lookup[entry.token] = entry
             }
         }

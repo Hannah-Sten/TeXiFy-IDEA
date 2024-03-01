@@ -23,8 +23,8 @@ enum class FigureLocation(
 
     companion object {
 
-        val ALL_SYMBOLS = values().mapNotNull { it.symbol.firstOrNull() }
+        val ALL_SYMBOLS = entries.mapNotNull { it.symbol.firstOrNull() }
 
-        fun bySymbol(symbol: String) = values().firstOrNull { it.symbol == symbol }
+        fun bySymbol(symbol: String) = entries.firstOrNull { it.symbol == symbol }
     }
 }

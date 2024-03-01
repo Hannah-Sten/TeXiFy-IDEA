@@ -20,7 +20,7 @@ enum class DefaultMagicKeys(
         """
         The name of the typesetting engine to use for the current file.
         The following programs are supported:
-        ${LatexCompiler.values().joinToString(", ") { it.executableName }}
+        ${LatexCompiler.entries.joinToString(", ") { it.executableName }}
         """.trimIndent().trim(),
         MagicCommentScope.FILE.singleScope()
     ),
@@ -31,7 +31,7 @@ enum class DefaultMagicKeys(
         """
         The name of the typesetting engine to use for the current file.
         The following programs are supported:
-        ${LatexCompiler.values().joinToString(", ") { it.executableName }}
+        ${LatexCompiler.entries.joinToString(", ") { it.executableName }}
         """.trimIndent().trim(),
         MagicCommentScope.FILE.singleScope()
     ),
@@ -42,8 +42,7 @@ enum class DefaultMagicKeys(
         """
         The name of the typesetting engine to use for the current file.
         The following programs are supported:
-        ${BibliographyCompiler.values()
-            .joinToString(", ") { it.executableName }}
+        ${BibliographyCompiler.entries.joinToString(", ") { it.executableName }}
         """.trimIndent().trim(),
         MagicCommentScope.FILE.singleScope()
     ),

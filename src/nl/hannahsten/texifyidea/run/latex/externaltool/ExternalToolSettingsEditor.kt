@@ -45,7 +45,7 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
             layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Program
-            val programField = ComboBox(ExternalTool.values())
+            val programField = ComboBox(ExternalTool.entries.toTypedArray())
             program = LabeledComponent.create(programField, "External tool")
             add(program)
 

@@ -40,7 +40,7 @@ enum class MagicCommentScope {
          * Contains all comment scopes.
          */
         @JvmStatic
-        val ALL_SCOPES = values().toSet()
+        val ALL_SCOPES = entries.toSet()
     }
 }
 

@@ -13,7 +13,7 @@ fun LatexMagicComment.getMagicComment(): MagicComment<String, String> =
  */
 fun LatexMagicComment.key(): MagicKey<String> {
     val key = getMagicComment().keySet().firstOrNull() ?: ""
-    return DefaultMagicKeys.values().firstOrNull { it.key == key } ?: CustomMagicKey(key)
+    return DefaultMagicKeys.entries.firstOrNull { it.key == key } ?: CustomMagicKey(key)
 }
 
 /**

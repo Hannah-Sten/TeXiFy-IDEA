@@ -51,7 +51,7 @@ object LatexCommandLineOptionsCache {
         ProgressManager.getInstance().run(object : Backgroundable(project, "Retrieving available command line options for LaTeX compilers...") {
             override fun run(indicator: ProgressIndicator) {
                 try {
-                    for (compiler in LatexCompiler.values()) {
+                    for (compiler in LatexCompiler.entries) {
                         val (output, _) = runCommandWithExitCode(compiler.executableName, "--help")
                         if (output != null) {
                             val optionsList = parseHelpOutput(compiler.executableName, output)

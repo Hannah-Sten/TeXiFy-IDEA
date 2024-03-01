@@ -62,7 +62,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Compiler
-            val compilerField = ComboBox(BibliographyCompiler.values())
+            val compilerField = ComboBox(BibliographyCompiler.entries.toTypedArray())
             compiler = LabeledComponent.create(compilerField, "Compiler")
             add(compiler)
 

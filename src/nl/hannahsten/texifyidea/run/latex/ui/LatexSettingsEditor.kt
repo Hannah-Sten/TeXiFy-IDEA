@@ -322,7 +322,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // LaTeX distribution
         @Suppress("DialogTitleCapitalization")
-        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isAvailable(project!!) }.toTypedArray()), "LaTeX Distribution")
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project!!) }.toTypedArray()), "LaTeX Distribution")
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
@@ -370,7 +370,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      */
     private fun addCompilerPathField(panel: JPanel) {
         // Compiler
-        val compilerField = ComboBox(LatexCompiler.values())
+        val compilerField = ComboBox(LatexCompiler.entries.toTypedArray())
         compiler = LabeledComponent.create(compilerField, "Compiler")
         panel.add(compiler)
 

@@ -213,7 +213,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
      * In order to make it easier for the user to enter new values, we use a dialog before adding the entry to the list (might be out of view if the list is long).
      */
     private fun createAddLabelConventionDialog() {
-        val typeField = ComboBox(LabelConventionType.values())
+        val typeField = ComboBox(LabelConventionType.entries.toTypedArray())
         val elementField = JBTextField().apply { preferredSize = Dimension(200, preferredSize.height) }
         val prefixField = JBTextField().apply { preferredSize = Dimension(200, preferredSize.height) }
         val labelField = JBCheckBox()
@@ -250,7 +250,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     }
 
     private fun buildEnvironmentSelector(): ComboBox<LabelConventionType> {
-        return ComboBox(LabelConventionType.values())
+        return ComboBox(LabelConventionType.entries.toTypedArray())
     }
 
     override fun createComponent(): JComponent {

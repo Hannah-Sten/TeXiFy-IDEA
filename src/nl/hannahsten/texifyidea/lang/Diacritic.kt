@@ -16,8 +16,8 @@ interface Diacritic {
 
         fun allValues(): List<Diacritic> {
             val list: MutableList<Diacritic> = ArrayList()
-            list.addAll(Normal.values())
-            list.addAll(Math.values())
+            list.addAll(Normal.entries.toTypedArray())
+            list.addAll(Math.entries.toTypedArray())
             return list
         }
     }
@@ -63,12 +63,12 @@ interface Diacritic {
         companion object {
 
             fun fromUnicode(unicode: String): Normal? {
-                return values()
+                return entries
                     .find { it.unicode == unicode }
             }
 
             fun fromCommand(command: String): Normal? {
-                return values()
+                return entries
                     .find { it.command == command }
             }
         }
@@ -103,12 +103,12 @@ interface Diacritic {
         companion object {
 
             fun fromUnicode(unicode: String): Math? {
-                return values()
+                return entries
                     .find { it.unicode == unicode }
             }
 
             fun fromCommand(command: String): Math? {
-                return values()
+                return entries
                     .find { it.command == command }
             }
         }

@@ -33,7 +33,7 @@ enum class InsightGroup(
 
         @JvmStatic
         fun byFileType(fileType: FileType): List<InsightGroup> {
-            return values().filter { fileType in it.fileTypes }
+            return entries.filter { fileType in it.fileTypes }
         }
     }
 }
