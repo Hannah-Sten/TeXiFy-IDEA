@@ -34,6 +34,9 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
    */
   private int newEnvironmentBracesNesting = 0;
 
+  /** Similar to newEnvironmentBracesNesting */
+  private int newCommandBracesNesting = 0;
+
   /**
    * Also keep track of brackets of verbatim environment optional arguments.
    */
@@ -80,6 +83,7 @@ COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:0-9]+|.|\r) // _ and : are only LaTeX3 syntax
 LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage)
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
+NEWCOMMAND=\\(new|provide)command
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 
 // Verbatim commands which will be delimited by the same character
@@ -121,7 +125,7 @@ MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION
-%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC
+%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
 
 // latex3 has some special syntax
 %states LATEX3
@@ -311,6 +315,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {NEWENVIRONMENT}        { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
 {NEWDOCUMENTENVIRONMENT} { yypushState(NEW_DOCUMENT_ENV_DEFINITION_NAME); return COMMAND_TOKEN; }
 
+// Similarly, we need to do special things in command definitions as these are often incomplete LaTeX
+{NEWCOMMAND}            { yypushState(NEW_COMMAND_DEFINITION_PARAM1); return COMMAND_TOKEN; }
+
 // A separate state is used to track when we start with the second parameter of \newenvironment, this state denotes the first one
 <NEW_ENVIRONMENT_DEFINITION_NAME> {
     {CLOSE_BRACE}       {
@@ -379,6 +386,35 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     "\\["               { return DISPLAY_MATH_START; }
     "\\]"               { return DISPLAY_MATH_END; }
     "$"                 { return NORMAL_TEXT_WORD; }
+}
+
+// Very similar to NEW_ENVIRONMENT_DEFINITION, we count braces and really hope that every \newcommand has two parameters
+<NEW_COMMAND_DEFINITION_PARAM1> {
+    {OPEN_BRACE}        { newCommandBracesNesting++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       {
+        newCommandBracesNesting--;
+        if(newCommandBracesNesting == 0) {
+            yypopState();
+            yypushState(NEW_COMMAND_DEFINITION_PARAM2);
+        }
+        return CLOSE_BRACE;
+    }
+    // It is common to have an unmatches \begin or \end in a \newcommand, so ignore them
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
+}
+
+<NEW_COMMAND_DEFINITION_PARAM2> {
+    {OPEN_BRACE}        { newCommandBracesNesting++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       {
+        newCommandBracesNesting--;
+        if(newCommandBracesNesting == 0) {
+            yypopState();
+        }
+        return CLOSE_BRACE;
+    }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
 }
 
 
