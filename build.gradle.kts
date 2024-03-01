@@ -20,7 +20,7 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.5.0"
+    id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
@@ -124,9 +124,9 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.17")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:1.2.2")
-    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.2")
-    implementation("io.arrow-kt:arrow-resilience:1.2.2")
+    implementation("io.arrow-kt:arrow-core:1.2.3")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.3")
+    implementation("io.arrow-kt:arrow-resilience:1.2.3")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
