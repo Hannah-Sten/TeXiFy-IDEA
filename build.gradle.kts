@@ -124,7 +124,7 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.17")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:1.2.2")
+    implementation("io.arrow-kt:arrow-core:1.2.3")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.2")
     implementation("io.arrow-kt:arrow-resilience:1.2.2")
 
