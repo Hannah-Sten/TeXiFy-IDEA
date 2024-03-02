@@ -24,7 +24,8 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
     data class LibraryWrapper(
         val displayName: String = "",
         val libraryType: Class<*> = Any::class.java,
-        val bibtex: BibItems = BibItems()
+        val bibtex: BibItems = BibItems(),
+        val url: String? = null,
     )
 
     data class BibItems(val items: List<BibtexEntry> = emptyList())
@@ -43,7 +44,7 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
 
         return XmlMapper(module)
             .writerWithDefaultPrettyPrinter()
-            .writeValueAsString(value.mapValues { LibraryWrapper(it.value.displayName, it.value.libraryType, BibItems(it.value.entries)) })
+            .writeValueAsString(value.mapValues { LibraryWrapper(it.value.displayName, it.value.libraryType, BibItems(it.value.entries), it.value.url) })
     }
 
     override fun fromString(value: String): Map<String, LibraryState> {
@@ -60,6 +61,6 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
 
         return XmlMapper(module)
             .readValue<Map<String, LibraryWrapper>>(value)
-            .mapValues { LibraryState(it.value.displayName, it.value.libraryType, it.value.bibtex.items) }
+            .mapValues { LibraryState(it.value.displayName, it.value.libraryType, it.value.bibtex.items, it.value.url) }
     }
 }

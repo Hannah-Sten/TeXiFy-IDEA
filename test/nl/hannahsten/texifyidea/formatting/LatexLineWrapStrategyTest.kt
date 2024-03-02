@@ -39,8 +39,7 @@ class LatexLineWrapStrategyTest : BasePlatformTestCase() {
         myFixture.configureByText(LatexFileType, text)
         myFixture.performEditorAction("ReformatCode")
         val expected = """
-            \section{This includes 
-            permissions.}
+            \section{This includes permissions.}
             \href{https://the-very-very-long.url}{This includes}
             permissions.
         """.trimIndent()
@@ -59,6 +58,41 @@ class LatexLineWrapStrategyTest : BasePlatformTestCase() {
         myFixture.type("URL")
         val expected = """
             \href{https://the-very-very-long.url}{unreasonable long URL}
+        """.trimIndent()
+        myFixture.checkResult(expected)
+    }
+
+    fun testTextWrap() {
+        setUpTest()
+        val text = """
+        \documentclass{article}
+        \begin{document}
+            Über die grüne Wiese hüpft
+            er das gemeinsame Frühstück
+        
+            Beisammensein, onders ${'$'}^{,}${'$'} bei
+        
+            jedoch \footfullcite{author} abhielt
+        
+        \end{document}
+        """.trimIndent()
+        myFixture.configureByText(LatexFileType, text)
+        myFixture.performEditorAction("ReformatCode")
+        val expected = """
+        \documentclass{article}
+        \begin{document}
+            Über die grüne Wiese hüpft
+            er das gemeinsame 
+            Frühstück
+        
+            Beisammensein, onders 
+            ${'$'}^{,}${'$'} bei
+        
+            jedoch 
+            \footfullcite{author} 
+            abhielt
+        
+        \end{document}
         """.trimIndent()
         myFixture.checkResult(expected)
     }

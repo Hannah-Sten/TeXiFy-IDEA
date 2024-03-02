@@ -43,8 +43,8 @@ class TableCreationEditColumnDialog(
             val txtColumnName = JBTextField(columnName)
 
             // A combobox to select the column type.
-            val cboxColumnType = JComboBox(ColumnType.values().map { it.displayName }.toTypedArray())
-            cboxColumnType.selectedIndex = ColumnType.values().indexOf(columnType)
+            val cboxColumnType = JComboBox(ColumnType.entries.map { it.displayName }.toTypedArray())
+            cboxColumnType.selectedIndex = ColumnType.entries.indexOf(columnType)
 
             // Add UI elements.
             val panel = JPanel(VerticalLayout(8)).apply {
@@ -67,7 +67,7 @@ class TableCreationEditColumnDialog(
             }
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
-                onOkFunction(txtColumnName.text, ColumnType.values()[cboxColumnType.selectedIndex], editingColumn)
+                onOkFunction(txtColumnName.text, ColumnType.entries[cboxColumnType.selectedIndex], editingColumn)
             }
         }
     }

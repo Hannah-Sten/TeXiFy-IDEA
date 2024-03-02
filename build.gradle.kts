@@ -9,7 +9,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.17.1"
+    id("org.jetbrains.intellij") version "1.17.2"
     kotlin("jvm") version ("1.9.20")
     kotlin("plugin.serialization") version ("1.9.20")
 
@@ -20,10 +20,10 @@ plugins {
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.5.0"
+    id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.5"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
@@ -33,7 +33,7 @@ plugins {
 
     id("org.jetbrains.changelog") version "2.2.0"
 
-    id("org.jetbrains.grammarkit") version "2022.3.2.1"
+    id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
 
 group = "nl.hannahsten"
@@ -124,9 +124,9 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.17")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:1.2.1")
-    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.1")
-    implementation("io.arrow-kt:arrow-resilience:1.2.1")
+    implementation("io.arrow-kt:arrow-core:1.2.3")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.3")
+    implementation("io.arrow-kt:arrow-resilience:1.2.3")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
@@ -143,7 +143,7 @@ dependencies {
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
 
-    testImplementation("io.mockk:mockk:1.13.9")
+    testImplementation("io.mockk:mockk:1.13.10")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -304,28 +304,26 @@ tasks {
 
     val generateLatexParserTask = register<GenerateParserTask>("generateLatexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
-        targetRoot.set("gen")
+        targetRootOutputDir.set(File("gen"))
         pathToParser.set("nl/hannahsten/texifyidea/parser/LatexParser.java")
         pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
     }
 
     val generateBibtexParserTask = register<GenerateParserTask>("generateBibtexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Bibtex.bnf"))
-        targetRoot.set("gen")
+        targetRootOutputDir.set(File("gen"))
         pathToParser.set("nl/hannahsten/texifyidea/parser/BibtexParser.java")
         pathToPsiRoot.set("nl/hannahsten/texifyidea/psi")
     }
 
     val generateLatexLexerTask = register<GenerateLexerTask>("generateLatexLexer") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/LatexLexer.flex"))
-        targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
-        targetClass.set("LatexLexer")
+        targetOutputDir.set(File("gen/nl/hannahsten/texifyidea/grammar/"))
     }
 
     val generateBibtexLexerTask = register<GenerateLexerTask>("generateBibtexLexer") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/BibtexLexer.flex"))
-        targetDir.set("gen/nl/hannahsten/texifyidea/grammar/")
-        targetClass.set("BibtexLexer")
+        targetOutputDir.set(File("gen/nl/hannahsten/texifyidea/grammar/"))
     }
 
     initializeIntelliJPlugin {

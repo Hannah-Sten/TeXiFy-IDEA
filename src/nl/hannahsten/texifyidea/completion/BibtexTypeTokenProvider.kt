@@ -18,7 +18,7 @@ object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         result.addAllElements(
-            BibtexDefaultEntryType.values().map {
+            BibtexDefaultEntryType.entries.map {
                 LookupElementBuilder.create(it, it.token)
                     .withPresentableText(it.token)
                     .bold()

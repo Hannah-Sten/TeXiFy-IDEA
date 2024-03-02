@@ -167,7 +167,7 @@ enum class DefaultEnvironment(
         private val lookup = HashMap<String, DefaultEnvironment>()
 
         init {
-            for (environment in values()) {
+            for (environment in entries) {
                 lookup[environment.environmentName] = environment
             }
         }

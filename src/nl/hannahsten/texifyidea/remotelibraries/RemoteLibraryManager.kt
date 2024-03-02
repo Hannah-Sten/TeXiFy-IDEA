@@ -31,11 +31,11 @@ class RemoteLibraryManager : PersistentStateComponent<RemoteLibraryState> {
     /**
      * Update the stored bib entries if the library already has an entry, otherwise create a new entry.
      */
-    fun updateLibrary(library: RemoteBibLibrary, bibItems: List<BibtexEntry>) {
+    fun updateLibrary(library: RemoteBibLibrary, bibItems: List<BibtexEntry>, url: String? = null) {
         libraries[library.identifier]?.let {
             it.entries = bibItems
         } ?: run {
-            libraries[library.identifier] = LibraryState(library.displayName, library::class.java, bibItems)
+            libraries[library.identifier] = LibraryState(library.displayName, library::class.java, bibItems, url)
         }
     }
 

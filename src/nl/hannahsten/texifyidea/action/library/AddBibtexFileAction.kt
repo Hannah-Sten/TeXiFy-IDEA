@@ -3,8 +3,6 @@ package nl.hannahsten.texifyidea.action.library
 import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.raise.either
-import com.intellij.credentialStore.Credentials
-import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextBrowseFolderListener
@@ -17,7 +15,7 @@ import nl.hannahsten.texifyidea.remotelibraries.BibtexFileLibrary
 import nl.hannahsten.texifyidea.remotelibraries.RemoteBibLibraryFactory
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.ui.remotelibraries.AddLibDialogWrapper
-import nl.hannahsten.texifyidea.util.CredentialAttributes
+import java.io.File
 import javax.swing.JComponent
 
 /**
@@ -58,11 +56,10 @@ class AddBibtexFileAction : AddLibraryAction<BibtexFileLibrary, AddBibtexFileAct
     }
 
     override suspend fun createLibrary(dialogWrapper: AddBibtexFileDialogWrapper, project: Project): Either<RemoteLibraryRequestFailure, Pair<BibtexFileLibrary, List<BibtexEntry>>?> = either {
-        val library = RemoteBibLibraryFactory.create<BibtexFileLibrary>(BibtexFileLibrary.NAME) ?: return@either null
-        val path = Credentials(dialogWrapper.path)
-        PasswordSafe.instance.set(CredentialAttributes.BibtexFile.path, path)
+        val name = if (File(dialogWrapper.path).exists()) File(dialogWrapper.path).name else BibtexFileLibrary.NAME
+        val library = RemoteBibLibraryFactory.create<BibtexFileLibrary>(name, url = dialogWrapper.path) ?: return@either null
         val bibItems = library.getCollection().getOrElse { raise(it) }
-        RemoteLibraryManager.getInstance().updateLibrary(library, bibItems)
+        RemoteLibraryManager.getInstance().updateLibrary(library, bibItems, url = dialogWrapper.path)
         library to bibItems
     }
 }

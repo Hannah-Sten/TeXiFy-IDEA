@@ -34,6 +34,7 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
         @book{newey_how_2017,
                title = {How to build a car},
            }</bibtex>
+            <url>test url</url>
           </a1234>
         </LinkedHashMap>
         
@@ -49,7 +50,8 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
                 identifier to LibraryState(
                     displayName,
                     ZoteroLibrary::class.java,
-                    entries
+                    entries,
+                    "test url"
                 )
             )
         )
@@ -64,6 +66,6 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
 
         val result = LibraryStateConverter().fromString(xmlString)
 
-        assertEquals(mapOf(identifier to LibraryState(displayName, ZoteroLibrary::class.java, entries)).toString().trim(), result.toString().trim())
+        assertEquals(mapOf(identifier to LibraryState(displayName, ZoteroLibrary::class.java, entries, "test url")).toString().trim(), result.toString().trim())
     }
 }

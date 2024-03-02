@@ -14,7 +14,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 )
 @Service(Service.Level.PROJECT)
 data class LatexErrorTreeViewConfiguration(
-    var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.values().associateWith { true }.toMutableMap(),
+    var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.entries.associateWith { true }.toMutableMap(),
     var showBibtexWarnings: Boolean = true,
     var expanded: Boolean = true // Unfortunately we cannot use this, because expandAll() apparently only works in Actions
 ) :

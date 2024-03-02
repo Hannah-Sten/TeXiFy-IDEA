@@ -11,7 +11,7 @@ class LatexNameSuggestionProvider : NameSuggestionProvider {
 
     override fun getSuggestedNames(element: PsiElement, nameSuggestionContext: PsiElement?, result: MutableSet<String>): SuggestedNameInfo? {
         if (element.firstParentOfType(LatexBeginCommand::class) != null) {
-            result.addAll(DefaultEnvironment.values().map { it.environmentName })
+            result.addAll(DefaultEnvironment.entries.map { it.environmentName })
         }
 
         return null

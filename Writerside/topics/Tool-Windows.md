@@ -18,6 +18,7 @@ With the Library tool window (located on the right toolbar) it is possible to co
 * [Mendeley](https://www.mendeley.com/search/)
 * [Zotero](https://www.zotero.org/)
 * [Zotero Groups](https://www.zotero.org/groups/)
+* Local Zotero installation, using the [Better BibTeX plugin](https://retorque.re/zotero-better-bibtex/)
 * Local BibTeX file, for example a JabRef library
 
 After connecting to a library the contents of this library will be shown in the tool window.
@@ -32,7 +33,6 @@ Note that there is a maximum limit of bibtex entries that will be downloaded by 
 ### Connecting to a library
 
 When connecting to a library, all items from that library will be loaded after the user finishes the setup.
-Collections (for Mendeley and Zotero) are currently not supported.
 
 #### Mendeley {id="mendeley"}
 
@@ -48,6 +48,11 @@ When adding a Zotero library, you need to specify the following information that
 * User ID. Go to the Feeds/API tab and copy the `<user ID>` where it says `Your userID for use in API calls is <user ID>`.
 * User API key. Go to the Feeds/API tab and click `Create new private key`.
   It is important that you keep this key to yourself.
+
+You can also change the Zotero API URL when adding a library connection, for example:
+* Use a local Zotero installation by [installing the Better BibTeX plugin](https://retorque.re/zotero-better-bibtex/installation/index.html) and getting the url using [Pull Export](https://retorque.re/zotero-better-bibtex/exporting/pull/). In this case the user id and api key will not be used.
+* Connect to a Zotero group url using the group id which can be found in the url to the group, for example `https://api.zotero.org/groups/2608283/items?format=biblatex`
+* Specify a different format, so use `format=biblatex` instead of `format=bibtex` in the url. Other formats are not supported.
 
 ### Syncing a library {id="library-sync"}
 

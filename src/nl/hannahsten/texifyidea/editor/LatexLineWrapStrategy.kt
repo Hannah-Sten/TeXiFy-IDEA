@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexRawText
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
@@ -39,18 +40,31 @@ class LatexLineWrapStrategy : PsiAwareDefaultLineWrapPositionStrategy(true, *Uti
         maxPreferredOffset: Int,
         isSoftWrap: Boolean
     ): Int {
+        // math.startOffset may be smaller than startOffset, but I'm not sure why we would not be allowed to return a value < startOffset because that's the only sensible place to wrap: the start of the inline math environment
+        val math = element.firstParentOfType<LatexMathEnvironment>()
+        if (math != null) return math.startOffset
+
+        // What we're doing here looks very much like LatexLineWrapper#calculatePreferredWrapPosition, should we use that as default instead?
         val wrapPosition = super.doCalculateWrapPosition(document, project, element, startOffset, endOffset, maxPreferredOffset, isSoftWrap)
 
         // Don't wrap urls, both in comments and in \url-like commands
-        return if (element is PsiComment) {
-            getWrapPositionInComment(element, wrapPosition)
+        if (element is PsiComment) {
+            return getWrapPositionInComment(element, wrapPosition)
         }
-        else if (element.node.elementType == LatexTypes.RAW_TEXT_TOKEN) {
-            getWrapPositionInRawText(element, wrapPosition)
+        if (element.node.elementType == LatexTypes.RAW_TEXT_TOKEN) {
+            return getWrapPositionInRawText(element, wrapPosition)
         }
-        else {
-            return wrapPosition
+
+        // Not sure if we want to wrap inside commands
+        val command = element.firstParentOfType<LatexCommands>()
+        if (command != null) return command.startOffset
+
+        // Don't wrap in the middle of a word (can happen by default for German characters)
+        if (element.node.elementType == LatexTypes.NORMAL_TEXT_WORD) {
+            return element.startOffset
         }
+
+        return wrapPosition
     }
 
     private fun String.findUrl(): Int {

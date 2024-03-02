@@ -26,7 +26,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
     /**
      * What type of blind text to generate.
      */
-    private val cboxBlindType = ComboBox(DummyTextData.BlindtextType.values()).apply {
+    private val cboxBlindType = ComboBox(DummyTextData.BlindtextType.entries.toTypedArray()).apply {
         selectedItem = DummyTextData.BlindtextType.PARAGRAPH
         addItemListener { updateUi() }
     }
@@ -86,7 +86,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
     /**
      * How to separate the lipsum paragraphs.
      */
-    private val cboxLipsumSeparator = ComboBox(DummyTextData.LipsumParagraphSeparation.values()).apply {
+    private val cboxLipsumSeparator = ComboBox(DummyTextData.LipsumParagraphSeparation.entries.toTypedArray()).apply {
         selectedItem = DummyTextData.LipsumParagraphSeparation.PARAGRAPH
     }
 
@@ -110,7 +110,7 @@ open class InsertDummyTextDialogWrapper : DialogWrapper(true) {
     /**
      * Which dummy text teplate to use.
      */
-    private val cboxRawTemplate = ComboBox(Ipsum.values()).apply {
+    private val cboxRawTemplate = ComboBox(Ipsum.entries.toTypedArray()).apply {
         selectedItem = Ipsum.TEXIFY_IDEA_IPSUM
     }
 

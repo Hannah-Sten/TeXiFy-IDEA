@@ -31,5 +31,9 @@ data class LibraryState(
     /**
      * Store the entries from the library, so we don't have to query the libraries on startup.
      */
-    var entries: List<BibtexEntry>
+    var entries: List<BibtexEntry>,
+    /**
+     * The url at which to access the library, if applicable.
+     */
+    val url: String?,
 )

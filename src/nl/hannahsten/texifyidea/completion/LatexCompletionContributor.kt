@@ -299,7 +299,7 @@ open class LatexCompletionContributor : CompletionContributor() {
      * Adds autocompletion for parameters that have been given a default [Argument.Type].
      * When the type contains a completion contributor, it will be registered to the correct6 argument.
      */
-    private fun registerLatexArgumentTypeCompletion() = Argument.Type.values().forEach { type ->
+    private fun registerLatexArgumentTypeCompletion() = Argument.Type.entries.forEach { type ->
         val completionProvider = type.completionProvider ?: return@forEach
         extend(
             CompletionType.BASIC,

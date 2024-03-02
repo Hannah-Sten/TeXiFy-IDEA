@@ -113,7 +113,7 @@ class MathEnvironmentEditor(
     }
 
     private fun isAmsMathEnvironment(environmentName: String): Boolean {
-        val amsMathEnvironments: Array<String> = DefaultEnvironment.values()
+        val amsMathEnvironments: Array<String> = DefaultEnvironment.entries
             .filter { it.dependency == LatexPackage.AMSMATH }
             .map { it.environmentName }
             .toTypedArray()

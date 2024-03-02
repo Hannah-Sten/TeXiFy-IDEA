@@ -49,7 +49,7 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
             layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Program
-            val programField = ComboBox(MakeindexProgram.values())
+            val programField = ComboBox(MakeindexProgram.entries.toTypedArray())
             makeindexProgram = LabeledComponent.create(programField, "Index program")
             add(makeindexProgram)
 
