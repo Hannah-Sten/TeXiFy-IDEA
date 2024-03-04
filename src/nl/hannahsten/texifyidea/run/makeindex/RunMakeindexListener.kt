@@ -6,14 +6,18 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.io.File
 import java.io.FileNotFoundException
@@ -98,7 +102,12 @@ class RunMakeindexListener(
 
     private fun generateIndexConfigs(): Set<RunnerAndConfigurationSettings> {
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
-        val indexPrograms = getDefaultMakeindexPrograms(latexRunConfig.mainFile, environment.project)
+
+        val usedPackages = runReadAction {
+            latexRunConfig.mainFile?.psiFile(environment.project)?.includedPackages() ?: emptySet()
+        }
+        val mainFile = latexRunConfig.mainFile
+        val indexPrograms = getDefaultMakeindexPrograms(mainFile, environment.project, usedPackages)
 
         val runConfigs = mutableSetOf<RunnerAndConfigurationSettings>()
 
@@ -110,9 +119,13 @@ class RunMakeindexListener(
 
             val runConfig = makeindexRunConfigSettings.configuration as MakeindexRunConfiguration
 
-            runConfig.mainFile = latexRunConfig.mainFile
+            runConfig.mainFile = mainFile
             runConfig.makeindexProgram = indexProgram
             runConfig.setSuggestedName()
+            // See nomencl documentation
+            if (LatexPackage.NOMENCL in usedPackages && indexProgram == MakeindexProgram.MAKEINDEX) {
+                runConfig.commandLineArguments = "${mainFile?.nameWithoutExtension}.nlo -s nomencl.ist -o ${mainFile?.nameWithoutExtension}.nls"
+            }
 
             // bib2gls we handle separately, because it needs the bib file, so instead of running it in the auxil dir we run it next to the main file
             runConfig.workingDirectory = if (runConfig.makeindexProgram != MakeindexProgram.BIB2GLS) latexRunConfig.getAuxilDirectory() else runConfig.mainFile?.parent

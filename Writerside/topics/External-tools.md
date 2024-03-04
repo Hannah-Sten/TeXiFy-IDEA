@@ -49,6 +49,34 @@ TeXiFy also supports using xindy (instead of makeindex) and a custom index name,
 See the imakeidx documentation at [https://ctan.org/pkg/imakeidx](https://ctan.org/pkg/imakeidx) for more details.
 Note that in order to use xindy to need to install Perl.
 
+### nomencl
+
+Also the nomencl package is supported in the same way, as it uses makeindex.
+Example from the nomencl documentation:
+
+<!-- ```latex -->
+```
+\documentclass{article}
+\usepackage[nocfg]{nomencl}
+\makenomenclature
+
+\begin{document}
+    \section*{Main equations}
+    \begin{equation}
+        a=\frac{N}{A}
+    \end{equation}%
+    \nomenclature{$a$}{The number of angels per unit area\nomrefeq}%
+    \nomenclature{$N$}{The number of angels per needle point\nomrefpage}%
+    \nomenclature{$A$}{The area of the needle point}%
+    The equation $\sigma = m a$%
+    \nomenclature{$\sigma$}{The total mass of angels per unit area\nomrefeqpage}%
+    \nomenclature{$m$}{The mass of one angel}
+    follows easily.
+    \eqdeclaration{32}
+    \printnomenclature
+\end{document}
+```
+
 ## Input index file filename.idx not found.
 If you use an auxiliary directory (auxil/ or out/) then you may get an error message from imakeidx saying
 `Input index file filename.idx not found.`.

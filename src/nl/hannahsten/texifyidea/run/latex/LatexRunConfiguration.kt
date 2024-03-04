@@ -542,7 +542,8 @@ class LatexRunConfiguration(
      */
     fun getAuxilDirectory(): VirtualFile? {
         return if (latexDistribution.isMiktex(project)) {
-            auxilPath.getAndCreatePath()
+            // If we are using MiKTeX it might still be we are not using an auxil directory, so then fall back to the out directory
+            auxilPath.getAndCreatePath() ?: outputPath.getAndCreatePath()
         }
         else {
             outputPath.getAndCreatePath()
