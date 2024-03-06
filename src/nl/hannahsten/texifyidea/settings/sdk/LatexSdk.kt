@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.settings.sdk
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.util.runWriteAction
 import org.jdom.Element
 
 /**
@@ -30,7 +31,9 @@ abstract class LatexSdk(name: String) : SdkType(name) {
     override fun setupSdkPaths(sdk: Sdk) {
         val modificator = sdk.sdkModificator
         modificator.versionString = getVersionString(sdk)
-        modificator.commitChanges() // save
+        runWriteAction {
+            modificator.commitChanges() // save
+        }
     }
 
     /**
