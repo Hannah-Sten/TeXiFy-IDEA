@@ -123,6 +123,34 @@ You can use for example the `TEXINPUTS` environment variable to include LaTeX fi
 For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and TeXiFy) will search in any subdirectory of `/path/to/directory` for the file to be included, and `:` means to include the standard content of `TEXINPUTS`. For Windows, it is similar: `TEXINPUTS=C:...\path\to\directory\\;` (note the semicolon).
 For more information about paths resolving, see [https://www.tug.org/texinfohtml/kpathsea.html#Path-searching](https://www.tug.org/texinfohtml/kpathsea.html#Path-searching)
 
+## LaTeX code to run before compiling the main file
+_Since b0.9.5_
+
+You can enter LaTeX code to be executed before the main file.
+For example, suppose you want to have two versions of a document, then you could create two run configurations and use this field to set a boolean flag to a different value.
+
+For example, if your LaTeX file contains
+
+<!-- ```latex -->
+```
+\documentclass{article}
+\usepackage{etoolbox}
+
+% Only sets the value of \waarde if it is undefined
+\providecommand{\waarde}{true}
+
+% Create a boolean and set it to the value of \waarde
+\newbool{binair}
+\setbool{binair}{\waarde}
+
+\begin{document}
+    \ifbool{binair}{waar}{onwaar}
+\end{document}
+```
+
+then you can put `\newcommand{\waarde}{false}` in this field in your run configuration to set the value of the boolean to `false`.
+This works for at least pdflatex, lualatex, xelatex and latexmk.
+
 ## Custom SumatraPDF path
 
 See [(Windows) Choose a custom path to SumatraPDF](PDF-viewers.md#portable-sumatrapdf).
