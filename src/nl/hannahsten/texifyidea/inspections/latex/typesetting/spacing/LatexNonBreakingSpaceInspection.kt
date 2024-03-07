@@ -54,7 +54,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
     /**
      * Commands redefined by cleveref, such that no non-breaking space is needed anymore.
      */
-    private val cleverefRedefinitions = setOf(THREF, VREF, VREF_CAPITAL, VREFRANGE, FULLREF).map { it.commandWithSlash }
+    private val cleverefRedefinitions = listOf(THREF.commandWithSlash) + setOf(VREF, VREFRANGE, FULLREF).map { it.command }.flatMap { c -> listOf(c, "$c*", c.replaceFirstChar { it.uppercase() }) }.map { "\\" + it }
 
     override val inspectionGroup = InsightGroup.LATEX
 
