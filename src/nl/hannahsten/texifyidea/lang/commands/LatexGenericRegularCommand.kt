@@ -385,6 +385,7 @@ enum class LatexGenericRegularCommand(
     VDOTS("vdots", display = "⋮"),
     VLINE("vline"),
     VREF("vref", "key".asRequired(Argument.Type.LABEL), dependency = VARIOREF),
+    VREF_CAPITAL("Vref", "key".asRequired(Argument.Type.LABEL), dependency = VARIOREF),
     VREFRANGE("vrefrange", "start".asRequired(), "end".asRequired(), "text".asOptional(), dependency = VARIOREF),
     VSPACE("vspace", "length".asRequired()),
     VSPACE_STAR("vspace*", "length".asRequired()),
