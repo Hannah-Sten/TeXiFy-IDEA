@@ -68,6 +68,7 @@ class LatexRunConfiguration(
         private const val PDF_VIEWER = "pdf-viewer"
         private const val VIEWER_COMMAND = "viewer-command"
         private const val COMPILER_ARGUMENTS = "compiler-arguments"
+        private const val BEFORE_RUN_COMMAND = "before-run-command"
         private const val MAIN_FILE = "main-file"
         private const val OUTPUT_PATH = "output-path"
         private const val AUXIL_PATH = "auxil-path"
@@ -99,6 +100,7 @@ class LatexRunConfiguration(
         }
 
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
+    var beforeRunCommand: String? = null
 
     var mainFile: VirtualFile? = null
         set(value) {
@@ -277,6 +279,9 @@ class LatexRunConfiguration(
         // Read environment variables
         environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
+        val beforeRunCommandRead = parent.getChildText(BEFORE_RUN_COMMAND)
+        beforeRunCommand = if (beforeRunCommandRead.isNullOrEmpty()) null else beforeRunCommandRead
+
         // Read main file.
         val filePath = parent.getChildText(MAIN_FILE)
         setMainFile(filePath)
@@ -373,6 +378,7 @@ class LatexRunConfiguration(
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
+        parent.addContent(Element(BEFORE_RUN_COMMAND).also { it.text = this.beforeRunCommand ?: "" })
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
@@ -542,7 +548,8 @@ class LatexRunConfiguration(
      */
     fun getAuxilDirectory(): VirtualFile? {
         return if (latexDistribution.isMiktex(project)) {
-            auxilPath.getAndCreatePath()
+            // If we are using MiKTeX it might still be we are not using an auxil directory, so then fall back to the out directory
+            auxilPath.getAndCreatePath() ?: outputPath.getAndCreatePath()
         }
         else {
             outputPath.getAndCreatePath()

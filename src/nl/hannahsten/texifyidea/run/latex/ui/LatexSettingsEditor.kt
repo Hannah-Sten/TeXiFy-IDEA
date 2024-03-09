@@ -11,6 +11,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.EditorTextField
+import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
@@ -42,8 +43,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var compiler: LabeledComponent<ComboBox<LatexCompiler>>
     private lateinit var enableCompilerPath: JBCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
-    private lateinit var compilerArguments: EditorTextField
+    private lateinit var compilerArguments: LabeledComponent<EditorTextField>
     private lateinit var environmentVariables: EnvironmentVariablesComponent
+    private lateinit var beforeRunCommand: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
     private lateinit var outputPath: LabeledComponent<ComponentWithBrowseButton<*>>
 
@@ -93,10 +95,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
-        compilerArguments.text = args ?: ""
+        compilerArguments.component.text = args ?: ""
 
         // Reset environment variables
         environmentVariables.envData = runConfiguration.environmentVariables
+
+        beforeRunCommand.component.text = runConfiguration.beforeRunCommand
 
         // Reset the main file to compile.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
@@ -195,10 +199,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
 
         // Apply custom compiler arguments
-        runConfiguration.compilerArguments = compilerArguments.text
+        runConfiguration.compilerArguments = compilerArguments.component.text
 
         // Apply environment variables
         runConfiguration.environmentVariables = environmentVariables.envData
+
+        runConfiguration.beforeRunCommand = beforeRunCommand.component.text
 
         // Apply main file.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
@@ -277,11 +283,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             LatexArgumentsCompletionProvider(options).apply(argumentsEditor)
         }
 
-        compilerArguments = argumentsEditor
+        compilerArguments = LabeledComponent.create(argumentsEditor, "Custom compiler arguments")
         panel.add(compilerArguments)
 
         environmentVariables = EnvironmentVariablesComponent()
         panel.add(environmentVariables)
+
+        beforeRunCommand = LabeledComponent.create(RawCommandLineEditor(), "LaTeX code to run before compiling the main file")
+        panel.add(beforeRunCommand)
 
         panel.add(SeparatorComponent())
 
