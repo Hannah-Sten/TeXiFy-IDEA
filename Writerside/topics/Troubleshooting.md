@@ -6,7 +6,7 @@ If you run into troubles while using TeXiFy, you can try the following things.
 * Search this wiki using the search bar in the top right corner.
 * Search through the [GitHub issues](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues?q=is%3Aissue) to find similar problems, and if your issue has already been resolved
 * Look through the list of common problems at this page
-* Ask for help at [gitter](https://gitter.im/TeXiFy-IDEA)
+* Ask for help at [gitter](https://matrix.to/#/#TeXiFy-IDEA_Support:gitter.im)
 * [Open a discussion](https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions)
 
 ## Debugging performance issues
