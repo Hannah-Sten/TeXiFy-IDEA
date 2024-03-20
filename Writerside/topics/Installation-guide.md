@@ -230,7 +230,7 @@ If you want to use Skim instead of the built-in pdf viewer, for configuring forw
 * If you want a proper explanation of what LaTeX and its philosophy is
   about, read the [Not So Short Introduction To LaTeX2e](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf).
 
-Any suggestions for improvements of the installation instructions, however small? Please feel free to edit this wiki page, or let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
+Any suggestions for improvements of the installation instructions, however small? Please feel free to edit this wiki page, or let us know at [gitter](https://matrix.to/#/#TeXiFy-IDEA_Support:gitter.im)!
 
 ## When you want to work together: install git
 

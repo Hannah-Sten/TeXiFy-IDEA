@@ -2,7 +2,7 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 ![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/r/rating/9473-texify-idea?style=flat-square)
-[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
+[![Join the chat at https://app.gitter.im/#/room/#TeXiFy-IDEA_Support:gitter.im](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://app.gitter.im/#/room/#TeXiFy-IDEA_Support:gitter.im)
 [![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/HannahSchellekens)
 [![codecov](https://img.shields.io/codecov/c/github/Hannah-Sten/TeXiFy-IDEA/master?style=flat-square)](https://codecov.io/gh/Hannah-Sten/TeXiFy-IDEA)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/Hannah-Sten/TeXiFy-IDEA.svg)](http://isitmaintained.com/project/Hannah-Sten/TeXiFy-IDEA "Average time to resolve an issue")
@@ -23,7 +23,7 @@ This plugin adds the tools to make creating LaTeX documents a breeze. We are cur
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
 1. For questions, ideas or general comments use the [Discussions tab](https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions/categories/q-a) to start a new discussion.
 2. [Issues](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advise to use GitHub Discussions.
-3. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account).
+3. Live chat via [gitter](https://app.gitter.im/#/room/#TeXiFy-IDEA_Support:gitter.im) (you can login with your GitHub account).
 
 Please bear in mind that this is just a side project for us. It might take a while to fully process your feedback. We try our best :3
 
