@@ -244,4 +244,18 @@ class LatexParserTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
+
+    fun testUnmatchedBeginInDefinition() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\tableMod}[0]{
+                \end{multicols}
+                \insertedObject
+                \begin{multicols}{2}
+            }
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

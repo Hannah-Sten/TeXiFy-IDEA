@@ -6,6 +6,15 @@
 
 ### Fixed
 
+## [0.9.5-alpha.7] - 2024-03-09
+
+### Added
+* Add support for the nomencl package
+* Add starred and capitalized versions of cleveref commands to exceptions for non-breaking space inspection, by @niknetniko
+
+### Fixed
+* Fix a parser issue when having a single \begin or \end in a \newcommand definition
+
 ## [0.9.5-alpha.6] - 2024-03-01
 
 ### Added

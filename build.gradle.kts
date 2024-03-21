@@ -1,3 +1,4 @@
+
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
@@ -103,18 +104,18 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.16.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.8")
-    implementation("io.ktor:ktor-client-cio:2.3.8")
-    implementation("io.ktor:ktor-client-auth:2.3.8")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
-    implementation("io.ktor:ktor-server-core:2.3.8")
-    implementation("io.ktor:ktor-server-jetty:2.3.8")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
+    implementation("io.ktor:ktor-client-core:2.3.9")
+    implementation("io.ktor:ktor-client-cio:2.3.9")
+    implementation("io.ktor:ktor-client-auth:2.3.9")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.9")
+    implementation("io.ktor:ktor-server-core:2.3.9")
+    implementation("io.ktor:ktor-server-jetty:2.3.9")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.9")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-12")
@@ -238,7 +239,7 @@ intellij {
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
 // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 tasks.publishPlugin {
-    dependsOn("patchChangelog")
+//    dependsOn("patchChangelog")
     dependsOn("useLatestVersions")
 //    dependsOn("dependencyCheckAnalyze")
 
