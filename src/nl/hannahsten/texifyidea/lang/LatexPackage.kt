@@ -88,6 +88,7 @@ open class LatexPackage @JvmOverloads constructor(
         val VARIOREF = LatexPackage("varioref")
         val WASYSYM = LatexPackage("wasysym")
         val WIDETABLE = LatexPackage("widetable")
+        val XARGS = LatexPackage("xargs")
         val XCOLOR = LatexPackage("xcolor")
         val XPARSE = LatexPackage("xparse")
 
