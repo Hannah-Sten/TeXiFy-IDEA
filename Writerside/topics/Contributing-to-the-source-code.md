@@ -15,6 +15,21 @@ You can also look at previous pull requests for inspiration, for example [#2245]
 
 Note, if commands are just missing from the autocompletion, this is likely more complicated because these shouldn’t be hardcoded, but detected automatically.
 
+### Adding support for command: example
+Note: [#2245](https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/2245 presents it very clearly and if You just want to see some code, go that way. Stay here, if You want explanations.
+
+Let's use `\newcommandx` as our example. As the name suggests, this is alternative form of `\newcommand` with additional features.
+First, optional step: add the package the command is from to the list of predefined packages (if it's not already there). List is located in [nl/hannahsten/texifyidea/lang/LatexPackage](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/LatexPackage.kt)
+
+Second step: declare the command. Commands are declared in [src/nl/hannahsten/texifyidea/lang/commands](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/commands) package and in our example we are going to use [LatexNewDefinitionCommand](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/commands/LatexNewDefinitionCommand.kt) class.
+Other types of commands should go to respective classes (names should be self-explanatory).
+Add your command using the syntax analogous to the already existing commands.
+
+Third, and the last step: add handling for the command. Usual place is: [src/nl/hannahsten/texifyidea/util/magic](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/util/magic), with the class [CommandMagic](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/util/magic/CommandMagic.kt) in our example.
+Here we add `\newcommandx` to the `regularStrictCommandDefinitions`, which is the set of all standard command defining commands.
+
+And here You go: it's done (at least for this simple example)
+
 [//]: # (todo: separate topic?)
 ## Building from source
 

@@ -240,6 +240,7 @@ object CommandMagic {
         NEWCOMMAND_STAR.cmd,
         NEWIF.cmd,
         NEWDOCUMENTCOMMAND.cmd,
+        NEWCOMMANDX.cmd,
     )
 
     /**
@@ -252,6 +253,8 @@ object CommandMagic {
         DECLAREDOCUMENTCOMMAND,
         DEF,
         LET,
+        PROVIDECOMMANDX,
+        DECLAREROBUSTCOMMANDX,
     ).map { it.cmd }
 
     /**
@@ -261,6 +264,7 @@ object CommandMagic {
         RENEWCOMMAND,
         RENEWCOMMAND_STAR,
         CATCODE, // Not really redefining commands, but characters
+        RENEWCOMMANDX,
     ).map { it.cmd } + flexibleCommandDefinitions
 
     /**
@@ -312,6 +316,7 @@ object CommandMagic {
         DECLARETCOLORBOX,
         NEWTCOLORBOX_,
         PROVIDETCOLORBOX,
+        NEWENVIRONMENTX,
     ).map { it.cmd }
 
     /**
@@ -321,6 +326,7 @@ object CommandMagic {
         RENEWENVIRONMENT.cmd,
         RENEWTCOLORBOX.cmd,
         RENEWTCOLORBOX_.cmd,
+        RENEWENVIRONMENTX.cmd,
     )
 
     /**
