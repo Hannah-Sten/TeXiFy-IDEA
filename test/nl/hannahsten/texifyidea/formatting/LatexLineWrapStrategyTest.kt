@@ -96,4 +96,18 @@ class LatexLineWrapStrategyTest : BasePlatformTestCase() {
         """.trimIndent()
         myFixture.checkResult(expected)
     }
+
+    fun testParenthesisWrap() {
+        setUpTest()
+        val text = """
+            Lorem ipsum dolor amet (aaaaaaaa)
+        """.trimIndent()
+        myFixture.configureByText(LatexFileType, text)
+        myFixture.performEditorAction("ReformatCode")
+        val expected = """
+            Lorem ipsum dolor amet
+            (aaaaaaaa)
+        """.trimIndent()
+        myFixture.checkResult(expected)
+    }
 }
