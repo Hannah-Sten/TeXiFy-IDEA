@@ -78,6 +78,8 @@ fun BibtexContent.evaluate(): String {
         for (string in childrenOfType(BibtexString::class)) {
             val braced = string.bracedString
             val quoted = string.quotedString
+            val bracedVerbatim = string.bracedVerbatim
+            val quotedVerbatim = string.quotedVerbatim
             val defined = string.definedString
 
             if (braced != null) {
@@ -88,6 +90,12 @@ fun BibtexContent.evaluate(): String {
             }
             else if (defined != null) {
                 result += defined.evaluate()
+            }
+            else if (bracedVerbatim != null) {
+                result += bracedVerbatim.evaluate()
+            }
+            else if (quotedVerbatim != null) {
+                result += quotedVerbatim.evaluate()
             }
         }
 
@@ -164,3 +172,17 @@ fun BibtexQuotedString.evaluate(): String {
     val text = text
     return text.substring(1 until text.length - 1)
 }
+
+/**
+ * Returns the contents of the quoted verbatim string.
+ *
+ * E.g. `"Test Hello"` becomes `Test Hello`.
+ */
+fun BibtexQuotedVerbatim.evaluate(): String = text.substring(1 until text.length - 1)
+
+/**
+ * Returns the contents of the braced verbatim string.
+ *
+ * E.g. `{Test Hello}` becomes `Test Hello`.
+ */
+fun BibtexBracedVerbatim.evaluate(): String = text.substring(1 until text.length - 1)

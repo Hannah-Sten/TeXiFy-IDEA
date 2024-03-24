@@ -49,6 +49,8 @@ QUOTES="\""
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 TYPE_TOKEN=@[a-zA-Z_]+
+// BibTeX itself doesn't support % as a comment character (using it it the start of a line in an entry is illegal), but
+// biber explicitly supports it as a comment, so we do as well.
 COMMENT_TOKEN=%[^\r\n]*
 // Characters disallowed by bibtex or biber (non-ascii or not depends on LaTeX compiler)
 IDENTIFIER=[^,{}\(\)\"#%'=~\\ \n]+

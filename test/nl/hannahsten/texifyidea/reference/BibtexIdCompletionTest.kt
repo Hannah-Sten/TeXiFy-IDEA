@@ -27,7 +27,7 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         val entry1 = result.first { l -> l!!.lookupString == "Evans2015" }!!
         assertTrue(entry1.allLookupStrings.contains("Evans, Isaac"))
         assertTrue(entry1.allLookupStrings.contains("Evans2015"))
-        assertTrue(entry1.allLookupStrings.contains("Missing the Point(er): On the Effectiveness of Code Pointer Integrity"))
+        assertTrue(entry1.allLookupStrings.contains("{Missing the Point(er): On the Effectiveness of Code Pointer Integrity}"))
     }
 
     @Test
