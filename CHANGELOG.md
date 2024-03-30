@@ -403,11 +403,6 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
 [Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.6...HEAD
-[0.9.5-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.1...v0.9.5-alpha.2
-[0.9.5-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5-alpha.1
-[0.9.5-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.2...v0.9.5-alpha.3
-[0.9.5-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.3...v0.9.5-alpha.4
-[0.9.5-alpha.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.4...v0.9.5-alpha.6
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.2
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2

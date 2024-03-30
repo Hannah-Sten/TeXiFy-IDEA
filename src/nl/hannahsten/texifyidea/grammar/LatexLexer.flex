@@ -426,7 +426,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // We have to explicitly specify in which states the $ starts an inline math,
 // because definitely not in all states this should be the case (like inline math)
-<YYINITIAL,DISPLAY_MATH,PSEUDOCODE> {
+<YYINITIAL,DISPLAY_MATH,PSEUDOCODE,NEW_COMMAND_DEFINITION_PARAM2> {
     "$"                             { yypushState(INLINE_MATH); return INLINE_MATH_START; }
     {ROBUST_INLINE_MATH_START}      { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START; }
 }
