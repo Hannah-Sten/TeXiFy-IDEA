@@ -1,12 +1,9 @@
 package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.application.options.CodeStyle
-import com.intellij.execution.configurations.runConfigurationType
 import com.intellij.formatting.Wrap
 import com.intellij.formatting.WrapType
 import com.intellij.lang.ASTNode
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager
-import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 
 /**
  *
