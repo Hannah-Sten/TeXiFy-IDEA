@@ -26,7 +26,7 @@ When you spot unacceptable behavior, please report per the instructions in the C
 
 ## I just have a question!
 The fastest way to reach us is by starting a [GitHub Discussion](https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions).
-You can also reach us on the project's [Gitter chat](https://gitter.im/TeXiFy-IDEA) (just log in with your GitHub account).
+You can also reach us on the project's [Gitter chat](https://app.gitter.im/#/room/#TeXiFy-IDEA_Support:gitter.im) (just log in with your GitHub account).
 We will get notified directly if you post something there and we try to get back to you as soon as possible.
 
 ## Your first contribution

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TCOLORBOX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XARGS
 
 /**
  * @author Hannah Schellekens
@@ -31,6 +32,12 @@ enum class LatexNewDefinitionCommand(
     NEWTCOLORBOX_("NewTColorBox", "init options".asOptional(), "name".asRequired(), "specification".asRequired(), "options".asRequired(), dependency = TCOLORBOX),
     RENEWTCOLORBOX_("ReNewTColorBox", "init options".asOptional(), "name".asRequired(), "specification".asRequired(), "options".asRequired(), dependency = TCOLORBOX),
     PROVIDETCOLORBOX("ProvideTColorBox", "init options".asOptional(), "name".asRequired(), "specification".asRequired(), "options".asRequired(), dependency = TCOLORBOX),
+    NEWCOMMANDX("newcommandx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Argument.Type.TEXT), dependency = XARGS),
+    RENEWCOMMANDX("renewcommandx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Argument.Type.TEXT), dependency = XARGS),
+    PROVIDECOMMANDX("providecommandx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Argument.Type.TEXT), dependency = XARGS),
+    DECLAREROBUSTCOMMANDX("DeclareRobustCommandx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Argument.Type.TEXT), dependency = XARGS),
+    NEWENVIRONMENTX("newenvironmentx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Argument.Type.TEXT), "enddef".asRequired(Argument.Type.TEXT), dependency = XARGS),
+    RENEWENVIRONMENTX("renewenvironmentx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Argument.Type.TEXT), "enddef".asRequired(Argument.Type.TEXT), dependency = XARGS),
     ;
 
     override val identifier: String
