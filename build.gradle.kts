@@ -10,7 +10,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.17.2"
+    id("org.jetbrains.intellij") version "1.17.3"
     kotlin("jvm") version ("1.9.20")
     kotlin("plugin.serialization") version ("1.9.20")
 
@@ -30,7 +30,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.0.9"
+    id("org.owasp.dependencycheck") version "9.0.10"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
@@ -98,15 +98,15 @@ dependencies {
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.9.1")
+    implementation("org.codehaus.plexus:plexus-archiver:4.9.2")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.16.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.9")
