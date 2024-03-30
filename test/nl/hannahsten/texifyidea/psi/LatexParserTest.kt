@@ -254,6 +254,7 @@ class LatexParserTest : BasePlatformTestCase() {
                 \insertedObject
                 \begin{multicols}{2}
             }
+            \newcommand{\cmd}{${'$'}x\$}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
