@@ -39,13 +39,7 @@ fun BibtexEntry.getTagContent(tagName: String?): String {
 
     entryContent.tagList.forEach {
         if (tagName.equals(it.key.text, ignoreCase = true)) {
-            val text = it.content?.evaluate() ?: return ""
-
-            // Deal with braced strings.
-            return if (text.first() == '{' && text.last() == '}') {
-                text.substring(1, text.length - 1)
-            }
-            else text
+            return it.content?.evaluate() ?: ""
         }
     }
 
