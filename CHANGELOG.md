@@ -6,6 +6,49 @@
 
 ### Fixed
 
+## [0.9.5-alpha.8] - 2024-03-30
+
+### Added
+
+* Add \newcommandx and related commands from the xparse package, by @tmczar
+* Improve line wrapping by preferring line breaks at whitespace
+* Add support for the nomencl package
+* Add starred and capitalized versions of cleveref commands to exceptions for non-breaking space inspection, by @niknetniko
+* Add option to the run configuration settings to run LaTeX commands before compiling the main file
+* Autocompletion for compiler arguments in run configuration settings
+* Support a local Zotero instance in the remote libraries tool window via the BBT plugin
+* Support Zotero groups in the remote libraries tool window
+* Support local BibTeX files in the remote libraries tool window
+* Improve file filters for the LaTeX package index
+* Improve \DescribeMacro handling for the package doocumentation index
+* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
+* Add option to disable indentation of environments, by @slideclimb
+
+### Fixed
+
+* Fix quoted links in bibtex
+* Ignore \begin and \end commands in \newcommand definition in the parser
+* Fix a parser issue when having a single \begin or \end in a \newcommand definition
+* Fix exception #2976
+* Fix exception #3469
+* Avoid line breaks when reformatting in the middle of commands, math and words
+* Fix exception #3274 in the equation preview
+* Never use jlatexmath for the TikZ preview
+* Destroy invalid tokens for the remote libraries tool windows
+* Fix missing folding for commands in math environments, by @jojo2357
+* Fix an issue when inlining files with whitespace, by @jojo2357
+
+## [0.9.5-alpha.7] - 2024-03-09
+
+### Added
+
+* Add support for the nomencl package
+* Add starred and capitalized versions of cleveref commands to exceptions for non-breaking space inspection, by @niknetniko
+
+### Fixed
+
+* Fix a parser issue when having a single \begin or \end in a \newcommand definition
+
 ## [0.9.5-alpha.6] - 2024-03-01
 
 ### Added
@@ -393,12 +436,7 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.6...HEAD
-[0.9.5-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.1...v0.9.5-alpha.2
-[0.9.5-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5-alpha.1
-[0.9.5-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.2...v0.9.5-alpha.3
-[0.9.5-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.3...v0.9.5-alpha.4
-[0.9.5-alpha.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.4...v0.9.5-alpha.6
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.8...HEAD
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.2
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
