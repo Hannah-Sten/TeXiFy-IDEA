@@ -8,6 +8,47 @@ import org.jsoup.Jsoup
 
 class HtmlPasteProviderTest : BasePlatformTestCase() {
 
+    // Uses UI elements so cannot be run
+//    fun testTable() {
+//        myFixture.configureByText("main.tex", "")
+//        val html = """
+//            <body>
+//            <table cellspacing="0" border="0">
+//            	<colgroup span="2" width="85"></colgroup>
+//            	<tr>
+//            		<td height="17" align="left" valign=bottom>Column 1</td>
+//            		<td align="left" valign=bottom>Column 2</td>
+//            	</tr>
+//            	<tr>
+//            		<td height="17" align="left" valign=bottom>ABBR</td>
+//            		<td align="right" valign=bottom sdval="1.27" sdnum="1043;">1</td>
+//            	</tr>
+//            	<tr>
+//            		<td height="17" align="left" valign=bottom>DPTP</td>
+//            		<td align="right" valign=bottom sdval="1,18" sdnum="1043;">1,18</td>
+//            	</tr>
+//            </table>
+//            </body>
+//        """.trimIndent()
+//        val node = Jsoup.parse(html).select("body")[0]
+//        val latex = HtmlPasteProvider().convertHtmlToLatex(node, myFixture.file as LatexFile)
+//        TestCase.assertEquals("""
+//         \begin{table}
+//            \centering
+//            \begin{tabular}{ll}
+//                \toprule
+//                \textbf{Column 1} & \textbf{Column 2 cost} \\
+//                \midrule
+//                ABBR & 1.27 \\
+//                DPTP & 1,18 \\
+//                \bottomrule
+//            \end{tabular}
+//            \caption{}
+//            \label{tab:}
+//        \end{table}
+//        """.trimIndent(), latex)
+//    }
+
     fun testItalic() {
         myFixture.configureByText("main.tex", "")
         val html = "<i>italic</i>"

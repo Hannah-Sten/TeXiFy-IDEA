@@ -17,6 +17,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
             "b" to "\\textbf{",
             "u" to "\\underline{",
             "p" to "",
+            "body" to "",
             "ol" to "\\begin{enumerate}\n",
             "ul" to "\\begin{itemize}\n",
             "li" to "\\item ",
@@ -36,6 +37,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
             "b" to "}",
             "u" to "}",
             "p" to "\n\n",
+            "body" to "",
             "ol" to "\\end{enumerate}\n",
             "ul" to "\\end{itemize}\n",
             "li" to "\n",
@@ -74,10 +76,6 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         var latexString = ""
-        val environ = getCentering(htmlIn)
-        if (environ != "") {
-            latexString += "\\begin{$environ}"
-        }
 
         val prefix = getPrefix(htmlIn)
 
@@ -95,20 +93,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         else {
             prefix + content + postfix
         }
-
-        if (environ != "") {
-            latexString += "\\end{$environ}"
-        }
         return latexString
-    }
-
-    private fun getCentering(node: Node) = when {
-        node.attr("align") == "center" -> "center"
-        node.attr("align") == "left" -> "flushleft"
-        node.attr("align") == "right" -> "flushright"
-        // latex doesnt have native support here
-        // node.attr("align") == "justify" ->
-        else -> ""
     }
 
     private fun getPrefix(element: Element): String {
