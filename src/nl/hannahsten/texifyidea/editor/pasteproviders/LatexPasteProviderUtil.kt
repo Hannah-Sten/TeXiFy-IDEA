@@ -19,7 +19,8 @@ fun convertHtmlToLatex(nodes: List<Node>, latexFile: LatexFile): String {
     for (node in nodes) {
         if (node.childNodeSize() == 0) {
             when (node) {
-                is TextNode -> out += node.text()
+                // use wholeText to preserve newlines
+                is TextNode -> out += node.wholeText
                 is Element -> {
                     out += handleElement(node, latexFile)
                 }
