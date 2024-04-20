@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import nl.hannahsten.texifyidea.file.LatexFile
 import org.jsoup.nodes.Element
-import org.jsoup.nodes.Node
 
 class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
 
