@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.closingTags
-import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.escapeText
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.openingTags
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -20,10 +19,12 @@ fun convertHtmlToLatex(nodes: List<Node>, latexFile: LatexFile): String {
     for (node in nodes) {
         if (node.childNodeSize() == 0) {
             when (node) {
-                is TextNode -> out += escapeText(node.text())
+                // use wholeText to preserve newlines
+                is TextNode -> out += node.wholeText
                 is Element -> {
                     out += handleElement(node, latexFile)
                 }
+
                 else -> {
                     Log.error("Did not plan for " + node.javaClass.name + " please implement a case for this")
                 }
