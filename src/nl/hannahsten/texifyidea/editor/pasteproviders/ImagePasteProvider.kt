@@ -75,6 +75,8 @@ open class ImagePasteProvider : PasteProvider {
     }
 
     override fun isPastePossible(dataContext: DataContext): Boolean {
+        // If both paste providers could handle the content, prefer the one that handles the text instead of pasting the text as an image
+        if (HtmlPasteProvider().isPastePossible(dataContext)) return false
         val file = dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
         if (file.isLatexFile().not()) return false
 

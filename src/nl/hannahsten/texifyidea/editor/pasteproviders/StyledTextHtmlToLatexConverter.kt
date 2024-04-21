@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 
 import nl.hannahsten.texifyidea.file.LatexFile
 import org.jsoup.nodes.Element
-import org.jsoup.nodes.Node
 
 class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
 
@@ -13,6 +12,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
          */
         val openingTags = hashMapOf(
             "b" to "\\textbf{",
+            "body" to "",
             "br" to "\n",
             "em" to "\\textit{",
             "h1" to "\\chapter*{",
@@ -33,6 +33,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         val closingTags = hashMapOf(
             "a" to "}",
             "b" to "}",
+            "body" to "",
             "br" to "",
             "div" to "\n",
             "em" to "}",
@@ -54,10 +55,6 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         var latexString = ""
-        val environ = getCentering(htmlIn)
-        if (environ != "") {
-            latexString += "\\begin{$environ}"
-        }
 
         val prefix = getPrefix(htmlIn)
 
@@ -75,20 +72,7 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         else {
             prefix + content + postfix
         }
-
-        if (environ != "") {
-            latexString += "\\end{$environ}"
-        }
         return latexString
-    }
-
-    private fun getCentering(node: Node) = when {
-        node.attr("align") == "center" -> "center"
-        node.attr("align") == "left" -> "flushleft"
-        node.attr("align") == "right" -> "flushright"
-        // latex doesnt have native support here
-        // node.attr("align") == "justify" ->
-        else -> ""
     }
 
     private fun getPrefix(element: Element): String {
