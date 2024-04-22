@@ -2,6 +2,9 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
@@ -77,3 +80,11 @@ fun TextRange.toIntRange() = startOffset until endOffset
  * Easy access to [java.util.regex.Matcher.matches].
  */
 fun Pattern.matches(sequence: CharSequence?) = if (sequence != null) matcher(sequence).matches() else false
+
+fun runInBackground(project: Project?, description: String, function: (indicator: ProgressIndicator) -> Unit) {
+    ProgressManager.getInstance().run(object : Backgroundable(project, description) {
+        override fun run(indicator: ProgressIndicator) {
+            function(indicator)
+        }
+    })
+}
