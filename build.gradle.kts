@@ -93,7 +93,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.3.2")
-    implementation("org.slf4j:slf4j-simple:2.0.12")
+    implementation("org.slf4j:slf4j-simple:2.0.13")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
@@ -109,13 +109,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.9")
-    implementation("io.ktor:ktor-client-cio:2.3.9")
-    implementation("io.ktor:ktor-client-auth:2.3.9")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.9")
-    implementation("io.ktor:ktor-server-core:2.3.9")
-    implementation("io.ktor:ktor-server-jetty:2.3.9")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.9")
+    implementation("io.ktor:ktor-client-core:2.3.10")
+    implementation("io.ktor:ktor-client-cio:2.3.10")
+    implementation("io.ktor:ktor-client-auth:2.3.10")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.10")
+    implementation("io.ktor:ktor-server-core:2.3.10")
+    implementation("io.ktor:ktor-server-jetty:2.3.10")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.10")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-13")
@@ -125,9 +125,9 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.17")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:1.2.3")
-    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.3")
-    implementation("io.arrow-kt:arrow-resilience:1.2.3")
+    implementation("io.arrow-kt:arrow-core:1.2.4")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
+    implementation("io.arrow-kt:arrow-resilience:1.2.4")
 
     // Test dependencies
     // No version specified, it equals the kotlin version
