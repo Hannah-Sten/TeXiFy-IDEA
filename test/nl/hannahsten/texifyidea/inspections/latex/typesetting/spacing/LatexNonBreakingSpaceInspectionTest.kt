@@ -132,4 +132,25 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
             """.trimIndent()
         )
     }
+
+    fun `test no warning when using cleveref`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \documentclass{article}
+            \usepakackage{varioref}
+            \usepackage{cleveref}
+            \begin{document}
+                \begin{figure}
+                    Figure text.
+                    \caption{Caption}
+                    \label{fig:some-figure}
+                \end{figure}
+            
+                I ref \vref{fig:some-figure}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(false, false, true, false)
+    }
 }

@@ -37,7 +37,10 @@ class MakeindexCommandLineState(
 
         val command = ParametersListUtil.parse(commandLineArguments ?: "").apply {
             add(0, indexProgram.executableName)
-            add(indexFilename)
+            // The -o parameter overrides the output file name, so then we shouldn't append it a second time
+            if (commandLineArguments == null || commandLineArguments.contains("-o").not()) {
+                add(indexFilename)
+            }
         }
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)
 

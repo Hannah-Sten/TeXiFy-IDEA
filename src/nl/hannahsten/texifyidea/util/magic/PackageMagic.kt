@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEXTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MAKEIDX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MULTIND
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NOMENCL
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.REPEATINDEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITIDX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITINDEX
@@ -26,7 +27,7 @@ object PackageMagic {
      * All known packages which provide an index.
      */
     val index = hashSetOf(
-        MAKEIDX, MULTIND, INDEX, SPLITIDX, SPLITINDEX, IMAKEIDX, HVINDEX, IDXLAYOUT, REPEATINDEX, INDEXTOOLS
+        MAKEIDX, MULTIND, INDEX, SPLITIDX, SPLITINDEX, IMAKEIDX, HVINDEX, IDXLAYOUT, REPEATINDEX, INDEXTOOLS, NOMENCL
     )
 
     /**

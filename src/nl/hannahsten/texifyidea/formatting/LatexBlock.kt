@@ -57,7 +57,7 @@ class LatexBlock(
         if (child == null && (sectionIndent > 0 || fakeSectionIndent > 0)) {
             val block = LatexBlock(
                 myNode,
-                wrappingStrategy.getWrap(),
+                wrappingStrategy.getNormalWrap(myNode),
                 null,
                 spacingBuilder,
                 wrappingStrategy,
@@ -67,6 +67,7 @@ class LatexBlock(
             blocks.add(block)
         }
 
+        var isPreviousWhiteSpace = child != null && child.elementType !== TokenType.WHITE_SPACE && child !is PsiWhiteSpace
         // Create child blocks
         while (child != null) {
             val isSectionCommand =
@@ -86,7 +87,8 @@ class LatexBlock(
             if (child.elementType !== TokenType.WHITE_SPACE && child !is PsiWhiteSpace) {
                 val block = LatexBlock(
                     child,
-                    wrappingStrategy.getWrap(),
+                    // Only allow wrapping if the previous element is a white space.
+                    if (isPreviousWhiteSpace) wrappingStrategy.getNormalWrap(myNode) else wrappingStrategy.getNoneWrap(),
                     null,
                     spacingBuilder,
                     wrappingStrategy,
@@ -94,7 +96,9 @@ class LatexBlock(
                     newFakeSectionIndent
                 )
                 blocks.add(block)
+                isPreviousWhiteSpace = false
             }
+            else isPreviousWhiteSpace = true
             child = child.treeNext
         }
         return blocks

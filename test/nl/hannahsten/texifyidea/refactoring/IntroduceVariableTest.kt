@@ -3,8 +3,8 @@ package nl.hannahsten.texifyidea.refactoring
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.refactoring.introducecommand.ExtractExpressionUi
-import nl.hannahsten.texifyidea.util.parser.LatexExtractablePSI
 import nl.hannahsten.texifyidea.refactoring.introducecommand.withMockTargetExpressionChooser
+import nl.hannahsten.texifyidea.util.parser.LatexExtractablePSI
 
 class IntroduceVariableTest : BasePlatformTestCase() {
     fun testBasicCaret() = doTest(
@@ -166,9 +166,9 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         0,
         """
         \newcommand{\mycommand}{\begin{enumerate}
-                                    \item{Page Data: page id, namespace, title (File Schema: enwiki-latest-page.sql.gz)}
-                                    \item{Link Data: originating page, originating namespace, target page, target namespace (File Schema: enwiki-latest-pagelinks.sql.gz)}
-                                    \item{Redirect Data: originating page, originating namespace, target page, target namespace (File Schema: enwiki-latest-redirect.sql.gz)}
+        \item{Page Data: page id, namespace, title (File Schema: enwiki-latest-page.sql.gz)}
+        \item{Link Data: originating page, originating namespace, target page, target namespace (File Schema: enwiki-latest-pagelinks.sql.gz)}
+        \item{Redirect Data: originating page, originating namespace, target page, target namespace (File Schema: enwiki-latest-redirect.sql.gz)}
         \end{enumerate}}
     
         Hello Werld

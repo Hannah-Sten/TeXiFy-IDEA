@@ -23,7 +23,7 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
         journal = {GitHub},
         year = {2020},
         url = {$url},
-        biburl = {$url}
+        biburl = "$url"
     }"""
 
     private val entryElement by lazy {

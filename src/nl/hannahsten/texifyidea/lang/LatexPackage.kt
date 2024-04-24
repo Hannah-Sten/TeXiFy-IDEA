@@ -71,6 +71,7 @@ open class LatexPackage @JvmOverloads constructor(
         val NATBIB = LatexPackage("natbib")
         val NEWTXMATH = LatexPackage("newtxmath")
         val NTHEOREM = LatexPackage("ntheorem")
+        val NOMENCL = LatexPackage("nomencl")
         val PDFCOMMENT = LatexPackage("pdfcomment")
         val PYTHONTEX = LatexPackage("pythontex")
         val REPEATINDEX = LatexPackage("repeatindex")
@@ -87,6 +88,7 @@ open class LatexPackage @JvmOverloads constructor(
         val VARIOREF = LatexPackage("varioref")
         val WASYSYM = LatexPackage("wasysym")
         val WIDETABLE = LatexPackage("widetable")
+        val XARGS = LatexPackage("xargs")
         val XCOLOR = LatexPackage("xcolor")
         val XPARSE = LatexPackage("xparse")
 
