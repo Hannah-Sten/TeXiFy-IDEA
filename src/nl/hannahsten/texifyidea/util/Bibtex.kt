@@ -159,7 +159,6 @@ fun BibtexDefinedString.evaluate(): String {
  * E.g. `{{T}est $\alpha$ {H}ello}` becomes `{T}est $\alpha$ {H}ello`.
  */
 fun BibtexBracedString.evaluate(): String {
-    val text = text
     return text.substring(1 until text.length - 1)
 }
 
@@ -169,7 +168,6 @@ fun BibtexBracedString.evaluate(): String {
  * E.g. `"Test Hello"` becomes `Test Hello`.
  */
 fun BibtexQuotedString.evaluate(): String {
-    val text = text
     return text.substring(1 until text.length - 1)
 }
 

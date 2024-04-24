@@ -5,6 +5,7 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.NavigationItem
+import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexTag
 import nl.hannahsten.texifyidea.util.evaluate
@@ -17,7 +18,7 @@ open class BibtexStructureViewTagElement(val tag: BibtexTag) : StructureViewTree
 
     private val tagPresentation: PresentationData = object : PresentationData() {
 
-        override fun getLocationString() = tag.content?.evaluate().orEmpty()
+        override fun getLocationString() = runReadAction { tag.content?.evaluate().orEmpty() }
 
         override fun getPresentableText() = tag.keyName()
 
