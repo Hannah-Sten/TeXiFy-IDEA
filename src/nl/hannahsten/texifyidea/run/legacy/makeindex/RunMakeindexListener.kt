@@ -10,9 +10,9 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
-import nl.hannahsten.texifyidea.run.LatexTemplateConfigurationFactory
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.LatexTemplateConfigurationFactory
+import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
 import nl.hannahsten.texifyidea.run.step.getDefaultMakeindexPrograms
 import nl.hannahsten.texifyidea.run.step.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -111,7 +111,7 @@ class RunMakeindexListener(
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
 
         val usedPackages = runReadAction {
-            latexRunConfig.mainFile?.psiFile(environment.project)?.includedPackages() ?: emptySet()
+            latexRunConfig.options.mainFile.resolve()?.psiFile(environment.project)?.includedPackages() ?: emptySet()
         }
         val mainFile = latexRunConfig.options.mainFile.resolve()
         val indexPrograms = getDefaultMakeindexPrograms(mainFile, environment.project, usedPackages)
