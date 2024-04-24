@@ -44,12 +44,16 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
-        // If the outdirs do not exist, we assume this is because either something went wrong and an incorrect output path was filled in,
-        // or the user did not create a new project, for example by opening or importing existing resources,
-        // so they still need to be created.
-        if (runConfig.outputPath.virtualFile == null) {
-            runConfig.outputPath.getAndCreatePath()
-        }
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(
+            {
+                if (runConfig.outputPath.virtualFile == null) {
+                    runConfig.outputPath.getAndCreatePath()
+                }
+            },
+            "Creating Output Directories...",
+            false,
+            runConfig.project
+        )
 
         if (!runConfig.hasBeenRun) {
             // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
