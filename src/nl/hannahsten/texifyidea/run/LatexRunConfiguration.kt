@@ -57,7 +57,7 @@ class LatexRunConfiguration constructor(
     override fun clone(): LatexRunConfiguration {
         // Super already handles copying the options
         val new = super.clone() as? LatexRunConfiguration ?: LatexRunConfiguration(project, factory ?: LatexTemplateConfigurationFactory(latexRunConfigurationType()), name)
-        val newSteps = compileSteps.map { it.clone() }.toMutableList().onEach { it.configuration = new }
+        val newSteps = compileSteps.map { it.clone() }.onEach { it.configuration = new }
         new.compileSteps.clear()
         new.compileSteps.addAll(newSteps)
 
