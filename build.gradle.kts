@@ -182,6 +182,8 @@ changelog {
 }
 
 tasks.patchPluginXml {
+    dependsOn("patchChangelog")
+
     // Required to run pluginVerifier
     sinceBuild.set(properties("pluginSinceBuild"))
 
@@ -190,12 +192,7 @@ tasks.patchPluginXml {
         provider {
             with(changelog) {
                 renderItem(
-                    // When publishing alpha versions, we want the unreleased changes to be shown, otherwise we assume that patchChangelog has been run and we need to get the latest released version (otherwise it will show 'Unreleased' as title)
-                    if (properties("pluginVersion").split("-").size != 1) {
-                        changelog.getUnreleased()
-                    } else {
-                        getOrNull(properties("pluginVersion")) ?: getLatest()
-                    },
+                getOrNull(properties("pluginVersion")) ?: getLatest(),
                     Changelog.OutputType.HTML
                 )
             }
@@ -239,7 +236,6 @@ intellij {
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
 // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 tasks.publishPlugin {
-//    dependsOn("patchChangelog")
     dependsOn("useLatestVersions")
 //    dependsOn("dependencyCheckAnalyze")
 
