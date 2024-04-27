@@ -255,6 +255,10 @@ class LatexParserTest : BasePlatformTestCase() {
                 \begin{multicols}{2}
             }
             \newcommand{\cmd}{${'$'}x${'$'}}
+            
+            \AfterEndEnvironment{minted}{
+                \end{tcolorbox}
+            }
             """.trimIndent()
         )
         myFixture.checkHighlighting()

@@ -83,7 +83,8 @@ COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:0-9]+|.|\r) // _ and : are only LaTeX3 syntax
 LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage)
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
-NEWCOMMAND=\\(new|provide)command
+// BeforeBegin/AfterEnd are from etoolbox, and just happen to also have two parameters where the second can contain loose \begin or \end
+NEWCOMMAND=\\(new|provide)command | \\BeforeBeginEnvironment | \\AfterEndEnvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 
 // Verbatim commands which will be delimited by the same character
