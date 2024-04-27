@@ -192,7 +192,7 @@ tasks.patchPluginXml {
         provider {
             with(changelog) {
                 renderItem(
-                getOrNull(properties("pluginVersion")) ?: getLatest(),
+                    getOrNull(properties("pluginVersion")) ?: getLatest(),
                     Changelog.OutputType.HTML
                 )
             }
