@@ -126,24 +126,24 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             // Create xml mapper that doesn't fail on unknown properties. This allows us to only define the properties we need.
             val mapper = XmlMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-            with(URL(JETBRAINS_API_URL).openConnection() as HttpURLConnection) {
+            val connection = (URL(JETBRAINS_API_URL).openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
                 connectTimeout = 1000
                 readTimeout = 1000
+            }
 
-                val inputString: String = try {
-                    inputStream.reader().use { it.readText() }
-                }
-                catch (e: SocketTimeoutException) {
-                    return latestVersionCached
-                }
-                latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
-                    .category
-                    ?.maxByOrNull { it.version }
-                    ?: latestVersionCached
-
+            val inputString: String = try {
+                connection.inputStream.reader().use { it.readText() }
+            }
+            catch (e: SocketTimeoutException) {
                 return latestVersionCached
             }
+            latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
+                .category
+                ?.maxByOrNull { it.version }
+                ?: latestVersionCached
+
+            return latestVersionCached
         }
 
         val currentVersion by lazy {
