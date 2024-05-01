@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Don't remove forward slashes from file path when creating a file from the unresolved file intention
 
 ## [0.9.5-alpha.10] - 2024-04-27
 
@@ -29,7 +30,6 @@
 
 ### Fixed
 
-* Fix urls in quotes in bibtex
 * Fix exceptions #3510, #3462, #3512
 * Fix parse error when using \BeforeBeginEnvironment or \AfterEndEnvironment
 * Fix quoted links in bibtex

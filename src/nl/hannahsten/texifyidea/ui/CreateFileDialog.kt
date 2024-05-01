@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.*
-import nl.hannahsten.texifyidea.util.formatAsFileName
+import nl.hannahsten.texifyidea.util.formatAsFilePath
 import java.io.File
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -26,7 +26,7 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Field to enter the name of the new file.
-            val nameField = JTextField(newFileName.formatAsFileName())
+            val nameField = JTextField(newFileName.formatAsFilePath())
             // Field to select the folder/location of the new file.
             val pathField = TextFieldWithBrowseButton()
             pathField.text = currentFilePath ?: return@apply
