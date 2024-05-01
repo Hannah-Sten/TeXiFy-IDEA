@@ -8,6 +8,8 @@
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/Hannah-Sten/TeXiFy-IDEA.svg)](http://isitmaintained.com/project/Hannah-Sten/TeXiFy-IDEA "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/Hannah-Sten/TeXiFy-IDEA.svg)](http://isitmaintained.com/project/Hannah-Sten/TeXiFy-IDEA "Percentage of issues still open")
 
+<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.png" alt="JetBrains logo." width="170"></a>
+
 # TeXiFy-IDEA
 <sup><sub>(Pronounced as `/ˈtɛxɪfaɪ aɪˈdɪə/` with a greek letter Chi (χ), just as in LaTeX)</sub></sup>
 
