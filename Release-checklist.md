@@ -10,6 +10,7 @@
 - [ ] Delete alpha versions from changelog
 - [ ] runIDE and check the changelog is formatted correctly
 - [ ] Run publishPlugin
+- [ ] Re-exclude Sumatra dlls in build.gradle.kts
 - [ ] Merge PR
 - [ ] buildPlugin and release on GitHub, tag version: v0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone
