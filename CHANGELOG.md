@@ -5,9 +5,13 @@
 ### Added
 
 ### Fixed
-* Don't remove forward slashes from file path when creating a file from the unresolved file intention
 
-## [0.9.5-alpha.10] - 2024-04-27
+## [0.9.5] - 2024-05-01
+
+Welcome to TeXiFy IDEA 0.9.5! This release automatically translates HTML from the clipboard to LaTeX when pasting, by @jojo2357, and includes a lot of additions and bug fixes!
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
 
 ### Added
 
@@ -334,8 +338,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.10...HEAD
-[0.9.5-alpha.10]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5-alpha.10
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...HEAD
+[0.9.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.2
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
