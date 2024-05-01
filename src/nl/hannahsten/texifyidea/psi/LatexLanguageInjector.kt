@@ -12,12 +12,13 @@ import nl.hannahsten.texifyidea.util.camelCase
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.remove
 import java.util.*
 
 /**
- * Inject language based on magic comments.
+ * Inject language based on magic comments or environments.
  *
  * @author Sten Wessel
  */
@@ -34,6 +35,9 @@ class LatexLanguageInjector : LanguageInjector {
                 }
                 host.getEnvironmentName() == "lstlisting" -> {
                     host.beginCommand.getOptionalParameterMap().toStringMap().getOrDefault("language", null)
+                }
+                host.getEnvironmentName() == "minted" && host.beginCommand.requiredParameters().size >= 2 -> {
+                    host.beginCommand.requiredParameters()[1].text
                 }
                 host.getEnvironmentName() in EnvironmentMagic.languageInjections.keys -> {
                     EnvironmentMagic.languageInjections[host.getEnvironmentName()]
