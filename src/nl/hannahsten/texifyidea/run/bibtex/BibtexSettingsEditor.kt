@@ -53,8 +53,8 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         runConfig.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
         runConfig.compilerArguments = compilerArguments.component.text
         runConfig.environmentVariables = environmentVariables.envData
-        runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
-        runConfig.bibWorkingDir = LocalFileSystem.getInstance().findFileByPath(bibWorkingDir.component.text)
+        runConfig.mainFile = if (mainFile.component.text.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(mainFile.component.text) else null
+        runConfig.bibWorkingDir = if (bibWorkingDir.component.text.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(bibWorkingDir.component.text) else null
     }
 
     private fun createUIComponents() {
