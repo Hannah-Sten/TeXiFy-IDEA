@@ -48,8 +48,10 @@ fun PsiFile.findInclusions(): List<PsiFile> {
 /**
  * Checks if the file has LaTeX syntax.
  */
-fun PsiFile.isLatexFile() = fileType == LatexFileType ||
-    fileType == StyleFileType || fileType == ClassFileType
+fun PsiFile.isLatexFile() = virtualFile.isLatexFile()
+
+fun VirtualFile.isLatexFile() = fileType == LatexFileType ||
+        fileType == StyleFileType || fileType == ClassFileType
 
 /**
  * Checks if the file has a `.sty` extention. This is a workaround for file type checking.
