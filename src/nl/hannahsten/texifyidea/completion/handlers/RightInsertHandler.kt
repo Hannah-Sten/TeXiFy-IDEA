@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.editor.Editor
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexDelimiterCommand
 import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 
 /**
@@ -17,24 +18,14 @@ open class RightInsertHandler : InsertHandler<LookupElement> {
     override fun handleInsert(context: InsertionContext, element: LookupElement) {
         val editor = context.editor
         val command = element.`object` as? LatexCommand ?: return
-        val name = command.command
 
-        when {
-            name.startsWith("left") -> insertRightBraceCommand(name, editor)
-            name == "langle" -> insertRightCommand(editor, "\\rangle", spacing = " ")
-            name == "lq" -> insertRightCommand(editor, "\\rq", spacing = "", suffix = "{}")
+        if (command is LatexDelimiterCommand && command.isLeft) {
+            insertRightCommand(editor, command)
         }
     }
 
-    private fun insertRightBraceCommand(commandName: String, editor: Editor) {
-        val char = commandName.substring(4)
-        val opposite = TypographyMagic.braceOpposites[char] ?: return
-        editor.document.insertString(editor.caretModel.offset, "  \\right$opposite")
+    private fun insertRightCommand(editor: Editor, leftCommand: LatexDelimiterCommand) {
+        editor.document.insertString(editor.caretModel.offset, "  \\" + leftCommand.matchingName)
         editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
-    }
-
-    private fun insertRightCommand(editor: Editor, rightCommand: String, spacing: String = "", suffix: String = "") {
-        editor.document.insertString(editor.caretModel.offset, "$suffix$spacing$spacing$rightCommand$suffix")
-        editor.caretModel.moveToOffset(editor.caretModel.offset + spacing.length + suffix.length)
     }
 }
