@@ -63,6 +63,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
     override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
         val articlePath = runCommand("$homePath/kpsewhich", "article.sty") ?: return null
+        if (articlePath.isBlank()) return null
         // Assume article.sty is in tex/latex/base/article.sty
         return LocalFileSystem.getInstance().findFileByPath(articlePath)?.parent?.parent
     }

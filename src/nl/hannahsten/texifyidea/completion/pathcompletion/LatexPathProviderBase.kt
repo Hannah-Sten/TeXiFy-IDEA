@@ -122,6 +122,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add completion entries for absolute path
      */
     private fun addAbsolutePathCompletion(baseDir: String) {
+        if (baseDir.isBlank()) return
         LocalFileSystem.getInstance().findFileByPath(baseDir)?.let { dirFile ->
             if (searchFolders()) {
                 addFolderNavigations(baseDir)

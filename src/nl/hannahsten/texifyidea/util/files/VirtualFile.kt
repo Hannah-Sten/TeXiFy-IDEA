@@ -19,6 +19,7 @@ fun VirtualFile.psiFile(project: Project): PsiFile? {
 }
 
 fun VirtualFile.findVirtualFileByAbsoluteOrRelativePath(filePath: String): VirtualFile? {
+    if (filePath.isBlank()) return null
     val isAbsolute = File(filePath).isAbsolute
     return if (!isAbsolute) {
         findFileByRelativePath(filePath)
@@ -66,6 +67,7 @@ fun findVirtualFileByAbsoluteOrRelativePath(path: String, project: Project): Vir
  * @return The matching file, or `null` when the file couldn't be found.
  */
 fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList()): VirtualFile? {
+    if (filePath.isBlank()) return null
     try {
         val isAbsolute = File(filePath).isAbsolute
         var file = if (!isAbsolute) {
