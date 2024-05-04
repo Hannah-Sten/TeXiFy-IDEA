@@ -170,7 +170,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add file to autocompletion dialog
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
-        if (validExtensions != null) {
+        if (validExtensions != null && validExtensions!!.isNotEmpty() && validExtensions!![0].isNotEmpty()) {
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 
