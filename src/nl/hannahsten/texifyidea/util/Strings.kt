@@ -82,7 +82,7 @@ fun String.getIndent(): String {
 fun String.appendExtension(extensionWithoutDot: String): String {
     if (extensionWithoutDot == "") return this
 
-    val dottedExtension = ".${extensionWithoutDot}"
+    val dottedExtension = ".$extensionWithoutDot"
     val thisLower = lowercase(Locale.getDefault())
 
     return when {
