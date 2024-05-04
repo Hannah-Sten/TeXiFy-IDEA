@@ -15,7 +15,10 @@ import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parents
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
-import nl.hannahsten.texifyidea.file.*
+import nl.hannahsten.texifyidea.file.BibtexFileType
+import nl.hannahsten.texifyidea.file.ClassFileType
+import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
@@ -24,7 +27,8 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
@@ -50,8 +54,7 @@ fun PsiFile.findInclusions(): List<PsiFile> {
  */
 fun PsiFile.isLatexFile() = virtualFile.isLatexFile()
 
-fun VirtualFile.isLatexFile() = fileType == LatexFileType ||
-        fileType == StyleFileType || fileType == ClassFileType
+fun VirtualFile.isLatexFile() = fileType == LatexFileType || fileType == StyleFileType || fileType == ClassFileType
 
 /**
  * Checks if the file has a `.sty` extention. This is a workaround for file type checking.
