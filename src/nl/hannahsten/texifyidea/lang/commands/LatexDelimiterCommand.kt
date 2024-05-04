@@ -18,7 +18,7 @@ enum class LatexDelimiterCommand(
 ) : LatexCommand {
 
     LEFT_PARENTH("left(", "right)", display = "("),
-    RIGHT_PARENTH("right)", "right)", display = ")"),
+    RIGHT_PARENTH("right)", "left(", display = ")"),
     LEFT_BRACKET("left[", "right]", display = "["),
     RIGHT_BRACKET("right]", "left[", display = "]"),
     LEFT_BRACE("left\\{", "right\\}", display = "{"),

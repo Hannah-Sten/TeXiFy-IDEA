@@ -6,7 +6,6 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.editor.Editor
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexDelimiterCommand
-import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 
 /**
  * Inserts the right part of left-right command pairs, like `\left( \right)`.
