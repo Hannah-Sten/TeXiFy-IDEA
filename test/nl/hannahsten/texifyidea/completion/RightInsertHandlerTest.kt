@@ -8,8 +8,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 class RightInsertHandlerTest : BasePlatformTestCase() {
     fun testLeftRightBraces() {
         myFixture.configureByText(LatexFileType, """$\lef<caret> $""")
-        myFixture.complete(CompletionType.BASIC
-        )
+        myFixture.complete(CompletionType.BASIC)
         myFixture.finishLookup(Lookup.NORMAL_SELECT_CHAR)
         myFixture.checkResult("""$\left( <caret> \right) $""")
     }
