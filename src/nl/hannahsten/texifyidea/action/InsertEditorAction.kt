@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.parser.isLatexOrBibtex
