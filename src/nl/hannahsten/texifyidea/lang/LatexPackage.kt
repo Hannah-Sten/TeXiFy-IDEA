@@ -67,6 +67,7 @@ open class LatexPackage @JvmOverloads constructor(
         val MARVOSYM = LatexPackage("marvosym")
         val MATHABX = LatexPackage("mathabx")
         val MATHTOOLS = LatexPackage("mathtools")
+        val MINTED = LatexPackage("minted")
         val MULTIND = LatexPackage("multind")
         val NATBIB = LatexPackage("natbib")
         val NEWTXMATH = LatexPackage("newtxmath")

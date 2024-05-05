@@ -3,13 +3,9 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
-import com.intellij.codeInsight.lookup.AutoCompletionPolicy
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.util.ProcessingContext
-import nl.hannahsten.texifyidea.TexifyIcons
-
 
 /**
  * @author Hannah Schellekens
@@ -616,12 +612,11 @@ class LatexMintedLanguage(
     fun createLookupElement(): List<LookupElement> {
         return languageAbbr.map {
             LookupElementBuilder.create(it)
-                .withPresentableText(it)
+                .withPresentableText(languageName)
                 .bold()
                 .withLookupStrings(listOf(languageName))
-                .withTailText(" ($languageName)", false)
                 .withCaseSensitivity(false)
-                .withAutoCompletionPolicy(AutoCompletionPolicy.ALWAYS_AUTOCOMPLETE)
+                .withTypeText(it)
         }
     }
 }
