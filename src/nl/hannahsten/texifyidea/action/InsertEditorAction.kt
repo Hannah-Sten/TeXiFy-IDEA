@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.parser.isLatexOrBibtex
 
@@ -43,10 +44,10 @@ open class InsertEditorAction(
         val start = selection.selectionStart
         val end = selection.selectionEnd
 
-        // Don't touch any file content that is not related to TeXiFy
-        if (file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() != true) return
-
-        runWriteAction(project, file) { insert(document, start, end, editor.caretModel) }
+        // Only touch files that are either LaTeX files or have LaTeX content in them
+        if (file.isLatexFile() || file.psiFile(project)?.findElementAt(start)?.isLatexOrBibtex() == true) {
+            runWriteAction(project, file) { insert(document, start, end, editor.caretModel) }
+        }
     }
 
     private fun insert(document: Document, start: Int, end: Int, caretModel: CaretModel) {
