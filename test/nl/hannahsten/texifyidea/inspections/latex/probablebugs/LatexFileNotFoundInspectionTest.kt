@@ -40,7 +40,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun testValidAbsolutePathCaps() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myOtherPicture.PNG}""")
+        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture.PNG}""")
         myFixture.checkHighlighting()
     }
 
@@ -86,7 +86,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun testDefaultUpperCaseExtensionCompletion() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myOtherPicture}""")
+        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture}""")
         myFixture.checkHighlighting()
     }
 
