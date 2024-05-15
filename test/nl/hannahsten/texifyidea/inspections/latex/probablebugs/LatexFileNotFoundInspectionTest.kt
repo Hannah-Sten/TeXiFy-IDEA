@@ -31,7 +31,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     @Test
-    fun testInvalidAbsolutePath() {
+    fun testMissingAbsolutePath() {
         myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.myinvalidextension</error>}""")
         myFixture.checkHighlighting()
     }
@@ -39,6 +39,15 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     @Test
     fun testValidAbsolutePath() {
         myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.png</error>}""")
+
+        assertFails {
+            myFixture.checkHighlighting()
+        }
+    }
+
+    @Test
+    fun testValidAbsolutePathCaps() {
+        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myOtherPicture.PNG</error>}""")
 
         assertFails {
             myFixture.checkHighlighting()
@@ -78,12 +87,42 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     @Test
+    fun testUpperCaseAbsoluteGraphicsDirWithInclude() {
+        myFixture.copyFileToProject("myOtherPicture.PNG")
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \graphicspath{{$absoluteWorkingPath/test/resources/completion/path/}}
+            \includegraphics{myOtherPicture}
+            """.trimIndent()
+        )
+
+        myFixture.checkHighlighting()
+    }
+
+    @Test
     fun testDefaultExtensionCompletion() {
         myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture</error>}""")
 
         assertFails {
             myFixture.checkHighlighting()
         }
+    }
+
+    @Test
+    fun testDefaultUpperCaseExtensionCompletion() {
+        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myOtherPicture</error>}""")
+
+        assertFails {
+            myFixture.checkHighlighting()
+        }
+    }
+
+    @Test
+    fun testDefaultMixedCaseExtensionCompletion() {
+        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myBadPicture</error>}""")
+
+        myFixture.checkHighlighting()
     }
 
     @Test
