@@ -8,7 +8,7 @@ import com.intellij.refactoring.rename.RenameDialog
 import com.intellij.refactoring.rename.RenamePsiElementProcessor
 import com.intellij.refactoring.rename.RenamePsiFileProcessor.PsiFileRenameDialog
 
-class LatexRenameProcessor: RenamePsiElementProcessor() {
+class LatexRenameProcessor : RenamePsiElementProcessor() {
     override fun canProcessElement(element: PsiElement): Boolean {
         return when (element) {
             is PsiFile -> true
