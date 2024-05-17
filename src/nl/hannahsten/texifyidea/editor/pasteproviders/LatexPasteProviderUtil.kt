@@ -4,7 +4,6 @@ import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConve
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.openingTags
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
@@ -26,7 +25,8 @@ fun convertHtmlToLatex(nodes: List<Node>, latexFile: LatexFile): String {
                 }
 
                 else -> {
-                    Log.error("Did not plan for " + node.javaClass.name + " please implement a case for this")
+                    // We don't know what is in there, but it is probably not text so skip it
+                    continue
                 }
             }
         }
