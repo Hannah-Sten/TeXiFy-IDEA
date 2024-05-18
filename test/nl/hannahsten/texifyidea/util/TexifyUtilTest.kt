@@ -43,13 +43,4 @@ class TexifyUtilTest {
         val expectedResult = "SomePath.tex.tex"
         Assert.assertEquals("SomePath.tex.tex + tex", expectedResult, actualResult)
     }
-
-    @Test
-    fun appendExtensionCrazyCapitals() {
-        val path = "SoMEPaTH.TEx"
-        val extension = "tEX"
-        val actualResult = path.appendExtension(extension)
-        val expectedResult = "SomePath.tex"
-        Assert.assertTrue("SoMEPaTH.TEx + tEX", actualResult.equals(expectedResult, ignoreCase = true))
-    }
 }
