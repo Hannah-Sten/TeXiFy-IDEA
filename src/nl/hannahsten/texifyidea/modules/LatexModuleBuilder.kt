@@ -54,6 +54,7 @@ class LatexModuleBuilder : ModuleBuilder() {
 
         for (sourcePath in sourcePaths) {
             val path = sourcePath.first
+            if (path.isBlank()) continue
             File(path).mkdirs()
             val sourceRoot = fileSystem.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path))
 
@@ -69,6 +70,7 @@ class LatexModuleBuilder : ModuleBuilder() {
         // Create source directory.
         for (sourcePath in sourcePaths) {
             val path = sourcePath.first
+            if (path.isBlank()) continue
             File(path).mkdirs()
 
             val fileName = FileUtil.toSystemIndependentName(path)

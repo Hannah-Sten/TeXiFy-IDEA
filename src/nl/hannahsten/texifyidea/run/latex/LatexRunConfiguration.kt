@@ -492,6 +492,10 @@ class LatexRunConfiguration(
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
      */
     fun setMainFile(mainFilePath: String) {
+        if (mainFilePath.isBlank()) {
+            this.mainFile = null
+            return
+        }
         val fileSystem = LocalFileSystem.getInstance()
         // Check if the file is valid and exists
         val mainFile = fileSystem.findFileByPath(mainFilePath)
