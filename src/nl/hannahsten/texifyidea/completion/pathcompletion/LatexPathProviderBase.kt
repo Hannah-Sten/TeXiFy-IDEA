@@ -122,7 +122,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add completion entries for absolute path
      */
     private fun addAbsolutePathCompletion(baseDir: String) {
-        LocalFileSystem.getInstance().findFileByPath(baseDir)?.let { dirFile ->
+        LocalFileSystem.getInstance().refreshAndFindFileByPath(baseDir)?.let { dirFile ->
             if (searchFolders()) {
                 addFolderNavigations(baseDir)
                 getContents(dirFile, true).forEach {
@@ -272,18 +272,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * search in given path for subfiles or directories
      */
     private fun getContents(base: VirtualFile?, directory: Boolean): List<VirtualFile> {
-        val contents = java.util.ArrayList<VirtualFile>()
-
-        if (base == null) {
-            return contents
-        }
-
-        for (file in base.children) {
-            if (file.isDirectory == directory) {
-                contents.add(file)
-            }
-        }
-
-        return contents
+        return base?.children?.filter { it.isDirectory == directory } ?: mutableListOf()
     }
 }
