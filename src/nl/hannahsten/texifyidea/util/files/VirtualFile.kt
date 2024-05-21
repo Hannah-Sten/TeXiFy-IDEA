@@ -76,7 +76,7 @@ fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList(
         else {
             LocalFileSystem.getInstance().findFileByPath(filePath)
         }
-        if (file != null && !file.isDirectory) return file
+        if (file != null && !file.isDirectory && (extensions.isEmpty() || file.extension in extensions)) return file
 
         extensions.forEach { extension ->
             val lookFor = filePath.appendExtension(extension)

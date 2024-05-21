@@ -52,9 +52,8 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
         regex.append("(")
         for (extension in extensions) {
             regex.append("\\.")
-            val extensionLower = extension.lowercase(Locale.getDefault())
-            regex.append(extensionLower)
-            supportedExtensions.add(extensionLower)
+            regex.append(extension)
+            supportedExtensions.add(extension)
             if (extension != extensions[extensions.size - 1]) {
                 regex.append("|")
             }
