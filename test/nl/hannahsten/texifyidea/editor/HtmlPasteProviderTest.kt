@@ -82,4 +82,31 @@ class HtmlPasteProviderTest : BasePlatformTestCase() {
         val latex = HtmlPasteProvider().convertHtmlToLatex(node, myFixture.file as LatexFile)
         TestCase.assertEquals(result, latex)
     }
+
+    fun testList() {
+        myFixture.configureByText("main.tex", "")
+        // Source: pdf
+        val html = """
+            <!-- Version:0.9 -->
+            <html>
+            <body>
+            <!--StartFragment-->3. a list:
+            - one,
+            - two,
+            <!--EndFragment-->
+            </body>
+            </html>
+        """.trimIndent()
+        val result = """
+            
+            3. a list:
+            - one,
+            - two,
+
+
+        """.trimIndent()
+        val node = Jsoup.parse(html).select("body")[0]
+        val latex = HtmlPasteProvider().convertHtmlToLatex(node, myFixture.file as LatexFile)
+        TestCase.assertEquals(result, latex)
+    }
 }

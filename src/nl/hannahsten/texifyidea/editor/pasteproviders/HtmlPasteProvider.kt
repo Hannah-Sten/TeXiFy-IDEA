@@ -38,13 +38,13 @@ class HtmlPasteProvider : PasteProvider {
         val editor = project.currentTextEditor()?.editor ?: return
         val latexFile = dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile ?: return
 
-        // dont bother with expensive operations unless the gimmes have passed
-
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
-        val textToInsert = convertHtmlToLatex(Jsoup.parse(html).select("body")[0], latexFile)
+        // On Windows the content may have Windows-style line separators, which are not accepted by the editor
+        val textToInsert = convertHtmlToLatex(Jsoup.parse(html).select("body")[0], latexFile).replace("\r\n", "\n")
 
-        val writeAction = Runnable { EditorModificationUtil.insertStringAtCaret(editor, textToInsert) }
-        WriteCommandAction.runWriteCommandAction(project, writeAction)
+        WriteCommandAction.writeCommandAction(project).withName("Paste from Clipboard").compute<Unit, Throwable> {
+            EditorModificationUtil.insertStringAtCaret(editor, textToInsert)
+        }
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext) && TexifySettings.getInstance().htmlPasteTranslator != TexifySettings.HtmlPasteTranslator.DISABLED
