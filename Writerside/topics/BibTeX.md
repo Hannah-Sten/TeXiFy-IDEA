@@ -194,7 +194,7 @@ Introduction cites~\cite{knuth90}.
 \bibliography{references}
 ```
 
-`introduction.tex`
+`discrete_shape.tex`
 <!-- ```latex -->
 ```
 Discrete shape cites~\cite{goossens93}.
