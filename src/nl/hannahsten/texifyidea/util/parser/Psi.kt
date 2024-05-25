@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import kotlin.reflect.KClass
 
@@ -24,6 +25,8 @@ import kotlin.reflect.KClass
  * Get the offset where the psi element ends.
  */
 fun PsiElement.endOffset(): Int = textOffset + textLength
+
+fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(textOffset)
 
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
