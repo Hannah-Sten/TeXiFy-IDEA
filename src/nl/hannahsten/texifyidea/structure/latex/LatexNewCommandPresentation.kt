@@ -43,8 +43,9 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
         // Get the definition to show in place of the location string.
         locationString = when {
-            newCommand.commandToken.text == "\\" + LatexNewDefinitionCommand.NEWCOMMAND.command && required.size >= 2 -> required[1]
-            newCommand.commandToken.text == "\\" + LatexXparseCommand.NEWDOCUMENTCOMMAND.command && required.size >= 3 -> required[2]
+            newCommand.name == LatexNewDefinitionCommand.NEWCOMMAND.commandWithSlash && required.size >= 2 -> required[1]
+            newCommand.name == LatexNewDefinitionCommand.RENEWCOMMAND.commandWithSlash && required.size >= 2 -> required[1]
+            newCommand.name == LatexXparseCommand.NEWDOCUMENTCOMMAND.commandWithSlash && required.size >= 3 -> required[2]
             else -> ""
         }
     }
