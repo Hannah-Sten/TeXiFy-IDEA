@@ -14,7 +14,7 @@ class LatexOtherCommandPresentation(val command: LatexCommands, private val icon
 
     override fun getPresentableText() = command.name
 
-    override fun getLocationString() = command.lineNumber().toString()
+    override fun getLocationString() = command.containingFile.name + ":" + command.lineNumber().toString()
 
     override fun getIcon(b: Boolean) = icon
 }
