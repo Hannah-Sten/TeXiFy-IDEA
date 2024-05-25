@@ -4,7 +4,6 @@ import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.NEWCOMMAND
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.RENEWCOMMAND
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand

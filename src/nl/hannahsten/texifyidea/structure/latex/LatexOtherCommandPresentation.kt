@@ -2,9 +2,7 @@ package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.lineNumber
-import nl.hannahsten.texifyidea.util.parser.nextCommand
 import javax.swing.Icon
 
 /**
