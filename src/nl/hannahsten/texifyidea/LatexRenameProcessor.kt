@@ -12,7 +12,7 @@ class LatexRenameProcessor : RenamePsiElementProcessor() {
     override fun canProcessElement(element: PsiElement): Boolean {
         return when (element) {
             is PsiFile -> true
-            else -> true
+            else -> false
         }
     }
 
