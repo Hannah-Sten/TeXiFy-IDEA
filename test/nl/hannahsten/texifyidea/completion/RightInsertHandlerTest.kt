@@ -12,4 +12,11 @@ class RightInsertHandlerTest : BasePlatformTestCase() {
         myFixture.finishLookup(Lookup.NORMAL_SELECT_CHAR)
         myFixture.checkResult("""$\left( <caret> \right) $""")
     }
+
+    fun testLeftRightMatchingBraces() {
+        myFixture.configureByText(LatexFileType, """$\lef<caret> )$""")
+        myFixture.complete(CompletionType.BASIC)
+        myFixture.finishLookup(Lookup.NORMAL_SELECT_CHAR)
+        myFixture.checkResult("""$\left( <caret> )$""")
+    }
 }
