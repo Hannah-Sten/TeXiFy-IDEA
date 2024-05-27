@@ -12,8 +12,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     id("org.jetbrains.intellij") version "1.17.3"
     // Go to Settings | Languages & Frameworks | Kotlin, and click the Enable the K2-based Kotlin plugin checkbox to enable the new mod
-    kotlin("jvm") version ("2.0.0-RC2")
-    kotlin("plugin.serialization") version ("2.0.0-RC2")
+    kotlin("jvm") version ("2.0.0")
+    kotlin("plugin.serialization") version ("2.0.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.51.0"
