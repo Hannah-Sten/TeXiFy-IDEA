@@ -4,7 +4,6 @@ import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.highlighting.BraceMatchingUtil
 import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.openapi.editor.Editor
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexDelimiterCommand
