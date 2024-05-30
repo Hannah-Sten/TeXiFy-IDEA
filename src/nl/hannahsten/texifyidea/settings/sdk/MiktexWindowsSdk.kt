@@ -21,7 +21,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         var version: DefaultArtifactVersion? = null
     }
 
-    override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
+    override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.MIKTEX
 
     override fun getExecutableName(executable: String, homePath: String): String {
         val path = LatexSdkUtil.getPdflatexParentPath(Paths.get(homePath, "miktex").toString()) ?: return executable

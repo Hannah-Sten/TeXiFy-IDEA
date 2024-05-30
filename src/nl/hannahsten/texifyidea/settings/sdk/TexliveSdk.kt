@@ -90,7 +90,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
     override fun getInvalidHomeMessage(path: String) = "Could not find $path/bin/*/pdflatex"
 
-    override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
+    override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.TEXLIVE
 
     override fun getVersionString(sdkHome: String): String {
         return "TeX Live " + sdkHome.split("/").lastOrNull { it.isNotBlank() }
