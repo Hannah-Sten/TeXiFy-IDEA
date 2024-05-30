@@ -114,11 +114,6 @@ object PatternMagic {
     val htmlTag = RegexPattern.compile("""<.*?/?>""")!!
 
     /**
-     * Matches a LaTeX command that is the start of an \if-\fi structure.
-     */
-    val ifCommand = RegexPattern.compile("\\\\if[a-zA-Z@]*")!!
-
-    /**
      * Matches the begin and end commands of the cases and split environments.
      */
     val casesOrSplitCommands = Regex(
