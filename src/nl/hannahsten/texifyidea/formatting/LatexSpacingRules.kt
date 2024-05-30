@@ -2,16 +2,16 @@ package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CodeStyleSettings
-import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
-import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
 
@@ -49,6 +49,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             between(NORMAL_TEXT_WORD, NORMAL_TEXT_WORD).spaces(1)
             before(ENVIRONMENT_CONTENT).lineBreakInCode()
             before(PSEUDOCODE_BLOCK_CONTENT).lineBreakInCode()
+            before(IF_BLOCK_CONTENT).lineBreakInCode()
         }
 
         // Newline before certain algorithm pseudocode commands
@@ -73,6 +74,9 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
             )
             inPosition(parent = PSEUDOCODE_BLOCK, left = PSEUDOCODE_BLOCK_CONTENT, right = END_PSEUDOCODE_BLOCK).spacing(
+                Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+            )
+            inPosition(parent = IF_BLOCK, left = IF_BLOCK_CONTENT, right = END_IF).spacing(
                 Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
             )
         }

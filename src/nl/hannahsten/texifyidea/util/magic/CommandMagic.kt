@@ -432,16 +432,6 @@ object CommandMagic {
      */
     val bibliographyIncludeCommands = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }
 
-    @Suppress("unused")
-    val startIfs = hashSetOf(
-        IF, IFCAT, IFX,
-        IFCASE, IFNUM, IFODD,
-        IFHMODE, IFVMODE, IFMMODE,
-        IFINNER, IFDIM, IFVOID,
-        IFHBOX, IFVBOX, IFEOF,
-        IFTRUE, IFFALSE
-    ).map { it.cmd }
-
     /**
      * All commands that end if.
      */
