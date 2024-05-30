@@ -432,6 +432,7 @@ object CommandMagic {
      */
     val bibliographyIncludeCommands = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }
 
+    @Suppress("unused")
     val startIfs = hashSetOf(
         IF, IFCAT, IFX,
         IFCASE, IFNUM, IFODD,
@@ -445,6 +446,11 @@ object CommandMagic {
      * All commands that end if.
      */
     val endIfs = hashSetOf(FI.cmd)
+
+    /**
+     * All commands that at first glance look like \if-esque commands, but that actually aren't.
+     */
+    val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot", "\\ifcsvstrcmp")
 
     /**
      * List of all TeX style primitives.
