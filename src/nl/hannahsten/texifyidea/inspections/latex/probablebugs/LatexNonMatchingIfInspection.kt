@@ -3,18 +3,22 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.matches
+import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.previousCommand
 import java.util.*
 
@@ -38,11 +42,13 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         }
 
         // Find matches.
-        val stack = ArrayDeque<LatexCommands>()
-        val commands = file.commandsInFile().sortedBy { it.textOffset }
-        for (command in commands) {
-            val name = command.name
-            if (command.name in CommandMagic.endIfs) {
+        val stack = ArrayDeque<PsiElement>()
+        val commands = file.commandsInFile()
+        val ifs = file.childrenOfType<LeafPsiElement>().filter { it.elementType == LatexTypes.END_IF || it.elementType == LatexTypes.START_IF}
+        val all = (commands + ifs).sortedBy { it.textOffset }
+        for (command in all) {
+            val name = if (command is LatexCommands) command.name else command.text
+            if (command is LeafPsiElement && command.elementType == LatexTypes.END_IF) {
                 // Non-opened fi.
                 if (stack.isEmpty()) {
                     descriptors.add(
