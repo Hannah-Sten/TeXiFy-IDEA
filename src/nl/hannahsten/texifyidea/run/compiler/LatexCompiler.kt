@@ -389,8 +389,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             "--rm",
         )
 
-        if (isMiktex) {
-            parameterList += listOf(
+        parameterList += if (isMiktex) {
+            listOf(
                 "-v",
                 "miktex:/miktex/.miktex",
                 "-v",
@@ -398,7 +398,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             )
         }
         else {
-            parameterList += listOf(
+            listOf(
                 "-v",
                 "${mainFile.parent.path}:/workdir"
             )
