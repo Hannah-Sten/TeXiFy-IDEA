@@ -44,7 +44,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         // Find matches.
         val stack = ArrayDeque<PsiElement>()
         val commands = file.commandsInFile()
-        val ifs = file.childrenOfType<LeafPsiElement>().filter { it.elementType == LatexTypes.END_IF || it.elementType == LatexTypes.START_IF}
+        val ifs = file.childrenOfType<LeafPsiElement>().filter { it.elementType == LatexTypes.END_IF || it.elementType == LatexTypes.START_IF }
         val all = (commands + ifs).sortedBy { it.textOffset }
         for (command in all) {
             val name = if (command is LatexCommands) command.name else command.text
