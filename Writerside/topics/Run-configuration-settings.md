@@ -249,6 +249,12 @@ Custom output directories are supported.
 * You have to login to GitHub to use the Docker image: get a github token from [https://github.com/settings/tokens,](https://github.com/settings/tokens,) save it somewhere secure and run `echo my_token | docker login https://docker.pkg.github.com -u myusername --password-stdin`
   See [https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages) for more info.
 
+### Dockerized TeX Live
+
+Similar to the MiKTeX docker image, you can also use a texlive docker image if you have it installed.
+By default, the official `texlive/texlive` image is used.
+If you use IntelliJ, you can select a different image name by creating a LaTeX Docker SDK, see [Project configuration](Project-configuration.md#sdks).
+
 ### TeX Live from WSL
 
 _Since b0.6.10_
