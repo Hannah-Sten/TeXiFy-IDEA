@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.util.Function
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 
@@ -38,5 +39,10 @@ class LatexPostfixExpressionSelector(private val mathOnly: Boolean = false, priv
             LatexTypes.DISPLAY_MATH_END -> mutableListOf(context.firstParentOfType(LatexDisplayMath::class) as PsiElement)
             else -> mutableListOf(context)
         }
+    }
+
+    fun getTopMostExpression(element: PsiElement): PsiElement {
+        return getExpressions(element, element.containingFile.fileDocument, element.textOffset).firstOrNull()
+            ?: element
     }
 }
