@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.reference
 
-import com.intellij.execution.RunManager
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -15,12 +13,10 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvi
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import java.io.File
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -39,10 +35,6 @@ class InputFileReference(
     }
 
     companion object {
-
-        private val texinputs by lazy {
-            runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
-        }
 
         /**
          * Handle element rename, but taking into account whether the given
@@ -123,31 +115,7 @@ class InputFileReference(
         val rootDirectories = rootFiles.mapNotNull { it.parent }
 
         // Check environment variables
-        val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
-        val texinputsVariable = runManager.allConfigurationsList
-            .filterIsInstance<LatexRunConfiguration>()
-            .firstOrNull { it.mainFile in rootFiles }
-            ?.environmentVariables
-            ?.envs
-            ?.getOrDefault("TEXINPUTS", null)
-            // Not sure which of these takes precedence, or if they are joined together
-            ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
-            ?: texinputs
-
-        for (texInputPath in texinputsVariable?.trim('\'')?.split(File.pathSeparator)?.filter { it.isNotBlank() } ?: emptyList()) {
-            val path = texInputPath.trimEnd(File.pathSeparatorChar)
-            searchPaths.add(path.trimEnd('/'))
-            // See the kpathsea manual, // expands to subdirs
-            if (path.endsWith("//")) {
-                LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
-                    searchPaths.addAll(
-                        parent.allChildDirectories()
-                            .filter { it.isDirectory }
-                            .map { it.path }
-                    )
-                }
-            }
-        }
+        searchPaths += getTexinputsPaths(element.project, rootFiles, expandPaths = true, latexmkSearchDirectory = element.containingFile?.virtualFile?.parent)
 
         // BIBINPUTS
         // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
