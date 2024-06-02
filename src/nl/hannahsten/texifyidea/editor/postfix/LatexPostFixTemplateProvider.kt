@@ -1,11 +1,9 @@
 package nl.hannahsten.texifyidea.editor.postfix
 
 import com.intellij.codeInsight.completion.CompletionContributor
-import com.intellij.codeInsight.template.postfix.templates.JavaPostfixTemplateProvider
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplatesUtils
-import com.intellij.codeInsight.template.postfix.templates.editable.JavaEditablePostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.editable.PostfixTemplateEditor
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
@@ -13,7 +11,6 @@ import nl.hannahsten.texifyidea.editor.postfix.editable.LatexEditablePostfixTemp
 import nl.hannahsten.texifyidea.editor.postfix.editable.LatexPostfixTemplateEditor
 import nl.hannahsten.texifyidea.editor.postfix.editable.LatexPostfixTemplateExpressionCondition
 import org.jdom.Element
-import org.jetbrains.jps.model.java.JpsJavaSdkType
 
 class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContributor() {
 
@@ -51,6 +48,9 @@ class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContribu
         return if (templateToEdit == null) {
             LatexPostfixTemplateEditor(this)
         }
+        else if (templateToEdit is LatexEditablePostfixTemplate && !templateToEdit.isBuiltin) {
+            LatexPostfixTemplateEditor(this).apply { setTemplate(templateToEdit) }
+        }
         else null
     }
 
@@ -65,9 +65,9 @@ class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContribu
 
     override fun readExternalTemplate(id: String, name: String, template: Element): PostfixTemplate? {
         val liveTemplate = PostfixTemplatesUtils.readExternalLiveTemplate(template, this) ?: return null
-        val condition = PostfixTemplatesUtils.readExternalConditions(template) { condition: Element? -> LatexPostfixTemplateExpressionCondition.readExternal(condition!!) }.first()
+        val conditions = PostfixTemplatesUtils.readExternalConditions(template) { condition: Element? -> LatexPostfixTemplateExpressionCondition.readExternal(condition!!) }
 
-        return LatexEditablePostfixTemplate(id, name, liveTemplate, condition, this)
+        return LatexEditablePostfixTemplate(id, name, liveTemplate, conditions, this)
     }
 
     override fun writeExternalTemplate(template: PostfixTemplate, parentElement: Element) {

@@ -1,20 +1,19 @@
 package nl.hannahsten.texifyidea.editor.postfix.editable
 
 import com.intellij.codeInsight.template.postfix.templates.editable.PostfixTemplateExpressionCondition
-import com.intellij.psi.PsiExpression
+import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.editor.postfix.LatexPostfixExpressionSelector
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import org.jdom.Element
 
-sealed class LatexPostfixTemplateExpressionCondition : PostfixTemplateExpressionCondition<PsiExpression> {
+sealed class LatexPostfixTemplateExpressionCondition : PostfixTemplateExpressionCondition<PsiElement> {
 
     abstract fun expressionSelector(): LatexPostfixExpressionSelector
 
     companion object {
-        fun values() = listOf(
-            LatexPostfixTemplateDefaultExpressionCondition(),
+        fun selectableValues() = setOf(
             LatexPostfixTemplateTextOnlyExpressionCondition(),
-            LatexPostfixTemplateTextOnlyExpressionCondition()
+            LatexPostfixTemplateMathOnlyExpressionCondition()
         )
 
         fun readExternal(condition: Element): LatexPostfixTemplateExpressionCondition {
@@ -22,23 +21,9 @@ sealed class LatexPostfixTemplateExpressionCondition : PostfixTemplateExpression
             return when (id) {
                 LatexPostfixTemplateMathOnlyExpressionCondition.ID -> LatexPostfixTemplateMathOnlyExpressionCondition()
                 LatexPostfixTemplateTextOnlyExpressionCondition.ID -> LatexPostfixTemplateTextOnlyExpressionCondition()
-                else -> LatexPostfixTemplateDefaultExpressionCondition()
+                else -> throw IllegalStateException("Invalid condition $condition")
             }
         }
-    }
-}
-
-class LatexPostfixTemplateDefaultExpressionCondition : LatexPostfixTemplateExpressionCondition() {
-    override fun expressionSelector(): LatexPostfixExpressionSelector = LatexPostfixExpressionSelector()
-
-    override fun value(t: PsiExpression): Boolean = true
-
-    override fun getPresentableName(): String = ID
-
-    override fun getId(): String = ID
-
-    companion object {
-        const val ID = "default"
     }
 }
 
@@ -46,7 +31,7 @@ class LatexPostfixTemplateMathOnlyExpressionCondition : LatexPostfixTemplateExpr
 
     override fun expressionSelector(): LatexPostfixExpressionSelector = LatexPostfixExpressionSelector(mathOnly = true, textOnly = false)
 
-    override fun value(t: PsiExpression): Boolean = t.inMathContext()
+    override fun value(t: PsiElement): Boolean = t.inMathContext()
 
     override fun getPresentableName(): String = ID
 
@@ -61,7 +46,7 @@ class LatexPostfixTemplateTextOnlyExpressionCondition : LatexPostfixTemplateExpr
 
     override fun expressionSelector(): LatexPostfixExpressionSelector = LatexPostfixExpressionSelector(mathOnly = false, textOnly = true)
 
-    override fun value(t: PsiExpression): Boolean = !t.inMathContext()
+    override fun value(t: PsiElement): Boolean = !t.inMathContext()
 
     override fun getPresentableName(): String = ID
 
