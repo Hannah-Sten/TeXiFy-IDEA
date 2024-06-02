@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInsight.template.postfix.settings.PostfixTemplateEditorBase
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.grazie.utils.toSet
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
@@ -18,6 +19,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.isLatexProject
 import javax.swing.JComponent
+import javax.swing.JLabel
 import javax.swing.JPanel
 
 class LatexPostfixTemplateEditor(private val templateProvider: LatexPostFixTemplateProvider) :
@@ -25,6 +27,7 @@ class LatexPostfixTemplateEditor(private val templateProvider: LatexPostFixTempl
 
     private val panel: JPanel = FormBuilder.createFormBuilder()
         .addComponentFillVertically(myEditTemplateAndConditionsPanel, UIUtil.DEFAULT_VGAP)
+        .addComponent(JLabel("Use the Custom Postfix Templates plugin to create more complex postfix templates.").apply { setIcon(AllIcons.General.Information) })
         .panel
 
     override fun createTemplate(templateId: String, templateName: String): PostfixTemplate {
