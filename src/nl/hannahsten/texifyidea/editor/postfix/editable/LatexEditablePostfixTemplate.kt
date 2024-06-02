@@ -7,11 +7,11 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.editor.postfix.LatexPostFixTemplateProvider
 import nl.hannahsten.texifyidea.editor.postfix.LatexPostfixExpressionSelector
 
-class LatexEditablePostfixTemplate(templateId: String, templateName: String, template: TemplateImpl, conditions: Set<LatexPostfixTemplateExpressionCondition>, provider: LatexPostFixTemplateProvider)
-    : EditablePostfixTemplateWithMultipleExpressions<LatexPostfixTemplateExpressionCondition>(templateId, templateName, template, "", conditions, true, provider) {
+class LatexEditablePostfixTemplate(templateId: String, templateName: String, template: TemplateImpl, conditions: Set<LatexPostfixTemplateExpressionCondition>, provider: LatexPostFixTemplateProvider) :
+    EditablePostfixTemplateWithMultipleExpressions<LatexPostfixTemplateExpressionCondition>(templateId, templateName, template, "", conditions, true, provider) {
 
-        constructor(templateId: String, templateName: String, templateText: String, conditions: Set<LatexPostfixTemplateExpressionCondition>, provider: LatexPostFixTemplateProvider)
-            : this(templateId, templateName, createTemplateFromText(templateText), conditions, provider)
+    constructor(templateId: String, templateName: String, templateText: String, conditions: Set<LatexPostfixTemplateExpressionCondition>, provider: LatexPostFixTemplateProvider) :
+        this(templateId, templateName, createTemplateFromText(templateText), conditions, provider)
 
     override fun getExpressions(context: PsiElement, document: Document, offset: Int): MutableList<PsiElement> {
         return if (myExpressionConditions.isEmpty()) {
@@ -25,7 +25,6 @@ class LatexEditablePostfixTemplate(templateId: String, templateName: String, tem
     override fun getTopmostExpression(element: PsiElement): PsiElement {
         return getExpressions(element, element.containingFile.fileDocument, element.textOffset)
             .minByOrNull { it.textOffset }!!
-
     }
 
     override fun isBuiltin(): Boolean {

@@ -20,8 +20,8 @@ import nl.hannahsten.texifyidea.util.isLatexProject
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class LatexPostfixTemplateEditor(private val templateProvider: LatexPostFixTemplateProvider)
-    : PostfixTemplateEditorBase<LatexPostfixTemplateExpressionCondition>(templateProvider, createEditor(), true) {
+class LatexPostfixTemplateEditor(private val templateProvider: LatexPostFixTemplateProvider) :
+    PostfixTemplateEditorBase<LatexPostfixTemplateExpressionCondition>(templateProvider, createEditor(), true) {
 
     private val panel: JPanel = FormBuilder.createFormBuilder()
         .addComponentFillVertically(myEditTemplateAndConditionsPanel, UIUtil.DEFAULT_VGAP)

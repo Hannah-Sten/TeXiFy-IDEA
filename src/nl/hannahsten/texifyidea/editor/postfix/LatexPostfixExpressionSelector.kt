@@ -6,7 +6,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.util.Function
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 
