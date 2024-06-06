@@ -6,6 +6,14 @@
 
 ### Fixed
 
+## [0.9.7-alpha.1] - 2024-06-06
+
+### Added
+
+* Support TeX Live docker image
+* Formatter support for plain TeX \if-statements
+* Index files from the TEXINPUTS variable, for autocompletion
+
 ## [0.9.6] - 2024-06-01
 
 Welcome to TeXiFy IDEA 0.9.6! This release fixes an issue with the table insertion wizard, fixes pasting from a pdf file, and more.
@@ -358,7 +366,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7-alpha.1...HEAD
+[0.9.7-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7-alpha.1
 [0.9.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4

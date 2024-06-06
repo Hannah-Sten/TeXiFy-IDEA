@@ -147,9 +147,9 @@ object LatexmkRcFileFinder {
         if (projectDir?.isValid == false) return null
         projectDir?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
         projectDir?.findChild("latexmkrc")?.let { return getTexinputs(it) }
-        projectDir?.children?.forEach { directory ->
-            directory?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
-            directory?.findChild("latexmkrc")?.let { return getTexinputs(it) }
+        projectDir?.children?.forEach { childDir ->
+            childDir?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
+            childDir?.findChild("latexmkrc")?.let { return getTexinputs(it) }
         }
         return null
     }
