@@ -11,7 +11,8 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
         """.trimIndent()
     )
 
-    fun `test if not closed`() = testHighlighting("<warning descr=\"If statement should probably be closed with \\fi\">\\if</warning>")
+    // This is a parse error
+    fun `test if not closed`() = testHighlighting("<warning descr=\"If statement should probably be closed with \\fi\">\\if</warning><EOLError>")
 
     fun `test fi not opened`() = testHighlighting("<warning descr=\"No matching \\if-command found\">\\fi</warning>")
 
