@@ -27,7 +27,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "9.2.0"
@@ -118,7 +118,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-13")
+    implementation("org.apache.maven:maven-artifact:4.0.0-beta-3")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")

@@ -101,7 +101,7 @@ fun LatexCommands.nextCommand(): LatexCommands? {
  *
  * @return The previous command in the file, or `null` when there is no such command.
  */
-fun LatexCommands.previousCommand(): LatexCommands? {
+fun PsiElement.previousCommand(): LatexCommands? {
     val content = parentOfType(LatexNoMathContent::class) ?: return null
     val previous = content.previousSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null

@@ -18,7 +18,8 @@ class LatexPairedBraceMatcher : PairedBraceMatcher {
         BracePair(LatexTypes.OPEN_PAREN, LatexTypes.CLOSE_PAREN, false),
         BracePair(LatexTypes.OPEN_BRACE, LatexTypes.CLOSE_BRACE, false),
         BracePair(LatexTypes.OPEN_BRACKET, LatexTypes.CLOSE_BRACKET, false),
-        BracePair(LatexTypes.BEGIN_PSEUDOCODE_BLOCK, LatexTypes.END_PSEUDOCODE_BLOCK, false)
+        BracePair(LatexTypes.BEGIN_PSEUDOCODE_BLOCK, LatexTypes.END_PSEUDOCODE_BLOCK, false),
+        BracePair(LatexTypes.START_IF, LatexTypes.END_IF, false),
     )
 
     override fun getPairs() = bracePairs

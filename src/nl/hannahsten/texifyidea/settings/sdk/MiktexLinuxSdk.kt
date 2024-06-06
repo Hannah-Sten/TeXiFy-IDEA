@@ -21,7 +21,7 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         var version: String? = null
     }
 
-    override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
+    override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.MIKTEX
 
     override fun getExecutableName(executable: String, homePath: String): String {
         return "$homePath/$executable"

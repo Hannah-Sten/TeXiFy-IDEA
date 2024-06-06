@@ -230,6 +230,57 @@ fun Int?.ifPositiveAddTwo(): Int =
         """.trimIndent()
     }
 
+    fun testPlainIf() {
+        """
+            \ifx\mycmd\undefined
+            undefed
+            \else
+          \if\mycmd1
+          defed, 1
+          \else
+          defed
+          \fi
+            \fi
+        """.trimIndent() `should be reformatted to` """
+            \ifx
+                \mycmd\undefined
+                undefed
+            \else
+                \if
+                    \mycmd1
+                    defed, 1
+                \else
+                    defed
+                \fi
+            \fi
+        """.trimIndent()
+    }
+
+    fun testPlainUnknownIf() {
+        """
+            \ifx\mycmd\undefined
+            undefed
+            \else
+          \ifaxp\mycmd1%\ifaxp is not a known if
+          defed, 1
+          \else
+          defed
+          \fi
+            \fi
+        """.trimIndent() `should be reformatted to` """
+            \ifx
+                \mycmd\undefined
+                undefed
+            \else
+                \ifaxp\mycmd1%\ifaxp is not a known if
+                defed, 1
+            \else
+                defed
+            \fi
+            \fi
+        """.trimIndent()
+    }
+
     fun `test section used in command definition`() {
         """
             \documentclass{article}
