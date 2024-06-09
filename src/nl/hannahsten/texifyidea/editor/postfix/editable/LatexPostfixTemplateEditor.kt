@@ -27,7 +27,7 @@ class LatexPostfixTemplateEditor(private val templateProvider: LatexPostFixTempl
 
     private val panel: JPanel = FormBuilder.createFormBuilder()
         .addComponentFillVertically(myEditTemplateAndConditionsPanel, UIUtil.DEFAULT_VGAP)
-        .addComponent(JLabel("Use the Custom Postfix Templates plugin to create more complex postfix templates.").apply { setIcon(AllIcons.General.Information) })
+        .addComponent(JLabel("Use the Custom Postfix Templates plugin to create more complex postfix templates.").apply { icon = AllIcons.General.Information })
         .panel
 
     override fun createTemplate(templateId: String, templateName: String): PostfixTemplate {
