@@ -80,7 +80,7 @@ END_TOKEN="\\end"
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:0-9]+|.|\r) // _ and : are only LaTeX3 syntax
-LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage)
+LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage|ProvidesExplClass|ProvidesExplFile)
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 // BeforeBegin/AfterEnd are from etoolbox, and just happen to also have two parameters where the second can contain loose \begin or \end
