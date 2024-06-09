@@ -1,8 +1,16 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessNotCreatedException
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.files.*
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 import java.io.IOException
@@ -52,6 +60,10 @@ class SystemEnvironment {
         // Assumes version will be given in the format GNOME Document Viewer 3.34.2
         val evinceVersion: DefaultArtifactVersion by lazy {
             DefaultArtifactVersion("evince --version".runCommand()?.split(" ")?.lastOrNull() ?: "")
+        }
+
+        val texinputs by lazy {
+            runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
         }
     }
 }
@@ -145,4 +157,51 @@ private fun readInputStream(nonBlocking: Boolean, proc: Process): String {
         output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
     }
     return output
+}
+
+/**
+ * Collect texinputs from various places
+ *
+ * @param rootFiles If provided, filter run configurations
+ * @param expandPaths Expand subdirectories
+ */
+fun getTexinputsPaths(
+    project: Project,
+    rootFiles: Collection<VirtualFile>,
+    expandPaths: Boolean = true,
+    latexmkSearchDirectory: VirtualFile? = null
+): List<String> {
+    val searchPaths = mutableListOf<String>()
+    val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
+    val allConfigurations = runManager.allConfigurationsList
+        .filterIsInstance<LatexRunConfiguration>()
+    val selectedConfiguratios = if (rootFiles.isEmpty()) allConfigurations else allConfigurations.filter { it.mainFile in rootFiles }
+    val configurationTexinputsVariables = selectedConfiguratios.map { it.environmentVariables.envs }.mapNotNull { it.getOrDefault("TEXINPUTS", null) }
+    // Not sure which of these takes precedence, or if they are joined together
+    val texinputsVariables = configurationTexinputsVariables +
+        selectedConfiguratios.map { LatexmkRcFileFinder.getTexinputsVariable(latexmkSearchDirectory ?: project.guessProjectDir() ?: return@map null, it, project) } +
+        listOf(if (expandPaths) SystemEnvironment.texinputs else System.getenv("TEXINPUTS"))
+
+    for (texinputsVariable in texinputsVariables.filterNotNull()) {
+        for (texInputPath in texinputsVariable.trim('\'').split(File.pathSeparator).filter { it.isNotBlank() }) {
+            val path = texInputPath.trimEnd(File.pathSeparatorChar)
+            searchPaths.add(path.trimEnd('/'))
+            // See the kpathsea manual, // expands to subdirs
+            if (path.endsWith("//")) {
+                LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
+                    if (expandPaths) {
+                        searchPaths.addAll(
+                            parent.allChildDirectories()
+                                .filter { it.isDirectory }
+                                .map { it.path }
+                        )
+                    }
+                    else {
+                        searchPaths.add(parent.path)
+                    }
+                }
+            }
+        }
+    }
+    return searchPaths
 }
