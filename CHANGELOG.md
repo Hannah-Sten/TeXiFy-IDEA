@@ -6,6 +6,16 @@
 
 ### Fixed
 
+## [0.9.7-alpha.2] - 2024-06-09
+
+### Added
+
+* Add a simple editor for postfix templates, by @slideclimb
+* Add support for \ProvidesExpl(Class|File), by @Sirraide
+* Support TeX Live docker image
+* Formatter support for plain TeX \if-statements
+* Index files from the TEXINPUTS variable, for autocompletion
+
 ## [0.9.7-alpha.1] - 2024-06-06
 
 ### Added
@@ -366,8 +376,9 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7-alpha.1...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7-alpha.2...HEAD
 [0.9.7-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7-alpha.1
+[0.9.7-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7-alpha.1...v0.9.7-alpha.2
 [0.9.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
