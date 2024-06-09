@@ -39,4 +39,9 @@ class LatexPostfixExpressionSelector(private val mathOnly: Boolean = false, priv
             else -> mutableListOf(context)
         }
     }
+
+    fun getTopMostExpression(element: PsiElement): PsiElement {
+        return getExpressions(element, element.containingFile.fileDocument, element.textOffset).firstOrNull()
+            ?: element
+    }
 }

@@ -136,7 +136,8 @@ Currently available are commands for text decoration, and some commonly used mat
 
 ![math-postfix](math-postfix.gif)
 
-A list of available templates is in <ui-path>File | Settings | Editor | General | Postfix Completion</ui-path>, where you can edit the key of a template. If you want to add your own postfix templates, have a look at the [Custom Postfix Templates](https://plugins.jetbrains.com/plugin/9862-custom-postfix-templates) plugin. The plugin allows the creation of custom postfix templates for a number of languages, including Latex.
+A list of available templates is in <ui-path>File | Settings | Editor | General | Postfix Completion</ui-path>, where you can edit the key of a template. You can also add your own templates.
+For more advanced editing of postfix templates, have a look at the [Custom Postfix Templates](https://plugins.jetbrains.com/plugin/9862-custom-postfix-templates) plugin. The plugin allows the creation of custom postfix templates for a number of languages, including LaTeX.
 
 See also [https://www.jetbrains.com/help/idea/auto-completing-code.html#postfix_completion](https://www.jetbrains.com/help/idea/auto-completing-code.html#postfix_completion).
 
