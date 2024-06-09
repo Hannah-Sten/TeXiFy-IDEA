@@ -541,7 +541,7 @@ class LatexRunConfiguration(
             latexDistribution
         }
         else {
-            LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType() ?: LatexDistributionType.TEXLIVE
+            LatexSdkUtil.getLatexDistributionType(project) ?: LatexDistributionType.TEXLIVE
         }
     }
 

@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -71,6 +72,8 @@ open class WordCountAction : AnAction() {
         // Prefer texcount, I think it is slightly more accurate
         val dialog = if (SystemEnvironment.isAvailable("texcount")) {
             val root = psiFile.findRootFile().virtualFile
+            // Make sure the file is written to disk before running an external tool on it
+            FileDocumentManager.getInstance().apply { saveDocument(getDocument(root) ?: return@apply) }
             val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = File(root.parent.path))
             if (exitCode == 0 && output?.toIntOrNull() != null) {
                 makeDialog(psiFile, output.toInt())

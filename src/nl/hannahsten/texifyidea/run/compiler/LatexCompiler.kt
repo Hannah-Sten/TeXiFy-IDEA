@@ -292,28 +292,32 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
-        val moduleRoots = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
-            rootManager.contentSourceRoots
-        }
-        else {
+        val moduleRoots = if (runConfig.getLatexDistributionType().isDocker()) {
             emptyArray()
         }
+        else {
+            rootManager.contentSourceRoots
+        }
 
-        // If we used /miktex/work/out, an out directory would appear in the src folder on the host system
-        val dockerOutputDir = "/miktex/out"
-        val dockerAuxilDir = "/miktex/auxil"
-        val outputPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
+        val outputPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
+            // If we used /miktex/work/out, an out directory would appear in the src folder on the host system
+            "/miktex/out"
+        }
+        else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
+            "/out"
+        }
+        else {
             runConfig.outputPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
-        else {
-            dockerOutputDir
-        }
 
-        val auxilPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.auxilPath.getAndCreatePath()?.path?.toPath(runConfig)
+        val auxilPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
+            "/miktex/auxil"
+        }
+        else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
+            null
         }
         else {
-            dockerAuxilDir
+            runConfig.auxilPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
 
         val command = createCommand(
@@ -338,8 +342,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             return mutableListOf("bash", "-ic", wslCommand)
         }
 
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
-            createDockerCommand(runConfig, dockerAuxilDir, dockerOutputDir, mainFile, command)
+        if (runConfig.getLatexDistributionType().isDocker()) {
+            createDockerCommand(runConfig, auxilPath, outputPath, mainFile, command)
         }
 
         // Custom compiler arguments specified by the user
@@ -368,9 +372,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     }
 
     @Suppress("SameParameterValue")
-    private fun createDockerCommand(runConfig: LatexRunConfiguration, dockerAuxilDir: String, dockerOutputDir: String, mainFile: VirtualFile, command: MutableList<String>) {
-        // See https://hub.docker.com/r/miktex/miktex
-        "docker volume create --name miktex".runCommand()
+    private fun createDockerCommand(runConfig: LatexRunConfiguration, dockerAuxilDir: String?, dockerOutputDir: String?, mainFile: VirtualFile, command: MutableList<String>) {
+        val isMiktex = runConfig.getLatexDistributionType() == LatexDistributionType.MIKTEX
+
+        if (isMiktex) {
+            // See https://hub.docker.com/r/miktex/miktex
+            "docker volume create --name miktex".runCommand()
+        }
 
         // Find the sdk corresponding to the type the user has selected in the run config
         val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull { it.sdkType is DockerSdk }
@@ -379,20 +387,37 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),
             "run",
             "--rm",
-            "-v",
-            "miktex:/miktex/.miktex",
-            "-v",
-            "${mainFile.parent.path}:/miktex/work"
         )
 
-        // Avoid mounting the mainfile parent also to /miktex/work/out,
-        // because there may be a good reason to make the output directory the same as the source directory
-        if (runConfig.outputPath.getAndCreatePath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.outputPath.getAndCreatePath()?.path}:$dockerOutputDir"))
+        parameterList += if (isMiktex) {
+            listOf(
+                "-v",
+                "miktex:/miktex/.miktex",
+                "-v",
+                "${mainFile.parent.path}:/miktex/work"
+            )
+        }
+        else {
+            listOf(
+                "-v",
+                "${mainFile.parent.path}:/workdir"
+            )
         }
 
-        if (runConfig.auxilPath.getAndCreatePath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()?.path}:$dockerAuxilDir"))
+        if (dockerOutputDir != null) {
+            // Avoid mounting the mainfile parent also to /miktex/work/out,
+            // because there may be a good reason to make the output directory the same as the source directory
+            val outPath = runConfig.outputPath.getAndCreatePath()
+            if (outPath?.path != null && outPath != mainFile.parent) {
+                parameterList.addAll(listOf("-v", "${outPath.path}:$dockerOutputDir"))
+            }
+        }
+
+        if (dockerAuxilDir != null) {
+            val auxilPath = runConfig.auxilPath.getAndCreatePath()
+            if (auxilPath?.path != null && auxilPath != mainFile.parent) {
+                parameterList.addAll(listOf("-v", "${auxilPath.path}:$dockerAuxilDir"))
+            }
         }
 
         parameterList.add((sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName ?: "miktex:latest")

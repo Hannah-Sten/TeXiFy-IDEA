@@ -4,11 +4,13 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.isTestProject
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
@@ -58,6 +60,8 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         // Unfortunately, since .sty is a LaTeX file type, these will all be parsed, which will take an enormous amount of time.
         // Note that using project-independent getAdditionalRootsToIndex does not fix this
         roots.addAll(LatexSdkUtil.getSdkSourceRoots(project) { sdkType, homePath -> sdkType.getDefaultStyleFilesPath(homePath) })
+
+        roots.addAll(getTexinputsPaths(project, rootFiles = listOf(), expandPaths = false).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) })
         Log.debug("Indexing source roots $roots")
 
         return roots
