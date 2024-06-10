@@ -150,6 +150,7 @@ enum class DefaultEnvironment(
     LONGTBLR(environmentName = "longtblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
     LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
+    MINTED(environmentName = "minted", dependency = LatexPackage.MINTED),
     PYCODE(environmentName = "pycode", dependency = LatexPackage.PYTHONTEX),
     TALLTBLR(environmentName = "talltblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
     TBLR(environmentName = "tblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
