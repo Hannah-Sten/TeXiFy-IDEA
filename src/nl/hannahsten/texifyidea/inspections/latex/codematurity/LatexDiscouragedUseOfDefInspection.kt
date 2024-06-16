@@ -77,7 +77,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
             val startOFfset = command.textOffset
             val endOffset = max(cmd.textOffset + cmd.textLength, value.textOffset + value.textLength)
 
-            val numberArgumentsText = nArgs?.let { "[${nArgs}]" } ?: ""
+            val numberArgumentsText = nArgs?.let { "[$nArgs]" } ?: ""
             val valueText = if (value.text.startsWith("{") && value.text.endsWith("}")) value.text.drop(1).dropLast(1) else value.text
 
             document.replaceString(startOFfset, endOffset, "$commandName{${cmd.text}}$numberArgumentsText{$valueText}")
