@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -121,7 +122,10 @@ abstract class IndexUtilBase<T : PsiElement>(
             // Cached values may have become invalid over time, so do a double check to be sure (#2976)
             cache[project]?.get(scope)?.let { return runReadAction { it.mapNotNull { pointer -> pointer.element }.filter { it.isValid } } }
         }
-        val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
+        val result = getKeys(project).flatMap {
+            ProgressManager.checkCanceled()
+            getItemsByName(it, project, scope)
+        }
         runReadAction { cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() } }
         return result
     }

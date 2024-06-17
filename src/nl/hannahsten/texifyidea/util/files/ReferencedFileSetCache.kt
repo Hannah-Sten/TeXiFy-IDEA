@@ -1,5 +1,9 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -49,6 +53,8 @@ class ReferencedFileSetCache {
     companion object {
 
         private val mutex = Mutex()
+
+        private var cacheFillInProgress = false
     }
 
     /**
@@ -85,12 +91,12 @@ class ReferencedFileSetCache {
     private fun updateCachesFor(requestedFile: PsiFile) {
         val fileset = requestedFile.findReferencedFileSetWithoutCache()
         for (file in fileset) {
-            fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
+            fileSetCache[file.virtualFile] = fileset.map { runReadAction { it.createSmartPointer() } }.toSet()
         }
 
         val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
         for (file in fileset) {
-            rootFilesCache[file.virtualFile] = rootfiles.map { it.createSmartPointer() }.toSet()
+            rootFilesCache[file.virtualFile] = rootfiles.map { runReadAction { it.createSmartPointer() } }.toSet()
         }
     }
 
@@ -105,20 +111,33 @@ class ReferencedFileSetCache {
             runBlocking {
                 // Do NOT use a coroutine here, because then when typing (so the caller is e.g. gutter icons, inspections, line makers etc.) somehow the following (at least the runReadAction parts) will block the UI. Note that certain user-triggered actions (think run configuration) will still lead to this blocking the UI if not run in the background explicitly
                 mutex.withLock {
-                    // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
-                    // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
-                    val includes = LatexIncludesIndex.Util.getItems(file.project)
-                    val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
-                        numberOfIncludes[file.project] = includes.size
-                        dropAllCaches()
-                        true
-                    }
-                    else {
-                        false
-                    }
+                    if (!cacheFillInProgress) {
+                        // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
+                        // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
+                        val includes = LatexIncludesIndex.Util.getItems(file.project)
+                        val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
+                            numberOfIncludes[file.project] = includes.size
+                            dropAllCaches()
+                            true
+                        }
+                        else {
+                            false
+                        }
 
-                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
-                        updateCachesFor(file)
+                        if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
+                            cacheFillInProgress = true
+                            // Avoid blocking UI
+                            ProgressManager.getInstance().run(object : Task.Backgroundable(file.project, "Updating file set") {
+                                override fun run(indicator: ProgressIndicator) {
+                                    try {
+                                        updateCachesFor(file)
+                                    }
+                                    finally {
+                                        cacheFillInProgress = false
+                                    }
+                                }
+                            })
+                        }
                     }
                 }
             }

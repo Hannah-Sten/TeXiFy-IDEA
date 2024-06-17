@@ -28,7 +28,7 @@ internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
 
     // Find all root files.
     val roots = includes.asSequence()
-        .map { it.containingFile }
+        .map { runReadAction { it.containingFile } }
         .distinct()
         .filter { it.isRoot() }
         .toSet()
@@ -36,7 +36,7 @@ internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
     // Map root to all directly referenced files.
     val sets = HashMap<PsiFile, Set<PsiFile>>()
     for (root in roots) {
-        val referenced = runReadAction { root.referencedFiles(root.virtualFile) } + root
+        val referenced = root.referencedFiles(root.virtualFile) + root
 
         if (referenced.contains(this)) {
             return referenced + this
