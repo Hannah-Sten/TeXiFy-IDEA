@@ -1,11 +1,9 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.refactoring.suggested.createSmartPointer
@@ -127,16 +125,14 @@ class ReferencedFileSetCache {
                         if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                             cacheFillInProgress = true
                             // Avoid blocking UI
-                            ProgressManager.getInstance().run(object : Task.Backgroundable(file.project, "Updating file set") {
-                                override fun run(indicator: ProgressIndicator) {
-                                    try {
-                                        updateCachesFor(file)
-                                    }
-                                    finally {
-                                        cacheFillInProgress = false
-                                    }
+                            withBackgroundProgress(file.project, "Updating file set", cancellable = true) {
+                                try {
+                                    updateCachesFor(file)
                                 }
-                            })
+                                finally {
+                                    cacheFillInProgress = false
+                                }
+                            }
                         }
                     }
                 }
