@@ -15,7 +15,7 @@ class StartEvinceInverseSearchListener : ProjectActivity, DumbAware {
 
     override suspend fun execute(project: Project) {
         if (project.selectedRunConfig()?.pdfViewer == InternalPdfViewer.EVINCE ||
-            project.latexTemplateRunConfig()?.pdfViewer == InternalPdfViewer.EVINCE
+            (project.selectedRunConfig() == null && project.latexTemplateRunConfig()?.pdfViewer == InternalPdfViewer.EVINCE)
         ) {
             EvinceInverseSearchListener.start(project)
         }
