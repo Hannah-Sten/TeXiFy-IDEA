@@ -19,7 +19,9 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -88,6 +90,13 @@ fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
  */
 fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
     RunManager.getInstance(it).selectedConfiguration?.configuration as? LatexRunConfiguration
+}
+
+/**
+ * Get the run configuration of the template.
+ */
+fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
+    RunManager.getInstance(it).getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
 }
 
 /**

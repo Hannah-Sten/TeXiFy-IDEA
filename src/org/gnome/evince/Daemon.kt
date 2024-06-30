@@ -18,5 +18,5 @@ interface Daemon : DBusInterface {
      * @param spawn Whether to spawn Evince or not.
      * @return The name owner of the evince process for the given document URI.
      */
-    fun FindDocument(uri: String, spawn: Boolean?): String
+    fun FindDocument(uri: String?, spawn: Boolean): String?
 }
