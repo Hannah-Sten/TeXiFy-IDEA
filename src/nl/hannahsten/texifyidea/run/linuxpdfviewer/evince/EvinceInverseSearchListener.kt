@@ -23,7 +23,7 @@ object EvinceInverseSearchListener {
 
     private var currentCoroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private val sessionConnection: DBusConnection = DBusConnectionBuilder.forSessionBus().build()
+    private var sessionConnection: DBusConnection? = null
 
     private var syncSourceHandler: AutoCloseable? = null
 
@@ -36,6 +36,16 @@ object EvinceInverseSearchListener {
         if (SystemEnvironment.evinceVersion.majorVersion <= 3 && SystemEnvironment.evinceVersion.minorVersion <= 28) {
             Notification("LaTeX", "Old Evince version found", "Please update Evince to at least version 3.28 to use forward/backward search", NotificationType.ERROR).notify(project)
             return
+        }
+
+        if (sessionConnection == null) {
+            // Create session connection here, so that if we're running tests this can fail silently
+            try {
+                sessionConnection = DBusConnectionBuilder.forSessionBus().build()
+            }
+            catch (e: Exception) {
+                Notification("LaTeX", "Cannot get connection to DBus", "Check if the correct packages are installed", NotificationType.ERROR).notify(project)
+            }
         }
 
         // Check if we already have a listener
@@ -54,7 +64,7 @@ object EvinceInverseSearchListener {
      * Start listening for backward search calls on the D-Bus.
      */
     private fun startListening() {
-        syncSourceHandler = sessionConnection.addSigHandler(Window.SyncSource::class.java) { signal ->
+        syncSourceHandler = sessionConnection?.addSigHandler(Window.SyncSource::class.java) { signal ->
             val filename = signal.sourceFile.replaceFirst("file://".toRegex(), "")
             syncSource(filename, signal.sourcePoint.line)
         }
@@ -84,7 +94,7 @@ object EvinceInverseSearchListener {
         // Remove the listener
         syncSourceHandler?.close()
         // Properly close the connection
-        sessionConnection.close()
+        sessionConnection?.close()
         currentCoroutineScope.cancel(CancellationException(("Unloading the plugin")))
     }
 }
