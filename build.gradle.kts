@@ -109,7 +109,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.11")
+    implementation("io.ktor:ktor-client-core:2.3.12")
     implementation("io.ktor:ktor-client-cio:2.3.11")
     implementation("io.ktor:ktor-client-auth:2.3.11")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
