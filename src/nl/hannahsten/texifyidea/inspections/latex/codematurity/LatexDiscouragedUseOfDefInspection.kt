@@ -72,17 +72,18 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
             val document = file.document() ?: return
-            val (cmd, value) = getArguments(command) ?: return
+            val (cmd, nArgs, value) = getArguments(command) ?: return
 
             val startOFfset = command.textOffset
             val endOffset = max(cmd.textOffset + cmd.textLength, value.textOffset + value.textLength)
 
+            val numberArgumentsText = nArgs?.let { "[$nArgs]" } ?: ""
             val valueText = if (value.text.startsWith("{") && value.text.endsWith("}")) value.text.drop(1).dropLast(1) else value.text
 
-            document.replaceString(startOFfset, endOffset, "$commandName{${cmd.text}}{$valueText}")
+            document.replaceString(startOFfset, endOffset, "$commandName{${cmd.text}}$numberArgumentsText{$valueText}")
         }
 
-        open fun getArguments(command: LatexCommands): Pair<PsiElement, PsiElement>? {
+        open fun getArguments(command: LatexCommands): Triple<PsiElement, Int?, PsiElement>? {
             val parent = command.parent
             val definedCommand = parent.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class) ?: return null
             // Either the definition is wrapped in braces, in which case it will be parsed as a parameter of the command being defined, or it is a sibling of the command
@@ -90,7 +91,13 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
                 ?: definedCommand.nextSiblingIgnoreWhitespace()
                 ?: definedCommand.parent.nextSiblingIgnoreWhitespace()
                 ?: return null
-            return Pair(definedCommand.commandToken, value)
+            if (value.text.matches(Regex("""(#\d)+#?"""))) {
+                val numberOfArguments = Regex("""#\d""").findAll(value.text).count()
+                val bracedValue = value.nextSiblingIgnoreWhitespace() ?: return null
+                return Triple(definedCommand.commandToken, numberOfArguments, bracedValue)
+            } else {
+                return Triple(definedCommand.commandToken, null, value)
+            }
         }
     }
 }
