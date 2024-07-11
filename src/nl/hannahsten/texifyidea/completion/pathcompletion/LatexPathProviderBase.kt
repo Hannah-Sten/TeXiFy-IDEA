@@ -34,6 +34,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     private var resultSet: CompletionResultSet? = null
     private var validExtensions: List<String>? = null
     private var absolutePathSupport = true
+    private var supportsAnyExtension = true
 
     companion object {
 
@@ -50,6 +51,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         if (parentCommand is RequiredFileArgument) {
             validExtensions = parentCommand.supportedExtensions
             absolutePathSupport = parentCommand.isAbsolutePathSupported
+            supportsAnyExtension = parentCommand.supportsAnyExtension
         }
 
         var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile) ?: autocompleteText
@@ -171,7 +173,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add file to autocompletion dialog
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
-        if (validExtensions != null) {
+        // If the command only supports a specific set of extensions, check for validity
+        if (validExtensions != null && supportsAnyExtension.not()) {
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 

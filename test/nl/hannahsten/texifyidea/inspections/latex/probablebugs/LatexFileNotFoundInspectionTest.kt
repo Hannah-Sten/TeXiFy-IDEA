@@ -155,4 +155,11 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //        myFixture.configureByFiles("latexmkrc/main.tex", "latexmkrc/.latexmkrc", "latexmkrc/subdir1/mypackage2.sty")
 //        myFixture.checkHighlighting()
 //    }
+
+    fun testOtherExtension() {
+        // Contrary to \includegraphics, \input will accept a file with any extension if specified
+        myFixture.addFileToProject("included.txt", "\\LaTeX content")
+        myFixture.configureByText(LatexFileType, "\\input{included.txt}")
+        myFixture.checkHighlighting()
+    }
 }

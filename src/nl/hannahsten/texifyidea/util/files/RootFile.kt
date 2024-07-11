@@ -25,7 +25,7 @@ fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
 
     if (magicComment.contains(DefaultMagicKeys.ROOT)) {
         val path = magicComment.value(DefaultMagicKeys.ROOT) ?: ""
-        this.findFile(path)?.let { roots.add(it) }
+        this.findFile(path, supportsAnyExtension = true)?.let { roots.add(it) }
     }
 
     if (this.isRoot()) {

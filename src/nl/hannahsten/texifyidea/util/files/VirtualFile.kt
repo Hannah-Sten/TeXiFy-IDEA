@@ -60,13 +60,12 @@ fun findVirtualFileByAbsoluteOrRelativePath(path: String, project: Project): Vir
  * First looks if the file including extensions exists, when it doesn't it tries to append all
  * possible extensions until it finds a good one.
  *
- * @param filePath
- *         The name of the file relative to the directory, or an absolute path.
- * @param extensions
- *         Set of all supported extensions to look for.
+ * @param filePath The name of the file relative to the directory, or an absolute path.
+ * @param extensions Set of all supported extensions to look for.
+ * @param supportsAnyExtension If true (or if no extensions are provided), then if the extension is provided in the file name, it will be accepted. Otherwise, only the provided extensions are accepted.
  * @return The matching file, or `null` when the file couldn't be found.
  */
-fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList()): VirtualFile? {
+fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList(), supportsAnyExtension: Boolean): VirtualFile? {
     if (filePath.isBlank()) return null
     try {
         val isAbsolute = File(filePath).isAbsolute
@@ -76,7 +75,7 @@ fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList(
         else {
             LocalFileSystem.getInstance().findFileByPath(filePath)
         }
-        if (file != null && !file.isDirectory && (extensions.isEmpty() || file.extension in extensions)) return file
+        if (file != null && !file.isDirectory && (extensions.isEmpty() || file.extension in extensions || supportsAnyExtension)) return file
 
         extensions.forEach { extension ->
             val lookFor = filePath.appendExtension(extension)
@@ -87,7 +86,7 @@ fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList(
                 LocalFileSystem.getInstance().findFileByPath(lookFor)
             }
 
-            if (file != null && !file!!.isDirectory) return file
+            if (file is VirtualFile && !(file as VirtualFile).isDirectory) return file
         }
     }
     // #2248

@@ -16,8 +16,8 @@ import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
 
 /**
@@ -38,7 +38,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
         val root = file.findRootFile()
 
         val isInclude = LatexIncludesIndex.Util.getItemsInFileSet(file).any {
-            it.name == "\\include" && it.requiredParameter(0)?.let { f -> root.findFile(f) } == file
+            it.name == "\\include" && it.requiredParameter(0)?.let { f -> root.findFile(f, supportsAnyExtension = true) } == file
         }
 
         if (!isInclude) {
