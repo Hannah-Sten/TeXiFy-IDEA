@@ -30,7 +30,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.2.0"
+    id("org.owasp.dependencycheck") version "10.0.2"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -99,24 +99,24 @@ dependencies {
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.9.2")
+    implementation("org.codehaus.plexus:plexus-archiver:4.10.0")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.17.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.12")
-    implementation("io.ktor:ktor-client-cio:2.3.11")
+    implementation("io.ktor:ktor-client-cio:2.3.12")
     implementation("io.ktor:ktor-client-auth:2.3.12")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
-    implementation("io.ktor:ktor-server-core:2.3.11")
-    implementation("io.ktor:ktor-server-jetty:2.3.11")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
+    implementation("io.ktor:ktor-server-core:2.3.12")
+    implementation("io.ktor:ktor-server-jetty:2.3.12")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-beta-3")
@@ -139,11 +139,11 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.3")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
+    testImplementation("org.junit.platform:junit-platform-runner:1.10.3")
 
     testImplementation("io.mockk:mockk:1.13.11")
 
