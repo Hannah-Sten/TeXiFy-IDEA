@@ -173,8 +173,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add file to autocompletion dialog
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
-        // If the command only supports a specific set of extensions, check for validity
-        if (validExtensions != null && supportsAnyExtension.not()) {
+        // Some commands like \input accept any file extension (supportsExtension), but showing only .tex files is probably a better user experience.
+        if (validExtensions != null) {
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 

@@ -103,7 +103,7 @@ class InputFileReference(
      *              (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve
      *              (if requested by the user).
      */
-    fun  resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set,
         // because this function is used to find the file set so that would cause an infinite loop
 

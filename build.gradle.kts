@@ -32,7 +32,7 @@ plugins {
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "9.2.0"
 
-    id("org.jetbrains.changelog") version "2.2.0"
+    id("org.jetbrains.changelog") version "2.2.1"
 
     id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
