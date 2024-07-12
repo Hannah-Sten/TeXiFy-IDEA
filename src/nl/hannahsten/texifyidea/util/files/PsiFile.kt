@@ -201,7 +201,7 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  * @param commandName
  *          The name of the command including a backslash, or `null` for all commands.
  *
- * @see [LatexCommandsIndex.Util.getItems]
+ * see LatexCommandsIndex.Util.getItems
  */
 @JvmOverloads
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
