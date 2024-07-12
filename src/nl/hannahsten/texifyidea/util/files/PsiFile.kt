@@ -19,7 +19,6 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
@@ -70,7 +69,7 @@ fun PsiFile.isClassFile() = virtualFile?.extension == "cls"
  * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
  * Note this explicitly does not find files elsewhere on the system.
  */
-fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls")
+fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls", supportsAnyExtension = true)
 
 /**
  * If the file has a \documentclass command, return the class name, null otherwise.
@@ -132,20 +131,16 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile:
 /**
  * Looks up a file relative to this file.
  *
- * @param path
- *         The path relative to this file.
+ * @param path The path relative to this file.
+ * @param extensions Search for extensions in this order
+ * @param supportsAnyExtension If true, the found file is accepted even if the extension is not in the provided non-empty list.
  * @return The found file, or `null` when the file could not be found.
  */
-fun PsiFile.findFile(path: String, extensions: List<String>? = null): PsiFile? {
+fun PsiFile.findFile(path: String, extensions: List<String>? = null, supportsAnyExtension: Boolean): PsiFile? {
     if (project.isDisposed) return null
     val directory = containingDirectory?.virtualFile
 
-    val file = directory?.findFile(
-        path,
-        extensions
-            ?: FileMagic.includeExtensions
-    )
-        ?: return scanRoots(path, extensions)
+    val file = directory?.findFile(path, extensions ?: FileMagic.includeExtensions, supportsAnyExtension = supportsAnyExtension) ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
         StyleFileType != psiFile.fileType &&
@@ -170,10 +165,10 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
     return arguments.filter { it.isNotEmpty() }.mapNotNull {
         val extension = FileMagic.automaticExtensions[command.name]
         if (extension != null) {
-            findFile(it, listOf(extension))
+            findFile(it, listOf(extension), supportsAnyExtension = true)
         }
         else {
-            findFile(it)
+            findFile(it, supportsAnyExtension = true)
         }
     }.toSet()
 }
@@ -188,11 +183,7 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
 fun PsiFile.scanRoots(path: String, extensions: List<String>? = null): PsiFile? {
     val rootManager = ProjectRootManager.getInstance(project)
     rootManager.contentSourceRoots.forEach { root ->
-        val file = root.findFile(
-            path,
-            extensions
-                ?: FileMagic.includeExtensions
-        )
+        val file = root.findFile(path, extensions ?: FileMagic.includeExtensions, supportsAnyExtension = true)
         if (file != null) {
             return file.psiFile(project)
         }
@@ -210,7 +201,7 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  * @param commandName
  *          The name of the command including a backslash, or `null` for all commands.
  *
- * @see [LatexCommandsIndex.Util.getItems]
+ * see LatexCommandsIndex.Util.getItems
  */
 @JvmOverloads
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {

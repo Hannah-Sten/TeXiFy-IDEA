@@ -21,13 +21,14 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
  *
- * @param defaultExtension Default extension of the command in which this reference is.
+ * @param defaultExtension Default extension of the command in which this reference is, in case the argument does not have an extension.
  */
 class InputFileReference(
     element: LatexCommands,
     val range: TextRange,
     val extensions: List<String>,
-    val defaultExtension: String
+    val defaultExtension: String,
+    val supportsAnyExtension: Boolean,
 ) : PsiReferenceBase<LatexCommands>(element) {
 
     init {
@@ -138,7 +139,7 @@ class InputFileReference(
         @Suppress("KotlinConstantConditions")
         if (targetFile == null) {
             for (rootDirectory in rootDirectories) {
-                targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+                targetFile = rootDirectory.findFile(filePath = processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
             }
         }
@@ -146,7 +147,7 @@ class InputFileReference(
         // Try content roots
         if (targetFile == null && LatexSdkUtil.isMiktexAvailable) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
-                targetFile = moduleRoot.findFile(processedKey, extensions)
+                targetFile = moduleRoot.findFile(processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
             }
         }
@@ -161,7 +162,7 @@ class InputFileReference(
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
                 for (rootDirectory in rootDirectories) {
-                    targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                    targetFile = rootDirectory.findFile(path + processedKey, extensions, supportsAnyExtension)
                     if (targetFile != null) break
                 }
                 if (targetFile != null) break

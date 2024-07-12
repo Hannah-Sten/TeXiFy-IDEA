@@ -51,7 +51,7 @@ class BibtexOutputListener(
         val logMessage = extractMessage(windowList) ?: return
 
         if (!messageList.contains(logMessage)) {
-            val file = mainFile?.parent?.findFile(logMessage.fileName ?: mainFile.name)
+            val file = mainFile?.parent?.findFile(logMessage.fileName ?: mainFile.name, supportsAnyExtension = true)
             val messageWithFile = BibtexLogMessage(logMessage.message, logMessage.fileName, logMessage.line, logMessage.type, file)
             messageList.add(messageWithFile)
             addBibMessageToTree(messageWithFile)
