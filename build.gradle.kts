@@ -210,7 +210,7 @@ intellij {
             "tanvd.grazi",
             "java",
 //            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
-            "com.jetbrains.hackathon.indices.viewer:1.26"
+            "com.jetbrains.hackathon.indices.viewer:1.27"
         )
     )
 
