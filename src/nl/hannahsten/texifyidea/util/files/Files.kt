@@ -240,8 +240,11 @@ fun getUniqueFileName(fileName: String, directory: String? = null): String {
 /**
  * Get a(n external) file by its absolute path.
  */
-fun getExternalFile(path: String): VirtualFile? =
-    LocalFileSystem.getInstance().findFileByPath(path)
+fun findFileByPath(path: String): VirtualFile? {
+    // A blank path will resolve to the jetbrains /bin directory, which is likely not intended
+    if (path.isBlank()) return null
+    return LocalFileSystem.getInstance().findFileByPath(path)
+}
 
 /**
  * Converts the absolute path to a relative path.

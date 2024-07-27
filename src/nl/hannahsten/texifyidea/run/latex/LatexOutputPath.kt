@@ -77,6 +77,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
                 if (mainFile == null) return null
                 pathString.replace(MAIN_FILE_STRING, mainFile?.parent?.path ?: return null)
             }
+            if (pathString.isBlank()) return null
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
             if (path != null && path.isDirectory) {
                 return path

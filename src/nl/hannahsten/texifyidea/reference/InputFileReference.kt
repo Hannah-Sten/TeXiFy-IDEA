@@ -204,7 +204,7 @@ class InputFileReference(
         if (targetFile == null && lookForInstalledPackages) {
             targetFile = element.getFileNameWithExtensions(processedKey)
                 .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
-                .firstNotNullOfOrNull { getExternalFile(it) }
+                .firstNotNullOfOrNull { findFileByPath(it) }
         }
 
         if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile

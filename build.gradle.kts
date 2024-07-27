@@ -24,13 +24,13 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("org.jetbrains.kotlinx.kover") version "0.8.0"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.1.0"
+    id("org.owasp.dependencycheck") version "9.2.0"
 
     id("org.jetbrains.changelog") version "2.2.0"
 
@@ -104,18 +104,18 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.10")
-    implementation("io.ktor:ktor-client-cio:2.3.10")
-    implementation("io.ktor:ktor-client-auth:2.3.10")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.10")
-    implementation("io.ktor:ktor-server-core:2.3.10")
-    implementation("io.ktor:ktor-server-jetty:2.3.10")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.10")
+    implementation("io.ktor:ktor-client-core:2.3.11")
+    implementation("io.ktor:ktor-client-cio:2.3.11")
+    implementation("io.ktor:ktor-client-auth:2.3.11")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
+    implementation("io.ktor:ktor-server-core:2.3.11")
+    implementation("io.ktor:ktor-server-jetty:2.3.11")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-alpha-13")
@@ -144,7 +144,7 @@ dependencies {
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
 
-    testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation("io.mockk:mockk:1.13.11")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))

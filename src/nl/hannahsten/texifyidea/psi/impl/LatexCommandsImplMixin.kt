@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.psi.impl
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
+import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiNameIdentifierOwner
@@ -14,6 +15,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexVisitor
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
+import nl.hannahsten.texifyidea.structure.latex.LatexPresentationFactory
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
@@ -115,6 +117,10 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
      */
     override fun getReference(): PsiReference? {
         return this.references.firstOrNull()
+    }
+
+    override fun getPresentation(): ItemPresentation? {
+        return LatexPresentationFactory.getPresentation(this)
     }
 
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
