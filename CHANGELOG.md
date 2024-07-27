@@ -6,7 +6,34 @@
 
 ### Fixed
 
-## [0.9.6-alpha.3] - 2024-05-27
+## [0.9.7] - 2024-07-12
+
+Welcome to TeXiFy IDEA 0.9.7! This release improves the Evince support by Tim Klocke (@taaem), adds a simple editor for postfix templates, and more.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve Evince forward/inverse search support, by @taaem
+* Support conversion of arguments in \def -> \newcommand quickfix, by @slideclimb
+* Add a simple editor for postfix templates, by @slideclimb
+* Add support for \ProvidesExpl(Class|File), by @Sirraide
+* Support TeX Live docker image
+* Formatter support for plain TeX \if-statements
+* Index files from the TEXINPUTS variable, for autocompletion
+
+### Fixed
+
+* Fix Evince synchronization after creating a new run configuration, by @taaem
+* Fix unresolved file reference for \input commands
+
+## [0.9.6] - 2024-06-01
+
+Welcome to TeXiFy IDEA 0.9.6! This release fixes an issue with the table insertion wizard, fixes pasting from a pdf file, and more.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
 
 ### Added
 
@@ -19,20 +46,6 @@
 * Handle file extensions case sensitive, by @jojo2357
 * Autocomplete \left* with \right* for all variants, by @jojo2357
 * Fix pasting text from pdf file
-* Fix table insertion wizard not inserting text
-
-## [0.9.6-alpha.2] - 2024-05-19
-
-### Fixed
-
-* Autocomplete \left* with \right* for all variants, by @jojo2357
-* Fix pasting text from pdf file
-* Fix table insertion wizard not inserting text
-
-## [0.9.6-alpha.1] - 2024-05-03
-
-### Fixed
-
 * Fix table insertion wizard not inserting text
 
 ## [0.9.5] - 2024-05-01
@@ -367,13 +380,12 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6-alpha.3...HEAD
-[0.9.6-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6-alpha.2...v0.9.6-alpha.3
-[0.9.6-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6-alpha.1...v0.9.6-alpha.2
-[0.9.6-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...v0.9.6-alpha.1
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...HEAD
+[0.9.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7
+[0.9.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
-[0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.2
+[0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...v0.9.0

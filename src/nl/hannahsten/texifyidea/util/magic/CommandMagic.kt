@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
@@ -431,21 +430,6 @@ object CommandMagic {
      * Commands that include bib files.
      */
     val bibliographyIncludeCommands = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }
-
-    @Suppress("unused")
-    val startIfs = hashSetOf(
-        IF, IFCAT, IFX,
-        IFCASE, IFNUM, IFODD,
-        IFHMODE, IFVMODE, IFMMODE,
-        IFINNER, IFDIM, IFVOID,
-        IFHBOX, IFVBOX, IFEOF,
-        IFTRUE, IFFALSE
-    ).map { it.cmd }
-
-    /**
-     * All commands that end if.
-     */
-    val endIfs = hashSetOf(FI.cmd)
 
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.

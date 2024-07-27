@@ -466,7 +466,7 @@ class LatexRunConfiguration(
                 .flatMap { command -> command.getRequiredParameters() }
                 .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile!!.findFile(filename)
+                    val chapterMainFile = psiFile!!.findFile(filename, supportsAnyExtension = true)
                         ?: return@forEach
 
                     val chapterFiles = chapterMainFile.referencedFileSet()
@@ -541,7 +541,7 @@ class LatexRunConfiguration(
             latexDistribution
         }
         else {
-            LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType() ?: LatexDistributionType.TEXLIVE
+            LatexSdkUtil.getLatexDistributionType(project) ?: LatexDistributionType.TEXLIVE
         }
     }
 

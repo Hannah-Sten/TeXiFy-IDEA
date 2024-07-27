@@ -80,7 +80,7 @@ END_TOKEN="\\end"
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:0-9]+|.|\r) // _ and : are only LaTeX3 syntax
-LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage)
+LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage|ProvidesExplClass|ProvidesExplFile)
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
 // BeforeBegin/AfterEnd are from etoolbox, and just happen to also have two parameters where the second can contain loose \begin or \end
@@ -124,6 +124,11 @@ VERBATIM_DELIMITER=[^}\\\]\[\(]
 BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | "\\Loop" | "\\Function" | "\\Procedure"
 MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
+
+// See TeX by Topic chapter 13
+START_IFS=\\if | \\ifcat | \\ifx | \\ifcase | \\ifnum | \\ifodd | \\ifhmode | \\ifvmode | \\ifmmode | \\ifinner | \\ifdim | \\ifvoid | \\ifhbox | \\ifvbox | \\ifeof | \\iftrue | \\iffalse
+ELSE=\\else
+END_IFS=\\fi
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
@@ -524,6 +529,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {ENDINPUT}              { yypushState(OFF); return COMMAND_TOKEN; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
+{START_IFS}             { return START_IF; }
+{ELSE}                  { return ELSE; }
+{END_IFS}               { return END_IF; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
 {MAGIC_COMMENT_TOKEN}   { return MAGIC_COMMENT_TOKEN; }

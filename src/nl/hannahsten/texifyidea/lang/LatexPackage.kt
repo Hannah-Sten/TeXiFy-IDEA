@@ -43,6 +43,7 @@ open class LatexPackage @JvmOverloads constructor(
         val COLOR = LatexPackage("color")
         val COMMENT = LatexPackage("comment")
         val CSQUOTES = LatexPackage("csquotes")
+        val ETOOLBOX = LatexPackage("etoolbox")
         val EUROSYM = LatexPackage("eurosym")
         val FLOAT = LatexPackage("float")
         val FONTENC = LatexPackage("fontenc")

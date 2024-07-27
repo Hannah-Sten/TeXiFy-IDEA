@@ -55,7 +55,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
         }
 
         for (subParamRange in subParamRanges) {
-            inputFileReferences.add(InputFileReference(this, subParamRange, extensions, fileArgument.defaultExtension))
+            inputFileReferences.add(InputFileReference(this, subParamRange, extensions, fileArgument.defaultExtension, supportsAnyExtension = true))
         }
     }
 
@@ -64,7 +64,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
-            inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), "tex"))
+            inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), "tex", supportsAnyExtension = true))
         }
     }
 

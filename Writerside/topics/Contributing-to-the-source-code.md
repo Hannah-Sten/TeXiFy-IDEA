@@ -30,7 +30,6 @@ Here we add `\newcommandx` to the `regularStrictCommandDefinitions`, which is th
 
 And here You go: it's done (at least for this simple example)
 
-[//]: # (todo: separate topic?)
 ## Building from source
 
 We assume that git, IntelliJ, java and LaTeX are installed. If not, follow the normal [installation instructions](Installation-guide.md) first.

@@ -10,7 +10,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.17.3"
+    id("org.jetbrains.intellij") version "1.17.4"
     kotlin("jvm") version ("1.9.20")
     kotlin("plugin.serialization") version ("1.9.20")
 
@@ -24,15 +24,15 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.8.0"
+    id("org.jetbrains.kotlinx.kover") version "0.8.2"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "9.2.0"
+    id("org.owasp.dependencycheck") version "10.0.2"
 
-    id("org.jetbrains.changelog") version "2.2.0"
+    id("org.jetbrains.changelog") version "2.2.1"
 
     id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
@@ -92,33 +92,34 @@ dependencies {
 //    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java:3.3.2")
+    implementation("com.github.hypfvieh:dbus-java-core:5.0.0")
+    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.0.0")
     implementation("org.slf4j:slf4j-simple:2.0.13")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.9.2")
+    implementation("org.codehaus.plexus:plexus-archiver:4.10.0")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.17.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:2.3.11")
-    implementation("io.ktor:ktor-client-cio:2.3.11")
-    implementation("io.ktor:ktor-client-auth:2.3.11")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
-    implementation("io.ktor:ktor-server-core:2.3.11")
-    implementation("io.ktor:ktor-server-jetty:2.3.11")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-cio:2.3.12")
+    implementation("io.ktor:ktor-client-auth:2.3.12")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
+    implementation("io.ktor:ktor-server-core:2.3.12")
+    implementation("io.ktor:ktor-server-jetty:2.3.12")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-alpha-13")
+    implementation("org.apache.maven:maven-artifact:4.0.0-beta-3")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
@@ -135,14 +136,14 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.3")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
+    testImplementation("org.junit.platform:junit-platform-runner:1.10.3")
 
     testImplementation("io.mockk:mockk:1.13.11")
 
@@ -209,7 +210,7 @@ intellij {
             "tanvd.grazi",
             "java",
 //            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
-            "com.jetbrains.hackathon.indices.viewer:1.26"
+            "com.jetbrains.hackathon.indices.viewer:1.27"
         )
     )
 

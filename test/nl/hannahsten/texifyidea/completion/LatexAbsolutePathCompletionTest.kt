@@ -40,10 +40,10 @@ class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
     fun testSupportedPictureExtensions() {
         myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/<caret>}""")
 
-        val result = myFixture.complete(CompletionType.BASIC)
+        val result = myFixture.complete(CompletionType.BASIC).removeFolderEntries()
 
         // is only allowed to show folders and the png file
-        assertEquals(1, result.removeFolderEntries().size)
+        assertEquals(1, result.size)
     }
 
     fun testSupportedInputExtensions() {

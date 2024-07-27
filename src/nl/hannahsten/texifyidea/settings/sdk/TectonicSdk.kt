@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -46,7 +47,7 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
         return Cache.fileLocationCache?.get(name) ?: ""
     }
 
-    override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
+    override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.TEXLIVE
 
     // We assume Tectonic is in PATH.
     override fun getExecutableName(executable: String, homePath: String) = executable
