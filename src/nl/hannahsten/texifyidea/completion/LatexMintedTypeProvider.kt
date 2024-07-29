@@ -13,7 +13,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
- * @author Hannah Schellekens
+ * Provide autocompletion for minted languages in an \inputminted command. The harcoded list is only used as a backup.
+ *
+ * @author jojo2357
  */
 object LatexMintedTypeProvider : CompletionProvider<CompletionParameters>() {
     private val FALLBACK_LANGUAGES = setOf(
