@@ -174,7 +174,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
         // Some commands like \input accept any file extension (supportsExtension), but showing only .tex files is probably a better user experience.
-        if (validExtensions != null) {
+        if (validExtensions != null && validExtensions!!.isNotEmpty() && validExtensions!![0].isNotEmpty()) {
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 
