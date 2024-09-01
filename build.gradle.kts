@@ -92,7 +92,7 @@ dependencies {
 //    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java-core:5.0.0")
+    implementation("com.github.hypfvieh:dbus-java-core:5.1.0")
     implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.0.0")
     implementation("org.slf4j:slf4j-simple:2.0.13")
 
