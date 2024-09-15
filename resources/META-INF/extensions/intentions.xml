@@ -20,6 +20,12 @@
 
         <intentionAction>
             <language>Latex</language>
+            <className>nl.hannahsten.texifyidea.intentions.LatexFlipArgumentsIntention</className>
+            <category>LaTeX</category>
+        </intentionAction>
+
+        <intentionAction>
+            <language>Latex</language>
             <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggleIntention</className>
             <category>LaTeX</category>
         </intentionAction>
