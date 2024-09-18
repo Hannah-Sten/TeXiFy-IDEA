@@ -27,4 +27,26 @@ class LatexFlipArgumentsIntentionTest : BasePlatformTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testOnFunctionTOken() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                $\fr<caret>ac{a}{b}$
+            \end{document}
+            """.trimIndent()
+        )
+        val intentions = myFixture.availableIntentions
+        writeCommand(myFixture.project) {
+            intentions.first { i -> i.text == "Swap the two arguments of a command" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+        }
+        myFixture.checkResult(
+            """
+            \begin{document}
+                $\fr<caret>ac{b}{a}$
+            \end{document}
+            """.trimIndent()
+        )
+    }
 }

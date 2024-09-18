@@ -8,8 +8,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import nl.hannahsten.texifyidea.util.replaceString
@@ -41,7 +44,8 @@ class LatexFlipArgumentsIntention : TexifyIntentionBase("Swap the two arguments 
             return
         }
 
-        val tokens = getToken(file, editor)?.requiredParameters() ?: return
+        val token = getToken(file, editor) ?: return
+        val tokens = token.requiredParameters()
 
         assert(tokens.size == 2) { "Expected to have only 2 args!" }
 
@@ -51,7 +55,9 @@ class LatexFlipArgumentsIntention : TexifyIntentionBase("Swap the two arguments 
         val replacements = tokens[1].text + tokens[0].text
 
         runWriteAction {
-            document.replaceString(range, replacements)
+            token.parent.node.addChild(LatexPsiHelper(project).createFromText(tokens[0].node.text).firstChildOfType(LatexRequiredParam::class)!!.node)
+            tokens[0].delete()
+//            document.replaceString(range, replacements)
         }
     }
 }
