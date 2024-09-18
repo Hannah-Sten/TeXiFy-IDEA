@@ -50,8 +50,9 @@ fun PsiFile.findInclusions(): List<PsiFile> {
 
 /**
  * Checks if the file has LaTeX syntax.
+ * Not every psi file has a virtualfile, e.g. in intention preview
  */
-fun PsiFile.isLatexFile() = virtualFile.isLatexFile()
+fun PsiFile.isLatexFile() = fileType == LatexFileType || fileType == StyleFileType || fileType == ClassFileType
 
 fun VirtualFile.isLatexFile() = fileType == LatexFileType || fileType == StyleFileType || fileType == ClassFileType
 
