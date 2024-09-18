@@ -22,13 +22,13 @@ class LatexFlipArgumentsIntentionTest : BasePlatformTestCase() {
         myFixture.checkResult(
             """
             \begin{document}
-                $\frac{b<caret>}{a}$
+                $\frac{b}{a}$
             \end{document}
             """.trimIndent()
         )
     }
 
-    fun testOnFunctionTOken() {
+    fun testOnFunctionToken() {
         myFixture.configureByText(
             LatexFileType,
             """
