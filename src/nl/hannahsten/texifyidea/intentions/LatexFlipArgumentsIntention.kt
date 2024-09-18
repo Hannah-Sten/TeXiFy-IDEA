@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
+import nl.hannahsten.texifyidea.util.runWriteAction
 
 class LatexFlipArgumentsIntention : TexifyIntentionBase("Swap the two arguments of a command") {
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
@@ -42,9 +43,11 @@ class LatexFlipArgumentsIntention : TexifyIntentionBase("Swap the two arguments 
 
         assert(parameters.size == 2) { "Expected to have only 2 args!" }
 
-        val firstParameterText = parameters[0].node.text
-        val newParameter = LatexPsiHelper(project).createRequiredParameter(firstParameterText, hasBraces = true).node
-        command.node.addChild(newParameter)
-        parameters[0].delete()
+        runWriteAction {
+            val firstParameterText = parameters[0].node.text
+            val newParameter = LatexPsiHelper(project).createRequiredParameter(firstParameterText, hasBraces = true).node
+            command.node.addChild(newParameter)
+            parameters[0].delete()
+        }
     }
 }
