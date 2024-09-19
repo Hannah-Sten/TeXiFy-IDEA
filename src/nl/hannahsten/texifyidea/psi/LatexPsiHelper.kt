@@ -79,8 +79,9 @@ class LatexPsiHelper(private val project: Project) {
         }
     }
 
-    fun createRequiredParameter(content: String): LatexRequiredParam {
-        val commandText = "\\label{$content}"
+    fun createRequiredParameter(content: String, hasBraces: Boolean = false): LatexRequiredParam {
+        // The command does not matter, we just need one to get it parsed as an argument
+        val commandText = if (hasBraces) "\\label$content" else "\\label{$content}"
         return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
     }
 
