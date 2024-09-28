@@ -33,11 +33,6 @@ class LatexCompileGutter : RunLineMarkerContributor() {
         val actions = ExecutorAction.getActions(0)
 
         // Create icon.
-        return Info(
-            TexifyIcons.BUILD,
-            { "Compile document" },
-            actions[0],
-            editConfigs
-        )
+        return Info(TexifyIcons.BUILD, arrayOf(actions[0], editConfigs)) { "Compile document" }
     }
 }

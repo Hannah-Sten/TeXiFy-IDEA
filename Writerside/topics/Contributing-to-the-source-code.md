@@ -158,7 +158,7 @@ If you get the error `Caused by: org.gradle.process.internal.ExecException: Proc
 
 ### The server may not support the client's requested TLS protocol versions: (TLSv1.2, TLSv1.3)
 
-Please make sure you’re using at least JDK 17, both as project SDK and in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path>.
+Please make sure you’re using at least JDK 21, both as project SDK and in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path>.
 
 ### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
 

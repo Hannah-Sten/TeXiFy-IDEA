@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.*
 import com.intellij.testFramework.LightVirtualFile
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
@@ -23,6 +24,20 @@ class LatexCommandsStubElementType(debugName: String) :
 
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return object : LatexCommandsImpl(latexCommandsStub, this) {
+
+            override fun getElementType(): IStubElementType<*, *> {
+                return this@LatexCommandsStubElementType
+            }
+
+            override fun getStub(): LatexCommandsStub {
+                return latexCommandsStub
+            }
+
+            override fun setName(name: String): PsiElement {
+                this.name = name
+                return this
+            }
+
             init {
                 this.name = latexCommandsStub.name!!
             }

@@ -4,15 +4,15 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = project.findProperty(key).toString()
 
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "1.17.4"
-    kotlin("jvm") version ("1.9.20")
-    kotlin("plugin.serialization") version ("1.9.20")
+    id("org.jetbrains.intellij.platform") version "2.1.0"
+    kotlin("jvm") version ("2.0.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -30,7 +30,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "10.0.3"
+    id("org.owasp.dependencycheck") version "10.0.4"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -42,6 +42,9 @@ version = properties("pluginVersion")
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 sourceSets {
@@ -57,20 +60,18 @@ sourceSets {
 }
 
 // Java target version
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
@@ -84,6 +85,29 @@ configurations {
 }
 
 dependencies {
+    intellijPlatform {
+        instrumentationTools()
+        zipSigner()
+        pluginVerifier()
+        testFramework(TestFrameworkType.Platform)
+        testFramework(TestFrameworkType.Plugin.Java)
+
+        // Comment out to use the latest EAP snapshot
+        // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
+        // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
+        intellijIdeaCommunity("2024.2")
+        // Example to use a different, locally installed, IDE
+        // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
+        // Also disable "version" above
+        // If it doesn't work (Could not resolve all files for configuration ':detachedConfiguration4'.), specify 'version' instead
+//    localPath.set("/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/213.6777.50/")
+
+        bundledPlugin("com.intellij.java")
+        bundledPlugin("tanvd.grazi")
+        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.16.1")
+        plugin("com.jetbrains.hackathon.indices.viewer:1.27")
+    }
+
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
     // These lines can sometimes be problematic on Linux, but are required for SumatraPDF
@@ -93,7 +117,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java-core:5.1.0")
-    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.0.0")
+    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.1.0")
     implementation("org.slf4j:slf4j-simple:2.0.16")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
@@ -105,9 +129,9 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.17.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.12")
@@ -129,21 +153,20 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.2.4")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
     implementation("io.arrow-kt:arrow-resilience:1.2.4")
-
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.0")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.1")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.11.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.11.1")
 
     testImplementation("io.mockk:mockk:1.13.12")
 
@@ -160,16 +183,6 @@ tasks.processResources {
     }
 }
 
-// https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
-tasks.runIde {
-    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions", "-Xmx2g", "-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
-
-    // Set to true to generate hprof files on unload fails
-    systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
-    // Some warning asked for this to be set explicitly
-    systemProperty("idea.log.path", file("build/idea-sandbox/system/log").absolutePath)
-}
-
 // Avoid ClassNotFoundException: com.maddyhome.idea.copyright.psi.UpdateCopyrightsProvider
 tasks.buildSearchableOptions {
     jvmArgs = listOf("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
@@ -182,69 +195,43 @@ changelog {
     itemPrefix.set("*")
 }
 
-tasks.patchPluginXml {
-    dependsOn("patchChangelog")
-
-    // Required to run pluginVerifier
-    sinceBuild.set(properties("pluginSinceBuild"))
-
-    // Get the latest available change notes from the changelog file
-    changeNotes.set(
-        provider {
-            with(changelog) {
-                renderItem(
-                    getOrNull(properties("pluginVersion")) ?: getLatest(),
-                    Changelog.OutputType.HTML
-                )
+intellijPlatform {
+    pluginConfiguration {
+        name = "TeXiFy-IDEA"
+        // Get the latest available change notes from the changelog file
+        changeNotes = (
+            provider {
+                with(changelog) {
+                    renderItem(
+                        getOrNull(properties("pluginVersion")) ?: getLatest(),
+                        Changelog.OutputType.HTML
+                    )
+                }
             }
-        }
-    )
+            )
+    }
+
+    publishing {
+        // Allow publishing to the Jetbrains repo via a Gradle task
+        // This requires to put a Jetbrains Hub token, see http://www.jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html for more details
+        // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
+        // You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
+        token.set(properties["intellijPublishToken"].toString())
+
+        // Specify channel as per the tutorial.
+        // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
+        channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
+    }
 }
 
-intellij {
-    pluginName.set("TeXiFy-IDEA")
+// https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
+tasks.runIde {
+    jvmArgs = mutableListOf("-XX:+UnlockDiagnosticVMOptions", "-Xmx2g", "-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader")
 
-    // indices plugin doesn't work in tests
-    plugins.set(
-        listOf(
-            "tanvd.grazi",
-            "java",
-//            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
-            "com.jetbrains.hackathon.indices.viewer:1.27"
-        )
-    )
-
-    // Use the since build number from plugin.xml
-    updateSinceUntilBuild.set(false)
-    // Keep an open until build, to avoid automatic downgrades to very old versions of the plugin
-    sameSinceUntilBuild.set(true)
-
-    // Comment out to use the latest EAP snapshot
-    // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
-    // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version.set("2024.1")
-//    type = "PY"
-
-    // Example to use a different, locally installed, IDE
-    // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
-    // Also disable "version" above
-    // If it doesn't work (Could not resolve all files for configuration ':detachedConfiguration4'.), specify 'version' instead
-//    localPath.set("/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/213.6777.50/")
-}
-
-// Allow publishing to the Jetbrains repo via a Gradle task
-// This requires to put a Jetbrains Hub token, see http://www.jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html for more details
-// Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
-// You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
-tasks.publishPlugin {
-    dependsOn("useLatestVersions")
-//    dependsOn("dependencyCheckAnalyze")
-
-    token.set(properties["intellijPublishToken"].toString())
-
-    // Specify channel as per the tutorial.
-    // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
+    // Set to true to generate hprof files on unload fails
+    systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
+    // Some warning asked for this to be set explicitly
+    systemProperty("idea.log.path", file("build/idea-sandbox/system/log").absolutePath)
 }
 
 tasks.test {
@@ -294,11 +281,6 @@ tasks.useLatestVersions {
 
 tasks {
 
-    // https://github.com/JetBrains/gradle-grammar-kit-plugin/issues/168
-    withType<GenerateParserTask> {
-        classpath(setupDependencies.flatMap { it.idea.map { idea -> idea.classes.resolve("lib/opentelemetry.jar") } })
-    }
-
     val generateLatexParserTask = register<GenerateParserTask>("generateLatexParser") {
         sourceFile.set(File("src/nl/hannahsten/texifyidea/grammar/Latex.bnf"))
         targetRootOutputDir.set(File("gen"))
@@ -323,7 +305,7 @@ tasks {
         targetOutputDir.set(File("gen/nl/hannahsten/texifyidea/grammar/"))
     }
 
-    initializeIntelliJPlugin {
+    initializeIntellijPlatformPlugin {
         dependsOn(generateLatexParserTask)
         dependsOn(generateBibtexParserTask)
         dependsOn(generateLatexLexerTask)
@@ -331,6 +313,10 @@ tasks {
     }
 
     runKtlintCheckOverMainSourceSet {
-        dependsOn(initializeIntelliJPlugin)
+        dependsOn(initializeIntellijPlatformPlugin)
+    }
+
+    compileKotlin {
+        dependsOn(initializeIntellijPlatformPlugin)
     }
 }
