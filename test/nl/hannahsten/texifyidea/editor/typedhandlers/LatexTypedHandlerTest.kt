@@ -90,6 +90,18 @@ class LatexTypedHandlerTest : BasePlatformTestCase() {
         myFixture.checkResult("""$\left(<caret>\right)$""")
     }
 
+    fun testCorrectPairedExistingParenthesis() {
+        myFixture.configureByText(LatexFileType, """$\left<caret>)$""")
+        myFixture.type('(')
+        myFixture.checkResult("""$\left(<caret>\right)$""")
+    }
+
+    fun testCorrectPairedExistingRightParenthesis() {
+        myFixture.configureByText(LatexFileType, """$\left<caret>\right)$""")
+        myFixture.type('(')
+        myFixture.checkResult("""$\left(<caret>\right)$""")
+    }
+
     fun testCorrectPairedBraces() {
         myFixture.configureByText(LatexFileType, """$\left<caret>$""")
         myFixture.type('{')
