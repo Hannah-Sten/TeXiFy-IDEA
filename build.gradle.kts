@@ -86,6 +86,10 @@ configurations {
 
 dependencies {
     intellijPlatform {
+        instrumentationTools()
+        zipSigner()
+        pluginVerifier()
+
         // Comment out to use the latest EAP snapshot
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
