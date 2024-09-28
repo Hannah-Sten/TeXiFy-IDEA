@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.currentTextEditor
 import org.apache.commons.io.FilenameUtils
 import org.jsoup.nodes.Element
 import java.awt.image.BufferedImage
+import java.net.URI
 import java.net.URL
 import javax.imageio.IIOException
 import javax.imageio.ImageIO
@@ -38,7 +39,7 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
     }
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
-        val url = URL(htmlIn.attr("src"))
+        val url = URI(htmlIn.attr("src")).toURL()
         val image = try {
             ImageIO.read(url)
         }
