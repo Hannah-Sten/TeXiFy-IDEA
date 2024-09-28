@@ -17,7 +17,7 @@ class LatexSectionPresentation(sectionCommand: LatexCommands) : EditableHintPres
             throw IllegalArgumentException("command is no \\section-command")
         }
 
-        this.sectionName = sectionCommand.getRequiredParameters()[0]
+        this.sectionName = sectionCommand.getRequiredParameters().firstOrNull() ?: "Unnamed section"
     }
 
     override fun getPresentableText() = sectionName
