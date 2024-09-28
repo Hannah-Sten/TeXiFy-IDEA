@@ -192,7 +192,6 @@ changelog {
     itemPrefix.set("*")
 }
 
-
 intellijPlatform {
     pluginConfiguration {
         name = "TeXiFy-IDEA"
@@ -206,7 +205,7 @@ intellijPlatform {
                     )
                 }
             }
-        )
+            )
     }
 
     publishing {
@@ -220,8 +219,6 @@ intellijPlatform {
         // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
     }
-
-
 }
 
 // https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks
