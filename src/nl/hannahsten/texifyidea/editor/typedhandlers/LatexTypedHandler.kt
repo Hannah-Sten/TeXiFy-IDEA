@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.CodeInsightSettings
+import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.editorActions.TabOutScopesTracker
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
@@ -12,6 +13,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
+import nl.hannahsten.texifyidea.completion.handlers.RightInsertHandler
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
@@ -111,7 +113,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     }
 
     /**
-     * Upon typing `\[`, inserts the closing delimiter `\]`.
+     * Upon typing `\[`, inserts the closing delimiter `\]` and upon typing `\left[` inserts the closing `\right]`.
      */
     private fun insertDisplayMathClose(editor: Editor): Result {
         val tokenType = getTypedTokenType(editor)
@@ -124,11 +126,14 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             editor.document.insertString(offset, insertString)
             return Result.STOP
         }
+        else if (hasJustTyped("""\left[""", editor)) {
+            insertRight(editor)
+        }
         return Result.CONTINUE
     }
 
     /**
-     * Upon typing `\(`, inserts the closing delimiter `\)`.
+     * Upon typing `\(`, inserts the closing delimiter `\)`, and upon typing `\left(` inserts the closing `\right)`.
      */
     private fun insertRobustInlineMathClose(editor: Editor): Result {
         val tokenType = getTypedTokenType(editor)
@@ -137,18 +142,25 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             editor.document.insertString(editor.caretModel.offset, "\\")
             return Result.STOP
         }
+
+        if (hasJustTyped("""\left(""", editor)) {
+            insertRight(editor)
+            return Result.STOP
+        }
+
         return Result.CONTINUE
     }
 
     /**
-     * Upon typing `\{`, inserts the closing delimiter `\}`. Unlike the others, this isnt a token so we just have to check manually
+     * Upon typing `\{`, inserts the closing delimiter `\}`.
      */
     private fun insertClosingEscapeBrace(editor: Editor): Result {
-        val offset = editor.caretModel.offset
-        if (offset > editor.document.textLength) return Result.CONTINUE
-        if (offset - 2 < 0) return Result.CONTINUE
-        if (editor.document.getText(TextRange.from(offset - 2, 2)) == "\\{") {
+        if (hasJustTyped("\\{", editor)) {
             editor.document.insertString(editor.caretModel.offset, "\\}")
+            return Result.STOP
+        }
+        else if (hasJustTyped("\\left{", editor)) {
+            insertRight(editor)
             return Result.STOP
         }
         return Result.CONTINUE
@@ -162,5 +174,16 @@ class LatexTypedHandler : TypedHandlerDelegate() {
         val highlighter = (editor as EditorEx).highlighter
         val iterator = highlighter.createIterator(caret - 1)
         return iterator.tokenType
+    }
+
+    private fun hasJustTyped(text: String, editor: Editor): Boolean {
+        val offset = editor.caretModel.offset
+        if (offset > editor.document.textLength) return false
+        if (offset - text.length < 0) return false
+        return editor.document.getText(TextRange.from(offset - text.length, text.length)) == text
+    }
+
+    private fun insertRight(editor: Editor) {
+        editor.document.insertString(editor.caretModel.offset, """\right""")
     }
 }
