@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import com.intellij.refactoring.suggested.startOffset
+import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing.LatexSpaceAfterAbbreviationInspection

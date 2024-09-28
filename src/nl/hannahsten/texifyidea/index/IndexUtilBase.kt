@@ -10,7 +10,7 @@ import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
-import com.intellij.refactoring.suggested.createSmartPointer
+import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
