@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -88,6 +89,8 @@ dependencies {
         instrumentationTools()
         zipSigner()
         pluginVerifier()
+        testFramework(TestFrameworkType.Platform)
+        testFramework(TestFrameworkType.Plugin.Java)
 
         // Comment out to use the latest EAP snapshot
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
