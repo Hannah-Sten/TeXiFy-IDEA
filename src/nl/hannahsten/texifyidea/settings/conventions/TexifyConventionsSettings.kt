@@ -7,7 +7,6 @@ package nl.hannahsten.texifyidea.settings.conventions
  * the currently active scheme modifies either the project state or the global state, depending on which scheme is
  * selected.
  */
-@ConsistentCopyVisibility
 data class TexifyConventionsSettings internal constructor(
     private var projectState: TexifyConventionsProjectState = TexifyConventionsProjectState(
         TexifyConventionsScheme(myName = TexifyConventionsScheme.PROJECT_SCHEME_NAME)
