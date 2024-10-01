@@ -105,7 +105,7 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.17.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
 
