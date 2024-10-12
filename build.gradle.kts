@@ -143,7 +143,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-beta-3")
+    implementation("org.apache.maven:maven-artifact:4.0.0-beta-4")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
