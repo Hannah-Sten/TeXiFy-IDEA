@@ -21,7 +21,6 @@ open class GraphicsDragAndDropHandler : FileDropHandler {
         return extension.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions
     }
 
-
     override suspend fun handleDrop(e: FileDropEvent): Boolean {
         // Only allow dropping in LaTeX sources.
         val editor = e.editor ?: return false
