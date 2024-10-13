@@ -30,7 +30,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "10.0.3"
+    id("org.owasp.dependencycheck") version "10.0.4"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -93,7 +93,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java-core:5.1.0")
-    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.0.0")
+    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.1.0")
     implementation("org.slf4j:slf4j-simple:2.0.16")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
@@ -106,8 +106,8 @@ dependencies {
 
     // Parsing xml
     implementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.17.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:2.3.12")
@@ -129,7 +129,6 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.2.4")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
     implementation("io.arrow-kt:arrow-resilience:1.2.4")
-
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -139,11 +138,11 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.1")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.11.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.11.1")
 
     testImplementation("io.mockk:mockk:1.13.12")
 
@@ -209,7 +208,7 @@ intellij {
         listOf(
             "tanvd.grazi",
             "java",
-//            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.15.0",
+            "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.16.1",
             "com.jetbrains.hackathon.indices.viewer:1.27"
         )
     )
