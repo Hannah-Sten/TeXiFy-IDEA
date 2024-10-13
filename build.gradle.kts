@@ -13,7 +13,6 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     id("org.jetbrains.intellij.platform") version "2.1.0"
     kotlin("jvm") version ("1.9.20")
-    kotlin("plugin.serialization") version ("1.9.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -196,7 +195,6 @@ changelog {
     itemPrefix.set("*")
 }
 
-
 intellijPlatform {
     pluginConfiguration {
         name = "TeXiFy-IDEA"
@@ -210,7 +208,7 @@ intellijPlatform {
                     )
                 }
             }
-        )
+            )
     }
 
     publishing {
@@ -224,8 +222,6 @@ intellijPlatform {
         // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
     }
-
-
 }
 
 // https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#diagnosing-leaks

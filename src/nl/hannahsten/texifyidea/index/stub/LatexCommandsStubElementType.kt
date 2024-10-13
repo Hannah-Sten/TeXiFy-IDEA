@@ -29,11 +29,11 @@ class LatexCommandsStubElementType(debugName: String) :
                 return this@LatexCommandsStubElementType
             }
 
-            override fun getStub(): LatexCommandsStub? {
+            override fun getStub(): LatexCommandsStub {
                 return latexCommandsStub
             }
 
-            override fun setName(name: String): PsiElement? {
+            override fun setName(name: String): PsiElement {
                 this.name = name
                 return this
             }
