@@ -12,7 +12,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij.platform") version "2.1.0"
-    kotlin("jvm") version ("2.0.20")
+    kotlin("jvm") version ("1.9.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.51.0"
