@@ -60,20 +60,18 @@ sourceSets {
 }
 
 // Java target version
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
