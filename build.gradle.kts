@@ -149,7 +149,7 @@ dependencies {
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
-    implementation("org.apache.xmlgraphics:batik-all:1.17")
+    implementation("org.apache.xmlgraphics:batik-all:1.18")
     implementation("batik:batik-svg-dom:1.6-1")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
@@ -164,13 +164,13 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.1")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.11.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.11.2")
 
-    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("io.mockk:mockk:1.13.13")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
