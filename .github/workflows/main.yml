@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - name: Generate lexer/parser
         run: ./gradlew setupDependencies
@@ -63,7 +63,7 @@ jobs:
         fetch-depth: 2
     - uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'zulu'
     - name: Run linting
       run: |
