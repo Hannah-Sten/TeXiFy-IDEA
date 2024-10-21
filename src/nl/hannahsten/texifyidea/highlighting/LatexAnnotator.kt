@@ -258,7 +258,6 @@ open class LatexAnnotator : Annotator {
     /**
      * Annotates the contents of the given parameter with the given style.
      */
-    @Suppress("USELESS_CAST")
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
         val firstContentChild = parameter.firstChildOfType(LatexContent::class)
         val firstParamChild = parameter.firstChildOfType(LatexRequiredParamContent::class)

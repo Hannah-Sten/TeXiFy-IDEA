@@ -47,7 +47,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                                         (
                                             1 + StringUtil.offsetToLineNumber(
                                                 containing.text,
-                                                bibtexEntry.getTextOffset()
+                                                bibtexEntry.textOffset
                                             )
                                             ),
                                     true
@@ -94,6 +94,8 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
     init {
 
         // Only show Ctrl+click underline under the reference name
-        setRangeInElement(range)
+        if (range != null) {
+            rangeInElement = range
+        }
     }
 }
