@@ -39,7 +39,7 @@ open class ConfigureInverseSearchAction : AnAction() {
             addCancelAction()
             setOkOperation {
                 // First kill Sumatra to avoid having two instances open of which only one has the correct setting
-                Runtime.getRuntime().exec("taskkill /IM SumatraPDF.exe")
+                Runtime.getRuntime().exec(arrayOf("taskkill", "/IM", "SumatraPDF.exe"))
 
                 val path = PathManager.getBinPath()
                 var name = ApplicationNamesInfo.getInstance().scriptName

@@ -12,7 +12,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
     id("org.jetbrains.intellij.platform") version "2.1.0"
-    kotlin("jvm") version ("1.9.20")
+    kotlin("jvm") version ("2.0.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -44,6 +44,7 @@ repositories {
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
+        maven("https://www.jetbrains.com/intellij-repository/snapshots")
     }
 }
 
@@ -76,11 +77,13 @@ tasks.compileTestKotlin {
     }
 }
 
-// https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
 configurations {
     all {
+        // https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
         exclude(group = "xml-apis")
         exclude(group = "xerces")
+        // https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#coroutinesLibraries
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
     }
 }
 
@@ -92,10 +95,13 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        // Comment out to use the latest EAP snapshot
+        intellijIdeaUltimate("2024.2")
+
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-        intellijIdeaCommunity("2024.1")
+//        intellijIdeaCommunity("243.20847-EAP-CANDIDATE-SNAPSHOT", useInstaller = false)
+//        jetbrainsRuntime() // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#target-versions-multi-os-archives
+
         // Example to use a different, locally installed, IDE
         // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
         // Also disable "version" above
@@ -147,7 +153,7 @@ dependencies {
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
-    implementation("org.apache.xmlgraphics:batik-all:1.17")
+    implementation("org.apache.xmlgraphics:batik-all:1.18")
     implementation("batik:batik-svg-dom:1.6-1")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
@@ -162,13 +168,13 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.1")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.11.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.11.2")
 
-    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("io.mockk:mockk:1.13.13")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
