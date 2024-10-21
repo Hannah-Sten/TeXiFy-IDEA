@@ -11,3 +11,4 @@ results/
 gen/
 **/node_modules
 .intellijPlatform
+.kotlin
