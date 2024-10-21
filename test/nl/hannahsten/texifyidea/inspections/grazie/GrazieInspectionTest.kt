@@ -88,9 +88,9 @@ class GrazieInspectionTest : BasePlatformTestCase() {
                 Das ist eine Function ${'$'} f${'$'}.
                 Nur zum Testen.
 
-                Dies ist <warning descr="Möglicherweise passen das Nomen und die Wörter, die das Nomen beschreiben, grammatisch nicht zusammen.">eine deutscher Satz</warning>.% This comment is a sentence so should end with a full stop.
+                Dies ist <GRAMMAR_ERROR descr="Möglicherweise passen das Nomen und die Wörter, die das Nomen beschreiben, grammatisch nicht zusammen.">eine deutscher Satz</GRAMMAR_ERROR>.
                 Und hier ist ein zweiter Satz.\newline
-                Und hier ist ein dritter Satz.
+                Und hier ist ein dritter Satz.% This comment is a sentence so should end with a full stop.
             \end{document}
             """.trimIndent()
         )
