@@ -7,8 +7,8 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
+import com.intellij.psi.util.endOffset
+import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
@@ -258,7 +258,6 @@ open class LatexAnnotator : Annotator {
     /**
      * Annotates the contents of the given parameter with the given style.
      */
-    @Suppress("USELESS_CAST")
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
         val firstContentChild = parameter.firstChildOfType(LatexContent::class)
         val firstParamChild = parameter.firstChildOfType(LatexRequiredParamContent::class)

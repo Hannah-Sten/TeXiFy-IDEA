@@ -126,7 +126,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             // Create xml mapper that doesn't fail on unknown properties. This allows us to only define the properties we need.
             val mapper = XmlMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-            val connection = (URL(JETBRAINS_API_URL).openConnection() as HttpURLConnection).apply {
+            val connection = (URI.create(JETBRAINS_API_URL).toURL().openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
                 connectTimeout = 1000
                 readTimeout = 1000

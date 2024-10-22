@@ -44,6 +44,7 @@ repositories {
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
+        maven("https://www.jetbrains.com/intellij-repository/snapshots")
     }
 }
 
@@ -60,29 +61,29 @@ sourceSets {
 }
 
 // Java target version
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
 // Same for Kotlin tests
 tasks.compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
+    compilerOptions {
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
-// https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
 configurations {
     all {
+        // https://stackoverflow.com/questions/11677572/dealing-with-xerces-hell-in-java-maven
         exclude(group = "xml-apis")
         exclude(group = "xerces")
+        // https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#coroutinesLibraries
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
     }
 }
 
@@ -94,10 +95,13 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        // Comment out to use the latest EAP snapshot
+        intellijIdeaUltimate("2024.2")
+
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-        intellijIdeaCommunity("2024.1")
+//        intellijIdeaCommunity("243.20847-EAP-CANDIDATE-SNAPSHOT", useInstaller = false)
+//        jetbrainsRuntime() // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#target-versions-multi-os-archives
+
         // Example to use a different, locally installed, IDE
         // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
         // Also disable "version" above
