@@ -1,6 +1,6 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const {Octokit} = require("@octokit/rest");
+import core from '@actions/core';
+import github from '@actions/github';
+import {Octokit} from "@octokit/rest";
 
 function getText() {
     // Attempt to find the text to replace. This is somewhat involved since we trigger on many actions.
