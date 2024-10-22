@@ -1,6 +1,6 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const {Octokit} = require("@octokit/rest");
+import core from '@actions/core';
+import github from '@actions/github';
+import {Octokit} from "@octokit/rest";
 
 function getText() {
     // Attempt to find the text to replace. This is somewhat involved since we trigger on many actions.
@@ -73,27 +73,30 @@ async function setText(token, replacement) {
     }
 }
 
-try {
-    const prefix = core.getInput('issue-prefix');
-    const baseUrl = core.getInput('youtrack-base-url');
-    const token = core.getInput('repo-token');
+function main() {
+    try {
+        const prefix = core.getInput('issue-prefix');
+        const baseUrl = core.getInput('youtrack-base-url');
+        const token = core.getInput('repo-token');
 
-    const text = getText();
-    if (text === null || text === undefined) {
-        return;
+        const text = getText();
+        if (text === null || text === undefined) {
+            return;
+        }
+
+        const regex = new RegExp(`(?<!\\[|\/issue\/)\\b(${prefix}-\\d+)\\b(?!\\])`, 'g');
+
+        if (!regex.test(text)) {
+            // Exit early when no links need to be inserted to avoid API calls
+            return
+        }
+
+        const replacement = text.replace(regex, `[$1](${baseUrl}/issue/$1)`);
+
+        setText(token, replacement);
+    } catch (e) {
+        core.setFailed(e.message);
     }
-
-    const regex = new RegExp(`(?<!\\[|\/issue\/)\\b(${prefix}-\\d+)\\b(?!\\])`, 'g');
-
-    if (!regex.test(text)) {
-        // Exit early when no links need to be inserted to avoid API calls
-        return
-    }
-
-    const replacement = text.replace(regex, `[$1](${baseUrl}/issue/$1)`);
-
-    setText(token, replacement);
 }
-catch (e) {
-    core.setFailed(e.message);
-}
+
+main()
