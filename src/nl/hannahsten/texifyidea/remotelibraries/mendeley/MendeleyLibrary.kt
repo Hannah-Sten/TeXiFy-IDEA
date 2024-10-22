@@ -50,16 +50,6 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
         }
     }
 
-//    private fun AuthConfig.bearer(function: BearerAuthConfig.() -> Unit) {
-//
-//                    // Attempt to load the access token from memory.
-//                    loadTokens {
-//                        val token = PasswordSafe.instance.getPassword(Mendeley.tokenAttributes) ?: return@loadTokens null
-//                        val refreshToken = PasswordSafe.instance.getPassword(Mendeley.refreshTokenAttributes) ?: return@loadTokens null
-//                        BearerTokens(token, refreshToken)
-//                    }
-//    }
-
     override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> {
         MendeleyAuthenticator.getAccessToken()
         return try {
