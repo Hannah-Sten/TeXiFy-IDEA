@@ -12,14 +12,15 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
 import io.ktor.server.engine.*
-import io.ktor.server.jetty.*
+import io.ktor.server.jetty.jakarta.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyAuthenticator.authenticationCode
+import nl.hannahsten.texifyidea.remotelibraries.mendeley.MendeleyAuthenticator.createAuthenticationServer
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.refreshTokenAttributes
 import nl.hannahsten.texifyidea.util.CredentialAttributes.Mendeley.tokenAttributes
 
@@ -64,7 +65,7 @@ object MendeleyAuthenticator {
      *
      * @see [createAuthenticationServer]
      */
-    private lateinit var authenticationServer: JettyApplicationEngine
+    private lateinit var authenticationServer: EmbeddedServer<JettyApplicationEngine, JettyApplicationEngineBase.Configuration>
 
     var isUserAuthenticationFinished = false
 
