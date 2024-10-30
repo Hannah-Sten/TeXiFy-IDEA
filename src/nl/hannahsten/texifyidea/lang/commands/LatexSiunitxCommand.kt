@@ -35,7 +35,6 @@ enum class LatexSiunitxCommand(
     SI("si", "options".asOptional(), "unit".asRequired(), dependency = SIUNITX),
     SI_NUM("SI", "options".asOptional(), "number".asRequired(), "pre-unit".asOptional(), "unit".asRequired(), dependency = SIUNITX),
     SILIST("SIlist", "options".asOptional(), "numbers".asRequired(), "unit".asRequired(), dependency = SIUNITX),
-    SIRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), "unit".asRequired(), dependency = SIUNITX),
     ;
 
     override val identifier: String
