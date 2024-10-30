@@ -16,9 +16,11 @@ open class LatexToggleSmartQuotesIntention : TexifyIntentionBase("Toggle smart q
     /**
      * Contains the preferred setting of the user if they have already selected one.
      */
-    private var selectedSmartQuoteSetting = when (val replacement = TexifySettings.getInstance().automaticQuoteReplacement) {
-        TexifySettings.QuoteReplacement.NONE -> TexifySettings.QuoteReplacement.LIGATURES
-        else -> replacement
+    private val selectedSmartQuoteSetting: TexifySettings.QuoteReplacement by lazy {
+        when (val replacement = TexifySettings.getInstance().automaticQuoteReplacement) {
+            TexifySettings.QuoteReplacement.NONE -> TexifySettings.QuoteReplacement.LIGATURES
+            else -> replacement
+        }
     }
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
