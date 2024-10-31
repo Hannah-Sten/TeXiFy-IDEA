@@ -29,12 +29,6 @@ enum class LatexSiunitxCommand(
     COMPLEXQTY("complexqty", "options".asOptional(), "number".asRequired(), "unit".asRequired(), dependency = SIUNITX),
     SISETUP("sisetup", "options".asRequired(), dependency = SIUNITX),
     TABLENUM("tablenum", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
-
-    // As of version 3, the following commands are not recommended anymore
-    // See chapter 5 "Upgrading from version 2" in the siunitx documentation for more information
-    SI("si", "options".asOptional(), "unit".asRequired(), dependency = SIUNITX),
-    SI_NUM("SI", "options".asOptional(), "number".asRequired(), "pre-unit".asOptional(), "unit".asRequired(), dependency = SIUNITX),
-    SILIST("SIlist", "options".asOptional(), "numbers".asRequired(), "unit".asRequired(), dependency = SIUNITX),
     ;
 
     override val identifier: String
