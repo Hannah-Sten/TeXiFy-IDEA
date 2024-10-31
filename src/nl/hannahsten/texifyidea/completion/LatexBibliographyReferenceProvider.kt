@@ -29,7 +29,8 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
             // Filter ids that are already included in the local bib entries.
             .filter { it.id !in localEntries.filterIsInstance<BibtexEntry>().map { bib -> bib.id } }
 
-        val lookupItems = localEntries.mapNotNull { bibtexEntry ->
+        // Make sure the project makes sense (#3659)
+        val lookupItems = localEntries.filter { it.project == it.containingFile.project }.mapNotNull { bibtexEntry ->
             when (bibtexEntry) {
                 is BibtexEntry -> createLookupElementFromBibtexEntry(bibtexEntry)
                 is LatexCommands -> createLookupElementFromLatexCommand(bibtexEntry)
