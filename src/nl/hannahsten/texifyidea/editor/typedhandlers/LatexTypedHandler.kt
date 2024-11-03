@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.editor.typedhandlers
 
 import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.editorActions.TabOutScopesTracker
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
+import com.intellij.codeInsight.highlighting.BraceMatchingUtil
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileTypes.FileType
@@ -13,7 +13,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
-import nl.hannahsten.texifyidea.completion.handlers.RightInsertHandler
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
@@ -82,13 +81,13 @@ class LatexTypedHandler : TypedHandlerDelegate() {
                 }
             }
             else if (c == '[') {
-                return insertDisplayMathClose(editor)
+                return insertDisplayMathClose(editor, file)
             }
             else if (c == '(') {
-                return insertRobustInlineMathClose(editor)
+                return insertRobustInlineMathClose(editor, file)
             }
             else if (c == '{') {
-                return insertClosingEscapeBrace(editor)
+                return insertClosingEscapeBrace(editor, file)
             }
         }
         return Result.CONTINUE
@@ -115,7 +114,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     /**
      * Upon typing `\[`, inserts the closing delimiter `\]` and upon typing `\left[` inserts the closing `\right]`.
      */
-    private fun insertDisplayMathClose(editor: Editor): Result {
+    private fun insertDisplayMathClose(editor: Editor, file: PsiFile): Result {
         val tokenType = getTypedTokenType(editor)
         if (tokenType === LatexTypes.DISPLAY_MATH_START) {
             // Checks if a bracket has already been inserted, if so: don't insert a 2nd one.
@@ -126,7 +125,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             editor.document.insertString(offset, insertString)
             return Result.STOP
         }
-        else if (hasJustTyped("""\left[""", editor)) {
+        else if (hasJustTyped("""\left[""", editor) && !hasMatchingRight(editor, file)) {
             insertRight(editor)
         }
         return Result.CONTINUE
@@ -135,7 +134,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     /**
      * Upon typing `\(`, inserts the closing delimiter `\)`, and upon typing `\left(` inserts the closing `\right)`.
      */
-    private fun insertRobustInlineMathClose(editor: Editor): Result {
+    private fun insertRobustInlineMathClose(editor: Editor, file: LatexFile): Result {
         val tokenType = getTypedTokenType(editor)
         if (tokenType === LatexTypes.INLINE_MATH_START) {
             // Only insert backslash because the closing parenthesis is already inserted by the PairedBraceMatcher.
@@ -143,7 +142,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             return Result.STOP
         }
 
-        if (hasJustTyped("""\left(""", editor)) {
+        if (hasJustTyped("""\left(""", editor) && !hasMatchingRight(editor, file)) {
             insertRight(editor)
             return Result.STOP
         }
@@ -154,12 +153,12 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     /**
      * Upon typing `\{`, inserts the closing delimiter `\}`.
      */
-    private fun insertClosingEscapeBrace(editor: Editor): Result {
+    private fun insertClosingEscapeBrace(editor: Editor, file: PsiFile): Result {
         if (hasJustTyped("\\{", editor)) {
             editor.document.insertString(editor.caretModel.offset, "\\}")
             return Result.STOP
         }
-        else if (hasJustTyped("\\left{", editor)) {
+        else if (hasJustTyped("\\left{", editor) && !hasMatchingRight(editor, file)) {
             insertRight(editor)
             return Result.STOP
         }
@@ -185,5 +184,10 @@ class LatexTypedHandler : TypedHandlerDelegate() {
 
     private fun insertRight(editor: Editor) {
         editor.document.insertString(editor.caretModel.offset, """\right""")
+    }
+
+    private fun hasMatchingRight(editor: Editor, file: PsiFile): Boolean {
+        val matchingBraceOffset = BraceMatchingUtil.computeHighlightingAndNavigationContext(editor, file)?.navigationOffset
+        return matchingBraceOffset?.let { editor.document.getText(TextRange.from(it - 1 - """\right""".length, """\right""".length)) == """\right""" } == true
     }
 }
