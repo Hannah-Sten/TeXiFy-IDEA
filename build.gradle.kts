@@ -13,6 +13,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     id("org.jetbrains.intellij.platform") version "2.1.0"
     kotlin("jvm") version ("2.0.20")
+    kotlin("plugin.serialization") version ("2.0.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -147,6 +148,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core:3.0.0")
     implementation("io.ktor:ktor-server-jetty-jakarta:3.0.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-beta-5")
