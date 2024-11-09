@@ -10,7 +10,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 import java.io.IOException
@@ -64,6 +64,10 @@ class SystemEnvironment {
 
         val texinputs by lazy {
             runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
+        }
+
+        val texmfhome by lazy {
+            runCommand("kpsewhich", "--expand-var", "'\$TEXMFHOME'")
         }
     }
 }
@@ -160,7 +164,7 @@ private fun readInputStream(nonBlocking: Boolean, proc: Process): String {
 }
 
 /**
- * Collect texinputs from various places
+ * Collect search paths from TEXINPUTS and TEXMFHOME from run configs
  *
  * @param rootFiles If provided, filter run configurations
  * @param expandPaths Expand subdirectories
@@ -176,11 +180,18 @@ fun getTexinputsPaths(
     val allConfigurations = runManager.allConfigurationsList
         .filterIsInstance<LatexRunConfiguration>()
     val selectedConfiguratios = if (rootFiles.isEmpty()) allConfigurations else allConfigurations.filter { it.mainFile in rootFiles }
-    val configurationTexinputsVariables = selectedConfiguratios.map { it.environmentVariables.envs }.mapNotNull { it.getOrDefault("TEXINPUTS", null) }
+    val runConfigVariables = selectedConfiguratios.map { it.environmentVariables.envs }
+
+    val configurationTexinputsVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXINPUTS", null) }
+    val configurationTexmfhomeVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXMFHOME", null) }
+
+    val latexmkTexinputs = selectedConfiguratios.map { LatexmkRcFileFinder.getTexinputsVariable(latexmkSearchDirectory ?: project.guessProjectDir() ?: return@map null, it, project) }
+
+    val systemTexinputs = listOf(if (expandPaths) SystemEnvironment.texinputs else System.getenv("TEXINPUTS"))
+    val systemTexmfhome = listOf(if (expandPaths) SystemEnvironment.texmfhome else System.getenv("TEXMFHOME"))
+
     // Not sure which of these takes precedence, or if they are joined together
-    val texinputsVariables = configurationTexinputsVariables +
-        selectedConfiguratios.map { LatexmkRcFileFinder.getTexinputsVariable(latexmkSearchDirectory ?: project.guessProjectDir() ?: return@map null, it, project) } +
-        listOf(if (expandPaths) SystemEnvironment.texinputs else System.getenv("TEXINPUTS"))
+    val texinputsVariables = configurationTexinputsVariables + latexmkTexinputs + systemTexinputs
 
     for (texinputsVariable in texinputsVariables.filterNotNull()) {
         for (texInputPath in texinputsVariable.trim('\'').split(File.pathSeparator).filter { it.isNotBlank() }) {
@@ -203,5 +214,18 @@ fun getTexinputsPaths(
             }
         }
     }
+
+    // Most files are searched for in subdirectories of tex/generic or tex/latex, see kpsewhich -help-format | grep -1 sty
+    (configurationTexmfhomeVariables + systemTexmfhome)
+        .mapNotNull { it?.trim('\'', '/')?.replaceFirst("~", System.getProperty("user.home")) }
+        .mapNotNull { LocalFileSystem.getInstance().findFileByPath("$it/tex") }
+        .forEach { parent ->
+            searchPaths.addAll(
+                parent.allChildDirectories()
+                    .filter { it.isDirectory }
+                    .map { it.path }
+            )
+        }
+
     return searchPaths
 }

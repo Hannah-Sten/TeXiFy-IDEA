@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for TEXMFHOME for reference resolving
 
 ### Fixed
 
