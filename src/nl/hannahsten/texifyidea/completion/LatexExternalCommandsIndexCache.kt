@@ -6,6 +6,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
@@ -37,7 +38,7 @@ object LatexExternalCommandsIndexCache {
      * Initiate a cache fill but do not wait for it to be filled.
      */
     fun fillCacheAsync(project: Project, packagesInProject: List<LatexPackage>) {
-        if (isCacheFillInProgress.compareAndSet(expected = true, new = true)) {
+        if (DumbService.isDumb(project) || isCacheFillInProgress.compareAndSet(expected = true, new = true)) {
             return
         }
         isCacheFillInProgress.getAndSet(true)

@@ -13,6 +13,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     id("org.jetbrains.intellij.platform") version "2.1.0"
     kotlin("jvm") version ("2.0.20")
+    kotlin("plugin.serialization") version ("2.0.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -137,7 +138,7 @@ dependencies {
     // Parsing xml
     implementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.1")
 
     // Http requests
     implementation("io.ktor:ktor-client-core:3.0.0")
@@ -147,9 +148,10 @@ dependencies {
     implementation("io.ktor:ktor-server-core:3.0.0")
     implementation("io.ktor:ktor-server-jetty-jakarta:3.0.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-beta-4")
+    implementation("org.apache.maven:maven-artifact:4.0.0-beta-5")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
@@ -165,10 +167,10 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.1")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.3")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
@@ -215,6 +217,11 @@ intellijPlatform {
                 }
             }
             )
+
+        ideaVersion {
+            sinceBuild.set(properties("pluginSinceBuild"))
+            untilBuild = provider { null }
+        }
     }
 
     publishing {
