@@ -5,7 +5,7 @@ import arrow.core.getOrNone
 import arrow.core.nonEmptySetOf
 
 /**
- * @author Hannah Schellekens, Sten Wessel
+ * @author Hannah Schellekens, Sten Wessel, Florian Kraft
  */
 object LatexMathCommand {
 
@@ -16,9 +16,10 @@ object LatexMathCommand {
     private val ARROWS: Set<LatexCommand> = LatexArrowCommand.entries.toSet()
     private val GENERIC_COMMANDS: Set<LatexCommand> = LatexGenericMathCommand.entries.toSet()
     private val UNCATEGORIZED_STMARYRD_SYMBOLS: Set<LatexCommand> = LatexUncategorizedStmaryrdSymbols.entries.toSet()
+    private val DIFFCOEFF: Set<LatexCommand> = LatexDiffcoeffCommand.entries.toSet()
 
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
-        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS
+        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF
 
     private val lookup = HashMap<String, NonEmptySet<LatexCommand>>()
     private val lookupDisplay = HashMap<String, NonEmptySet<LatexCommand>>()
