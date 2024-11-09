@@ -24,6 +24,7 @@ With the Library tool window (located on the right toolbar) it is possible to co
 After connecting to a library the contents of this library will be shown in the tool window.
 The items from a remote library are available to the autocompletion of `\cite`-like commands the same way bibliography items that are included in a bibliography file are.
 When using completion on an item that is not in the local bibliography file it will be added by TeXiFy.
+This can be disabled in [Settings](TeXiFy-settings.md#option-to-disable-automatic-copy-of-bibtex-entries-from-a-remote-library).
 Note that there is a maximum limit of bibtex entries that will be downloaded by TeXiFy to avoid performance issues.
 
 **Completion of a bibliography item from a remote library. LaTeX file on top, BibTeX file on bottom, Libraries tool window on the right.**

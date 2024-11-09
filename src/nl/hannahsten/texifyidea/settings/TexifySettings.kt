@@ -42,6 +42,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
     var automaticDependencyCheck = true
+    var automaticBibtexImport = true
     var autoCompile = false
     var autoCompileOnSaveOnly = false
     var continuousPreview = false
@@ -68,6 +69,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             automaticUpDownBracket = automaticUpDownBracket,
             automaticItemInItemize = automaticItemInItemize,
             automaticDependencyCheck = automaticDependencyCheck,
+            automaticBibtexImport = automaticBibtexImport,
             autoCompile = autoCompile,
             autoCompileOnSaveOnly = autoCompileOnSaveOnly,
             continuousPreview = continuousPreview,
@@ -88,6 +90,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         automaticUpDownBracket = state.automaticUpDownBracket
         automaticItemInItemize = state.automaticItemInItemize
         automaticDependencyCheck = state.automaticDependencyCheck
+        automaticBibtexImport = state.automaticBibtexImport
         autoCompile = state.autoCompile
         autoCompileOnSaveOnly = state.autoCompileOnSaveOnly
         continuousPreview = state.continuousPreview

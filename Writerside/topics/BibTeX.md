@@ -130,6 +130,7 @@ When using BibTeX autocompletion in TeXiFy version 0.6.8 or later, besides using
 The suggestions list will show title and (to the right) the bibtex id.
 If you press <shortcut>Ctrl + Q</shortcut> when having an item selected you can also view the authors.
 When you select it, the bibtex id will be inserted.
+You can also use autocompletion for BibTeX entries stored in Mendeley, Zotero or any other local file, see the [Remote Libraries](Tool-Windows.md#remote-libraries) tool window.
 
 ![bibtex-autocomplete](bibtex-autocomplete.png)
 

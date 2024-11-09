@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add setting to disable auto-import of bibtex entries from remote libraries
 
 ### Fixed
 
