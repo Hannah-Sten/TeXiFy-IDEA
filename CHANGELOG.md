@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix default Docker image name when running Dockerized TeX Live without a project SDK
 
 ## [0.9.8]
 
