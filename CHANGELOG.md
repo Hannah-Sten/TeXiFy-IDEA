@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Avoid referencing obsolete psifiles, fix exception #3635
 
 ## [0.9.7] - 2024-07-12
 
