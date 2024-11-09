@@ -4,7 +4,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.UPGREEK
 
 /**
- * @author Hannah Schellekens
+ * @author Florian Kraft
  */
 enum class LatexUpgreekCommand(
     override val command: String,

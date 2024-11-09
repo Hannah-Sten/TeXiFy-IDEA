@@ -1,12 +1,12 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SIUNITX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DIFFCOEFF
 
 /**
- * @author Hannah Schellekens
+ * @author Florian Kraft
  */
-enum class LatexSiunitxCommand(
+enum class LatexDiffcoeffCommand(
     override val command: String,
     override vararg val arguments: Argument = emptyArray(),
     override val dependency: LatexPackage = LatexPackage.DEFAULT,
