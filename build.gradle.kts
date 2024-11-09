@@ -217,6 +217,11 @@ intellijPlatform {
                 }
             }
             )
+
+        ideaVersion {
+            sinceBuild.set(properties("pluginSinceBuild"))
+            untilBuild = provider { null }
+        }
     }
 
     publishing {
