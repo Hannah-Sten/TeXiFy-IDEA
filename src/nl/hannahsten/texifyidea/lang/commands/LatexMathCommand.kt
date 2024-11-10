@@ -17,9 +17,10 @@ object LatexMathCommand {
     private val GENERIC_COMMANDS: Set<LatexCommand> = LatexGenericMathCommand.entries.toSet()
     private val UNCATEGORIZED_STMARYRD_SYMBOLS: Set<LatexCommand> = LatexUncategorizedStmaryrdSymbols.entries.toSet()
     private val DIFFCOEFF: Set<LatexCommand> = LatexDiffcoeffCommand.entries.toSet()
+    private val UPGREEK: Set<LatexCommand> = LatexUpgreekCommand.entries.toSet()
 
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
-        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF
+        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK
 
     private val lookup = HashMap<String, NonEmptySet<LatexCommand>>()
     private val lookupDisplay = HashMap<String, NonEmptySet<LatexCommand>>()
