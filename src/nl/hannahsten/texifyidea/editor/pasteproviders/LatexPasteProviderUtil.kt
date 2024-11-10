@@ -62,4 +62,4 @@ private val tagDependencies = hashMapOf(
 )
 
 fun htmlTextIsFormattable(htmlIn: String): Boolean =
-    (PandocHtmlToLatexConverter.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
+    (PandocHtmlToLatexConverter.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it") } && closingTags.keys.any { htmlIn.contains("</$it>") }
