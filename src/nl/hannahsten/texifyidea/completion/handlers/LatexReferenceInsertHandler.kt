@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import nl.hannahsten.texifyidea.file.BibtexFile
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.bibtexIdsInFileSet
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
@@ -17,7 +18,7 @@ class LatexReferenceInsertHandler(private val remote: Boolean = false, private v
         val model = context.editor.caretModel
         model.moveToOffset(model.offset + 1)
 
-        if (remote) {
+        if (remote and TexifySettings.getInstance().automaticBibtexImport) {
             remoteBib ?: return
             val bibsInFile = context.file.originalFile.bibtexIdsInFileSet()
             // Add the bib item after the last item we found in the file set, and hope that that makes sense...

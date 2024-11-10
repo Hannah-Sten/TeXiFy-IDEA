@@ -9,6 +9,7 @@ data class TexifySettingsState(
     var automaticUpDownBracket: Boolean = true,
     var automaticItemInItemize: Boolean = true,
     var automaticDependencyCheck: Boolean = true,
+    var automaticBibtexImport: Boolean = true,
     var autoCompile: Boolean = false,
     var autoCompileOnSaveOnly: Boolean = false,
     var continuousPreview: Boolean = false,

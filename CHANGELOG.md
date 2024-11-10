@@ -3,9 +3,28 @@
 ## [Unreleased]
 
 ### Added
+* Add setting to disable auto-import of bibtex entries from remote libraries
 
 ### Fixed
+* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
 * Avoid referencing obsolete psifiles, fix exception #3635
+
+## [0.9.8]
+
+Welcome to TeXiFy IDEA 0.9.8! This release adds a new intention, improves autocompletion and fixes some exceptions.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Add intention to swap command arguments, by @jojo2357
+* Insert \right) when typing \left( without using autocomplete, by @slideclimb
+* Update siunix commands in autocompletion, by @Toseflo
+
+### Fixed
+* Fix crash in structure view if section command has no parameters
+* Fix exceptions #3698, #3672, #3699 and #3659
 
 ## [0.9.7] - 2024-07-12
 
@@ -381,7 +400,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...HEAD
+[0.9.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5

@@ -23,6 +23,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var automaticUpDownBracket: JBCheckBox? = null
     private var automaticItemInItemize: JBCheckBox? = null
     private var automaticDependencyCheck: JBCheckBox? = null
+    private var automaticBibtexImport: JBCheckBox? = null
     private var autoCompile: JBCheckBox? = null
     private var autoCompileOnSaveOnly: JBCheckBox? = null
     private var continuousPreview: JBCheckBox? = null
@@ -43,6 +44,7 @@ class TexifyConfigurable : SearchableConfigurable {
         Pair(::automaticUpDownBracket, settings::automaticUpDownBracket),
         Pair(::automaticItemInItemize, settings::automaticItemInItemize),
         Pair(::automaticDependencyCheck, settings::automaticDependencyCheck),
+        Pair(::automaticBibtexImport, settings::automaticBibtexImport),
         Pair(::autoCompile, settings::autoCompile),
         Pair(::autoCompileOnSaveOnly, settings::autoCompileOnSaveOnly),
         Pair(::continuousPreview, settings::continuousPreview),
@@ -66,6 +68,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                     automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
                     automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
+                    automaticBibtexImport = addCheckbox("Automatically copy BibTeX entries from remote libraries to the local library")
                     autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
                     autoCompileOnSaveOnly = addCheckbox("Automatic compilation only after document save")
                     continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")

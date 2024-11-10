@@ -33,8 +33,9 @@ open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTr
     }
 
     override fun getPresentation(): ItemPresentation {
-        assert(element is BibtexFile) { "Expected BibtexFile, got ${element.javaClass}" }
-        return BibtexFilePresentation(element as BibtexFile)
+        // File is usually a BibtexFile, but can be PsiPlainTextFile sometimes
+        assert(element is PsiFile) { "Expected PsiFile, got ${element.javaClass}" }
+        return BibtexFilePresentation(element as PsiFile)
     }
 
     override fun getChildren(): Array<TreeElement> {
