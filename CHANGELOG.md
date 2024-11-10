@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add setting to disable auto-import of bibtex entries from remote libraries
 
 ### Fixed
 * Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
