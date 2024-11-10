@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexTodoCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 
@@ -498,5 +499,12 @@ object CommandMagic {
      */
     val foldableFootnotes = listOf(
         FOOTNOTE.cmd, FOOTCITE.cmd
+    )
+
+    /**
+     * Commands that should be contributed to the todo toolwindow.
+     */
+    val todoCommands = setOf(
+        LatexTodoCommand.TODO.cmd, LatexTodoCommand.MISSINGFIGURE.cmd
     )
 }
