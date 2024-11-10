@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DIFFCOEFF
 
 /**
  * @author Florian Kraft
@@ -12,7 +11,6 @@ enum class LatexDiffcoeffCommand(
     override val dependency: LatexPackage = LatexPackage.DIFFCOEFF,
     override val display: String? = null,
     override val isMathMode: Boolean = true,
-    val collapse: Boolean = false
 ) : LatexCommand {
 
     DIFF("diff", "order-spec".asOptional(), "differentiand".asRequired(), "variable(s)".asRequired(), "pt of eval".asOptional()),
