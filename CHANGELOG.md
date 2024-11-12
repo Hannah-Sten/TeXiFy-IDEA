@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
 
 ### Fixed
 * Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
