@@ -173,7 +173,7 @@ class InputFileReference(
         }
 
         // Look for packages/files elsewhere using the kpsewhich command.
-        if (targetFile == null && lookForInstalledPackages) {
+        if (targetFile == null && lookForInstalledPackages && !element.project.isTestProject()) {
             targetFile = element.getFileNameWithExtensions(processedKey)
                 .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
                 .firstNotNullOfOrNull { findFileByPath(it) }
