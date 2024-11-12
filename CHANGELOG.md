@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
 
 ## [0.9.9-alpha.2] - 2024-11-12
 
