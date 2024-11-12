@@ -38,10 +38,12 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
         // Find all duplicates.
         val packages = file.includedPackages(onlyDirectInclusions = true).map { it.name }
+        // When using the subfiles package, there will be multiple \documentclass{subfiles} commands
+        val ignoredPackages = setOf("subfiles")
         val covered = HashSet<String>()
         val duplicates = HashSet<String>()
         packages.filterNotTo(duplicates) {
-            covered.add(it)
+            covered.add(it) || it in ignoredPackages
         }
 
         // Duplicates!
