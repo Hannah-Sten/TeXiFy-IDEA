@@ -209,6 +209,12 @@ fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
 fun String.runCommand(workingDirectory: File? = null) =
     runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
+/**
+ * See [String.runCommand] but implemented in a non-blocking way.
+ */
+suspend fun String.runCommandNonBlocking(workingDirectory: File? = null) =
+    runCommandNonBlocking(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+
 fun String.runCommandWithExitCode(workingDirectory: File? = null) =
     runCommandWithExitCode(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
