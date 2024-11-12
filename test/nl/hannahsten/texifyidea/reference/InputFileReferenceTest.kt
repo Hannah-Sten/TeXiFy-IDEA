@@ -22,4 +22,10 @@ class InputFileReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("newname.tex")
         myFixture.checkResult("\\include{newname}")
     }
+
+    fun testRenameSubfiles() {
+        myFixture.configureByFiles("simplesubfile/subdir/onedown.tex", "simplesubfile/main.tex")
+        myFixture.renameElementAtCaret("newmain.tex")
+        myFixture.checkResultByFile("simplesubfile/subdir/onedown-after.tex")
+    }
 }

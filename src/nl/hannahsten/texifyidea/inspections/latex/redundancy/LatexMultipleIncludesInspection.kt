@@ -7,6 +7,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
@@ -39,7 +40,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         // Find all duplicates.
         val packages = file.includedPackages(onlyDirectInclusions = true).map { it.name }
         // When using the subfiles package, there will be multiple \documentclass{subfiles} commands
-        val ignoredPackages = setOf("subfiles")
+        val ignoredPackages = setOf(LatexPackage.SUBFILES.name)
         val covered = HashSet<String>()
         val duplicates = HashSet<String>()
         packages.filterNotTo(duplicates) {
