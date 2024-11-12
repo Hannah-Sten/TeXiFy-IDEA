@@ -20,6 +20,7 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
@@ -113,7 +114,7 @@ class LatexRunConfiguration(
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
-    var psiFile: PsiFile? = null
+    var psiFile: SmartPsiElementPointer<PsiFile>? = null
 
     /** Path to the directory containing the output files. */
     var outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
@@ -429,7 +430,7 @@ class LatexRunConfiguration(
     internal fun generateBibRunConfig() {
         // Get a pair of Bib compiler and compiler arguments.
         val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
-            val runCommand = psiFile?.allParentMagicComments()
+            val runCommand = psiFile?.element?.allParentMagicComments()
                 ?.value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
             val compilerString = if (runCommand.contains(' ')) {
                 runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim()
@@ -444,29 +445,29 @@ class LatexRunConfiguration(
 
         val defaultCompiler = when {
             compilerFromMagicComment != null -> compilerFromMagicComment!!.first
-            psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
-            psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
+            psiFile?.element?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
+            psiFile?.element?.usesBiber() == true -> BibliographyCompiler.BIBER
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile?.includedPackages()?.contains(LatexPackage.CHAPTERBIB) == true
+        val usesChapterbib = psiFile?.element?.includedPackages()?.contains(LatexPackage.CHAPTERBIB) == true
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
         }
         else if (psiFile != null) {
-            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd }
+            val allBibliographyCommands = psiFile?.element?.commandsInFileSet()?.filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd } ?: emptyList()
 
             // We know that there can only be one bibliography per top-level \include,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
-            psiFile!!.allCommands()
-                .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
-                .flatMap { command -> command.getRequiredParameters() }
-                .forEach { filename ->
+            psiFile?.element?.allCommands()
+                ?.filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
+                ?.flatMap { command -> command.getRequiredParameters() }
+                ?.forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile!!.findFile(filename, supportsAnyExtension = true)
+                    val chapterMainFile = psiFile?.element?.findFile(filename, supportsAnyExtension = true)
                         ?: return@forEach
 
                     val chapterFiles = chapterMainFile.referencedFileSet()
