@@ -13,11 +13,8 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvi
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.expandCommandsOnce
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
-import nl.hannahsten.texifyidea.util.getTexinputsPaths
-import nl.hannahsten.texifyidea.util.includedPackages
-import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
