@@ -13,18 +13,18 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * @author Hannah Schellekens
@@ -72,8 +72,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
         val docClass = LatexCommandsIndex.Util.getItems(element.getProject(), scope).asSequence()
-            .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.getRequiredParameters().isNotEmpty() }
-            .map { cmd -> cmd.getRequiredParameters()[0] }
+            .filter { cmd -> cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash && cmd.getRequiredParameters().isNotEmpty() }
+            .mapNotNull { cmd -> cmd.getRequiredParameters().firstOrNull() }
             .firstOrNull() ?: "article"
 
         // Fetch all commands in the active file.
@@ -87,7 +87,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Add sectioning.
         val sections = ArrayDeque<LatexStructureViewCommandElement>()
         for (currentCmd in commands) {
-            val token = currentCmd.commandToken.text
+            val token = currentCmd.name
 
             // Update counter.
             if (token == "\\addtocounter" || token == "\\setcounter") {
