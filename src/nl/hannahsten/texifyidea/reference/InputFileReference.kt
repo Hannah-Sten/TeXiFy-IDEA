@@ -13,9 +13,11 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvi
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.getTexinputsPaths
+import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
@@ -144,8 +146,8 @@ class InputFileReference(
             }
         }
 
-        // Try content roots
-        if (targetFile == null && LatexSdkUtil.isMiktexAvailable) {
+        // Try content roots, also for non-MiKTeX situations to allow using this as a workaround in case references can't be resolved the regular way
+        if (targetFile == null) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
                 targetFile = moduleRoot.findFile(processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
