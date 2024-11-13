@@ -373,7 +373,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     @Suppress("SameParameterValue")
     private fun createDockerCommand(runConfig: LatexRunConfiguration, dockerAuxilDir: String?, dockerOutputDir: String?, mainFile: VirtualFile, command: MutableList<String>) {
-        val isMiktex = runConfig.getLatexDistributionType() == LatexDistributionType.MIKTEX
+        val isMiktex = runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX
 
         if (isMiktex) {
             // See https://hub.docker.com/r/miktex/miktex
@@ -420,7 +420,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
         }
 
-        parameterList.add((sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName ?: "miktex:latest")
+        val sdkImage = (sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName
+        val default = if (isMiktex) "miktex/miktex:latest" else "texlive/texlive:latest"
+        parameterList.add(sdkImage ?: default)
 
         command.addAll(0, parameterList)
     }

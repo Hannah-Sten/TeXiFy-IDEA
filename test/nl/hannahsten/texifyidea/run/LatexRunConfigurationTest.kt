@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
+import com.intellij.psi.createSmartPointer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -36,7 +37,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
-        runConfig.psiFile = mainFile
+        runConfig.psiFile = mainFile.createSmartPointer()
         runConfig.setMainFile("main.tex")
         runConfig.generateBibRunConfig()
         assertTrue(runConfig.bibRunConfigs.isNotEmpty())

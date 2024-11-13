@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
+import com.intellij.psi.createSmartPointer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -18,7 +19,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
-        runConfig.psiFile = mainFile
+        runConfig.psiFile = mainFile.createSmartPointer()
         runConfig.setMainFile("main.tex")
         val outPath = LatexOutputPath("out", runConfig.getMainFileContentRoot(), runConfig.mainFile, project)
         // Cannot mkdirs in test, so will default to src

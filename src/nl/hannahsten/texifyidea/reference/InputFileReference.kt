@@ -44,11 +44,8 @@ class InputFileReference(
          * newElementName is just a filename which we have to replace,
          * or a full relative path (in which case we replace the whole path).
          */
-        fun handleElementRename(command: LatexCommands, newElementName: String, elementNameIsJustFilename: Boolean): PsiElement {
+        fun handleElementRename(command: LatexCommands, newElementName: String, elementNameIsJustFilename: Boolean, key: String, range: TextRange): PsiElement {
             // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
-            // It seems to be problematic to find the old filename we want to replace
-            // Since the parameter content may be a path, but we are just given a filename, just replace the filename
-            // We guess the filename is after the last occurrence of /
             val oldNode = command.node
 
             val newName = if ((oldNode?.psi as? LatexCommands)?.name in CommandMagic.illegalExtensions.keys) {
@@ -58,18 +55,12 @@ class InputFileReference(
                 newElementName
             }
 
-            val defaultNewText = "${command.name}{$newName}"
-            // Assumes that it is the last parameter, but at least leaves the options intact
-            val default = oldNode?.text?.replaceAfterLast('{', "$newName}", defaultNewText) ?: defaultNewText
-
             // Recall that \ is a file separator on Windows
-            val newText = if (elementNameIsJustFilename) {
-                oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
-                    ?.let { "\\" + it } ?: default
-            }
-            else {
-                default
-            }
+            val newKey = if (elementNameIsJustFilename) key.replaceAfterLast('/', newName, newName) else newName
+
+            // The file may be in a required or optional parameter
+            val newText = command.text.replaceRange(range.toIntRange(), newKey)
+
             val newNode = LatexPsiHelper(command.project).createFromText(newText).firstChild.node ?: return command
             if (oldNode == null) {
                 command.parent?.node?.addChild(newNode)
@@ -114,7 +105,10 @@ class InputFileReference(
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles().mapNotNull { it.virtualFile }
+        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles()
+            // If the current file is a root file, then we assume paths have to be relative to this file. In particular, when using subfiles then parts that are relative to one of the other root files should not be valid
+            .let { if (element.containingFile in it) listOf(element.containingFile) else it }
+            .mapNotNull { it.virtualFile }
         val rootDirectories = rootFiles.mapNotNull { it.parent }
 
         // Check environment variables
@@ -172,7 +166,7 @@ class InputFileReference(
         }
 
         // Look for packages/files elsewhere using the kpsewhich command.
-        if (targetFile == null && lookForInstalledPackages) {
+        if (targetFile == null && lookForInstalledPackages && !element.project.isTestProject()) {
             targetFile = element.getFileNameWithExtensions(processedKey)
                 .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
                 .firstNotNullOfOrNull { findFileByPath(it) }
@@ -218,7 +212,7 @@ class InputFileReference(
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {
-        return handleElementRename(element, newElementName, true)
+        return handleElementRename(element, newElementName, true, key, range)
     }
 
     // Required for moving referenced files
@@ -226,7 +220,7 @@ class InputFileReference(
         val newFile = givenElement as? PsiFile ?: return this.element
         // Assume LaTeX will accept paths relative to the root file
         val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
-        return handleElementRename(element, newFileName, false)
+        return handleElementRename(element, newFileName, false, key, range)
     }
 
     /**

@@ -52,6 +52,11 @@ For more information, see [Automagically import packages of common commands](Edi
 
 If you disable this, consider if TeXiFy should support your use case and please open an issue if so.
 
+## Option to disable automatic copy of BibTeX entries from a remote library
+
+By default, when using a remote library (see [Tool Windows](Tool-Windows.md#remote-libraries)), any entries that you select in autocompletion will be copied to the local BibTeX file.
+This settings disables that, which can be useful if you are including BibTeX files in a way that cannot be parsed by TeXiFy.
+
 ## Option to enable automatic compilation
 _Since b0.6.8_
 

@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
+import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
@@ -38,7 +39,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
 
         // Change the main file as given by the template run configuration to the current file
         runConfiguration.mainFile = mainFile
-        runConfiguration.psiFile = container
+        runConfiguration.psiFile = container.createSmartPointer()
         runConfiguration.setSuggestedName()
         // Avoid changing the outputPath of the template run config (which is a shallow clone)
         runConfiguration.outputPath = runConfiguration.outputPath.clone()

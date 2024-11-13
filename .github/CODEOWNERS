@@ -1,4 +1,3 @@
-# Global owners, automatically request review when pull request is submitted
-*       @HannahSchellekens @stenwessel @PHPirates @slideclimb
-
-# Patterns below override the rules above
+*       @PHPirates
+remotelibraries/ @PHPirates @slideclimb
+library/ @PHPirates @slideclimb
