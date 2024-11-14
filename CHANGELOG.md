@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Support references in \subfix command
 
 ### Fixed
 
