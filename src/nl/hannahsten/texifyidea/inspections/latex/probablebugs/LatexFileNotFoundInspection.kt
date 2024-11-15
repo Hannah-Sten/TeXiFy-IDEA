@@ -5,6 +5,7 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
@@ -75,7 +76,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         // Create quick fixes for all extensions
         extensions.forEach {
-            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer()))
+            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer(), reference.key, reference.range))
         }
 
         // Find expected extension
@@ -100,7 +101,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
      *
      * @param filePath Path relative to the root file parent.
      */
-    class CreateNewFileWithDialogQuickFix(private val filePath: String, private val extension: String, private val elementPointer: SmartPsiElementPointer<LatexCommands>) : LocalQuickFix {
+    class CreateNewFileWithDialogQuickFix(private val filePath: String, private val extension: String, private val elementPointer: SmartPsiElementPointer<LatexCommands>, private val key: String, private val range: TextRange) : LocalQuickFix {
 
         override fun getFamilyName() = "Create file ${filePath.appendExtension(extension)}"
 
@@ -126,7 +127,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     CommandMagic.illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
                 }
 
-                InputFileReference.handleElementRename(element, fileNameRelativeToRoot, false)
+                InputFileReference.handleElementRename(element, fileNameRelativeToRoot, false, key, range)
             }
         }
     }

@@ -1,21 +1,16 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.execution.process.ProcessNotCreatedException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
-import java.io.IOException
-import java.util.concurrent.TimeUnit
-import javax.swing.SwingUtilities
 
 /**
  * Information about the system other than the LatexDistribution or the OS.
@@ -65,102 +60,15 @@ class SystemEnvironment {
         val texinputs by lazy {
             runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
         }
-    }
-}
 
-/**
- * Run a command in the terminal.
- *
- * @return The output of the command or null if an exception was thrown.
- */
-fun runCommand(vararg commands: String, workingDirectory: File? = null): String? {
-    return runCommandWithExitCode(*commands, workingDirectory = workingDirectory).first
-}
-
-/**
- * See [runCommand], but also returns exit code.
- *
- * @param returnExceptionMessage Whether to return exception messages if exceptions are thrown.
- * @param nonBlocking If true, the function will not block waiting for output
- * @param inputString If provided, this will be written to the process outputStream before starting the process.
- */
-fun runCommandWithExitCode(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3, returnExceptionMessage: Boolean = false, nonBlocking: Boolean = false, inputString: String = ""): Pair<String?, Int> {
-    Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
-    return try {
-        val proc = GeneralCommandLine(*commands)
-            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .withWorkDirectory(workingDirectory)
-            .createProcess()
-
-        if (inputString.isNotBlank()) {
-            proc.outputStream.bufferedWriter().apply {
-                write(inputString)
-                close()
-            }
-        }
-
-        if (proc.waitFor(timeout, TimeUnit.SECONDS)) {
-            val output = readInputStream(nonBlocking, proc)
-            Log.debug("${commands.firstOrNull()} exited with ${proc.exitValue()} ${output.take(100)}")
-            return Pair(output, proc.exitValue())
-        }
-        else {
-            var output = ""
-            // If the program has timed out, something is stuck so we are not going to wait until it prints its stdout/stderr, we just check if ready and otherwise are out of luck
-            if (proc.inputStream.bufferedReader().ready()) {
-                output += proc.inputStream.bufferedReader().readText().trim()
-            }
-            if (proc.errorStream.bufferedReader().ready()) {
-                output += proc.errorStream.bufferedReader().readText().trim()
-            }
-            proc.destroy()
-            proc.waitFor()
-            Log.debug("${commands.firstOrNull()} exited ${proc.exitValue()} with timeout")
-            Pair(output, proc.exitValue())
-        }
-    }
-    catch (e: IOException) {
-        Log.debug(e.message ?: "Unknown IOException occurred")
-        if (!returnExceptionMessage) {
-            Pair(null, -1) // Don't print the stacktrace because that is confusing.
-        }
-        else {
-            Pair(e.message, -1)
-        }
-    }
-    catch (e: ProcessNotCreatedException) {
-        Log.debug(e.message ?: "Unknown ProcessNotCreatedException occurred")
-        // e.g. if the command is just trying if a program can be run or not, and it's not the case
-        if (!returnExceptionMessage) {
-            Pair(null, -1)
-        }
-        else {
-            Pair(e.message, -1)
+        val texmfhome by lazy {
+            runCommand("kpsewhich", "--expand-var", "'\$TEXMFHOME'")
         }
     }
 }
 
 /**
- * Read input and error streams. If non-blocking, we will skip reading the streams if they are not ready.
- */
-private fun readInputStream(nonBlocking: Boolean, proc: Process): String {
-    var output = ""
-    if (nonBlocking) {
-        if (proc.inputStream.bufferedReader().ready()) {
-            output += proc.inputStream.bufferedReader().readText().trim()
-        }
-        if (proc.errorStream.bufferedReader().ready()) {
-            output += proc.errorStream.bufferedReader().readText().trim()
-        }
-    }
-    else {
-        output = proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
-    }
-    return output
-}
-
-/**
- * Collect texinputs from various places
+ * Collect search paths from TEXINPUTS and TEXMFHOME from run configs
  *
  * @param rootFiles If provided, filter run configurations
  * @param expandPaths Expand subdirectories
@@ -176,11 +84,18 @@ fun getTexinputsPaths(
     val allConfigurations = runManager.allConfigurationsList
         .filterIsInstance<LatexRunConfiguration>()
     val selectedConfiguratios = if (rootFiles.isEmpty()) allConfigurations else allConfigurations.filter { it.mainFile in rootFiles }
-    val configurationTexinputsVariables = selectedConfiguratios.map { it.environmentVariables.envs }.mapNotNull { it.getOrDefault("TEXINPUTS", null) }
+    val runConfigVariables = selectedConfiguratios.map { it.environmentVariables.envs }
+
+    val configurationTexinputsVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXINPUTS", null) }
+    val configurationTexmfhomeVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXMFHOME", null) }
+
+    val latexmkTexinputs = selectedConfiguratios.map { LatexmkRcFileFinder.getTexinputsVariable(latexmkSearchDirectory ?: project.guessProjectDir() ?: return@map null, it, project) }
+
+    val systemTexinputs = listOf(if (expandPaths) SystemEnvironment.texinputs else System.getenv("TEXINPUTS"))
+    val systemTexmfhome = listOf(if (expandPaths) SystemEnvironment.texmfhome else System.getenv("TEXMFHOME"))
+
     // Not sure which of these takes precedence, or if they are joined together
-    val texinputsVariables = configurationTexinputsVariables +
-        selectedConfiguratios.map { LatexmkRcFileFinder.getTexinputsVariable(latexmkSearchDirectory ?: project.guessProjectDir() ?: return@map null, it, project) } +
-        listOf(if (expandPaths) SystemEnvironment.texinputs else System.getenv("TEXINPUTS"))
+    val texinputsVariables = configurationTexinputsVariables + latexmkTexinputs + systemTexinputs
 
     for (texinputsVariable in texinputsVariables.filterNotNull()) {
         for (texInputPath in texinputsVariable.trim('\'').split(File.pathSeparator).filter { it.isNotBlank() }) {
@@ -203,5 +118,18 @@ fun getTexinputsPaths(
             }
         }
     }
+
+    // Most files are searched for in subdirectories of tex/generic or tex/latex, see kpsewhich -help-format | grep -1 sty
+    (configurationTexmfhomeVariables + systemTexmfhome)
+        .mapNotNull { it?.trim('\'', '/')?.replaceFirst("~", System.getProperty("user.home")) }
+        .mapNotNull { LocalFileSystem.getInstance().findFileByPath("$it/tex") }
+        .forEach { parent ->
+            searchPaths.addAll(
+                parent.allChildDirectories()
+                    .filter { it.isDirectory }
+                    .map { it.path }
+            )
+        }
+
     return searchPaths
 }
