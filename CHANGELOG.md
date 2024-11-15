@@ -6,6 +6,27 @@
 
 ### Fixed
 
+## [0.9.9-alpha.5] - 2024-11-15
+
+### Added
+
+* Also index bibliography files that are included but are outside the project
+* Add support for TEXMFHOME for reference resolving
+* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
+* Improve reference resolving when using subfiles
+* Add setting to disable auto-import of bibtex entries from remote libraries
+
+### Fixed
+
+* Fix html check when pasting tables from Excel
+* Fix default Docker image name when running Dockerized TeX Live without a project SDK
+* Always use content roots to resolve references
+* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
+* Fix rename of files when using subfiles
+* Fix incorrect 'package already included' warning for the subfiles package
+* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
+* Avoid referencing obsolete psifiles, fix exception #3635
+
 ## [0.9.9-alpha.4] - 2024-11-13
 
 ### Added
@@ -456,7 +477,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.4...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.5...HEAD
+[0.9.9-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.4...v0.9.9-alpha.5
 [0.9.9-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.3...v0.9.9-alpha.4
 [0.9.9-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.2...v0.9.9-alpha.3
 [0.9.9-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.1...v0.9.9-alpha.2

@@ -59,6 +59,8 @@ class LatexParserTest : BasePlatformTestCase() {
             """
             \newcommand{\xyz}{\@ifnextchar[{\@xyz}{\@xyz[default]}}
             \def\@xyz[#1]#2{do something with #1 and #2}
+            
+            \newcommand{\abc}{\@ifnextchar${'$'}{Math coming: }{No math}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
