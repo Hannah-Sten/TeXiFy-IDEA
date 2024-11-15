@@ -76,8 +76,8 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
         if (Cache.externalDirectFileInclusions == null) {
             if (!DumbService.isDumb(project)) {
-                // For now, just do this for bibliography commands, as there this is most common
-                val externalFiles = LatexCommandsIndex.Util.getCommandsByNames(CommandMagic.bibliographyIncludeCommands.toSet(), project, GlobalSearchScope.projectScope(project))
+                // For now, just do this for bibliography and direct input commands, as there this is most common
+                val externalFiles = LatexCommandsIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
                     // We can't add single files, so take the parent
                     .mapNotNull {
                         val path = it.requiredParameter(0) ?: return@mapNotNull null
