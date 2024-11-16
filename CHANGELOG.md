@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Use xdg-mime to choose a default pdf viewer in the run configuration template
 
 ### Fixed
 * Improve error report submitter for long stacktraces
