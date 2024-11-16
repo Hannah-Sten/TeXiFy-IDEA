@@ -161,6 +161,8 @@ fun PsiElement.inMathContext(): Boolean {
 fun PsiElement.inDirectMathContext(): Boolean =
     hasParent(LatexMathContent::class)
         || hasParent(LatexDisplayMath::class)
+        || hasParent(LatexMathEnvironment::class)
+        || hasParent(LatexInlineMath::class)
         || inDirectEnvironmentContext(Environment.Context.MATH)
 
 /**
