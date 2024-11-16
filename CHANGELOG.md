@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Don't insert the right brace when in front of text
 
 ### Fixed
 * Improve error report submitter for long stacktraces
