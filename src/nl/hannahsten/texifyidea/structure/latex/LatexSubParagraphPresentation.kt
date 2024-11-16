@@ -13,11 +13,11 @@ class LatexSubParagraphPresentation(subParagraphCommand: LatexCommands) : Editab
     private var hint = ""
 
     init {
-        if (subParagraphCommand.commandToken.text != "\\subparagraph") {
+        if (subParagraphCommand.name != "\\subparagraph") {
             throw IllegalArgumentException("command is no \\subparagraph-command")
         }
 
-        this.subParagraphName = subParagraphCommand.getRequiredParameters()[0]
+        this.subParagraphName = subParagraphCommand.getRequiredParameters().firstOrNull() ?: "Unknown subparagraph"
     }
 
     override fun getPresentableText() = subParagraphName

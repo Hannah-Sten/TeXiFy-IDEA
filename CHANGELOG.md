@@ -6,6 +6,7 @@
 * Use xdg-mime to choose a default pdf viewer in the run configuration template
 
 ### Fixed
+* Fix exceptions in structure view when command parameters are missing
 * Improve error report submitter for long stacktraces
 
 ## [0.9.9-alpha.4] - 2024-11-13
