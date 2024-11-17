@@ -6,7 +6,10 @@ import com.intellij.formatting.ChildAttributes
 import com.intellij.formatting.Indent
 import com.intellij.lang.ASTNode
 import nl.hannahsten.texifyidea.formatting.LatexBlock
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexBeginCommand
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
@@ -30,7 +33,7 @@ object LatexEnterHandler {
         }
 
         val type = node.elementType
-        if (type === LatexTypes.DISPLAY_MATH || shouldIndentEnvironment) {
+        if (type == LatexTypes.DISPLAY_MATH || shouldIndentEnvironment || type == LatexTypes.LEFT_RIGHT || type == LatexTypes.LEFT_RIGHT_CONTENT) {
             return ChildAttributes(Indent.getNormalIndent(true), null)
         }
         val indentSections = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_SECTIONS

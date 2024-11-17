@@ -155,6 +155,44 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testPictureParameter() {
+        """
+        \begin{textblock*}{\paperwidth}[0.5,0.5](0.5\paperwidth,0.5\paperheight)
+            Thank you for your attention.
+        \end{textblock*}
+        """.trimIndent() `should be reformatted to` """
+        \begin{textblock*}{\paperwidth}[0.5,0.5](0.5\paperwidth,0.5\paperheight)
+            Thank you for your attention.
+        \end{textblock*}
+        """.trimIndent()
+    }
+
+    fun testLeftRight() {
+        """
+        \[
+        \left(
+        \xi
+        a + b
+        + c
+        \left[
+        \frac a b
+        \right]
+        \right)
+        \]
+        """.trimIndent() `should be reformatted to` """
+         \[
+             \left(
+                 \xi
+                 a + b
+                 + c
+                 \left[
+                     \frac a b
+                 \right]
+             \right)
+         \]
+        """.trimIndent()
+    }
+
     fun `test formatter off and on comments`() {
         """
 % @formatter:off
