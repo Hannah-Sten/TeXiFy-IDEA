@@ -126,7 +126,7 @@ picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
 optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ANGLE_PARAM
 // Cannot contain ( or )
 picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF
 
