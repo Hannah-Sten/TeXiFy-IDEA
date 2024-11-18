@@ -4,6 +4,7 @@
 
 ### Added
 * Use xdg-mime to choose a default pdf viewer in the run configuration template
+* Don't insert the right brace when in front of text
 
 ### Fixed
 * Fix exceptions in structure view when command parameters are missing
