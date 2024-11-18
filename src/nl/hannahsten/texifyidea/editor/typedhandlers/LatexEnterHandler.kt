@@ -33,9 +33,10 @@ object LatexEnterHandler {
         }
 
         val type = node.elementType
-        if (type == LatexTypes.DISPLAY_MATH || shouldIndentEnvironment || type == LatexTypes.LEFT_RIGHT || type == LatexTypes.LEFT_RIGHT_CONTENT) {
+        if (type == LatexTypes.DISPLAY_MATH || shouldIndentEnvironment || type == LatexTypes.LEFT_RIGHT) {
             return ChildAttributes(Indent.getNormalIndent(true), null)
         }
+
         val indentSections = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_SECTIONS
         if (indentSections) {
             // This function will be called on the block for which the caret is adding something in the children at the given index,
