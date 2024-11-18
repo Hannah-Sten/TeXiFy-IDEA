@@ -4,9 +4,12 @@
 
 ### Added
 * Use xdg-mime to choose a default pdf viewer in the run configuration template
+* Don't insert the right brace when in front of text
 
 ### Fixed
+* Fix exceptions in structure view when command parameters are missing
 * Improve error report submitter for long stacktraces
+* Fix a parser issue with bidirectional arrow in TikZ
 
 ## [0.9.9-alpha.4] - 2024-11-13
 
