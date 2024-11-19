@@ -25,6 +25,9 @@ object LatexExternalPackageInclusionCache {
     fun getAllPackageInclusions(project: Project): Map<LatexPackage, Set<LatexPackage>> {
         if (cache.isNotEmpty() || DumbService.isDumb(project)) return cache
 
+        // Make sure the index is ready (#3754)
+        if (FileBasedIndex.getInstance().getIndexModificationStamp(LatexExternalPackageInclusionIndex.Cache.id, project) < 0) return cache
+
         val directChildren = mutableMapOf<LatexPackage, MutableSet<LatexPackage>>()
 
         // Get direct children from the index
