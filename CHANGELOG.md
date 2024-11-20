@@ -10,6 +10,7 @@
 * Fix exceptions in structure view when command parameters are missing
 * Improve error report submitter for long stacktraces
 * Fix a parser issue with bidirectional arrow in TikZ
+* Fix a parse error when using \else with a user defined \if-command
 
 ## [0.9.9-alpha.4] - 2024-11-13
 
