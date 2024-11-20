@@ -61,14 +61,17 @@ class LatexTypedHandlerTest : BasePlatformTestCase() {
     }
 
     fun testLeftRight() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \[
                 \left(
                     a+b<caret>
                     \xi
                 \right)
             \]
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.type("\n+c")
         myFixture.checkResult(
             """
