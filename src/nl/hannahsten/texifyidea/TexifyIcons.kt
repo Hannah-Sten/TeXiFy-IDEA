@@ -290,7 +290,7 @@ object TexifyIcons {
             "cls" -> CLASS_FILE
             "dtx" -> DOCUMENTED_LATEX_SOURCE
             "sty" -> STYLE_FILE
-            "txt" -> TEXT_FILE
+//            "txt" -> TEXT_FILE
             "tikz" -> TIKZ_FILE
             "log" -> TEXT_FILE
             "pdf" -> PDF_FILE
