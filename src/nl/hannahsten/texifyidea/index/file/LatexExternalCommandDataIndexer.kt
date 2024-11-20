@@ -38,7 +38,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
          *
          * Similar: \DeclareTextSymbol, \DeclareTextAccent, \DeclareTextComposite, \DeclareTextCompositeCommand
          */
-        val declareTextSymbolRegex = """\\DeclareText(?:Symbol|Accent)\{(?<key>[^}]+)}(?<value>\{(?<encoding>[^}]+)}(?:.+)*?\{(?<slot>[^}]+)})""".toRegex()
+        val declareTextSymbolRegex = """\\Declare(?:Text|Math)(?:Symbol|Accent)\{(?<key>[^}]+)}(?<value>\{(?<encoding>[^}]+)}(?:.+)*?\{(?<slot>[^}]+)})""".toRegex()
         val declareTextCommandRegex = """\\DeclareTextCommand\{(?<key>[^}]+)}\{(?<value>[^}]+)}""".toRegex()
     }
 

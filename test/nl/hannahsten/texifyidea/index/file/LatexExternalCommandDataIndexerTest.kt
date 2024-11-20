@@ -243,6 +243,22 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals("", map["\\textless"])
     }
 
+    fun testDeclareMathSymbol() {
+        val text = """
+            %    It would ok to use \cs{let} for those declared by
+            %    \cs{DeclareMathSymbol} but for a cleaner interface we avoid it
+            %    always (just in case the internals change).
+            %    \begin{macrocode}
+            \DeclareMathSymbol{\leq}{\mathrel}{symbols}{"14}
+            \DeclareMathSymbol{\geq}{\mathrel}{symbols}{"15}
+            %    \end{macrocode}
+        """.trimIndent()
+        val file = myFixture.configureByText("fontdef.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(2, map.size)
+        assertEquals("", map["\\leq"])
+    }
+
     fun testDef() {
         val text = """
             \blank@linefalse \def\par{\ifblank@line
