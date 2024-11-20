@@ -7,6 +7,7 @@
 * Don't insert the right brace when in front of text
 
 ### Fixed
+* Fix basic case of false positive of duplicate label inspection when user defined \if commands are used
 * Fix exceptions in structure view when command parameters are missing
 * Improve error report submitter for long stacktraces
 * Fix a parser issue with bidirectional arrow in TikZ
