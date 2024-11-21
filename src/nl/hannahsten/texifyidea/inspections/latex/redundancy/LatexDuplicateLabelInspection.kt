@@ -201,5 +201,4 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         }
         return false
     }
-
 }
