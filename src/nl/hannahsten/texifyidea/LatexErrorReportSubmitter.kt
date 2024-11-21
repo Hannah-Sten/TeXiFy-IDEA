@@ -166,7 +166,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             val texifyLines = lines.mapIndexedNotNull { i: Int, line: String -> if ("nl.hannahsten.texifyidea" in line || "Caused by:" in line) i else null }
             val interestingLines = ((0..10).toSet() + texifyLines.flatMap { listOf(it - 1, it, it + 1) }.toSet()).toList().sorted()
             return interestingLines.foldIndexed("") { i, stacktrace, lineIndex ->
-                stacktrace + (if (i > 0 && interestingLines[i - 1] < lineIndex - 1) "\n    (...)" else "") + "\n" + lines.getOrElse(lineIndex) { "" }.take(500)
+                stacktrace + (if (i > 0 && interestingLines[i - 1] < lineIndex - 1) "\n        (...)" else "") + "\n" + lines.getOrElse(lineIndex) { "" }.take(500)
             }.trim()
         }
     }

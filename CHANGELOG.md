@@ -7,6 +7,7 @@
 * Don't insert the right brace when in front of text
 
 ### Fixed
+* Fix exceptions #3754 and #3326
 * Fix exceptions in structure view when command parameters are missing
 * Improve error report submitter for long stacktraces
 * Fix a parser issue with bidirectional arrow in TikZ
