@@ -7,6 +7,7 @@
 * Don't insert the right brace when in front of text
 
 ### Fixed
+* Don't override the file icon for .txt files, by @Steve-Li-1998
 * Fix exceptions #3754 and #3326
 * Fix exceptions in structure view when command parameters are missing
 * Improve error report submitter for long stacktraces
