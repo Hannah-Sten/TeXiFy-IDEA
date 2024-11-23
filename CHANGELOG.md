@@ -3,16 +3,36 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.9.9-alpha.6] - 2024-11-23
+
+### Added
+
+* Disable Evince inverse search on Windows to avoid a UI freeze on opening a second project
 * Use xdg-mime to choose a default pdf viewer in the run configuration template
 * Don't insert the right brace when in front of text
 * Add DeclareMathSymbol to indexed command definitions in installed packages
+* Add support for TEXMFHOME for reference resolving
+* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
+* Improve reference resolving when using subfiles
+* Add setting to disable auto-import of bibtex entries from remote libraries
 
 ### Fixed
+
 * Don't override the file icon for .txt files, by @Steve-Li-1998
 * Fix exceptions #3754 and #3326
 * Fix exceptions in structure view when command parameters are missing
 * Improve error report submitter for long stacktraces
 * Fix a parser issue with bidirectional arrow in TikZ
+* Fix default Docker image name when running Dockerized TeX Live without a project SDK
+* Always use content roots to resolve references
+* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
+* Fix rename of files when using subfiles
+* Fix incorrect 'package already included' warning for the subfiles package
+* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
+* Avoid referencing obsolete psifiles, fix exception #3635
 
 ## [0.9.9-alpha.4] - 2024-11-13
 
@@ -57,6 +77,7 @@
 * Add setting to disable auto-import of bibtex entries from remote libraries
 
 ### Fixed
+
 * Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
 * Avoid referencing obsolete psifiles, fix exception #3635
 
@@ -463,7 +484,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.4...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.6...HEAD
+[0.9.9-alpha.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.4...v0.9.9-alpha.6
 [0.9.9-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.3...v0.9.9-alpha.4
 [0.9.9-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.2...v0.9.9-alpha.3
 [0.9.9-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.1...v0.9.9-alpha.2
