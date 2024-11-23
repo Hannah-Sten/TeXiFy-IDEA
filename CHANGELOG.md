@@ -5,6 +5,7 @@
 ### Added
 * Use xdg-mime to choose a default pdf viewer in the run configuration template
 * Don't insert the right brace when in front of text
+* Add DeclareMathSymbol to indexed command definitions in installed packages
 
 ### Fixed
 * Don't override the file icon for .txt files, by @Steve-Li-1998
