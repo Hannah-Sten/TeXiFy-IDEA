@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.IndexableSetContributor
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
@@ -71,13 +72,12 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         roots.addAll(LatexSdkUtil.getSdkSourceRoots(project) { sdkType, homePath -> sdkType.getDefaultStyleFilesPath(homePath) })
 
         roots.addAll(getTexinputsPaths(project, rootFiles = listOf(), expandPaths = false).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) })
-        Log.debug("Indexing source roots $roots")
 
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
         if (Cache.externalDirectFileInclusions == null) {
             if (!DumbService.isDumb(project)) {
                 // For now, just do this for bibliography and direct input commands, as there this is most common
-                val externalFiles = LatexCommandsIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
+                val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
                     // We can't add single files, so take the parent
                     .mapNotNull {
                         val path = it.requiredParameter(0) ?: return@mapNotNull null
@@ -93,6 +93,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         }
         roots.addAll(Cache.externalDirectFileInclusions?.filter { it.exists() } ?: emptyList())
 
+        Log.debug("Indexing source roots $roots")
         return roots
     }
 
