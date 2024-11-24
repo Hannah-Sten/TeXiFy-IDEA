@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.replaceAfterFrom
 import java.io.File
@@ -205,8 +206,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             val baseFile = this.originalFile.virtualFile
 
             if (this.originalFile.isLatexFile()) {
-                this.originalFile.findRootFile().containingDirectory?.virtualFile?.apply {
-                    resultList.add(this)
+                this.originalFile.findRootFiles().mapNotNull { it.containingDirectory?.virtualFile }.forEach {
+                    resultList.add(it)
                 }
             }
             else resultList.add(baseFile.parent)
