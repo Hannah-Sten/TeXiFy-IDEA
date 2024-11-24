@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.*
+import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.formatAsFilePath
 import java.io.File
 import javax.swing.JPanel
@@ -12,12 +13,11 @@ import javax.swing.JTextField
  *
  * Dialog to ask the user for a file name and location when creating a new file.
  *
- * @param currentFilePath The path of the file we are currently in, e.g., the file from which an intention was triggered
- *      that creates a new file.
+ * @param basePath The path of the file to which the newFileName is relative
  * @param newFileName The name of the new file, with or without the extension. Will be reformatted before being shown to the user.
  * @param newFileFullPath The full path of the new file, without tex extension.
  */
-class CreateFileDialog(private val currentFilePath: String?, private val newFileName: String, var newFileFullPath: String? = null) {
+class CreateFileDialog(private val basePath: String?, private val newFileName: String, var newFileFullPath: String? = null) {
 
     init {
         DialogBuilder().apply {
@@ -26,10 +26,26 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Field to enter the name of the new file.
-            val nameField = JTextField(newFileName.formatAsFilePath())
+            // If only the file is new, but the directory exists, use the existing directory and don't change it to follow conventions
+            val formattedPath = if (basePath != null) {
+                var existingPath = LocalFileSystem.getInstance().findFileByPath(basePath)
+                var existingRelativePath = ""
+                val partsToFormat = newFileName.split('/').dropWhile { part ->
+                    if (existingPath?.exists() == false) return@dropWhile false
+                    existingPath = existingPath?.children?.firstOrNull { it.name == part } ?: return@dropWhile false
+                    existingRelativePath += "$part/"
+                    true
+                }
+                existingRelativePath + partsToFormat.joinToString("/").formatAsFilePath()
+            }
+            else {
+                newFileName.formatAsFilePath()
+            }
+            val nameField = JTextField(formattedPath)
+
             // Field to select the folder/location of the new file.
             val pathField = TextFieldWithBrowseButton()
-            pathField.text = currentFilePath ?: return@apply
+            pathField.text = basePath ?: return@apply
             // Make sure the dialog is wide enough to fit the whole path in the text field.
             pathField.textField.columns = pathField.text.length
 

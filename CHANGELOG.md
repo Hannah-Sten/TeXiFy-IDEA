@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Do not format existing directories in the given path in the file creation quickfix dialog
 
 ### Fixed
 
