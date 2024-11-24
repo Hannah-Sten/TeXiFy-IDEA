@@ -45,7 +45,11 @@ fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
  * Note: LaTeX Files can have more than one * root file, so using [findRootFiles] and explicitly handling the cases of
  * multiple root files is preferred over using [findRootFile].
  */
-fun PsiFile.findRootFile(): PsiFile = findRootFiles().firstOrNull() ?: this
+fun PsiFile.findRootFile(): PsiFile {
+    val allRoots = findRootFiles()
+    // If there are multiple root files, prefer the current one
+    return if (this in allRoots) this else allRoots.firstOrNull() ?: this
+}
 
 /**
  * Gets the set of files that are the root files of `this` file.
