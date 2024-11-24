@@ -3,9 +3,12 @@
 ## [Unreleased]
 
 ### Added
+* Support references in \subfix command
+* Provide autocompletion for all relevant directories when using subfiles
 * Do not format existing directories in the given path in the file creation quickfix dialog
 
 ### Fixed
+* Fix 'missing import' false positive in subfiles
 
 ## [0.9.9-alpha.6] - 2024-11-23
 

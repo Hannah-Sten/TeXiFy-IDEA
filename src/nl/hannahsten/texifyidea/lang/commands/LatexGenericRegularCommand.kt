@@ -287,6 +287,7 @@ enum class LatexGenericRegularCommand(
     STRETCH("stretch", "factor".asRequired()),
     SUBFILE("subfile", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = LatexPackage.SUBFILES),
     SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = LatexPackage.SUBFILES),
+    SUBFIX("subfix", RequiredFileArgument("file", true, false, "tex"), dependency = LatexPackage.SUBFILES),
     SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     SUBINPUTFROM("subinputfrom"),

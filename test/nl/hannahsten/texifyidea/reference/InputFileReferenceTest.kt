@@ -28,4 +28,10 @@ class InputFileReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("newmain.tex")
         myFixture.checkResultByFile("simplesubfile/subdir/onedown-after.tex")
     }
+
+    fun testRenameSubfix() {
+        myFixture.configureByFiles("subfix/main.tex", "subfix/subdir2/chapter2.tex", "subfix/subdir2/references.bib")
+        myFixture.renameElementAtCaret("newreferences.bib")
+        myFixture.checkResultByFile("subfix/main-after.tex")
+    }
 }
