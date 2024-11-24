@@ -14,6 +14,7 @@ import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 /**
@@ -50,10 +51,10 @@ abstract class IndexUtilBase<T : PsiElement>(
             .toMutableSet()
         searchFiles.add(baseFile.virtualFile)
 
-        // Add document class.
-        val root = baseFile.findRootFile()
-        val documentClass = root.documentClassFileInProject()
-        if (documentClass != null) {
+        // Add document classes
+        // There can be multiple, e.g. in the case of subfiles, in which case we probably want all items in the super-fileset
+        val roots = baseFile.findRootFiles()
+        roots.mapNotNull { it.documentClassFileInProject() }.forEach { documentClass ->
             searchFiles.add(documentClass.virtualFile)
             documentClass.referencedFileSet().asSequence()
                 .forEach { searchFiles.add(it.virtualFile) }
