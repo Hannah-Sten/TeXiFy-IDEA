@@ -50,6 +50,11 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
                 it.shiftRight(requiredParameter.textOffset - this.textOffset)
             }
         }
+        else if (requiredParameter.firstChildOfType(LatexParameterText::class)?.children?.size == 1 && requiredParameter.firstChildOfType(LatexCommands::class) != null) {
+            // Special case if there is a single command instead of text, we ignore it. Example: \subfix from the subfiles package, can be ignored for our purposes
+            val newRequiredParameter = requiredParameter.firstChildOfType(LatexCommands::class)?.requiredParameters()?.firstOrNull() ?: requiredParameter
+            listOf(newRequiredParameter.textRange.shrink(1).shiftLeft(this.textOffset))
+        }
         else {
             listOf(requiredParameter.textRange.shrink(1).shiftLeft(this.textOffset))
         }

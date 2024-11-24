@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+* Support references in \subfix command
+* Provide autocompletion for all relevant directories when using subfiles
 
 ### Fixed
 * Fix 'missing import' false positive in subfiles
