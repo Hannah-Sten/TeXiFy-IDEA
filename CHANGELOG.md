@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix 'missing import' false positive in subfiles
 
 ## [0.9.9-alpha.6] - 2024-11-23
 
