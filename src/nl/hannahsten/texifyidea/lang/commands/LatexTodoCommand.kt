@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TODONOTES
 
 enum class LatexTodoCommand(
