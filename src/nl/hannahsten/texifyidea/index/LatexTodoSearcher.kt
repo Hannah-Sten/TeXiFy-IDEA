@@ -10,6 +10,7 @@ import com.intellij.util.Processor
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.matches
 
 /**
  * Provides the "to do" item in the toolwindow and highlighting in the editor.
@@ -18,15 +19,13 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 class LatexTodoSearcher : QueryExecutorBase<IndexPatternOccurrence, IndexPatternSearch.SearchParameters>() {
     override fun processQuery(queryParameters: IndexPatternSearch.SearchParameters, consumer: Processor<in IndexPatternOccurrence>) {
         val file = queryParameters.file as? LatexFile ?: return
-        val pattern = queryParameters.pattern
-            ?: queryParameters.patternProvider.indexPatterns.firstOrNull { it.patternString.contains("todo", true) }
-            ?: return
 
-        file.commandsInFile().filter { it.name in CommandMagic.todoCommands }
-            .forEach {
-                println("${it.text}: ${it.textRange}")
-                consumer.process(LatexTodoOccurrence(file, it.textRange, pattern))
-            }
+        queryParameters.patternProvider.indexPatterns.forEach { pattern ->
+            file.commandsInFile().filter { it.name in CommandMagic.todoCommands }.filter { pattern.pattern?.matches(it.name) == true }
+                .forEach {
+                    consumer.process(LatexTodoOccurrence(file, it.textRange, pattern))
+                }
+        }
     }
 }
 

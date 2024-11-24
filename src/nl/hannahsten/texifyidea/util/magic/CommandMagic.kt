@@ -502,9 +502,7 @@ object CommandMagic {
     )
 
     /**
-     * Commands that should be contributed to the todo toolwindow.
+     * Commands that should be contributed to the to do toolwindow.
      */
-    val todoCommands = setOf(
-        LatexTodoCommand.TODO.cmd, LatexTodoCommand.MISSINGFIGURE.cmd
-    )
+    val todoCommands = setOf(LatexTodoCommand.TODO.cmd, LatexTodoCommand.MISSINGFIGURE.cmd)
 }

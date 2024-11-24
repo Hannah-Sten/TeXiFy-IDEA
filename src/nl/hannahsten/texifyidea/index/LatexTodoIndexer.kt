@@ -14,14 +14,16 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 class LatexTodoIndexer : LexerBasedTodoIndexer() {
     override fun createLexer(consumer: OccurrenceConsumer): Lexer {
-        return object : BaseFilterLexer(LatexLexerAdapter(), consumer) {
-            override fun advance() {
-                val tokenType = delegate.tokenType
-                if (tokenType in LatexTokenSets.COMMENTS || (tokenType == LatexTypes.COMMAND_TOKEN && delegate.tokenText in CommandMagic.todoCommands)) {
-                    advanceTodoItemCountsInToken()
-                }
-                delegate.advance()
-            }
+        return LatexFilterLexer(consumer)
+    }
+}
+
+class LatexFilterLexer(consumer: OccurrenceConsumer) : BaseFilterLexer(LatexLexerAdapter(), consumer) {
+    override fun advance() {
+        val tokenType = delegate.tokenType
+        if (tokenType in LatexTokenSets.COMMENTS || (tokenType == LatexTypes.COMMAND_TOKEN && delegate.tokenText in CommandMagic.todoCommands)) {
+            advanceTodoItemCountsInToken()
         }
+        delegate.advance()
     }
 }

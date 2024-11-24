@@ -18,6 +18,7 @@
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionIndex" />
         <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor" />
         <indexPatternSearch implementation="nl.hannahsten.texifyidea.index.LatexTodoSearcher"/>
+        <indexPatternProvider implementation="nl.hannahsten.texifyidea.index.LatexTodoIndexPatternProvider"/>
         <todoIndexer filetype="LaTeX source file" implementationClass="nl.hannahsten.texifyidea.index.LatexTodoIndexer"/>
     </extensions>
 </idea-plugin>
