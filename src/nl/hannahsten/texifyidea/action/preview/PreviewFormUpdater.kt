@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
+import com.intellij.ui.JBColor
 
 /**
  * @author Sergei Izmailov
@@ -53,8 +54,14 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
     fun compilePreview(previewCode: String, project: Project, canUseJlatexmath: Boolean) {
         previewForm.setEquation(previewCode)
 
+        val foreground = JBColor.foreground()
+        val colorPreamble = """
+        \usepackage{xcolor}
+        \color[RGB]{${foreground.red},${foreground.green},${foreground.blue}}
+        """.trimIndent()
+
         // Combine default and user defined preamble. Cannot be used if we decide to run latexmath.
-        val preamble = preamble + userPreamble
+        val preamble = preamble + colorPreamble + userPreamble
 
         // jlatexmath cannot handle a custom preamble
         val previewer = if (userPreamble.isBlank() && canUseJlatexmath) {
