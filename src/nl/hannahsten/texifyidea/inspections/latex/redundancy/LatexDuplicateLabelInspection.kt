@@ -6,22 +6,18 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.elementType
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.labels.findBibitemCommands
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
-import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.*
 import java.lang.Integer.max
 import java.util.*
 
@@ -128,6 +124,10 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         .mapNotNull { command ->
             // When the label is defined in a command definition ignore it, because there could be more than one with #1 as parameter
             if (command.parentOfType(LatexCommands::class).isDefinitionOrRedefinition()) return@mapNotNull null
+            // If the command is within an \if branch, ignore it because it will may appear in multiple branches of which only one will be present during compilation
+            if (isPreviousConditionalStart(command) && isNextConditionalEnd(command)) {
+                return@mapNotNull null
+            }
             command.getLabelDescriptor()
         }
         .groupBy { it.label }
@@ -150,5 +150,55 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
             isOntheFly
         )
+    }
+
+    /**
+     * If the next relevant command is a \fi
+     */
+    private fun isNextConditionalEnd(current: PsiElement): Boolean {
+        return isEndConditional(nextConditionalCommand(current, searchBackwards = false) ?: return false)
+    }
+
+    /**
+     * If the previous relevant command is an \if
+     */
+    private fun isPreviousConditionalStart(current: PsiElement): Boolean {
+        return isStartConditional(nextConditionalCommand(current, searchBackwards = true) ?: return false)
+    }
+
+    /**
+     * Next relevant command. There are  many ways in which this does not work, but since this is just an inspection this is much safer than trying to parse user defined \if commands in the parser, which is impossiblee
+     */
+    private fun nextConditionalCommand(element: PsiElement, searchBackwards: Boolean): PsiElement? {
+        var current = element.parentOfType(LatexNoMathContent::class)
+        while (current != null && !isConditional(current)) {
+            current = if (!searchBackwards) {
+                current.nextSibling?.nextSiblingOfType(LatexNoMathContent::class)
+            }
+            else {
+                current.prevSibling?.previousSiblingOfType(LatexNoMathContent::class)
+            }
+        }
+        return current
+    }
+
+    private fun isConditional(element: PsiElement): Boolean {
+        return isStartConditional(element) || isEndConditional(element)
+    }
+
+    private fun isStartConditional(rootElement: PsiElement): Boolean {
+        // To keep it simple, only look one level down
+        for (element in rootElement.children + listOf(rootElement)) {
+            if (element is LatexCommands && element.name?.startsWith("\\if") == true) return true
+            if (element.elementType == LatexTypes.START_IF) return true
+        }
+        return false
+    }
+
+    private fun isEndConditional(rootElement: PsiElement): Boolean {
+        for (element in rootElement.children + listOf(rootElement)) {
+            if (element.firstChild?.elementType in setOf(LatexTypes.ELSE, LatexTypes.END_IF)) return true
+        }
+        return false
     }
 }

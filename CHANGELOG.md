@@ -5,6 +5,8 @@
 ### Added
 
 ### Fixed
+* Fix basic case of false positive of duplicate label inspection when user defined \if commands are used
+* Fix a parse error when using \else with a user defined \if-command
 
 ## [0.9.9-alpha.7] - 2024-11-24
 
@@ -23,7 +25,6 @@
 * Add setting to disable auto-import of bibtex entries from remote libraries
 
 ### Fixed
-
 * Fix 'missing import' false positive in subfiles
 * Don't override the file icon for .txt files, by @Steve-Li-1998
 * Fix exceptions #3754 and #3326

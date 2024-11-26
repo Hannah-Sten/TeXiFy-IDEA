@@ -189,6 +189,7 @@ class LatexParserTest : BasePlatformTestCase() {
             LatexFileType,
             """
             I write \State \Until I \Repeat \EndProcedure.
+            \ifdog DOG \else CAT \fi
             """.trimIndent()
         )
         myFixture.checkHighlighting()
