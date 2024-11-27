@@ -148,7 +148,8 @@ class InputFileReference(
         // Try graphicspaths
         if (targetFile == null) {
             // If we are not building the fileset, we can make use of it
-            if (!isBuildingFileset && element.containingFile.includedPackages().contains(LatexGenericRegularCommand.GRAPHICSPATH.dependency)) {
+            val includedPackages = element.containingFile.includedPackages()
+            if (!isBuildingFileset && CommandMagic.graphicPathsCommands.any { includedPackages.contains(it.dependency) }) {
                 // Add the graphics paths to the search paths
                 searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
             }

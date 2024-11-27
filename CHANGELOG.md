@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for \includesvg
 
 ### Fixed
 * Fix basic case of false positive of duplicate label inspection when user defined \if commands are used

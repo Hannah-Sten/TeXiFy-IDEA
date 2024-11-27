@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import java.io.File
@@ -33,7 +34,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     fun getGraphicsPathsInFileSet(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = file.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.GRAPHICSPATH.cmd }
+        val graphicsPathCommands = file.commandsInFileSet().filter { CommandMagic.graphicPathsCommands.map { it.cmd }.contains(it.name) }
 
         // Is a graphicspath defined?
         if (graphicsPathCommands.isNotEmpty()) {
@@ -95,7 +96,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      * Get all the graphics paths defined by one \graphicspaths command.
      */
     private fun LatexCommands.getGraphicsPaths(): List<String> {
-        if (name != LatexGenericRegularCommand.GRAPHICSPATH.cmd) return emptyList()
+        if (!CommandMagic.graphicPathsCommands.map { it.cmd }.contains(name)) return emptyList()
         return parameterList.firstNotNullOfOrNull { it.requiredParam }
             // Each graphics path is in a group.
             ?.childrenOfType(LatexNormalText::class)

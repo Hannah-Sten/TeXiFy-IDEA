@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NTHEOREM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SVG
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.VARIOREF
@@ -147,6 +148,7 @@ enum class LatexGenericRegularCommand(
     INPUTMINTED("inputminted", "language".asRequired(Argument.Type.MINTED_FUNTIME_LAND), RequiredFileArgument("sourcefile", true, false, ""), dependency = LatexPackage.MINTED),
     INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", isAbsolutePathSupported = true, commaSeparatesArguments = false, FileMagic.graphicFileExtensions, supportsAnyExtension = false), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, true, "tex")),
+    INCLUDESVG("includesvg", "options".asOptional(), RequiredPicturePathArgument("svg file", isAbsolutePathSupported = true, commaSeparatesArguments = false, extension = listOf("svg"), supportsAnyExtension = false), dependency = SVG),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),
     INDEX("intex", "entry".asRequired()),
@@ -303,6 +305,7 @@ enum class LatexGenericRegularCommand(
     SUBSUBSECTION_STAR("subsubsection*", "title".asRequired(Argument.Type.TEXT)),
     SUBSUBSECTIONMARK("subsubsectionmark", "code".asRequired()),
     SUPPRESSFLOATS("suppressfloats", "placement".asOptional()),
+    SVGPATH("svgpath", RequiredFolderArgument("foldername"), dependency = SVG),
     SYMBOL("symbol", "n".asRequired()),
     TABCOLSEP("tabcolsep"),
     TABLENAME("tablename", "name".asRequired(Argument.Type.TEXT)),
