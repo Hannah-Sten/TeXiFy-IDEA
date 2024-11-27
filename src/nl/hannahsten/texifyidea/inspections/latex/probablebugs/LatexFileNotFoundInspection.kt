@@ -115,7 +115,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
             // Display a dialog to ask for the location and name of the new file.
             // By default, all inclusion paths are relative to the main file
-            val newFilePath = CreateFileDialog(root, filePath.replace("$root/", "").formatAsFilePath())
+            val newFilePath = CreateFileDialog(root, filePath.replace("$root/", ""))
                 .newFileFullPath ?: return
 
             runWriteAction {
