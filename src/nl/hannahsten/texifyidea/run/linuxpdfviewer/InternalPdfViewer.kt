@@ -65,6 +65,17 @@ enum class InternalPdfViewer(
         // These properties may be used often when opening a project or during project use because of settings state initialization, so we cache them.
         val availableSubset: List<InternalPdfViewer> by lazy { entries.filter { it.isAvailable() } }
 
-        val firstAvailable: InternalPdfViewer by lazy { availableSubset.first() }
+        val firstAvailable: InternalPdfViewer by lazy {
+            // Use system default if possible
+            if (SystemInfo.isLinux) {
+                // e.g. okularApplication_pdf.desktop or org.gnome.Evince.desktop
+                runCommand("xdg-mime", "query", "default", "application/pdf", timeout = 1)?.let {
+                    availableSubset.firstOrNull { viewer -> viewer.name.lowercase() in it.lowercase() }
+                } ?: availableSubset.first()
+            }
+            else {
+                availableSubset.first()
+            }
+        }
     }
 }

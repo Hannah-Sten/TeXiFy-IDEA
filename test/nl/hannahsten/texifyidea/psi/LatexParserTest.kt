@@ -96,6 +96,8 @@ class LatexParserTest : BasePlatformTestCase() {
             \begin{frame}
                 \only<1>{<info descr="null">${'$'}<info textAttributesKey=LATEX_INLINE_MATH>a_1${'$'}</info></info>}
             \end{frame}
+            
+            \tikzset{<->/.style=->}
             """.trimIndent()
         )
         myFixture.checkHighlighting(false, true, false)
@@ -189,6 +191,7 @@ class LatexParserTest : BasePlatformTestCase() {
             LatexFileType,
             """
             I write \State \Until I \Repeat \EndProcedure.
+            \ifdog DOG \else CAT \fi
             """.trimIndent()
         )
         myFixture.checkHighlighting()

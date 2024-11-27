@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.*
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
@@ -64,6 +65,7 @@ object EvinceInverseSearchListener {
      * Start listening for backward search calls on the D-Bus.
      */
     private fun startListening() {
+        Log.debug("Starting Evince inverse search listener")
         syncSourceHandler = sessionConnection?.addSigHandler(Window.SyncSource::class.java) { signal ->
             val filename = signal.sourceFile.replaceFirst("file://".toRegex(), "")
             syncSource(filename, signal.sourcePoint.line)
