@@ -25,6 +25,8 @@
 * Add setting to disable auto-import of bibtex entries from remote libraries
 
 ### Fixed
+* Fix relative path conversion in graphics insertion wizard by resolving relative to the root file
+* Fix exception #3763
 * Fix 'missing import' false positive in subfiles
 * Don't override the file icon for .txt files, by @Steve-Li-1998
 * Fix exceptions #3754 and #3326
