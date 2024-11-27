@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Disallow unmatched braces after \@ifnextchar
 * Fix basic case of false positive of duplicate label inspection when user defined \if commands are used
 * Fix a parse error when using \else with a user defined \if-command
 
