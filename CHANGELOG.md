@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Inspections can now be suppressed for any single line, or block of text
 
 ### Fixed
 * Disallow unmatched braces after \@ifnextchar
