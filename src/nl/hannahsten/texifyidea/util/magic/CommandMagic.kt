@@ -378,6 +378,8 @@ object CommandMagic {
         "\\DeclareDocumentEnvironment"
     )
 
+    val graphicPathsCommands = listOf(GRAPHICSPATH, SVGPATH)
+
     /**
      * Commands that should not have the given file extensions.
      */
