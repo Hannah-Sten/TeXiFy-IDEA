@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Show formatted file path in file not found inspection quickfix name
 
 ### Fixed
 * Disallow unmatched braces after \@ifnextchar

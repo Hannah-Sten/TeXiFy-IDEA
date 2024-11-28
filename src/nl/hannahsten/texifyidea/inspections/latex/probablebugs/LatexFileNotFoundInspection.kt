@@ -103,7 +103,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
      */
     class CreateNewFileWithDialogQuickFix(private val filePath: String, private val extension: String, private val elementPointer: SmartPsiElementPointer<LatexCommands>, private val key: String, private val range: TextRange) : LocalQuickFix {
 
-        override fun getFamilyName() = "Create file ${filePath.appendExtension(extension)}"
+        override fun getFamilyName() = "Create file ${filePath.appendExtension(extension).formatAsFilePath()}"
 
         override fun startInWriteAction() = false
 

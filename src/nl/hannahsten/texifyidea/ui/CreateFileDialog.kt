@@ -2,8 +2,8 @@ package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.*
-import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.formatAsFilePath
+import nl.hannahsten.texifyidea.util.formatAsFilePathWithExistingParents
 import java.io.File
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -26,17 +26,8 @@ class CreateFileDialog(private val basePath: String?, private val newFileName: S
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Field to enter the name of the new file.
-            // If only the file is new, but the directory exists, use the existing directory and don't change it to follow conventions
             val formattedPath = if (basePath != null) {
-                var existingPath = LocalFileSystem.getInstance().findFileByPath(basePath)
-                var existingRelativePath = ""
-                val partsToFormat = newFileName.split('/').dropWhile { part ->
-                    if (existingPath?.exists() == false) return@dropWhile false
-                    existingPath = existingPath?.children?.firstOrNull { it.name == part } ?: return@dropWhile false
-                    existingRelativePath += "$part/"
-                    true
-                }
-                existingRelativePath + partsToFormat.joinToString("/").formatAsFilePath()
+                formatAsFilePathWithExistingParents(basePath, newFileName)
             }
             else {
                 newFileName.formatAsFilePath()

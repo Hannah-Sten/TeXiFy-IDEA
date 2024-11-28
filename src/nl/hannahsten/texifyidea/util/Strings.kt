@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import java.io.File
@@ -173,6 +174,21 @@ fun String.formatAsFilePath(): String {
 
     // If there are no valid characters left, use a default name.
     return formatted.ifEmpty { "myfile" }
+}
+
+/**
+ * If only the file is new, but the directory exists, use the existing directory and don't change it to follow conventions
+ */
+fun formatAsFilePathWithExistingParents(basePath: String, newFileName: String): String {
+    var existingPath = LocalFileSystem.getInstance().findFileByPath(basePath)
+    var existingRelativePath = ""
+    val partsToFormat = newFileName.split('/').dropWhile { part ->
+        if (existingPath?.exists() == false) return@dropWhile false
+        existingPath = existingPath?.children?.firstOrNull { it.name == part } ?: return@dropWhile false
+        existingRelativePath += "$part/"
+        true
+    }
+    return existingRelativePath + partsToFormat.joinToString("/").formatAsFilePath()
 }
 
 /**
