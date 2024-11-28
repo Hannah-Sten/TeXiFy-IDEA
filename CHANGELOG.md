@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Disable quotes inspection when TeX ligatures are disabled by fontspec
 
 ### Fixed
 * Disallow unmatched braces after \@ifnextchar

@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTSPEC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
@@ -413,6 +414,15 @@ enum class LatexGenericRegularCommand(
     LCNAMECREFS("lcnamecrefs", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
     LABELCREF("labelcref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
     LABELCPAGEREF("labelcpageref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+
+    // Fontspec
+    DEFAULTFONTFEATURES("defaultfontfeatures", "font names".asOptional(), "font features".asRequired(), dependency = FONTSPEC),
+    ADDFONTFEATURE("addfontfeature", "font features".asRequired(), dependency = FONTSPEC),
+    ADDFONTFEATURES("addfontfeatures", "font features".asRequired(), dependency = FONTSPEC),
+    SETMAINFONT("setmainfont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    SETSANSFONT("setsansfont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    SETMONOFONT("setmonofont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    FONTSPEC_CMD("fontspec", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
     ;
 
     override val identifier: String
