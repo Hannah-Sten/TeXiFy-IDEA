@@ -148,10 +148,12 @@ class InputFileReference(
         // Try graphicspaths
         if (targetFile == null) {
             // If we are not building the fileset, we can make use of it
-            val includedPackages = element.containingFile.includedPackages()
-            if (!isBuildingFileset && CommandMagic.graphicPathsCommands.any { includedPackages.contains(it.dependency) }) {
-                // Add the graphics paths to the search paths
-                searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
+            if (!isBuildingFileset) {
+                val includedPackages = element.containingFile.includedPackages()
+                if (CommandMagic.graphicPathsCommands.any { includedPackages.contains(it.dependency) }) {
+                    // Add the graphics paths to the search paths
+                    searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
+                }
             }
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
