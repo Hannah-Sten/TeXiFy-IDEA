@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Use theme foreground and background colors for equation preview
 
 ### Fixed
 * Disallow unmatched braces after \@ifnextchar
