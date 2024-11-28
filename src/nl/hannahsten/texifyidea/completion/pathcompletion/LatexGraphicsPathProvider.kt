@@ -33,7 +33,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     fun getGraphicsPathsInFileSet(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = file.commandsInFileSet().filter { CommandMagic.graphicPathsCommands.map { it.cmd }.contains(it.name) }
+        val graphicsPathCommands = file.commandsInFileSet().filter { command -> CommandMagic.graphicPathsCommands.map { it.cmd }.contains(command.name) }
 
         // Is a graphicspath defined?
         if (graphicsPathCommands.isNotEmpty()) {
