@@ -77,7 +77,8 @@ WHITE_SPACE={SINGLE_WHITE_SPACE}+
 // Commands
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_IFNEXTCHAR=\\@ifnextchar.
+// All characters after @ifnextchar may be unbalanced, except braces, see https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/3744#issuecomment-2477263416
+COMMAND_IFNEXTCHAR=\\@ifnextchar[^{]
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:0-9]+|.|\r) // _ and : are only LaTeX3 syntax
 LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage|ProvidesExplClass|ProvidesExplFile)

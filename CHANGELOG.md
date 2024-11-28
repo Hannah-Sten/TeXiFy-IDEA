@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Disallow unmatched braces after \@ifnextchar
 
 ## [0.9.9-alpha.8] - 2024-11-28
 
