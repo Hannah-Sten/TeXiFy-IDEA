@@ -98,4 +98,18 @@ class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicat
         )
         myFixture.checkHighlighting()
     }
+
+    fun testIfs() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \ifdog
+                \section{DOG}\label{sec:pet}
+                \else
+                \section{CAT}\label{sec:pet}
+                \fi
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

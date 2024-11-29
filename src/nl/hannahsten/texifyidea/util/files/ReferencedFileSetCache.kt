@@ -122,7 +122,8 @@ class ReferencedFileSetCache {
                     }
                 }
             }
-            cache[file.virtualFile]?.mapNotNull { it.element }?.toSet() ?: setOf(file)
+            // Make sure to check if file is still valid after retrieving from cache (it may have been deleted)
+            cache[file.virtualFile]?.mapNotNull { it.element }?.filter { it.isValid }?.toSet() ?: setOf(file)
         }
         else {
             setOf(file)

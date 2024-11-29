@@ -4,19 +4,18 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.relativizePath
-import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 
 /**
@@ -32,8 +31,10 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
      */
     fun executeAction(file: VirtualFile, project: Project) {
         val editor = project.currentTextEditor() ?: return
-        val text = showDialogAndGetText(editor, file, project) ?: return
-        editor.editor.insertAtCaretAndMove(text)
+        runInEdt {
+            val text = showDialogAndGetText(editor, file, project) ?: return@runInEdt
+            editor.editor.insertAtCaretAndMove(text)
+        }
     }
 
     /**
@@ -57,8 +58,10 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
 
         // Handle result.
         val graphicData = dialogWrapper.extractData()
-        file.psiFile(project)?.let { graphicData.importPackages(it) }
-        return buildGraphicString(project, graphicData, indent)
+        val psiFile = file.psiFile(project)
+        psiFile?.let { graphicData.importPackages(it) }
+        val rootFile = psiFile?.findRootFile()
+        return buildGraphicString(project, graphicData, indent, rootFile)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -81,27 +84,28 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
         project: Project,
         data: InsertGraphicData,
         indent: String,
-        tab: String = "    "
+        rootFile: PsiFile?,
+        tab: String = "    ",
     ): String {
         // Only the graphics (non-centered).
         val toInsert = if (data.center.not() && data.placeInFigure.not()) {
-            data.includeCommand(project)
+            data.includeCommand(project, rootFile)
         }
         // Centered graphics, but not in a figure.
         else if (data.center && data.placeInFigure.not()) {
             buildString {
                 append("\\begin{center}\n")
-                append(indent).append(tab).append(data.includeCommand(project)).newline()
+                append(indent).append(tab).append(data.includeCommand(project, rootFile)).newline()
                 append(indent).append("\\end{center}")
             }
         }
         // Insert figure.
-        else data.figure(project, indent, tab)
+        else data.figure(project, indent, tab, rootFile)
 
         return toInsert
     }
 
-    private fun InsertGraphicData.figure(project: Project, indent: String, tab: String) = buildString {
+    private fun InsertGraphicData.figure(project: Project, indent: String, tab: String, rootFile: PsiFile?) = buildString {
         append("\\begin{figure}")
         if (positions?.isNotEmpty() == true) {
             append(positionOptions())
@@ -116,7 +120,7 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
             addCaptionAndLabel(this@figure, indent, tab)
         }
 
-        append(indent).append(tab).append(includeCommand(project)).newline()
+        append(indent).append(tab).append(includeCommand(project, rootFile)).newline()
 
         if (captionLocation == CaptionLocation.BELOW_GRAPHIC) {
             addCaptionAndLabel(this@figure, indent, tab)
@@ -130,19 +134,28 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
         append(indent).append(tab).append("\\label{").append(data.label ?: "").append("}").newline()
     }
 
-    private fun InsertGraphicData.includeCommand(project: Project) = buildString {
+    private fun InsertGraphicData.includeCommand(project: Project, rootFile: PsiFile?) = buildString {
         append("\\includegraphics")
         if (options.isNotBlank()) {
             append("[").append(options).append("]")
         }
-        append("{").append(convertFilePath(project, filePath)).append("}")
+        append("{").append(convertFilePath(project, filePath, rootFile)).append("}")
     }
 
-    private fun InsertGraphicData.convertFilePath(project: Project, absoluteFilePath: String): String {
+    private fun InsertGraphicData.convertFilePath(project: Project, absoluteFilePath: String, rootFile: PsiFile?): String {
         val rootManager = ProjectRootManager.getInstance(project)
 
         val filePath = if (relativePath) {
-            rootManager.relativizePath(absoluteFilePath) ?: absoluteFilePath
+            // We need to match the path given by the user (from e.g. the file chooser dialog) to the root file
+            val imageFile = LocalFileSystem.getInstance().findFileByPath(absoluteFilePath)
+
+            val default = rootManager.relativizePath(absoluteFilePath) ?: absoluteFilePath
+            if (rootFile != null && imageFile != null) {
+                FileUtil.pathRelativeTo(rootFile.virtualFile.parent.path + "/", imageFile.path) ?: default
+            }
+            else {
+                default
+            }
         }
         else absoluteFilePath
 

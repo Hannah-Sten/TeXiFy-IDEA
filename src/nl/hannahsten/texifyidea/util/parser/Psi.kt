@@ -95,7 +95,7 @@ fun <T : PsiElement> PsiElement.firstParentOfType(clazz: KClass<T>): T? {
         if (clazz.java.isAssignableFrom(current.javaClass)) {
             return current as? T
         }
-        current = current.parent
+        current = current.parent?.let { if (it.isValid) it else null }
     }
     return null
 }
@@ -107,7 +107,7 @@ inline fun <reified T : PsiElement> PsiElement.firstParentOfType(): T? {
         if (current is T) {
             return current
         }
-        current = current.parent
+        current = current.parent?.let { if (it.isValid) it else null }
     }
     return null
 }

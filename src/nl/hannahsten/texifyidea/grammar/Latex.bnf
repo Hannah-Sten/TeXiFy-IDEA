@@ -57,7 +57,7 @@ latexFile ::= content
 content ::= no_math_content*
 
 // When updating this list, consider updating other _content lists
-no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | normal_text | END_IF
+no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | normal_text | END_IF | ELSE
 
 normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | ANGLE_PARAM)+
 
@@ -76,7 +76,7 @@ pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content?
 
 pseudocode_block_content ::= no_math_content*
 
-// Plain TeX \if...\fi, note that user defined ifs are not included so there may be unmatched \fi
+// Plain TeX \if...\fi, note that user defined ifs are not included so there may be unmatched \fi or \else
 if_block ::= START_IF if_block_content? (ELSE if_block_content?)* END_IF { pin=1 }
 
 // no_math_content without end_if
@@ -130,10 +130,10 @@ picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 // These are like content, but no brackets and with parameter_text instead of normal_text
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
-optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ANGLE_PARAM
+optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ELSE
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ELSE  | ANGLE_PARAM
 // Cannot contain ( or )
-picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF
+picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ELSE
 
 strict_key_val_pair ::= key_val_key EQUALS key_val_value?
 

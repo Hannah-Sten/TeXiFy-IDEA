@@ -97,7 +97,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .inside(LatexRequiredParam::class.java)
             .withPattern("File name completion pattern") { psiElement, processingContext ->
                 val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
-                val name = command.commandToken.text
+                val name = command.name ?: return@withPattern false
                 val cmd = LatexRegularCommand[name.substring(1)] ?: return@withPattern false
 
                 val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
@@ -117,7 +117,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .inside(LatexRequiredParam::class.java)
             .withPattern("Folder name completion pattern") { psiElement, processingContext ->
                 val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
-                val name = command.commandToken.text
+                val name = command.name ?: return@withPattern false
                 val cmd = LatexRegularCommand[name.substring(1)] ?: return@withPattern false
 
                 val args = cmd.first().getArgumentsOf(RequiredFolderArgument::class)

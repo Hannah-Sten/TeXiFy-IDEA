@@ -4,6 +4,7 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.panels.HorizontalLayout
 import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
@@ -128,3 +129,5 @@ fun JPanel.addLabeledComponent(
 fun hbox(spacing: Int = 8, vararg components: JComponent) = JPanel(HorizontalLayout(spacing)).apply {
     components.forEach { add(it) }
 }
+
+fun Color.toHex() = String.format("#%02x%02x%02x", red, green, blue)
