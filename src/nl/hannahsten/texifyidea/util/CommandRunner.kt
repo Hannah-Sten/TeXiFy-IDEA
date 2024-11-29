@@ -52,7 +52,18 @@ suspend fun runCommandNonBlocking(
 
         process.outputWriter().use { if (input != null) it.write(input) }
         val output = if (!discardOutput) async { process.inputReader().use { it.readText() } } else null
-        val error = if (!discardOutput) async { process.errorReader().use { it.readText() } } else null
+        val error = if (!discardOutput) async { process.errorReader().use {
+            try {
+                it.readText()
+            } catch (e: IOException) {
+                // In some case directly after IDE start, the stream may be closed already, so ignore that
+                if (e.message?.contains("Stream closed") == true) {
+                    Log.info("Ignored closed stream: " + e.message)
+                    e.message
+                }
+                else throw e
+            }
+        } } else null
 
         withTimeoutOrNull(1_000 * timeout) {
             process.awaitExit()
