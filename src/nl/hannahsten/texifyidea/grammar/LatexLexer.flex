@@ -88,8 +88,8 @@ NEWENVIRONMENT=\\(re)?newenvironment
 NEWCOMMAND=\\(new|provide)command | \\BeforeBeginEnvironment | \\AfterEndEnvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 // These are separate to support formatting
-LEFT=\\left(\[|\(|\\\{)
-RIGHT=\\right(\]|\)|\\\})
+LEFT=\\left
+RIGHT=\\right
 
 // Verbatim commands which will be delimited by the same character
 // \path from the 'path' package
