@@ -8,7 +8,12 @@
 
 ### Fixed
 
-## [0.9.9-alpha.9] - 2024-11-29
+## [0.9.9] - 2024-12-01
+
+Welcome to TeXiFy IDEA 0.9.9! This release improves subfiles support, fixes some parser errors and fixes many other small bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
 
 ### Added
 
@@ -45,186 +50,7 @@
 * Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
 * Fix rename of files when using subfiles
 * Fix incorrect 'package already included' warning for the subfiles package
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.8] - 2024-11-28
-
-### Added
-
-* Add support for \includesvg
-* Support references in \subfix command
-* Provide autocompletion for all relevant directories when using subfiles
-* Do not format existing directories in the given path in the file creation quickfix dialog
-* Disable Evince inverse search on Windows to avoid a UI freeze on opening a second project
-* Use xdg-mime to choose a default pdf viewer in the run configuration template
-* Don't insert the right brace when in front of text
-* Add DeclareMathSymbol to indexed command definitions in installed packages
-* Add support for TEXMFHOME for reference resolving
-* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
-* Improve reference resolving when using subfiles
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Fix exception #3771 when a file referenced from cache is deleted
-* Fix basic case of false positive of duplicate label inspection when user defined \if commands are used
-* Fix a parse error when using \else with a user defined \if-command
-* Fix relative path conversion in graphics insertion wizard by resolving relative to the root file
-* Fix exception #3763
-* Fix 'missing import' false positive in subfiles
-* Don't override the file icon for .txt files, by @Steve-Li-1998
-* Fix exceptions #3754 and #3326
-* Fix exceptions in structure view when command parameters are missing
-* Improve error report submitter for long stacktraces
-* Fix a parser issue with bidirectional arrow in TikZ
-* Fix default Docker image name when running Dockerized TeX Live without a project SDK
-* Always use content roots to resolve references
-* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
-* Fix rename of files when using subfiles
-* Fix incorrect 'package already included' warning for the subfiles package
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.7] - 2024-11-24
-
-### Added
-
-* Support references in \subfix command
-* Provide autocompletion for all relevant directories when using subfiles
-* Do not format existing directories in the given path in the file creation quickfix dialog
-* Disable Evince inverse search on Windows to avoid a UI freeze on opening a second project
-* Use xdg-mime to choose a default pdf viewer in the run configuration template
-* Don't insert the right brace when in front of text
-* Add DeclareMathSymbol to indexed command definitions in installed packages
-* Add support for TEXMFHOME for reference resolving
-* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
-* Improve reference resolving when using subfiles
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Fix relative path conversion in graphics insertion wizard by resolving relative to the root file
-* Fix exception #3763
-* Fix 'missing import' false positive in subfiles
-* Don't override the file icon for .txt files, by @Steve-Li-1998
-* Fix exceptions #3754 and #3326
-* Fix exceptions in structure view when command parameters are missing
-* Improve error report submitter for long stacktraces
-* Fix a parser issue with bidirectional arrow in TikZ
-* Fix default Docker image name when running Dockerized TeX Live without a project SDK
-* Always use content roots to resolve references
-* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
-* Fix rename of files when using subfiles
-* Fix incorrect 'package already included' warning for the subfiles package
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.6] - 2024-11-23
-
-### Added
-
-* Disable Evince inverse search on Windows to avoid a UI freeze on opening a second project
-* Use xdg-mime to choose a default pdf viewer in the run configuration template
-* Don't insert the right brace when in front of text
-* Add DeclareMathSymbol to indexed command definitions in installed packages
-* Add support for TEXMFHOME for reference resolving
-* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
-* Improve reference resolving when using subfiles
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Don't override the file icon for .txt files, by @Steve-Li-1998
-* Fix exceptions #3754 and #3326
-* Fix exceptions in structure view when command parameters are missing
-* Improve error report submitter for long stacktraces
-* Fix a parser issue with bidirectional arrow in TikZ
-* Fix default Docker image name when running Dockerized TeX Live without a project SDK
-* Always use content roots to resolve references
-* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
-* Fix rename of files when using subfiles
-* Fix incorrect 'package already included' warning for the subfiles package
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.5] - 2024-11-15
-
-### Added
-
-* Also index bibliography files that are included but are outside the project
-* Add support for TEXMFHOME for reference resolving
-* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
-* Improve reference resolving when using subfiles
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Fix html check when pasting tables from Excel
-* Fix default Docker image name when running Dockerized TeX Live without a project SDK
-* Always use content roots to resolve references
-* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
-* Fix rename of files when using subfiles
-* Fix incorrect 'package already included' warning for the subfiles package
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.4] - 2024-11-13
-
-### Added
-
-* Add support for TEXMFHOME for reference resolving
-* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
-* Improve reference resolving when using subfiles
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Fix default Docker image name when running Dockerized TeX Live without a project SDK
-* Always use content roots to resolve references
-* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
-* Fix rename of files when using subfiles
-* Fix incorrect 'package already included' warning for the subfiles package
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.3] - 2024-11-12
-
-### Added
-
-* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
-* Improve reference resolving when using subfiles
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
-* Fix rename of files when using subfiles
-* Fix incorrect 'package already included' warning for the subfiles package
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.2] - 2024-11-12
-
-### Added
-
-* Improve reference resolving when using subfiles
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
-* Avoid referencing obsolete psifiles, fix exception #3635
-
-## [0.9.9-alpha.1] - 2024-11-10
-
-### Added
-
-* Add setting to disable auto-import of bibtex entries from remote libraries
-
-### Fixed
-
-* Fix exception #3557 if using bibtex structure view when bibtex file type is reassignd to plain text
+* Fix exception #3557 if using bibtex structure view when bibtex file type is reassigned to plain text
 * Avoid referencing obsolete psifiles, fix exception #3635
 
 ## [0.9.8]
@@ -619,15 +445,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.9...HEAD
-[0.9.9-alpha.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.8...v0.9.9-alpha.9
-[0.9.9-alpha.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.7...v0.9.9-alpha.8
-[0.9.9-alpha.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.6...v0.9.9-alpha.7
-[0.9.9-alpha.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.4...v0.9.9-alpha.6
-[0.9.9-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.3...v0.9.9-alpha.4
-[0.9.9-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.2...v0.9.9-alpha.3
-[0.9.9-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9-alpha.1...v0.9.9-alpha.2
-[0.9.9-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9-alpha.1
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...HEAD
+[0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
 [0.9.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...v0.9.6
