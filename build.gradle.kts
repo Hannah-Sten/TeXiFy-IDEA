@@ -31,7 +31,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "10.0.4"
+    id("org.owasp.dependencycheck") version "11.1.0"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -111,8 +111,8 @@ dependencies {
 
         bundledPlugin("com.intellij.java")
         bundledPlugin("tanvd.grazi")
-        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.16.1")
-        plugin("com.jetbrains.hackathon.indices.viewer:1.27")
+        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.0")
+        plugin("com.jetbrains.hackathon.indices.viewer:1.28")
     }
 
     // Local dependencies
@@ -136,18 +136,18 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.0.0")
-    implementation("io.ktor:ktor-client-cio:3.0.0")
-    implementation("io.ktor:ktor-client-auth:3.0.0")
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.0")
-    implementation("io.ktor:ktor-server-core:3.0.0")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.0.0")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0")
+    implementation("io.ktor:ktor-client-core:3.0.1")
+    implementation("io.ktor:ktor-client-cio:3.0.1")
+    implementation("io.ktor:ktor-client-auth:3.0.1")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.1")
+    implementation("io.ktor:ktor-server-core:3.0.1")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.0.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Comparing versions
