@@ -31,7 +31,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "10.0.4"
+    id("org.owasp.dependencycheck") version "11.1.0"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
