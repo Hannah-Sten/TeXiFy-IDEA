@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
-import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.JBUI
 import org.apache.batik.dom.GenericDOMImplementation
@@ -10,7 +9,6 @@ import org.apache.batik.svggen.SVGGraphics2D
 import org.apache.batik.transcoder.TranscoderException
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
-import org.apache.batik.transcoder.image.ImageTranscoder
 import org.apache.batik.transcoder.image.PNGTranscoder
 import org.scilab.forge.jlatexmath.DefaultTeXFont
 import org.scilab.forge.jlatexmath.ParseException
@@ -70,7 +68,6 @@ class JlatexmathPreviewer : Previewer {
         val transcoderInput = TranscoderInput(FileInputStream("$tempBaseName.svg"))
         val os = FileOutputStream("$tempBaseName.png")
         val transcoderOutput = TranscoderOutput(os)
-        transcoder.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, JBColor.WHITE)
         transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, scaledWidth)
         transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, scaledHeight)
 
@@ -98,10 +95,10 @@ class JlatexmathPreviewer : Previewer {
         val icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20f)
         icon.insets = JBUI.insets(5)
         g2.svgCanvasSize = Dimension(icon.iconWidth, icon.iconHeight)
-        g2.color = JBColor.WHITE
+        g2.color = JBColor.background()
         g2.fillRect(0, 0, icon.iconWidth, icon.iconHeight)
         val jl = JLabel()
-        jl.foreground = Gray._0
+        jl.foreground = JBColor.foreground()
         icon.paintIcon(jl, g2, 0, 0)
         val useCSS = true
         val svgs = FileOutputStream("$tempBaseName.svg")

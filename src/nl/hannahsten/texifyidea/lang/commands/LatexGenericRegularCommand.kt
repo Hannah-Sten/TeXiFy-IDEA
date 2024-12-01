@@ -7,10 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTSPEC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NTHEOREM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SVG
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.VARIOREF
@@ -147,6 +149,7 @@ enum class LatexGenericRegularCommand(
     INPUTMINTED("inputminted", "language".asRequired(Argument.Type.MINTED_FUNTIME_LAND), RequiredFileArgument("sourcefile", true, false, ""), dependency = LatexPackage.MINTED),
     INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", isAbsolutePathSupported = true, commaSeparatesArguments = false, FileMagic.graphicFileExtensions, supportsAnyExtension = false), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, true, "tex")),
+    INCLUDESVG("includesvg", "options".asOptional(), RequiredPicturePathArgument("svg file", isAbsolutePathSupported = true, commaSeparatesArguments = false, extension = listOf("svg"), supportsAnyExtension = false), dependency = SVG),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),
     INDEX("intex", "entry".asRequired()),
@@ -303,6 +306,7 @@ enum class LatexGenericRegularCommand(
     SUBSUBSECTION_STAR("subsubsection*", "title".asRequired(Argument.Type.TEXT)),
     SUBSUBSECTIONMARK("subsubsectionmark", "code".asRequired()),
     SUPPRESSFLOATS("suppressfloats", "placement".asOptional()),
+    SVGPATH("svgpath", RequiredFolderArgument("foldername"), dependency = SVG),
     SYMBOL("symbol", "n".asRequired()),
     TABCOLSEP("tabcolsep"),
     TABLENAME("tablename", "name".asRequired(Argument.Type.TEXT)),
@@ -410,6 +414,15 @@ enum class LatexGenericRegularCommand(
     LCNAMECREFS("lcnamecrefs", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
     LABELCREF("labelcref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
     LABELCPAGEREF("labelcpageref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+
+    // Fontspec
+    DEFAULTFONTFEATURES("defaultfontfeatures", "font names".asOptional(), "font features".asRequired(), dependency = FONTSPEC),
+    ADDFONTFEATURE("addfontfeature", "font features".asRequired(), dependency = FONTSPEC),
+    ADDFONTFEATURES("addfontfeatures", "font features".asRequired(), dependency = FONTSPEC),
+    SETMAINFONT("setmainfont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    SETSANSFONT("setsansfont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    SETMONOFONT("setmonofont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    FONTSPEC_CMD("fontspec", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
     ;
 
     override val identifier: String
