@@ -48,7 +48,7 @@ class LatexParserDefinition : ParserDefinition {
         val FILE: IStubFileElementType<*> = object : IStubFileElementType<LatexFileStub>(
             "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
         ) {
-            override fun getStubVersion(): Int = 76
+            override fun getStubVersion(): Int = 77
         }
     }
 
