@@ -61,6 +61,8 @@ class LatexParserTest : BasePlatformTestCase() {
             \def\@xyz[#1]#2{do something with #1 and #2}
             
             \@namedef{#1}{\@ifnextchar{^}{\@nameuse{#1@}}{\@nameuse{#1@}^{}}}
+            
+            \newcommand{\abc}{\@ifnextchar${'$'}{Math coming: }{No math}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
