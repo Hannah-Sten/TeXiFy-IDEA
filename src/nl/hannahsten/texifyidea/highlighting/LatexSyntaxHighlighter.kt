@@ -87,6 +87,8 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
             LatexTypes.START_IF,
             LatexTypes.ELSE,
             LatexTypes.END_IF,
+            LatexTypes.LEFT,
+            LatexTypes.RIGHT,
         )
 
         /*

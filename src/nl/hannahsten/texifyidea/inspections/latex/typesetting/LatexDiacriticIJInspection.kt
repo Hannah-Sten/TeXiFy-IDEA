@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.lang.Diacritic
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.util.parser.commandTokens
 import nl.hannahsten.texifyidea.util.parser.hasParent
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
@@ -70,7 +70,7 @@ open class LatexDiacriticIJInspection : TexifyRegexInspection(
         val offset = matcher.end()
 
         val foundAhead = file.findElementAt(offset)
-        if (foundAhead is LeafPsiElement && foundAhead.elementType == LatexTypes.COMMAND_TOKEN) {
+        if (foundAhead is LeafPsiElement && commandTokens.contains(foundAhead.elementType)) {
             return false
         }
 
