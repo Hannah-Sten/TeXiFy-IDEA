@@ -194,6 +194,10 @@ class LatexBlock(
             return Indent.getNormalIndent(false)
         }
 
+        if (myNode.elementType == LatexTypes.LEFT_RIGHT_CONTENT) {
+            return Indent.getNormalIndent(true)
+        }
+
         // Display math
         return if ((myNode.elementType === LatexTypes.MATH_CONTENT || myNode.elementType === LatexTypes.COMMENT_TOKEN) &&
             myNode.treeParent?.elementType === LatexTypes.DISPLAY_MATH

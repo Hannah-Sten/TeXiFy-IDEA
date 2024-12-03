@@ -20,7 +20,8 @@ class LatexUsagesProvider : FindUsagesProvider {
                 LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
                 LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
                 LatexTypes.PARAMETER_TEXT, LatexTypes.PARAMETER,
-                LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM
+                LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM,
+                LatexTypes.LEFT, LatexTypes.RIGHT,
             ),
             // Comments.
             TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),

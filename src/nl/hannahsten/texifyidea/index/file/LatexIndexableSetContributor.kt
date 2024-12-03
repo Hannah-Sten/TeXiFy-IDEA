@@ -3,15 +3,20 @@ package nl.hannahsten.texifyidea.index.file
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.IndexableSetContributor
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.isTestProject
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
@@ -23,6 +28,10 @@ import java.nio.file.Path
  * Specify the paths that have to be indexed for the [LatexExternalCommandIndex].
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
+
+    object Cache {
+        var externalDirectFileInclusions: Set<VirtualFile>? = null
+    }
 
     override fun getAdditionalProjectRootsToIndex(project: Project): MutableSet<VirtualFile> {
         // Avoid indexing in tests
@@ -62,8 +71,28 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         roots.addAll(LatexSdkUtil.getSdkSourceRoots(project) { sdkType, homePath -> sdkType.getDefaultStyleFilesPath(homePath) })
 
         roots.addAll(getTexinputsPaths(project, rootFiles = listOf(), expandPaths = false).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) })
-        Log.debug("Indexing source roots $roots")
 
+        // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
+        if (Cache.externalDirectFileInclusions == null) {
+            if (!DumbService.isDumb(project)) {
+                // For now, just do this for bibliography and direct input commands, as there this is most common
+                val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
+                    // We can't add single files, so take the parent
+                    .mapNotNull {
+                        val path = it.requiredParameter(0) ?: return@mapNotNull null
+                        if (File(path).isAbsolute) {
+                            LocalFileSystem.getInstance().findFileByPath(path)?.parent
+                        }
+                        else {
+                            it.containingFile.parent?.virtualFile?.findFileByRelativePath(path)?.parent
+                        }
+                    }
+                Cache.externalDirectFileInclusions = externalFiles.toSet()
+            }
+        }
+        roots.addAll(Cache.externalDirectFileInclusions?.filter { it.exists() } ?: emptyList())
+
+        Log.debug("Indexing source roots $roots")
         return roots
     }
 

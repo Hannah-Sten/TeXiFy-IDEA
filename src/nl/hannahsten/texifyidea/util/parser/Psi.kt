@@ -7,7 +7,6 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
 import com.intellij.util.ProcessingContext
@@ -195,14 +194,6 @@ fun PsiElement?.findOuterMathEnvironment(): PsiElement? {
 }
 
 /**
- * Check if the element is in a comment or not.
- */
-fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMMENT) || when (this) {
-    is PsiComment -> true
-    else -> this is LeafPsiElement && elementType == LatexTypes.COMMAND_TOKEN
-}
-
-/**
  * Checks if the element is inside a verbatim context.
  */
 fun PsiElement.inVerbatim() = inDirectEnvironment(EnvironmentMagic.verbatim)
@@ -322,6 +313,8 @@ inline fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -
 
     return false
 }
+
+val commandTokens = setOf(LatexTypes.COMMAND_TOKEN, LatexTypes.LEFT, LatexTypes.RIGHT)
 
 /**
  * Checks whether the psi element is part of a comment or not.

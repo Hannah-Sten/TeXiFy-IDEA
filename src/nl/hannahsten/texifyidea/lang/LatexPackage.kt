@@ -48,6 +48,7 @@ open class LatexPackage @JvmOverloads constructor(
         val EUROSYM = LatexPackage("eurosym")
         val FLOAT = LatexPackage("float")
         val FONTENC = LatexPackage("fontenc")
+        val FONTSPEC = LatexPackage("fontspec")
         val GAUSS = LatexPackage("gauss")
         val GLOSSARIES = LatexPackage("glossaries")
         val GLOSSARIESEXTRA = LatexPackage("glossaries-extra")
