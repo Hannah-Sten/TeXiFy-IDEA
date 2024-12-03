@@ -9,6 +9,7 @@ If you see a minor bug in an inspection, like some missing metadata about comman
 Most inspections can be ignored for only a single line, environment or file.
 To do this, use the format `%! Suppress = MyInspectionName`.
 The easiest way is usually to use the available context menu on the inspection warning itself.
+In some cases, like block of text spanning multiple lines, placing a magic comment in front of it will suppress the inspection for the whole block, instead of for a single line.
 
 ![Suppression](suppression-menu.png)
 

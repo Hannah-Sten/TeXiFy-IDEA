@@ -5,6 +5,7 @@
 ### Added
 * Automatically index bibliography files outside the project that are included by an absolute path
 * Disable quotes inspection when TeX ligatures are disabled by fontspec
+* Inspections can now be suppressed for any single line, or block of text
 
 ### Fixed
 
