@@ -162,6 +162,21 @@ Folding actions can be found at <ui-path>Code | Folding</ui-path>.
 
 ![bibtex-folding](bibtex-folding.png)
 
+## Working with BibTeX files outside the project
+
+In some cases, you may want to use a central bibliography file which is placed outside the project.
+Because of that, it is not indexed automatically, because neither your LaTeX installation nor TeXiFy knows where it is.
+That means that the bibtex entries would not appear in the autocompletion.
+Since version 0.9.10, TeXiFy has experimental support for finding and indexing bibliography files that are included with absolute paths, but this may require an extra few restarts to work.
+
+In general, for portability reasons it is not recommended to include files by their absolute paths.
+To include files outside the project, you have the following options.
+
+* Using the `BIBINPUTS` environment variable, you can set this in the [run configuration](Run-configuration-settings.md#environment-variables) or any other regular way.
+* Put the bibliography file in your local texmf tree, for example `~/texmf/bibtex/bib` or `$TEXMFHOME/bibtex/bib` if you set this environment variable
+* You can use the [Remote Library](Tool-Windows.md#remote-libraries) tool window to connect to a bibliography file anywhere on your system. This automatically copies any entries to the local bib file you include in your main file, so that you end up with a self-contained project which does not break if you change the original bib file.
+* If you do want to use an absolute path, you can disable the automatic copying of the remote libraries tool window in [Settings](TeXiFy-settings.md)
+
 ## Chapterbib support
 
 _Since b0.6.9_

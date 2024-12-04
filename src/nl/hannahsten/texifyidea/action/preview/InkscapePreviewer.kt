@@ -6,9 +6,11 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.ui.JBColor
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import nl.hannahsten.texifyidea.util.toHex
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -134,7 +136,7 @@ $previewCode
                     "$tempBasename.pdf",
                     "--export-area-drawing",
                     "--export-dpi", "1000",
-                    "--export-background", "#FFFFFF",
+                    "--export-background", JBColor.background().toHex(),
                     "--export-background-opacity", "1.0",
                     "--export-filename", "$tempBasename.png"
                 ),
@@ -161,7 +163,7 @@ $previewCode
                     "$tempBasename.svg",
                     "--export-area-drawing",
                     "--export-dpi", "1000",
-                    "--export-background", "#FFFFFF",
+                    "--export-background", JBColor.background().toHex(),
                     "--export-png", "$tempBasename.png"
                 ),
                 tempDirectory,

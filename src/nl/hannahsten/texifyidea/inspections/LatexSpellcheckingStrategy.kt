@@ -31,6 +31,8 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         if (psiElement.elementType == LatexTypes.COMMAND_TOKEN ||
             psiElement.elementType == LatexTypes.COMMAND_IFNEXTCHAR ||
             psiElement.elementType == LatexTypes.COMMENT_TOKEN ||
+            psiElement.elementType == LatexTypes.LEFT ||
+            psiElement.elementType == LatexTypes.RIGHT ||
             isBeginEnd(psiElement) ||
             psiElement.hasParent(LatexOptionalParam::class)
         ) {
