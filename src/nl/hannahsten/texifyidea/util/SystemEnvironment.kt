@@ -52,6 +52,10 @@ class SystemEnvironment {
             return isAvailable
         }
 
+        // Map a system command to the full location, as raw output (so may be multiple paths on Windows) from the where/which command
+        // This is cached because the value will not change between restarts
+        var executableLocationCache = mutableMapOf<String, String?>()
+
         // Assumes version will be given in the format GNOME Document Viewer 3.34.2
         val evinceVersion: DefaultArtifactVersion by lazy {
             DefaultArtifactVersion("evince --version".runCommand()?.split(" ")?.lastOrNull() ?: "")
