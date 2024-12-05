@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
@@ -68,6 +69,12 @@ open class LatexAnnotator : Annotator {
         // Commands.
         else if (psiElement is LatexCommands) {
             annotateCommands(psiElement, annotationHolder)
+        }
+        else if (psiElement.elementType == LatexTypes.LEFT || psiElement.elementType == LatexTypes.RIGHT) {
+            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+                .range(psiElement)
+                .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                .create()
         }
         else if (psiElement.isComment()) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)

@@ -87,6 +87,9 @@ NEWENVIRONMENT=\\(re)?newenvironment
 // BeforeBegin/AfterEnd are from etoolbox, and just happen to also have two parameters where the second can contain loose \begin or \end
 NEWCOMMAND=\\(new|provide)command | \\BeforeBeginEnvironment | \\AfterEndEnvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
+// These are separate to support formatting
+LEFT=\\left
+RIGHT=\\right
 
 // Verbatim commands which will be delimited by the same character
 // \path from the 'path' package
@@ -525,6 +528,8 @@ END_IFS=\\fi
 {CLOSE_BRACE}           { return CLOSE_BRACE; }
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
+{LEFT}                  { return LEFT; }
+{RIGHT}                 { return RIGHT; }
 
 {LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
 {ENDINPUT}              { yypushState(OFF); return COMMAND_TOKEN; }

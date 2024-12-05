@@ -6,7 +6,10 @@ import com.intellij.formatting.ChildAttributes
 import com.intellij.formatting.Indent
 import com.intellij.lang.ASTNode
 import nl.hannahsten.texifyidea.formatting.LatexBlock
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexBeginCommand
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
@@ -30,9 +33,10 @@ object LatexEnterHandler {
         }
 
         val type = node.elementType
-        if (type === LatexTypes.DISPLAY_MATH || shouldIndentEnvironment) {
+        if (type == LatexTypes.DISPLAY_MATH || shouldIndentEnvironment || type == LatexTypes.LEFT_RIGHT) {
             return ChildAttributes(Indent.getNormalIndent(true), null)
         }
+
         val indentSections = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_SECTIONS
         if (indentSections) {
             // This function will be called on the block for which the caret is adding something in the children at the given index,

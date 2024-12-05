@@ -5,9 +5,12 @@ package nl.hannahsten.texifyidea.lang.magic
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.util.prevLeaf
+import com.intellij.psi.util.prevLeafs
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
@@ -296,7 +299,15 @@ fun PsiElement.magicComment(): MagicComment<String, String>? = when (this) {
     is LatexMathEnvironment -> this.magicComment()
     is LatexCommands -> this.magicComment()
     is LatexGroup -> this.magicComment()
-    else -> null
+    else -> this.commentOnPreviousLine()
+}
+
+/**
+ * To find any comment at the previous line, we need to check for newlines explicitly.
+ * Return null if the previous line is not a magic comment.
+ */
+fun PsiElement.commentOnPreviousLine(): MagicComment<String, String>? {
+    return prevLeafs.firstOrNull { it is PsiWhiteSpace && it.text.contains("\n") }?.backwardMagicCommentLookup { prevLeaf(true) }
 }
 
 /**
