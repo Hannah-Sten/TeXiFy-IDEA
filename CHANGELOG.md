@@ -3,12 +3,18 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.9.10-alpha.2] - 2024-12-05
+
+### Added
+
+* Improve performance of finding files to be indexed
 * Show formatted file path in file not found inspection quickfix name
 * Automatically index bibliography files outside the project that are included by an absolute path
 * Disable quotes inspection when TeX ligatures are disabled by fontspec
 * Inspections can now be suppressed for any single line, or block of text
-
-### Fixed
 
 ## [0.9.9] - 2024-12-01
 
@@ -447,7 +453,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.10-alpha.2...HEAD
+[0.9.10-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.9.10-alpha.2
 [0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
 [0.9.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7

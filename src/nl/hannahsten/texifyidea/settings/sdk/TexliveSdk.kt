@@ -61,7 +61,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         if (!paths.isNullOrEmpty()) {
             for (path in paths.split("\\s+".toRegex())) {
                 // Resolve symlinks
-                val resolvedPath = runCommand("readlink", "-f", path) ?: path
+                val resolvedPath = if (!SystemInfo.isWindows) runCommand("readlink", "-f", path) ?: path else path
 
                 // We don't know for sure whether this path contains 'texlive':
                 // e.g. C:\texnolive\2021\bin\pdflatex.exe can be perfectly valid

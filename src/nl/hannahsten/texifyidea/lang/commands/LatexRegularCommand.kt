@@ -25,9 +25,10 @@ object LatexRegularCommand {
     private val LISTINGS: Set<LatexCommand> = LatexListingCommand.entries.toSet()
     private val LOREM_IPSUM: Set<LatexCommand> = LatexLoremIpsumCommand.entries.toSet()
     private val GLOSSARY: Set<LatexCommand> = LatexGlossariesCommand.entries.toSet()
+    private val TODO: Set<LatexCommand> = LatexTodoCommand.entries.toSet()
 
     val ALL: Set<LatexCommand> = GENERIC + TEXTCOMP + EURO + TEXT_SYMBOLS + NEW_DEFINITIONS + MATHTOOLS +
-        XCOLOR + XPARSE + NATBIB + BIBLATEX + SIUNITX + ALGORITHMICX + IFS + LISTINGS + LOREM_IPSUM + GLOSSARY
+        XCOLOR + XPARSE + NATBIB + BIBLATEX + SIUNITX + ALGORITHMICX + IFS + LISTINGS + LOREM_IPSUM + GLOSSARY + TODO
 
     private val lookup = HashMap<String, NonEmptySet<LatexCommand>>()
     private val lookupDisplay = HashMap<String, NonEmptySet<LatexCommand>>()
