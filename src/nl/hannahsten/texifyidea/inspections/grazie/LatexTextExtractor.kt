@@ -4,6 +4,7 @@ import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -50,12 +51,17 @@ class LatexTextExtractor : TextExtractor() {
         val rootText = root.text
 
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
-        val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>())
+        val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>() + root.childrenOfType<PsiWhiteSpace>())
             .asSequence()
             .filter { it.isNotInMathEnvironment() && it.isNotInSquareBrackets() }
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             .flatMap { text ->
+                // Always keep newlines, as they may be the only whitespace splitting consecutive commands
+                if (text is PsiWhiteSpace && !text.text.contains("\n")) {
+                    return@flatMap emptyList()
+                }
+
                 // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
                 // Even commends which have no text as argument, for example certain reference commands like auteref, may need to be kept in to get correct punctuation
                 if (text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true) {
