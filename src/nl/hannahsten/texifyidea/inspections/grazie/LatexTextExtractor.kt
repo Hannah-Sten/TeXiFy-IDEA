@@ -37,14 +37,15 @@ class LatexTextExtractor : TextExtractor() {
             .map { TextContent.Exclusion.exclude(it.toTextRange()) }
             .filter { it.start >= 0 && it.end <= textContent.length }
 
-        return textContent.excludeRanges(stealthyRanges)
+        val textToSubmit = textContent.excludeRanges(stealthyRanges)
+        return textToSubmit
     }
 
     /**
      * Get ranges to ignore.
      * Note: IntRange has an inclusive end.
      */
-    private fun getStealthyRanges(root: PsiElement): List<IntRange> {
+    fun getStealthyRanges(root: PsiElement): List<IntRange> {
         // Getting text takes time, so we only do it once
         val rootText = root.text
 
@@ -55,8 +56,9 @@ class LatexTextExtractor : TextExtractor() {
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             .flatMap { text ->
-                // Skip arguments of non-text commands
-                if (text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type == Argument.Type.TEXT } != true) {
+                // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
+                if (text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT } == true || text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null) {
+                    // Ignore this
                     return@flatMap emptyList()
                 }
 
@@ -71,7 +73,7 @@ class LatexTextExtractor : TextExtractor() {
 
                 // -1 Because endOffset is exclusive, but we are working with inclusive end here
                 var end = text.textRange.endOffset - 1 - root.startOffset
-                // If LatexNormalText ends, for example because it is followed by a command, we do want to include the space in front of the command, since it is still typeset as a space, which is not true for the space after the command
+                // If LatexNormalText ends, for example because it is followed by a command, we do want to include the space in front of the command, since it is still typeset as a space, which is not true for the space after the command if the command has no arguments,
                 // except when the space is followed by inline math, since we ignore inline math altogether (which is probably not correct) we should also ignore the space
                 if (setOf(' ', '\n').contains(rootText.getOrNull(end + 1)) && rootText.getOrNull(end + 2) != '$') {
                     end += 1
@@ -100,9 +102,7 @@ class LatexTextExtractor : TextExtractor() {
             ranges.removeAll(overlapped.toSet())
             ranges.add(indent.merge(overlapped))
         }
-        // This is approximately (except at the start) the text we send to Grazie
-//        val text = ranges.sortedBy { it.first }.flatMap { listOf(it.first, it.last) }.toMutableList().also { it.add(0, -1) }
-//            .chunked(2) { if (it.size > 1) rootText.substring(it[0] + 1, it[1]) else null }
+
         return ranges.sortedBy { it.first }
     }
 

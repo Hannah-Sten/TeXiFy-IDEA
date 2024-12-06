@@ -11,6 +11,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import com.intellij.util.messages.Topic
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 
 class GrazieInspectionTest : BasePlatformTestCase() {
 
@@ -62,7 +63,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     fun testMatchingParens() {
         myFixture.configureByText(
-            LatexFileType, """a (in this case) . aa"""
+            LatexFileType, """A sentence (in this case). More sentence."""
         )
         myFixture.checkHighlighting()
     }
@@ -122,21 +123,69 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
-    // Broken in 2023.2 (TEX-177)
-//    fun testTabular() {
-//        GrazieRemote.download(Lang.GERMANY_GERMAN)
-//        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
-//        myFixture.configureByText(
-//            LatexFileType,
-//            """
-//                \begin{tabular}{llll}
-//                    ${'$'}a${'$'}:                 & ${'$'}\mathbb{N}${'$'} & \rightarrow & ${'$'}M${'$'}     \\
-//                    \multicolumn{1}{l}{} & ${'$'}n${'$'}          & \mapsto     & ${'$'}a(n)${'$'}.
-//                \end{tabular}
-//
-//                Ich bin über die Entwicklung sehr froh.
-//            """.trimIndent()
-//        )
-//        myFixture.checkHighlighting()
-//    }
+    fun testTabular() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \begin{tabular}{llll}
+                    ${'$'}a${'$'}:                 & ${'$'}\mathbb{N}${'$'} & \rightarrow & ${'$'}M${'$'}     \\
+                    \multicolumn{1}{l}{} & ${'$'}n${'$'}          & \mapsto     & ${'$'}a(n)${'$'}.
+                \end{tabular}
+
+                Ich bin über die Entwicklung sehr froh.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    /*
+     * These rules are not enabled by default in Grazie Lite, but do show up by default in Grazie Pro.
+     */
+
+
+    fun testCommaInSentence() {
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("COMMA_PARENTHESIS_WHITESPACE")) }
+        myFixture.configureByText(LatexFileType, """\label{fig} Similar to the structure presented in \autoref{fig}, it is.""")
+        myFixture.checkHighlighting()
+    }
+
+
+    fun testCommandsInSentence() {
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("CONSECUTIVE_SPACES")) }
+        myFixture.configureByText(LatexFileType, """The principles of a generic \ac{PID} controller.""")
+        myFixture.checkHighlighting()
+    }
+
+    /*
+     * Grazie Pro
+     *
+     *  These tests only test false positives in Grazie Pro (com.intellij.grazie.pro.style.StyleInspection), but that is not possible to test at the moment: https://youtrack.jetbrains.com/issue/GRZ-5023
+     * So we test the excluded ranges directly.
+     */
+
+    /**
+     * Text as sent to Grazie.
+     */
+    fun getSubmittedText(rootText: String, ranges: List<IntRange>): String {
+        return ranges.sortedBy { it.first }.flatMap { listOf(it.first, it.last) }.toMutableList().also { it.add(0, -1) }
+            .chunked(2) { if (it.size > 1) rootText.substring(it[0] + 1, it[1]) else null }.joinToString()
+    }
+
+    fun testLongTextInCommand() {
+        val text =  """
+            \section{This is the first section of my test document}
+            \section{The second section that is present in my testing document}
+            \section{A third section that I also put in my test document to showcase this issue}
+            \section{Here is a fourth section that I am putting in my document}
+            """.trimIndent()
+
+        myFixture.checkHighlighting()
+
+        val file = LatexPsiHelper(myFixture.project).createFromText(text)
+        val ranges = LatexTextExtractor().getStealthyRanges(file)
+        val submittedText = getSubmittedText(text, ranges)
+        assertEquals("A PID controller.", submittedText)
+    }
 }

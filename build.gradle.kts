@@ -113,7 +113,8 @@ dependencies {
         bundledPlugin("tanvd.grazi")
         plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.0")
         plugin("com.jetbrains.hackathon.indices.viewer:1.28")
-        plugin("com.intellij.grazie.pro:0.3.347")
+        // Does not work in tests: https://youtrack.jetbrains.com/issue/GRZ-5023
+//        plugin("com.intellij.grazie.pro:0.3.347")
     }
 
     // Local dependencies
