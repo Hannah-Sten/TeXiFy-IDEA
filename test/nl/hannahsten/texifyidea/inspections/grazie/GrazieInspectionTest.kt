@@ -6,12 +6,14 @@ import com.intellij.grazie.ide.msg.GrazieStateLifecycle
 import com.intellij.grazie.jlanguage.Lang
 import com.intellij.grazie.remote.GrazieRemote
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.psi.PsiFile
 import com.intellij.spellchecker.inspections.SpellCheckingInspection
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import com.intellij.util.messages.Topic
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexContent
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 class GrazieInspectionTest : BasePlatformTestCase() {
 
@@ -123,6 +125,18 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testGermanGlossaries() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            Der Hintergrund des Themas der Thesis ist der Umbruch beim Prozess des \gls{api}-Managements.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testTabular() {
         GrazieRemote.download(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
@@ -169,26 +183,20 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     /**
      * Text as sent to Grazie.
      */
-    fun getSubmittedText(rootText: String, ranges: List<IntRange>): String {
-        return ranges.sortedBy { it.first }.flatMap { listOf(it.first, it.last) }.toMutableList().also { it.add(0, -1) }
-            .chunked(2) { if (it.size > 1) rootText.substring(it[0] + 1, it[1]) else null }.joinToString()
+    private fun getSubmittedText(file: PsiFile): String {
+        return LatexTextExtractor().buildTextContent(file.firstChildOfType(LatexContent::class)!!).toString()
     }
 
-    fun testLongTextInCommand() {
+    fun testNewlinesShouldBeKept() {
         val text =  """
-            \section{This is the first section of my test document}
-            \section{The second section that is present in my testing document}
-            \section{A third section that I also put in my test document to showcase this issue}
-            \section{Here is a fourth section that I am putting in my document}
-            """.trimIndent()
-
-        myFixture.checkHighlighting()
-
-        val file = LatexPsiHelper(myFixture.project).createFromText(text)
-        val ranges = LatexTextExtractor().getStealthyRanges(file)
-        val submittedText = getSubmittedText(text, ranges)
-        assertEquals("A PID controller.", submittedText)
+            \section{First}
+            \section{Second}
+        """.trimIndent()
+        myFixture.configureByText(LatexFileType, text)
+        val submittedText = getSubmittedText(myFixture.file)
+        assertEquals("""
+            First
+            Second
+        """.trimIndent(), submittedText)
     }
-
-    // todo that one german test
 }

@@ -4,8 +4,8 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 enum class LatexGlossariesCommand(
@@ -46,10 +46,10 @@ enum class LatexGlossariesCommand(
         "long".asRequired(),
         dependency = LatexPackage.GLOSSARIES
     ),
-    GLS("gls", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
-    GLSUPPER("Gls", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
-    GLSPLURAL("glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
-    GLSPLURALUPPER("Glspl", "label".asRequired(), dependency = LatexPackage.GLOSSARIES),
+    GLS("gls", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.GLOSSARIES),
+    GLSUPPER("Gls", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.GLOSSARIES),
+    GLSPLURAL("glspl", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.GLOSSARIES),
+    GLSPLURALUPPER("Glspl", "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.GLOSSARIES),
 
     LOADGLSENTRIES(
         "loadglsentries",
