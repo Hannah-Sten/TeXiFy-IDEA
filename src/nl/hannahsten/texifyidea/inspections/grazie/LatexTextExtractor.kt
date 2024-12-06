@@ -57,7 +57,13 @@ class LatexTextExtractor : TextExtractor() {
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             .flatMap { text ->
                 // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
-                if (text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT } == true || text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null) {
+                // Even commends which have no text as argument, for example certain reference commands like auteref, may need to be kept in to get correct punctuation
+                if (text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true) {
+                    return@flatMap emptyList()
+                }
+
+                // Environment names are never part of a sentence
+                if (text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null) {
                     // Ignore this
                     return@flatMap emptyList()
                 }

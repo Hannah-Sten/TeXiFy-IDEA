@@ -142,18 +142,19 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     /*
      * These rules are not enabled by default in Grazie Lite, but do show up by default in Grazie Pro.
+     * To find a rule id, search for the name in https://community.languagetool.org/rule/list and use the id together with the prefex from LangTool.globalIdPrefix
      */
 
 
     fun testCommaInSentence() {
-        GrazieConfig.update { it.copy(userEnabledRules = setOf("COMMA_PARENTHESIS_WHITESPACE")) }
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.COMMA_PARENTHESIS_WHITESPACE")) }
         myFixture.configureByText(LatexFileType, """\label{fig} Similar to the structure presented in \autoref{fig}, it is.""")
         myFixture.checkHighlighting()
     }
 
 
     fun testCommandsInSentence() {
-        GrazieConfig.update { it.copy(userEnabledRules = setOf("CONSECUTIVE_SPACES")) }
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.CONSECUTIVE_SPACES")) }
         myFixture.configureByText(LatexFileType, """The principles of a generic \ac{PID} controller.""")
         myFixture.checkHighlighting()
     }
@@ -188,4 +189,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         val submittedText = getSubmittedText(text, ranges)
         assertEquals("A PID controller.", submittedText)
     }
+
+    // todo that one german test
 }
