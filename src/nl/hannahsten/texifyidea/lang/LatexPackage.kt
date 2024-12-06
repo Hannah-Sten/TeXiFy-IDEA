@@ -89,6 +89,7 @@ open class LatexPackage @JvmOverloads constructor(
         val TCOLORBOX = LatexPackage("tcolorbox")
         val TEXTCOMP = LatexPackage("textcomp")
         val TIKZ = LatexPackage("tikz")
+        val TODONOTES = LatexPackage("todonotes")
         val ULEM = LatexPackage("ulem")
         val UPGREEK = LatexPackage("upgreek")
         val VARIOREF = LatexPackage("varioref")
