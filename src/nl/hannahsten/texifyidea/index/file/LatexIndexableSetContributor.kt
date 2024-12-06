@@ -75,19 +75,29 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
         if (Cache.externalDirectFileInclusions == null) {
             if (!DumbService.isDumb(project)) {
-                // For now, just do this for bibliography and direct input commands, as there this is most common
-                val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
-                    // We can't add single files, so take the parent
-                    .mapNotNull {
-                        val path = it.requiredParameter(0) ?: return@mapNotNull null
-                        if (File(path).isAbsolute) {
-                            LocalFileSystem.getInstance().findFileByPath(path)?.parent
+                try {
+                    // For now, just do this for bibliography and direct input commands, as there this is most common
+                    val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
+                        // We can't add single files, so take the parent
+                        .mapNotNull {
+                            val path = it.requiredParameter(0) ?: return@mapNotNull null
+                            if (File(path).isAbsolute) {
+                                LocalFileSystem.getInstance().findFileByPath(path)?.parent
+                            }
+                            else {
+                                it.containingFile.parent?.virtualFile?.findFileByRelativePath(path)?.parent
+                            }
                         }
-                        else {
-                            it.containingFile.parent?.virtualFile?.findFileByRelativePath(path)?.parent
-                        }
+                    Cache.externalDirectFileInclusions = externalFiles.toSet()
+                } catch (e: Throwable) {
+                    // This is very rare, but it can happen, in which case we will ignore and try again later
+                    if (e.message?.contains("Indexing process should not rely on non-indexed file data") == true) {
+                        Log.warn("Ignored index not ready: " + e.message)
                     }
-                Cache.externalDirectFileInclusions = externalFiles.toSet()
+                    else {
+                        throw e
+                    }
+                }
             }
         }
         roots.addAll(Cache.externalDirectFileInclusions?.filter { it.exists() } ?: emptyList())

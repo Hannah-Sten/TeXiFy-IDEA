@@ -38,6 +38,14 @@ suspend fun runCommandNonBlocking(
     try {
         Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
 
+        // where/which commands occur often but do not change since the output depends on PATH, so can be cached
+        val isExecutableLocationCommand = commands.size == 2 && listOf("where", "which").contains(commands[0])
+        if (isExecutableLocationCommand && SystemEnvironment.executableLocationCache[commands[1]] != null) {
+            val standardOutput = SystemEnvironment.executableLocationCache[commands[1]]
+            Log.debug("Retrieved output of $commands from cache: $standardOutput")
+            return@withContext CommandResult(0, standardOutput, null)
+        }
+
         val processBuilder = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withWorkDirectory(workingDirectory)
@@ -59,7 +67,7 @@ suspend fun runCommandNonBlocking(
                         it.readText()
                     }
                     catch (e: IOException) {
-                        // In some case directly after IDE start, the stream may be closed already, so ignore that
+                        // In some cases directly after IDE start (after a timeout?), the stream may be closed already, so ignore that
                         if (e.message?.contains("Stream closed") == true) {
                             Log.info("Ignored closed stream: " + e.message)
                             e.message
@@ -80,6 +88,11 @@ suspend fun runCommandNonBlocking(
 
         val result = CommandResult(process.awaitExit(), output?.await()?.trim(), error?.await()?.trim())
         Log.debug("${commands.firstOrNull()} exited with ${result.exitCode} ${result.standardOutput?.take(100)} ${result.errorOutput?.take(100)}")
+
+        // Update cache of where/which output
+        if (isExecutableLocationCommand) {
+            SystemEnvironment.executableLocationCache[commands[1]] = result.standardOutput
+        }
 
         return@withContext result
     }
