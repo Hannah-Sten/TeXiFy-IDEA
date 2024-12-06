@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.matches
 
 /**
- * Provides the "to do" item in the toolwindow and highlighting in the editor.
+ * Provides the "to do" item in the toolwindow.
  */
 @Suppress("UnstableApiUsage")
 class LatexTodoSearcher : QueryExecutorBase<IndexPatternOccurrence, IndexPatternSearch.SearchParameters>() {

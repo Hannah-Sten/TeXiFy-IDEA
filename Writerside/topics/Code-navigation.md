@@ -154,3 +154,19 @@ An example:
 
 On Linux, the Mendeley format is also supported, which is of the form
 `file = {:home/user/.local/share/data/Mendeley Ltd./Mendeley Desktop/Downloaded/filename.pdf:pdf;:home/user/.local/share/data/Mendeley Ltd./Mendeley Desktop/Downloaded/filename2.pdf:pdf}`
+
+## TODO view
+
+_Since b0.9.9_
+
+<ui-path>View | Tool Windows | TODO</ui-path>
+
+The TODO view by default shows all `todo` comments and `\todo{}` and `\missingfigure{}` commands.
+Highlighting of the commands in the IDE by default is currently not enabled due to API limitations, but can be achieved by adding the following patterns to <ui-path>File | Settings | Editor | TODO </ui-path>:
+
+ - `\\todo\b`, case sensitive is `true`
+ - `\\missingfigure\b`, case sensitive is `true`
+
+However, this adds the items to the tool window a second time.
+To avoid this, create a filter and include all patterns.
+Magic.
