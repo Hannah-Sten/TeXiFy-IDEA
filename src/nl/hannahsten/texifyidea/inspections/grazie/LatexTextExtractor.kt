@@ -11,10 +11,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.merge
 import nl.hannahsten.texifyidea.util.overlaps
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.endOffset
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.parents
+import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
@@ -53,7 +50,7 @@ class LatexTextExtractor : TextExtractor() {
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
         val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>() + root.childrenOfType<PsiWhiteSpace>())
             .asSequence()
-            .filter { it.isNotInMathEnvironment() && it.isNotInSquareBrackets() }
+            .filter { !it.inMathContext() && it.isNotInSquareBrackets() }
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             .flatMap { text ->
@@ -117,8 +114,6 @@ class LatexTextExtractor : TextExtractor() {
 
         return ranges.sortedBy { it.first }
     }
-
-    private fun PsiElement.isNotInMathEnvironment() = parents().none { it is LatexMathEnvironment }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }
         ?.let { it is LatexGroup } ?: true
