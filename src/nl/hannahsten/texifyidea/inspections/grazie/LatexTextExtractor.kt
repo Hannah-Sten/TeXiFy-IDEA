@@ -55,26 +55,25 @@ class LatexTextExtractor : TextExtractor() {
         val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>() + root.childrenOfType<PsiWhiteSpace>())
             .asSequence()
             .filter { !it.inMathContext() && it.isNotInSquareBrackets() }
+            // Ordering is relevant for whitespace
+            .sortedBy { it.startOffset }
+
+            // Always keep newlines, as they may be the only whitespace splitting consecutive commands
+            .filter { text -> text !is PsiWhiteSpace || text.text.contains("\n") }
+
+            // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
+            // Even commends which have no text as argument, for example certain reference commands like auteref, may need to be kept in to get correct punctuation
+            .filterNot { text -> text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true }
+
+            // Environment names are never part of a sentence
+            .filterNot { text -> text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null }
+
+            // NOTE: it is not allowed to start the text we send to Grazie with a newline! If we do, then Grazie will just not do anything. So we exclude whitespace at the start
+            .dropWhile { it is PsiWhiteSpace }
+
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             .flatMap { text ->
-                // Always keep newlines, as they may be the only whitespace splitting consecutive commands
-                if (text is PsiWhiteSpace && !text.text.contains("\n")) {
-                    return@flatMap emptyList()
-                }
-
-                // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
-                // Even commends which have no text as argument, for example certain reference commands like auteref, may need to be kept in to get correct punctuation
-                if (text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true) {
-                    return@flatMap emptyList()
-                }
-
-                // Environment names are never part of a sentence
-                if (text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null) {
-                    // Ignore this
-                    return@flatMap emptyList()
-                }
-
                 var start = text.textRange.startOffset - root.startOffset
                 // If LatexNormalText starts after a newline following a command, the newline is not part of the LatexNormalText so we include it manually to make sure that it is seen as a space between sentences
                 // NOTE: it is not allowed to start the text we send to Grazie with a newline! If we do, then Grazie will just not do anything. So we exclude the newline for the first normal text in the file.

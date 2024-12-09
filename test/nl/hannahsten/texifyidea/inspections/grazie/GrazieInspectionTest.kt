@@ -31,17 +31,29 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         }
     }
 
-    fun testCheckGrammarInConstructs() {
+    fun testSingleSentence() {
         myFixture.configureByText(LatexFileType, """Is these an error with a sentence ${'$'}\xi${'$'} end or not.""")
         myFixture.checkHighlighting()
-        val testName = getTestName(false)
-        myFixture.configureByFile("$testName.tex")
+    }
+
+    fun testCommentInText() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{document}
+                All <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or those are?">those is</GRAMMAR_ERROR> problems in the middle of a sentence.
+                % <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem in a comment
+                <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem at the beginning of a sentence.
+            \end{document}
+        """.trimIndent())
         myFixture.checkHighlighting(true, false, false, true)
     }
 
-    fun testMultilineCheckGrammar() {
-        val testName = getTestName(false)
-        myFixture.configureByFile("$testName.tex")
+    fun testSentenceAtEnvironmentStart() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{document}
+                <GRAMMAR_ERROR descr="Use An instead of 'A' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'.">A</GRAMMAR_ERROR> apple a day keeps the doctor away.
+                Some other sentence.
+            \end{document}
+        """.trimIndent())
         myFixture.checkHighlighting(true, false, false, true)
     }
 
