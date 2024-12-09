@@ -154,7 +154,7 @@ enum class LatexGenericRegularCommand(
     INDEXSPACE("indexspace"),
     INDEX("intex", "entry".asRequired()),
     IT("it"),
-    ITEM("item", "label".asOptional()),
+    ITEM("item", "label".asOptional(Argument.Type.TEXT)),
     ITSHAPE("itshape"),
     LABEL("label", "key".asRequired()),
     LARGE("large"),
