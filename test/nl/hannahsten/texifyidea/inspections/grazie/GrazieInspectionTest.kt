@@ -37,30 +37,34 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testCommentInText() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{document}
                 All <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or those are?">those is</GRAMMAR_ERROR> problems in the middle of a sentence.
                 % <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem in a comment
                 <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem at the beginning of a sentence.
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(true, false, false, true)
     }
 
     fun testSentenceAtEnvironmentStart() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{document}
                 <GRAMMAR_ERROR descr="Use An instead of 'A' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'.">A</GRAMMAR_ERROR> apple a day keeps the doctor away.
                 Some other sentence.
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(true, false, false, true)
     }
 
     fun testInlineMath() {
-        myFixture.configureByText(
-            LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?"""
-        )
+        myFixture.configureByText(LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?""")
         myFixture.checkHighlighting()
     }
 
@@ -76,9 +80,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testMatchingParens() {
-        myFixture.configureByText(
-            LatexFileType, """A sentence (in this case). More sentence."""
-        )
+        myFixture.configureByText(LatexFileType, """A sentence (in this case). More sentence.""")
         myFixture.checkHighlighting()
     }
 
@@ -171,13 +173,11 @@ class GrazieInspectionTest : BasePlatformTestCase() {
      * To find a rule id, search for the name in https://community.languagetool.org/rule/list and use the id together with the prefex from LangTool.globalIdPrefix
      */
 
-
     fun testCommaInSentence() {
         GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.COMMA_PARENTHESIS_WHITESPACE")) }
         myFixture.configureByText(LatexFileType, """\label{fig} Similar to the structure presented in \autoref{fig}, it is.""")
         myFixture.checkHighlighting()
     }
-
 
     fun testCommandsInSentence() {
         GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.CONSECUTIVE_SPACES")) }
@@ -200,15 +200,18 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testNewlinesShouldBeKept() {
-        val text =  """
+        val text = """
             \section{First}
             \section{Second}
         """.trimIndent()
         myFixture.configureByText(LatexFileType, text)
         val submittedText = getSubmittedText(myFixture.file)
-        assertEquals("""
+        assertEquals(
+            """
             First
             Second
-        """.trimIndent(), submittedText)
+            """.trimIndent(),
+            submittedText
+        )
     }
 }

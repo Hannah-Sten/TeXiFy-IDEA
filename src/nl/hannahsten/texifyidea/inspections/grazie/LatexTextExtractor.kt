@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.grazie
 import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
+import com.intellij.lang.tree.util.children
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
@@ -57,20 +58,17 @@ class LatexTextExtractor : TextExtractor() {
             .filter { !it.inMathContext() && it.isNotInSquareBrackets() }
             // Ordering is relevant for whitespace
             .sortedBy { it.startOffset }
-
             // Always keep newlines, as they may be the only whitespace splitting consecutive commands
             .filter { text -> text !is PsiWhiteSpace || text.text.contains("\n") }
-
             // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
             // Even commends which have no text as argument, for example certain reference commands like auteref, may need to be kept in to get correct punctuation
             .filterNot { text -> text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true }
-
             // Environment names are never part of a sentence
             .filterNot { text -> text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null }
-
+            // If we encounter an unescaped &, we are in some language construct like a tabular, so we ignore this because ofter a tabular does not contain full sentences
+            .filter { text -> text.node.children().none { it.elementType == LatexTypes.AMPERSAND } }
             // NOTE: it is not allowed to start the text we send to Grazie with a newline! If we do, then Grazie will just not do anything. So we exclude whitespace at the start
             .dropWhile { it is PsiWhiteSpace }
-
             // Ranges that we need to keep
             // Note that textRangeInParent will not be correct because that's the text range in the direct parent, not in the root
             .flatMap { text ->
