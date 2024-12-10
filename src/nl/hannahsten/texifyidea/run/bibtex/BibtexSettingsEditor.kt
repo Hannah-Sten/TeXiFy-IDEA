@@ -108,8 +108,8 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose the Main .tex File", ".tex")
-                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                        FileTypeDescriptor("Choose the Main .tex File", "tex")
+                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )
             }
