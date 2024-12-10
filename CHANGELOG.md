@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix LaTeX files not showing up when choosing main file in run configuration
 * Fix various issues with the Grazie implementation, in particular default rules for Grazie Pro
 
 ## [0.9.10-alpha.2] - 2024-12-05

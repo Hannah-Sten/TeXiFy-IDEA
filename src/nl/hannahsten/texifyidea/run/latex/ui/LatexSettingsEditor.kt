@@ -302,10 +302,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val mainFileField = TextFieldWithBrowseButton()
         mainFileField.addBrowseFolderListener(
             TextBrowseFolderListener(
-                FileTypeDescriptor("Choose a File to Compile", ".tex")
+                FileTypeDescriptor("Choose a File to Compile", "tex")
                     .withRoots(
                         *ProjectRootManager.getInstance(project!!)
-                            .contentRootsFromAllModules
+                            .contentRootsFromAllModules.toSet().toTypedArray()
                     )
             )
         )

@@ -57,8 +57,8 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose the Main .tex File", ".tex")
-                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                        FileTypeDescriptor("Choose the Main .tex File", "tex")
+                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )
             }

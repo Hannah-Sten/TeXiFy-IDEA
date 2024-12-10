@@ -53,8 +53,8 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose Main LaTeX File", ".tex")
-                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                        FileTypeDescriptor("Choose Main LaTeX File", "tex")
+                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )
             }
