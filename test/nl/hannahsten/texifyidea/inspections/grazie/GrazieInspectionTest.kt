@@ -6,11 +6,14 @@ import com.intellij.grazie.ide.msg.GrazieStateLifecycle
 import com.intellij.grazie.jlanguage.Lang
 import com.intellij.grazie.remote.GrazieRemote
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.psi.PsiFile
 import com.intellij.spellchecker.inspections.SpellCheckingInspection
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import com.intellij.util.messages.Topic
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.psi.LatexContent
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 class GrazieInspectionTest : BasePlatformTestCase() {
 
@@ -28,24 +31,40 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         }
     }
 
-    fun testCheckGrammarInConstructs() {
+    fun testSingleSentence() {
         myFixture.configureByText(LatexFileType, """Is these an error with a sentence ${'$'}\xi${'$'} end or not.""")
         myFixture.checkHighlighting()
-        val testName = getTestName(false)
-        myFixture.configureByFile("$testName.tex")
+    }
+
+    fun testCommentInText() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                All <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or those are?">those is</GRAMMAR_ERROR> problems in the middle of a sentence.
+                % <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem in a comment
+                <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem at the beginning of a sentence.
+            \end{document}
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(true, false, false, true)
     }
 
-    fun testMultilineCheckGrammar() {
-        val testName = getTestName(false)
-        myFixture.configureByFile("$testName.tex")
+    fun testSentenceAtEnvironmentStart() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                <GRAMMAR_ERROR descr="Use An instead of 'A' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'.">A</GRAMMAR_ERROR> apple a day keeps the doctor away.
+                Some other sentence.
+            \end{document}
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(true, false, false, true)
     }
 
     fun testInlineMath() {
-        myFixture.configureByText(
-            LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?"""
-        )
+        myFixture.configureByText(LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?""")
         myFixture.checkHighlighting()
     }
 
@@ -61,9 +80,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testMatchingParens() {
-        myFixture.configureByText(
-            LatexFileType, """a (in this case) . aa"""
-        )
+        myFixture.configureByText(LatexFileType, """A sentence (in this case). More sentence.""")
         myFixture.checkHighlighting()
     }
 
@@ -122,21 +139,79 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
-    // Broken in 2023.2 (TEX-177)
-//    fun testTabular() {
-//        GrazieRemote.download(Lang.GERMANY_GERMAN)
-//        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
-//        myFixture.configureByText(
-//            LatexFileType,
-//            """
-//                \begin{tabular}{llll}
-//                    ${'$'}a${'$'}:                 & ${'$'}\mathbb{N}${'$'} & \rightarrow & ${'$'}M${'$'}     \\
-//                    \multicolumn{1}{l}{} & ${'$'}n${'$'}          & \mapsto     & ${'$'}a(n)${'$'}.
-//                \end{tabular}
-//
-//                Ich bin über die Entwicklung sehr froh.
-//            """.trimIndent()
-//        )
-//        myFixture.checkHighlighting()
-//    }
+    fun testGermanGlossaries() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            Der Hintergrund des Themas der Thesis ist der Umbruch beim Prozess des \gls{api}-Managements.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testTabular() {
+        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \begin{tabular}{llll}
+                    ${'$'}a${'$'}:                 & ${'$'}\mathbb{N}${'$'} & \rightarrow & ${'$'}M${'$'}     \\
+                    \multicolumn{1}{l}{} & ${'$'}n${'$'}          & \mapsto     & ${'$'}a(n)${'$'}.
+                \end{tabular}
+
+                Ich bin über die Entwicklung sehr froh.
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    /*
+     * These rules are not enabled by default in Grazie Lite, but do show up by default in Grazie Pro.
+     * To find a rule id, search for the name in https://community.languagetool.org/rule/list and use the id together with the prefex from LangTool.globalIdPrefix
+     */
+
+    fun testCommaInSentence() {
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.COMMA_PARENTHESIS_WHITESPACE")) }
+        myFixture.configureByText(LatexFileType, """\label{fig} Similar to the structure presented in \autoref{fig}, it is.""")
+        myFixture.checkHighlighting()
+    }
+
+    fun testCommandsInSentence() {
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.CONSECUTIVE_SPACES")) }
+        myFixture.configureByText(LatexFileType, """The principles of a generic \ac{PID} controller.""")
+        myFixture.checkHighlighting()
+    }
+
+    /*
+     * Grazie Pro
+     *
+     *  These tests only test false positives in Grazie Pro (com.intellij.grazie.pro.style.StyleInspection), but that is not possible to test at the moment: https://youtrack.jetbrains.com/issue/GRZ-5023
+     * So we test the excluded ranges directly.
+     */
+
+    /**
+     * Text as sent to Grazie.
+     */
+    private fun getSubmittedText(file: PsiFile): String {
+        return LatexTextExtractor().buildTextContent(file.firstChildOfType(LatexContent::class)!!).toString()
+    }
+
+    fun testNewlinesShouldBeKept() {
+        val text = """
+            \section{First}
+            \section{Second}
+        """.trimIndent()
+        myFixture.configureByText(LatexFileType, text)
+        val submittedText = getSubmittedText(myFixture.file)
+        assertEquals(
+            """
+            First
+            Second
+            """.trimIndent(),
+            submittedText
+        )
+    }
 }
