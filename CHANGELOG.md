@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Do not fold sections in a command definition
 
 ### Fixed
 * Fix LaTeX files not showing up when choosing main file in run configuration
