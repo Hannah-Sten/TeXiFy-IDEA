@@ -24,5 +24,9 @@
                          groupPath="LaTeX" groupName="Code maturity" displayName="Discouraged use of \makeatletter in tex sources"
                          enabledByDefault="true"
                          level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexMissingGlossaryReferenceInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="Missing glossary reference"
+                         enabledByDefault="true"
+                         level="WARNING" />
     </extensions>
 </idea-plugin>
