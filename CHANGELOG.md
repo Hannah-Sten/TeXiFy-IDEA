@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Include optional parameters in spellcheck, if it contains text
 
 ### Fixed
 * Fix LaTeX files not showing up when choosing main file in run configuration

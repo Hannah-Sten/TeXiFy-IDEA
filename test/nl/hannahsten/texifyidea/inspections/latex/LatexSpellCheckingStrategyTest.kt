@@ -17,4 +17,17 @@ class LatexSpellCheckingStrategyTest : TexifyInspectionTestBase(SpellCheckingIns
         )
         myFixture.checkHighlighting()
     }
+
+    fun testOptionalParameterTypo() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+               \begin{description}
+                  \item[<TYPO descr="Typo: In word 'Tpyo'">Tpyo</TYPO>]
+                   <TYPO descr="Typo: In word 'Tpyo'">Tpyo</TYPO>
+               \end{description}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }
