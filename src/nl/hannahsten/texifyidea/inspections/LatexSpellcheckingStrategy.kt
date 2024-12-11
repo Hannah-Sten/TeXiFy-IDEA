@@ -63,7 +63,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
     private fun getArgument(leaf: LeafPsiElement): Argument? {
         val parent = leaf.parentOfType<LatexCommands>() ?: return null
 
-        val arguments = getArguments(parent.name?.substring(1) ?: return null)  ?: return null
+        val arguments = getArguments(parent.name?.substring(1) ?: return null) ?: return null
         val requiredArguments = arguments.filterIsInstance<RequiredArgument>()
         val optionalArguments = arguments.filterIsInstance<OptionalArgument>()
 
