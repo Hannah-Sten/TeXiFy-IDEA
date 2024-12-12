@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add inspection to warn about a missing reference for a glossary occurrence
 
 ### Fixed
 * Fix LaTeX files not showing up when choosing main file in run configuration

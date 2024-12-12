@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.inspections.latex.codematurity
+package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -32,29 +33,32 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
                 val correctOccurrences = "\\\\gls[^{]+\\{($name)}".toRegex().findAll(text).mapNotNull { it.groups.firstOrNull()?.range }
                 val allOccurrences = name.toRegex().findAll(text).map { it.range }
                 allOccurrences.filter { !correctOccurrences.contains(it) }.forEach { range ->
-                    descriptors.add(manager.createProblemDescriptor(
-                        textElement,
-                        range.toTextRange(),
-                        "Missing glossary reference",
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly,
-                        AddGlsFix(),
-                    ))
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            textElement,
+                            range.toTextRange(),
+                            "Missing glossary reference",
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly,
+                            AddGlsFix(),
+                        )
+                    )
                 }
-
             }
         }
         return descriptors
     }
 
     private class AddGlsFix : LocalQuickFix {
-        override fun getFamilyName(): String {
-            TODO("Not yet implemented")
-        }
+        override fun getFamilyName() = "Add \\gls command"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            TODO("Not yet implemented")
-        }
+            val range = descriptor.textRangeInElement
+            val newText = descriptor.psiElement.text.replaceRange(range.endOffset, range.endOffset, "}")
+                .replaceRange(range.startOffset, range.startOffset, "\\gls{")
 
+            val newElement = LatexPsiHelper(project).createFromText(newText).firstChild
+            descriptor.psiElement.replace(newElement)
+        }
     }
 }
