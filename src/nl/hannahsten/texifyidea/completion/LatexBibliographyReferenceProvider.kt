@@ -51,9 +51,11 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
         result.withPrefixMatcher(CamelHumpMatcher(prefix, false)).addAllElements(lookupItems + lookupItemsFromRemote)
     }
 
-    private fun createLookupElementFromBibtexEntry(bibtexEntry: BibtexEntry, remote: Boolean = false): LookupElementBuilder {
+    private fun createLookupElementFromBibtexEntry(bibtexEntry: BibtexEntry, remote: Boolean = false): LookupElementBuilder? {
         val lookupStrings = LinkedList(bibtexEntry.getAuthors())
         lookupStrings.add(bibtexEntry.getTitle())
+        // Ensure a consistent project (#3802)
+        if (bibtexEntry.id?.project != bibtexEntry.id?.containingFile?.project) return null
         return LookupElementBuilder.create(bibtexEntry.getIdentifier())
             .withPsiElement(bibtexEntry.id)
             .withPresentableText(bibtexEntry.getTitle())
