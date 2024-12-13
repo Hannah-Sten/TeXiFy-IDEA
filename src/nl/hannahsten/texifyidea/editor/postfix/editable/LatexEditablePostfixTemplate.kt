@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.editor.postfix.LatexPostFixTemplateProvider
 import nl.hannahsten.texifyidea.editor.postfix.LatexPostfixExpressionSelector
 
+@Suppress("PostfixTemplateDescriptionNotFound")
 class LatexEditablePostfixTemplate(templateId: String, templateName: String, template: TemplateImpl, conditions: Set<LatexPostfixTemplateExpressionCondition>, provider: LatexPostFixTemplateProvider) :
     EditablePostfixTemplateWithMultipleExpressions<LatexPostfixTemplateExpressionCondition>(templateId, templateName, template, "", conditions, true, provider) {
 

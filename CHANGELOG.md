@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Do not fold sections in a command definition
 * Include optional parameters in spellcheck, if it contains text
 
 ### Fixed
