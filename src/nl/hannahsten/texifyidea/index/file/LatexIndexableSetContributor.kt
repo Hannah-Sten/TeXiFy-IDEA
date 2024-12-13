@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
@@ -77,16 +78,20 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         if (Cache.externalDirectFileInclusions == null && !DumbService.isDumb(project)) {
             runInBackground(project, "Searching for external bib files...") {
                 // For now, just do this for bibliography and direct input commands, as there this is most common
-                val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
+                val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
+                val externalFiles = runReadAction {
+                    LatexIncludesIndex.Util.getCommandsByNames(commandNames, project, GlobalSearchScope.projectScope(project))
+                }
                     // We can't add single files, so take the parent
                     .mapNotNull {
-                        val path = it.requiredParameter(0) ?: return@mapNotNull null
-                        if (File(path).isAbsolute) {
-                            LocalFileSystem.getInstance().findFileByPath(path)?.parent
+                        val path = runReadAction { it.requiredParameter(0) } ?: return@mapNotNull null
+                        val file = if (File(path).isAbsolute) {
+                            LocalFileSystem.getInstance().findFileByPath(path)
                         }
                         else {
-                            it.containingFile.parent?.virtualFile?.findFileByRelativePath(path)?.parent
+                            runReadAction { it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
                         }
+                        runReadAction { file?.parent }
                     }
                 Cache.externalDirectFileInclusions = externalFiles.toSet()
             }
