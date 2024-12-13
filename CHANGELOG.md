@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for automatic language injection on the minted environment
 * Do not fold sections in a command definition
 * Include optional parameters in spellcheck, if it contains text
 
