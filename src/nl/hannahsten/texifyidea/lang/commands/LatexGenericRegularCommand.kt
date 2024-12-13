@@ -77,6 +77,7 @@ enum class LatexGenericRegularCommand(
     TEXT_DAGGER("dag", display = "†"),
     TEXT_DOUBLE_DAGGER("ddag", display = "‡"),
     DATE("date", "text".asRequired(Argument.Type.TEXT)),
+    DECLAREGRAPHICSEXTENSIONS("DeclareGraphicsExtensions", "extensions".asRequired(), dependency = GRAPHICX),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Argument.Type.TEXT), dependency = AMSMATH),
     DEF("def"),
     DOCUMENTCLASS("documentclass", "options".asOptional(), RequiredFileArgument("class", true, false, "cls")),

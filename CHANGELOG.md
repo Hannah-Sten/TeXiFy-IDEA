@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for DeclareGraphicsExtensions
 * Include optional parameters in spellcheck, if it contains text
 
 ### Fixed
