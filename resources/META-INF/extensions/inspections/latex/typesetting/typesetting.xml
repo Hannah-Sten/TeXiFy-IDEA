@@ -44,5 +44,9 @@
                          groupPath="LaTeX" groupName="Typesetting issues" displayName="Incorrectly typeset quotation marks"
                          enabledByDefault="true"
                          level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.typesetting.LatexMissingGlossaryReferenceInspection"
+                         groupPath="LaTeX" groupName="Code maturity" displayName="Missing glossary reference"
+                         enabledByDefault="true"
+                         level="WARNING" />
     </extensions>
 </idea-plugin>

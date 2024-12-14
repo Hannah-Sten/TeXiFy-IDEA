@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add inspection to warn about a missing reference for a glossary occurrence
 * Do not fold sections in a command definition
 * Include optional parameters in spellcheck, if it contains text
 

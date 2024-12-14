@@ -42,3 +42,9 @@ For example, instead of `(\frac 1 2)` write `\left(\frac 1 2\right)`.
 ## Citations must be placed before interpunction
 
 Use `Sentence~\cite{knuth1990}.` and not `Sentence.~\cite{knuth1990}`
+
+## Missing glossary reference
+
+When using a glossary, it is good practice to reference every glossary entry with a \gls-like command.
+This makes sure that the list of pages with occurrences in the glossary is complete.
+For examples on how to use a glossary, see [External tools](External-tools.md#glossary-examples).
