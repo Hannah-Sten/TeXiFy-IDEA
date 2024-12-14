@@ -8,6 +8,7 @@
 * Include optional parameters in spellcheck, if it contains text
 
 ### Fixed
+* Fix false positive for duplicate command definition inspection in if/else
 * Fix LaTeX files not showing up when choosing main file in run configuration
 * Fix various issues with the Grazie implementation, in particular default rules for Grazie Pro
 
