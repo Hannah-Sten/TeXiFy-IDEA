@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
@@ -22,6 +23,8 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         super.setUp()
         mockkStatic(::runCommandWithExitCode)
         every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+
+        mockkStatic(LatexNavigationGutter::collectNavigationMarkers)
     }
 
     override fun getTestDataPath(): String {
