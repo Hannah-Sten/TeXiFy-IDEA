@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
@@ -17,6 +18,7 @@ import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.runInBackground
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
@@ -73,31 +75,25 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         roots.addAll(getTexinputsPaths(project, rootFiles = listOf(), expandPaths = false).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) })
 
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
-        if (Cache.externalDirectFileInclusions == null) {
-            if (!DumbService.isDumb(project)) {
-                try {
-                    // For now, just do this for bibliography and direct input commands, as there this is most common
-                    val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet(), project, GlobalSearchScope.projectScope(project))
-                        // We can't add single files, so take the parent
-                        .mapNotNull {
-                            val path = it.requiredParameter(0) ?: return@mapNotNull null
-                            if (File(path).isAbsolute) {
-                                LocalFileSystem.getInstance().findFileByPath(path)?.parent
-                            }
-                            else {
-                                it.containingFile.parent?.virtualFile?.findFileByRelativePath(path)?.parent
-                            }
-                        }
-                    Cache.externalDirectFileInclusions = externalFiles.toSet()
-                } catch (e: Throwable) {
-                    // This is very rare, but it can happen, in which case we will ignore and try again later
-                    if (e.message?.contains("Indexing process should not rely on non-indexed file data") == true) {
-                        Log.warn("Ignored index not ready: " + e.message)
-                    }
-                    else {
-                        throw e
-                    }
+        if (Cache.externalDirectFileInclusions == null && !DumbService.isDumb(project)) {
+            runInBackground(project, "Searching for external bib files...") {
+                // For now, just do this for bibliography and direct input commands, as there this is most common
+                val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
+                val externalFiles = runReadAction {
+                    LatexIncludesIndex.Util.getCommandsByNames(commandNames, project, GlobalSearchScope.projectScope(project))
                 }
+                    // We can't add single files, so take the parent
+                    .mapNotNull {
+                        val path = runReadAction { it.requiredParameter(0) } ?: return@mapNotNull null
+                        val file = if (File(path).isAbsolute) {
+                            LocalFileSystem.getInstance().findFileByPath(path)
+                        }
+                        else {
+                            runReadAction { it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
+                        }
+                        runReadAction { file?.parent }
+                    }
+                Cache.externalDirectFileInclusions = externalFiles.toSet()
             }
         }
         roots.addAll(Cache.externalDirectFileInclusions?.filter { it.exists() } ?: emptyList())
