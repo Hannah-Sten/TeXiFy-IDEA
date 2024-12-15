@@ -8,25 +8,27 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
- *
- * @param defaultExtension Default extension of the command in which this reference is, in case the argument does not have an extension.
  */
 class InputFileReference(
     element: LatexCommands,
     val range: TextRange,
     val extensions: List<String>,
-    val defaultExtension: String,
     val supportsAnyExtension: Boolean,
 ) : PsiReferenceBase<LatexCommands>(element) {
 
@@ -120,6 +122,26 @@ class InputFileReference(
                 searchPaths.clear()
                 searchPaths.addAll(bibRunConfigs.mapNotNull { it.environmentVariables.envs["BIBINPUTS"] })
             }
+        }
+
+        // Overrides the default for commands from the graphicx package
+        val extensions = if (!isBuildingFileset) {
+            val command = LatexCommand.lookup(element.name)?.firstOrNull()
+            if (command?.dependency == LatexPackage.GRAPHICX) {
+                // We cannot use the file set at this point, so we take the first command in the project and hope for the best
+                LatexCommandsIndex.Util.getCommandsByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, element.project, GlobalSearchScope.projectScope(element.project))
+                    .firstOrNull()
+                    ?.requiredParameter(0)
+                    ?.split(",")
+                    // Graphicx requires the dot to be included
+                    ?.map { it.trim(' ', '.') } ?: extensions
+            }
+            else {
+                extensions
+            }
+        }
+        else {
+            extensions
         }
 
         var processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
