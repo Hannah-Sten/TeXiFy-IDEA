@@ -139,8 +139,8 @@ abstract class AliasManager {
 
         // Check if something has changed (the number of indexed command might be the same while the content is different), and if so, update the aliases.
         // Also do this the first time something is registered, because then we have to update aliases as well
-        val hasNotChanged = this.indexedCommandDefinitions == indexedCommandDefinitions
-        if (!hasNotChanged || wasRegistered) {
+        val hasChanged = this.indexedCommandDefinitions != indexedCommandDefinitions
+        if (hasChanged || wasRegistered) {
             // Update everything, since it is difficult to know beforehand what aliases could be added or not
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
             // requested alias set (otherwise only the first alias set requesting an update will get it)

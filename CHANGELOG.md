@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for automatic detection of custom command aliases for include commands
 * Add support for DeclareGraphicsExtensions
 * Add inspection to warn about a missing reference for a glossary occurrence
 * Do not fold sections in a command definition

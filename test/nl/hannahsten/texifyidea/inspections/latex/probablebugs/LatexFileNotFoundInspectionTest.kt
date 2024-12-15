@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import nl.hannahsten.texifyidea.util.updateIncludeCommandsAliasesAsync
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -189,6 +190,13 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         // Contrary to \includegraphics, \input will accept a file with any extension if specified
         myFixture.addFileToProject("included.txt", "\\LaTeX content")
         myFixture.configureByText(LatexFileType, "\\input{included.txt}")
+        myFixture.checkHighlighting()
+    }
+
+    fun testCommandAlias() {
+        myFixture.configureByText(LatexFileType, """\newcommand{\myinput}{\input} \myinput{<error descr="File 'doesnotexist.tex' not found">doesnotexist.tex</error>}""")
+        // In practice, this will be triggered by the first something to ask for include commands aliases, for performance reasons
+        updateIncludeCommandsAliasesAsync(myFixture.project)
         myFixture.checkHighlighting()
     }
 }

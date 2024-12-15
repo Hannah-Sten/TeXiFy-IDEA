@@ -2,9 +2,7 @@
 
 package nl.hannahsten.texifyidea.util.magic
 
-import com.intellij.openapi.project.Project
 import com.intellij.ui.Gray
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -220,26 +218,9 @@ object CommandMagic {
 
     /**
      * All commands that define labels and that are present by default.
-     * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
+     * To include user defined commands, use [nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands] (may be significantly slower).
      */
     val labelDefinitionsWithoutCustomCommands = setOf(LABEL.cmd)
-
-    /**
-     * Get all commands defining labels, including user defined commands.
-     * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
-     *
-     * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
-     */
-    fun getLabelDefinitionCommands(project: Project): Set<String> {
-        // Check if updates are needed
-        CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
-        return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
-    }
-
-    /**
-     * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
-     */
-    fun getLabelDefinitionCommands() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
 
     /**
      * All commands that define bibliography items.
