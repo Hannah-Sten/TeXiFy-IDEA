@@ -7,8 +7,8 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkStatic
+import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-import org.junit.Test
 
 class LatexGutterTest : BasePlatformTestCase() {
 
@@ -22,7 +22,6 @@ class LatexGutterTest : BasePlatformTestCase() {
         return "test/resources/gutter"
     }
 
-    @Test
     fun testShowCompileGutter() {
         val testName = getTestName(false)
         val gutters = myFixture.findAllGutters("$testName.tex")
@@ -30,7 +29,13 @@ class LatexGutterTest : BasePlatformTestCase() {
         assertEquals("Compile document", gutters.first().tooltipText)
     }
 
-    @Test
+    fun testGraphicsExtensions() {
+        val testName = getTestName(false)
+        myFixture.copyDirectoryToProject("figures", "figures")
+        val gutters = myFixture.findAllGutters("$testName.tex")
+        assertEquals(TexifyIcons.FILE, gutters.last().icon)
+    }
+
     fun testShowMethodSeparators() {
         val testName = getTestName(false)
         withLineMarkersEnabled {
@@ -44,7 +49,6 @@ class LatexGutterTest : BasePlatformTestCase() {
         }
     }
 
-    @Test
     fun testShowNavigationGutter() {
         val testName = getTestName(false)
         myFixture.configureByFile("$testName.tex")
