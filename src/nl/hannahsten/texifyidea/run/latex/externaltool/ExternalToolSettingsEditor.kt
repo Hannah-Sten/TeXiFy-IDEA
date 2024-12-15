@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.externaltool
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -53,7 +53,9 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose Main LaTeX File", "tex")
+                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                            .withTitle("Choose Main LaTeX File")
+                            .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )

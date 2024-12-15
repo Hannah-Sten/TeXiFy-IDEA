@@ -6,10 +6,8 @@ import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.psi.PsiFileFactory
 import com.intellij.refactoring.BaseRefactoringProcessor.ConflictsInTestsException
-import com.intellij.refactoring.MockInlineMethodOptions
 import com.intellij.refactoring.inline.InlineOptions
 import com.intellij.testFramework.LightPlatformCodeInsightTestCase
-import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler.Util.getReference
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.canInlineLatexElement
@@ -127,7 +125,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
     private fun configure(testIndex: Int? = null): String {
         @NonNls val fileName = getTestName(false) + (testIndex ?: "") + ".tex"
         configureByFile(fileName)
-        TestCase.assertTrue(file.parent != null)
+        assertTrue(file.parent != null)
         if (file.parent?.children?.any { it.containingFile.name == inlineFile } == false) {
             val ioFile = File(testDataPath + inlineFile)
             checkCaseSensitiveFS(testDataPath + inlineFile, ioFile)
@@ -181,5 +179,13 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
             project, inlineFile, ref, options.isInlineThisOnly, !options.isKeepTheDeclaration
         )
         processor.run()
+    }
+
+    open class MockInlineMethodOptions : InlineOptions {
+        override fun isInlineThisOnly() = false
+
+        override fun close(p0: Int) {}
+
+        override fun isPreviewUsages() = false
     }
 }
