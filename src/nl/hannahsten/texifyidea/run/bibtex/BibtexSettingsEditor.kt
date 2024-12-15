@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.run.bibtex
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -108,7 +108,9 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose the Main .tex File", "tex")
+                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                            .withTitle("Choose the Main .tex File")
+                            .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )

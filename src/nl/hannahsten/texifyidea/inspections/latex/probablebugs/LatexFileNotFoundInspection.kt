@@ -81,8 +81,8 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         // Find expected extension
         val extension = fileName.getFileExtension().ifEmpty {
-            reference.defaultExtension
-        }
+            reference.extensions.firstOrNull()
+        } ?: "tex"
 
         descriptors.add(
             manager.createProblemDescriptor(
