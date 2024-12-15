@@ -193,6 +193,7 @@ object CommandMagic {
 
     /**
      * All commands that define a glossary entry of the glossaries package (e.g. \newacronym).
+     * When adding a command, define how to get the glossary name in [nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.extractGlossaryName].
      */
     val glossaryEntry =
         hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION).map { it.cmd }.toSet()

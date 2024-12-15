@@ -5,7 +5,9 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 enum class LatexGlossariesCommand(
@@ -79,6 +81,22 @@ enum class LatexGlossariesCommand(
         fun extractGlossaryLabelElement(command: LatexCommands): PsiElement? {
             if (!CommandMagic.glossaryEntry.contains(command.name)) return null
             return command.requiredParameters()[0].firstChildOfType(LatexParameterText::class)
+        }
+
+        /**
+         * Find the name, which is the text that will appear in the document, from the given glossary entry definition.
+         */
+        fun extractGlossaryName(command: LatexCommands): String? {
+            if (setOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY).map { it.cmd }.contains(command.name)) {
+                val keyValueList = command.requiredParameter(1) ?: return null
+                return "name=\\{([^}]+)}".toRegex().find(keyValueList)?.groupValues?.get(1)
+            }
+            else if (setOf(NEWACRONYM, NEWABBREVIATION).map { it.cmd }.contains(command.name)) {
+                return command.requiredParameter(1)
+            }
+            else {
+                return null
+            }
         }
     }
 }
