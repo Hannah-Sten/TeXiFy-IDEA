@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import java.util.*
@@ -79,18 +80,18 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Fetch all commands in the active file.
         val numbering = SectionNumbering(DocumentClass.getClassByName(docClass))
         val commands = element.allCommands()
-        val treeElements = ArrayList<TreeElement>()
+        val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
         // Add includes.
         addIncludes(treeElements, commands)
 
         // Add sectioning.
-        val sections = ArrayDeque<LatexStructureViewCommandElement>()
+        val sections = mutableListOf<LatexStructureViewCommandElement>()
         for (currentCmd in commands) {
             val token = currentCmd.name
 
             // Update counter.
-            if (token == "\\addtocounter" || token == "\\setcounter") {
+            if (token == LatexGenericRegularCommand.ADDTOCOUNTER.cmd || token == LatexGenericRegularCommand.SETCOUNTER.cmd) {
                 updateNumbering(currentCmd, numbering)
                 continue
             }
@@ -108,13 +109,13 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
             // First section.
             if (sections.isEmpty()) {
-                sections.addFirst(child)
+                sections.add(child)
                 treeElements.add(child)
                 setLevelHint(child, numbering)
                 continue
             }
 
-            val currentIndex = order(current(sections) ?: continue)
+            val currentIndex = order(sections.lastOrNull() ?: continue)
             val nextIndex = order(currentCmd)
 
             when {
@@ -133,12 +134,12 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         addFromLabelingCommands(treeElements, commands)
 
         // Add bibitem definitions.
-        addFromCommand(treeElements, commands, "\\bibitem")
+        addFromCommand(treeElements, commands, LatexGenericRegularCommand.BIBITEM.cmd)
 
-        return treeElements.toTypedArray()
+        return treeElements.sortedBy { it.value.textOffset }.toTypedArray()
     }
 
-    private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
+    private fun addIncludes(treeElements: MutableList<LatexStructureViewCommandElement>, commands: List<LatexCommands>) {
         for (command in commands) {
             if (command.name !in getIncludeCommands()) {
                 continue
@@ -158,7 +159,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addFromCommand(
-        treeElements: MutableList<TreeElement>, commands: List<LatexCommands>,
+        treeElements: MutableList<LatexStructureViewCommandElement>, commands: List<LatexCommands>,
         commandName: String
     ) {
         for (cmd in commands) {
@@ -168,9 +169,12 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
     }
 
-    private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
+    /**
+     * Add commands which define new labels
+     */
+    private fun addFromLabelingCommands(treeElements: MutableList<LatexStructureViewCommandElement>, commands: List<LatexCommands>) {
         val labelingCommands = getLabelDefinitionCommands()
-        commands.filter { labelingCommands.contains(it.commandToken.text) }
+        commands.filter { labelingCommands.contains(it.name) }
             .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
             .forEach {
                 treeElements.add(it)
@@ -178,16 +182,16 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun registerHigher(
-        sections: Deque<LatexStructureViewCommandElement>,
+        sections: MutableList<LatexStructureViewCommandElement>,
         child: LatexStructureViewCommandElement,
         currentCmd: LatexCommands,
-        treeElements: MutableList<TreeElement>,
+        treeElements: MutableList<LatexStructureViewCommandElement>,
         numbering: SectionNumbering
     ) {
         val indexInsert = order(currentCmd)
-        while (!sections.isEmpty()) {
-            pop(sections)
-            val index = current(sections)?.let { order(it) }
+        while (sections.isNotEmpty()) {
+            sections.removeLastOrNull()
+            val index = sections.lastOrNull()?.let { order(it) }
 
             if (index != null && indexInsert > index) {
                 registerDeeper(sections, child, numbering)
@@ -203,31 +207,31 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun registerDeeper(
-        sections: Deque<LatexStructureViewCommandElement>,
+        sections: MutableList<LatexStructureViewCommandElement>,
         child: LatexStructureViewCommandElement,
         numbering: SectionNumbering
     ) {
-        current(sections)?.addChild(child) ?: return
-        queue(child, sections)
+        sections.lastOrNull()?.addChild(child) ?: return
+        sections.add(child)
 
         setLevelHint(child, numbering)
     }
 
     private fun registerSameLevel(
-        sections: Deque<LatexStructureViewCommandElement>,
+        sections: MutableList<LatexStructureViewCommandElement>,
         child: LatexStructureViewCommandElement,
         currentCmd: LatexCommands,
-        treeElements: MutableList<TreeElement>,
+        treeElements: MutableList<LatexStructureViewCommandElement>,
         numbering: SectionNumbering
     ) {
-        sections.pollFirst()
-        val parent = sections.peekFirst()
+        sections.removeLastOrNull()
+        val parent = sections.lastOrNull()
         parent?.addChild(child)
         sections.addFirst(child)
 
         setLevelHint(child, numbering)
 
-        if (currentCmd.commandToken.text == highestLevel(sections)) {
+        if (currentCmd.name == sections.minBy { order(it) }.commandName) {
             treeElements.add(child)
         }
     }
@@ -272,27 +276,6 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         return Arrays.stream(leafs!!)
             .anyMatch { l -> l.elementType == LatexTypes.STAR }
     }
-
-    private fun highestLevel(sections: Deque<LatexStructureViewCommandElement>): String {
-        return sections.stream()
-            .map { this.order(it) }
-            .min { obj, anotherInteger -> obj.compareTo(anotherInteger) }
-            .map { CommandMagic.sectionMarkers[it] }
-            .orElse("\\section")
-    }
-
-    private fun pop(sections: Deque<LatexStructureViewCommandElement>) {
-        sections.removeFirst()
-    }
-
-    private fun queue(
-        child: LatexStructureViewCommandElement,
-        sections: Deque<LatexStructureViewCommandElement>
-    ) {
-        sections.addFirst(child)
-    }
-
-    private fun current(sections: Deque<LatexStructureViewCommandElement>) = sections.peekFirst() ?: null
 
     private fun order(element: LatexStructureViewCommandElement) = order(element.commandName)
 
