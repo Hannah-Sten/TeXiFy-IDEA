@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Change order in structure view to match source file and sectioning level 
 * Add command redefinitions to command definition filter in structure view
 * Add inspection to warn about a missing reference for a glossary occurrence
 * Do not fold sections in a command definition

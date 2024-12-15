@@ -82,103 +82,89 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.allCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        // Add includes.
-        addIncludes(treeElements, commands)
+        val includeCommands = getIncludeCommands()
+        val labelingCommands = getLabelDefinitionCommands()
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
-        for (currentCmd in commands) {
-            val token = currentCmd.name
-
+        for (command in commands) {
             // Update counter.
-            if (token == LatexGenericRegularCommand.ADDTOCOUNTER.cmd || token == LatexGenericRegularCommand.SETCOUNTER.cmd) {
-                updateNumbering(currentCmd, numbering)
+            if (command.name == LatexGenericRegularCommand.ADDTOCOUNTER.cmd || command.name == LatexGenericRegularCommand.SETCOUNTER.cmd) {
+                updateNumbering(command, numbering)
                 continue
             }
 
-            // Only consider section markers.
-            if (!CommandMagic.sectionMarkers.contains(token)) {
-                continue
-            }
+            val newElement = LatexStructureViewCommandElement.newCommand(command) ?: continue
 
-            if (currentCmd.getRequiredParameters().isEmpty()) {
-                continue
-            }
+            when (command.name) {
+                in CommandMagic.sectionMarkers -> {
+                    addSections(command, sections, treeElements, numbering)
+                }
+                in labelingCommands + CommandMagic.commandDefinitionsAndRedefinitions + setOf(LatexGenericRegularCommand.BIBITEM.cmd) -> {
+                    addAtCurrentSectionLevel(sections, treeElements, newElement)
+                }
+                in includeCommands -> {
+                    for (psiFile in command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView)) {
+                        if (BibtexFileType == psiFile.fileType) {
+                            newElement.addChild(BibtexStructureViewElement(psiFile))
+                        }
+                        else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
+                            newElement.addChild(LatexStructureViewElement(psiFile))
+                        }
+                    }
 
-            val child = LatexStructureViewCommandElement.newCommand(currentCmd) ?: continue
-
-            // First section.
-            if (sections.isEmpty()) {
-                sections.add(child)
-                treeElements.add(child)
-                setLevelHint(child, numbering)
-                continue
-            }
-
-            val currentIndex = order(sections.lastOrNull() ?: continue)
-            val nextIndex = order(currentCmd)
-
-            when {
-                currentIndex == nextIndex -> registerSameLevel(sections, child, currentCmd, treeElements, numbering)
-                nextIndex > currentIndex -> registerDeeper(sections, child, numbering)
-                else -> registerHigher(sections, child, currentCmd, treeElements, numbering)
+                    addAtCurrentSectionLevel(sections, treeElements, newElement)
+                }
             }
         }
-
-        // Add command definitions.
-        CommandMagic.commandDefinitionsAndRedefinitions.forEach {
-            addFromCommand(treeElements, commands, it)
-        }
-
-        // Add label definitions.
-        addFromLabelingCommands(treeElements, commands)
-
-        // Add bibitem definitions.
-        addFromCommand(treeElements, commands, LatexGenericRegularCommand.BIBITEM.cmd)
-
         return treeElements.sortedBy { it.value.textOffset }.toTypedArray()
     }
 
-    private fun addIncludes(treeElements: MutableList<LatexStructureViewCommandElement>, commands: List<LatexCommands>) {
-        for (command in commands) {
-            if (command.name !in getIncludeCommands()) {
-                continue
-            }
-
-            val elt = LatexStructureViewCommandElement.newCommand(command) ?: continue
-            for (psiFile in command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView)) {
-                if (BibtexFileType == psiFile.fileType) {
-                    elt.addChild(BibtexStructureViewElement(psiFile))
-                }
-                else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
-                    elt.addChild(LatexStructureViewElement(psiFile))
-                }
-            }
-            treeElements.add(elt)
-        }
-    }
-
-    private fun addFromCommand(
-        treeElements: MutableList<LatexStructureViewCommandElement>, commands: List<LatexCommands>,
-        commandName: String
-    ) {
-        for (cmd in commands) {
-            if (cmd.commandToken.text != commandName) continue
-            val element = LatexStructureViewCommandElement.newCommand(cmd) ?: continue
-            treeElements.add(element)
-        }
-    }
-
     /**
-     * Add commands which define new labels
+     * Add to top level or at the current sectioning level, so that all entries in the structure view are in the same order as they are in the source
      */
-    private fun addFromLabelingCommands(treeElements: MutableList<LatexStructureViewCommandElement>, commands: List<LatexCommands>) {
-        val labelingCommands = getLabelDefinitionCommands()
-        commands.filter { labelingCommands.contains(it.name) }
-            .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
-            .forEach {
-                treeElements.add(it)
-            }
+    private fun addAtCurrentSectionLevel(
+        sections: MutableList<LatexStructureViewCommandElement>,
+        treeElements: ArrayList<LatexStructureViewCommandElement>,
+        newElement: LatexStructureViewCommandElement
+    ) {
+        if (sections.isNotEmpty()) {
+            sections.last().addChild(newElement)
+        }
+        else {
+            treeElements.add(newElement)
+        }
+    }
+
+    private fun LatexStructureViewElement.addSections(
+        command: LatexCommands,
+        sections: MutableList<LatexStructureViewCommandElement>,
+        treeElements: ArrayList<LatexStructureViewCommandElement>,
+        numbering: SectionNumbering
+    ) {
+        if (command.getRequiredParameters().isEmpty()) {
+            return
+        }
+
+        val child = LatexStructureViewCommandElement.newCommand(command) ?: return
+
+        // First section.
+        if (sections.isEmpty()) {
+            sections.add(child)
+            treeElements.add(child)
+            setLevelHint(child, numbering)
+            return
+        }
+
+        // Order of the most recently added element, which is kept at the end of the list for administrative purposes
+        val currentIndex = order(sections.lastOrNull() ?: return)
+        val nextIndex = order(command)
+
+        when {
+            currentIndex == nextIndex -> registerSameLevel(sections, child, command, treeElements, numbering)
+            nextIndex > currentIndex -> registerDeeper(sections, child, numbering)
+            else -> registerHigher(sections, child, command, treeElements, numbering)
+        }
     }
 
     private fun registerHigher(
@@ -188,18 +174,19 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         treeElements: MutableList<LatexStructureViewCommandElement>,
         numbering: SectionNumbering
     ) {
-        val indexInsert = order(currentCmd)
+        val currentOrder = order(currentCmd)
         while (sections.isNotEmpty()) {
+            // The last entry is the most recently added element (as a child somewhere), remove it first
             sections.removeLastOrNull()
-            val index = sections.lastOrNull()?.let { order(it) }
+            val highestLevelOrder = sections.lastOrNull()?.let { order(it) }
 
-            if (index != null && indexInsert > index) {
+            if (highestLevelOrder != null && currentOrder > highestLevelOrder) {
                 registerDeeper(sections, child, numbering)
                 break
             }
             // Avoid that an element is not added at all by adding it one level up anyway.
             // If index is null, that means that the tree currently only has elements with a higher order.
-            else if (index == null || indexInsert == index) {
+            else if (highestLevelOrder == null || currentOrder == highestLevelOrder) {
                 registerSameLevel(sections, child, currentCmd, treeElements, numbering)
                 break
             }
@@ -224,10 +211,11 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         treeElements: MutableList<LatexStructureViewCommandElement>,
         numbering: SectionNumbering
     ) {
+        // The last entry is the most recently added element (as a child somewhere), remove it first
         sections.removeLastOrNull()
         val parent = sections.lastOrNull()
         parent?.addChild(child)
-        sections.addFirst(child)
+        sections.add(child)
 
         setLevelHint(child, numbering)
 
