@@ -38,9 +38,10 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
   private int newCommandBracesNesting = 0;
 
   /**
-   * Also keep track of brackets of verbatim environment optional arguments.
+   * Also keep track of brackets of verbatim environment arguments.
    */
   private int verbatimOptionalArgumentBracketsCount = 0;
+  private int verbatimRequiredArgumentBracketsCount = 0;
 
   /**
    * Keep track of braces in the PARTIAL_DEFINITION state.
@@ -144,8 +145,8 @@ END_IFS=\\fi
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START
 
-%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
-%xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
+%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_REQUIRED_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
+%xstates VERBATIM POSSIBLE_VERBATIM_ARG POSSIBLE_VERBATIM_END
 
 // algorithmic environment
 %states PSEUDOCODE POSSIBLE_PSEUDOCODE_END
@@ -231,13 +232,14 @@ END_IFS=\\fi
 
 // Jump over the closing } of the \begin{verbatim} before starting verbatim state
 <VERBATIM_START> {
-    {CLOSE_BRACE}       { yypopState(); yypushState(POSSIBLE_VERBATIM_OPTIONAL_ARG); return CLOSE_BRACE; }
+    {CLOSE_BRACE}       { yypopState(); yypushState(POSSIBLE_VERBATIM_ARG); return CLOSE_BRACE; }
 }
 
 // Check if an optional argument is coming up
 // If you start a verbatim with an open bracket and don't close it, this won't work
-<POSSIBLE_VERBATIM_OPTIONAL_ARG> {
+<POSSIBLE_VERBATIM_ARG> {
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount = 1; yypopState(); yypushState(VERBATIM_OPTIONAL_ARG); return OPEN_BRACKET; }
+    {OPEN_BRACE}        { verbatimRequiredArgumentBracketsCount = 1; yypopState(); yypushState(VERBATIM_REQUIRED_ARG); return OPEN_BRACE; }
     {WHITE_SPACE}       { yypopState(); yypushState(VERBATIM); return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN; }
 }
@@ -248,9 +250,19 @@ END_IFS=\\fi
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET; }
     {CLOSE_BRACKET}     {
         verbatimOptionalArgumentBracketsCount--;
-        if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(VERBATIM); }
+        // There can be a required arg coming
+        if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(POSSIBLE_VERBATIM_ARG); }
         return CLOSE_BRACKET;
     }
+}
+
+<VERBATIM_REQUIRED_ARG> {
+    {OPEN_BRACE}        { verbatimRequiredArgumentBracketsCount++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       {
+          verbatimRequiredArgumentBracketsCount--;
+          if (verbatimRequiredArgumentBracketsCount == 0) { yypopState(); yypushState(VERBATIM); }
+          return CLOSE_BRACE;
+      }
 }
 
 <VERBATIM> {

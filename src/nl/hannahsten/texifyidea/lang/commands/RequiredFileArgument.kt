@@ -22,8 +22,6 @@ import java.util.regex.Pattern
 open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported: Boolean = true, open val commaSeparatesArguments: Boolean, vararg extensions: String, open val supportsAnyExtension: Boolean = true) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
 
     lateinit var supportedExtensions: List<String>
-    lateinit var defaultExtension: String
-        private set
     private var pattern: Pattern? = null
 
     init {
@@ -44,12 +42,9 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
         if (extensions.isEmpty()) {
             setRegex(regex.toString())
             this.supportedExtensions = supportedExtensions
-            this.defaultExtension = ""
             return
         }
-        else {
-            defaultExtension = extensions[0]
-        }
+
         regex.append("(")
         for (extension in extensions) {
             regex.append("\\.")
