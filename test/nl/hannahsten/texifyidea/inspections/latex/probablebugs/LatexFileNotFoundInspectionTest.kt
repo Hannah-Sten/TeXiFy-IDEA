@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import com.intellij.openapi.util.SystemInfo
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
@@ -22,6 +24,8 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         super.setUp()
         mockkStatic(::runCommandWithExitCode)
         every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+
+        mockkStatic(LatexNavigationGutter::collectNavigationMarkers)
     }
 
     override fun getTestDataPath(): String {
@@ -29,29 +33,40 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun testMissingAbsolutePath() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.myinvalidextension</error>}""")
-        myFixture.checkHighlighting()
+        // Avoid "VfsRootAccess$VfsRootAccessNotAllowedError: File accessed outside allowed roots" on Windows in github actions
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.myinvalidextension</error>}""")
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testValidAbsolutePath() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myPicture.png}""")
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myPicture.png}""")
 
-        myFixture.checkHighlighting()
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testValidAbsolutePathCaps() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture.PNG}""")
-        myFixture.checkHighlighting()
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture.PNG}""")
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testBackActionAbsolute() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/../path/../path/myPicture.png}""")
-        myFixture.checkHighlighting()
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/../path/../path/myPicture.png}""")
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testCurrDirActionAbsolute() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/./resources/./././completion/path/././myPicture.png}""")
-        myFixture.checkHighlighting()
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/./resources/./././completion/path/././myPicture.png}""")
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testAbsoluteGraphicsDirWithInclude() {
@@ -81,19 +96,25 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun testDefaultExtensionCompletion() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myPicture}""")
-        myFixture.checkHighlighting()
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myPicture}""")
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testDefaultUpperCaseExtensionCompletion() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture}""")
-        myFixture.checkHighlighting()
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture}""")
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testDefaultMixedCaseExtensionCompletion() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myBadPicture</error>}""")
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myBadPicture</error>}""")
 
-        myFixture.checkHighlighting()
+            myFixture.checkHighlighting()
+        }
     }
 
     fun testNoWarningInDefinition() {

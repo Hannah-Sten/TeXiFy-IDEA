@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.SettingsEditor
@@ -33,7 +33,11 @@ import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackground
 import java.awt.event.ItemEvent
-import javax.swing.*
+import javax.swing.InputVerifier
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import kotlin.Throws
 
 /**
  * @author Sten Wessel
@@ -302,11 +306,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val mainFileField = TextFieldWithBrowseButton()
         mainFileField.addBrowseFolderListener(
             TextBrowseFolderListener(
-                FileTypeDescriptor("Choose a File to Compile", "tex")
-                    .withRoots(
-                        *ProjectRootManager.getInstance(project!!)
-                            .contentRootsFromAllModules.toSet().toTypedArray()
-                    )
+                FileChooserDescriptorFactory.createSingleFileDescriptor()
+                    .withTitle("Choose a File to Compile")
+                    .withExtensionFilter("tex")
+                    .withRoots(*ProjectRootManager.getInstance(project!!).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
