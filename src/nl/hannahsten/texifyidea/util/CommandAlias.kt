@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import java.util.concurrent.atomic.AtomicBoolean
 
-
 // Due to the update method being called many times, we need to limit the number of updates requested
 var isUpdatingIncludeAliases = AtomicBoolean(false)
 
