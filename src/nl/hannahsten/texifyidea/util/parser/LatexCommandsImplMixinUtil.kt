@@ -42,7 +42,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     // Find file references within required parameters and across required parameters (think \referencing{reference1,reference2}{reference3} )
     for (i in requiredParameters().indices) {
         // Find the corresponding requiredArgument
-        val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull { it is RequiredFileArgument } ?: continue
+        val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else continue
 
         // Check if the actual argument is a file argument or continue with the next argument
         val fileArgument = requiredArgument as? RequiredFileArgument ?: continue

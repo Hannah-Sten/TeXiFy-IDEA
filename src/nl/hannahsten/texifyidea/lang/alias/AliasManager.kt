@@ -86,14 +86,15 @@ abstract class AliasManager {
      * @param alias
      * The alias to register for the item. This could be either
      * a new item, or an existing item *E.g. `\start`*
+     * @param isRedefinition If the alias is being redefined, remove the original definition
      */
     @Synchronized
-    fun registerAlias(item: String, alias: String) {
+    fun registerAlias(item: String, alias: String, isRedefinition: Boolean = false) {
         synchronized(aliases) {
             val aliasSet = aliases[item] ?: mutableSetOf()
 
-            // If the alias is already assigned: unassign it.
-            if (isRegistered(alias)) {
+            // If the alias is already assigned and we are redefining it: unassign it.
+            if (isRedefinition && isRegistered(alias)) {
                 val previousAliases = aliases[alias]
                 previousAliases?.remove(alias)
                 aliases.remove(alias)

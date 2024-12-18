@@ -199,4 +199,11 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         updateIncludeCommandsAliasesAsync(myFixture.project)
         myFixture.checkHighlighting()
     }
+
+    fun testCommandAliasMoreParameters() {
+        myFixture.configureByText(LatexFileType, """\newcommand{\myinput}[2]{\input{#1}\section{#2}} \myinput{<error descr="File 'doesnotexist.tex' not found">doesnotexist.tex</error>}{My section}""")
+        // In practice, this will be triggered by the first something to ask for include commands aliases, for performance reasons
+        updateIncludeCommandsAliasesAsync(myFixture.project)
+        myFixture.checkHighlighting()
+    }
 }
