@@ -142,6 +142,7 @@ enum class LatexGenericRegularCommand(
     HYPERREF("hyperref", "options".asOptional(), "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.HYPERREF),
     HYPHENATION("hyphenation", "words".asRequired(Argument.Type.TEXT)),
     I("i", display = "i (dotless)"),
+    IFTHENELSE("ifthenelse", "test".asRequired(), "then clause".asRequired(), "else clause".asRequired()),
     IMPORT("import", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INCLUDE("include", RequiredFileArgument("sourcefile", false, false, "tex")),
     INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),

@@ -33,8 +33,6 @@ class SectionNumbering(private val documentClass: DocumentClass) {
         }
     }
 
-    private fun getCounter(level: Int) = counters[level]
-
     fun setCounter(level: Int, amount: Int) {
         counters[level] = amount
     }
@@ -54,7 +52,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
 
         for (i in documentClass.startIndex..level) {
             sb.append(delimiter)
-            sb.append(getCounter(i))
+            sb.append(counters[i])
             delimiter = "."
         }
 

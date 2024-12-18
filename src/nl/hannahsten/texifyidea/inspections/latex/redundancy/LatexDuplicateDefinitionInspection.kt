@@ -7,10 +7,11 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.parser.definedCommandName
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
+import nl.hannahsten.texifyidea.util.isInConditionalBranch
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.definedCommandName
 
 /**
  * Warns for commands that are defined twice in the same fileset.
@@ -32,6 +33,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
         val defined = HashMultiset.create<String>()
         val definitions = file.definitionsInFileSet().filter { it.name in CommandMagic.regularStrictCommandDefinitions }
         for (command in definitions) {
+            if (isInConditionalBranch(command)) continue
             val name = command.definedCommandName() ?: continue
             defined.add(name)
         }
@@ -39,6 +41,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
         // Go monkeys.
         file.definitions()
             .forEach {
+                if (isInConditionalBranch(it)) return@forEach
                 val definedCmd = it.definedCommandName() ?: return@forEach
                 if (defined.count(definedCmd) > 1) {
                     descriptors.add(
