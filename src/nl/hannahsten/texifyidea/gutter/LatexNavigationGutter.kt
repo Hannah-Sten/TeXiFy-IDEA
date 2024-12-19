@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.getOriginalCommandFromAlias
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import javax.swing.Icon
@@ -36,9 +37,9 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val fullCommand = command.name ?: return
 
         // Fetch the corresponding LatexRegularCommand object.
-        val commandHuh = LatexCommand.lookup(fullCommand.substring(1)) ?: return
+        val commandHuh = LatexCommand.lookup(fullCommand.substring(1))?.first() ?: getOriginalCommandFromAlias(command.name ?: return, command.project) ?: return
 
-        val arguments = commandHuh.first().getArgumentsOf(RequiredFileArgument::class.java)
+        val arguments = commandHuh.getArgumentsOf(RequiredFileArgument::class.java)
         if (arguments.isEmpty()) {
             return
         }

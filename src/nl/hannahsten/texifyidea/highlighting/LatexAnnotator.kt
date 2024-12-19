@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
@@ -221,7 +221,7 @@ open class LatexAnnotator : Annotator {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
-            in getLabelDefinitionCommands() -> {
+            in getLabelDefinitionCommandsNoUpdate() -> {
                 LatexSyntaxHighlighter.LABEL_DEFINITION
             }
             // Bibliography references (citations).

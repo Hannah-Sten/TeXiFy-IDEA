@@ -244,13 +244,13 @@ class CommandManagerTest {
         manager!!.registerCommand("\\ten")
         manager!!.registerAlias("\\one", "\\een")
         manager!!.registerAlias("\\one", "\\un")
-        manager!!.registerAlias("\\een", "\\ein")
+        manager!!.registerAlias("\\een", "\\ein", isRedefinition = true)
         manager!!.registerAlias("\\two", "\\twee")
         manager!!.registerAlias("\\twee", "\\deux")
         manager!!.registerAlias("\\deux", "\\zwei")
         manager!!.registerAlias("\\three", "\\tien")
-        manager!!.registerAlias("\\ten", "\\tien")
-        manager!!.registerAlias("\\tien", "\\dix")
+        manager!!.registerAlias("\\ten", "\\tien", isRedefinition = true)
+        manager!!.registerAlias("\\tien", "\\dix", isRedefinition = true)
         checkDefaultAliases(
             Function { command: String? ->
                 manager!!.getAliases(
@@ -275,7 +275,7 @@ class CommandManagerTest {
         manager!!.registerAliasNoSlash("twee", "deux")
         manager!!.registerAliasNoSlash("deux", "zwei")
         manager!!.registerAliasNoSlash("three", "tien")
-        manager!!.registerAliasNoSlash("ten", "tien")
+        manager!!.registerAliasNoSlash("ten", "tien", isRedefinition = true)
         manager!!.registerAliasNoSlash("tien", "dix")
         checkDefaultAliases(
             Function { command: String? ->
@@ -535,7 +535,7 @@ class CommandManagerTest {
      * `\varepsilon => A`
      */
     @Test
-    fun testEpsilon() {
+    fun testCommandRedefinition() {
         resetup(null)
 
         // Original commands
@@ -544,8 +544,8 @@ class CommandManagerTest {
 
         // Set aliases
         manager!!.registerAliasNoSlash("varepsilon", "goodepsilon")
-        manager!!.registerAliasNoSlash("epsilon", "varepsilon")
-        manager!!.registerAliasNoSlash("goodepsilon", "epsilon")
+        manager!!.registerAliasNoSlash("epsilon", "varepsilon", isRedefinition = true)
+        manager!!.registerAliasNoSlash("goodepsilon", "epsilon", isRedefinition = true)
 
         // Result checking
         val a = manager!!.getAliasesFromOriginalNoSlash("varepsilon")

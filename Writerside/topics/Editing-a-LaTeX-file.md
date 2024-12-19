@@ -244,7 +244,7 @@ See [https://blog.codinghorror.com/the-problem-with-code-folding/](https://blog.
 
 _Since b0.7_
 
-TeXiFy supports custom definitions of `label`-like, `\ref`-like and `\cite`-like commands.
+TeXiFy supports custom definitions (aliases) of `label`-like, `\ref`-like, `\cite`-like and `input`-like commands.
 For example, if you write
 
 <!-- ```latex -->
@@ -259,7 +259,7 @@ For example, if you write
 
 For definitions like `\newcommand{\mycite}[1]{\citeauthor{#1}\cite{#1}}`, this means that you will also get autocompletion of citation labels in `\mycite` commands.
 
-In the case of definitions including a `\label` command, we check the parameter positions as well.
+In the case of definitions including a `\label` or any command that has a file parameter, we check the parameter positions as well.
 For example,
 
 <!-- ```latex -->

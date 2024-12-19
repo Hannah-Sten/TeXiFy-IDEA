@@ -5,7 +5,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
@@ -17,7 +17,7 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val presentableText: String
 
     init {
-        val labelingCommands = getLabelDefinitionCommands()
+        val labelingCommands = getLabelDefinitionCommandsNoUpdate()
         if (!labelingCommands.contains(labelCommand.commandToken.text)) {
             val token = labelCommand.commandToken.text
             throw IllegalArgumentException("command '$token' is no \\label-command")

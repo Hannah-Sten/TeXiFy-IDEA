@@ -19,12 +19,12 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.getIncludeCommands
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
+import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 import java.util.*
 
 /**
@@ -82,8 +82,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.allCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val includeCommands = getIncludeCommands()
-        val labelingCommands = getLabelDefinitionCommands()
+        val includeCommands = updateAndGetIncludeCommands(element.project)
+        val labelingCommands = getLabelDefinitionCommandsNoUpdate()
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
