@@ -22,7 +22,7 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
 
     override fun getElementInfo(element: PsiElement) = when (element) {
         is LatexEnvironment -> element.name()?.text
-        is LatexCommands -> if (element.name in CommandMagic.sectioningCommands.map { it.cmd }) element.requiredParameter(0) ?: element.name else  element.name
+        is LatexCommands -> if (element.name in CommandMagic.sectioningCommands.map { it.cmd }) element.requiredParameter(0) ?: element.name else element.name
         else -> ""
     } ?: ""
 
