@@ -38,11 +38,12 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
         val parent = LatexSectionFoldingBuilder().buildFoldRegions(element.containingFile, document, quick = true)
             // Only top-level elements in the section should have the section as parents, other elements should keep their direct parent (e.g. an environment)
             .filter { it.range.contains(element.textRange ?: return@filter false) }
-            .filterNot { it.range.contains(element.parent.textRange ?: return@filterNot true) }
-            .firstOrNull { it.element.psi != element }
+            .filter { !it.range.contains(element.parent.textRange ?: return@filter false) }
+            // Avoid creating a loop
+            .filter { it.element.psi != element }
+            .filter { it.element.psi?.parents()?.contains(element) != true }
+            .minByOrNull { it.range.endOffset - it.range.startOffset }
             ?.element?.psi
-        // Avoid creating a loop
-        if (parent?.parents()?.contains(element) == true) { return super.getParent(element) }
         return parent ?: super.getParent(element)
     }
 }
