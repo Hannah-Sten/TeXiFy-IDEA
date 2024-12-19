@@ -88,3 +88,9 @@ fun runInBackground(project: Project?, description: String, function: (indicator
         }
     })
 }
+
+fun runInBackgroundWithoutProgress(function: () -> Unit) {
+    ApplicationManager.getApplication().invokeLater {
+        function()
+    }
+}

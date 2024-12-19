@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Improve performance when starting a run configuration
 * Change order in structure view to match source file and sectioning level 
 * Add command redefinitions to command definition filter in structure view
 * Add support for automatic language injection on the minted environment
