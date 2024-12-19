@@ -37,7 +37,7 @@ fun Project.getLabelReferenceCommands(): Set<String> {
 /**
  * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
  */
-fun getLabelDefinitionCommands() = CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
+fun getLabelDefinitionCommandsNoUpdate() = CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 
 /**
  * Get all commands defining labels, including user defined commands.

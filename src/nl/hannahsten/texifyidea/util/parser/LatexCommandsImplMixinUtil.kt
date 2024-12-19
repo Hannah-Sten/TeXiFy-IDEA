@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
+import nl.hannahsten.texifyidea.util.getOriginalCommandFromAlias
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.shrink
@@ -22,6 +23,7 @@ import kotlin.collections.set
 
 /**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
+ * This method is called continuously, so it should be really fast.
  *
  * Use this instead of command.references.filterIsInstance<InputFileReference>(), to avoid resolving references of types that will not be needed.
  */
@@ -29,7 +31,10 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     val inputFileReferences = mutableListOf<InputFileReference>()
 
     // There may be multiple commands with this name, just guess the first one
-    val command = LatexCommand.lookup(this.name)?.firstOrNull() ?: return emptyList()
+    val command = LatexCommand.lookup(this.name)?.firstOrNull()
+        // If not found, maybe it is an alias (user defined command) of a known command
+        ?: getOriginalCommandFromAlias(this.name ?: return emptyList(), project)
+        ?: return emptyList()
 
     // Arguments from the LatexCommand (so the command as hardcoded in e.g. LatexRegularCommand)
     val requiredArguments = command.arguments.mapNotNull { it as? RequiredArgument }
@@ -37,7 +42,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     // Find file references within required parameters and across required parameters (think \referencing{reference1,reference2}{reference3} )
     for (i in requiredParameters().indices) {
         // Find the corresponding requiredArgument
-        val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull { it is RequiredFileArgument } ?: continue
+        val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else continue
 
         // Check if the actual argument is a file argument or continue with the next argument
         val fileArgument = requiredArgument as? RequiredFileArgument ?: continue

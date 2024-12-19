@@ -32,14 +32,15 @@ fun Project.findCommandDefinitions(): Collection<LatexCommands> {
 }
 
 /**
- * Get all commands that include other files, including backslashes.
+ * Get all commands that include other files, including backslashes. Use [updateAndGetIncludeCommands] to include custom commands, if possible.
  */
-fun getIncludeCommands(): Set<String> {
-    return LatexRegularCommand.values()
-        .filter { command -> command.arguments.any { it is RequiredFileArgument } }
-        .map { "\\" + it.command }
-        .toSet()
-}
+val defaultIncludeCommands: Set<String>
+    by lazy {
+        LatexRegularCommand.values()
+            .filter { command -> command.arguments.any { it is RequiredFileArgument } }
+            .map { "\\" + it.command }
+            .toSet()
+    }
 
 /**
  * Inserts a custom c custom command definition.

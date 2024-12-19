@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.util.getIncludeCommands
+import nl.hannahsten.texifyidea.util.defaultIncludeCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import java.io.IOException
@@ -33,8 +33,8 @@ class LatexCommandsStubElementType(debugName: String) :
                 return latexCommandsStub
             }
 
-            override fun setName(name: String): PsiElement {
-                this.name = name
+            override fun setName(newName: String): PsiElement {
+                this.name = newName
                 return this
             }
 
@@ -107,7 +107,7 @@ class LatexCommandsStubElementType(debugName: String) :
 
         val token = latexCommandsStub.commandToken
         indexSinkOccurrence(indexSink, LatexCommandsIndex.Util, token)
-        if (token in getIncludeCommands()) {
+        if (token in defaultIncludeCommands) {
             indexSinkOccurrence(indexSink, LatexIncludesIndex.Util, token)
         }
         if (token in CommandMagic.definitions) {
