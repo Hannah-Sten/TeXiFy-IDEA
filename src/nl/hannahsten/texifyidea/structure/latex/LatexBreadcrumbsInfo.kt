@@ -7,6 +7,8 @@ import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.name
 import nl.hannahsten.texifyidea.util.parser.parents
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
@@ -20,7 +22,7 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
 
     override fun getElementInfo(element: PsiElement) = when (element) {
         is LatexEnvironment -> element.name()?.text
-        is LatexCommands -> if (element.name == "\\section") element.requiredParameter(0) else  element.name
+        is LatexCommands -> if (element.name in CommandMagic.sectioningCommands.map { it.cmd }) element.requiredParameter(0) ?: element.name else  element.name
         else -> ""
     } ?: ""
 
@@ -32,10 +34,11 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
 
     override fun getParent(element: PsiElement): PsiElement? {
         val document = element.containingFile.document() ?: return super.getParent(element)
+        // Add sections
         val parent = LatexSectionFoldingBuilder().buildFoldRegions(element.containingFile, document, quick = true)
             // Only top-level elements in the section should have the section as parents, other elements should keep their direct parent (e.g. an environment)
-            .filter { it.range.contains(element.textRange) }
-            .filterNot { it.range.contains(element.parent.textRange) }
+            .filter { it.range.contains(element.textRange ?: return@filter false) }
+            .filterNot { it.range.contains(element.parent.textRange ?: return@filterNot true) }
             .firstOrNull { it.element.psi != element }
             ?.element?.psi
         // Avoid creating a loop
