@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Fix auto import from local bibtex file on Windows
 * Add sections to breadcrumbs
 * Change order in structure view to match source file and sectioning level 
 * Add command redefinitions to command definition filter in structure view
