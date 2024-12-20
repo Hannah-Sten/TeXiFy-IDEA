@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
@@ -37,28 +39,32 @@ object LatexExternalPackageInclusionCache {
 
         // Get direct children from the index
         if (isFillingCache.getAndSet(true)) return cache
-        runInBackground(project, "Retrieving LaTeX package inclusions...") { indicator ->
-            try {
-                runReadAction { FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }.forEach { indexKey ->
-                    runReadAction {
-                        FileBasedIndex.getInstance().processValues(
-                            LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
-                                indicator.checkCanceled()
-                                val key = LatexPackage(file.name.removeFileExtension())
-                                directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
-                                true
-                            },
-                            GlobalSearchScope.everythingScope(project)
-                        )
+        // ???
+        runInEdt {
+            runInBackground(project, "Retrieving LaTeX package inclusions...") { indicator ->
+                try {
+                    runReadAction { FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }.forEach { indexKey ->
+                        runReadAction {
+                            FileBasedIndex.getInstance().processValues(
+                                LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
+                                    indicator.checkCanceled()
+                                    val key = LatexPackage(file.name.removeFileExtension())
+                                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
+                                    true
+                                },
+                                GlobalSearchScope.everythingScope(project)
+                            )
+                        }
+                    }
+
+                    // Do some DFS for indirect inclusions
+                    for (latexPackage in directChildren.keys) {
+                        cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
                     }
                 }
-
-                // Do some DFS for indirect inclusions
-                for (latexPackage in directChildren.keys) {
-                    cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
+                finally {
+                    isFillingCache.set(false)
                 }
-            } finally {
-                isFillingCache.set(false)
             }
         }
 
