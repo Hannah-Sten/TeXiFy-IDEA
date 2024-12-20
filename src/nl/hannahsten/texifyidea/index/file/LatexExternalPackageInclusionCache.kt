@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.DumbService
