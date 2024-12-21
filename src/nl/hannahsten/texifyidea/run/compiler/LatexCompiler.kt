@@ -287,9 +287,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      */
     fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>? {
         val rootManager = ProjectRootManager.getInstance(project)
-        val fileIndex = rootManager.fileIndex
         val mainFile = runConfig.mainFile ?: return null
-        val moduleRoot = fileIndex.getContentRootForFile(mainFile)
+        // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
+        val moduleRoot = runConfig.outputPath.contentRoot
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
         val moduleRoots = if (runConfig.getLatexDistributionType().isDocker()) {

@@ -5,6 +5,7 @@
 ### Added
 * Fix auto import from local bibtex file on Windows
 * Add sections to breadcrumbs
+* Improve performance when starting a run configuration and when using autocompletion directly after starting the IDE
 * Change order in structure view to match source file and sectioning level 
 * Add command redefinitions to command definition filter in structure view
 * Add support for automatic language injection on the minted environment
