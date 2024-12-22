@@ -86,13 +86,13 @@ Currently the automatic compilation is only triggered when you type in a documen
 
 ![autocompile](autocompile.gif)
 
-## Automatic compilation only when the document is saved.
+### Automatic compilation only when the document is saved.
 You can enable this in TeXiFy settings.
 When enabled, auto compilation will only run when the file is actually saved to disk, instead of after every change.
 To configure when a file is saved to disk (for example after a certain idle time), go to <ui-path>Settings | Appearance | System Settings</ui-path>.
 Also see [https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html](https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html)
 
-## Disable automatic compilation in power save mode
+### Disable automatic compilation in power save mode
 
 If you select this option, automatic compilation will always be on, except when power save mode is enabled, which can be done via <ui-path>File | Power Save Mode</ui-path>.
 There are various other plugins which can automatically enable power save mode in certain situations.
