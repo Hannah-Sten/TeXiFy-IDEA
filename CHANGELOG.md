@@ -3,14 +3,35 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.9.10-alpha.4] - 2024-12-21
+
+### Added
+
 * Add sections to breadcrumbs
 * Improve performance when starting a run configuration and when using autocompletion directly after starting the IDE
 * Change order in structure view to match source file and sectioning level 
 * Add command redefinitions to command definition filter in structure view
 * Add support for automatic language injection on the minted environment
 * Add support for automatic detection of custom command aliases for include commands
+* Add support for DeclareGraphicsExtensions
+* Add inspection to warn about a missing reference for a glossary occurrence
+* Do not fold sections in a command definition
+* Include optional parameters in spellcheck, if it contains text
+* Improve performance of finding files to be indexed
+* Show formatted file path in file not found inspection quickfix name
+* Automatically index bibliography files outside the project that are included by an absolute path
+* Disable quotes inspection when TeX ligatures are disabled by fontspec
+* Inspections can now be suppressed for any single line, or block of text
 
 ### Fixed
+
+* Fix auto import from local bibtex file on Windows
+* Fix false positive for duplicate command definition inspection in if/else
+* Fix LaTeX files not showing up when choosing main file in run configuration
+* Fix various issues with the Grazie implementation, in particular default rules for Grazie Pro
 
 ## [0.9.10-alpha.3] - 2024-12-15
 
@@ -27,6 +48,7 @@
 * Inspections can now be suppressed for any single line, or block of text
 
 ### Fixed
+
 * Fix false positive for duplicate command definition inspection in if/else
 * Fix LaTeX files not showing up when choosing main file in run configuration
 * Fix various issues with the Grazie implementation, in particular default rules for Grazie Pro
@@ -478,7 +500,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.10-alpha.3...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.10-alpha.4...HEAD
+[0.9.10-alpha.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.10-alpha.3...v0.9.10-alpha.4
 [0.9.10-alpha.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.10-alpha.2...v0.9.10-alpha.3
 [0.9.10-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.9.10-alpha.2
 [0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
