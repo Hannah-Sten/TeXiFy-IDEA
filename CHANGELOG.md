@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+* Add option to disable automatic compilation in power save mode
+* Convert automatic compilation settings to a combobox
 * Add sections to breadcrumbs
 * Improve performance when starting a run configuration and when using autocompletion directly after starting the IDE
 * Change order in structure view to match source file and sectioning level 

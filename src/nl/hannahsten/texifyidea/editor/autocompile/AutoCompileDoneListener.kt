@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 class AutoCompileDoneListener : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        if (TexifySettings.getInstance().autoCompile) {
-            AutoCompileState.compileDone()
+        if (TexifySettings.getInstance().isAutoCompileEnabled()) {
+            AutoCompileState.scheduleCompilationIfNecessary()
         }
     }
 

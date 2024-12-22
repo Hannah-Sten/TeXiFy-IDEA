@@ -45,7 +45,7 @@ object AutoCompileState {
      * Tell the state a compilation has just finished.
      */
     @Synchronized
-    fun compileDone() {
+    fun scheduleCompilationIfNecessary() {
         // Only compile again if needed
         if (hasChanged) {
             scheduleCompilation()

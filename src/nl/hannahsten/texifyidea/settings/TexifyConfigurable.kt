@@ -24,8 +24,6 @@ class TexifyConfigurable : SearchableConfigurable {
     private var automaticItemInItemize: JBCheckBox? = null
     private var automaticDependencyCheck: JBCheckBox? = null
     private var automaticBibtexImport: JBCheckBox? = null
-    private var autoCompile: JBCheckBox? = null
-    private var autoCompileOnSaveOnly: JBCheckBox? = null
     private var continuousPreview: JBCheckBox? = null
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
@@ -35,6 +33,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var latexIndentOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
     private var htmlPasteTranslator: ComboBox<String>? = null
+    private var autoCompileOption: ComboBox<String>? = null
 
     /**
      * Map UI variables to underlying setting variables
@@ -45,8 +44,6 @@ class TexifyConfigurable : SearchableConfigurable {
         Pair(::automaticItemInItemize, settings::automaticItemInItemize),
         Pair(::automaticDependencyCheck, settings::automaticDependencyCheck),
         Pair(::automaticBibtexImport, settings::automaticBibtexImport),
-        Pair(::autoCompile, settings::autoCompile),
-        Pair(::autoCompileOnSaveOnly, settings::autoCompileOnSaveOnly),
         Pair(::continuousPreview, settings::continuousPreview),
         Pair(::includeBackslashInSelection, settings::includeBackslashInSelection),
         Pair(::showPackagesInStructureView, settings::showPackagesInStructureView),
@@ -69,8 +66,6 @@ class TexifyConfigurable : SearchableConfigurable {
                     automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
                     automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
                     automaticBibtexImport = addCheckbox("Automatically copy BibTeX entries from remote libraries to the local library")
-                    autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
-                    autoCompileOnSaveOnly = addCheckbox("Automatic compilation only after document save")
                     continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
@@ -80,6 +75,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     latexIndentOptions = addCommandLineEditor("Latexindent", TexifySettingsState().latexIndentOptions)
                     automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
                     htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
+                    autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
                 }
             )
         }
@@ -138,7 +134,8 @@ class TexifyConfigurable : SearchableConfigurable {
             textidoteOptions?.text != settings.textidoteOptions ||
             latexIndentOptions?.text != settings.latexIndentOptions ||
             automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-            htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal
+            htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal ||
+            autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal
     }
 
     override fun apply() {
@@ -149,6 +146,7 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.latexIndentOptions = latexIndentOptions?.text ?: ""
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.entries.toTypedArray()[automaticQuoteReplacement?.selectedIndex ?: 0]
         settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
+        settings.autoCompileOption = TexifySettings.AutoCompile.entries.toTypedArray()[autoCompileOption?.selectedIndex ?: 0]
     }
 
     override fun reset() {
@@ -159,5 +157,6 @@ class TexifyConfigurable : SearchableConfigurable {
         latexIndentOptions?.text = settings.latexIndentOptions
         automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
         htmlPasteTranslator?.selectedIndex = settings.htmlPasteTranslator.ordinal
+        autoCompileOption?.selectedIndex = settings.autoCompileOption.ordinal
     }
 }

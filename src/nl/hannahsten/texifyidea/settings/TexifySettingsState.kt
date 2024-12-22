@@ -10,8 +10,6 @@ data class TexifySettingsState(
     var automaticItemInItemize: Boolean = true,
     var automaticDependencyCheck: Boolean = true,
     var automaticBibtexImport: Boolean = true,
-    var autoCompile: Boolean = false,
-    var autoCompileOnSaveOnly: Boolean = false,
     var continuousPreview: Boolean = false,
     var includeBackslashInSelection: Boolean = false,
     var showPackagesInStructureView: Boolean = false,
@@ -21,6 +19,10 @@ data class TexifySettingsState(
     var latexIndentOptions: String = "",
     var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
     var htmlPasteTranslator: TexifySettings.HtmlPasteTranslator = TexifySettings.HtmlPasteTranslator.BUILTIN,
+    var autoCompileOption: TexifySettings.AutoCompile? = null,
     var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
+    // Kept for backwards compatibility
+    var autoCompile: Boolean = false,
+    var autoCompileOnSaveOnly: Boolean = false,
     var pdfViewer: InternalPdfViewer = InternalPdfViewer.firstAvailable
 )

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings
 
+import com.intellij.ide.PowerSaveMode
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.RoamingType
@@ -38,13 +39,18 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         DISABLED,
     }
 
+    enum class AutoCompile {
+        OFF,
+        ALWAYS,
+        AFTER_DOCUMENT_SAVE,
+        DISABLE_ON_POWER_SAVE,
+    }
+
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
     var automaticDependencyCheck = true
     var automaticBibtexImport = true
-    var autoCompile = false
-    var autoCompileOnSaveOnly = false
     var continuousPreview = false
     var includeBackslashInSelection = false
     var showPackagesInStructureView = false
@@ -54,6 +60,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var latexIndentOptions = ""
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var htmlPasteTranslator = HtmlPasteTranslator.BUILTIN
+    var autoCompileOption = AutoCompile.OFF
 
     /**
      * Backwards compatibility. This value is never altered, only read from/to memory.
@@ -70,8 +77,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             automaticItemInItemize = automaticItemInItemize,
             automaticDependencyCheck = automaticDependencyCheck,
             automaticBibtexImport = automaticBibtexImport,
-            autoCompile = autoCompile,
-            autoCompileOnSaveOnly = autoCompileOnSaveOnly,
             continuousPreview = continuousPreview,
             includeBackslashInSelection = includeBackslashInSelection,
             showPackagesInStructureView = showPackagesInStructureView,
@@ -81,6 +86,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             latexIndentOptions = latexIndentOptions,
             automaticQuoteReplacement = automaticQuoteReplacement,
             htmlPasteTranslator = htmlPasteTranslator,
+            autoCompileOption = autoCompileOption,
             pdfViewer = pdfViewer
         )
     }
@@ -91,8 +97,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         automaticItemInItemize = state.automaticItemInItemize
         automaticDependencyCheck = state.automaticDependencyCheck
         automaticBibtexImport = state.automaticBibtexImport
-        autoCompile = state.autoCompile
-        autoCompileOnSaveOnly = state.autoCompileOnSaveOnly
         continuousPreview = state.continuousPreview
         includeBackslashInSelection = state.includeBackslashInSelection
         showPackagesInStructureView = state.showPackagesInStructureView
@@ -102,6 +106,12 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         latexIndentOptions = state.latexIndentOptions
         automaticQuoteReplacement = state.automaticQuoteReplacement
         htmlPasteTranslator = state.htmlPasteTranslator
+        // Backwards compatibility
+        autoCompileOption = state.autoCompileOption ?: if (state.autoCompileOnSaveOnly) AutoCompile.AFTER_DOCUMENT_SAVE else if (state.autoCompile) AutoCompile.ALWAYS else AutoCompile.OFF
         pdfViewer = state.pdfViewer
+    }
+
+    fun isAutoCompileEnabled(): Boolean {
+        return autoCompileOption == AutoCompile.ALWAYS || (!PowerSaveMode.isEnabled() && autoCompileOption == AutoCompile.DISABLE_ON_POWER_SAVE)
     }
 }
