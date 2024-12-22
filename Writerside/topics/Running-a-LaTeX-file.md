@@ -92,6 +92,11 @@ When enabled, auto compilation will only run when the file is actually saved to 
 To configure when a file is saved to disk (for example after a certain idle time), go to <ui-path>Settings | Appearance | System Settings</ui-path>.
 Also see [https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html](https://www.jetbrains.com/help/idea/saving-and-reverting-changes.html)
 
+## Disable automatic compilation in power save mode
+
+If you select this option, automatic compilation will always be on, except when power save mode is enabled, which can be done via <ui-path>File | Power Save Mode</ui-path>.
+There are various other plugins which can automatically enable power save mode in certain situations.
+
 ### Automatic compilation support by compilers
 
 Some compilers, at least latexmk and tectonic, also support automatic compilation.
