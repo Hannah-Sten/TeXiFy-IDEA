@@ -10,11 +10,13 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.awt.Dimension
+import java.awt.event.ActionEvent
 import java.io.File
 import java.util.*
 import javax.swing.Box
@@ -66,6 +68,31 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         }
     }
 
+    private fun addOrRemoveSizeCommand(field: JBTextField, event: ActionEvent, command: String) {
+        val isSelected = (event.source as JBCheckBox).isSelected
+        if (isSelected && command !in field.text) {
+            field.text += command
+        }
+        else if (!isSelected && command in field.text) {
+            field.text = field.text.remove(command)
+        }
+    }
+
+    private val txtWidthRelative = JBCheckBox("Relative to line width").apply {
+        addActionListener {
+            // linewidth seems to be a good default: https://tex.stackexchange.com/a/17085/98850
+            val command = LatexGenericRegularCommand.LINEWIDTH.commandWithSlash
+            addOrRemoveSizeCommand(txtWidth, it, command)
+        }
+    }
+
+    private val txtHeightRelative = JBCheckBox("Relative to text height").apply {
+        addActionListener {
+            val command = LatexGenericRegularCommand.TEXTHEIGHT.commandWithSlash
+            addOrRemoveSizeCommand(txtHeight, it, command)
+        }
+    }
+
     /**
      * The angle option for the graphic. When empty, no angle. Not necessarily a number.
      */
@@ -73,6 +100,25 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         toolTipText = "Degrees, anticlockwise"
         addTextChangeListener {
             updateGraphicsOptions("angle")
+        }
+    }
+
+    private val keepAspectRatio = JBCheckBox("Keep aspect ratio").apply {
+        addActionListener {
+            val option = "keepaspectratio"
+            val isSelected = (it.source as JBCheckBox).isSelected
+            if (isSelected && option !in txtCustomOptions.text) {
+                if (txtCustomOptions.text.isNotBlank()) txtCustomOptions.text += ","
+                txtCustomOptions.text += option
+            }
+            else if (!isSelected && option in txtCustomOptions.text) {
+                if (",$option" in txtCustomOptions.text) {
+                    txtCustomOptions.text = txtCustomOptions.text.remove(",$option")
+                }
+                else {
+                    txtCustomOptions.text = txtCustomOptions.text.remove(option)
+                }
+            }
         }
     }
 
@@ -211,7 +257,13 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
             addLabeledComponent(txtAngle, "Angle:", labelWidth)
         }
         add(optionsPanel)
-        addLabeledComponent(txtCustomOptions, "Custom:", labelWidth)
+        val relativeOptionsPanel = JPanel(HorizontalLayout(10)).apply {
+            add(txtWidthRelative)
+            add(txtHeightRelative)
+            add(keepAspectRatio)
+        }
+        add(relativeOptionsPanel)
+        addLabeledComponent(txtCustomOptions, "Custom:", 80)
     }
 
     private fun JPanel.addLayoutControls() {
@@ -258,19 +310,25 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     }
 
     private fun JTextField.updateGraphicsOptions(fieldName: String) {
-        val text = text.replace(",", "")
+        val newOptionValue = text.replace(",", "")
         // Update
         if (txtCustomOptions.text.contains("$fieldName=")) {
-            txtCustomOptions.text = txtCustomOptions.text
-                .replace(Regex("$fieldName=[^,]*"), Regex.escapeReplacement("$fieldName=$text"))
+            if (newOptionValue.isNotBlank()) {
+                txtCustomOptions.text = txtCustomOptions.text
+                    .replace(Regex("$fieldName=[^,]*"), Regex.escapeReplacement("$fieldName=$newOptionValue"))
+            }
+            else {
+                // Remove
+                txtCustomOptions.text = txtCustomOptions.text.replace(Regex(",?$fieldName=[^,]*"), "")
+            }
         }
         // Nothing yet, set width property.
         else if (txtCustomOptions.text.isBlank()) {
-            txtCustomOptions.text = "$fieldName=$text"
+            txtCustomOptions.text = "$fieldName=$newOptionValue"
         }
         // When there is something, append width property.
         else {
-            txtCustomOptions.text += ",$fieldName=$text"
+            txtCustomOptions.text += ",$fieldName=$newOptionValue"
         }
     }
 

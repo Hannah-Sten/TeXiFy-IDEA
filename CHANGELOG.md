@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add checkboxes to graphic insertion wizard for relative width or height
 
 ### Fixed
 
