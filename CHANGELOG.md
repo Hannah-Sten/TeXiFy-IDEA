@@ -8,6 +8,7 @@
 * Add checkboxes to graphic insertion wizard for relative width or height
 
 ### Fixed
+* Fix parse error when using parentheses in a group in a key value command argument
 
 ## [0.9.10-alpha.4] - 2024-12-21
 
