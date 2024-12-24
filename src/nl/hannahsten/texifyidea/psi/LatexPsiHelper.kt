@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
@@ -56,6 +57,9 @@ class LatexPsiHelper(private val project: Project) {
      */
     fun createFromText(text: String): PsiFile =
         PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
+
+    fun createBibtexFromText(text: String): PsiFile =
+        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.bib", BibtexLanguage, text, false, true)
 
     /**
      * Adds the supplied element to the content of the environment.
