@@ -42,6 +42,7 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
    */
   private int verbatimOptionalArgumentBracketsCount = 0;
   private int verbatimRequiredArgumentBracketsCount = 0;
+  private int verbatimUrlBracesCount = 0;
 
   /**
    * Keep track of braces in the PARTIAL_DEFINITION state.
@@ -98,10 +99,11 @@ PLAIN_VERBATIM_COMMAND=\\verb | \\verb\* | \\path
 
 // Verbatim commands which can also have normal optional/required parameters (or a same-character delimiter)
 VERBATIM_COMMAND=\\directlua | \\luaexec | \\lstinline
- // These can contain unescaped % for example.
- | \\url | \\href
  // PythonTex Python code commands
  | \\py | \\pyb | \\pyc | \\pys | \\pyv
+// These can contain unescaped # and %, but braces have to be balanced
+URL_COMMAND=\\url | \\href
+
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
 PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 
@@ -143,7 +145,7 @@ END_IFS=\\fi
 
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
-%xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START
+%xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START URL_VERBATIM
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_REQUIRED_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
 %xstates VERBATIM POSSIBLE_VERBATIM_ARG POSSIBLE_VERBATIM_END
@@ -163,6 +165,7 @@ END_IFS=\\fi
 // Use a separate state to start verbatim, to be able to return a command token for \verb
 {PLAIN_VERBATIM_COMMAND}  { yypushState(INLINE_VERBATIM_PLAIN_START); return COMMAND_TOKEN; }
 {VERBATIM_COMMAND}        { yypushState(INLINE_VERBATIM_NORMAL_START); return COMMAND_TOKEN; }
+{URL_COMMAND}             { verbatimUrlBracesCount = 0; yypushState(URL_VERBATIM); return COMMAND_TOKEN; }
 
 // This is like INLINE_VERBATIM_START, but because lstinline supports normal optional/required parameters instead of two of the same delimiters,
 // it is a separate state so that other verbatim commands are unlikely to be picked up incorrectly
@@ -206,6 +209,14 @@ END_IFS=\\fi
 
 <INLINE_VERBATIM> {
     {ANY_CHAR}          { if(yytext().toString().equals(verbatim_delimiter)) { yypopState(); return CLOSE_BRACE; } else { return RAW_TEXT_TOKEN; } }
+    // Because the state is exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
+    [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+}
+
+<URL_VERBATIM> {
+    { OPEN_BRACE }      { verbatimUrlBracesCount++; return OPEN_BRACE; }
+    { CLOSE_BRACE }     { verbatimUrlBracesCount--; if (verbatimUrlBracesCount == 0) { yypopState(); } return CLOSE_BRACE; }
+    {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
     // Because the state is exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
     [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
