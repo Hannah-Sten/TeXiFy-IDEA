@@ -24,6 +24,8 @@ class LatexParserTest : BasePlatformTestCase() {
             ${'$'}\test{\cmd{a}[b]}${'$'}
             
             \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+            
+            \anycommand{test = {Some text with (Round Brackets)}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
