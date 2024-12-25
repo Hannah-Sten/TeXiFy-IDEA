@@ -50,6 +50,11 @@ class LatexParserTest : BasePlatformTestCase() {
             LatexFileType,
             """
             $ math \text{ text $\xi$ text } math$
+            
+            $\begin{cases*}
+                 1 & if $ p \equiv 1 \pmod 4$ \\
+                 -1 & if $ p \equiv 3 \pmod 4$
+            \end{cases*}$ a
             """.trimIndent()
         )
         myFixture.checkHighlighting()
