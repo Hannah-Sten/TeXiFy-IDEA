@@ -214,8 +214,10 @@ END_IFS=\\fi
 }
 
 <URL_VERBATIM> {
-    { OPEN_BRACE }      { verbatimUrlBracesCount++; return OPEN_BRACE; }
-    { CLOSE_BRACE }     { verbatimUrlBracesCount--; if (verbatimUrlBracesCount == 0) { yypopState(); } return CLOSE_BRACE; }
+    {OPEN_BRACE}        { verbatimUrlBracesCount++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       { verbatimUrlBracesCount--; if (verbatimUrlBracesCount == 0) { yypopState(); } return CLOSE_BRACE; }
+    // There can be whitespace between command and argument
+    {WHITE_SPACE}       { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
     // Because the state is exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
     [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
