@@ -26,6 +26,8 @@ class LatexParserTest : BasePlatformTestCase() {
             \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
             
             \anycommand{test = {Some text with (Round Brackets)}}
+            
+            \href{\thefield{#%}}{#1}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
