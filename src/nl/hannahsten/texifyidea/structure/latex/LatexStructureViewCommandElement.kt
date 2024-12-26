@@ -4,10 +4,11 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.NavigationItem
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.structure.EditableHintPresentation
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.nextCommand
-import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -18,7 +19,7 @@ class LatexStructureViewCommandElement private constructor(private val element: 
 
         @JvmStatic
         fun newCommand(commands: LatexCommands): LatexStructureViewCommandElement? {
-            if ("\\let" == commands.commandToken.text || "\\def" == commands.commandToken.text) {
+            if (LatexGenericRegularCommand.LET.cmd == commands.name || LatexGenericRegularCommand.DEF.cmd == commands.commandToken.text) {
                 val sibling = commands.nextCommand() ?: return null
 
                 return LatexStructureViewCommandElement(sibling)

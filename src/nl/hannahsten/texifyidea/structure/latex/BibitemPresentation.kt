@@ -14,10 +14,6 @@ class BibitemPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val locationString: String
 
     init {
-        if (labelCommand.commandToken.text != "\\bibitem") {
-            throw IllegalArgumentException("command is no \\bibitem-command")
-        }
-
         // Get label name.
         this.bibitemName = labelCommand.getRequiredParameters().firstOrNull() ?: ""
 

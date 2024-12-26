@@ -13,10 +13,6 @@ class LatexSubSectionPresentation(sectionCommand: LatexCommands) : EditableHintP
     private var hint = ""
 
     init {
-        if (sectionCommand.commandToken.text != "\\subsection") {
-            throw IllegalArgumentException("command is no \\subsection-command")
-        }
-
         this.subSectionName = sectionCommand.getRequiredParameters().firstOrNull() ?: "Unnamed subsection"
     }
 

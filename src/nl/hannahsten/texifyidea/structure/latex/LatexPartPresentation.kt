@@ -13,10 +13,6 @@ class LatexPartPresentation(partCommand: LatexCommands) : EditableHintPresentati
     private var hint = ""
 
     init {
-        if (partCommand.commandToken.text != "\\part") {
-            throw IllegalArgumentException("command is no \\part-command")
-        }
-
         this.partName = partCommand.getRequiredParameters().firstOrNull() ?: "Unnamed part"
     }
 

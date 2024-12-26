@@ -13,10 +13,6 @@ class LatexSectionPresentation(sectionCommand: LatexCommands) : EditableHintPres
     private var hint = ""
 
     init {
-        if (sectionCommand.commandToken.text != "\\section") {
-            throw IllegalArgumentException("command is no \\section-command")
-        }
-
         this.sectionName = sectionCommand.getRequiredParameters().firstOrNull() ?: "Unnamed section"
     }
 

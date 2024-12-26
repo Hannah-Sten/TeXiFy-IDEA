@@ -13,10 +13,6 @@ class LatexSubParagraphPresentation(subParagraphCommand: LatexCommands) : Editab
     private var hint = ""
 
     init {
-        if (subParagraphCommand.name != "\\subparagraph") {
-            throw IllegalArgumentException("command is no \\subparagraph-command")
-        }
-
         this.subParagraphName = subParagraphCommand.getRequiredParameters().firstOrNull() ?: "Unknown subparagraph"
     }
 
