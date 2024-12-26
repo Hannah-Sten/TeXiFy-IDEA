@@ -1,7 +1,10 @@
 package nl.hannahsten.texifyidea.lang.alias
 
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
@@ -16,6 +19,8 @@ object EnvironmentManager : AliasManager() {
         // e.g. \newenvironment{mytabl}{\begin{tabular}{cc}}{\end{tabular}}
         indexedDefinitions.filter { definition ->
             definition.requiredParameter(1)?.containsAny(aliasSet.map { "\\begin{$it}" }.toSet()) == true
+                // This command always defines an alias for the listings environment
+                || (definition.name == LatexNewDefinitionCommand.LSTNEWENVIRONMENT.cmd && aliasSet.contains(DefaultEnvironment.LISTINGS.environmentName))
         }
             .mapNotNull { it.requiredParameter(0) }
             .forEach { registerAlias(firstAlias, it) }

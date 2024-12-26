@@ -326,6 +326,7 @@ object CommandMagic {
         NEWTCOLORBOX_,
         PROVIDETCOLORBOX,
         NEWENVIRONMENTX,
+        LSTNEWENVIRONMENT,
     ).map { it.cmd }
 
     /**
