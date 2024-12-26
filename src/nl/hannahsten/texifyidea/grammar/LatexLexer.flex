@@ -137,7 +137,7 @@ START_IFS=\\if | \\ifcat | \\ifx | \\ifcase | \\ifnum | \\ifodd | \\ifhmode | \\
 ELSE=\\else
 END_IFS=\\fi
 
-%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION
+%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION ENVIRONMENT_INSIDE_INLINE_MATH
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
 
 // latex3 has some special syntax
@@ -475,12 +475,21 @@ END_IFS=\\fi
     // When already in inline math, when encountering a \text command we need to switch out of the math state
     // because if we encounter another $, then it will be an inline_math_start, not an inline_math_end
     \\text              { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN; }
+    // Similarly, environments like cases* from mathtools have text as their second column, which can have inline math
+    // We cannot use a single token for inline math start and end because the parser will try to parse the one that should be an 'end' as a 'start'
+    // Therefore, to make sure that we cannot have a START \begin{cases*} END ... START \end{cases*} END, we use a separate state
+    {BEGIN_TOKEN}       { yypushState(ENVIRONMENT_INSIDE_INLINE_MATH); return BEGIN_TOKEN; }
 }
 
 // When in a \text in inline math, either start nested inline math or close the \text
 <TEXT_INSIDE_INLINE_MATH> {
     "$"                 { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START; }
     {CLOSE_BRACE}       { yypopState(); return CLOSE_BRACE; }
+}
+
+<ENVIRONMENT_INSIDE_INLINE_MATH> {
+    "$"                 { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START; }
+    {END_TOKEN}         { yypopState(); return END_TOKEN; }
 }
 
 <INLINE_MATH_LATEX> {
