@@ -10,11 +10,7 @@ import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
  */
 class LatexIncludePresentation(labelCommand: LatexCommands) : ItemPresentation {
 
-    private val fileName: String
-
-    init {
-        this.fileName = labelCommand.getIncludedFiles(true).joinToString { it.name }
-    }
+    private val fileName = labelCommand.getIncludedFiles(true).joinToString { it.name }
 
     override fun getPresentableText() = fileName
 
