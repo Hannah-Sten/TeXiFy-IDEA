@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util.labels
 import com.intellij.psi.PsiElement
 import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -14,6 +15,7 @@ import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
  * Extracts the label element (so the element that should be resolved to) from the PsiElement given that the PsiElement represents a label.
+ * Also see LatexEnvironmentUtil#getLabel()
  */
 fun PsiElement.extractLabelElement(): PsiElement? {
     fun getLabelParameterText(command: LatexCommandWithParams): LatexParameterText {
@@ -45,7 +47,14 @@ fun PsiElement.extractLabelElement(): PsiElement? {
                 getLabelParameterText(beginCommand)
             }
             else {
-                null
+                // Check for user defined environments
+                val labelPositions = EnvironmentManager.labelAliasesInfo.get(getEnvironmentName())
+                if (labelPositions != null) {
+                    this.beginCommand.parameterList.getOrNull(labelPositions.positions.first())?.firstChildOfType(LatexParameterText::class)
+                }
+                else {
+                    null
+                }
             }
         }
         else -> null
@@ -86,7 +95,14 @@ fun PsiElement.extractLabelName(referencingFileSetCommands: Collection<LatexComm
             }
         }
 
-        is LatexEnvironment -> this.getLabel() ?: ""
+        is LatexEnvironment -> {
+            this.getLabel()
+                // Check if it is a user defined alias of a labeled environment
+                ?: EnvironmentManager.labelAliasesInfo.get(getEnvironmentName())?.let {
+                    this.beginCommand.parameterList.getOrNull(it.positions.first())?.firstChildOfType(LatexParameterText::class)?.text
+                }
+                ?: ""
+        }
         else -> text
     }
 }

@@ -5,6 +5,7 @@ import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.junit.Test
 
@@ -97,6 +98,35 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             """.trimIndent()
         )
         CommandManager.updateAliases(setOf("\\label"), project)
+        myFixture.checkHighlighting()
+    }
+
+    fun testFigureReferencedCustomListingsEnvironment() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \lstnewenvironment{java}[2][]{
+                \lstset{
+                    captionpos=b,
+                    language=Java,
+                % other style attributes
+                    caption={#1},
+                    label={#2},
+                }
+            }{}
+
+            \begin{java}[Test]{lst:test}
+                class Main {
+                    public static void main(String[] args) {
+                        return "HelloWorld";
+                    }
+                }
+            \end{java}
+
+            \ref{lst:test}
+            """.trimIndent()
+        )
+        EnvironmentManager.updateAliases(setOf("lstlisting"), project)
         myFixture.checkHighlighting()
     }
 
