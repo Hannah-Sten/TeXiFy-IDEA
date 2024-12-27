@@ -48,7 +48,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
             }
             else {
                 // Check for user defined environments
-                val labelPositions = EnvironmentManager.labelAliasesInfo.get(getEnvironmentName())
+                val labelPositions = EnvironmentManager.labelAliasesInfo.getOrDefault(getEnvironmentName(), null)
                 if (labelPositions != null) {
                     this.beginCommand.parameterList.getOrNull(labelPositions.positions.first())?.firstChildOfType(LatexParameterText::class)
                 }
@@ -98,7 +98,7 @@ fun PsiElement.extractLabelName(referencingFileSetCommands: Collection<LatexComm
         is LatexEnvironment -> {
             this.getLabel()
                 // Check if it is a user defined alias of a labeled environment
-                ?: EnvironmentManager.labelAliasesInfo.get(getEnvironmentName())?.let {
+                ?: EnvironmentManager.labelAliasesInfo.getOrDefault(getEnvironmentName(), null)?.let {
                     this.beginCommand.parameterList.getOrNull(it.positions.first())?.firstChildOfType(LatexParameterText::class)?.text
                 }
                 ?: ""
