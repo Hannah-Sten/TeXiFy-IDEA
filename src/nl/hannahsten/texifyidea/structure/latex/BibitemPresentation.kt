@@ -10,16 +10,11 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 class BibitemPresentation(labelCommand: LatexCommands) : ItemPresentation {
 
-    private val bibitemName: String
+    // Get label name.
+    private val bibitemName = labelCommand.getRequiredParameters().firstOrNull() ?: ""
     private val locationString: String
 
     init {
-        if (labelCommand.commandToken.text != "\\bibitem") {
-            throw IllegalArgumentException("command is no \\bibitem-command")
-        }
-
-        // Get label name.
-        this.bibitemName = labelCommand.getRequiredParameters().firstOrNull() ?: ""
 
         // Location string.
         val manager = FileDocumentManager.getInstance()
