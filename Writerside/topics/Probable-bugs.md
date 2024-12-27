@@ -108,7 +108,9 @@ This inspection warns for `\if` commands (and variations) which are not closed w
 
 ## File not found
 
-If a Latex command takes a path argument TeXiFy checks whether the file or path exists and throws an error if not.
+If a Latex command takes a path argument, TeXiFy checks whether the file or path exists and throws an error if not.
+If you are not using LaTeX run configurations and you are using a different working directory than the directory of the main file, then this inspection may not be able to detect from where to resolve the included files.
+To fix this, right click the working directory and select 'Mark as sources root'.
 
 ## Absolute path not allowed
 
