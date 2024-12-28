@@ -90,7 +90,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                 override fun run(indicator: ProgressIndicator) {
                     val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
 
-                    val timeout: Long = if (packageName == "--all") 600 else 15
+                    val timeout: Long = if (packageName == "--all") 1200 else 15
                     var (output, exitCode) = runCommandWithExitCode(tlmgrExecutable, "update", packageName, returnExceptionMessage = true, timeout = timeout)
                     if (output?.contains("tlmgr update --self") == true) {
                         val (tlmgrOutput, tlmgrExitCode) = runCommandWithExitCode(tlmgrExecutable, "update", "--self", returnExceptionMessage = true, timeout = 20)
