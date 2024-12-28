@@ -9,12 +9,10 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 
-/*
-* LatexEnvironment
-*/
 /**
  * Find the label of the environment. The method finds labels inside the environment content as well as labels
  * specified via an optional parameter
+ * Similar to LabelExtraction#extractLabelElement, but we cannot use the index here
  *
  * @return the label name if any, null otherwise
  */

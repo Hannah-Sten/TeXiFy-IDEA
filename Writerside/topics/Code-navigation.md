@@ -26,7 +26,8 @@ Web links in `\url` and `\href` commands are clickable using <shortcut>Ctrl + Cl
 By pressing <shortcut>Ctrl + B</shortcut> on a reference to a label, or a citation of a bibtex entry, your cursor will go to the declaration of the reference or citation.
 In general, you can go back to your previous cursor location with <shortcut>Ctrl + Alt + &lt;-</shortcut>
 
-This also works with usages of commands defined with `\newcommand` definitions (in your fileset, not in LaTeX packages), but only if your command definition includes braces, like `\newcommand{\mycommand}{definition}`
+This also works with usages of commands defined with `\newcommand` definitions (in your fileset, not in LaTeX packages), but only if your command definition includes braces, like `\newcommand{\mycommand}{definition}`.
+It also works for user defined environments that accept a label as parameter, for example using `\lstnewenvironment`.
 
 ![go-to-label-declaration](go-to-label-declaration.gif)
 
