@@ -83,7 +83,18 @@ class ReferencedFileSetCache {
      * once and then fill both caches with all the information we have.
      */
     private fun updateCachesFor(requestedFile: PsiFile) {
-        val filesets = requestedFile.project.findReferencedFileSetWithoutCache()
+        val filesets = requestedFile.project.findReferencedFileSetWithoutCache().toMutableMap()
+        val tectonicInclusions = findTectonicTomlInclusions(requestedFile.project)
+
+        // Now we join all the file sets that are in the same file set according to the Tectonic.toml file
+        for (inclusionsSet in tectonicInclusions) {
+            val mappings = filesets.filter { it.value.intersect(inclusionsSet).isNotEmpty() }
+            val newFileSet = mappings.values.flatten().toSet() + inclusionsSet
+            mappings.forEach {
+                filesets[it.key] = newFileSet
+            }
+        }
+
         for (fileset in filesets.values) {
             for (file in fileset) {
                 fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
