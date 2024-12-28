@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
+import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
 
@@ -231,15 +232,22 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
             val command = mutableListOf(runConfig.compilerPath ?: executableName)
 
-            command.add("--synctex")
+            // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
+            // The V2 CLI uses a toml file and should not have arguments
+            if (runConfig.mainFile?.hasTectonicTomlFile() != true) {
+                command.add("--synctex")
 
-            command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
+                command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
-            if (outputPath != null) {
-                command.add("--outdir=$outputPath")
+                if (outputPath != null) {
+                    command.add("--outdir=$outputPath")
+                }
+            }
+            else {
+                command.add("-X")
+                command.add("build")
             }
 
             return command
@@ -364,7 +372,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add(runConfig.beforeRunCommand + " \\input{${mainFile.name}}")
             }
         }
-        else {
+        else if (runConfig.compiler != TECTONIC || runConfig.mainFile?.hasTectonicTomlFile() != true) {
             command.add(mainFile.name)
         }
 
