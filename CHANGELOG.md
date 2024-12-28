@@ -6,6 +6,7 @@
 * Support label references to user defined listings environment
 * Add option to disable automatic compilation in power save mode
 * Convert automatic compilation settings to a combobox
+* Add inspection to check for LaTeX package updates
 * Add checkboxes to graphic insertion wizard for relative width or height
 
 ### Fixed
