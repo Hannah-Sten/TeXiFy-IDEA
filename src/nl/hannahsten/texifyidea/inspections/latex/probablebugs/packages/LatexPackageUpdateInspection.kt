@@ -64,30 +64,36 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     it,
                     "Update available for package $packageName",
-                    UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), packageName, packageVersions.first, packageVersions.second),
+                    arrayOf(
+                        UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), packageName, packageVersions.first, packageVersions.second),
+                        UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), "--all", null, null),
+                    ),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly
+                    isOntheFly,
+                    false,
                 )
             }
     }
 
     private class UpdatePackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String, val old: String?, val new: String?) : LocalQuickFix {
 
-        override fun getFamilyName(): String = if (old != null && new != null) "Update $packageName from revision $old to revision $new" else "Update $packageName"
+        override fun getFamilyName(): String = if (packageName == "--all") "Update all packages" else if (old != null && new != null) "Update $packageName from revision $old to revision $new" else "Update $packageName"
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             // Nothing is modified
-            return IntentionPreviewInfo.EMPTY
+            return IntentionPreviewInfo.Html("Run tlngr update $packageName")
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ProgressManager.getInstance().run(object : Backgroundable(project, "Updating $packageName...") {
+            val message = if (packageName == "--all") "Updating all packages" else "Updating $packageName..."
+            ProgressManager.getInstance().run(object : Backgroundable(project, message) {
                 override fun run(indicator: ProgressIndicator) {
                     val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
 
-                    var (output, exitCode) = runCommandWithExitCode(tlmgrExecutable, "update", packageName, returnExceptionMessage = true, timeout = 10)
+                    val timeout: Long = if (packageName == "--all") 600 else 15
+                    var (output, exitCode) = runCommandWithExitCode(tlmgrExecutable, "update", packageName, returnExceptionMessage = true, timeout = timeout)
                     if (output?.contains("tlmgr update --self") == true) {
-                        val (tlmgrOutput, tlmgrExitCode) = runCommandWithExitCode(tlmgrExecutable, "update", "--self", returnExceptionMessage = true, timeout = 10)
+                        val (tlmgrOutput, tlmgrExitCode) = runCommandWithExitCode(tlmgrExecutable, "update", "--self", returnExceptionMessage = true, timeout = 20)
                         if (tlmgrExitCode != 0) {
                             Notification(
                                 "LaTeX",
@@ -97,8 +103,8 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                             ).notify(project)
                             indicator.cancel()
                         }
-                        title = "Updating $packageName..."
-                        val (secondOutput, secondExitCode) = runCommandWithExitCode(tlmgrExecutable, "update", packageName, returnExceptionMessage = true, timeout = 10)
+                        title = message
+                        val (secondOutput, secondExitCode) = runCommandWithExitCode(tlmgrExecutable, "update", packageName, returnExceptionMessage = true, timeout = timeout)
                         output = secondOutput
                         exitCode = secondExitCode
                     }
@@ -106,8 +112,8 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                     if (exitCode != 0) {
                         Notification(
                             "LaTeX",
-                            "Package $packageName not updated",
-                            "Could not update $packageName: $output",
+                            if (packageName == "--all") "Could not update packages" else "Package $packageName not updated",
+                            "Could not update $packageName${if (exitCode == 143) " due to a timeout" else ""}: $output",
                             NotificationType.ERROR
                         ).notify(project)
                         indicator.cancel()
