@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Improve performance of file set cache used by inspections
 * Support label references to user defined listings environment
 * Add option to disable automatic compilation in power save mode
 * Convert automatic compilation settings to a combobox

@@ -83,14 +83,16 @@ class ReferencedFileSetCache {
      * once and then fill both caches with all the information we have.
      */
     private fun updateCachesFor(requestedFile: PsiFile) {
-        val fileset = requestedFile.findReferencedFileSetWithoutCache()
-        for (file in fileset) {
-            fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
-        }
+        val filesets = requestedFile.project.findReferencedFileSetWithoutCache()
+        for (fileset in filesets.values) {
+            for (file in fileset) {
+                fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
+            }
 
-        val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
-        for (file in fileset) {
-            rootFilesCache[file.virtualFile] = rootfiles.map { it.createSmartPointer() }.toSet()
+            val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
+            for (file in fileset) {
+                rootFilesCache[file.virtualFile] = rootfiles.map { it.createSmartPointer() }.toSet()
+            }
         }
     }
 
@@ -117,7 +119,8 @@ class ReferencedFileSetCache {
                         false
                     }
 
-                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
+                    // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
+                    if (numberOfIncludesChanged) {
                         updateCachesFor(file)
                     }
                 }

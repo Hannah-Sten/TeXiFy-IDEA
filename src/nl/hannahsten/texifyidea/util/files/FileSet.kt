@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
@@ -21,38 +22,18 @@ import nl.hannahsten.texifyidea.util.parser.isDefinition
  * @return All the LaTeX and BibTeX files that are cross referenced between each other.
  */
 // Internal because only ReferencedFileSetCache should call this
-internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
-    // Setup.
-    val project = this.project
-    val includes = LatexIncludesIndex.Util.getItems(project)
-
+internal fun Project.findReferencedFileSetWithoutCache(): Map<PsiFile, Set<PsiFile>> {
     // Find all root files.
-    val roots = includes.asSequence()
+    return LatexIncludesIndex.Util.getItems(this)
+        .asSequence()
         .map { it.containingFile }
         .distinct()
         .filter { it.isRoot() }
         .toSet()
-
-    // Map root to all directly referenced files.
-    val sets = HashMap<PsiFile, Set<PsiFile>>()
-    for (root in roots) {
-        val referenced = runReadAction { root.referencedFiles(root.virtualFile) } + root
-
-        if (referenced.contains(this)) {
-            return referenced + this
+        .associateWith { root ->
+            // Map root to all directly referenced files.
+            runReadAction { root.referencedFiles(root.virtualFile) } + root
         }
-
-        sets[root] = referenced
-    }
-
-    // Look for matching root.
-    for (referenced in sets.values) {
-        if (referenced.contains(this)) {
-            return referenced + this
-        }
-    }
-
-    return setOf(this)
 }
 
 /**
