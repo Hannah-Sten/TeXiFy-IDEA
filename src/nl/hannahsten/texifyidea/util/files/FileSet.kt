@@ -51,15 +51,15 @@ fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
     // Actually, according to https://tectonic-typesetting.github.io/book/latest/v2cli/build.html?highlight=tectonic.toml#remarks Tectonic.toml files can appear in any parent directory, but we only search in the project for now
     val tomlFiles = findTectonicTomlFiles(project)
     val filesets = tomlFiles.mapNotNull { tomlFile ->
-            val data = TomlMapper().readValue(File(tomlFile.path), Map::class.java)
-            val outputList = data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null
-            val inputs = (outputList.firstOrNull() as? Map<*, *>)?.getOrDefault("inputs", null) as? List<*> ?: return@mapNotNull null
-            // Inputs can be either a map "inline" -> String or file name
-            // Actually it can also be just a single file name, but then we don't need all this gymnastics
-            inputs.filterIsInstance<String>().mapNotNull {
-                tomlFile.parent.findFile("src/$it")?.psiFile(project)
-            }.toSet()
-        }
+        val data = TomlMapper().readValue(File(tomlFile.path), Map::class.java)
+        val outputList = data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null
+        val inputs = (outputList.firstOrNull() as? Map<*, *>)?.getOrDefault("inputs", null) as? List<*> ?: return@mapNotNull null
+        // Inputs can be either a map "inline" -> String or file name
+        // Actually it can also be just a single file name, but then we don't need all this gymnastics
+        inputs.filterIsInstance<String>().mapNotNull {
+            tomlFile.parent.findFile("src/$it")?.psiFile(project)
+        }.toSet()
+    }
 
     return filesets
 }
