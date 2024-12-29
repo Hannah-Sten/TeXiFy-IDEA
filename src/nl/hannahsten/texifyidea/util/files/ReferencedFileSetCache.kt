@@ -121,17 +121,11 @@ class ReferencedFileSetCache {
                     // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
                     // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
                     val includes = LatexIncludesIndex.Util.getItems(file.project)
-                    val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
-                        numberOfIncludes[file.project] = includes.size
-                        dropAllCaches()
-                        true
-                    }
-                    else {
-                        false
-                    }
 
                     // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
-                    if (numberOfIncludesChanged) {
+                    if (includes.size != numberOfIncludes[file.project]) {
+                        numberOfIncludes[file.project] = includes.size
+                        dropAllCaches()
                         updateCachesFor(file)
                     }
                 }
