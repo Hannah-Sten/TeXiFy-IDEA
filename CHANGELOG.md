@@ -6,14 +6,25 @@
 * Support label references to user defined listings environment
 * Add option to disable automatic compilation in power save mode
 * Convert automatic compilation settings to a combobox
+
 * Add experimental support for the addtoluatexpath package
+
+
+
+
+* Add inspection to check for LaTeX package updates
+
+
+
 * Add checkboxes to graphic insertion wizard for relative width or height
 
 ### Fixed
 * Fix parse error when using commands with arguments in parameter of \href or \url
 * Fix parse error when using parentheses in a group in a key value command argument
 * Fix parse erron when using inline math in cases* environment in inline math
-* 
+* Fix exceptions #3813, #3818
+* Fix false positive non-breaking space warning for \nameref
+* Fix confusion with \micro and \mu unicode characters
 
 ## [0.9.10-alpha.4] - 2024-12-21
 

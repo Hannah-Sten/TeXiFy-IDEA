@@ -46,6 +46,7 @@ object EvinceInverseSearchListener {
             }
             catch (e: Exception) {
                 Notification("LaTeX", "Cannot get connection to DBus", "Check if the correct packages are installed", NotificationType.ERROR).notify(project)
+                return
             }
         }
 

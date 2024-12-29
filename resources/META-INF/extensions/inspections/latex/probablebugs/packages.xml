@@ -8,6 +8,10 @@
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Package is not installed"
                          enabledByDefault="true"
                          level="WARNING" />
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageUpdateInspection"
+                         groupPath="LaTeX" groupName="Probable bugs" displayName="Package has an update available"
+                         enabledByDefault="true"
+                         level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageNameDoesNotMatchFileNameInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Package name does not match file name"
                          enabledByDefault="true"
