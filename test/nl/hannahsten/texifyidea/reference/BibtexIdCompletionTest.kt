@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.junit.Test
+import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 
 class BibtexIdCompletionTest : BasePlatformTestCase() {
 
@@ -16,7 +16,6 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         super.setUp()
     }
 
-    @Test
     fun testCompleteLatexReferences() {
         // when
         runCompletion()
@@ -30,7 +29,6 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(entry1.allLookupStrings.contains("{Missing the Point(er): On the Effectiveness of Code Pointer Integrity}"))
     }
 
-    @Test
     fun testCompletionResultsLowerCase() {
         // when
         runCompletion()
@@ -41,7 +39,6 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(result?.contains("Muchnick1997") == true)
     }
 
-    @Test
     fun testCompletionResultsSecondEntry() {
         // when
         runCompletion()
@@ -54,14 +51,12 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(result?.contains("Burow2016") == true)
     }
 
-    @Test
     fun testCompleteBibtexWithCorrectCase() {
         // Using the following failed sometimes
         val testName = getTestName(false)
         myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
     }
 
-    @Test
     fun testBibtexEntryDocumentation() {
         runCompletion()
         val element = DocumentationManager.getInstance(myFixture.project).getElementFromLookup(myFixture.editor, myFixture.file)
@@ -78,7 +73,11 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
     }
 
     private fun runCompletion() {
-        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
+        val files = myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
+        // The first time completion runs, due to caching there may be a race condition
+        for (file in files) {
+            ReferencedFileSetService.getInstance().referencedFileSetOf(file)
+        }
         // when
         myFixture.complete(CompletionType.BASIC)
     }

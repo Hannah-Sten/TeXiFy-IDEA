@@ -27,6 +27,8 @@ import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
+import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
@@ -92,7 +94,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
 
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
+        val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
+        val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withEnvironment(runConfig.environmentVariables.envs)
         val handler = KillableProcessHandler(commandLine)

@@ -83,14 +83,27 @@ class ReferencedFileSetCache {
      * once and then fill both caches with all the information we have.
      */
     private fun updateCachesFor(requestedFile: PsiFile) {
-        val fileset = requestedFile.findReferencedFileSetWithoutCache()
-        for (file in fileset) {
-            fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
+        val filesets = requestedFile.project.findReferencedFileSetWithoutCache().toMutableMap()
+        val tectonicInclusions = findTectonicTomlInclusions(requestedFile.project)
+
+        // Now we join all the file sets that are in the same file set according to the Tectonic.toml file
+        for (inclusionsSet in tectonicInclusions) {
+            val mappings = filesets.filter { it.value.intersect(inclusionsSet).isNotEmpty() }
+            val newFileSet = mappings.values.flatten().toSet() + inclusionsSet
+            mappings.forEach {
+                filesets[it.key] = newFileSet
+            }
         }
 
-        val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
-        for (file in fileset) {
-            rootFilesCache[file.virtualFile] = rootfiles.map { it.createSmartPointer() }.toSet()
+        for (fileset in filesets.values) {
+            for (file in fileset) {
+                fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
+            }
+
+            val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
+            for (file in fileset) {
+                rootFilesCache[file.virtualFile] = rootfiles.map { it.createSmartPointer() }.toSet()
+            }
         }
     }
 
@@ -108,16 +121,11 @@ class ReferencedFileSetCache {
                     // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
                     // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
                     val includes = LatexIncludesIndex.Util.getItems(file.project)
-                    val numberOfIncludesChanged = if (includes.size != numberOfIncludes[file.project]) {
+
+                    // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
+                    if (includes.size != numberOfIncludes[file.project]) {
                         numberOfIncludes[file.project] = includes.size
                         dropAllCaches()
-                        true
-                    }
-                    else {
-                        false
-                    }
-
-                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                         updateCachesFor(file)
                     }
                 }

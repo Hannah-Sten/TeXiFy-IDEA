@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.bibtex
 
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 
 class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEntryInspection()) {
 
@@ -15,7 +16,10 @@ class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEnt
     }
 
     fun `test quick fix`() {
-        myFixture.configureByFiles("references-before.bib", "main-quick-fix.tex")
+        myFixture.configureByFiles("references-before.bib", "main-quick-fix.tex").forEach {
+            // Refresh cache
+            ReferencedFileSetService.getInstance().referencedFileSetOf(it)
+        }
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals("Expected number of quick fixes:", 2, quickFixes.size)
         writeCommand(myFixture.project) {

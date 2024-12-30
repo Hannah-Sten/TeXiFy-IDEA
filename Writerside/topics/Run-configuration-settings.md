@@ -92,8 +92,9 @@ _Since b0.6.6_
 
 See [https://tectonic-typesetting.github.io/en-US/](https://tectonic-typesetting.github.io/en-US/) for installation and more info.
 Tectonic has the advantage that it downloads packages automatically, compiles just as much times as needed and handles BibTeX, but it often only works for not too complicated LaTeX documents.
-
 It also has automatic compilation using `tectonic -X watch`.
+
+There is some basic support for a `Tectonic.toml` file, including inspection support (missing imports, for example) for multiple inputs in the toml file (Tectonic 0.15.1 or later).
 
 The documentation can be found at [https://tectonic-typesetting.github.io/book/latest/](https://tectonic-typesetting.github.io/book/latest/)
 
