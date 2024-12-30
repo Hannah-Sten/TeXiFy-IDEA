@@ -11,7 +11,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.1.0"
+    id("org.jetbrains.intellij.platform") version "2.2.1"
     kotlin("jvm") version ("2.0.20")
     kotlin("plugin.serialization") version ("2.0.20")
 
@@ -25,13 +25,13 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.0"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "11.1.0"
+    id("org.owasp.dependencycheck") version "11.1.1"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -96,7 +96,7 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdeaCommunity("2024.3.1")
+        intellijIdeaCommunity("2024.3")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
@@ -112,7 +112,7 @@ dependencies {
         bundledPlugin("com.intellij.java")
         bundledPlugin("tanvd.grazi")
         plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.0")
-        plugin("com.jetbrains.hackathon.indices.viewer:1.28")
+        plugin("com.jetbrains.hackathon.indices.viewer:1.29")
         // Does not work in tests: https://youtrack.jetbrains.com/issue/GRZ-5023
 //        plugin("com.intellij.grazie.pro:0.3.347")
     }
@@ -144,13 +144,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.0.1")
-    implementation("io.ktor:ktor-client-cio:3.0.1")
-    implementation("io.ktor:ktor-client-auth:3.0.1")
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.1")
-    implementation("io.ktor:ktor-server-core:3.0.1")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.0.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
+    implementation("io.ktor:ktor-client-core:3.0.3")
+    implementation("io.ktor:ktor-client-cio:3.0.3")
+    implementation("io.ktor:ktor-client-auth:3.0.3")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
+    implementation("io.ktor:ktor-server-core:3.0.3")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.0.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Comparing versions
@@ -161,9 +161,9 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.18")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:1.2.4")
-    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
-    implementation("io.arrow-kt:arrow-resilience:1.2.4")
+    implementation("io.arrow-kt:arrow-core:2.0.0")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.0.0")
+    implementation("io.arrow-kt:arrow-resilience:2.0.0")
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -173,13 +173,13 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.3")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.11.2")
+    testImplementation("org.junit.platform:junit-platform-runner:1.11.4")
 
-    testImplementation("io.mockk:mockk:1.13.13")
+    testImplementation("io.mockk:mockk:1.13.14")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -292,7 +292,11 @@ tasks.dependencyUpdates {
 
 tasks.useLatestVersions {
     // Do not update this ktlint plugin, it is mostly unmaintained and newer versions are usually either broken or introduce unwanted style changes
-    updateBlacklist = listOf("org.jlleitschuh.gradle.ktlint")
+    updateBlacklist = listOf(
+        "org.jlleitschuh.gradle.ktlint",
+        // Takes a lot of time because it will download all IDE poms
+        "com.jetbrains.intellij.platform",
+    )
 }
 
 tasks {
