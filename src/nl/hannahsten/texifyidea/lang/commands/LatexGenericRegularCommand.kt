@@ -32,6 +32,7 @@ enum class LatexGenericRegularCommand(
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
+    ADDTOLUATEXPATH("addtoluatexpath", RequiredFolderArgument("paths")),
     A_RING("aa", display = "å"),
     CAPITAL_A_RING("AA", display = "Å"),
     ADDBIBRESOURCE("addbibresource", RequiredFileArgument("bibliographyfile", true, false, "bib"), dependency = BIBLATEX),

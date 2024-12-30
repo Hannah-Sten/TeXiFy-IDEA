@@ -1,13 +1,22 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.isDefinition
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Finds all the files in the project that are somehow related using includes.
@@ -94,4 +103,31 @@ fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
     return LatexDefinitionIndex.Util.getItemsInFileSet(this)
+}
+
+/**
+ * The addtoluatexpath package supports adding to \input@path in different ways
+ */
+fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
+    val direct = runReadAction { LatexCommandsIndex.Util.getCommandsByNames(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project)) }
+        .mapNotNull { command -> runReadAction { command.requiredParameter(0) } }
+        .flatMap { it.split(",") }
+    val viaUsepackage = runReadAction { LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.packageInclusionCommands, project, GlobalSearchScope.projectScope(project)) }
+        .filter { runReadAction { it.requiredParameter(0) } == LatexPackage.ADDTOLUATEXPATH.name }
+        .flatMap { runReadAction { it.getOptionalParameterMap().keys } }
+        .flatMap { it.text.split(",") }
+
+    val luatexPathDirectories = (direct + viaUsepackage).flatMap {
+        val basePath = LocalFileSystem.getInstance().findFileByPath(it.trimEnd('/', '*')) ?: return@flatMap emptyList()
+        if (it.endsWith("/**")) {
+            basePath.allChildDirectories()
+        }
+        else if (it.endsWith("/*")) {
+            basePath.children.filter { it.isDirectory }
+        }
+        else {
+            listOf(basePath)
+        }
+    }
+    return luatexPathDirectories
 }
