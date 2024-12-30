@@ -235,7 +235,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             // Try to find in lookup for special command
             val replacement: String?
             val command: LatexCommand? = if (inMathMode) {
-                LatexMathCommand.findByDisplay(c)?.firstOrNull()
+                LatexMathCommand.findByDisplay(c)?.firstOrNull() ?: LatexRegularCommand.findByDisplay(c)?.firstOrNull()
             }
             else {
                 LatexRegularCommand.findByDisplay(c)?.firstOrNull()

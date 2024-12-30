@@ -202,6 +202,14 @@ class InputFileReference(
             targetFile = findAnywhereInProject(processedKey)
         }
 
+        // addtoluatexpath package
+        if (targetFile == null) {
+            for (path in addToLuatexPathSearchDirectories(element.project)) {
+                targetFile = path.findFile(processedKey, extensions, supportsAnyExtension)
+                if (targetFile != null) break
+            }
+        }
+
         if (targetFile == null) return null
 
         // Return a reference to the target file.

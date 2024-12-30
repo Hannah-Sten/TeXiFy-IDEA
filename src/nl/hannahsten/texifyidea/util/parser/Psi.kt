@@ -32,7 +32,7 @@ fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(tex
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
     return runReadAction {
-        if (project.isDisposed || !this.isValid) {
+        if (!this.isValid || project.isDisposed) {
             emptyList()
         }
         else {

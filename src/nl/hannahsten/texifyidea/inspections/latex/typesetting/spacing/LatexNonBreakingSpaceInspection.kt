@@ -46,6 +46,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         "\\Cref",
         "\\cpageref",
         "\\autoref",
+        "\\nameref",
         "\\citeauthor",
         "\\textcite",
         "\\Textcite"

@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.files.addToLuatexPathSearchDirectories
 import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -76,8 +77,8 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
 
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
         if (Cache.externalDirectFileInclusions == null && !DumbService.isDumb(project)) {
-            runInBackground(project, "Searching for external bib files...") {
-                // For now, just do this for bibliography and direct input commands, as there this is most common
+            runInBackground(project, "Searching for inclusions by absolute path...") {
+                // Bibliography and direct input commands
                 val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
                 val externalFiles = runReadAction {
                     LatexIncludesIndex.Util.getCommandsByNames(commandNames, project, GlobalSearchScope.projectScope(project))
@@ -93,6 +94,12 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                         }
                         runReadAction { file?.parent }
                     }
+                    .toMutableList()
+
+                // addtoluatexpath package
+                val luatexPathDirectories = addToLuatexPathSearchDirectories(project)
+                externalFiles.addAll(luatexPathDirectories)
+
                 Cache.externalDirectFileInclusions = externalFiles.toSet()
             }
         }

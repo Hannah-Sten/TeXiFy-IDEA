@@ -27,6 +27,7 @@ open class LatexPackage @JvmOverloads constructor(
         // Predefined packages.
         val DEFAULT = LatexPackage("")
 
+        val ADDTOLUATEXPATH = LatexPackage("addtoluatexpath")
         val ALGORITHM2E = LatexPackage("algorithm2e")
         val ALGORITHMICX = LatexPackage("algorithmicx")
         val ALGPSEUDOCODE = LatexPackage("algpseudocode")
