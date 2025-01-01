@@ -174,7 +174,7 @@ dependencies {
 
     // Use junit 5 for test cases
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
 
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.11.4")
