@@ -154,7 +154,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Comparing versions
-    implementation("org.apache.maven:maven-artifact:4.0.0-beta-5")
+    implementation("org.apache.maven:maven-artifact:4.0.0-rc-2")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
