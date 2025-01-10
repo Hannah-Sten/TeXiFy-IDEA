@@ -54,7 +54,7 @@ object LatexLogMessageExtractor {
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach { handler ->
-            if (handler.regex.any { it.containsMatchIn(text) }) {
+            if (handler.regex.any { it.containsMatchIn(textToMatch) }) {
                 return handler.findMessage(text, newText, currentFile)
             }
         }
