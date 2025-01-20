@@ -27,15 +27,14 @@ class ReferencedFileSetCache {
      * with `B` as search root etc.
      * It could be that multiple values are equal.
      *
-     * We use VirtualFile as key instead of PsiFile, because the file set depends on virtual files,
-     * but virtual files are not project-specific (can be opened in multiple projects). See [VfsChangeListener].
+     * We use the file path as key instead of VirtualFile, because there may be different VirtualFiles pointing to the same file on disk. See [VfsChangeListener].
      * For the same reason we do not use a CachedValue, because the CachedValuesManager is project-specific.
      *
      * We use SmartPsiElementPointer to avoid storing files which have become invalid, e.g. after installing a plugin which doesn't require a restart.
      */
-    private val fileSetCache = ConcurrentHashMap<VirtualFile, Set<SmartPsiElementPointer<PsiFile>>>()
+    private val fileSetCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>()
 
-    private val rootFilesCache = ConcurrentHashMap<VirtualFile, Set<SmartPsiElementPointer<PsiFile>>>()
+    private val rootFilesCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>()
 
     /**
      * The number of includes in the include index at the time the cache was last filled.
@@ -69,8 +68,8 @@ class ReferencedFileSetCache {
      * Clears the cache for base file `file`.
      */
     fun dropCaches(file: VirtualFile) {
-        fileSetCache.remove(file)
-        rootFilesCache.remove(file)
+        fileSetCache.remove(file.path)
+        rootFilesCache.remove(file.path)
     }
 
     fun dropAllCaches() {
@@ -97,12 +96,12 @@ class ReferencedFileSetCache {
 
         for (fileset in filesets.values) {
             for (file in fileset) {
-                fileSetCache[file.virtualFile] = fileset.map { it.createSmartPointer() }.toSet()
+                fileSetCache[file.virtualFile.path] = fileset.map { it.createSmartPointer() }.toSet()
             }
 
             val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
             for (file in fileset) {
-                rootFilesCache[file.virtualFile] = rootfiles.map { it.createSmartPointer() }.toSet()
+                rootFilesCache[file.virtualFile.path] = rootfiles.map { it.createSmartPointer() }.toSet()
             }
         }
     }
@@ -110,7 +109,7 @@ class ReferencedFileSetCache {
     /**
      * In a thread-safe way, get the value from the cache and if needed refresh the cache first.
      */
-    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<SmartPsiElementPointer<PsiFile>>>): Set<PsiFile> {
+    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>): Set<PsiFile> {
         return if (file.virtualFile != null) {
             // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
@@ -131,7 +130,7 @@ class ReferencedFileSetCache {
                 }
             }
             // Make sure to check if file is still valid after retrieving from cache (it may have been deleted)
-            cache[file.virtualFile]?.mapNotNull { it.element }?.filter { it.isValid }?.toSet() ?: setOf(file)
+            cache[file.virtualFile.path]?.mapNotNull { it.element }?.filter { it.isValid }?.toSet() ?: setOf(file)
         }
         else {
             setOf(file)
