@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditor
@@ -35,7 +37,7 @@ import nl.hannahsten.texifyidea.util.parser.*
  * Get the file search scope for this psi file.
  */
 val PsiFile.fileSearchScope: GlobalSearchScope
-    get() = GlobalSearchScope.fileScope(this)
+    get() = runReadAction { GlobalSearchScope.fileScope(this) }
 
 /**
  * Looks for all file inclusions in a given file, excluding installed LaTeX packages.
@@ -118,8 +120,8 @@ internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
  */
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
     LatexIncludesIndex.Util.getItems(project, fileSearchScope).forEach command@{ command ->
-        command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile, true) }
+        runReadAction { command.references }.filterIsInstance<InputFileReference>()
+            .mapNotNull { runReadAction { it.resolve(false, rootFile, true) } }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
@@ -314,4 +316,8 @@ fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
         PsiTreeUtil.isAncestor(expr, exprBefore, false) -> exprBefore
         else -> expr
     }
+}
+
+fun PsiFile.rerunInspections() {
+    DaemonCodeAnalyzer.getInstance(project).restart(this)
 }

@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
+import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
@@ -124,11 +125,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                     // Clear cache, since we changed something
                     Cache.availablePackageUpdates = mapOf()
                     // Rerun inspections
-                    DaemonCodeAnalyzer.getInstance(project)
-                        .restart(
-                            filePointer.containingFile
-                                ?: return
-                        )
+                    filePointer.containingFile?.rerunInspections()
                 }
             })
         }

@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Refresh file set cache in background
 
 ### Fixed
 

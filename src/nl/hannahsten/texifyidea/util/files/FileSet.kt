@@ -44,7 +44,7 @@ internal fun Project.findReferencedFileSetWithoutCache(): Map<PsiFile, Set<PsiFi
         .toSet()
         .associateWith { root ->
             // Map root to all directly referenced files.
-            runReadAction { root.referencedFiles(root.virtualFile) } + root
+            root.referencedFiles(root.virtualFile) + root
         }
 }
 

@@ -24,6 +24,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
+import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
@@ -155,11 +156,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     override fun onSuccess() {
                         TexLivePackages.packageList.add(packageName)
                         // Rerun inspections
-                        DaemonCodeAnalyzer.getInstance(project)
-                            .restart(
-                                filePointer.containingFile
-                                    ?: return
-                            )
+                        filePointer.containingFile?.rerunInspections()
                     }
                 })
         }

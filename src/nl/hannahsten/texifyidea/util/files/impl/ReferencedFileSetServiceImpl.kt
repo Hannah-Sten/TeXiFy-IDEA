@@ -19,4 +19,6 @@ class ReferencedFileSetServiceImpl : ReferencedFileSetService {
     override fun dropCaches(file: VirtualFile) = cache.dropCaches(file)
 
     override fun dropAllCaches() = cache.dropAllCaches()
+
+    override fun markCacheOutOfDate() = cache.markCacheOutOfDate()
 }
