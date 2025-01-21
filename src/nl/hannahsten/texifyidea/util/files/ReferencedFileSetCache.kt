@@ -151,9 +151,10 @@ class ReferencedFileSetCache {
                     // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
                     if (includes.size != Cache.numberOfIncludes[file.project]) {
                         Cache.isCacheFillInProgress = true
+                        Cache.numberOfIncludes[file.project] = includes.size
+
                         runInBackground(file.project, "Updating file set cache...") {
                             try {
-                                Cache.numberOfIncludes[file.project] = includes.size
                                 // Only drop caches after we have new data (since that task may be cancelled)
                                 val (newFileSetCache, newRootFilesCache) = getNewCachesFor(file)
                                 dropAllCaches()
