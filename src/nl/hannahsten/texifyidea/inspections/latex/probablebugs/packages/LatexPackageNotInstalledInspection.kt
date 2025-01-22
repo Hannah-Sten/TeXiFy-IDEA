@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
