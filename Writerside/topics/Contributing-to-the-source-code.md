@@ -96,6 +96,11 @@ But there is an important difference! The `name` is _indexed_ (see `LatexCommand
 This means that probably using `name` is recommended, as it would use the index, but it may be completely wrong if the index is not updated correctly.
 This can lead to strange behaviour (see e.g. [#1097](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1097)), which can be fixed by updating the index correctly.
 
+## Concurrency
+
+Never use the regular `runReadAction` from a coroutine! This read action will block write actions, but in a coroutine the regular cancellation check/exception does not work, which may lead to a deadlock.
+See https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#write-allowing-read-action-vs-nonblockingreadaction
+
 ## Helpful tools
 
 * <ui-path>Tools | View PSI Structure</ui-path>

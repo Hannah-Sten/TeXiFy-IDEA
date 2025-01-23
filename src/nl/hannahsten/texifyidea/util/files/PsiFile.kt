@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditor
@@ -12,11 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
-import com.intellij.psi.util.parents
-import com.intellij.psi.util.endOffset
-import com.intellij.psi.util.startOffset
+import com.intellij.psi.util.*
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -109,26 +106,19 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
-internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
-    val result = HashSet<PsiFile>()
-    referencedFiles(result, rootFile)
-    return result
-}
-
-/**
- * Recursive implementation of [referencedFiles].
- */
-private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
+internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
+    val files = mutableSetOf<PsiFile>()
     LatexIncludesIndex.Util.getItems(project, fileSearchScope).forEach command@{ command ->
-        runReadAction { command.references }.filterIsInstance<InputFileReference>()
-            .mapNotNull { runReadAction { it.resolve(false, rootFile, true) } }
+        smartReadAction(project) { command.references }.filterIsInstance<InputFileReference>()
+            .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true) } }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
                 files.add(it)
-                it.referencedFiles(files, rootFile)
+                files.addAll(it.referencedFiles(rootFile))
             }
     }
+    return files
 }
 
 /**

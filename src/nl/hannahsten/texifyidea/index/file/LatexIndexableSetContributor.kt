@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
-import nl.hannahsten.texifyidea.util.runInBackground
+import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
@@ -77,7 +77,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
 
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
         if (Cache.externalDirectFileInclusions == null && !DumbService.isDumb(project)) {
-            runInBackground(project, "Searching for inclusions by absolute path...") {
+            runInBackgroundBlocking(project, "Searching for inclusions by absolute path...") {
                 // Bibliography and direct input commands
                 val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
                 val externalFiles = runReadAction {

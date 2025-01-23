@@ -1,17 +1,17 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.application.runReadAction
+import arrow.atomic.AtomicBoolean
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
-import nl.hannahsten.texifyidea.util.runInBackground
+import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -45,7 +45,7 @@ class ReferencedFileSetCache {
 
         internal var rootFilesCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>()
 
-        internal var isCacheFillInProgress = false
+        internal var isCacheFillInProgress = AtomicBoolean(false)
 
         /**
          * The number of includes in the include index at the time the cache was last filled.
@@ -99,11 +99,11 @@ class ReferencedFileSetCache {
      * Since we have to calculate the fileset to fill the root file or fileset cache, we make sure to only do that
      * once and then fill both caches with all the information we have.
      */
-    private fun getNewCachesFor(requestedFile: PsiFile): Pair<Map<String, Set<SmartPsiElementPointer<PsiFile>>>, Map<String, Set<SmartPsiElementPointer<PsiFile>>>> {
+    private suspend fun getNewCachesFor(requestedFile: PsiFile, reporter: ProgressReporter): Pair<Map<String, Set<SmartPsiElementPointer<PsiFile>>>, Map<String, Set<SmartPsiElementPointer<PsiFile>>>> {
         val newFileSetCache = mutableMapOf<String, Set<SmartPsiElementPointer<PsiFile>>>()
         val newRootFilesCache = mutableMapOf<String, Set<SmartPsiElementPointer<PsiFile>>>()
 
-        val filesets = requestedFile.project.findReferencedFileSetWithoutCache().toMutableMap()
+        val filesets = requestedFile.project.findReferencedFileSetWithoutCache(reporter).toMutableMap()
         val tectonicInclusions = findTectonicTomlInclusions(requestedFile.project)
 
         // Now we join all the file sets that are in the same file set according to the Tectonic.toml file
@@ -117,12 +117,12 @@ class ReferencedFileSetCache {
 
         for (fileset in filesets.values) {
             for (file in fileset) {
-                newFileSetCache[file.virtualFile.path] = fileset.map { runReadAction { it.createSmartPointer() } }.toSet()
+                newFileSetCache[file.virtualFile.path] = fileset.map { smartReadAction(requestedFile.project) { it.createSmartPointer() } }.toSet()
             }
 
             val rootFiles = requestedFile.findRootFilesWithoutCache(fileset)
             for (file in fileset) {
-                newRootFilesCache[file.virtualFile.path] = rootFiles.map { runReadAction { it.createSmartPointer() } }.toSet()
+                newRootFilesCache[file.virtualFile.path] = rootFiles.map { smartReadAction(requestedFile.project) { it.createSmartPointer() } }.toSet()
             }
         }
 
@@ -137,37 +137,26 @@ class ReferencedFileSetCache {
             return setOf(file)
         }
 
-        // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
-        // Wrapping the code with synchronized (myLock) { ... } also didn't work
-        // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
-        runBlocking {
-            // Do NOT use a coroutine here, because then when typing (so the caller is e.g. gutter icons, inspections, line makers etc.) somehow the following (at least the runReadAction parts) will block the UI. Note that certain user-triggered actions (think run configuration) will still lead to this blocking the UI if not run in the background explicitly
-            mutex.withLock {
-                if (!Cache.isCacheFillInProgress) {
-                    // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
-                    // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
-                    val includes = LatexIncludesIndex.Util.getItems(file.project)
+        // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
+        // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
+        val includes = LatexIncludesIndex.Util.getItems(file.project)
 
-                    // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
-                    if (includes.size != Cache.numberOfIncludes[file.project]) {
-                        Cache.isCacheFillInProgress = true
-                        Cache.numberOfIncludes[file.project] = includes.size
+        // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
+        if (includes.size != Cache.numberOfIncludes[file.project] && !Cache.isCacheFillInProgress.getAndSet(true)) {
+            Cache.numberOfIncludes[file.project] = includes.size
 
-                        runInBackground(file.project, "Updating file set cache...") {
-                            try {
-                                // Only drop caches after we have new data (since that task may be cancelled)
-                                val (newFileSetCache, newRootFilesCache) = getNewCachesFor(file)
-                                dropAllCaches()
-                                Cache.fileSetCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newFileSetCache.toMutableMap())
-                                Cache.rootFilesCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newRootFilesCache.toMutableMap())
-                                // Many inspections use the file set, so a rerun could give different results
-                                file.rerunInspections()
-                            }
-                            finally {
-                                Cache.isCacheFillInProgress = false
-                            }
-                        }
-                    }
+            runInBackgroundNonBlocking(file.project, "Updating file set cache...") { reporter ->
+                try {
+                    // Only drop caches after we have new data (since that task may be cancelled)
+                    val (newFileSetCache, newRootFilesCache) = getNewCachesFor(file, reporter)
+                    dropAllCaches()
+                    Cache.fileSetCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newFileSetCache.toMutableMap())
+                    Cache.rootFilesCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newRootFilesCache.toMutableMap())
+                    // Many inspections use the file set, so a rerun could give different results
+                    file.rerunInspections()
+                }
+                finally {
+                    Cache.isCacheFillInProgress.set(false)
                 }
             }
         }

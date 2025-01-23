@@ -10,7 +10,7 @@ import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.algorithm.DFS
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
-import nl.hannahsten.texifyidea.util.runInBackground
+import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -40,7 +40,7 @@ object LatexExternalPackageInclusionCache {
         if (isFillingCache.getAndSet(true)) return cache
         // ???
         runInEdt {
-            runInBackground(project, "Retrieving LaTeX package inclusions...") { indicator ->
+            runInBackgroundBlocking(project, "Retrieving LaTeX package inclusions...") { indicator ->
                 try {
                     runReadAction { FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }.forEach { indexKey ->
                         runReadAction {
