@@ -150,8 +150,8 @@ class ReferencedFileSetCache {
                     // Only drop caches after we have new data (since that task may be cancelled)
                     val (newFileSetCache, newRootFilesCache) = getNewCachesFor(file, reporter)
                     dropAllCaches()
-                    Cache.fileSetCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newFileSetCache.toMutableMap())
-                    Cache.rootFilesCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newRootFilesCache.toMutableMap())
+                    Cache.fileSetCache.putAll(ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newFileSetCache.toMutableMap()))
+                    Cache.rootFilesCache.putAll(ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>(newRootFilesCache.toMutableMap()))
                     // Many inspections use the file set, so a rerun could give different results
                     file.rerunInspections()
                 }

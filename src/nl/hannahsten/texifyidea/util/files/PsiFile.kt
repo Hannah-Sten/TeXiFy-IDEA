@@ -27,6 +27,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
@@ -309,5 +310,8 @@ fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
 }
 
 fun PsiFile.rerunInspections() {
-    DaemonCodeAnalyzer.getInstance(project).restart(this)
+    if (!project.isTestProject()) {
+        // PSI/document/model changes are not allowed during highlighting in tests
+        DaemonCodeAnalyzer.getInstance(project).restart(this)
+    }
 }
