@@ -108,7 +108,13 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
 internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
-    val files = mutableSetOf<PsiFile>()
+    // Using a single set avoids infinite loops
+    val result = mutableSetOf<PsiFile>()
+    referencedFiles(result, rootFile)
+    return result
+}
+
+internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
     LatexIncludesIndex.Util.getItems(project, fileSearchScope).forEach command@{ command ->
         smartReadAction(project) { command.references }.filterIsInstance<InputFileReference>()
             .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true) } }
@@ -116,10 +122,9 @@ internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
                 files.add(it)
-                files.addAll(it.referencedFiles(rootFile))
+                it.referencedFiles(files, rootFile)
             }
     }
-    return files
 }
 
 /**
