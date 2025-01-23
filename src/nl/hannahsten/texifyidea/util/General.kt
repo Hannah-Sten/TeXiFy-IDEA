@@ -114,7 +114,8 @@ suspend fun runInBackground(project: Project, description: String, function: sus
     // We don't need to suspend and wait for the result
     launch {
         withBackgroundProgress(project, description) {
-            reportProgress { function(it) }
+            // Work size only allows integers, but we don't know the size here yet, so we start at 100.0%
+            reportProgress(size=1000) { function(it) }
         }
     }
 }

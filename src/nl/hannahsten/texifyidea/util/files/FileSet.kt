@@ -38,14 +38,18 @@ import java.io.File
 // Internal because only ReferencedFileSetCache should call this
 internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: ProgressReporter): Map<PsiFile, Set<PsiFile>> {
     // Find all root files.
-    return LatexIncludesIndex.Util.getItems(this)
+    val roots = LatexIncludesIndex.Util.getItems(this)
         .map { smartReadAction(this) { it.containingFile } }
         .distinct()
         .filter { it.isRoot() }
         .toSet()
+
+    return roots
         .associateWith { root ->
             // Map root to all directly referenced files.
-            root.referencedFiles(root.virtualFile) + root
+            reporter.sizedStep((1000 / roots.size).toInt()) {
+                root.referencedFiles(root.virtualFile) + root
+            }
         }
 }
 
