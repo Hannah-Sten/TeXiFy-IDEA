@@ -151,6 +151,7 @@ enum class LatexGenericRegularCommand(
     INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INPUTMINTED("inputminted", "language".asRequired(Argument.Type.MINTED_FUNTIME_LAND), RequiredFileArgument("sourcefile", true, false, ""), dependency = LatexPackage.MINTED),
     INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", isAbsolutePathSupported = true, commaSeparatesArguments = false, FileMagic.graphicFileExtensions, supportsAnyExtension = false), dependency = GRAPHICX),
+    INCLUDESTANDALONE("includestandalone", "mode".asOptional(), RequiredFileArgument("filename", false, false, "tex", *FileMagic.graphicFileExtensions.toTypedArray()), dependency = LatexPackage.STANDALONE),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, true, "tex")),
     INCLUDESVG("includesvg", "options".asOptional(), RequiredPicturePathArgument("svg file", isAbsolutePathSupported = true, commaSeparatesArguments = false, extension = listOf("svg"), supportsAnyExtension = false), dependency = SVG),
     INDEXNAME("indexname", "name".asRequired()),
