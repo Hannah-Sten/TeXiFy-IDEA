@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.clearAllMocks
+import io.mockk.unmockkAll
 import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
@@ -45,12 +47,24 @@ class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase(
     }
 
     fun testNoWarnings() {
-        myFixture.configureByFilesWithMockCache("pkg/secondpackage.sty", "main.tex")
-        myFixture.checkHighlighting()
+        try {
+            myFixture.configureByFilesWithMockCache("pkg/secondpackage.sty", "main.tex")
+            myFixture.checkHighlighting()
+        }
+        finally {
+            clearAllMocks()
+            unmockkAll()
+        }
     }
 
     fun testSubdirWarnings() {
-        myFixture.configureByFilesWithMockCache("pkg/mypackage.sty", "main.tex")
-        myFixture.checkHighlighting()
+        try {
+            myFixture.configureByFilesWithMockCache("pkg/mypackage.sty", "main.tex")
+            myFixture.checkHighlighting()
+        }
+        finally {
+            clearAllMocks()
+            unmockkAll()
+        }
     }
 }

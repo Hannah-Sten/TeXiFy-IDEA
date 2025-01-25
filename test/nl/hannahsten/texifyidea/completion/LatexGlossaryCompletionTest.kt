@@ -4,6 +4,8 @@ import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.clearAllMocks
+import io.mockk.unmockkAll
 import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 import nl.hannahsten.texifyidea.file.LatexFileType
 
@@ -71,15 +73,21 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
     }
 
     fun testExternalGlossaryCompletion() {
-         // given
-        myFixture.configureByFilesWithMockCache("LoadExternalGlossary.tex", "glossar.tex")
+        try {
+            // given
+            myFixture.configureByFilesWithMockCache("LoadExternalGlossary.tex", "glossar.tex")
 
-        // when
-        val result = myFixture.complete(CompletionType.BASIC)
+            // when
+            val result = myFixture.complete(CompletionType.BASIC)
 
-        // then
-        assertEquals(2, result.size)
-        assertTrue(result.any { l -> l.lookupString == "aslr" })
-        assertTrue(result.any { l -> l.lookupString == "maths" })
+            // then
+            assertEquals(2, result.size)
+            assertTrue(result.any { l -> l.lookupString == "aslr" })
+            assertTrue(result.any { l -> l.lookupString == "maths" })
+        }
+        finally {
+            clearAllMocks()
+            unmockkAll()
+        }
     }
 }

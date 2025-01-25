@@ -2,8 +2,10 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
@@ -97,16 +99,22 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
      * and call this function with the bib string from the remote library as the argument.
      */
     private fun completionWithRemoteBib(remoteBib: String) {
-        val path = getTestName(false)
+        try {
+            val path = getTestName(false)
 
-        mockkObject(RemoteLibraryManager)
-        every { RemoteLibraryManager.getInstance().getLibraries() } returns mutableMapOf("aaa" to LibraryState("mocked", ZoteroLibrary::class.java, BibtexEntryListConverter().fromString(remoteBib), "test url"))
+            mockkObject(RemoteLibraryManager)
+            every { RemoteLibraryManager.getInstance().getLibraries() } returns mutableMapOf("aaa" to LibraryState("mocked", ZoteroLibrary::class.java, BibtexEntryListConverter().fromString(remoteBib), "test url"))
 
-        myFixture.configureByFilesWithMockCache("$path/before.tex", "$path/bibtex_before.bib")
+            myFixture.configureByFilesWithMockCache("$path/before.tex", "$path/bibtex_before.bib")
 
-        myFixture.complete(CompletionType.BASIC)
+            myFixture.complete(CompletionType.BASIC)
 
-        myFixture.checkResultByFile("$path/before.tex", "$path/after.tex", true)
-        myFixture.checkResultByFile("$path/bibtex_before.bib", "$path/bibtex_after.bib", true)
+            myFixture.checkResultByFile("$path/before.tex", "$path/after.tex", true)
+            myFixture.checkResultByFile("$path/bibtex_before.bib", "$path/bibtex_after.bib", true)
+        }
+        finally {
+            clearAllMocks()
+            unmockkAll()
+        }
     }
 }
