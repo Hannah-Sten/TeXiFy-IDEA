@@ -107,6 +107,8 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
+// Suppress for Qodana only
+@Suppress("RedundantSuspendModifier", "RedundantSuppression")
 internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
     // Using a single set avoids infinite loops
     val result = mutableSetOf<PsiFile>()
@@ -114,8 +116,9 @@ internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile
     return result
 }
 
+@Suppress("RedundantSuspendModifier", "RedundantSuppression")
 internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
-    LatexIncludesIndex.Util.getItems(project, fileSearchScope).forEach command@{ command ->
+    LatexIncludesIndex.Util.getItemsNonBlocking(project, fileSearchScope).forEach command@{ command ->
         smartReadAction(project) { command.references }.filterIsInstance<InputFileReference>()
             .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true) } }
             .forEach {

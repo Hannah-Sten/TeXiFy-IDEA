@@ -1,16 +1,17 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.psi.createSmartPointer
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
-import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -117,6 +118,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param scope
      *          The scope in which to search for the items.
      */
+    @Deprecated("Use getItemsNonBlocking")
     fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
         if (useCache) {
             // Cached values may have become invalid over time, so do a double check to be sure (#2976)
@@ -124,6 +126,21 @@ abstract class IndexUtilBase<T : PsiElement>(
         }
         val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
         runReadAction { cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() } }
+        return result
+    }
+
+    suspend fun getItemsNonBlocking(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
+        if (useCache) {
+            // Cached values may have become invalid over time, so do a double check to be sure (#2976)
+            cache[project]?.get(scope)?.let {
+                return smartReadAction(project) {
+                    it.mapNotNull { pointer -> pointer.element }
+                        .filter { it.isValid }
+                }
+            }
+        }
+        val result = smartReadAction(project) { getKeys(project) }.flatMap { smartReadAction(project) { getItemsByName(it, project, scope) } }
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { smartReadAction(project) { it.createSmartPointer() } }
         return result
     }
 
@@ -140,7 +157,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     private fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
         try {
-            return runReadAction { StubIndex.getElements(indexKey, name, project, scope, elementClass) }
+            return StubIndex.getElements(indexKey, name, project, scope, elementClass)
         }
         catch (e: Exception) {
             // For some reason, any issue from any plugin that causes an exception will be raised here and will be attributed to TeXiFy, flooding the backlog
@@ -162,7 +179,7 @@ abstract class IndexUtilBase<T : PsiElement>(
     private fun getKeys(project: Project): Array<String> {
         if (!DumbService.isDumb(project) && !project.isDefault) {
             try {
-                return runReadAction { StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray() }
+                return StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray()
             }
             catch (e: Exception) {
                 // See above

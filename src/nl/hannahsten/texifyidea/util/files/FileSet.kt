@@ -36,20 +36,22 @@ import java.io.File
  * @return Map all root files which include any other file, to the file set containing that root file.
  */
 // Internal because only ReferencedFileSetCache should call this
-internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: ProgressReporter): Map<PsiFile, Set<PsiFile>> {
+internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: ProgressReporter?): Map<PsiFile, Set<PsiFile>> {
     // Find all root files.
-    val roots = LatexIncludesIndex.Util.getItems(this)
+    val project = this
+    val scope = GlobalSearchScope.projectScope(project)
+    val roots = LatexIncludesIndex.Util.getItemsNonBlocking(project, scope)
         .map { smartReadAction(this) { it.containingFile } }
         .distinct()
-        .filter { it.isRoot() }
+        .filter { smartReadAction(this) { it.isRoot() }}
         .toSet()
 
     return roots
         .associateWith { root ->
             // Map root to all directly referenced files.
-            reporter.sizedStep((1000 / roots.size).toInt()) {
+            reporter?.sizedStep((1000 / roots.size).toInt()) {
                 root.referencedFiles(root.virtualFile) + root
-            }
+            } ?: (root.referencedFiles(root.virtualFile) + root)
         }
 }
 

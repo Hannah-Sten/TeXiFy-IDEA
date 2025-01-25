@@ -5,7 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import org.junit.Test
+import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 
 class LatexGlossaryCompletionTest : BasePlatformTestCase() {
 
@@ -27,7 +27,6 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
         assertTrue("$lookup long description not found", presentation.tailText?.contains(description) ?: false)
     }
 
-    @Test
     fun testCompleteGlossaryCommandEntries() {
         // given
         myFixture.configureByFiles("${getTestName(false)}.tex")
@@ -64,7 +63,6 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { l -> l.lookupString == "aslr" })
     }
 
-    @Test
     fun testCompleteGlossaryReferences() {
         testGlossaryReferenceCompletion("gls")
         testGlossaryReferenceCompletion("Gls")
@@ -72,10 +70,10 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
         testGlossaryReferenceCompletion("Gls")
     }
 
-    @Test
-    fun testExternalGlossaryCompletion() {
+    fun testExternalGlossaryCompletion() = kotlinx.coroutines.test.runTest {
         // given
-        myFixture.configureByFiles("LoadExternalGlossary.tex", "glossar.tex")
+        val file = myFixture.configureByFiles("LoadExternalGlossary.tex", "glossar.tex")
+        ReferencedFileSetService.getInstance().forceRefreshCache(file.first())
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)

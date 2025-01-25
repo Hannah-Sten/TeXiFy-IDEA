@@ -167,6 +167,7 @@ dependencies {
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")

@@ -21,4 +21,6 @@ class ReferencedFileSetServiceImpl : ReferencedFileSetService {
     override fun dropAllCaches() = cache.dropAllCaches()
 
     override fun markCacheOutOfDate() = cache.markCacheOutOfDate()
+
+    override suspend fun forceRefreshCache(file: PsiFile) = cache.forceRefreshCache(file)
 }
