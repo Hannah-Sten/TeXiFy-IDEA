@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.inspections.bibtex
 
+import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 
 class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEntryInspection()) {
 
@@ -11,15 +11,12 @@ class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEnt
     }
 
     fun `test warnings where needed`() {
-        myFixture.configureByFiles("references.bib", "main.tex")
+        myFixture.configureByFilesWithMockCache("references.bib", "main.tex")
         myFixture.checkHighlighting()
     }
 
-    fun `test quick fix`() = kotlinx.coroutines.test.runTest {
-        myFixture.configureByFiles("references-before.bib", "main-quick-fix.tex").forEach {
-            // Refresh cache
-            ReferencedFileSetService.getInstance().referencedFileSetOf(it)
-        }
+    fun `test quick fix`() {
+        myFixture.configureByFilesWithMockCache("references-before.bib", "main-quick-fix.tex")
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals("Expected number of quick fixes:", 2, quickFixes.size)
         writeCommand(myFixture.project) {

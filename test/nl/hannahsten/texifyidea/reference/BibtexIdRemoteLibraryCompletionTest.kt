@@ -4,11 +4,11 @@ import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkObject
+import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
 import nl.hannahsten.texifyidea.remotelibraries.state.LibraryState
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 
 class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
 
@@ -102,10 +102,7 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
         mockkObject(RemoteLibraryManager)
         every { RemoteLibraryManager.getInstance().getLibraries() } returns mutableMapOf("aaa" to LibraryState("mocked", ZoteroLibrary::class.java, BibtexEntryListConverter().fromString(remoteBib), "test url"))
 
-        myFixture.configureByFiles("$path/before.tex", "$path/bibtex_before.bib").forEach {
-            // Refresh cache
-            ReferencedFileSetService.getInstance().referencedFileSetOf(it)
-        }
+        myFixture.configureByFilesWithMockCache("$path/before.tex", "$path/bibtex_before.bib")
 
         myFixture.complete(CompletionType.BASIC)
 

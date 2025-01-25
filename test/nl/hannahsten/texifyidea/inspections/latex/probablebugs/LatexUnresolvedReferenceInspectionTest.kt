@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import io.mockk.every
 import io.mockk.mockkStatic
+import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
@@ -73,7 +74,7 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
 
     fun testBibtexReference() {
         val name = getTestName(false) + ".tex"
-        myFixture.configureByFiles(name, "references.bib")
+        myFixture.configureByFilesWithMockCache(name, "references.bib")
         myFixture.checkHighlighting()
     }
 

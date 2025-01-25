@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
+import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 
 class BibtexIdCompletionTest : BasePlatformTestCase() {
 
@@ -18,7 +18,7 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
 
     fun testCompleteLatexReferences() {
         // when
-        runCompletion()
+        myFixture.configureByFilesWithMockCache("${getTestName(false)}.tex", "bibtex.bib")
         val result = myFixture.lookupElements!!
 
         // then
@@ -31,7 +31,7 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
 
     fun testCompletionResultsLowerCase() {
         // when
-        runCompletion()
+        myFixture.configureByFilesWithMockCache("${getTestName(false)}.tex", "bibtex.bib")
         val result = myFixture.lookupElementStrings
 
         // then
@@ -41,7 +41,7 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
 
     fun testCompletionResultsSecondEntry() {
         // when
-        runCompletion()
+        myFixture.configureByFilesWithMockCache("${getTestName(false)}.tex", "bibtex.bib")
         val result = myFixture.lookupElementStrings
 
         // then
@@ -54,11 +54,13 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
     fun testCompleteBibtexWithCorrectCase() {
         // Using the following failed sometimes
         val testName = getTestName(false)
-        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
+        myFixture.configureByFilesWithMockCache("${testName}_before.tex", "$testName.bib")
+        myFixture.complete(CompletionType.BASIC)
+        myFixture.checkResultByFile("${testName}_after.tex")
     }
 
     fun testBibtexEntryDocumentation() {
-        runCompletion()
+        myFixture.configureByFilesWithMockCache("${getTestName(false)}.tex", "bibtex.bib")
         val element = DocumentationManager.getInstance(myFixture.project).getElementFromLookup(myFixture.editor, myFixture.file)
 
         // Get the provider from the parent. Otherwise we request the documentation provider for a BibtexId element and, therefore,
@@ -70,15 +72,5 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         assertTrue(documentation!!.contains("Code Pointer Integrity"))
         assertTrue(documentation.contains("Evans"))
         assertTrue(documentation.contains("have been known for decades"))
-    }
-
-    private fun runCompletion() {
-        val files = myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
-        // The first time completion runs, due to caching there may be a race condition
-        for (file in files) {
-            ReferencedFileSetService.getInstance().referencedFileSetOf(file)
-        }
-        // when
-        myFixture.complete(CompletionType.BASIC)
     }
 }
