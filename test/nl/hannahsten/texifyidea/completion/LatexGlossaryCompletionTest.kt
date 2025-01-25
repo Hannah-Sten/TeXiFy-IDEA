@@ -5,7 +5,6 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 
 class LatexGlossaryCompletionTest : BasePlatformTestCase() {
 
@@ -72,8 +71,7 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
 
     fun testExternalGlossaryCompletion() = kotlinx.coroutines.test.runTest {
         // given
-        val file = myFixture.configureByFiles("LoadExternalGlossary.tex", "glossar.tex")
-        ReferencedFileSetService.getInstance().forceRefreshCache(file.first())
+        myFixture.configureByFiles("LoadExternalGlossary.tex", "glossar.tex")
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)

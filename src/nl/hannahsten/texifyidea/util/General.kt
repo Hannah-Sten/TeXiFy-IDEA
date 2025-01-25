@@ -104,31 +104,20 @@ fun runInBackgroundBlocking(project: Project?, description: String, function: (i
  * Use [runInBackground] if you have a meaningful coroutine scope.
  */
 fun runInBackgroundNonBlocking(project: Project, description: String, function: suspend (ProgressReporter) -> Unit) {
-//    if (project.isTestProject()) {
-//        runBlocking {
-//            runInBackground(project, description, function)
-//        }
-//    }
-//    else {
-        // We don't need to block until it finished
-        CoroutineScope(Dispatchers.IO).launch {
-            runInBackground(project, description, function)
-        }
-//    }
+    // We don't need to block until it finished
+    CoroutineScope(Dispatchers.IO).launch {
+        runInBackground(project, description, function)
+    }
 }
 
 suspend fun runInBackground(project: Project, description: String, function: suspend (ProgressReporter) -> Unit) = withContext(Dispatchers.IO) {
     // We don't need to suspend and wait for the result
-    val job = launch {
+    launch {
         withBackgroundProgress(project, description) {
             // Work size only allows integers, but we don't know the size here yet, so we start at 100.0%
             reportProgress(size = 1000) { function(it) }
         }
     }
-    // In tests, we need to get it right the first time, so we need to wait todo remove?
-//    if (project.isTestProject()) {
-//        job.join()
-//    }
 }
 
 fun runInBackgroundWithoutProgress(function: () -> Unit) {

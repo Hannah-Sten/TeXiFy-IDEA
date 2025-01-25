@@ -95,13 +95,6 @@ class ReferencedFileSetCache {
         Cache.numberOfIncludes.clear()
     }
 
-    suspend fun forceRefreshCache(file: PsiFile) {
-//        val (newFileSetCache, newRootFilesCache) = getNewCachesFor(file, reporter=null)
-//        dropAllCaches()
-//        Cache.fileSetCache.putAll(ConcurrentHashMap(newFileSetCache.toMutableMap()))
-//        Cache.rootFilesCache.putAll(ConcurrentHashMap(newRootFilesCache.toMutableMap()))
-    }
-
     /**
      * Since we have to calculate the fileset to fill the root file or fileset cache, we make sure to only do that
      * once and then fill both caches with all the information we have.
@@ -124,16 +117,20 @@ class ReferencedFileSetCache {
 
         for (fileset in filesets.values) {
             for (file in fileset) {
-                newFileSetCache[file.virtualFile.path] = fileset.mapNotNull { smartReadAction(requestedFile.project) {
-                    if (it.isValid) it.createSmartPointer() else null
-                } }.toSet()
+                newFileSetCache[file.virtualFile.path] = fileset.mapNotNull {
+                    smartReadAction(requestedFile.project) {
+                        if (it.isValid) it.createSmartPointer() else null
+                    }
+                }.toSet()
             }
 
             val rootFiles = requestedFile.findRootFilesWithoutCache(fileset)
             for (file in fileset) {
-                newRootFilesCache[file.virtualFile.path] = rootFiles.mapNotNull { smartReadAction(requestedFile.project) {
-                    if (it.isValid) it.createSmartPointer() else null
-                } }.toSet()
+                newRootFilesCache[file.virtualFile.path] = rootFiles.mapNotNull {
+                    smartReadAction(requestedFile.project) {
+                        if (it.isValid) it.createSmartPointer() else null
+                    }
+                }.toSet()
             }
         }
 

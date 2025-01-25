@@ -29,6 +29,4 @@ interface ReferencedFileSetService {
     fun dropAllCaches()
 
     fun markCacheOutOfDate()
-
-    suspend fun forceRefreshCache(file: PsiFile)
 }

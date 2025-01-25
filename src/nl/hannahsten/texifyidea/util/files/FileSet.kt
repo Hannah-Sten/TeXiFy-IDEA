@@ -43,7 +43,7 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     val roots = LatexIncludesIndex.Util.getItemsNonBlocking(project, scope)
         .map { smartReadAction(this) { it.containingFile } }
         .distinct()
-        .filter { smartReadAction(this) { it.isRoot() }}
+        .filter { smartReadAction(this) { it.isRoot() } }
         .toSet()
 
     return roots
