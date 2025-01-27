@@ -14,7 +14,6 @@ class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEnt
 
     fun `test warnings where needed`() {
         try {
-
             myFixture.configureByFilesWithMockCache("references.bib", "main.tex")
             myFixture.checkHighlighting()
         }
