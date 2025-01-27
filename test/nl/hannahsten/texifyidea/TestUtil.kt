@@ -7,9 +7,9 @@ import io.mockk.mockkObject
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 import nl.hannahsten.texifyidea.util.files.psiFile
 
-
 fun CodeInsightTestFixture.configureByFilesWithMockCache(vararg filenames: String) {
     val files = filenames.mapNotNull { copyFileToProject(it).psiFile(project) }
+//    val files = configureByFiles(*filenames)
     val mockService = mockk<ReferencedFileSetService>()
     every { mockService.referencedFileSetOf(any()) } returns files.toSet()
     every { mockService.rootFilesOf(any()) } returns setOf(files.first())
