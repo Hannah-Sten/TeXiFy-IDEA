@@ -370,6 +370,7 @@ object CommandMagic {
     val illegalExtensions = mapOf(
         INPUT.cmd to listOf(".tex"),
         INCLUDE.cmd to listOf(".tex"),
+        INCLUDESTANDALONE.cmd to listOf(".tex") + FileMagic.graphicFileExtensions.map { ".$it" },
         SUBFILEINCLUDE.cmd to listOf(".tex"),
         BIBLIOGRAPHY.cmd to listOf(".bib"),
         INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850

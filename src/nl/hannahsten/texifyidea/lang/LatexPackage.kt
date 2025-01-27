@@ -84,6 +84,7 @@ open class LatexPackage @JvmOverloads constructor(
         val SPLITIDX = LatexPackage("splitidx")
         val SPLITINDEX = LatexPackage("splitindex")
         val STMARYRD = LatexPackage("stmaryrd")
+        val STANDALONE = LatexPackage("standalone")
         val SUBFILES = LatexPackage("subfiles")
         val SVG = LatexPackage("svg")
         val TABULARRAY = LatexPackage("tabularray")
