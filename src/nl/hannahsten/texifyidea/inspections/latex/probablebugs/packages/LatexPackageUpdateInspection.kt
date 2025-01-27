@@ -34,7 +34,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
 
     object Cache {
         /** Map package name to old and new revision number */
-        var availablePackageUpdates = mapOf<String, Pair<String?, String?>>()
+        var availablePackageUpdates: Map<String, Pair<String?, String?>>? = null
     }
 
     override val inspectionGroup = InsightGroup.LATEX
@@ -46,9 +46,14 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         if (!LatexSdkUtil.isTlmgrAvailable(file.project) || !TexliveSdk.Cache.isAvailable) return emptyList()
 
-        if (Cache.availablePackageUpdates.isEmpty()) {
+        if (Cache.availablePackageUpdates == null) {
             val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", file.project)
-            val result = runCommand(tlmgrExecutable, "update", "--list") ?: return emptyList()
+            val result = runCommand(tlmgrExecutable, "update", "--list")
+            // Try to fill the cache only once
+            if (result == null) {
+                Cache.availablePackageUpdates = mapOf()
+                return emptyList()
+            }
             Cache.availablePackageUpdates = """update:\s*(?<package>[^ ]+).*local:\s*(?<local>\d+), source:\s*(?<source>\d+)""".toRegex()
                 .findAll(result)
                 .mapNotNull { Pair(it.groups["package"]?.value ?: return@mapNotNull null, Pair(it.groups["local"]?.value, it.groups["source"]?.value)) }
@@ -57,10 +62,10 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
 
         return file.childrenOfType<LatexCommands>()
             .filter { it.name in CommandMagic.packageInclusionCommands }
-            .filter { it.requiredParameter(0) in Cache.availablePackageUpdates.keys }
+            .filter { it.requiredParameter(0) in Cache.availablePackageUpdates!!.keys }
             .mapNotNull {
                 val packageName = it.requiredParameter(0) ?: return@mapNotNull null
-                val packageVersions = Cache.availablePackageUpdates[packageName] ?: return@mapNotNull null
+                val packageVersions = Cache.availablePackageUpdates!![packageName] ?: return@mapNotNull null
                 manager.createProblemDescriptor(
                     it,
                     "Update available for package $packageName",
