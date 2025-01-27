@@ -10,7 +10,7 @@
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageUpdateInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Package has an update available"
-                         enabledByDefault="true"
+                         enabledByDefault="false"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexPackageNameDoesNotMatchFileNameInspection"
                          groupPath="LaTeX" groupName="Probable bugs" displayName="Package name does not match file name"
