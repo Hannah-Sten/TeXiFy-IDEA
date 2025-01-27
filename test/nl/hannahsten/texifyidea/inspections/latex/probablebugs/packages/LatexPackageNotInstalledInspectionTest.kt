@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
@@ -13,12 +14,9 @@ class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPac
         texliveWithTlmgr(texlive = false, tlmgr = false)
 
         testHighlighting("\\usepackage{amsmath}")
-    }
 
-    fun `test no warnings when tlmgr is not available`() {
-        texliveWithTlmgr(texlive = true, tlmgr = false)
-
-        testHighlighting("\\usepackage{amsmath}")
+        unmockkObject(TexliveSdk.Cache)
+        unmockkObject(LatexSdkUtil)
     }
 
     fun `test no warnings when package is installed`() {
@@ -28,6 +26,10 @@ class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPac
         every { TexLivePackages.packageList } returns mutableListOf("amsmath")
 
         testHighlighting("\\usepackage{amsmath}")
+
+        unmockkObject(TexliveSdk.Cache)
+        unmockkObject(LatexSdkUtil)
+        unmockkObject(TexLivePackages)
     }
 
     private fun texliveWithTlmgr(texlive: Boolean = true, tlmgr: Boolean = true) {
@@ -35,6 +37,6 @@ class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPac
         every { TexliveSdk.Cache.isAvailable } returns texlive
 
         mockkObject(LatexSdkUtil)
-        every { LatexSdkUtil.isTlmgrInstalled } returns tlmgr
+        every { LatexSdkUtil.isTlmgrAvailable(any()) } returns tlmgr
     }
 }

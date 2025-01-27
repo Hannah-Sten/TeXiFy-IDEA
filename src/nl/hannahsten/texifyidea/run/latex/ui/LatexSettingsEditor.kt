@@ -31,7 +31,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.runInBackground
+import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
 import java.awt.event.ItemEvent
 import javax.swing.InputVerifier
 import javax.swing.JComponent
@@ -215,7 +215,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val txtFile = mainFile.component as TextFieldWithBrowseButton
         val filePath = txtFile.text
         // Might result in requiring a content root (for relative paths), so we have to run in the background
-        runInBackground(project, "Resolving main file...") {
+        runInBackgroundBlocking(project, "Resolving main file...") {
             runConfiguration.setMainFile(filePath)
         }
 

@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditor
@@ -10,11 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
-import com.intellij.psi.util.parents
-import com.intellij.psi.util.endOffset
-import com.intellij.psi.util.startOffset
+import com.intellij.psi.util.*
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -28,6 +27,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
@@ -35,7 +35,7 @@ import nl.hannahsten.texifyidea.util.parser.*
  * Get the file search scope for this psi file.
  */
 val PsiFile.fileSearchScope: GlobalSearchScope
-    get() = GlobalSearchScope.fileScope(this)
+    get() = runReadAction { GlobalSearchScope.fileScope(this) }
 
 /**
  * Looks for all file inclusions in a given file, excluding installed LaTeX packages.
@@ -107,19 +107,20 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
-internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
-    val result = HashSet<PsiFile>()
+// Suppress for Qodana only
+@Suppress("RedundantSuspendModifier", "RedundantSuppression")
+internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
+    // Using a single set avoids infinite loops
+    val result = mutableSetOf<PsiFile>()
     referencedFiles(result, rootFile)
     return result
 }
 
-/**
- * Recursive implementation of [referencedFiles].
- */
-private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
-    LatexIncludesIndex.Util.getItems(project, fileSearchScope).forEach command@{ command ->
-        command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile, true) }
+@Suppress("RedundantSuspendModifier", "RedundantSuppression")
+internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
+    LatexIncludesIndex.Util.getItemsNonBlocking(project, fileSearchScope).forEach command@{ command ->
+        smartReadAction(project) { command.references }.filterIsInstance<InputFileReference>()
+            .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true) } }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
@@ -313,5 +314,12 @@ fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
         exprBefore == null -> expr
         PsiTreeUtil.isAncestor(expr, exprBefore, false) -> exprBefore
         else -> expr
+    }
+}
+
+fun PsiFile.rerunInspections() {
+    if (!project.isTestProject()) {
+        // PSI/document/model changes are not allowed during highlighting in tests
+        DaemonCodeAnalyzer.getInstance(project).restart(this)
     }
 }

@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -19,8 +19,8 @@ import nl.hannahsten.texifyidea.util.parser.childrenOfType
  * Uses the fileset cache to find all root files in the fileset.
  * Note that each root file induces a fileset, so a file could be in multiple filesets.
  */
-fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
-    val magicComment = runReadAction { magicComment() }
+suspend fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
+    val magicComment = smartReadAction(project) { magicComment() }
     val roots = mutableSetOf<PsiFile>()
 
     if (magicComment.contains(DefaultMagicKeys.ROOT)) {
@@ -28,11 +28,11 @@ fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
         this.findFile(path, supportsAnyExtension = true)?.let { roots.add(it) }
     }
 
-    if (this.isRoot()) {
+    if (smartReadAction(project) { this.isRoot() }) {
         roots.add(this)
     }
 
-    roots.addAll(fileset.filter { it.isRoot() })
+    roots.addAll(fileset.filter { smartReadAction(project) { it.isRoot() } })
 
     return if (roots.isEmpty()) setOf(this) else roots
 }
@@ -81,7 +81,7 @@ fun PsiFile.isRoot(): Boolean {
     // If so, then we assume that the file is compilable and must be a root file.
     val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.mainFile == this.virtualFile }
 
-    return runReadAction { isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles() }
+    return isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles()
 }
 
 /**

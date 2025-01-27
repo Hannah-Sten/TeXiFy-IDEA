@@ -13,7 +13,8 @@ class VfsChangeListener : BulkFileListener {
             .forEach {
                 if (it.file != null) {
                     // We drop all caches because that is faster than figuring out which cached values need to be updated
-                    ReferencedFileSetService.getInstance().dropAllCaches()
+                    // Mark caches to be deleted, so they will be filled the next time they are requested
+                    ReferencedFileSetService.getInstance().markCacheOutOfDate()
                 }
             }
         super.after(events)

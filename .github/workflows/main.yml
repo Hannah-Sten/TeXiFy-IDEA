@@ -49,6 +49,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     if: github.event.pull_request.draft == false
+    timeout-minutes: 50
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]

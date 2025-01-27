@@ -2,11 +2,13 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
@@ -34,17 +36,22 @@ import java.io.File
  * @return Map all root files which include any other file, to the file set containing that root file.
  */
 // Internal because only ReferencedFileSetCache should call this
-internal fun Project.findReferencedFileSetWithoutCache(): Map<PsiFile, Set<PsiFile>> {
+internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: ProgressReporter?): Map<PsiFile, Set<PsiFile>> {
     // Find all root files.
-    return LatexIncludesIndex.Util.getItems(this)
-        .asSequence()
-        .map { it.containingFile }
+    val project = this
+    val scope = GlobalSearchScope.projectScope(project)
+    val roots = LatexIncludesIndex.Util.getItemsNonBlocking(project, scope)
+        .map { smartReadAction(this) { it.containingFile } }
         .distinct()
-        .filter { it.isRoot() }
+        .filter { smartReadAction(this) { it.isRoot() } }
         .toSet()
+
+    return roots
         .associateWith { root ->
             // Map root to all directly referenced files.
-            runReadAction { root.referencedFiles(root.virtualFile) } + root
+            reporter?.sizedStep((1000 / roots.size).toInt()) {
+                root.referencedFiles(root.virtualFile) + root
+            } ?: (root.referencedFiles(root.virtualFile) + root)
         }
 }
 
@@ -54,9 +61,9 @@ internal fun Project.findReferencedFileSetWithoutCache(): Map<PsiFile, Set<PsiFi
  * Example file: https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/3773#issuecomment-2503221732
  * @return List of sets of files included by the same toml file.
  */
-fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
+suspend fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
     // Actually, according to https://tectonic-typesetting.github.io/book/latest/v2cli/build.html?highlight=tectonic.toml#remarks Tectonic.toml files can appear in any parent directory, but we only search in the project for now
-    val tomlFiles = findTectonicTomlFiles(project)
+    val tomlFiles = smartReadAction(project) { findTectonicTomlFiles(project) }
     val filesets = tomlFiles.mapNotNull { tomlFile ->
         val data = TomlMapper().readValue(File(tomlFile.path), Map::class.java)
         val outputList = data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null
@@ -64,7 +71,7 @@ fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
         // Inputs can be either a map "inline" -> String or file name
         // Actually it can also be just a single file name, but then we don't need all this gymnastics
         inputs.filterIsInstance<String>().mapNotNull {
-            tomlFile.parent.findFile("src/$it")?.psiFile(project)
+            smartReadAction(project) { tomlFile.parent.findFile("src/$it")?.psiFile(project) }
         }.toSet()
     }
 
