@@ -6,9 +6,9 @@
 
 ### Fixed
 
-## [0.9.10] - 2025-01-27
+## [0.10.0] - 2025-01-27
 
-Welcome to TeXiFy IDEA 0.9.9! This release contains a lot of additions and performance improvements. Please report any UI freezes, slow typing or other performance issues to the GitHub issue tracker.
+Welcome to TeXiFy IDEA 0.10.0! This release contains a lot of additions and performance improvements. Please report any UI freezes, slow typing or other performance issues to the GitHub issue tracker.
 
 We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
 Your input is valuable and well appreciated.
@@ -491,8 +491,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.10...HEAD
-[0.9.10]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.9.10
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.10.0
 [0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
 [0.9.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7
