@@ -86,14 +86,15 @@ abstract class AliasManager {
      * @param alias
      * The alias to register for the item. This could be either
      * a new item, or an existing item *E.g. `\start`*
+     * @param isRedefinition If the alias is being redefined, remove the original definition
      */
     @Synchronized
-    fun registerAlias(item: String, alias: String) {
+    fun registerAlias(item: String, alias: String, isRedefinition: Boolean = false) {
         synchronized(aliases) {
             val aliasSet = aliases[item] ?: mutableSetOf()
 
-            // If the alias is already assigned: unassign it.
-            if (isRegistered(alias)) {
+            // If the alias is already assigned and we are redefining it: unassign it.
+            if (isRedefinition && isRegistered(alias)) {
                 val previousAliases = aliases[alias]
                 previousAliases?.remove(alias)
                 aliases.remove(alias)
@@ -139,8 +140,8 @@ abstract class AliasManager {
 
         // Check if something has changed (the number of indexed command might be the same while the content is different), and if so, update the aliases.
         // Also do this the first time something is registered, because then we have to update aliases as well
-        val hasNotChanged = this.indexedCommandDefinitions == indexedCommandDefinitions
-        if (!hasNotChanged || wasRegistered) {
+        val hasChanged = this.indexedCommandDefinitions != indexedCommandDefinitions
+        if (hasChanged || wasRegistered) {
             // Update everything, since it is difficult to know beforehand what aliases could be added or not
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
             // requested alias set (otherwise only the first alias set requesting an update will get it)

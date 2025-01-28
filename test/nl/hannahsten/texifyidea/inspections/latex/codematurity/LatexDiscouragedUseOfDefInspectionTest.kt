@@ -28,6 +28,30 @@ class LatexDiscouragedUseOfDefInspectionTest : TexifyInspectionTestBase(LatexDis
         quickFixName = "Convert to \\newcommand"
     )
 
+    fun `test quick fix def with argument`() = testNamedQuickFix(
+        before = """\def\testa#1{#1}""",
+        after = """\newcommand{\testa}[1]{#1}""",
+        numberOfFixes = 2,
+        quickFixName = "Convert to \\newcommand"
+    )
+
+    fun `test quick fix def with multiple arguments`() = testNamedQuickFix(
+        before = """\def\testa#1#2#3#4{#3#4}""",
+        after = """\newcommand{\testa}[4]{#3#4}""",
+        numberOfFixes = 2,
+        quickFixName = "Convert to \\newcommand"
+    )
+
+    /**
+     * \newcommand doesn't actually support this, but the inspection is triggered and this seems like the most sensible thing to do.
+     */
+    fun `test quick fix def with argument until next brace`() = testNamedQuickFix(
+        before = """\def\testa#1#{#1}""",
+        after = """\newcommand{\testa}[1]{#1}""",
+        numberOfFixes = 2,
+        quickFixName = "Convert to \\newcommand"
+    )
+
     fun `test quick fix def to renewcommand`() = testNamedQuickFix(
         before = """\def\a1""",
         after = """\renewcommand{\a}{1}""",

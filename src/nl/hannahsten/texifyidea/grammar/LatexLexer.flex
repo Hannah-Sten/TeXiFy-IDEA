@@ -38,9 +38,11 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
   private int newCommandBracesNesting = 0;
 
   /**
-   * Also keep track of brackets of verbatim environment optional arguments.
+   * Also keep track of brackets of verbatim environment arguments.
    */
   private int verbatimOptionalArgumentBracketsCount = 0;
+  private int verbatimRequiredArgumentBracketsCount = 0;
+  private int verbatimUrlBracesCount = 0;
 
   /**
    * Keep track of braces in the PARTIAL_DEFINITION state.
@@ -77,14 +79,19 @@ WHITE_SPACE={SINGLE_WHITE_SPACE}+
 // Commands
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_IFNEXTCHAR=\\@ifnextchar.
+// All characters after @ifnextchar may be unbalanced, except braces, see https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/3744#issuecomment-2477263416
+COMMAND_IFNEXTCHAR=\\@ifnextchar[^{]
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_TOKEN_LATEX3=\\([a-zA-Z@_:0-9]+|.|\r) // _ and : are only LaTeX3 syntax
-LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage)
+LATEX3_ON=\\(ExplSyntaxOn|ProvidesExplPackage|ProvidesExplClass|ProvidesExplFile)
 LATEX3_OFF=\\ExplSyntaxOff
 NEWENVIRONMENT=\\(re)?newenvironment
-NEWCOMMAND=\\(new|provide)command
+// BeforeBegin/AfterEnd are from etoolbox, and just happen to also have two parameters where the second can contain loose \begin or \end
+NEWCOMMAND=\\(new|provide)command | \\BeforeBeginEnvironment | \\AfterEndEnvironment
 NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
+// These are separate to support formatting
+LEFT=\\left
+RIGHT=\\right
 
 // Verbatim commands which will be delimited by the same character
 // \path from the 'path' package
@@ -92,10 +99,11 @@ PLAIN_VERBATIM_COMMAND=\\verb | \\verb\* | \\path
 
 // Verbatim commands which can also have normal optional/required parameters (or a same-character delimiter)
 VERBATIM_COMMAND=\\directlua | \\luaexec | \\lstinline
- // These can contain unescaped % for example.
- | \\url | \\href
  // PythonTex Python code commands
  | \\py | \\pyb | \\pyc | \\pys | \\pyv
+// These can contain unescaped # and %, but braces have to be balanced
+URL_COMMAND=\\url | \\href
+
 // Commands which are partial definitions, in the sense that they define only the begin or end of a pair of definitions, and thus can contain \begin commands without \end, or single $
 PARTIAL_DEFINITION_COMMAND=(\\pretitle|\\posttitle|\\preauthor|\\postauthor|\\predate|\\postdate)
 
@@ -124,7 +132,12 @@ BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | 
 MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
-%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION
+// See TeX by Topic chapter 13
+START_IFS=\\if | \\ifcat | \\ifx | \\ifcase | \\ifnum | \\ifodd | \\ifhmode | \\ifvmode | \\ifmmode | \\ifinner | \\ifdim | \\ifvoid | \\ifhbox | \\ifvbox | \\ifeof | \\iftrue | \\iffalse
+ELSE=\\else
+END_IFS=\\fi
+
+%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION ENVIRONMENT_INSIDE_INLINE_MATH
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
 
 // latex3 has some special syntax
@@ -132,10 +145,10 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
-%xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START
+%xstates INLINE_VERBATIM_PLAIN_START INLINE_VERBATIM INLINE_VERBATIM_NORMAL_START URL_VERBATIM
 
-%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
-%xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
+%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_REQUIRED_ARG VERBATIM_START VERBATIM_END INLINE_VERBATIM_OPTIONAL_ARG
+%xstates VERBATIM POSSIBLE_VERBATIM_ARG POSSIBLE_VERBATIM_END
 
 // algorithmic environment
 %states PSEUDOCODE POSSIBLE_PSEUDOCODE_END
@@ -152,6 +165,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // Use a separate state to start verbatim, to be able to return a command token for \verb
 {PLAIN_VERBATIM_COMMAND}  { yypushState(INLINE_VERBATIM_PLAIN_START); return COMMAND_TOKEN; }
 {VERBATIM_COMMAND}        { yypushState(INLINE_VERBATIM_NORMAL_START); return COMMAND_TOKEN; }
+{URL_COMMAND}             { verbatimUrlBracesCount = 0; yypushState(URL_VERBATIM); return COMMAND_TOKEN; }
 
 // This is like INLINE_VERBATIM_START, but because lstinline supports normal optional/required parameters instead of two of the same delimiters,
 // it is a separate state so that other verbatim commands are unlikely to be picked up incorrectly
@@ -199,6 +213,16 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 
+<URL_VERBATIM> {
+    {OPEN_BRACE}        { verbatimUrlBracesCount++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       { verbatimUrlBracesCount--; if (verbatimUrlBracesCount == 0) { yypopState(); } return CLOSE_BRACE; }
+    // There can be whitespace between command and argument
+    {WHITE_SPACE}       { return com.intellij.psi.TokenType.WHITE_SPACE; }
+    {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
+    // Because the state is exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
+    [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+}
+
 /*
  * Verbatim environments
  */
@@ -221,13 +245,14 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // Jump over the closing } of the \begin{verbatim} before starting verbatim state
 <VERBATIM_START> {
-    {CLOSE_BRACE}       { yypopState(); yypushState(POSSIBLE_VERBATIM_OPTIONAL_ARG); return CLOSE_BRACE; }
+    {CLOSE_BRACE}       { yypopState(); yypushState(POSSIBLE_VERBATIM_ARG); return CLOSE_BRACE; }
 }
 
 // Check if an optional argument is coming up
 // If you start a verbatim with an open bracket and don't close it, this won't work
-<POSSIBLE_VERBATIM_OPTIONAL_ARG> {
+<POSSIBLE_VERBATIM_ARG> {
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount = 1; yypopState(); yypushState(VERBATIM_OPTIONAL_ARG); return OPEN_BRACKET; }
+    {OPEN_BRACE}        { verbatimRequiredArgumentBracketsCount = 1; yypopState(); yypushState(VERBATIM_REQUIRED_ARG); return OPEN_BRACE; }
     {WHITE_SPACE}       { yypopState(); yypushState(VERBATIM); return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN; }
 }
@@ -238,9 +263,19 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET; }
     {CLOSE_BRACKET}     {
         verbatimOptionalArgumentBracketsCount--;
-        if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(VERBATIM); }
+        // There can be a required arg coming
+        if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(POSSIBLE_VERBATIM_ARG); }
         return CLOSE_BRACKET;
     }
+}
+
+<VERBATIM_REQUIRED_ARG> {
+    {OPEN_BRACE}        { verbatimRequiredArgumentBracketsCount++; return OPEN_BRACE; }
+    {CLOSE_BRACE}       {
+          verbatimRequiredArgumentBracketsCount--;
+          if (verbatimRequiredArgumentBracketsCount == 0) { yypopState(); yypushState(VERBATIM); }
+          return CLOSE_BRACE;
+      }
 }
 
 <VERBATIM> {
@@ -440,12 +475,21 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     // When already in inline math, when encountering a \text command we need to switch out of the math state
     // because if we encounter another $, then it will be an inline_math_start, not an inline_math_end
     \\text              { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN; }
+    // Similarly, environments like cases* from mathtools have text as their second column, which can have inline math
+    // We cannot use a single token for inline math start and end because the parser will try to parse the one that should be an 'end' as a 'start'
+    // Therefore, to make sure that we cannot have a START \begin{cases*} END ... START \end{cases*} END, we use a separate state
+    {BEGIN_TOKEN}       { yypushState(ENVIRONMENT_INSIDE_INLINE_MATH); return BEGIN_TOKEN; }
 }
 
 // When in a \text in inline math, either start nested inline math or close the \text
 <TEXT_INSIDE_INLINE_MATH> {
     "$"                 { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START; }
     {CLOSE_BRACE}       { yypopState(); return CLOSE_BRACE; }
+}
+
+<ENVIRONMENT_INSIDE_INLINE_MATH> {
+    "$"                 { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START; }
+    {END_TOKEN}         { yypopState(); return END_TOKEN; }
 }
 
 <INLINE_MATH_LATEX> {
@@ -518,11 +562,16 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {CLOSE_BRACE}           { return CLOSE_BRACE; }
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
+{LEFT}                  { return LEFT; }
+{RIGHT}                 { return RIGHT; }
 
 {LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
 {ENDINPUT}              { yypushState(OFF); return COMMAND_TOKEN; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
+{START_IFS}             { return START_IF; }
+{ELSE}                  { return ELSE; }
+{END_IFS}               { return END_IF; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
 {MAGIC_COMMENT_TOKEN}   { return MAGIC_COMMENT_TOKEN; }

@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.refactoring.suggested.startOffset
+import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.util.toIntRange
 
 /**

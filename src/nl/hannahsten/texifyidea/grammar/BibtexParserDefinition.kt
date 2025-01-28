@@ -45,7 +45,7 @@ class BibtexParserDefinition : ParserDefinition {
         val FILE = object : IStubFileElementType<BibtexFileStub>(
             "BibtexStubFileElementType", Language.findInstance(BibtexLanguage::class.java)
         ) {
-            override fun getStubVersion(): Int = 13
+            override fun getStubVersion(): Int = 14
         }
     }
 

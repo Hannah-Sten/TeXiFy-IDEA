@@ -52,10 +52,10 @@ For more information, see [Automagically import packages of common commands](Edi
 
 If you disable this, consider if TeXiFy should support your use case and please open an issue if so.
 
-## Option to enable automatic compilation
-_Since b0.6.8_
+## Option to disable automatic copy of BibTeX entries from a remote library
 
-See [Support for automatic compilation](Running-a-LaTeX-file.md#automatic-compilation).
+By default, when using a remote library (see [Tool Windows](Tool-Windows.md#remote-libraries)), any entries that you select in autocompletion will be copied to the local BibTeX file.
+This settings disables that, which can be useful if you are including BibTeX files in a way that cannot be parsed by TeXiFy.
 
 ## Option to enable continuous preview of math and TikZ environments
 _Since b0.6.7_
@@ -136,6 +136,11 @@ For more advantages, see [https://tex.stackexchange.com/questions/39285/whats-th
 ## Pasting HTML
 
 Choose what method to use to convert HTML to LaTeX when pasting from clipboard, see [Tools](Tools.md#paste-html-into-latex)
+
+## Options for automatic compilation
+_Since b0.6.8_
+
+See [Support for automatic compilation](Running-a-LaTeX-file.md#automatic-compilation).
 
 ## Conventions
 These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy | Conventions</ui-path> and allow you to configure Latex code conventions that apply either globally or for the current project.

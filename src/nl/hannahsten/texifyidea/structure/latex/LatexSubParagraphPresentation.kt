@@ -9,16 +9,8 @@ import nl.hannahsten.texifyidea.structure.EditableHintPresentation
  */
 class LatexSubParagraphPresentation(subParagraphCommand: LatexCommands) : EditableHintPresentation {
 
-    private val subParagraphName: String
+    private val subParagraphName = subParagraphCommand.getRequiredParameters().firstOrNull() ?: "Unknown subparagraph"
     private var hint = ""
-
-    init {
-        if (subParagraphCommand.commandToken.text != "\\subparagraph") {
-            throw IllegalArgumentException("command is no \\subparagraph-command")
-        }
-
-        this.subParagraphName = subParagraphCommand.getRequiredParameters()[0]
-    }
 
     override fun getPresentableText() = subParagraphName
 

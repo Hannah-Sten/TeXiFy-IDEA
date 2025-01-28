@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LISTINGS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TCOLORBOX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XARGS
 
@@ -38,6 +39,7 @@ enum class LatexNewDefinitionCommand(
     DECLAREROBUSTCOMMANDX("DeclareRobustCommandx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Argument.Type.TEXT), dependency = XARGS),
     NEWENVIRONMENTX("newenvironmentx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Argument.Type.TEXT), "enddef".asRequired(Argument.Type.TEXT), dependency = XARGS),
     RENEWENVIRONMENTX("renewenvironmentx", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Argument.Type.TEXT), "enddef".asRequired(Argument.Type.TEXT), dependency = XARGS),
+    LSTNEWENVIRONMENT("lstnewenvironment", "name".asRequired(), "number".asOptional(), "default arg".asOptional(), "starting code".asRequired(), "ending code".asRequired(), dependency = LISTINGS),
     ;
 
     override val identifier: String

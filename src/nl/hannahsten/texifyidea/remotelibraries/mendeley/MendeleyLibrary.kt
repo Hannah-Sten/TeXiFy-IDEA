@@ -61,9 +61,7 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
             // https://youtrack.jetbrains.com/issue/KTOR-4759/Auth-BearerAuthProvider-caches-result-of-loadToken-until-process-death
             Log.debug(e.message)
             destroyCredentials()
-            client.plugin(Auth).providers
-                .filterIsInstance<BearerAuthProvider>()
-                .first().clearToken()
+            client.authProvider<BearerAuthProvider>()?.clearToken()
             getBibtexStringWithoutRetry()
         }
     }

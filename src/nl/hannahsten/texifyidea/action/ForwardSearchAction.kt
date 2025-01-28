@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.run.step.PdfViewerStep
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
@@ -33,9 +34,10 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible =
+        e.presentation.isEnabledAndVisible = (
             e.project?.selectedRunConfig()?.compileSteps?.filterIsInstance<PdfViewerStep>()?.firstOrNull()?.state?.pdfViewer == viewer
-                && e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
+                || (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.compileSteps?.filterIsInstance<PdfViewerStep>()?.firstOrNull()?.state?.pdfViewer == viewer)
+            ) && e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT

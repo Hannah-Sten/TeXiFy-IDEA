@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.gutter
 import com.intellij.execution.lineMarker.ExecutorAction
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
@@ -29,15 +30,10 @@ class LatexCompileGutter : RunLineMarkerContributor() {
 
         // Lookup actions.
         val actionManager = ActionManager.getInstance()
-        val editConfigs = actionManager.getAction("editRunConfigurations")
+        val editConfigs = actionManager.getAction(IdeActions.ACTION_EDIT_RUN_CONFIGURATIONS)
         val actions = ExecutorAction.getActions(0)
 
         // Create icon.
-        return Info(
-            TexifyIcons.BUILD,
-            { "Compile document" },
-            actions[0],
-            editConfigs
-        )
+        return Info(TexifyIcons.BUILD, arrayOf(actions[0], editConfigs)) { "Compile document" }
     }
 }

@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.legacy.makeindex
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -39,9 +39,9 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
     // Save user selected settings to the given run config
     override fun applyEditorTo(runConfig: MakeindexRunConfiguration) {
         runConfig.makeindexProgram = makeindexProgram.component.selectedItem as MakeindexProgram
-        runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
+        runConfig.mainFile = if (mainFile.component.text.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(mainFile.component.text) else null
         runConfig.commandLineArguments = commandLineArguments.component.text
-        runConfig.workingDirectory = LocalFileSystem.getInstance().findFileByPath(workingDirectory.component.text)
+        runConfig.workingDirectory = if (workingDirectory.component.text.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(workingDirectory.component.text) else null
     }
 
     private fun createUIComponents() {
@@ -57,8 +57,10 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileTypeDescriptor("Choose the Main .tex File", ".tex")
-                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                            .withTitle("Choose the Main .tex File")
+                            .withExtensionFilter("tex")
+                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )
             }

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.ide.macro.ProjectFileDirMacro
+import com.intellij.psi.createSmartPointer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexmkCompiler
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
@@ -35,7 +36,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile
-        runConfig.options.mainFile = LatexRunConfigurationPathOption("main.tex", "main.tex")
+        runConfig.options.mainFile = LatexRunConfigurationPathOption("main.tex", "main.tex").createSmartPointer()
         runConfig.generateBibRunConfig()
 //        assertTrue(runConfig.bibRunConfigs.isNotEmpty()) // todo
 //        assertEquals(mainFile.virtualFile, (runConfig.bibRunConfigs.first().configuration as BibtexRunConfiguration).mainFile)

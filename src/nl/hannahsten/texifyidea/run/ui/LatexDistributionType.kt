@@ -17,10 +17,13 @@ enum class LatexDistributionType(val displayName: String) {
     MIKTEX("MiKTeX"),
     WSL_TEXLIVE("TeX Live using WSL"),
     DOCKER_MIKTEX("Dockerized MiKTeX"),
+    DOCKER_TEXLIVE("Dockerized TeX Live"),
     PROJECT_SDK("Use project SDK");
 
     private fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
-    fun isMiktex(project: Project) = this == MIKTEX || this == DOCKER_MIKTEX || (this == PROJECT_SDK && LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType()?.isMiktex() == true)
+    fun isMiktex(project: Project) = this == MIKTEX || this == DOCKER_MIKTEX || (this == PROJECT_SDK && LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true)
+
+    fun isDocker() = this == DOCKER_MIKTEX || this == DOCKER_TEXLIVE
 
     fun isAvailable(project: Project) = LatexSdkUtil.isAvailable(this, project)
 

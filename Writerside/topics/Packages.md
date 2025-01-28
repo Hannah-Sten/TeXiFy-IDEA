@@ -13,6 +13,13 @@ This inspection is for TeX Live only, MiKTeX automatically installs packages on 
 When using `\usepackage` or `\RequirePackage`, TeXiFy checks if the packages is installed.
 If it isn’t installed, it provides a quick fix to install the package.
 
+## Package update available
+_Since b0.9.10_
+
+When a package has an update available on CTAN, this inspection will provide a quickfix to update the package.
+Currently, it only works when tlmgr (TeX Live manager) is installed.
+The list of available package updates is cached until IntelliJ is restarted or the quickfix is used.
+
 ## Package name does not match file name
 _Since b0.6.10_
 

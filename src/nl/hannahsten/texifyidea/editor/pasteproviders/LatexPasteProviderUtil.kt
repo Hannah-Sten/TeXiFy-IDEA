@@ -4,7 +4,6 @@ import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConve
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.openingTags
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
@@ -18,15 +17,16 @@ fun convertHtmlToLatex(nodes: List<Node>, latexFile: LatexFile): String {
 
     for (node in nodes) {
         if (node.childNodeSize() == 0) {
-            when (node) {
+            out += when (node) {
                 // use wholeText to preserve newlines
-                is TextNode -> out += node.wholeText
+                is TextNode -> node.wholeText
                 is Element -> {
-                    out += handleElement(node, latexFile)
+                    handleElement(node, latexFile)
                 }
 
                 else -> {
-                    Log.error("Did not plan for " + node.javaClass.name + " please implement a case for this")
+                    // We don't know what is in there, but it is probably not text so skip it
+                    continue
                 }
             }
         }
@@ -62,4 +62,4 @@ private val tagDependencies = hashMapOf(
 )
 
 fun htmlTextIsFormattable(htmlIn: String): Boolean =
-    (PandocHtmlToLatexConverter.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it>") } && closingTags.keys.any { htmlIn.contains("<$it>") }
+    (PandocHtmlToLatexConverter.isPandocInPath && htmlIn.startsWith("<meta")) || openingTags.keys.any { htmlIn.contains("<$it") } && closingTags.keys.any { htmlIn.contains("</$it>") }

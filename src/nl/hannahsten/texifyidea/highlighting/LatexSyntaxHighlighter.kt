@@ -83,7 +83,12 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
             LatexTypes.END_TOKEN,
             LatexTypes.BEGIN_PSEUDOCODE_BLOCK,
             LatexTypes.MIDDLE_PSEUDOCODE_BLOCK,
-            LatexTypes.END_PSEUDOCODE_BLOCK
+            LatexTypes.END_PSEUDOCODE_BLOCK,
+            LatexTypes.START_IF,
+            LatexTypes.ELSE,
+            LatexTypes.END_IF,
+            LatexTypes.LEFT,
+            LatexTypes.RIGHT,
         )
 
         /*

@@ -29,7 +29,8 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
             // Filter ids that are already included in the local bib entries.
             .filter { it.id !in localEntries.filterIsInstance<BibtexEntry>().map { bib -> bib.id } }
 
-        val lookupItems = localEntries.mapNotNull { bibtexEntry ->
+        // Make sure the project makes sense (#3659)
+        val lookupItems = localEntries.filter { it.project == it.containingFile.project }.mapNotNull { bibtexEntry ->
             when (bibtexEntry) {
                 is BibtexEntry -> createLookupElementFromBibtexEntry(bibtexEntry)
                 is LatexCommands -> createLookupElementFromLatexCommand(bibtexEntry)
@@ -50,9 +51,11 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
         result.withPrefixMatcher(CamelHumpMatcher(prefix, false)).addAllElements(lookupItems + lookupItemsFromRemote)
     }
 
-    private fun createLookupElementFromBibtexEntry(bibtexEntry: BibtexEntry, remote: Boolean = false): LookupElementBuilder {
+    private fun createLookupElementFromBibtexEntry(bibtexEntry: BibtexEntry, remote: Boolean = false): LookupElementBuilder? {
         val lookupStrings = LinkedList(bibtexEntry.getAuthors())
         lookupStrings.add(bibtexEntry.getTitle())
+        // Ensure a consistent project (#3802)
+        if (bibtexEntry.id?.project != bibtexEntry.id?.containingFile?.project) return null
         return LookupElementBuilder.create(bibtexEntry.getIdentifier())
             .withPsiElement(bibtexEntry.id)
             .withPresentableText(bibtexEntry.getTitle())

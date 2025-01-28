@@ -39,7 +39,7 @@ open class ConfigureInverseSearchAction : AnAction() {
             addCancelAction()
             setOkOperation {
                 // First kill Sumatra to avoid having two instances open of which only one has the correct setting
-                Runtime.getRuntime().exec("taskkill /IM SumatraPDF.exe")
+                Runtime.getRuntime().exec(arrayOf("taskkill", "/IM", "SumatraPDF.exe"))
 
                 val path = PathManager.getBinPath()
                 var name = ApplicationNamesInfo.getInstance().scriptName
@@ -52,10 +52,10 @@ open class ConfigureInverseSearchAction : AnAction() {
                     // We will assume that since the user is using a 64-bit IDEA that name64 exists, this is at least true for idea64.exe and pycharm64.exe on Windows
                     name += "64"
                     // We also remove an extra "" because it opens an empty IDEA instance when present
-                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, nonBlocking = true)
+                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, discardOutput = true)
                 }
                 else {
-                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, nonBlocking = true)
+                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, discardOutput = true)
                 }
 
                 dialogWrapper.close(0)

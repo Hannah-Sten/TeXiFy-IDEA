@@ -6,10 +6,12 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.*
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
-import java.io.BufferedReader
+import org.freedesktop.dbus.connections.impl.DBusConnection
+import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
+import org.gnome.evince.Window
 import java.io.IOException
-import java.io.InputStreamReader
 
 /**
  * Listen on the D-Bus for inverse search signals coming from Evince.
@@ -22,6 +24,10 @@ object EvinceInverseSearchListener {
 
     private var currentCoroutineScope = CoroutineScope(Dispatchers.Default)
 
+    private var sessionConnection: DBusConnection? = null
+
+    private var syncSourceHandler: AutoCloseable? = null
+
     /**
      * Starts a listener which listens for inverse search actions from Evince.
      */
@@ -30,6 +36,22 @@ object EvinceInverseSearchListener {
         // The exact version required is not know, but 3.28 works and 3.0.2 does not (#2087), even though dbus is supported since 2.32
         if (SystemEnvironment.evinceVersion.majorVersion <= 3 && SystemEnvironment.evinceVersion.minorVersion <= 28) {
             Notification("LaTeX", "Old Evince version found", "Please update Evince to at least version 3.28 to use forward/backward search", NotificationType.ERROR).notify(project)
+            return
+        }
+
+        if (sessionConnection == null) {
+            // Create session connection here, so that if we're running tests this can fail silently
+            try {
+                sessionConnection = DBusConnectionBuilder.forSessionBus().build()
+            }
+            catch (e: Exception) {
+                Notification("LaTeX", "Cannot get connection to DBus", "Check if the correct packages are installed", NotificationType.ERROR).notify(project)
+                return
+            }
+        }
+
+        // Check if we already have a listener
+        if (syncSourceHandler != null) {
             return
         }
 
@@ -44,44 +66,10 @@ object EvinceInverseSearchListener {
      * Start listening for backward search calls on the D-Bus.
      */
     private fun startListening() {
-        try {
-            // Listen on the session D-Bus to catch SyncSource signals emitted by Evince
-            val commands = arrayOf("dbus-monitor", "--session")
-            val process = Runtime.getRuntime().exec(commands)
-            val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-            var line: String? = bufferedReader.readLine()
-
-            while (line != null && currentCoroutineScope.isActive) {
-                // Check if a SyncSource signal appeared from Evince and if so, read the contents
-                if (line.contains("interface=org.gnome.evince.Window; member=SyncSource")) {
-                    // Get the value between quotes
-                    val filenameLine = bufferedReader.readLine()
-                    var filename = filenameLine.substring(filenameLine.indexOf("\"") + 1, filenameLine.lastIndexOf("\""))
-                    filename = filename.replaceFirst("file://".toRegex(), "")
-
-                    // Pass over the "struct {" line
-                    bufferedReader.readLine()
-
-                    // Get the location represented by the struct
-                    val lineNumberLine = bufferedReader.readLine()
-                    val lineNumberString = lineNumberLine.substring(lineNumberLine.indexOf("int32") + 6, lineNumberLine.length).trim()
-                    val lineNumber = Integer.parseInt(lineNumberString)
-
-                    // Sync the IDE
-                    syncSource(filename, lineNumber)
-                }
-
-                // Check whether we would block before doing a blocking readLine call
-                // This is to ensure we can quickly stop this coroutine on plugin unload
-                while (!bufferedReader.ready()) {
-                    Thread.sleep(100)
-                    if (!currentCoroutineScope.isActive) return
-                }
-                line = bufferedReader.readLine()
-            }
-        }
-        catch (e: IOException) {
-            e.printStackTrace()
+        Log.debug("Starting Evince inverse search listener")
+        syncSourceHandler = sessionConnection?.addSigHandler(Window.SyncSource::class.java) { signal ->
+            val filename = signal.sourceFile.replaceFirst("file://".toRegex(), "")
+            syncSource(filename, signal.sourcePoint.line)
         }
     }
 
@@ -95,7 +83,7 @@ object EvinceInverseSearchListener {
         val path = PathManager.getBinPath()
         val name = ApplicationNamesInfo.getInstance().scriptName
 
-        val command = "$path/$name.sh --line $lineNumber \"$filePath\""
+        val command = arrayOf("$path/$name.sh", "--line", lineNumber.toString(), "\"$filePath\"")
 
         try {
             Runtime.getRuntime().exec(command)
@@ -106,6 +94,10 @@ object EvinceInverseSearchListener {
     }
 
     fun unload() {
+        // Remove the listener
+        syncSourceHandler?.close()
+        // Properly close the connection
+        sessionConnection?.close()
         currentCoroutineScope.cancel(CancellationException(("Unloading the plugin")))
     }
 }

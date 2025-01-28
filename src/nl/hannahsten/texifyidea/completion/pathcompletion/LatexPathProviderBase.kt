@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
-import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.replaceAfterFrom
 import java.io.File
@@ -34,6 +34,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     private var resultSet: CompletionResultSet? = null
     private var validExtensions: List<String>? = null
     private var absolutePathSupport = true
+    private var supportsAnyExtension = true
 
     companion object {
 
@@ -50,6 +51,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         if (parentCommand is RequiredFileArgument) {
             validExtensions = parentCommand.supportedExtensions
             absolutePathSupport = parentCommand.isAbsolutePathSupported
+            supportsAnyExtension = parentCommand.supportsAnyExtension
         }
 
         var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile) ?: autocompleteText
@@ -122,7 +124,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add completion entries for absolute path
      */
     private fun addAbsolutePathCompletion(baseDir: String) {
-        LocalFileSystem.getInstance().findFileByPath(baseDir)?.let { dirFile ->
+        if (baseDir.isBlank()) return
+        LocalFileSystem.getInstance().refreshAndFindFileByPath(baseDir)?.let { dirFile ->
             if (searchFolders()) {
                 addFolderNavigations(baseDir)
                 getContents(dirFile, true).forEach {
@@ -170,7 +173,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add file to autocompletion dialog
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
-        if (validExtensions != null) {
+        // Some commands like \input accept any file extension (supportsExtension), but showing only .tex files is probably a better user experience.
+        if (validExtensions != null && validExtensions!!.isNotEmpty() && validExtensions!![0].isNotEmpty()) {
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 
@@ -201,8 +205,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             val baseFile = this.originalFile.virtualFile
 
             if (this.originalFile.isLatexFile()) {
-                this.originalFile.findRootFile().containingDirectory?.virtualFile?.apply {
-                    resultList.add(this)
+                this.originalFile.findRootFiles().mapNotNull { it.containingDirectory?.virtualFile }.forEach {
+                    resultList.add(it)
                 }
             }
             else resultList.add(baseFile.parent)
@@ -272,18 +276,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * search in given path for subfiles or directories
      */
     private fun getContents(base: VirtualFile?, directory: Boolean): List<VirtualFile> {
-        val contents = java.util.ArrayList<VirtualFile>()
-
-        if (base == null) {
-            return contents
-        }
-
-        for (file in base.children) {
-            if (file.isDirectory == directory) {
-                contents.add(file)
-            }
-        }
-
-        return contents
+        return base?.children?.filter { it.isDirectory == directory } ?: mutableListOf()
     }
 }

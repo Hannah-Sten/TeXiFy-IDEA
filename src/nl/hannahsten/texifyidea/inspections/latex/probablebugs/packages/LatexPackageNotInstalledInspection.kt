@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -17,10 +17,14 @@ import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
+import nl.hannahsten.texifyidea.util.files.rerunInspections
+import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.projectSearchScope
@@ -49,48 +53,54 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
-        if (LatexSdkUtil.isTlmgrAvailable(file.project)) {
-            val installedPackages = TexLivePackages.packageList
-            val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
-                "\\ProvidesPackage", file.project,
-                file.project
-                    .projectSearchScope
-            )
-                .map { it.requiredParameter(0) }
-                .mapNotNull { it?.lowercase(Locale.getDefault()) }
-            val packages = installedPackages + customPackages
+        if (!LatexSdkUtil.isTlmgrAvailable(file.project)) return descriptors
 
-            val commands = file.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
+        if (TexLivePackages.packageList.isEmpty() && TexliveSdk.Cache.isAvailable) {
+            val result = "tlmgr list --only-installed".runCommand() ?: return emptyList()
+            TexLivePackages.packageList = Regex("i\\s(.*):").findAll(result)
+                .map { it.groupValues.last() }.toMutableList()
+        }
 
-            for (command in commands) {
-                @Suppress("ktlint:standard:property-naming")
-                val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
-                if (`package` !in packages) {
-                    // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
-                    if (
-                        knownNotInstalledPackages.contains(`package`) ||
-                        command.references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }.isEmpty()
-                    ) {
-                        descriptors.add(
-                            manager.createProblemDescriptor(
-                                command,
-                                "Package is not installed or \\ProvidesPackage is missing",
-                                InstallPackage(
-                                    SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
-                                    `package`,
-                                    knownNotInstalledPackages
-                                ),
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                isOntheFly
-                            )
+        val installedPackages = TexLivePackages.packageList
+        val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
+            LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project,
+            file.project
+                .projectSearchScope
+        )
+            .map { it.requiredParameter(0) }
+            .mapNotNull { it?.lowercase(Locale.getDefault()) }
+        val packages = installedPackages + customPackages
+
+        val commands = file.childrenOfType(LatexCommands::class)
+            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd || it.name == LatexGenericRegularCommand.REQUIREPACKAGE.cmd }
+
+        for (command in commands) {
+            @Suppress("ktlint:standard:property-naming")
+            val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
+            if (`package` !in packages) {
+                // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
+                if (
+                    knownNotInstalledPackages.contains(`package`) ||
+                    command.references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }.isEmpty()
+                ) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            command,
+                            "Package is not installed or \\ProvidesPackage is missing",
+                            InstallPackage(
+                                SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
+                                `package`,
+                                knownNotInstalledPackages
+                            ),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly
                         )
-                        knownNotInstalledPackages.add(`package`)
-                    }
-                    else {
-                        // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
-                        TexLivePackages.packageList.add(`package`)
-                    }
+                    )
+                    knownNotInstalledPackages.add(`package`)
+                }
+                else {
+                    // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
+                    TexLivePackages.packageList.add(`package`)
                 }
             }
         }
@@ -100,6 +110,11 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     private class InstallPackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String, val knownNotInstalledPackages: MutableSet<String>) : LocalQuickFix {
 
         override fun getFamilyName(): String = "Install $packageName"
+
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
+            // Nothing is modified
+            return IntentionPreviewInfo.EMPTY
+        }
 
         /**
          * Install the package in the background and add it to the list of installed
@@ -140,11 +155,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     override fun onSuccess() {
                         TexLivePackages.packageList.add(packageName)
                         // Rerun inspections
-                        DaemonCodeAnalyzer.getInstance(project)
-                            .restart(
-                                filePointer.containingFile
-                                    ?: return
-                            )
+                        filePointer.containingFile?.rerunInspections()
                     }
                 })
         }

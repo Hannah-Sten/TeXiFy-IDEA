@@ -2,22 +2,20 @@
 
 package nl.hannahsten.texifyidea.util.magic
 
-import com.intellij.openapi.project.Project
 import com.intellij.ui.Gray
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexIfCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexTodoCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 
@@ -133,10 +131,23 @@ object CommandMagic {
         CITE_STAR,
         PARENCITE_STAR,
         SUPERCITE,
+        CITES,
+        CITES_CAPITALIZED,
+        PARENCITES,
+        PARENCITES_CAPITALIZED,
+        FOOTCITES,
+        FOOTCITETEXTS,
+        SMARTCITES,
+        SMARTCITES_CAPITALIZED,
+        TEXTCITES,
+        TEXTCITES_CAPITALIZED,
+        SUPERCITES,
         AUTOCITE,
         AUTOCITE_CAPITALIZED,
         AUTOCITE_STAR,
         AUTOCITE_STAR_CAPITALIZED,
+        AUTOCITES,
+        AUTOCITES_CAPITALIZED,
         CITETITLE,
         CITETITLE_STAR,
         CITEYEAR_STAR,
@@ -145,17 +156,31 @@ object CommandMagic {
         CITEURL,
         VOLCITE,
         VOLCITE_CAPITALIZED,
+        VOLCITES,
+        VOLCITES_CAPITALIZED,
         PVOLCITE,
         PVOLCITE_CAPITALIZED,
+        PVOLCITES,
+        PVOLCITES_CAPITALIZED,
         FVOLCITE,
         FVOLCITE_CAPITALIZED,
         FTVOLCITE,
+        FTVOLCITE_CAPITALIZED,
+        FVOLCITES,
+        FVOLCITES_CAPITALIZED,
+        FTVOLCITES,
         SVOLCITE,
         SVOLCITE_CAPITALIZED,
+        SVOLCITES,
+        SVOLCITES_CAPITALIZED,
         TVOLCITE,
         TVOLCITE_CAPITALIZED,
+        TVOLCITES,
+        TVOLCITES_CAPITALIZED,
         AVOLCITE,
         AVOLCITE_CAPITALIZED,
+        AVOLCITES,
+        AVOLCITES_CAPITALIZED,
         FULLCITE,
         FOOTFULLCITE,
         NOTECITE,
@@ -166,6 +191,7 @@ object CommandMagic {
 
     /**
      * All commands that define a glossary entry of the glossaries package (e.g. \newacronym).
+     * When adding a command, define how to get the glossary name in [nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.extractGlossaryName].
      */
     val glossaryEntry =
         hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION).map { it.cmd }.toSet()
@@ -192,26 +218,9 @@ object CommandMagic {
 
     /**
      * All commands that define labels and that are present by default.
-     * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
+     * To include user defined commands, use [nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands] (may be significantly slower).
      */
     val labelDefinitionsWithoutCustomCommands = setOf(LABEL.cmd)
-
-    /**
-     * Get all commands defining labels, including user defined commands.
-     * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
-     *
-     * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
-     */
-    fun getLabelDefinitionCommands(project: Project): Set<String> {
-        // Check if updates are needed
-        CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
-        return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
-    }
-
-    /**
-     * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
-     */
-    fun getLabelDefinitionCommands() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
 
     /**
      * All commands that define bibliography items.
@@ -317,6 +326,7 @@ object CommandMagic {
         NEWTCOLORBOX_,
         PROVIDETCOLORBOX,
         NEWENVIRONMENTX,
+        LSTNEWENVIRONMENT,
     ).map { it.cmd }
 
     /**
@@ -352,12 +362,15 @@ object CommandMagic {
         "\\DeclareDocumentEnvironment"
     )
 
+    val graphicPathsCommands = listOf(GRAPHICSPATH, SVGPATH)
+
     /**
      * Commands that should not have the given file extensions.
      */
     val illegalExtensions = mapOf(
         INPUT.cmd to listOf(".tex"),
         INCLUDE.cmd to listOf(".tex"),
+        INCLUDESTANDALONE.cmd to listOf(".tex") + FileMagic.graphicFileExtensions.map { ".$it" },
         SUBFILEINCLUDE.cmd to listOf(".tex"),
         BIBLIOGRAPHY.cmd to listOf(".bib"),
         INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
@@ -404,21 +417,6 @@ object CommandMagic {
      * Commands that include bib files.
      */
     val bibliographyIncludeCommands = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }
-
-    @Suppress("unused")
-    val startIfs = hashSetOf(
-        IF, IFCAT, IFX,
-        IFCASE, IFNUM, IFODD,
-        IFHMODE, IFVMODE, IFMMODE,
-        IFINNER, IFDIM, IFVOID,
-        IFHBOX, IFVBOX, IFEOF,
-        IFTRUE, IFFALSE
-    ).map { it.cmd }
-
-    /**
-     * All commands that end if.
-     */
-    val endIfs = hashSetOf(FI.cmd)
 
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.
@@ -488,4 +486,9 @@ object CommandMagic {
     val foldableFootnotes = listOf(
         FOOTNOTE.cmd, FOOTCITE.cmd
     )
+
+    /**
+     * Commands that should be contributed to the to do toolwindow.
+     */
+    val todoCommands = setOf(LatexTodoCommand.TODO.cmd, LatexTodoCommand.MISSINGFIGURE.cmd)
 }

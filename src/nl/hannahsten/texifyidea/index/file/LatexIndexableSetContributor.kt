@@ -1,16 +1,26 @@
 package nl.hannahsten.texifyidea.index.file
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.IndexableSetContributor
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.files.addToLuatexPathSearchDirectories
+import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.isTestProject
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
@@ -22,6 +32,10 @@ import java.nio.file.Path
  * Specify the paths that have to be indexed for the [LatexExternalCommandIndex].
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
+
+    object Cache {
+        var externalDirectFileInclusions: Set<VirtualFile>? = null
+    }
 
     override fun getAdditionalProjectRootsToIndex(project: Project): MutableSet<VirtualFile> {
         // Avoid indexing in tests
@@ -59,8 +73,40 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         // Unfortunately, since .sty is a LaTeX file type, these will all be parsed, which will take an enormous amount of time.
         // Note that using project-independent getAdditionalRootsToIndex does not fix this
         roots.addAll(LatexSdkUtil.getSdkSourceRoots(project) { sdkType, homePath -> sdkType.getDefaultStyleFilesPath(homePath) })
-        Log.debug("Indexing source roots $roots")
 
+        roots.addAll(getTexinputsPaths(project, rootFiles = listOf(), expandPaths = false).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) })
+
+        // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
+        if (Cache.externalDirectFileInclusions == null && !DumbService.isDumb(project)) {
+            runInBackgroundBlocking(project, "Searching for inclusions by absolute path...") {
+                // Bibliography and direct input commands
+                val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
+                val externalFiles = runReadAction {
+                    LatexIncludesIndex.Util.getCommandsByNames(commandNames, project, GlobalSearchScope.projectScope(project))
+                }
+                    // We can't add single files, so take the parent
+                    .mapNotNull {
+                        val path = runReadAction { it.requiredParameter(0) } ?: return@mapNotNull null
+                        val file = if (File(path).isAbsolute) {
+                            LocalFileSystem.getInstance().findFileByPath(path)
+                        }
+                        else {
+                            runReadAction { it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
+                        }
+                        runReadAction { file?.parent }
+                    }
+                    .toMutableList()
+
+                // addtoluatexpath package
+                val luatexPathDirectories = addToLuatexPathSearchDirectories(project)
+                externalFiles.addAll(luatexPathDirectories)
+
+                Cache.externalDirectFileInclusions = externalFiles.toSet()
+            }
+        }
+        roots.addAll(Cache.externalDirectFileInclusions?.filter { it.exists() } ?: emptyList())
+
+        Log.debug("Indexing source roots $roots")
         return roots
     }
 

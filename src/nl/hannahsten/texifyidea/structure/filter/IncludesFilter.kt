@@ -5,7 +5,7 @@ import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
-import nl.hannahsten.texifyidea.util.getIncludeCommands
+import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 
 /**
  * @author Hannah Schellekens
@@ -16,7 +16,7 @@ class IncludesFilter : Filter {
         return if (treeElement !is LatexStructureViewCommandElement) {
             true
         }
-        else treeElement.commandName !in getIncludeCommands()
+        else treeElement.commandName !in updateAndGetIncludeCommands(treeElement.value.project)
     }
 
     override fun isReverted() = true

@@ -74,6 +74,7 @@ object LatexSdkUtil {
         if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
         if (type == LatexDistributionType.TEXLIVE && TexliveSdk.Cache.isAvailable) return true
         if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.Availability.isAvailable) return true
+        if (type == LatexDistributionType.DOCKER_TEXLIVE && DockerSdk.Availability.isAvailable) return true
         if (type == LatexDistributionType.WSL_TEXLIVE && isWslTexliveAvailable) return true
         return false
     }
@@ -148,7 +149,7 @@ object LatexSdkUtil {
      */
     fun getExecutableName(executableName: String, project: Project, latexDistributionType: LatexDistributionType? = null): String {
         // Prefixing the LaTeX compiler is not relevant for Docker MiKTeX (perhaps the path to the docker executable)
-        if (latexDistributionType == LatexDistributionType.DOCKER_MIKTEX) return executableName
+        if (latexDistributionType?.isDocker() == true) return executableName
 
         // Give preference to the project SDK if a valid LaTeX SDK is selected
         getLatexProjectSdk(project)?.let { sdk ->
@@ -200,6 +201,11 @@ object LatexSdkUtil {
      */
     fun getLatexProjectSdkType(project: Project): LatexSdk? {
         return getLatexProjectSdk(project)?.sdkType as? LatexSdk
+    }
+
+    fun getLatexDistributionType(project: Project): LatexDistributionType? {
+        val sdk = getLatexProjectSdk(project) ?: return null
+        return (sdk.sdkType as? LatexSdk)?.getLatexDistributionType(sdk)
     }
 
     /**

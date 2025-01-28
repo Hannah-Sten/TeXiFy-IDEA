@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -19,20 +19,20 @@ import nl.hannahsten.texifyidea.util.parser.childrenOfType
  * Uses the fileset cache to find all root files in the fileset.
  * Note that each root file induces a fileset, so a file could be in multiple filesets.
  */
-fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
-    val magicComment = runReadAction { magicComment() }
+suspend fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
+    val magicComment = smartReadAction(project) { magicComment() }
     val roots = mutableSetOf<PsiFile>()
 
     if (magicComment.contains(DefaultMagicKeys.ROOT)) {
         val path = magicComment.value(DefaultMagicKeys.ROOT) ?: ""
-        this.findFile(path)?.let { roots.add(it) }
+        this.findFile(path, supportsAnyExtension = true)?.let { roots.add(it) }
     }
 
-    if (this.isRoot()) {
+    if (smartReadAction(project) { this.isRoot() }) {
         roots.add(this)
     }
 
-    roots.addAll(fileset.filter { it.isRoot() })
+    roots.addAll(fileset.filter { smartReadAction(project) { it.isRoot() } })
 
     return if (roots.isEmpty()) setOf(this) else roots
 }
@@ -45,7 +45,11 @@ fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
  * Note: LaTeX Files can have more than one * root file, so using [findRootFiles] and explicitly handling the cases of
  * multiple root files is preferred over using [findRootFile].
  */
-fun PsiFile.findRootFile(): PsiFile = findRootFiles().firstOrNull() ?: this
+fun PsiFile.findRootFile(): PsiFile {
+    val allRoots = findRootFiles()
+    // If there are multiple root files, prefer the current one
+    return if (this in allRoots) this else allRoots.firstOrNull() ?: this
+}
 
 /**
  * Gets the set of files that are the root files of `this` file.
@@ -77,7 +81,7 @@ fun PsiFile.isRoot(): Boolean {
     // If so, then we assume that the file is compilable and must be a root file.
     val isMainFileInAnyConfiguration = project.getLatexRunConfigurations().any { it.options.mainFile.resolve() == this.virtualFile }
 
-    return runReadAction { isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles() }
+    return isMainFileInAnyConfiguration || documentEnvironment() || usesSubFiles()
 }
 
 /**

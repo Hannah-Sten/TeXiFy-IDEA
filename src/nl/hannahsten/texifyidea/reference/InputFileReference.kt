@@ -11,8 +11,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -21,18 +25,16 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import java.io.File
+import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
- *
- * @param defaultExtension Default extension of the command in which this reference is.
  */
 class InputFileReference(
     element: LatexCommands,
     val range: TextRange,
     val extensions: List<String>,
-    val defaultExtension: String
+    val supportsAnyExtension: Boolean,
 ) : PsiReferenceBase<LatexCommands>(element) {
 
     init {
@@ -41,20 +43,13 @@ class InputFileReference(
 
     companion object {
 
-        private val texinputs by lazy {
-            runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
-        }
-
         /**
          * Handle element rename, but taking into account whether the given
          * newElementName is just a filename which we have to replace,
          * or a full relative path (in which case we replace the whole path).
          */
-        fun handleElementRename(command: LatexCommands, newElementName: String, elementNameIsJustFilename: Boolean): PsiElement {
+        fun handleElementRename(command: LatexCommands, newElementName: String, elementNameIsJustFilename: Boolean, key: String, range: TextRange): PsiElement {
             // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
-            // It seems to be problematic to find the old filename we want to replace
-            // Since the parameter content may be a path, but we are just given a filename, just replace the filename
-            // We guess the filename is after the last occurrence of /
             val oldNode = command.node
 
             val newName = if ((oldNode?.psi as? LatexCommands)?.name in CommandMagic.illegalExtensions.keys) {
@@ -64,18 +59,12 @@ class InputFileReference(
                 newElementName
             }
 
-            val defaultNewText = "${command.name}{$newName}"
-            // Assumes that it is the last parameter, but at least leaves the options intact
-            val default = oldNode?.text?.replaceAfterLast('{', "$newName}", defaultNewText) ?: defaultNewText
-
             // Recall that \ is a file separator on Windows
-            val newText = if (elementNameIsJustFilename) {
-                oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
-                    ?.let { "\\" + it } ?: default
-            }
-            else {
-                default
-            }
+            val newKey = if (elementNameIsJustFilename) key.replaceAfterLast('/', newName, newName) else newName
+
+            // The file may be in a required or optional parameter
+            val newText = command.text.replaceRange(range.toIntRange(), newKey)
+
             val newNode = LatexPsiHelper(command.project).createFromText(newText).firstChild.node ?: return command
             if (oldNode == null) {
                 command.parent?.node?.addChild(newNode)
@@ -120,35 +109,14 @@ class InputFileReference(
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles().mapNotNull { it.virtualFile }
+        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles()
+            // If the current file is a root file, then we assume paths have to be relative to this file. In particular, when using subfiles then parts that are relative to one of the other root files should not be valid
+            .let { if (element.containingFile in it) listOf(element.containingFile) else it }
+            .mapNotNull { it.virtualFile }
         val rootDirectories = rootFiles.mapNotNull { it.parent }
 
         // Check environment variables
-        val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
-        val texinputsVariable = runManager.allConfigurationsList
-            .filterIsInstance<LatexRunConfiguration>()
-            .firstOrNull { it.options.mainFile.resolve() in rootFiles }
-            ?.options?.environmentVariables
-            ?.envs
-            ?.getOrDefault("TEXINPUTS", null)
-            // Not sure which of these takes precedence, or if they are joined together
-            ?: LatexmkRcFileFinder.getTexinputsVariable(element.containingFile, null)
-            ?: texinputs
-
-        for (texInputPath in texinputsVariable?.trim('\'')?.split(File.pathSeparator)?.filter { it.isNotBlank() } ?: emptyList()) {
-            val path = texInputPath.trimEnd(File.pathSeparatorChar)
-            searchPaths.add(path.trimEnd('/'))
-            // See the kpathsea manual, // expands to subdirs
-            if (path.endsWith("//")) {
-                LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
-                    searchPaths.addAll(
-                        parent.allChildDirectories()
-                            .filter { it.isDirectory }
-                            .map { it.path }
-                    )
-                }
-            }
-        }
+        searchPaths += getTexinputsPaths(element.project, rootFiles, expandPaths = true, latexmkSearchDirectory = element.containingFile?.virtualFile?.parent)
 
         // BIBINPUTS
         // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
@@ -162,6 +130,26 @@ class InputFileReference(
 //            }
         }
 
+        // Overrides the default for commands from the graphicx package
+        val extensions = if (!isBuildingFileset) {
+            val command = LatexCommand.lookup(element.name)?.firstOrNull()
+            if (command?.dependency == LatexPackage.GRAPHICX) {
+                // We cannot use the file set at this point, so we take the first command in the project and hope for the best
+                LatexCommandsIndex.Util.getCommandsByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, element.project, GlobalSearchScope.projectScope(element.project))
+                    .firstOrNull()
+                    ?.requiredParameter(0)
+                    ?.split(",")
+                    // Graphicx requires the dot to be included
+                    ?.map { it.trim(' ', '.') } ?: extensions
+            }
+            else {
+                extensions
+            }
+        }
+        else {
+            extensions
+        }
+
         var processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
         // Leading and trailing whitespaces seem to be ignored, at least it holds for \include-like commands
         processedKey = processedKey.trim()
@@ -172,15 +160,15 @@ class InputFileReference(
         @Suppress("KotlinConstantConditions")
         if (targetFile == null) {
             for (rootDirectory in rootDirectories) {
-                targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
+                targetFile = rootDirectory.findFile(filePath = processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
             }
         }
 
-        // Try content roots
-        if (targetFile == null && LatexSdkUtil.isMiktexAvailable) {
+        // Try content roots, also for non-MiKTeX situations to allow using this as a workaround in case references can't be resolved the regular way
+        if (targetFile == null) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
-                targetFile = moduleRoot.findFile(processedKey, extensions)
+                targetFile = moduleRoot.findFile(processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
             }
         }
@@ -188,14 +176,17 @@ class InputFileReference(
         // Try graphicspaths
         if (targetFile == null) {
             // If we are not building the fileset, we can make use of it
-            if (!isBuildingFileset && element.containingFile.includedPackages().contains(LatexGenericRegularCommand.GRAPHICSPATH.dependency)) {
-                // Add the graphics paths to the search paths
-                searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
+            if (!isBuildingFileset) {
+                val includedPackages = element.containingFile.includedPackages()
+                if (CommandMagic.graphicPathsCommands.any { includedPackages.contains(it.dependency) }) {
+                    // Add the graphics paths to the search paths
+                    searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
+                }
             }
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
                 for (rootDirectory in rootDirectories) {
-                    targetFile = rootDirectory.findFile(path + processedKey, extensions)
+                    targetFile = rootDirectory.findFile(path + processedKey, extensions, supportsAnyExtension)
                     if (targetFile != null) break
                 }
                 if (targetFile != null) break
@@ -203,10 +194,10 @@ class InputFileReference(
         }
 
         // Look for packages/files elsewhere using the kpsewhich command.
-        if (targetFile == null && lookForInstalledPackages) {
+        if (targetFile == null && lookForInstalledPackages && !element.project.isTestProject()) {
             targetFile = element.getFileNameWithExtensions(processedKey)
                 .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
-                .firstNotNullOfOrNull { getExternalFile(it) }
+                .firstNotNullOfOrNull { findFileByPath(it) }
         }
 
         if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
@@ -215,6 +206,14 @@ class InputFileReference(
         // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are
         if (!isBuildingFileset && targetFile == null && element.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
             targetFile = findAnywhereInProject(processedKey)
+        }
+
+        // addtoluatexpath package
+        if (targetFile == null) {
+            for (path in addToLuatexPathSearchDirectories(element.project)) {
+                targetFile = path.findFile(processedKey, extensions, supportsAnyExtension)
+                if (targetFile != null) break
+            }
         }
 
         if (targetFile == null) return null
@@ -249,7 +248,7 @@ class InputFileReference(
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {
-        return handleElementRename(element, newElementName, true)
+        return handleElementRename(element, newElementName, true, key, range)
     }
 
     // Required for moving referenced files
@@ -257,7 +256,7 @@ class InputFileReference(
         val newFile = givenElement as? PsiFile ?: return this.element
         // Assume LaTeX will accept paths relative to the root file
         val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
-        return handleElementRename(element, newFileName, false)
+        return handleElementRename(element, newFileName, false, key, range)
     }
 
     /**

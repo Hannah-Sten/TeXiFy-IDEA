@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
+import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
-import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.runCommandNonBlocking
 import java.io.File
 
 /**
@@ -21,19 +23,22 @@ object LatexPackageLocationCache {
      * Fill cache with all paths of all files in the LaTeX installation.
      * Note: this can take a long time.
      */
-    fun fillCacheWithKpsewhich(project: Project) {
+    suspend fun fillCacheWithKpsewhich(project: Project) {
         // We will get all search paths that kpsewhich has, expand them and find all files
         // Source: https://www.tug.org/texinfohtml/kpathsea.html#Casefolding-search
         // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.
         // We cannot rely on ls-R databases because they are not always populated, and running mktexlsr may run into permission issues.
         val executableName = LatexSdkUtil.getExecutableName("kpsewhich", project)
-        val searchPaths = (runCommand(executableName, "-show-path=tex") ?: ".") + File.pathSeparator + (runCommand(executableName, "-show-path=bib") ?: ".")
-        cache = runCommand(executableName, "-expand-path", searchPaths)?.split(File.pathSeparator)
+        val searchPaths = (runCommandNonBlocking(executableName, "-show-path=tex").standardOutput ?: ".") + File.pathSeparator + (runCommandNonBlocking(executableName, "-show-path=bib").standardOutput ?: ".")
+
+        cache = runCommandNonBlocking(executableName, "-expand-path", searchPaths, timeout = 10).standardOutput?.split(File.pathSeparator)
             ?.flatMap { LocalFileSystem.getInstance().findFileByPath(it)?.children?.toList() ?: emptyList() }
             ?.filter { !it.isDirectory }
             ?.toSet()
             ?.associate { it.name to it.path }
             ?.toMutableMap() ?: mutableMapOf()
+
+        Log.debug("Latex package location cache generated with ${cache?.size} paths")
     }
 
     /**
@@ -46,7 +51,7 @@ object LatexPackageLocationCache {
      */
     fun getPackageLocation(name: String, project: Project): String? {
         if (cache == null) {
-            fillCacheWithKpsewhich(project)
+            runBlocking { fillCacheWithKpsewhich(project) }
         }
 
         // Tectonic does not have kpsewhich, but works a little differently

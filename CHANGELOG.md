@@ -8,10 +8,171 @@ This beta release contains a completely new LaTeX run configuration. However, cu
 
 ### Fixed
 
-## [0.9.5-alpha.8] - 2024-03-30
+## [0.10.0] - 2025-01-27
+
+Welcome to TeXiFy IDEA 0.10.0! This release contains a lot of additions and performance improvements. Please report any UI freezes, slow typing or other performance issues to the GitHub issue tracker.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
 
 ### Added
 
+* Refresh file set cache in background
+* Support Tectonic V2 CLI in run configuration
+* Add basic support for multiple inputs in Tectonic.toml
+* Improve performance of file set cache used by inspections
+* Support label references to user defined listings environment
+* Add option to disable automatic compilation in power save mode
+* Convert automatic compilation settings to a combobox
+* Add experimental support for the addtoluatexpath package
+* Add inspection to check for LaTeX package updates
+* Add checkboxes to graphic insertion wizard for relative width or height
+* Add sections to breadcrumbs
+* Improve performance when starting a run configuration and when using autocompletion directly after starting the IDE
+* Change order in structure view to match source file and sectioning level 
+* Add command redefinitions to command definition filter in structure view
+* Add support for automatic language injection on the minted environment
+* Add support for automatic detection of custom command aliases for include commands
+* Add support for DeclareGraphicsExtensions
+* Add inspection to warn about a missing reference for a glossary occurrence
+* Do not fold sections in a command definition
+* Include optional parameters in spellcheck, if it contains text
+* Improve performance of finding files to be indexed
+* Show formatted file path in file not found inspection quickfix name
+* Automatically index bibliography files outside the project that are included by an absolute path
+* Disable quotes inspection when TeX ligatures are disabled by fontspec
+* Inspections can now be suppressed for any single line, or block of text
+
+### Fixed
+
+* Fix parse error when using commands with arguments in parameter of \href or \url
+* Fix parse error when using parentheses in a group in a key value command argument
+* Fix parse erron when using inline math in cases* environment in inline math
+* Fix exceptions #3813, #3818
+* Fix false positive non-breaking space warning for \nameref
+* Fix confusion with \micro and \mu unicode characters
+* Fix auto import from local bibtex file on Windows
+* Fix false positive for duplicate command definition inspection in if/else
+* Fix LaTeX files not showing up when choosing main file in run configuration
+* Fix various issues with the Grazie implementation, in particular default rules for Grazie Pro
+
+## [0.9.9] - 2024-12-01
+
+Welcome to TeXiFy IDEA 0.9.9! This release improves subfiles support, fixes some parser errors and fixes many other small bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Use theme foreground and background colors for equation preview
+* Add support for \includesvg
+* Support references in \subfix command
+* Provide autocompletion for all relevant directories when using subfiles
+* Do not format existing directories in the given path in the file creation quickfix dialog
+* Disable Evince inverse search on Windows to avoid a UI freeze on opening a second project
+* Use xdg-mime to choose a default pdf viewer in the run configuration template
+* Don't insert the right brace when in front of text
+* Add DeclareMathSymbol to indexed command definitions in installed packages
+* Add support for TEXMFHOME for reference resolving
+* Add diffcoeff and upgreek packages to autocompletion, by @Toseflo
+* Improve reference resolving when using subfiles
+* Add setting to disable auto-import of bibtex entries from remote libraries
+
+### Fixed
+
+* Disallow unmatched braces after \@ifnextchar
+* Fix exception #3771 when a file referenced from cache is deleted
+* Fix basic case of false positive of duplicate label inspection when user defined \if commands are used
+* Fix a parse error when using \else with a user defined \if-command
+* Fix relative path conversion in graphics insertion wizard by resolving relative to the root file
+* Fix exception #3763
+* Fix 'missing import' false positive in subfiles
+* Don't override the file icon for .txt files, by @Steve-Li-1998
+* Fix exceptions #3754 and #3326
+* Fix exceptions in structure view when command parameters are missing
+* Improve error report submitter for long stacktraces
+* Fix a parser issue with bidirectional arrow in TikZ
+* Fix default Docker image name when running Dockerized TeX Live without a project SDK
+* Always use content roots to resolve references
+* Fix 'package not found' error when using texlive-full on Windows, and improve running of system commands, by @tristankretzer
+* Fix rename of files when using subfiles
+* Fix incorrect 'package already included' warning for the subfiles package
+* Fix exception #3557 if using bibtex structure view when bibtex file type is reassigned to plain text
+* Avoid referencing obsolete psifiles, fix exception #3635
+
+## [0.9.8]
+
+Welcome to TeXiFy IDEA 0.9.8! This release adds a new intention, improves autocompletion and fixes some exceptions.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Add intention to swap command arguments, by @jojo2357
+* Insert \right) when typing \left( without using autocomplete, by @slideclimb
+* Update siunix commands in autocompletion, by @Toseflo
+
+### Fixed
+
+* Fix crash in structure view if section command has no parameters
+* Fix exceptions #3698, #3672, #3699 and #3659
+
+## [0.9.7] - 2024-07-12
+
+Welcome to TeXiFy IDEA 0.9.7! This release improves the Evince support by Tim Klocke (@taaem), adds a simple editor for postfix templates, and more.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve Evince forward/inverse search support, by @taaem
+* Support conversion of arguments in \def -> \newcommand quickfix, by @slideclimb
+* Add a simple editor for postfix templates, by @slideclimb
+* Add support for \ProvidesExpl(Class|File), by @Sirraide
+* Support TeX Live docker image
+* Formatter support for plain TeX \if-statements
+* Index files from the TEXINPUTS variable, for autocompletion
+
+### Fixed
+
+* Fix Evince synchronization after creating a new run configuration, by @taaem
+* Fix unresolved file reference for \input commands
+
+## [0.9.6] - 2024-06-01
+
+Welcome to TeXiFy IDEA 0.9.6! This release fixes an issue with the table insertion wizard, fixes pasting from a pdf file, and more.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Don't insert \right when brace is already matched, by @slideclimb
+* Show file and line number in 'go to definition' view, by @slideclimb
+* Do not select the extension when refactoring file names, by @jojo2357
+
+### Fixed
+
+* Handle file extensions case sensitive, by @jojo2357
+* Autocomplete \left* with \right* for all variants, by @jojo2357
+* Fix pasting text from pdf file
+* Fix table insertion wizard not inserting text
+
+## [0.9.5] - 2024-05-01
+
+Welcome to TeXiFy IDEA 0.9.5! This release automatically translates HTML from the clipboard to LaTeX when pasting, by @jojo2357, and includes a lot of additions and bug fixes!
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve performance when editing run configurations
+* Add support for multiline todos by @slideclimb
+* Added multicite versions of biblatex commands by @frankbits
 * Add \newcommandx and related commands from the xparse package, by @tmczar
 * Improve line wrapping by preferring line breaks at whitespace
 * Add support for the nomencl package
@@ -28,6 +189,8 @@ This beta release contains a completely new LaTeX run configuration. However, cu
 
 ### Fixed
 
+* Fix exceptions #3510, #3462, #3512
+* Fix parse error when using \BeforeBeginEnvironment or \AfterEndEnvironment
 * Fix quoted links in bibtex
 * Ignore \begin and \end commands in \newcommand definition in the parser
 * Fix a parser issue when having a single \begin or \end in a \newcommand definition
@@ -37,114 +200,6 @@ This beta release contains a completely new LaTeX run configuration. However, cu
 * Fix exception #3274 in the equation preview
 * Never use jlatexmath for the TikZ preview
 * Destroy invalid tokens for the remote libraries tool windows
-* Fix missing folding for commands in math environments, by @jojo2357
-* Fix an issue when inlining files with whitespace, by @jojo2357
-
-## [0.9.5-alpha.7] - 2024-03-09
-
-### Added
-
-* Add support for the nomencl package
-* Add starred and capitalized versions of cleveref commands to exceptions for non-breaking space inspection, by @niknetniko
-
-### Fixed
-
-* Fix a parser issue when having a single \begin or \end in a \newcommand definition
-
-## [0.9.5-alpha.6] - 2024-03-01
-
-### Added
-
-* Add option to the run configuration settings to run LaTeX commands before compiling the main file
-* Autocompletion for compiler arguments in run configuration settings
-* Support a local Zotero instance in the remote libraries tool window via the BBT plugin
-* Support Zotero groups in the remote libraries tool window
-* Support local BibTeX files in the remote libraries tool window
-* Improve file filters for the LaTeX package index
-* Improve \DescribeMacro handling for the package doocumentation index
-* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
-* Add option to disable indentation of environments, by @slideclimb
-
-### Fixed
-
-* Fix exception #2976
-* Fix exception #3469
-* Avoid line breaks when reformatting in the middle of commands, math and words
-* Fix exception #3274 in the equation preview
-* Never use jlatexmath for the TikZ preview
-* Destroy invalid tokens for the remote libraries tool windows
-* Fix missing folding for commands in math environments, by @jojo2357
-* Fix an issue when inlining files with whitespace, by @jojo2357
-
-## [0.9.5-alpha.4] - 2024-02-28
-
-### Added
-
-* Autocompletion for compiler arguments in run configuration settings
-* Support a local Zotero instance in the remote libraries tool window via the BBT plugin
-* Support Zotero groups in the remote libraries tool window
-* Support local BibTeX files in the remote libraries tool window
-* Improve file filters for the LaTeX package index
-* Improve \DescribeMacro handling for the package doocumentation index
-* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
-* Add option to disable indentation of environments, by @slideclimb
-
-### Fixed
-
-* Fix exception #3469
-* Avoid line breaks when reformatting in the middle of commands, math and words
-* Fix exception #3274 in the equation preview
-* Never use jlatexmath for the TikZ preview
-* Destroy invalid tokens for the remote libraries tool windows
-* Fix missing folding for commands in math environments, by @jojo2357
-* Fix an issue when inlining files with whitespace, by @jojo2357
-
-## [0.9.5-alpha.3] - 2024-02-11
-
-### Added
-
-* Support a local Zotero instance in the remote libraries tool window via the BBT plugin
-* Support Zotero groups in the remote libraries tool window
-* Support local BibTeX files in the remote libraries tool window
-* Improve file filters for the LaTeX package index
-* Improve \DescribeMacro handling for the package doocumentation index
-* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
-* Add option to disable indentation of environments, by @slideclimb
-
-### Fixed
-
-* Fix exception #3274 in the equation preview
-* Never use jlatexmath for the TikZ preview
-* Destroy invalid tokens for the remote libraries tool windows
-* Fix missing folding for commands in math environments, by @jojo2357
-* Fix an issue when inlining files with whitespace, by @jojo2357
-
-## [0.9.5-alpha.2] - 2024-02-10
-
-### Added
-
-* Improve file filters for the LaTeX package index
-* Improve \DescribeMacro handling for the package doocumentation index
-* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
-* Add option to disable indentation of environments, by @slideclimb
-
-### Fixed
-
-* Fix exception #3274 in the equation preview
-* Never use jlatexmath for the TikZ preview
-* Destroy invalid tokens for the remote libraries tool windows
-* Fix missing folding for commands in math environments, by @jojo2357
-* Fix an issue when inlining files with whitespace, by @jojo2357
-
-## [0.9.5-alpha.1] - 2024-02-06
-
-### Added
-
-* Automatically translate HTML from the clipboard to LaTeX, by @jojo2357
-* Add option to disable indentation of environments, by @slideclimb
-
-### Fixed
-
 * Fix missing folding for commands in math environments, by @jojo2357
 * Fix an issue when inlining files with whitespace, by @jojo2357
 
@@ -438,9 +493,15 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5-alpha.8...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.10.0
+[0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
+[0.9.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...v0.9.8
+[0.9.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.6...v0.9.7
+[0.9.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.5...v0.9.6
+[0.9.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.4
-[0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.3...v0.9.2
+[0.9.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.7.33...v0.9.0

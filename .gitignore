@@ -11,3 +11,5 @@ scripts/venv
 results/
 gen/
 **/node_modules
+.intellijPlatform
+.kotlin

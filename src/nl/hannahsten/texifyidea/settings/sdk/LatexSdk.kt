@@ -39,7 +39,7 @@ abstract class LatexSdk(name: String) : SdkType(name) {
     /**
      * Interface between this and [LatexDistributionType], which is used in the run configuration.
      */
-    abstract fun getLatexDistributionType(): LatexDistributionType
+    abstract fun getLatexDistributionType(sdk: Sdk): LatexDistributionType
 
     /**
      * Construct a valid path to the executable, given the homepath.

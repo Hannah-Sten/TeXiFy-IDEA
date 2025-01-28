@@ -3,8 +3,14 @@ package nl.hannahsten.texifyidea.editor.postfix
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
+import com.intellij.codeInsight.template.postfix.templates.PostfixTemplatesUtils
+import com.intellij.codeInsight.template.postfix.templates.editable.PostfixTemplateEditor
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.editor.postfix.editable.LatexEditablePostfixTemplate
+import nl.hannahsten.texifyidea.editor.postfix.editable.LatexPostfixTemplateEditor
+import nl.hannahsten.texifyidea.editor.postfix.editable.LatexPostfixTemplateExpressionCondition
+import org.jdom.Element
 
 class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContributor() {
 
@@ -33,6 +39,21 @@ class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContribu
 
     override fun getTemplates(): MutableSet<PostfixTemplate> = (templates + wrapWithTextCommandTemplates + wrapWithMathCommandTemplates) as MutableSet<PostfixTemplate>
 
+    /**
+     * To decide whether this template provider can add new templates, idea checks it its presentable name is non-null.
+     */
+    override fun getPresentableName() = "LaTeX"
+
+    override fun createEditor(templateToEdit: PostfixTemplate?): PostfixTemplateEditor? {
+        return if (templateToEdit == null) {
+            LatexPostfixTemplateEditor(this)
+        }
+        else if (templateToEdit is LatexEditablePostfixTemplate && !templateToEdit.isBuiltin) {
+            LatexPostfixTemplateEditor(this).apply { setTemplate(templateToEdit) }
+        }
+        else null
+    }
+
     override fun isTerminalSymbol(currentChar: Char): Boolean = (currentChar == '.')
 
     override fun afterExpand(file: PsiFile, editor: Editor) {}
@@ -41,4 +62,17 @@ class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContribu
         copyFile
 
     override fun preExpand(file: PsiFile, editor: Editor) {}
+
+    override fun readExternalTemplate(id: String, name: String, template: Element): PostfixTemplate? {
+        val liveTemplate = PostfixTemplatesUtils.readExternalLiveTemplate(template, this) ?: return null
+        val conditions = PostfixTemplatesUtils.readExternalConditions(template) { condition: Element? -> LatexPostfixTemplateExpressionCondition.readExternal(condition!!) }
+
+        return LatexEditablePostfixTemplate(id, name, liveTemplate, conditions, this)
+    }
+
+    override fun writeExternalTemplate(template: PostfixTemplate, parentElement: Element) {
+        if (template is LatexEditablePostfixTemplate) {
+            PostfixTemplatesUtils.writeExternalTemplate(template, parentElement)
+        }
+    }
 }

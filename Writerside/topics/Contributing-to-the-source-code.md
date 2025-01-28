@@ -30,7 +30,6 @@ Here we add `\newcommandx` to the `regularStrictCommandDefinitions`, which is th
 
 And here You go: it's done (at least for this simple example)
 
-[//]: # (todo: separate topic?)
 ## Building from source
 
 We assume that git, IntelliJ, java and LaTeX are installed. If not, follow the normal [installation instructions](Installation-guide.md) first.
@@ -97,6 +96,11 @@ But there is an important difference! The `name` is _indexed_ (see `LatexCommand
 This means that probably using `name` is recommended, as it would use the index, but it may be completely wrong if the index is not updated correctly.
 This can lead to strange behaviour (see e.g. [#1097](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1097)), which can be fixed by updating the index correctly.
 
+## Concurrency
+
+Never use the regular `runReadAction` from a coroutine! This read action will block write actions, but in a coroutine the regular cancellation check/exception does not work, which may lead to a deadlock.
+See https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#write-allowing-read-action-vs-nonblockingreadaction
+
 ## Helpful tools
 
 * <ui-path>Tools | View PSI Structure</ui-path>
@@ -159,7 +163,7 @@ If you get the error `Caused by: org.gradle.process.internal.ExecException: Proc
 
 ### The server may not support the client's requested TLS protocol versions: (TLSv1.2, TLSv1.3)
 
-Please make sure you’re using at least JDK 17, both as project SDK and in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path>.
+Please make sure you’re using at least JDK 21, both as project SDK and in <ui-path>Settings | Build, Execution, Deployment | Build Tools | Gradle | Gradle JVM</ui-path>.
 
 ### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
 

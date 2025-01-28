@@ -47,7 +47,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                                         (
                                             1 + StringUtil.offsetToLineNumber(
                                                 containing.text,
-                                                bibtexEntry.getTextOffset()
+                                                bibtexEntry.textOffset
                                             )
                                             ),
                                     true
@@ -66,8 +66,8 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
             val allCommands = file.commandsInFileSet()
             return file.findLatexLabelingElementsInFileSet()
                 .toSet()
-                .mapNotNull { labelingCommand: PsiElement ->
-                    val extractedLabel = labelingCommand.extractLabelName(referencingFileSetCommands = allCommands)
+                .mapNotNull { labelingElement: PsiElement ->
+                    val extractedLabel = labelingElement.extractLabelName(referencingFileSetCommands = allCommands)
                     if (extractedLabel.isBlank()) return@mapNotNull null
 
                     LookupElementBuilder
@@ -75,11 +75,11 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                         .bold()
                         .withInsertHandler(LatexReferenceInsertHandler())
                         .withTypeText(
-                            labelingCommand.containingFile.name + ":" +
+                            labelingElement.containingFile.name + ":" +
                                 (
                                     1 + StringUtil.offsetToLineNumber(
-                                        labelingCommand.containingFile.text,
-                                        labelingCommand.textOffset
+                                        labelingElement.containingFile.text,
+                                        labelingElement.textOffset
                                     )
                                     ),
                             true
@@ -94,6 +94,8 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
     init {
 
         // Only show Ctrl+click underline under the reference name
-        setRangeInElement(range)
+        if (range != null) {
+            rangeInElement = range
+        }
     }
 }

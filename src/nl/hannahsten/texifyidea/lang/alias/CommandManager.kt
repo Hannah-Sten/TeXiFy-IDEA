@@ -134,8 +134,8 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
      * When the given command already exixts.
      */
     @Throws(IllegalArgumentException::class)
-    fun registerAliasNoSlash(commandNoSlash: String, aliasNoSlash: String) {
-        registerAlias("\\" + commandNoSlash, "\\" + aliasNoSlash)
+    fun registerAliasNoSlash(commandNoSlash: String, aliasNoSlash: String, isRedefinition: Boolean = false) {
+        registerAlias("\\" + commandNoSlash, "\\" + aliasNoSlash, isRedefinition)
     }
 
     override fun findAllAliases(

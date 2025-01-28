@@ -39,4 +39,19 @@ class LatexDuplicateDefinitionInspectionTest : TexifyInspectionTestBase(LatexDup
         )
         myFixture.checkHighlighting()
     }
+
+    fun testIfthenelse() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \usepackage{ifthen}
+            \ifthenelse {\equal{\venue}{1}}{
+                \newcommand\examLocation{Building 1}
+            }{
+                \newcommand\examLocation{Building 2}
+            }
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

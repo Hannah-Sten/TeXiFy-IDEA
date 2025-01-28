@@ -14,15 +14,14 @@ import java.util.regex.Pattern
  * @param name
  * The name of the required argument.
  * @param commaSeparatesArguments True if arguments are separated by commas, for example \command{arg1,arg2}. If false, "arg1,arg2" will be seen as one argument.
+ * @param supportsAnyExtension True if the command accepts any file extension if provided explicitly.
  * @param extensions
  * All supported extensions, of which the first extension is the default extension.
  * @author Hannah Schellekens
  */
-open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported: Boolean = true, open val commaSeparatesArguments: Boolean, vararg extensions: String) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
+open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported: Boolean = true, open val commaSeparatesArguments: Boolean, vararg extensions: String, open val supportsAnyExtension: Boolean = true) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
 
     lateinit var supportedExtensions: List<String>
-    lateinit var defaultExtension: String
-        private set
     private var pattern: Pattern? = null
 
     init {
@@ -43,18 +42,14 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
         if (extensions.isEmpty()) {
             setRegex(regex.toString())
             this.supportedExtensions = supportedExtensions
-            this.defaultExtension = ""
             return
         }
-        else {
-            defaultExtension = extensions[0]
-        }
+
         regex.append("(")
         for (extension in extensions) {
             regex.append("\\.")
-            val extensionLower = extension.lowercase(Locale.getDefault())
-            regex.append(extensionLower)
-            supportedExtensions.add(extensionLower)
+            regex.append(extension)
+            supportedExtensions.add(extension)
             if (extension != extensions[extensions.size - 1]) {
                 regex.append("|")
             }

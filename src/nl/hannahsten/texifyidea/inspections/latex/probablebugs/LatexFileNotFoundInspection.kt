@@ -5,9 +5,10 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
-import com.intellij.refactoring.suggested.createSmartPointer
+import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -75,13 +76,13 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         // Create quick fixes for all extensions
         extensions.forEach {
-            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer()))
+            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer(), reference.key, reference.range))
         }
 
         // Find expected extension
         val extension = fileName.getFileExtension().ifEmpty {
-            reference.defaultExtension
-        }
+            reference.extensions.firstOrNull()
+        } ?: "tex"
 
         descriptors.add(
             manager.createProblemDescriptor(
@@ -100,9 +101,9 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
      *
      * @param filePath Path relative to the root file parent.
      */
-    class CreateNewFileWithDialogQuickFix(private val filePath: String, private val extension: String, private val elementPointer: SmartPsiElementPointer<LatexCommands>) : LocalQuickFix {
+    class CreateNewFileWithDialogQuickFix(private val filePath: String, private val extension: String, private val elementPointer: SmartPsiElementPointer<LatexCommands>, private val key: String, private val range: TextRange) : LocalQuickFix {
 
-        override fun getFamilyName() = "Create file ${filePath.appendExtension(extension)}"
+        override fun getFamilyName() = "Create file ${filePath.appendExtension(extension).formatAsFilePath()}"
 
         override fun startInWriteAction() = false
 
@@ -114,7 +115,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
             // Display a dialog to ask for the location and name of the new file.
             // By default, all inclusion paths are relative to the main file
-            val newFilePath = CreateFileDialog(root, filePath.replace("$root/", "").formatAsFilePath())
+            val newFilePath = CreateFileDialog(root, filePath.replace("$root/", ""))
                 .newFileFullPath ?: return
 
             runWriteAction {
@@ -126,7 +127,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     CommandMagic.illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
                 }
 
-                InputFileReference.handleElementRename(element, fileNameRelativeToRoot, false)
+                InputFileReference.handleElementRename(element, fileNameRelativeToRoot, false, key, range)
             }
         }
     }

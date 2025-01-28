@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditor
@@ -10,13 +13,11 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
-import com.intellij.psi.util.parents
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
-import nl.hannahsten.texifyidea.file.*
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import com.intellij.psi.util.*
+import nl.hannahsten.texifyidea.file.BibtexFileType
+import nl.hannahsten.texifyidea.file.ClassFileType
+import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
@@ -24,6 +25,10 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
+import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
@@ -31,7 +36,7 @@ import nl.hannahsten.texifyidea.util.parser.*
  * Get the file search scope for this psi file.
  */
 val PsiFile.fileSearchScope: GlobalSearchScope
-    get() = GlobalSearchScope.fileScope(this)
+    get() = runReadAction { GlobalSearchScope.fileScope(this) }
 
 /**
  * Looks for all file inclusions in a given file, excluding installed LaTeX packages.
@@ -46,9 +51,11 @@ fun PsiFile.findInclusions(): List<PsiFile> {
 
 /**
  * Checks if the file has LaTeX syntax.
+ * Not every psi file has a virtualfile, e.g. in intention preview
  */
-fun PsiFile.isLatexFile() = fileType == LatexFileType ||
-    fileType == StyleFileType || fileType == ClassFileType
+fun PsiFile.isLatexFile() = fileType == LatexFileType || fileType == StyleFileType || fileType == ClassFileType
+
+fun VirtualFile.isLatexFile() = fileType == LatexFileType || fileType == StyleFileType || fileType == ClassFileType
 
 /**
  * Checks if the file has a `.sty` extention. This is a workaround for file type checking.
@@ -64,7 +71,7 @@ fun PsiFile.isClassFile() = virtualFile?.extension == "cls"
  * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
  * Note this explicitly does not find files elsewhere on the system.
  */
-fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls")
+fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls", supportsAnyExtension = true)
 
 /**
  * If the file has a \documentclass command, return the class name, null otherwise.
@@ -101,19 +108,20 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
-internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
-    val result = HashSet<PsiFile>()
+// Suppress for Qodana only
+@Suppress("RedundantSuspendModifier", "RedundantSuppression")
+internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
+    // Using a single set avoids infinite loops
+    val result = mutableSetOf<PsiFile>()
     referencedFiles(result, rootFile)
     return result
 }
 
-/**
- * Recursive implementation of [referencedFiles].
- */
-private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
-    LatexIncludesIndex.Util.getItems(project, fileSearchScope).forEach command@{ command ->
-        command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile, true) }
+@Suppress("RedundantSuspendModifier", "RedundantSuppression")
+internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
+    LatexIncludesIndex.Util.getItemsNonBlocking(project, fileSearchScope).forEach command@{ command ->
+        smartReadAction(project) { command.references }.filterIsInstance<InputFileReference>()
+            .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true) } }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
@@ -126,20 +134,16 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile:
 /**
  * Looks up a file relative to this file.
  *
- * @param path
- *         The path relative to this file.
+ * @param path The path relative to this file.
+ * @param extensions Search for extensions in this order
+ * @param supportsAnyExtension If true, the found file is accepted even if the extension is not in the provided non-empty list.
  * @return The found file, or `null` when the file could not be found.
  */
-fun PsiFile.findFile(path: String, extensions: List<String>? = null): PsiFile? {
+fun PsiFile.findFile(path: String, extensions: List<String>? = null, supportsAnyExtension: Boolean): PsiFile? {
     if (project.isDisposed) return null
     val directory = containingDirectory?.virtualFile
 
-    val file = directory?.findFile(
-        path,
-        extensions
-            ?: FileMagic.includeExtensions
-    )
-        ?: return scanRoots(path, extensions)
+    val file = directory?.findFile(path, extensions ?: FileMagic.includeExtensions, supportsAnyExtension = supportsAnyExtension) ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
         StyleFileType != psiFile.fileType &&
@@ -164,10 +168,10 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
     return arguments.filter { it.isNotEmpty() }.mapNotNull {
         val extension = FileMagic.automaticExtensions[command.name]
         if (extension != null) {
-            findFile(it, listOf(extension))
+            findFile(it, listOf(extension), supportsAnyExtension = true)
         }
         else {
-            findFile(it)
+            findFile(it, supportsAnyExtension = true)
         }
     }.toSet()
 }
@@ -182,11 +186,7 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
 fun PsiFile.scanRoots(path: String, extensions: List<String>? = null): PsiFile? {
     val rootManager = ProjectRootManager.getInstance(project)
     rootManager.contentSourceRoots.forEach { root ->
-        val file = root.findFile(
-            path,
-            extensions
-                ?: FileMagic.includeExtensions
-        )
+        val file = root.findFile(path, extensions ?: FileMagic.includeExtensions, supportsAnyExtension = true)
         if (file != null) {
             return file.psiFile(project)
         }
@@ -204,7 +204,7 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  * @param commandName
  *          The name of the command including a backslash, or `null` for all commands.
  *
- * @see [LatexCommandsIndex.Util.getItems]
+ * see LatexCommandsIndex.Util.getItems
  */
 @JvmOverloads
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
@@ -316,5 +316,12 @@ fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
         exprBefore == null -> expr
         PsiTreeUtil.isAncestor(expr, exprBefore, false) -> exprBefore
         else -> expr
+    }
+}
+
+fun PsiFile.rerunInspections() {
+    if (!project.isTestProject()) {
+        // PSI/document/model changes are not allowed during highlighting in tests
+        DaemonCodeAnalyzer.getInstance(project).restart(this)
     }
 }

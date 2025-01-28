@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
@@ -57,6 +58,9 @@ class LatexPsiHelper(private val project: Project) {
     fun createFromText(text: String): PsiFile =
         PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
 
+    fun createBibtexFromText(text: String): PsiFile =
+        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.bib", BibtexLanguage, text, false, true)
+
     /**
      * Adds the supplied element to the content of the environment.
      * @param environment The environment whose content should be manipulated
@@ -79,8 +83,9 @@ class LatexPsiHelper(private val project: Project) {
         }
     }
 
-    fun createRequiredParameter(content: String): LatexRequiredParam {
-        val commandText = "\\label{$content}"
+    fun createRequiredParameter(content: String, hasBraces: Boolean = false): LatexRequiredParam {
+        // The command does not matter, we just need one to get it parsed as an argument
+        val commandText = if (hasBraces) "\\label$content" else "\\label{$content}"
         return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
     }
 

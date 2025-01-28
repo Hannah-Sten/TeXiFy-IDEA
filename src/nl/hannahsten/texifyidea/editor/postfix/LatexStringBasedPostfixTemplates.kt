@@ -63,6 +63,8 @@ internal object LatexWrapWithMathbbPostfixTemplate : LatexWrapWithCommandPostfix
 internal object LatexWrapWithBmPostfixTemplate : LatexWrapWithCommandPostfixTemplate("bm", mathOnly = true, pack = LatexPackage.BM)
 internal object LatexWrapWithMathcalPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathcal", name = "cal", mathOnly = true)
 
+// Not actually a postfix template, just a base class
+@Suppress("PostfixTemplateDescriptionNotFound")
 internal open class LatexWrapWithCommandPostfixTemplate(commandName: String, name: String = commandName, mathOnly: Boolean = false, textOnly: Boolean = false, pack: LatexPackage? = null) : ConstantStringBasedPostfixTemplate(
     name,
     "\\$commandName{expr}",
@@ -83,4 +85,8 @@ internal abstract class ConstantStringBasedPostfixTemplate(
     override fun getTemplateString(element: PsiElement) = template
 
     override fun getElementToRemove(expr: PsiElement?) = expr
+
+    override fun isBuiltin(): Boolean {
+        return true
+    }
 }

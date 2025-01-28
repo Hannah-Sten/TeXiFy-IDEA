@@ -7,15 +7,16 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
+import com.intellij.psi.util.elementType
+import com.intellij.psi.util.endOffset
+import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
@@ -68,6 +69,12 @@ open class LatexAnnotator : Annotator {
         // Commands.
         else if (psiElement is LatexCommands) {
             annotateCommands(psiElement, annotationHolder)
+        }
+        else if (psiElement.elementType == LatexTypes.LEFT || psiElement.elementType == LatexTypes.RIGHT) {
+            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+                .range(psiElement)
+                .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                .create()
         }
         else if (psiElement.isComment()) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
@@ -214,7 +221,7 @@ open class LatexAnnotator : Annotator {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
-            in getLabelDefinitionCommands() -> {
+            in getLabelDefinitionCommandsNoUpdate() -> {
                 LatexSyntaxHighlighter.LABEL_DEFINITION
             }
             // Bibliography references (citations).
@@ -258,7 +265,6 @@ open class LatexAnnotator : Annotator {
     /**
      * Annotates the contents of the given parameter with the given style.
      */
-    @Suppress("USELESS_CAST")
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
         val firstContentChild = parameter.firstChildOfType(LatexContent::class)
         val firstParamChild = parameter.firstChildOfType(LatexRequiredParamContent::class)

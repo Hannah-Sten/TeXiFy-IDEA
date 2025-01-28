@@ -95,7 +95,7 @@ class BibtexRunConfiguration(
         environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
         val mainFilePath = parent.getChildText(MAIN_FILE)
-        mainFile = if (mainFilePath != null) {
+        mainFile = if (mainFilePath.isNullOrBlank().not()) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
         }
         else {
@@ -103,7 +103,7 @@ class BibtexRunConfiguration(
         }
 
         val auxDirPath = parent.getChildText(AUX_DIR)
-        bibWorkingDir = if (auxDirPath != null) {
+        bibWorkingDir = if (auxDirPath.isNullOrBlank().not()) {
             LocalFileSystem.getInstance().findFileByPath(auxDirPath)
         }
         else {

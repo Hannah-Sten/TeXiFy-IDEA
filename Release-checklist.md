@@ -5,12 +5,12 @@
 - [ ] Run ctan.py
 
 - [ ] Add welcome text to Changelog.md
-- [ ] Update welcome text
 - [ ] Update version in gradle.properties
-- [ ] run patchChangelog (ideally this would be done for the publishPlugin task, but somehow that produces an 'Unreleased' title instead of 0.x.x)
+- [ ] run patchChangelog
 - [ ] Delete alpha versions from changelog
-- [ ] runIDE and check the changelog is formatted correctly
+- [ ] runIDE and check the changelog is formatted correctly, then close the dev instance
 - [ ] Run publishPlugin
+- [ ] Re-exclude Sumatra dlls in build.gradle.kts
 - [ ] Merge PR
 - [ ] buildPlugin and release on GitHub, tag version: v0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone

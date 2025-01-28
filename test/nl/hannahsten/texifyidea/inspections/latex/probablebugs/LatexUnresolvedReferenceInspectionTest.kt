@@ -1,10 +1,14 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import nl.hannahsten.texifyidea.configureByFilesWithMockCache
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.junit.Test
 
@@ -71,9 +75,16 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     }
 
     fun testBibtexReference() {
-        val name = getTestName(false) + ".tex"
-        myFixture.configureByFiles(name, "references.bib")
-        myFixture.checkHighlighting()
+        try {
+            val name = getTestName(false) + ".tex"
+            myFixture.configureByFilesWithMockCache(name, "references.bib")
+
+            myFixture.checkHighlighting()
+        }
+        finally {
+            clearAllMocks()
+            unmockkAll()
+        }
     }
 
     fun testFigureReferencedCustomCommandOptionalParameter() {
@@ -97,6 +108,35 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             """.trimIndent()
         )
         CommandManager.updateAliases(setOf("\\label"), project)
+        myFixture.checkHighlighting()
+    }
+
+    fun testFigureReferencedCustomListingsEnvironment() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \lstnewenvironment{java}[2][]{
+                \lstset{
+                    captionpos=b,
+                    language=Java,
+                % other style attributes
+                    caption={#1},
+                    label={#2},
+                }
+            }{}
+
+            \begin{java}[Test]{lst:test}
+                class Main {
+                    public static void main(String[] args) {
+                        return "HelloWorld";
+                    }
+                }
+            \end{java}
+
+            \ref{lst:test}
+            """.trimIndent()
+        )
+        EnvironmentManager.updateAliases(setOf("lstlisting"), project)
         myFixture.checkHighlighting()
     }
 

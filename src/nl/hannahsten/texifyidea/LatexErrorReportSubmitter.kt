@@ -81,10 +81,18 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             ?: event?.message
             ?: "Crash Report: <Fill in title>"
         val body = event?.throwableText ?: "Please paste the full stacktrace from the IDEA error popup."
+        // In some cases, very long stacktraces can refer to TeXiFy code only at the bottom (after 7000 characters), but we do want to submit this information, so we trim the middle part of the stacktrace
+        val maximumUrlSize = 6000
+        val smallBody = if ("at nl.hannahsten.texifyidea" in body && "at nl.hannahsten.texifyidea" !in body.take(maximumUrlSize)) {
+            Util.filterInterestingLines(body)
+        }
+        else {
+            body
+        }
 
         val builder = StringBuilder(ISSUE_URL)
         try {
-            builder.append(URLEncoder.encode(title, ENCODING))
+            builder.append(URLEncoder.encode(title.take(500), ENCODING))
             builder.append("&body=")
 
             val applicationInfo = ApplicationInfo.getInstance().let { "${it.fullApplicationName} (build ${it.build})" }
@@ -94,7 +102,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             builder.append(URLEncoder.encode("### TeXiFy IDEA version\n${Util.currentVersion}\n\n", ENCODING))
             builder.append(URLEncoder.encode("### Description\n", ENCODING))
             builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
-            builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(6000)}\n```", ENCODING))
+            builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${smallBody.take(6000)}\n```", ENCODING))
         }
         catch (e: UnsupportedEncodingException) {
             consumer.consume(
@@ -126,28 +134,40 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             // Create xml mapper that doesn't fail on unknown properties. This allows us to only define the properties we need.
             val mapper = XmlMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-            with(URL(JETBRAINS_API_URL).openConnection() as HttpURLConnection) {
+            val connection = (URI.create(JETBRAINS_API_URL).toURL().openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
                 connectTimeout = 1000
                 readTimeout = 1000
+            }
 
-                val inputString: String = try {
-                    inputStream.reader().use { it.readText() }
-                }
-                catch (e: SocketTimeoutException) {
-                    return latestVersionCached
-                }
-                latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
-                    .category
-                    ?.maxByOrNull { it.version }
-                    ?: latestVersionCached
-
+            val inputString: String = try {
+                connection.inputStream.reader().use { it.readText() }
+            }
+            catch (e: SocketTimeoutException) {
                 return latestVersionCached
             }
+            latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
+                .category
+                ?.maxByOrNull { it.version }
+                ?: latestVersionCached
+
+            return latestVersionCached
         }
 
         val currentVersion by lazy {
             PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
+        }
+
+        /**
+         * If the stacktrace is too long, collect lines referring to TeXiFy only.
+         */
+        fun filterInterestingLines(body: String): String {
+            val lines = body.split("\n").filter { it.isNotBlank() }
+            val texifyLines = lines.mapIndexedNotNull { i: Int, line: String -> if ("nl.hannahsten.texifyidea" in line || "Caused by:" in line) i else null }
+            val interestingLines = ((0..10).toSet() + texifyLines.flatMap { listOf(it - 1, it, it + 1) }.toSet()).toList().sorted()
+            return interestingLines.foldIndexed("") { i, stacktrace, lineIndex ->
+                stacktrace + (if (i > 0 && interestingLines[i - 1] < lineIndex - 1) "\n        (...)" else "") + "\n" + lines.getOrElse(lineIndex) { "" }.take(500)
+            }.trim()
         }
     }
 

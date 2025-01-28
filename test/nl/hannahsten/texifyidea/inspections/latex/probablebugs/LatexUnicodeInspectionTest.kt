@@ -95,6 +95,13 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
         testNamedQuickFix("é", "\\'e", "Escape Unicode character", 2)
     }
 
+    fun `test mu`() {
+        setUnicodeSupport(false)
+
+        testNamedQuickFix("$ µ$", "$ \\micro$", "Escape Unicode character", 1)
+        testNamedQuickFix("$ μ$", "$ \\mu$", "Escape Unicode character", 1)
+    }
+
     @Suppress("NonAsciiCharacters")
     fun `test escape unicode quick fix î`() {
         setUnicodeSupport(false)

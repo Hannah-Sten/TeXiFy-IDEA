@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
@@ -8,6 +10,8 @@ import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.algorithm.DFS
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Compute and cache for each package style file all the other style files it includes (directly or indirectly).
@@ -18,30 +22,49 @@ object LatexExternalPackageInclusionCache {
 
     private val cache = concurrentMapOf<LatexPackage, Set<LatexPackage>>()
 
+    private var isFillingCache = AtomicBoolean(false)
+
     /**
      * Map every LaTeX package style file to all the style files it includes, directly or indirectly.
      */
     @Synchronized
-    fun getAllPackageInclusions(project: Project): Map<LatexPackage, Set<LatexPackage>> {
+    fun updateOrGetCache(project: Project): Map<LatexPackage, Set<LatexPackage>> {
         if (cache.isNotEmpty() || DumbService.isDumb(project)) return cache
+
+        // Make sure the index is ready (#3754)
+        if (FileBasedIndex.getInstance().getIndexModificationStamp(LatexExternalPackageInclusionIndex.Cache.id, project) < 0) return cache
 
         val directChildren = mutableMapOf<LatexPackage, MutableSet<LatexPackage>>()
 
         // Get direct children from the index
-        FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project).forEach { indexKey ->
-            FileBasedIndex.getInstance().processValues(
-                LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
-                    val key = LatexPackage(file.name.removeFileExtension())
-                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
-                    true
-                },
-                GlobalSearchScope.everythingScope(project)
-            )
-        }
+        if (isFillingCache.getAndSet(true)) return cache
+        // ???
+        runInEdt {
+            runInBackgroundBlocking(project, "Retrieving LaTeX package inclusions...") { indicator ->
+                try {
+                    runReadAction { FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }.forEach { indexKey ->
+                        runReadAction {
+                            FileBasedIndex.getInstance().processValues(
+                                LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
+                                    indicator.checkCanceled()
+                                    val key = LatexPackage(file.name.removeFileExtension())
+                                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
+                                    true
+                                },
+                                GlobalSearchScope.everythingScope(project)
+                            )
+                        }
+                    }
 
-        // Do some DFS for indirect inclusions
-        for (latexPackage in directChildren.keys) {
-            cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
+                    // Do some DFS for indirect inclusions
+                    for (latexPackage in directChildren.keys) {
+                        cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
+                    }
+                }
+                finally {
+                    isFillingCache.set(false)
+                }
+            }
         }
 
         return cache
@@ -52,7 +75,7 @@ object LatexExternalPackageInclusionCache {
      */
     fun getAllIndirectlyIncludedPackages(packages: Collection<LatexPackage>, project: Project): Set<LatexPackage> {
         val result = packages.toMutableSet()
-        val allInclusions = getAllPackageInclusions(project)
+        val allInclusions = updateOrGetCache(project)
         for (latexPackage in packages) {
             result.addAll(allInclusions[latexPackage] ?: emptySet())
         }

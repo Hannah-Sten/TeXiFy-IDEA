@@ -13,15 +13,11 @@ class LatexParagraphPresentation(paragraphCommand: LatexCommands) : EditableHint
     private var hint = ""
 
     init {
-        if (paragraphCommand.commandToken.text != "\\paragraph") {
-            throw IllegalArgumentException("command is no \\paragraph-command")
-        }
-
         if (paragraphCommand.getRequiredParameters().isEmpty()) {
             this.paragraphName = ""
         }
         else {
-            this.paragraphName = paragraphCommand.getRequiredParameters()[0]
+            this.paragraphName = paragraphCommand.getRequiredParameters().firstOrNull() ?: "Unnamed paragraph"
         }
     }
 

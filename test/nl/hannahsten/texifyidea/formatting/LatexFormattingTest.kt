@@ -155,6 +155,44 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testPictureParameter() {
+        """
+        \begin{textblock*}{\paperwidth}[0.5,0.5](0.5\paperwidth,0.5\paperheight)
+            Thank you for your attention.
+        \end{textblock*}
+        """.trimIndent() `should be reformatted to` """
+        \begin{textblock*}{\paperwidth}[0.5,0.5](0.5\paperwidth,0.5\paperheight)
+            Thank you for your attention.
+        \end{textblock*}
+        """.trimIndent()
+    }
+
+    fun testLeftRight() {
+        """
+        \[
+        \left(
+        \xi
+        a + b
+        + c
+        \left[
+        \frac a b
+        \right]
+        \right)
+        \]
+        """.trimIndent() `should be reformatted to` """
+         \[
+             \left(
+                 \xi
+                 a + b
+                 + c
+                 \left[
+                     \frac a b
+                 \right]
+             \right)
+         \]
+        """.trimIndent()
+    }
+
     fun `test formatter off and on comments`() {
         """
 % @formatter:off
@@ -227,6 +265,57 @@ fun Int?.ifPositiveAddTwo(): Int =
                     }
                 }
             \end{algorithm}
+        """.trimIndent()
+    }
+
+    fun testPlainIf() {
+        """
+            \ifx\mycmd\undefined
+            undefed
+            \else
+          \if\mycmd1
+          defed, 1
+          \else
+          defed
+          \fi
+            \fi
+        """.trimIndent() `should be reformatted to` """
+            \ifx
+                \mycmd\undefined
+                undefed
+            \else
+                \if
+                    \mycmd1
+                    defed, 1
+                \else
+                    defed
+                \fi
+            \fi
+        """.trimIndent()
+    }
+
+    fun testPlainUnknownIf() {
+        """
+            \ifx\mycmd\undefined
+            undefed
+            \else
+          \ifaxp\mycmd1%\ifaxp is not a known if
+          defed, 1
+          \else
+          defed
+          \fi
+            \fi
+        """.trimIndent() `should be reformatted to` """
+            \ifx
+                \mycmd\undefined
+                undefed
+            \else
+                \ifaxp\mycmd1%\ifaxp is not a known if
+                defed, 1
+            \else
+                defed
+            \fi
+            \fi
         """.trimIndent()
     }
 

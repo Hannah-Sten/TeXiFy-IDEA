@@ -56,7 +56,8 @@ latexFile ::= content
 // Make sure that there is a root element with multiple children, for example for Grazie to allow ignoring certain types of no_math_content
 content ::= no_math_content*
 
-no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | normal_text
+// When updating this list, consider updating other _content lists
+no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | normal_text | END_IF | ELSE | LEFT | RIGHT
 
 normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA | ANGLE_PARAM)+
 
@@ -75,6 +76,12 @@ pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content?
 
 pseudocode_block_content ::= no_math_content*
 
+// Plain TeX \if...\fi, note that user defined ifs are not included so there may be unmatched \fi or \else
+if_block ::= START_IF if_block_content? (ELSE if_block_content?)* END_IF { pin=1 }
+
+// no_math_content without end_if
+if_block_content ::= (raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | normal_text | LEFT | RIGHT)*
+
 commands ::= COMMAND_TOKEN STAR? parameter* {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
@@ -84,6 +91,11 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     implements=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }
 
+// To allow indenting the content between left( and right), we need it as a separate element
+// This is no_math_content without the loose left and right, we need this to make sure a complete left_right situation is parsed as a left_right and not as two separate left and right
+left_right_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | normal_text | END_IF | ELSE
+// Allow unmatched left and right
+left_right ::= LEFT (OPEN_PAREN | OPEN_ANGLE_BRACKET | OPEN_BRACE | OPEN_BRACKET | PIPE)? left_right_content* RIGHT (CLOSE_PAREN | CLOSE_ANGLE_BRACKET | CLOSE_BRACE | CLOSE_BRACKET | PIPE)?
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
@@ -113,15 +125,16 @@ optional_key_val_key ::= optional_param_content+ {
 // a key and a value.
 required_param ::= OPEN_BRACE (strict_key_val_pair (COMMA strict_key_val_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=1 }
 
+// Picture environment (and derived environments) from beamer uses parentheses for arguments
 picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 
 // These are like content, but no brackets and with parameter_text instead of normal_text
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
-optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
+optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ELSE | LEFT | RIGHT
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ELSE  | ANGLE_PARAM | LEFT | RIGHT
 // Cannot contain ( or )
-picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
+picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | END_IF | ELSE | LEFT | RIGHT
 
 strict_key_val_pair ::= key_val_key EQUALS key_val_value?
 
@@ -132,7 +145,7 @@ key_val_key ::= (group | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | 
 key_val_value ::= key_val_content+ {
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexKeyValValueImplMixin"
 }
-key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | math_environment
+key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | commands | left_right | math_environment
 
 
 // The lowest level of a parameter must have the getReferences etc. implemented
@@ -140,7 +153,7 @@ key_val_content ::= parameter_text | parameter_group | OPEN_PAREN | CLOSE_PAREN 
 // So, the following is like normal_text
 // This assumes that parameter text which is a reference, appears directly under param_content
 // Commands is here instead of in required_param_content because it can be part of reference text for example to a file
-parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+ {
+parameter_text ::= (commands | left_right | NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | PIPE | EXCLAMATION_MARK | ELSE | LEFT | RIGHT)+ {
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterTextImplMixin"
 }
 
@@ -152,7 +165,7 @@ parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }
 // Be sure to capture the whitespace before and after the actual content as groups are meant to capture
 // *everything* inside them.
 // This element is needed instead of parameter_text in order to avoid parse errors for various other tokens that do not appear in parameter_text because they are not usually part of the reference
-parameter_group_text ::= (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
+parameter_group_text ::= (parameter_text | group | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | OPEN_PAREN | CLOSE_PAREN | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
 
 comment ::= COMMENT_TOKEN
 

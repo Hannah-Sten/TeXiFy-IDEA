@@ -2,14 +2,12 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.parentOfType
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy
 import com.intellij.spellchecker.tokenizer.Tokenizer
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.Argument.Type
-import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.hasParent
@@ -31,8 +29,9 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         if (psiElement.elementType == LatexTypes.COMMAND_TOKEN ||
             psiElement.elementType == LatexTypes.COMMAND_IFNEXTCHAR ||
             psiElement.elementType == LatexTypes.COMMENT_TOKEN ||
-            isBeginEnd(psiElement) ||
-            psiElement.hasParent(LatexOptionalParam::class)
+            psiElement.elementType == LatexTypes.LEFT ||
+            psiElement.elementType == LatexTypes.RIGHT ||
+            isBeginEnd(psiElement)
         ) {
             return EMPTY_TOKENIZER
         }
@@ -55,30 +54,35 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
     }
 
     private fun isBeginEnd(element: PsiElement): Boolean {
-        var elt: PsiElement? = PsiTreeUtil.getParentOfType(element, LatexBeginCommand::class.java)
-        if (elt != null) {
-            return true
-        }
-
-        elt = PsiTreeUtil.getParentOfType(element, LatexEndCommand::class.java)
-        return elt != null
+        return element.parentOfType<LatexEndCommand>() != null || element.parentOfType<LatexBeginCommand>() != null
     }
 
     /**
      * Get the argument (with type) from TeXiFy knowledge that corresponds with the current psi element.
      */
     private fun getArgument(leaf: LeafPsiElement): Argument? {
-        val parent = PsiTreeUtil.getParentOfType(leaf, LatexCommands::class.java) ?: return null
+        val parent = leaf.parentOfType<LatexCommands>() ?: return null
 
-        val arguments = getArguments(parent.commandToken.text.substring(1)) ?: return null
+        val arguments = getArguments(parent.name?.substring(1) ?: return null) ?: return null
+        val requiredArguments = arguments.filterIsInstance<RequiredArgument>()
+        val optionalArguments = arguments.filterIsInstance<OptionalArgument>()
 
-        val realParams = parent.getRequiredParameters()
+        val requiredParams = parent.getRequiredParameters()
         // Note that a leaf may be only part of a parameter
-        val parameterIndex = realParams.indexOf(leaf.firstParentOfType(LatexParameterText::class)?.text)
-        return if (parameterIndex < 0 || parameterIndex >= arguments.size) {
+        val parameterText = leaf.firstParentOfType(LatexParameterText::class)?.text
+        val parameterIndex = requiredParams.indexOf(parameterText)
+        if (parameterIndex >= 0 && parameterIndex < requiredArguments.size) {
+            return arguments[parameterIndex]
+        }
+
+        // Also check optional arguments, if not key-value pairs it may contain text
+        val optionalParamIndex = parent.getOptionalParameterMap().map { it.key.text }.indexOf(parameterText)
+        return if (optionalParamIndex >= 0 && optionalParamIndex < optionalArguments.size) {
+            optionalArguments[optionalParamIndex]
+        }
+        else {
             null
         }
-        else arguments[parameterIndex]
     }
 
     private fun getArguments(commandName: String): Array<out Argument>? {

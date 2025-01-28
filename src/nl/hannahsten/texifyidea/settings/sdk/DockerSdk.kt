@@ -8,18 +8,19 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
+import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
 import javax.swing.JComponent
 
 /**
- * Currently, we only support MiKTeX Docker images, but it wouldn't be too difficult to extend for other images.
+ * Currently, we only support official MiKTeX/texlive Docker images, but it wouldn't be too difficult to extend for other images.
  */
 class DockerSdk : LatexSdk("LaTeX Docker SDK") {
 
     object Availability {
         val isAvailable: Boolean by lazy {
-            getAvailableImages().any { it.contains("miktex") }
+            getAvailableImages().any { it.contains("miktex") || it.contains("texlive") }
         }
 
         fun getAvailableImages(): List<String> =
@@ -47,11 +48,18 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
     }
 
     override fun isValidSdkHome(path: String): Boolean {
-        // For now we only support miktex images
-        return "$path/docker image ls".runCommand()?.contains("miktex") ?: false
+        return "$path/docker image ls".runCommand()?.containsAny(setOf("miktex", "texlive")) == true
     }
 
-    override fun getLatexDistributionType() = LatexDistributionType.DOCKER_MIKTEX
+    override fun getLatexDistributionType(sdk: Sdk): LatexDistributionType {
+        val imageName = (sdk.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName
+        return if (imageName?.contains("texlive") == true) {
+            LatexDistributionType.DOCKER_TEXLIVE
+        }
+        else {
+            LatexDistributionType.DOCKER_MIKTEX
+        }
+    }
 
     override fun getVersionString(sdk: Sdk): String? {
         val data = sdk.sdkAdditionalData as? DockerSdkAdditionalData

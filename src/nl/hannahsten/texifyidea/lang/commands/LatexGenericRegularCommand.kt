@@ -7,10 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTSPEC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NTHEOREM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SVG
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.VARIOREF
@@ -30,6 +32,7 @@ enum class LatexGenericRegularCommand(
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
+    ADDTOLUATEXPATH("addtoluatexpath", RequiredFolderArgument("paths")),
     A_RING("aa", display = "å"),
     CAPITAL_A_RING("AA", display = "Å"),
     ADDBIBRESOURCE("addbibresource", RequiredFileArgument("bibliographyfile", true, false, "bib"), dependency = BIBLATEX),
@@ -75,6 +78,7 @@ enum class LatexGenericRegularCommand(
     TEXT_DAGGER("dag", display = "†"),
     TEXT_DOUBLE_DAGGER("ddag", display = "‡"),
     DATE("date", "text".asRequired(Argument.Type.TEXT)),
+    DECLAREGRAPHICSEXTENSIONS("DeclareGraphicsExtensions", "extensions".asRequired(), dependency = GRAPHICX),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Argument.Type.TEXT), dependency = AMSMATH),
     DEF("def"),
     DOCUMENTCLASS("documentclass", "options".asOptional(), RequiredFileArgument("class", true, false, "cls")),
@@ -139,18 +143,22 @@ enum class LatexGenericRegularCommand(
     HYPERREF("hyperref", "options".asOptional(), "label".asRequired(Argument.Type.TEXT), dependency = LatexPackage.HYPERREF),
     HYPHENATION("hyphenation", "words".asRequired(Argument.Type.TEXT)),
     I("i", display = "i (dotless)"),
+    IFTHENELSE("ifthenelse", "test".asRequired(), "then clause".asRequired(), "else clause".asRequired()),
     IMPORT("import", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INCLUDE("include", RequiredFileArgument("sourcefile", false, false, "tex")),
     INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INPUT("input", RequiredFileArgument("sourcefile", true, false, "tex")),
     INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
-    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", isAbsolutePathSupported = true, commaSeparatesArguments = false, FileMagic.graphicFileExtensions), dependency = GRAPHICX),
+    INPUTMINTED("inputminted", "language".asRequired(Argument.Type.MINTED_FUNTIME_LAND), RequiredFileArgument("sourcefile", true, false, ""), dependency = LatexPackage.MINTED),
+    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", isAbsolutePathSupported = true, commaSeparatesArguments = false, FileMagic.graphicFileExtensions, supportsAnyExtension = false), dependency = GRAPHICX),
+    INCLUDESTANDALONE("includestandalone", "mode".asOptional(), RequiredFileArgument("filename", false, false, "tex", *FileMagic.graphicFileExtensions.toTypedArray()), dependency = LatexPackage.STANDALONE),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, true, "tex")),
+    INCLUDESVG("includesvg", "options".asOptional(), RequiredPicturePathArgument("svg file", isAbsolutePathSupported = true, commaSeparatesArguments = false, extension = listOf("svg"), supportsAnyExtension = false), dependency = SVG),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),
     INDEX("intex", "entry".asRequired()),
     IT("it"),
-    ITEM("item", "label".asOptional()),
+    ITEM("item", "label".asOptional(Argument.Type.TEXT)),
     ITSHAPE("itshape"),
     LABEL("label", "key".asRequired()),
     LARGE("large"),
@@ -286,6 +294,7 @@ enum class LatexGenericRegularCommand(
     STRETCH("stretch", "factor".asRequired()),
     SUBFILE("subfile", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = LatexPackage.SUBFILES),
     SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = LatexPackage.SUBFILES),
+    SUBFIX("subfix", RequiredFileArgument("file", true, false, "tex"), dependency = LatexPackage.SUBFILES),
     SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     SUBINPUTFROM("subinputfrom"),
@@ -301,6 +310,7 @@ enum class LatexGenericRegularCommand(
     SUBSUBSECTION_STAR("subsubsection*", "title".asRequired(Argument.Type.TEXT)),
     SUBSUBSECTIONMARK("subsubsectionmark", "code".asRequired()),
     SUPPRESSFLOATS("suppressfloats", "placement".asOptional()),
+    SVGPATH("svgpath", RequiredFolderArgument("foldername"), dependency = SVG),
     SYMBOL("symbol", "n".asRequired()),
     TABCOLSEP("tabcolsep"),
     TABLENAME("tablename", "name".asRequired(Argument.Type.TEXT)),
@@ -408,6 +418,15 @@ enum class LatexGenericRegularCommand(
     LCNAMECREFS("lcnamecrefs", "label".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
     LABELCREF("labelcref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
     LABELCPAGEREF("labelcpageref", "key".asRequired(Argument.Type.LABEL), dependency = CLEVEREF),
+
+    // Fontspec
+    DEFAULTFONTFEATURES("defaultfontfeatures", "font names".asOptional(), "font features".asRequired(), dependency = FONTSPEC),
+    ADDFONTFEATURE("addfontfeature", "font features".asRequired(), dependency = FONTSPEC),
+    ADDFONTFEATURES("addfontfeatures", "font features".asRequired(), dependency = FONTSPEC),
+    SETMAINFONT("setmainfont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    SETSANSFONT("setsansfont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    SETMONOFONT("setmonofont", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
+    FONTSPEC_CMD("fontspec", "font".asRequired(), "font features".asOptional(), dependency = FONTSPEC),
     ;
 
     override val identifier: String

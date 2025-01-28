@@ -17,7 +17,7 @@ class AutocompileHandler : TypedHandlerDelegate() {
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
         run {
             // Only do this for latex files and if the option is enabled
-            if (file.fileType != LatexFileType || !TexifySettings.getInstance().autoCompile || TexifySettings.getInstance().autoCompileOnSaveOnly) {
+            if (file.fileType != LatexFileType || !TexifySettings.getInstance().isAutoCompileEnabled()) {
                 return@run
             }
 
@@ -32,7 +32,7 @@ class AutoCompileBackspacehandler : BackspaceHandlerDelegate() {
 
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {
         val project = editor.project
-        if (file.isLatexFile() && project != null && TexifySettings.getInstance().autoCompile && !TexifySettings.getInstance().autoCompileOnSaveOnly) {
+        if (file.isLatexFile() && project != null && TexifySettings.getInstance().isAutoCompileEnabled()) {
             AutoCompileState.documentChanged(project)
         }
     }

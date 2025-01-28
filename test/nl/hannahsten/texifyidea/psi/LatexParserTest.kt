@@ -24,6 +24,10 @@ class LatexParserTest : BasePlatformTestCase() {
             ${'$'}\test{\cmd{a}[b]}${'$'}
             
             \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+            
+            \anycommand{test = {Some text with (Round Brackets)}}
+            
+            \href{\thefield{#%}}{#1}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -48,6 +52,11 @@ class LatexParserTest : BasePlatformTestCase() {
             LatexFileType,
             """
             $ math \text{ text $\xi$ text } math$
+            
+            $\begin{cases*}
+                 1 & if $ p \equiv 1 \pmod 4$ \\
+                 -1 & if $ p \equiv 3 \pmod 4$
+            \end{cases*}$ a
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -59,6 +68,10 @@ class LatexParserTest : BasePlatformTestCase() {
             """
             \newcommand{\xyz}{\@ifnextchar[{\@xyz}{\@xyz[default]}}
             \def\@xyz[#1]#2{do something with #1 and #2}
+            
+            \@namedef{#1}{\@ifnextchar{^}{\@nameuse{#1@}}{\@nameuse{#1@}^{}}}
+            
+            \newcommand{\abc}{\@ifnextchar${'$'}{Math coming: }{No math}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -94,6 +107,8 @@ class LatexParserTest : BasePlatformTestCase() {
             \begin{frame}
                 \only<1>{<info descr="null">${'$'}<info textAttributesKey=LATEX_INLINE_MATH>a_1${'$'}</info></info>}
             \end{frame}
+            
+            \tikzset{<->/.style=->}
             """.trimIndent()
         )
         myFixture.checkHighlighting(false, true, false)
@@ -187,6 +202,7 @@ class LatexParserTest : BasePlatformTestCase() {
             LatexFileType,
             """
             I write \State \Until I \Repeat \EndProcedure.
+            \ifdog DOG \else CAT \fi
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -255,6 +271,10 @@ class LatexParserTest : BasePlatformTestCase() {
                 \begin{multicols}{2}
             }
             \newcommand{\cmd}{${'$'}x${'$'}}
+            
+            \AfterEndEnvironment{minted}{
+                \end{tcolorbox}
+            }
             """.trimIndent()
         )
         myFixture.checkHighlighting()

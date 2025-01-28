@@ -57,4 +57,30 @@ class LatexStructureViewElementTest : BasePlatformTestCase() {
             )
         }
     }
+
+    fun `test labels are added in the correct place`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \section{s}
+            \subsection{ss1}
+
+            \label{l}
+
+            \subsection{ss2}
+            """.trimIndent()
+        )
+
+        myFixture.testStructureView { component ->
+            val documentChildren = (component.treeModel as LatexStructureViewModel).root.children
+            assertEquals(
+                listOf("\\section{s}"),
+                documentChildren.map { (it as LatexStructureViewCommandElement).value.text }
+            )
+            assertEquals(
+                listOf("\\label{l}"),
+                documentChildren.filterIsInstance<LatexStructureViewCommandElement>().first().children.first().children.map { (it as LatexStructureViewCommandElement).value.text }
+            )
+        }
+    }
 }

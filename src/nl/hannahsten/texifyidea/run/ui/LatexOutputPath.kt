@@ -78,6 +78,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         }
         else {
             val pathString = MacroManager.getInstance().expandMacrosInString(pathString, true, context) ?: return null
+            if (pathString.isBlank()) return null
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
             if (path != null && path.isDirectory) {
                 return path

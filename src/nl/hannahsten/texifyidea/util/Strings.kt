@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
 import java.io.File
@@ -82,11 +83,10 @@ fun String.getIndent(): String {
 fun String.appendExtension(extensionWithoutDot: String): String {
     if (extensionWithoutDot == "") return this
 
-    val dottedExtension = ".${extensionWithoutDot.lowercase(Locale.getDefault())}"
-    val thisLower = lowercase(Locale.getDefault())
+    val dottedExtension = ".$extensionWithoutDot"
 
     return when {
-        thisLower.endsWith(dottedExtension) -> this
+        this.endsWith(dottedExtension) -> this
         endsWith('.') -> this + extensionWithoutDot
         else -> this + dottedExtension
     }
@@ -177,6 +177,21 @@ fun String.formatAsFilePath(): String {
 }
 
 /**
+ * If only the file is new, but the directory exists, use the existing directory and don't change it to follow conventions
+ */
+fun formatAsFilePathWithExistingParents(basePath: String, newFileName: String): String {
+    var existingPath = LocalFileSystem.getInstance().findFileByPath(basePath)
+    var existingRelativePath = ""
+    val partsToFormat = newFileName.split('/').dropWhile { part ->
+        if (existingPath?.exists() == false) return@dropWhile false
+        existingPath = existingPath?.children?.firstOrNull { it.name == part } ?: return@dropWhile false
+        existingRelativePath += "$part/"
+        true
+    }
+    return existingRelativePath + partsToFormat.joinToString("/").formatAsFilePath()
+}
+
+/**
  * Formats the string as a valid LaTeX label name.
  */
 fun String.formatAsLabel(): String {
@@ -209,6 +224,12 @@ fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
  */
 fun String.runCommand(workingDirectory: File? = null) =
     runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
+
+/**
+ * See [String.runCommand] but implemented in a non-blocking way.
+ */
+suspend fun String.runCommandNonBlocking(workingDirectory: File? = null) =
+    runCommandNonBlocking(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 fun String.runCommandWithExitCode(workingDirectory: File? = null) =
     runCommandWithExitCode(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)

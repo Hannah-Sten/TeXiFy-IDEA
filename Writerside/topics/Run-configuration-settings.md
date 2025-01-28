@@ -92,8 +92,9 @@ _Since b0.6.6_
 
 See [https://tectonic-typesetting.github.io/en-US/](https://tectonic-typesetting.github.io/en-US/) for installation and more info.
 Tectonic has the advantage that it downloads packages automatically, compiles just as much times as needed and handles BibTeX, but it often only works for not too complicated LaTeX documents.
-
 It also has automatic compilation using `tectonic -X watch`.
+
+There is some basic support for a `Tectonic.toml` file, including inspection support (missing imports, for example) for multiple inputs in the toml file (Tectonic 0.15.1 or later).
 
 The documentation can be found at [https://tectonic-typesetting.github.io/book/latest/](https://tectonic-typesetting.github.io/book/latest/)
 
@@ -121,6 +122,7 @@ You can pass environment variables to the command that is run to compile the LaT
 There is an option to include system variables.
 You can use for example the `TEXINPUTS` environment variable to include LaTeX files in a different directory anywhere on your system.
 For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and TeXiFy) will search in any subdirectory of `/path/to/directory` for the file to be included, and `:` means to include the standard content of `TEXINPUTS`. For Windows, it is similar: `TEXINPUTS=C:...\path\to\directory\\;` (note the semicolon).
+Similarly, you can also set `TEXMFHOME` to some other path than the default `~/texmf`, so that sty and cls files will be searched in the `tex/latex` subdirectory or any child directory of it.
 For more information about paths resolving, see [https://www.tug.org/texinfohtml/kpathsea.html#Path-searching](https://www.tug.org/texinfohtml/kpathsea.html#Path-searching)
 
 ## LaTeX code to run before compiling the main file
@@ -248,6 +250,12 @@ Custom output directories are supported.
 * Reboot (logging out and in may not be enough)
 * You have to login to GitHub to use the Docker image: get a github token from [https://github.com/settings/tokens,](https://github.com/settings/tokens,) save it somewhere secure and run `echo my_token | docker login https://docker.pkg.github.com -u myusername --password-stdin`
   See [https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages) for more info.
+
+### Dockerized TeX Live
+
+Similar to the MiKTeX docker image, you can also use a texlive docker image if you have it installed.
+By default, the official `texlive/texlive` image is used.
+If you use IntelliJ, you can select a different image name by creating a LaTeX Docker SDK, see [Project configuration](Project-configuration.md#sdks).
 
 ### TeX Live from WSL
 

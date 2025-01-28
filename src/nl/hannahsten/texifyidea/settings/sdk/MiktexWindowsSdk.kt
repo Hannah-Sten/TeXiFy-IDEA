@@ -21,7 +21,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         var version: DefaultArtifactVersion? = null
     }
 
-    override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
+    override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.MIKTEX
 
     override fun getExecutableName(executable: String, homePath: String): String {
         val path = LatexSdkUtil.getPdflatexParentPath(Paths.get(homePath, "miktex").toString()) ?: return executable
@@ -52,6 +52,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
     override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
         val path = Paths.get(homePath, "source").toString()
+        if (path.isBlank()) return null
         return try {
             // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
             LocalFileSystem.getInstance().findFileByPath(path)
@@ -64,6 +65,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
 
     override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
         val path = Paths.get(homePath, "tex", "latex").toString()
+        if (path.isBlank()) return null
         return try {
             LocalFileSystem.getInstance().findFileByPath(path)
         }

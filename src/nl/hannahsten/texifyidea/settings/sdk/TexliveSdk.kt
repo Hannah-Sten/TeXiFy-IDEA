@@ -61,7 +61,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         if (!paths.isNullOrEmpty()) {
             for (path in paths.split("\\s+".toRegex())) {
                 // Resolve symlinks
-                val resolvedPath = runCommand("readlink", "-f", path) ?: path
+                val resolvedPath = if (!SystemInfo.isWindows) runCommand("readlink", "-f", path) ?: path else path
 
                 // We don't know for sure whether this path contains 'texlive':
                 // e.g. C:\texnolive\2021\bin\pdflatex.exe can be perfectly valid
@@ -90,7 +90,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
     override fun getInvalidHomeMessage(path: String) = "Could not find $path/bin/*/pdflatex"
 
-    override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
+    override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.TEXLIVE
 
     override fun getVersionString(sdkHome: String): String {
         return "TeX Live " + sdkHome.split("/").lastOrNull { it.isNotBlank() }

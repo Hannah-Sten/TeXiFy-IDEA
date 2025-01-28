@@ -6,11 +6,15 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.runCommand
-import org.freedesktop.dbus.connections.impl.DBusConnection
+import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.freedesktop.dbus.errors.NoReply
 import org.freedesktop.dbus.errors.ServiceUnknown
+import org.freedesktop.dbus.exceptions.DBusException
+import org.freedesktop.dbus.types.UInt32
 import org.gnome.evince.Daemon
 import java.io.File
+import org.gnome.evince.SyncViewSourcePointStruct
+import org.gnome.evince.Window
 
 /**
  * Send commands to Evince.
@@ -31,6 +35,13 @@ object EvinceConversation : ViewerConversation() {
      * Object name of the Evince daemon.
      */
     private const val EVINCE_DAEMON_NAME = "org.gnome.evince.Daemon"
+
+    /**
+     * Object path of the Evince daemon. Together with the object name, this allows us to find the
+     * D-Bus object which allows us to execute the FindDocument function, which is exported on the D-Bus
+     * by Evince.
+     */
+    private const val EVINCE_WINDOW_PATH = "/org/gnome/evince/Window/0"
 
     /**
      * This variable will hold the latest known Evince process owner. We need to know the owner of the pdf file in order to execute forward search.
@@ -65,13 +76,25 @@ object EvinceConversation : ViewerConversation() {
         }
 
         if (processOwner != null) {
-            // Theoretically we should use the Java D-Bus bindings as well to call SyncView, but that did
-            // not succeed with a NoReply exception, so we will execute a command via the shell
-            val command = "gdbus call --session --dest $processOwner --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView $sourceFilePath '($line, 1)' 0"
-            runCommand("bash", "-c", command)
+            try {
+                // Get DBusConnection
+                DBusConnectionBuilder.forSessionBus().build().use { connection ->
+                    // Get the Object corresponding to the interface and call the functions to the processOwner
+                    val window = connection.getRemoteObject(processOwner, EVINCE_WINDOW_PATH, Window::class.java)
 
-            // The above process will only exit when the document is closed
-            return 0
+                    // Sync the Evince view to the current position
+                    try {
+                        window.SyncView(sourceFilePath, SyncViewSourcePointStruct(line, -1), UInt32(0))
+                    }
+                    catch (ignored: NoReply) {}
+                    catch (e: ServiceUnknown) {
+                        Notification("LaTeX", "Cannot sync position to Evince", "Please update Evince and then try again.", NotificationType.ERROR).notify(project)
+                    }
+                }
+            }
+            catch (e: DBusException) {
+                Notification("LaTeX", "Cannot sync position to Evince", "The Connection could not be established.", NotificationType.ERROR).notify(project)
+            }
         }
         else {
             // If the user used the forward search menu action
@@ -94,21 +117,25 @@ object EvinceConversation : ViewerConversation() {
     private fun findProcessOwner(pdfFilePath: String, project: Project) {
         if (!File(pdfFilePath).isFile) throw TeXception("PDF File $pdfFilePath not found")
 
-        // Initialize a session bus
-        val connection = DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION)
-
-        // Get the Daemon object using its bus name and object path
-        val daemon = connection.getRemoteObject(EVINCE_DAEMON_NAME, EVINCE_DAEMON_PATH, Daemon::class.java)
-
-        // Call the method on the D-Bus by using the function we defined in the Daemon interface
-        // Catch a NoReply, because it is unknown why Evince cannot start so we don't try to fix that
         try {
-            // If the file does not exist, this command might hang
-            processOwner = daemon.FindDocument("file://$pdfFilePath", true)
+            // Get DBusConnection
+            DBusConnectionBuilder.forSessionBus().build().use { connection ->
+                // Get the Daemon object using its bus name and object path
+                val daemon = connection.getRemoteObject(EVINCE_DAEMON_NAME, EVINCE_DAEMON_PATH, Daemon::class.java)
+
+                // Call the method on the D-Bus by using the function we defined in the Daemon interface
+                // Catch a NoReply, because it is unknown why Evince cannot start so we don't try to fix that
+                try {
+                    processOwner = daemon.FindDocument("file://$pdfFilePath", true)
+                }
+                catch (ignored: NoReply) {}
+                catch (e: ServiceUnknown) {
+                    Notification("LaTeX", "Cannot communicate to Evince", "Please update Evince and then try again.", NotificationType.ERROR).notify(project)
+                }
+            }
         }
-        catch (ignored: NoReply) {}
-        catch (e: ServiceUnknown) {
-            Notification("LaTeX", "Cannot communicate to Evince", "Please update Evince and then try again.", NotificationType.ERROR).notify(project)
+        catch (e: DBusException) {
+            Notification("LaTeX", "Cannot communicate to Evince", "The connection could not be established.", NotificationType.ERROR).notify(project)
         }
     }
 }

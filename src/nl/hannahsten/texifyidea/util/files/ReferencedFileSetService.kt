@@ -24,10 +24,9 @@ interface ReferencedFileSetService {
 
     fun rootFilesOf(psiFile: PsiFile): Set<PsiFile>
 
-    /**
-     * Invalidates the caches for the given file.
-     */
     fun dropCaches(file: VirtualFile)
 
     fun dropAllCaches()
+
+    fun markCacheOutOfDate()
 }

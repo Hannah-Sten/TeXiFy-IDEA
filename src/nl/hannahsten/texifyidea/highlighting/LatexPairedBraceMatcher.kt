@@ -18,14 +18,16 @@ class LatexPairedBraceMatcher : PairedBraceMatcher {
         BracePair(LatexTypes.OPEN_PAREN, LatexTypes.CLOSE_PAREN, false),
         BracePair(LatexTypes.OPEN_BRACE, LatexTypes.CLOSE_BRACE, false),
         BracePair(LatexTypes.OPEN_BRACKET, LatexTypes.CLOSE_BRACKET, false),
-        BracePair(LatexTypes.BEGIN_PSEUDOCODE_BLOCK, LatexTypes.END_PSEUDOCODE_BLOCK, false)
+        BracePair(LatexTypes.BEGIN_PSEUDOCODE_BLOCK, LatexTypes.END_PSEUDOCODE_BLOCK, false),
+        BracePair(LatexTypes.START_IF, LatexTypes.END_IF, false),
     )
 
     override fun getPairs() = bracePairs
 
     override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?): Boolean {
         // Automatic completion by IJ fails with multiple characters for rbrace.
-        return lbraceType !== LatexTypes.DISPLAY_MATH_START
+        // Don't insert the other brace when the caret is right before text: in this case we assume the user wants to type the braces separately. This is similar to the Kotlin plugin
+        return lbraceType !== LatexTypes.DISPLAY_MATH_START && contextType != LatexTypes.NORMAL_TEXT_WORD
     }
 
     override fun getCodeConstructStart(file: PsiFile, openingBraceOffset: Int) = openingBraceOffset

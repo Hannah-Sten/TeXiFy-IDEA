@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.Module
@@ -103,7 +104,7 @@ fun Module.createExcludedDir(path: String) {
  *          The project scope to retrieve the psi file for.
  * @return The PSI file matching the document, or `null` when the PSI file could not be found.
  */
-fun Document.psiFile(project: Project): PsiFile? = PsiDocumentManager.getInstance(project).getPsiFile(this)
+fun Document.psiFile(project: Project): PsiFile? = runReadAction { PsiDocumentManager.getInstance(project).getPsiFile(this) }
 
 /**
  * Creates a new file with a given name and given content.
@@ -240,8 +241,11 @@ fun getUniqueFileName(fileName: String, directory: String? = null): String {
 /**
  * Get a(n external) file by its absolute path.
  */
-fun getExternalFile(path: String): VirtualFile? =
-    LocalFileSystem.getInstance().findFileByPath(path)
+fun findFileByPath(path: String): VirtualFile? {
+    // A blank path will resolve to the jetbrains /bin directory, which is likely not intended
+    if (path.isBlank()) return null
+    return LocalFileSystem.getInstance().findFileByPath(path)
+}
 
 /**
  * Converts the absolute path to a relative path.

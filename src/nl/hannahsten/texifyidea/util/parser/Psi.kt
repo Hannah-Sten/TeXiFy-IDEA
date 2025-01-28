@@ -7,7 +7,6 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
 import com.intellij.util.ProcessingContext
@@ -17,6 +16,7 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import kotlin.reflect.KClass
 
@@ -25,12 +25,14 @@ import kotlin.reflect.KClass
  */
 fun PsiElement.endOffset(): Int = textOffset + textLength
 
+fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(textOffset)
+
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
     return runReadAction {
-        if (project.isDisposed || !this.isValid) {
+        if (!this.isValid || project.isDisposed) {
             emptyList()
         }
         else {
@@ -93,7 +95,7 @@ fun <T : PsiElement> PsiElement.firstParentOfType(clazz: KClass<T>): T? {
         if (clazz.java.isAssignableFrom(current.javaClass)) {
             return current as? T
         }
-        current = current.parent
+        current = current.parent?.let { if (it.isValid) it else null }
     }
     return null
 }
@@ -105,7 +107,7 @@ inline fun <reified T : PsiElement> PsiElement.firstParentOfType(): T? {
         if (current is T) {
             return current
         }
-        current = current.parent
+        current = current.parent?.let { if (it.isValid) it else null }
     }
     return null
 }
@@ -158,6 +160,8 @@ fun PsiElement.inMathContext(): Boolean {
 fun PsiElement.inDirectMathContext(): Boolean =
     hasParent(LatexMathContent::class)
         || hasParent(LatexDisplayMath::class)
+        || hasParent(LatexMathEnvironment::class)
+        || hasParent(LatexInlineMath::class)
         || inDirectEnvironmentContext(Environment.Context.MATH)
 
 /**
@@ -187,14 +191,6 @@ fun PsiElement?.findOuterMathEnvironment(): PsiElement? {
         }
     }
     return outerMathEnvironment
-}
-
-/**
- * Check if the element is in a comment or not.
- */
-fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMMENT) || when (this) {
-    is PsiComment -> true
-    else -> this is LeafPsiElement && elementType == LatexTypes.COMMAND_TOKEN
 }
 
 /**
@@ -317,6 +313,8 @@ inline fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -
 
     return false
 }
+
+val commandTokens = setOf(LatexTypes.COMMAND_TOKEN, LatexTypes.LEFT, LatexTypes.RIGHT)
 
 /**
  * Checks whether the psi element is part of a comment or not.

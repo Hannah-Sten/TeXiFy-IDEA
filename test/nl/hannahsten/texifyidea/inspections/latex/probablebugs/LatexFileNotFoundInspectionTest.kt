@@ -1,15 +1,16 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import com.intellij.openapi.util.SystemInfo
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-import org.junit.Test
+import nl.hannahsten.texifyidea.util.updateIncludeCommandsAliasesAsync
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.test.assertFails
 
 class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFoundInspection()) {
 
@@ -24,46 +25,51 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         super.setUp()
         mockkStatic(::runCommandWithExitCode)
         every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
+
+        mockkStatic(LatexNavigationGutter::collectNavigationMarkers)
     }
 
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/filenotfound"
     }
 
-    @Test
-    fun testInvalidAbsolutePath() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.myinvalidextension</error>}""")
-        myFixture.checkHighlighting()
+    fun testMissingAbsolutePath() {
+        // Avoid "VfsRootAccess$VfsRootAccessNotAllowedError: File accessed outside allowed roots" on Windows in github actions
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.myinvalidextension</error>}""")
+            myFixture.checkHighlighting()
+        }
     }
 
-    @Test
     fun testValidAbsolutePath() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.png</error>}""")
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myPicture.png}""")
 
-        assertFails {
             myFixture.checkHighlighting()
         }
     }
 
-    @Test
+    fun testValidAbsolutePathCaps() {
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture.PNG}""")
+            myFixture.checkHighlighting()
+        }
+    }
+
     fun testBackActionAbsolute() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/../path/../path/myPicture.png</error>}""")
-
-        assertFails {
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/../path/../path/myPicture.png}""")
             myFixture.checkHighlighting()
         }
     }
 
-    @Test
     fun testCurrDirActionAbsolute() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/./resources/./././completion/path/././myPicture.png</error>}""")
-
-        assertFails {
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/./resources/./././completion/path/././myPicture.png}""")
             myFixture.checkHighlighting()
         }
     }
 
-    @Test
     fun testAbsoluteGraphicsDirWithInclude() {
         myFixture.copyFileToProject("myPicture.png")
         myFixture.configureByText(
@@ -77,16 +83,41 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         myFixture.checkHighlighting()
     }
 
-    @Test
-    fun testDefaultExtensionCompletion() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture</error>}""")
+    fun testUpperCaseAbsoluteGraphicsDirWithInclude() {
+        myFixture.copyFileToProject("myOtherPicture.PNG")
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \graphicspath{{$absoluteWorkingPath/test/resources/completion/path/}}
+            \includegraphics{myOtherPicture}
+            """.trimIndent()
+        )
 
-        assertFails {
+        myFixture.checkHighlighting()
+    }
+
+    fun testDefaultExtensionCompletion() {
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/myPicture}""")
             myFixture.checkHighlighting()
         }
     }
 
-    @Test
+    fun testDefaultUpperCaseExtensionCompletion() {
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/inspections/latex/filenotfound/myOtherPicture}""")
+            myFixture.checkHighlighting()
+        }
+    }
+
+    fun testDefaultMixedCaseExtensionCompletion() {
+        if (!SystemInfo.isWindows) {
+            myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myBadPicture</error>}""")
+
+            myFixture.checkHighlighting()
+        }
+    }
+
     fun testNoWarningInDefinition() {
         myFixture.configureByText(LatexFileType, """\newcommand*{\gridelement}[1]{\subbottom[#1]{\includegraphics[width=2cm]{media/#1}}}""")
 
@@ -101,14 +132,12 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //        myFixture.checkHighlighting()
 //    }
 
-    @Test
     fun testInvalidImportAbsolutePath() {
         myFixture.copyFileToProject("chapters/included.tex")
         myFixture.configureByText(LatexFileType, """\import{/does/not/exist}{<error>included</error>}""")
         myFixture.checkHighlighting()
     }
 
-    @Test
     fun testImportAbsolutePathIncludedFile() {
         val files = myFixture.configureByFiles("ImportPackageAbsolutePath.tex", "chapters/included.tex", "chapters/included2.tex")
         myFixture.type("$absoluteWorkingPath/chapters/")
@@ -116,28 +145,32 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         myFixture.checkHighlighting()
     }
 
-    @Test
     fun testImportRelativePathIncludedFile() {
         myFixture.configureByFiles("chapters/included.tex", "ImportPackageRelativePath.tex", "chapters/included2.tex")
         myFixture.checkHighlighting()
     }
 
-    @Test
     fun testInvalidImportRelativePathIncludedFile() {
         myFixture.configureByFiles("chapters/notincluded.tex", "ImportPackageRelativePathInvalid.tex", "chapters/included2.tex")
         myFixture.checkHighlighting()
     }
 
-    @Test
     fun `test command expansion in root file`() {
         myFixture.configureByFiles("commandexpansion/main.tex", "commandexpansion/main.bib", "commandexpansion/nest/sub.tex")
         myFixture.checkHighlighting()
     }
 
-    @Test
     fun `test command expansion in subfile`() {
         myFixture.configureByFiles("commandexpansion/nest/sub.tex", "commandexpansion/main.tex", "commandexpansion/nest/sub2.tex")
         myFixture.checkHighlighting()
+    }
+
+    fun testSubfilesInclusions() {
+        myFixture.testHighlighting("subfilestest/subdir/onedown.tex", "subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/main.tex")
+    }
+
+    fun testSubfilesReferenceToMain() {
+        myFixture.testHighlighting("subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/subdir/onedown.tex", "subfilestest/main.tex")
     }
 
 // java.lang.Throwable: Stub index points to a file without PSI: file = temp:///src/subfiles/dir1, file type = com.intellij.openapi.fileTypes.UnknownFileType@35570dc3
@@ -152,4 +185,25 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //        myFixture.configureByFiles("latexmkrc/main.tex", "latexmkrc/.latexmkrc", "latexmkrc/subdir1/mypackage2.sty")
 //        myFixture.checkHighlighting()
 //    }
+
+    fun testOtherExtension() {
+        // Contrary to \includegraphics, \input will accept a file with any extension if specified
+        myFixture.addFileToProject("included.txt", "\\LaTeX content")
+        myFixture.configureByText(LatexFileType, "\\input{included.txt}")
+        myFixture.checkHighlighting()
+    }
+
+    fun testCommandAlias() {
+        myFixture.configureByText(LatexFileType, """\newcommand{\myinput}{\input} \myinput{<error descr="File 'doesnotexist.tex' not found">doesnotexist.tex</error>}""")
+        // In practice, this will be triggered by the first something to ask for include commands aliases, for performance reasons
+        updateIncludeCommandsAliasesAsync(myFixture.project)
+        myFixture.checkHighlighting()
+    }
+
+    fun testCommandAliasMoreParameters() {
+        myFixture.configureByText(LatexFileType, """\newcommand{\myinput}[2]{\input{#1}\section{#2}} \myinput{<error descr="File 'doesnotexist.tex' not found">doesnotexist.tex</error>}{My section}""")
+        // In practice, this will be triggered by the first something to ask for include commands aliases, for performance reasons
+        updateIncludeCommandsAliasesAsync(myFixture.project)
+        myFixture.checkHighlighting()
+    }
 }

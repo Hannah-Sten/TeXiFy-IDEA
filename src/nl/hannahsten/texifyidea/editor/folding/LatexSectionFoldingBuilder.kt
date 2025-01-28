@@ -9,10 +9,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.*
 
 /**
  * Recursively folds section commands
@@ -31,6 +28,10 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val commands = root.childrenOfType<LatexCommands>().filter { it.name in sectionCommands }
+            // If it has no parameters, it is probably not an actual section but in a command definition
+            .filter { it.parameterList.isNotEmpty() }
+            // Similarly, if the section command is in a parameter it is probably in the preamble, and we should not fold
+            .filter { it.firstParentOfType<LatexParameter>() == null }
             .sortedBy { it.textOffset }
         val comments = root.childrenOfType<LatexMagicComment>().filter { it.key() == DefaultMagicKeys.FAKE }
         val sectionElements: List<PsiElement> = (commands + comments).sortedBy { it.textOffset }

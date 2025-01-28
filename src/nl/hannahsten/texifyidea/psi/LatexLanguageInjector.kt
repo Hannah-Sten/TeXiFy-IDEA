@@ -6,6 +6,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
 import com.intellij.psi.PsiLanguageInjectionHost
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.util.camelCase
@@ -32,8 +33,11 @@ class LatexLanguageInjector : LanguageInjector {
                 hasMagicCommentKey -> {
                     magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
                 }
-                host.getEnvironmentName() == "lstlisting" -> {
+                host.getEnvironmentName() == DefaultEnvironment.LISTINGS.environmentName -> {
                     host.beginCommand.getOptionalParameterMap().toStringMap().getOrDefault("language", null)
+                }
+                host.getEnvironmentName() == DefaultEnvironment.MINTED.environmentName -> {
+                    host.beginCommand.getRequiredParameters().getOrNull(1)
                 }
                 host.getEnvironmentName() in EnvironmentMagic.languageInjections.keys -> {
                     EnvironmentMagic.languageInjections[host.getEnvironmentName()]

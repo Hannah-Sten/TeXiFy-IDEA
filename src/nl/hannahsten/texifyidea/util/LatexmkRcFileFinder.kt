@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -119,12 +120,12 @@ object LatexmkRcFileFinder {
      * Get the first TEXINPUTS we can find in latexmkrc files.
      * Cached because searching involves quite some system calls, and it's a rarely used feature.
      */
-    fun getTexinputsVariable(someFile: PsiFile?, runConfig: LatexRunConfiguration?): String? {
+    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? {
         return if (usesLatexmkrc == false) {
             null
         }
         else {
-            val texinputs = getTexinputsVariableNoCache(someFile, runConfig)
+            val texinputs = getTexinputsVariableNoCache(directory, runConfig, project)
             if (usesLatexmkrc == null) {
                 usesLatexmkrc = texinputs != null
             }
@@ -135,27 +136,24 @@ object LatexmkRcFileFinder {
     /**
      * Check the (first) latexmkrc file for any additions to TEXINPUTS and return that if present.
      *
-     * @param someFile Any file, the parent directories will be searched.
      * @param runConfig Run configuration to check for working directory and arguments.
      */
-    private fun getTexinputsVariableNoCache(someFile: PsiFile?, runConfig: LatexRunConfiguration?): String? {
+    private fun getTexinputsVariableNoCache(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? {
         systemLatexmkRcFile?.let { return getTexinputs(it) }
         if (runConfig != null) {
             getLocalLatexmkRcFile(runConfig.options.compilerArguments, runConfig.options.mainFile.resolve()?.parent?.path)?.let { return getTexinputs(it) }
         }
         // File could be anywhere if run configurations are not used, but searching the whole project could be too expensive
-        someFile?.virtualFile?.parent?.let { parentDir ->
-            parentDir.findChild(".latexmkrc")?.let { return getTexinputs(it) }
-            parentDir.findChild("latexmkrc")?.let { return getTexinputs(it) }
-        }
-        val project = someFile?.project ?: return null
+        directory.findChild(".latexmkrc")?.let { return getTexinputs(it) }
+        directory.findChild("latexmkrc")?.let { return getTexinputs(it) }
+
         val projectDir = project.guessProjectDir()
         if (projectDir?.isValid == false) return null
         projectDir?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
         projectDir?.findChild("latexmkrc")?.let { return getTexinputs(it) }
-        projectDir?.children?.forEach { directory ->
-            directory?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
-            directory?.findChild("latexmkrc")?.let { return getTexinputs(it) }
+        projectDir?.children?.forEach { childDir ->
+            childDir?.findChild(".latexmkrc")?.let { return getTexinputs(it) }
+            childDir?.findChild("latexmkrc")?.let { return getTexinputs(it) }
         }
         return null
     }
