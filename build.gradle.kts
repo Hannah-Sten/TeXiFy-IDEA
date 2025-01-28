@@ -16,7 +16,7 @@ plugins {
     kotlin("plugin.serialization") version ("2.0.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.51.0"
+    id("com.github.ben-manes.versions") version "0.52.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -25,13 +25,13 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.9.0"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "11.1.1"
+    id("org.owasp.dependencycheck") version "12.0.1"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -90,7 +90,6 @@ configurations {
 
 dependencies {
     intellijPlatform {
-        instrumentationTools()
         zipSigner()
         pluginVerifier()
         testFramework(TestFrameworkType.Platform)
@@ -151,7 +150,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core:3.0.3")
     implementation("io.ktor:ktor-server-jetty-jakarta:3.0.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-rc-2")
@@ -161,9 +160,9 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.18")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:2.0.0")
-    implementation("io.arrow-kt:arrow-fx-coroutines:2.0.0")
-    implementation("io.arrow-kt:arrow-resilience:2.0.0")
+    implementation("io.arrow-kt:arrow-core:2.0.1")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.0.1")
+    implementation("io.arrow-kt:arrow-resilience:2.0.1")
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -179,7 +178,7 @@ dependencies {
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.11.4")
 
-    testImplementation("io.mockk:mockk:1.13.14")
+    testImplementation("io.mockk:mockk:1.13.16")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
