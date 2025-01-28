@@ -54,7 +54,12 @@ object EnvironmentMagic {
      */
     val languageInjections = hashMapOf(
         LUACODE.env to "Lua",
-        LUACODE_STAR.env to "Lua"
+        LUACODE_STAR.env to "Lua",
+        PYCODE.env to "python",
+        PYSUB.env to "python",
+        PYVERBATIM.env to "python",
+        PYBLOCK.env to "python",
+        PYCONSOLE.env to "python",
     )
 
     val algorithmEnvironments = setOf(ALGORITHMIC.env)
