@@ -18,7 +18,7 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
     companion object {
 
         fun showNotification(project: Project, libraryName: String, statusMessage: String) {
-            val title = "Could not connect to $libraryName"
+            val title = "Something went wrong when retrieving library from $libraryName"
             Notification("LaTeX", title, statusMessage, NotificationType.ERROR).notify(project)
         }
     }
@@ -33,7 +33,11 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
 
         // Reading the dummy bib file needs to happen in a place where we have read access.
         runReadAction {
-            BibtexEntryListConverter().fromString(body)
+            try {
+                BibtexEntryListConverter().fromString(body)
+            } catch (e: Exception) {
+                raise(RemoteLibraryRequestFailure(displayName, body))
+            }
         }
     }
 
