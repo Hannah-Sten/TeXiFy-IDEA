@@ -7,6 +7,7 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
@@ -95,9 +96,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             ?: throw ExecutionException("Compile command could not be created.")
 
         val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
+
+        var envVariables = runConfig.environmentVariables.envs
+        if (runConfig.expandMacrosEnvVariables) {
+            envVariables = envVariables.map { entry ->
+                entry.key to ProgramParametersConfigurator.expandMacros(entry.value)
+            }.toMap()
+        }
+
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .withEnvironment(runConfig.environmentVariables.envs)
+            .withEnvironment(envVariables)
         val handler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated

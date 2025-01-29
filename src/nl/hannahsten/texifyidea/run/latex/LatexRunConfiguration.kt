@@ -79,6 +79,7 @@ class LatexRunConfiguration(
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
+        private const val EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES = "expand-macros-in-environment-variables"
 
         // For backwards compatibility
         private const val AUX_DIR = "aux-dir"
@@ -100,6 +101,7 @@ class LatexRunConfiguration(
             }
         }
 
+    var expandMacrosEnvVariables = false
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
     var beforeRunCommand: String? = null
 
@@ -280,6 +282,15 @@ class LatexRunConfiguration(
         // Read environment variables
         environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
+        // Read whether to expand macros in run configuration
+        val expandMacrosRunConfigurationBoolean = parent.getChildText(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES)
+        if (expandMacrosRunConfigurationBoolean == null) {
+            this.expandMacrosEnvVariables = false
+        }
+        else {
+            this.expandMacrosEnvVariables = expandMacrosRunConfigurationBoolean.toBoolean()
+        }
+
         val beforeRunCommandRead = parent.getChildText(BEFORE_RUN_COMMAND)
         beforeRunCommand = if (beforeRunCommandRead.isNullOrEmpty()) null else beforeRunCommandRead
 
@@ -379,6 +390,7 @@ class LatexRunConfiguration(
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
+        parent.addContent(Element(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES).also { it.text = expandMacrosEnvVariables.toString() })
         parent.addContent(Element(BEFORE_RUN_COMMAND).also { it.text = this.beforeRunCommand ?: "" })
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })

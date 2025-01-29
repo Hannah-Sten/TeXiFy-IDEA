@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
+import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileTypes.PlainTextFileType
@@ -16,6 +17,8 @@ import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.components.fields.ExtendableTextComponent
+import com.intellij.ui.components.fields.ExtendableTextField
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -57,6 +60,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     // Not shown on non-MiKTeX systems
     private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
 
+    private var expandMacrosEnvVariables: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionType>>
@@ -104,6 +108,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset environment variables
         environmentVariables.envData = runConfiguration.environmentVariables
+        if (expandMacrosEnvVariables != null) {
+            expandMacrosEnvVariables!!.isSelected = runConfiguration.expandMacrosEnvVariables
+        }
 
         beforeRunCommand.component.text = runConfiguration.beforeRunCommand
 
@@ -209,6 +216,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply environment variables
         runConfiguration.environmentVariables = environmentVariables.envData
 
+        // Apply parse macros in environment variables
+        runConfiguration.expandMacrosEnvVariables = expandMacrosEnvVariables?.isSelected ?: false
+
         runConfiguration.beforeRunCommand = beforeRunCommand.component.text
 
         // Apply main file.
@@ -296,6 +306,28 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         environmentVariables = EnvironmentVariablesComponent()
         panel.add(environmentVariables)
+
+        expandMacrosEnvVariables = JBCheckBox("Expand macros in environment variables")
+        expandMacrosEnvVariables!!.isSelected = false
+
+        val environmentVariableTextField = environmentVariables.component.textField as ExtendableTextField
+        var envVariableTextFieldMacroSupportExtension: ExtendableTextComponent.Extension? = null
+
+        expandMacrosEnvVariables!!.addItemListener {
+            if (it.stateChange == 1) { // checkbox checked
+                if (envVariableTextFieldMacroSupportExtension != null) {
+                    environmentVariableTextField.addExtension(envVariableTextFieldMacroSupportExtension!!)
+                }
+                else {
+                    MacrosDialog.addMacroSupport(environmentVariableTextField, MacrosDialog.Filters.ALL) { false }
+                    envVariableTextFieldMacroSupportExtension = environmentVariableTextField.extensions.last()
+                }
+            }
+            else if (envVariableTextFieldMacroSupportExtension != null) {
+                environmentVariableTextField.removeExtension(envVariableTextFieldMacroSupportExtension!!)
+            }
+        }
+        panel.add(expandMacrosEnvVariables)
 
         beforeRunCommand = LabeledComponent.create(RawCommandLineEditor(), "LaTeX code to run before compiling the main file")
         panel.add(beforeRunCommand)
