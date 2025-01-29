@@ -124,7 +124,7 @@ ANY_CHAR=[^]
 // Exclude some characters from possible verbatim delimiters. This is only a workaround because some things are impossible with our lexer.
 // As an example, consider the case when \verb is redefined to be a non-verbatim command, then the lexer will find all sorts of wrong delimiters, and can apparently bring the parser into an infinite loop (not sure how).
 // IMPORTANT: these characters need to be included in the exlusive INLINE_VERBATIM_START state
-VERBATIM_DELIMITER=[^}\\\]\[\(]
+VERBATIM_DELIMITER=[^}\\\]\[\( \t\n\x0B\f\r]
 
 // Algorithmicx
 // Currently we just use the begin..end structure for formatting, so there is no need to disinguish between separate constructs
@@ -180,6 +180,7 @@ END_IFS=\\fi
     {CLOSE_BRACKET}      { yypopState(); return CLOSE_BRACKET; }
     {OPEN_PAREN}         { yypopState(); return OPEN_PAREN; }
     \\                   { yypopState(); return BACKSLASH; }
+    {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
     [^]                  { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 
@@ -194,6 +195,7 @@ END_IFS=\\fi
     {CLOSE_BRACKET}      { yypopState(); return CLOSE_BRACKET; }
     {OPEN_PAREN}         { yypopState(); return OPEN_PAREN; }
     \\                   { yypopState(); return BACKSLASH; }
+    {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
     [^]                  { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 
