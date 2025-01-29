@@ -61,7 +61,7 @@ suspend fun runCommandNonBlocking(
 
         process.outputWriter().use { if (input != null) it.write(input) }
         val output = if (!discardOutput) async { process.inputReader().use { readTextIgnoreClosedStream(it) } } else null
-        val error = if (!discardOutput) { async { process.errorReader().use { readTextIgnoreClosedStream(it) } } } else null
+        val error = if (!discardOutput) async { process.errorReader().use { readTextIgnoreClosedStream(it) } } else null
 
         withTimeoutOrNull(1_000 * timeout) {
             process.awaitExit()
