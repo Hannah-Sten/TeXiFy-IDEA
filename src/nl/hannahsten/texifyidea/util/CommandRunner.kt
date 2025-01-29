@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.util.io.awaitExit
 import kotlinx.coroutines.*
+import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
 import javax.swing.SwingUtilities
@@ -59,25 +60,8 @@ suspend fun runCommandNonBlocking(
         val process = processBuilder.start()
 
         process.outputWriter().use { if (input != null) it.write(input) }
-        val output = if (!discardOutput) async { process.inputReader().use { it.readText() } } else null
-        val error = if (!discardOutput) {
-            async {
-                process.errorReader().use {
-                    try {
-                        it.readText()
-                    }
-                    catch (e: IOException) {
-                        // In some cases directly after IDE start (after a timeout?), the stream may be closed already, so ignore that
-                        if (e.message?.contains("Stream closed") == true) {
-                            Log.info("Ignored closed stream: " + e.message)
-                            e.message
-                        }
-                        else throw e
-                    }
-                }
-            }
-        }
-        else null
+        val output = if (!discardOutput) async { process.inputReader().use { readTextIgnoreClosedStream(it) } } else null
+        val error = if (!discardOutput) { async { process.errorReader().use { readTextIgnoreClosedStream(it) } } } else null
 
         withTimeoutOrNull(1_000 * timeout) {
             process.awaitExit()
@@ -114,6 +98,18 @@ suspend fun runCommandNonBlocking(
             if (returnExceptionMessageAsErrorOutput) e.message else null
         )
     }
+}
+
+private fun readTextIgnoreClosedStream(reader: BufferedReader): String? = try {
+    reader.readText()
+}
+catch (e: IOException) {
+    // In some cases directly after IDE start (after a timeout?), the stream may be closed already, so ignore that
+    if (e.message?.contains("Stream closed") == true) {
+        Log.info("Ignored closed stream: " + e.message)
+        e.message
+    }
+    else throw e
 }
 
 /**
