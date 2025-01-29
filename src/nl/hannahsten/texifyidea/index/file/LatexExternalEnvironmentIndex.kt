@@ -16,7 +16,7 @@ class LatexExternalEnvironmentIndex : FileBasedIndexExtension<String, String>() 
         val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.environments")
     }
 
-    private val indexer = LatexExternalEnvironmentDataIndexer()
+    private val indexer by lazy { LatexExternalEnvironmentDataIndexer () }
 
     override fun getName(): ID<String, String> {
         return Cache.id
