@@ -9,6 +9,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.ui.layout.CCFlags
@@ -94,17 +95,17 @@ class BibliographyCompileStep internal constructor(
         }
 
         val panel = panel {
-            row("Compiler:") {
+            row(JBLabel("Compiler:")) {
                 cell {
                     component(executableEditor.component)
                     compilerArguments(CCFlags.growX, CCFlags.pushX)
                 }
             }
-            row("Working directory:") {
+            row(JBLabel("Working directory:")) {
                 component(workingDirectory)
                     .comment("Working directory should typically be the directory where the .aux file can be found.")
             }
-            row("Environment variables:") {
+            row(JBLabel("Environment variables:")) {
                 component(environmentVariables)
                     .comment("For this step only. Separate variables with semicolon: VAR=value; VAR1=value1")
             }

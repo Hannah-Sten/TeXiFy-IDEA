@@ -8,6 +8,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
@@ -77,13 +78,13 @@ class CommandLineStep internal constructor(
         }
 
         val panel = panel {
-            row("Command line:") {
+            row(JBLabel("Command line:")) {
                 commandLineField(CCFlags.growX, CCFlags.pushX).comment("Any command that should be executed.")
             }
-            row("Working directory:") {
+            row(JBLabel("Working directory:")) {
                 component(workingDirectory)
             }
-            row("Environment variables:") {
+            row(JBLabel("Environment variables:")) {
                 component(environmentVariables)
                     .comment("For this step only. Separate variables with semicolon: VAR=value; VAR1=value1")
             }

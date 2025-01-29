@@ -139,8 +139,8 @@ object LatexSdkUtil {
         return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
             latexDistribution
         }
-        else {
-            LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType() ?: LatexDistributionType.TEXLIVE
+        else {// todo check if correct
+            LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType(getLatexProjectSdk(project)!!) ?: LatexDistributionType.TEXLIVE
         }
     }
 

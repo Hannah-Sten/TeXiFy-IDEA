@@ -139,7 +139,8 @@ fun runCommandWithExitCode(
     timeout: Long = 3,
     returnExceptionMessage: Boolean = false,
     discardOutput: Boolean = false,
-    inputString: String = ""
+    inputString: String = "",
+    killAfterTimeout: Boolean = true // todo
 ): Pair<String?, Int> =
     runBlocking {
         with(

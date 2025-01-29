@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.runReadAction
@@ -22,9 +21,8 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
+import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
+import nl.hannahsten.texifyidea.run.LatexTemplateConfigurationFactory
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -99,7 +97,7 @@ fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
  * Get the run configuration of the template.
  */
 fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
-    RunManager.getInstance(it).getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
+    RunManager.getInstance(it).getConfigurationTemplate(LatexTemplateConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
 }
 
 /**

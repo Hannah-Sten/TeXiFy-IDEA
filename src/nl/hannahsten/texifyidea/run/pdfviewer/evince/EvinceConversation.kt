@@ -5,16 +5,15 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.ViewerConversation
-import nl.hannahsten.texifyidea.util.runCommand
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.freedesktop.dbus.errors.NoReply
 import org.freedesktop.dbus.errors.ServiceUnknown
 import org.freedesktop.dbus.exceptions.DBusException
 import org.freedesktop.dbus.types.UInt32
 import org.gnome.evince.Daemon
-import java.io.File
 import org.gnome.evince.SyncViewSourcePointStruct
 import org.gnome.evince.Window
+import java.io.File
 
 /**
  * Send commands to Evince.
@@ -105,6 +104,8 @@ object EvinceConversation : ViewerConversation() {
                 throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $pdfPath")
             }
         }
+
+        return 0
     }
 
     /**

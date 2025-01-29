@@ -117,7 +117,7 @@ object BibliographyCompileStepProvider : StepProvider {
             .flatMap { command -> command.requiredParameters() }
             .forEach { filename ->
                 // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                val chapterMainFile = psiFile.findFile(filename.text)
+                val chapterMainFile = psiFile.findFile(filename.text, supportsAnyExtension = true)
                     ?: return@forEach
 
                 val chapterFiles = chapterMainFile.referencedFileSet()
