@@ -532,7 +532,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             // Possible improvement: detecting line 4
-            LatexLogMessage("unexpected symbol near '3'.", "./main.tex", -1, ERROR)
+            LatexLogMessage("unexpected symbol near '3' \\directlua{3 = x}", "./main.tex", -1, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -556,7 +556,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("Undefined control sequence. \\IsTrue", "config/constants.tex", 70, ERROR)
+            LatexLogMessage("Undefined control sequence. \\PrintVersion \\IsTrue", "config/constants.tex", 70, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -798,7 +798,7 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         val expectedMessages = setOf(
             LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR),
-            LatexLogMessage("Undefined control sequence. \\cupt", "./hw5.tex", 79, ERROR)
+            LatexLogMessage("Undefined control sequence. \\cupt T$).", "./hw5.tex", 79, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -872,6 +872,8 @@ Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
 [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 ./0_main.tex:23: Undefined control sequence.
 l.23     \asd
+...
+...
             """.trimIndent()
 
         val expectedMessages = setOf(
@@ -884,25 +886,17 @@ l.23     \asd
     fun `test long file name`() {
         val log =
             """
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
- restricted \write18 enabled.
-entering extended mode
 (/home/thomas/GitRepos/random-tex-empty/src/main.tex
-LaTeX2e <2024-06-01> patch level 2
-L3 programming layer <2024-09-10>
-(/home/thomas/texlive/2024/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
-(/home/thomas/texlive/2024/texmf-dist/tex/latex/base/size10.clo))
-(/home/thomas/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
- (/home/thomas/GitRepos/random-tex-empty/out/main.aux)
 [1{/home/thomas/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 /home/thomas/GitRepos/random-tex-empty/src/main.tex:22: Undefined control seque
 nce.
 l.22 	\asd
+...
+...
             """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("Undefined control sequence. \\asd", "main.tex", 22, ERROR),
+            LatexLogMessage("Undefined control sequence \\asd", "/home/thomas/GitRepos/random-tex-empty/src/main.tex", 22, ERROR),
         )
 
         testLog(log, expectedMessages)
