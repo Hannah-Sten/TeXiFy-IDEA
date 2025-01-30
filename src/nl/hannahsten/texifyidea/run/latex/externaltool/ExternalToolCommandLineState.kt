@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.externaltool
 
 import com.intellij.execution.ExecutionException
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.KillableProcessHandler
@@ -17,7 +18,8 @@ class ExternalToolCommandLineState(
     environment: ExecutionEnvironment,
     private val mainFile: VirtualFile?,
     private val workingDirectory: VirtualFile?,
-    private val tool: ExternalTool
+    private val tool: ExternalTool,
+    private val environmentVariables: EnvironmentVariablesData
 ) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)
@@ -28,6 +30,7 @@ class ExternalToolCommandLineState(
 
         val command = listOf(tool.executableName, mainFile.nameWithoutExtension)
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)
+            .withEnvironment(environmentVariables.envs)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 

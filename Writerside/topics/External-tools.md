@@ -218,6 +218,16 @@ list(primes_sieve2(60))
 \end{document}
 ```
 
+If you want pythontex to use a Python version from a virtual environment, edit the External Tool run configuration.
+In the environment variables, put `PATH=/path/to/venv/bin:PATH`, and make sure you have pygments installed.
+You can check if the correct executable is found with 
+```
+\begin{pyconsole}
+import sys
+sys.executable
+\end{pyconsole}
+```
+
 ## Sage
 _Since v2.0.0_
 
