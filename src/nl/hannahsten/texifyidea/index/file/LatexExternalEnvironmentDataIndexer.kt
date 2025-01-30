@@ -20,7 +20,9 @@ class LatexExternalEnvironmentDataIndexer : DataIndexer<String, String, FileCont
         """(?=\\DescribeEnv\{?(?<key>[a-zA-Z_:]+\*?)}?\s*(?<value>[\s\S]{0,500}))""".toRegex()
 
     // e.g. \newenvironment{proof}{...} \newenvironment|\newtheorem|\NewDocumentEnvironment|\DeclareDocumentEnvironment|\ProvideDocumentEnvironment
-    private val directDefinitionRegex = """(${CommandMagic.environmentDefinitions.joinToString("|").replace("\\", "\\\\")})\*?\{(?<key>[a-zA-Z_:]+)}(?<value>)""".toRegex()
+    private val directDefinitionRegex by lazy {
+        """(${CommandMagic.environmentDefinitions.joinToString("|").replace("\\", "\\\\")})\*?\{(?<key>[a-zA-Z_:]+)}(?<value>)""".toRegex()
+    }
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
         val map = mutableMapOf<String, String>()
