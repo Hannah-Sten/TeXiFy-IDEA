@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.externaltool
 
 import com.intellij.execution.Executor
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
@@ -32,9 +33,10 @@ class ExternalToolRunConfiguration(
     var program = ExternalTool.PYTHONTEX
     var mainFile: VirtualFile? = null
     var workingDirectory: VirtualFile? = null
+    var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        return ExternalToolCommandLineState(environment, mainFile, workingDirectory, this.program)
+        return ExternalToolCommandLineState(environment, mainFile, workingDirectory, this.program, environmentVariables)
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = ExternalToolSettingsEditor(project)
@@ -77,6 +79,8 @@ class ExternalToolRunConfiguration(
         else {
             null
         }
+
+        environmentVariables = EnvironmentVariablesData.readExternal(parent)
     }
 
     override fun writeExternal(element: Element) {
@@ -88,6 +92,7 @@ class ExternalToolRunConfiguration(
         parent.addContent(Element(PROGRAM).apply { text = this@ExternalToolRunConfiguration.program.name })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
         parent.addContent(Element(WORK_DIR).apply { text = workingDirectory?.path ?: "" })
+        this.environmentVariables.writeExternal(parent)
     }
 
     override fun isGeneratedName() = name == suggestedName()
