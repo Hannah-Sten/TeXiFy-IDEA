@@ -532,7 +532,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             // Possible improvement: detecting line 4
-            LatexLogMessage("unexpected symbol near '3'.", "./main.tex", -1, ERROR)
+            LatexLogMessage("unexpected symbol near '3' \\directlua{3 = x}", "./main.tex", -1, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -556,7 +556,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("Undefined control sequence. \\PrintVersion", "config/constants.tex", 70, ERROR)
+            LatexLogMessage("Undefined control sequence. \\PrintVersion \\IsTrue", "config/constants.tex", 70, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -798,7 +798,7 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         val expectedMessages = setOf(
             LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR),
-            LatexLogMessage("Undefined control sequence. \\cupt", "./hw5.tex", 79, ERROR)
+            LatexLogMessage("Undefined control sequence. \\cupt T$).", "./hw5.tex", 79, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -853,6 +853,50 @@ Latexmk: Summary of warnings from last run of *latex:
         val expectedMessages = setOf(
             LatexLogMessage("makeindex: file not writable for security reasons: /home/thomas/GitRepos/random-math/out/random-math.ind", null, -1, ERROR),
             LatexLogMessage("Can't create output index file /home/thomas/GitRepos/random-math/out/random-math.ind.", null, -1, ERROR),
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test updmap`() {
+        val log =
+            """
+(./0_main.tex
+LaTeX2e <2024-11-01> patch level 1
+L3 programming layer <2024-12-25>
+(/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2024/texmf-dist/tex/latex/base/size10.clo))
+(/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
+(/Users/neal/Desktop/mwe/out/0_main.aux)
+[1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+./0_main.tex:23: Undefined control sequence.
+l.23     \asd
+...
+...
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Undefined control sequence. \\asd", "./0_main.tex", 23, ERROR),
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test long file name`() {
+        val log =
+            """
+(/home/thomas/GitRepos/random-tex-empty/src/main.tex
+[1{/home/thomas/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+/home/thomas/GitRepos/random-tex-empty/src/main.tex:22: Undefined control seque
+nce.
+l.22 	\asd
+...
+...
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Undefined control sequence \\asd", "/home/thomas/GitRepos/random-tex-empty/src/main.tex", 22, ERROR),
         )
 
         testLog(log, expectedMessages)
