@@ -20,4 +20,9 @@ class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(Lat
             """.trimIndent()
         )
     }
+
+    fun testNewCommand() {
+        myFixture.configureByText(LatexFileType, """\newcommand{\mygls}{\newabbreviation{name}{\ensuremath{#1}}{long}} Some text""")
+        myFixture.checkHighlighting()
+    }
 }
