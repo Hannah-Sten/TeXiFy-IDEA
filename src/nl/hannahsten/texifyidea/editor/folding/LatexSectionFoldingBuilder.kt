@@ -6,6 +6,8 @@ import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.startOffset
+import nl.hannahsten.texifyidea.lang.magic.CustomMagicKey
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -34,7 +36,10 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
             .filter { it.firstParentOfType<LatexParameter>() == null }
             .sortedBy { it.textOffset }
         val comments = root.childrenOfType<LatexMagicComment>().filter { it.key() == DefaultMagicKeys.FAKE }
+        // If the user has a custom folding region interleaving with sections, e.g. spanning multiple sections but ending inside a section, we give the user priority over the default section folding (so that the user does not need to put fake sections everywhere)
+        val customRegions = root.childrenOfType<LatexMagicComment>().filter { it.key() == CustomMagicKey("region") || it.key() == CustomMagicKey("endregion") }
         val sectionElements: List<PsiElement> = (commands + comments).sortedBy { it.textOffset }
+        val sectionAndRegionElements: List<PsiElement> = (sectionElements + customRegions).sortedBy { it.textOffset }
 
         if (sectionElements.isEmpty()) {
             return descriptors.toTypedArray()
@@ -51,17 +56,30 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
             else -> null
         }
 
-        for (currentFoldingCommandIndex in sectionElements.indices) {
+        for (currentFoldingCommand in sectionElements) {
             var foundHigherCommand = false
-            val currentFoldingCommand = sectionElements[currentFoldingCommandIndex]
             val currentCommandRank = sectionCommandNames.indexOf(currentFoldingCommand.name() ?: continue)
+
+            // Count nested regions
+            var customRegionCounter = 0
 
             // Find the 'deepest' section under currentFoldingCommand,
             // so when we find something that is equal or lower in rank
             // (a section is ranked lower than a subsection) then we
             // get the block of text between it and the currentFoldingCommand
-            for (nextFoldingCommandIndex in currentFoldingCommandIndex + 1 until sectionElements.size) {
-                val nextFoldingCommand = sectionElements[nextFoldingCommandIndex]
+            for (nextFoldingCommand in sectionAndRegionElements.filter { it.startOffset > currentFoldingCommand.startOffset }) {
+                // Keep track of custom folding regions within a section that we should skip (we are looking for an endregion that starts before this section, and are assuming that these are balanced)
+                // todo now do the same for custom regions that are starting in this section but not ending here
+                if (nextFoldingCommand is LatexMagicComment) {
+                    if (nextFoldingCommand.key() == CustomMagicKey("region")) {
+                        customRegionCounter++
+                        continue
+                    }
+                    else if (nextFoldingCommand.key() == CustomMagicKey("endregion")) {
+                        customRegionCounter--
+                    }
+                    if (customRegionCounter >= 0) continue
+                }
 
                 // Find the rank of the next command to compare with the current rank
                 val nextCommandRank = sectionCommandNames.indexOf(nextFoldingCommand.name())
