@@ -170,6 +170,7 @@ class ReferencedFileSetCache {
         }
 
         // Make sure to check if file is still valid after retrieving from cache (it may have been deleted)
-        return cache[file.virtualFile.path]?.mapNotNull { it.element }?.filter { it.isValid }?.toSet() ?: setOf(file)
+        val fileset = cache[file.virtualFile.path]?.mapNotNull { it.element }?.filter { it.isValid }?.toSet()
+        return if (fileset.isNullOrEmpty())setOf(file) else fileset
     }
 }
