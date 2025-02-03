@@ -47,7 +47,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
-
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
