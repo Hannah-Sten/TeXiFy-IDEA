@@ -319,12 +319,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                     environmentVariableTextField.addExtension(envVariableTextFieldMacroSupportExtension!!)
                 }
                 else {
-                    MacrosDialog.addMacroSupport(environmentVariableTextField, MacrosDialog.Filters.ALL) { false }
+                    MacrosDialog.addTextFieldExtension(environmentVariableTextField)
                     envVariableTextFieldMacroSupportExtension = environmentVariableTextField.extensions.last()
                 }
             }
-            else if (envVariableTextFieldMacroSupportExtension != null) {
-                environmentVariableTextField.removeExtension(envVariableTextFieldMacroSupportExtension!!)
+            else {
+                envVariableTextFieldMacroSupportExtension?.let { theExtension ->
+                    environmentVariableTextField.removeExtension(theExtension)
+                }
             }
         }
         panel.add(expandMacrosEnvVariables)

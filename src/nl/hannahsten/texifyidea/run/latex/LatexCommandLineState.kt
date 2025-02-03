@@ -7,11 +7,11 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -34,6 +34,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
+import java.util.*
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -42,8 +43,11 @@ import java.io.File
  */
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
 
+    private val programParamsConfigurator = CustomContextProgramParametersConfigurator(runConfig)
+
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
+
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
@@ -96,12 +100,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             ?: throw ExecutionException("Compile command could not be created.")
 
         val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
-
-        var envVariables = runConfig.environmentVariables.envs
-        if (runConfig.expandMacrosEnvVariables) {
-            envVariables = envVariables.map { entry ->
-                entry.key to ProgramParametersConfigurator.expandMacros(entry.value)
-            }.toMap()
+        val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
+            mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
         }
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
