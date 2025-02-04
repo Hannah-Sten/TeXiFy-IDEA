@@ -3,8 +3,12 @@
 ## [Unreleased]
 
 ### Added
+* Add environment variables option to the external tool run configuration
 
 ### Fixed
+* Fix a parsing issue when a verbatim command is followed by a space
+* Make language injection id check case insensitive
+* Fix exceptions #3843, #3853, #3852, #3846 and #3866
 
 ## [0.10.0] - 2025-01-27
 
