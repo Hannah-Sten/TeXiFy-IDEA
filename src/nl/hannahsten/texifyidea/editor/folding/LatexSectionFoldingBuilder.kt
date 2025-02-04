@@ -82,7 +82,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                         unmatchedIndices.dropLast(1)
                     }
                     else {
-                        unmatchedIndices
+                        unmatchedIndices + comment
                     }
                 }
                 .firstOrNull()
@@ -110,11 +110,11 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                     previousContent = nextContent
                     nextContent = nextContent.nextSiblingIgnoreWhitespace() as? LatexNoMathContent
                 }
-                val sectionEnd = firstUnmatchedRegion ?: previousContent
-                if (sectionEnd.textOffset + sectionEnd.textLength - currentFoldingCommand.textOffset > 0) {
+                val endOffset = if (firstUnmatchedRegion != null) firstUnmatchedRegion.startOffset - 1 else previousContent.textOffset + previousContent.textLength
+                if (endOffset - currentFoldingCommand.textOffset > 0) {
                     val foldingRange = TextRange(
                         currentFoldingCommand.textOffset,
-                        sectionEnd.textOffset + sectionEnd.textLength
+                        endOffset
                     )
                     descriptors.add(FoldingDescriptor(currentFoldingCommand, foldingRange))
                 }
