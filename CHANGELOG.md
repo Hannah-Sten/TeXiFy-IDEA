@@ -4,8 +4,11 @@
 
 ### Added
 * Add environment variables option to the external tool run configuration
+* Let user defined folding regions override section folding regions by default
 
 ### Fixed
+* Fix missing glossary reference inspection when using a glossary definition command in a \newcommand
+* Improve log parsing of 'undefined control sequence' error
 * Fix a parsing issue when a verbatim command is followed by a space
 * Make language injection id check case insensitive
 * Fix exceptions #3843, #3853, #3852, #3846 and #3866

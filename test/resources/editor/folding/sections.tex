@@ -6,4 +6,17 @@ Text.
 Text.</fold></fold>
 <fold text='\section{Three}...'>\section{Three}
 Text.</fold>
+<fold text='sections'>%! region sections
+<fold text='\section{introduction}...'>\section{introduction}
+\blindtext</fold>
+<fold text='\section{salient point}...'>\section{salient point}
+<fold text='section-content'>%! region section-content
+\blindtext
+%! endregion</fold></fold>
+%! endregion</fold>
+
+<fold text='references'>%! region references
+\newpage
+\printbibliography
+%! endregion</fold>
 </fold>\end{document}
