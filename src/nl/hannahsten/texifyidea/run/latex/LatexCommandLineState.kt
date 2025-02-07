@@ -3,10 +3,14 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.util.ProgramParametersConfigurator
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
@@ -43,7 +47,7 @@ import java.util.*
  */
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
 
-    private val programParamsConfigurator = CustomContextProgramParametersConfigurator(runConfig)
+    private val programParamsConfigurator = ProgramParametersConfigurator()
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
@@ -99,8 +103,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             ?: throw ExecutionException("Compile command could not be created.")
 
         val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
-        val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
-            mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
+
+        @Suppress("UnstableApiUsage")
+        val envVariables = ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
+            runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
+                mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
+            }
         }
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
