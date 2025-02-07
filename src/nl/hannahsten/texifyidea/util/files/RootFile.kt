@@ -25,7 +25,7 @@ suspend fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFil
 
     if (magicComment.contains(DefaultMagicKeys.ROOT)) {
         val path = magicComment.value(DefaultMagicKeys.ROOT) ?: ""
-        this.findFile(path, supportsAnyExtension = true)?.let { roots.add(it) }
+        smartReadAction(project) { this.findFile(path, supportsAnyExtension = true) }?.let { roots.add(it) }
     }
 
     if (smartReadAction(project) { this.isRoot() }) {
