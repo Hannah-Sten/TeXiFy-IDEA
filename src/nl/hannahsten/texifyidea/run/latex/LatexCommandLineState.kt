@@ -105,8 +105,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
 
         @Suppress("UnstableApiUsage")
-        val envVariables = ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
-            runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
+        val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
+            ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
                 mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
             }
         }
