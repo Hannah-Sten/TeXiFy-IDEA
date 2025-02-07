@@ -11,7 +11,7 @@
 * Improve log parsing of 'undefined control sequence' error
 * Fix a parsing issue when a verbatim command is followed by a space
 * Make language injection id check case insensitive
-* Fix exceptions #3843, #3853, #3852, #3846 and #3866
+* Fix exceptions #3843, #3853, #3852, #3846, #3873, #3885 and #3866
 
 ## [0.10.0] - 2025-01-27
 
