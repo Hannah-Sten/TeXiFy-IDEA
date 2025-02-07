@@ -3,10 +3,19 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.10.1-alpha.2] - 2025-02-07
+
+### Added
+
 * Add environment variables option to the external tool run configuration
 * Let user defined folding regions override section folding regions by default
 
 ### Fixed
+
+* Fix a performance problem caused by cache misses in "Package not installed" inspection
 * Fix missing glossary reference inspection when using a glossary definition command in a \newcommand
 * Improve log parsing of 'undefined control sequence' error
 * Fix a parsing issue when a verbatim command is followed by a space
@@ -498,7 +507,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.1-alpha.2...HEAD
+[0.10.1-alpha.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...v0.10.1-alpha.2
 [0.10.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.10.0
 [0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
 [0.9.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...v0.9.8
