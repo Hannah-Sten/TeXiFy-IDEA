@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
 import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
@@ -42,8 +41,8 @@ object LatexExternalPackageInclusionCache {
         runInEdt {
             runInBackgroundBlocking(project, "Retrieving LaTeX package inclusions...") { indicator ->
                 try {
-                    runReadAction { FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }.forEach { indexKey ->
-                        runReadAction {
+                    DumbService.getInstance(project).tryRunReadActionInSmartMode({ FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }, indicator.text)?.forEach { indexKey ->
+                        DumbService.getInstance(project).tryRunReadActionInSmartMode({
                             FileBasedIndex.getInstance().processValues(
                                 LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
                                     indicator.checkCanceled()
@@ -53,7 +52,7 @@ object LatexExternalPackageInclusionCache {
                                 },
                                 GlobalSearchScope.everythingScope(project)
                             )
-                        }
+                        }, indicator.text)
                     }
 
                     // Do some DFS for indirect inclusions
