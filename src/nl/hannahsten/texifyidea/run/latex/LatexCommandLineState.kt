@@ -3,14 +3,19 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.util.ProgramParametersConfigurator
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -33,6 +38,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
+import java.util.*
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -40,6 +46,8 @@ import java.io.File
  * @author Sten Wessel
  */
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
+
+    private val programParamsConfigurator = ProgramParametersConfigurator()
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
@@ -95,9 +103,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             ?: throw ExecutionException("Compile command could not be created.")
 
         val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
+
+        @Suppress("UnstableApiUsage")
+        val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
+            ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
+                mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
+            }
+        }
+
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .withEnvironment(runConfig.environmentVariables.envs)
+            .withEnvironment(envVariables)
         val handler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated

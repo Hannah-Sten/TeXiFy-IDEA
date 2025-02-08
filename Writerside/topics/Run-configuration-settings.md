@@ -125,6 +125,16 @@ For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and 
 Similarly, you can also set `TEXMFHOME` to some other path than the default `~/texmf`, so that sty and cls files will be searched in the `tex/latex` subdirectory or any child directory of it.
 For more information about paths resolving, see [https://www.tug.org/texinfohtml/kpathsea.html#Path-searching](https://www.tug.org/texinfohtml/kpathsea.html#Path-searching)
 
+### Expand macros in environment variables
+_Since b0.10.1_
+
+When ticked, macros such as `$ContentRoot$` (the path to the content root of the current run configuration's main file) are expanded.
+An example use for this would be to add a directory containing the document class to be used to `TEXINPUTS`, e.g., `TEXINPUTS=$ContentRoot$/MyDir`.
+Doing so might be especially helpful in the context of setting up a 'run configuration template,' which is a run configuration that is used by default for any time a LaTeX file is run (and thus compiled) for the first time. For more details on run configuration templates, see [https://www.jetbrains.com/help/idea/run-debug-configuration.html#templates](https://www.jetbrains.com/help/idea/run-debug-configuration.html#templates).
+
+An overview of all built-in macros can be found at [https://www.jetbrains.com/help/idea/built-in-macros.html](https://www.jetbrains.com/help/idea/built-in-macros.html). 
+Whenever the documentation mentions 'the current file,' in the context of a TeXiFy run configuration, this always refers to the main `.tex` file being compiled.
+
 ## LaTeX code to run before compiling the main file
 _Since b0.9.5_
 
