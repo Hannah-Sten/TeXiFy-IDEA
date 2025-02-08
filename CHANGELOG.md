@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add option to run configuration to expand macros in environment variables, by @briha
 
 ### Fixed
 
