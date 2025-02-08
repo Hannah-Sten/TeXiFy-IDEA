@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.execution.RunManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
@@ -100,12 +101,10 @@ fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
 }
 
 /**
- * Get the first of the selected editors as a [TextEditor].
- * Returns `null` when there are no selected *text* editors.
+ * Gets the currently focused text editor.
  */
 fun Project.currentTextEditor(): TextEditor? {
-    val editors = FileEditorManager.getInstance(this).selectedEditors
-    return editors.firstOrNull { it is TextEditor } as TextEditor?
+    return FileEditorManager.getInstance(this).focusedEditor as TextEditor?
 }
 
 /**
