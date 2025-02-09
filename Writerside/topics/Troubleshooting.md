@@ -26,6 +26,14 @@ For any performance issue: if you do not have a favourite profiler yet, you can 
 * Take a Snapshot to view and save results. Note that you may have to click a few more levels open to see the actual methods.
 * Now you can zip the nps file and upload it here on GitHub.
 
+## I don't see any syntax highlighting
+
+If you have the TeXiFy plugin installed but still don't see any syntax highlighting, you may accidentally have reassigned the `.tex` file type to plain text.
+To undo this, go to <ui-path>Editor | File Types | LaTeX source file</ui-path> and make sure the `*.tex` pattern is there.
+Also check that the Text file type does not have this pattern.
+If the problem only occurs for one specific file, right-click the file and select 'Revert File Type Override'.
+For more information, see [IntelliJ IDEA Help](https://www.jetbrains.com/help/idea/creating-and-registering-file-types.html).
+ 
 ## Main file is not detected correctly
 
 If TeXiFy does not detect which file is your main/root LaTeX file, you may experience problems like package imports being placed in the wrong file, or imports not being resolved correctly.
