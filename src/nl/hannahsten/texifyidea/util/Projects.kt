@@ -100,12 +100,10 @@ fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
 }
 
 /**
- * Get the first of the selected editors as a [TextEditor].
- * Returns `null` when there are no selected *text* editors.
+ * Gets the currently focused text editor.
  */
 fun Project.currentTextEditor(): TextEditor? {
-    val editors = FileEditorManager.getInstance(this).selectedEditors
-    return editors.firstOrNull { it is TextEditor } as TextEditor?
+    return FileEditorManager.getInstance(this).focusedEditor as TextEditor?
 }
 
 /**
