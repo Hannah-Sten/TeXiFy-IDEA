@@ -85,7 +85,7 @@ class LatexTextExtractor : TextExtractor() {
                 var end = text.textRange.endOffset - 1 - root.startOffset
                 // If LatexNormalText ends, for example because it is followed by a command, we do want to include the space in front of the command, since it is still typeset as a space, which is not true for the space after the command if the command has no arguments,
                 // except when the space is followed by inline math, since we ignore inline math altogether (which is probably not correct) we should also ignore the space
-                if (setOf(' ', '\n').contains(rootText.getOrNull(end + 1)) && rootText.getOrNull(end + 2) != '$') {
+                if (setOf(' ', '\n').contains(rootText.getOrNull(end + 1)) && rootText.getOrNull(end + 2) != '$' && rootText.substring(end + 2, end + 4) != "\\(") {
                     end += 1
                 }
                 listOf(start, end)
