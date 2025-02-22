@@ -420,6 +420,7 @@ class LatexRunConfiguration(
         if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
         bibtexRunConfiguration.mainFile = mainFile
         bibtexRunConfiguration.setSuggestedName()
+        bibtexRunConfiguration.setDefaultDistribution(latexDistribution)
 
         // On non-MiKTeX systems, add bibinputs for bibtex to work
         if (!latexDistribution.isMiktex(project)) {
