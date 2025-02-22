@@ -69,7 +69,8 @@ suspend fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
         val output = (data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null).firstOrNull() as? Map<*, *>
         // The Inputs field was added after 0.15.0, at the moment of writing unreleased so we cannot check the version
         val inputs = if (output?.keys?.contains("inputs") == true) {
-            output.getOrDefault("inputs", listOf("_preamble.tex", "index.tex", "_postamble.tex")) as? List<*> ?: return@mapNotNull null
+            val inputListMaybe = output.getOrDefault("inputs", listOf("_preamble.tex", "index.tex", "_postamble.tex"))
+            if (inputListMaybe is String) listOf(inputListMaybe) else inputListMaybe as? List<*> ?: return@mapNotNull null
         }
         else {
             // See https://tectonic-typesetting.github.io/book/latest/ref/tectonic-toml.html#contents
