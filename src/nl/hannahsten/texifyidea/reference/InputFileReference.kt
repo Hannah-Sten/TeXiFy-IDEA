@@ -99,6 +99,8 @@ class InputFileReference(
         // IMPORTANT In this method, do not use any functionality which makes use of the file set,
         // because this function is used to find the file set so that would cause an infinite loop
 
+        if (!element.isValid) return null
+
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = mutableListOf<String>()
 

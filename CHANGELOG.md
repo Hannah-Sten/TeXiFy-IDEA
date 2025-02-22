@@ -7,6 +7,7 @@
 * Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
 
 ### Fixed
+* Fix #3906 invalid element exception
 
 ## [0.10.1] - 2025-02-08
 
