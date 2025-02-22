@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 
 /**
  * @author Thomas Schouten

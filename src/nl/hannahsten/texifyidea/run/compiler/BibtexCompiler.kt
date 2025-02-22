@@ -30,7 +30,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             // We (mis)use project SDK as default setting for backwards compatibility
             if ((runConfig.getLatexDistributionType() == LatexDistributionType.PROJECT_SDK && LatexSdkUtil.isMiktexAvailable) || runConfig.getLatexDistributionType().isMiktex(project)) {
                 val mainPath = runConfig.mainFile?.parent?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType()) ?: ""
-                add("-include-directory=${mainPath}")
+                add("-include-directory=$mainPath")
                 addAll(moduleRoots.map { "-include-directory=${it.path.toWslPathIfNeeded(runConfig.getLatexDistributionType())}" })
             }
 
