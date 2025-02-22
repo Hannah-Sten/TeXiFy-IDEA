@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
 
 ### Fixed
 

@@ -31,7 +31,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "12.0.2"
+    id("org.owasp.dependencycheck") version "12.1.0"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -143,13 +143,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.0.3")
-    implementation("io.ktor:ktor-client-cio:3.0.3")
-    implementation("io.ktor:ktor-client-auth:3.0.3")
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
-    implementation("io.ktor:ktor-server-core:3.0.3")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.0.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
+    implementation("io.ktor:ktor-client-core:3.1.0")
+    implementation("io.ktor:ktor-client-cio:3.1.0")
+    implementation("io.ktor:ktor-client-auth:3.1.0")
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.0")
+    implementation("io.ktor:ktor-server-core:3.1.0")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.1.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     // Comparing versions
@@ -172,11 +172,11 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.4")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.11.4")
+    testImplementation("org.junit.platform:junit-platform-runner:1.12.0")
 
     testImplementation("io.mockk:mockk:1.13.16")
 

@@ -66,8 +66,19 @@ suspend fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
     val tomlFiles = smartReadAction(project) { findTectonicTomlFiles(project) }
     val filesets = tomlFiles.mapNotNull { tomlFile ->
         val data = TomlMapper().readValue(File(tomlFile.path), Map::class.java)
-        val outputList = data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null
-        val inputs = (outputList.firstOrNull() as? Map<*, *>)?.getOrDefault("inputs", null) as? List<*> ?: return@mapNotNull null
+        val output = (data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null).firstOrNull() as? Map<*, *>
+        // The Inputs field was added after 0.15.0, at the moment of writing unreleased so we cannot check the version
+        val inputs = if (output?.keys?.contains("inputs") == true) {
+            val inputListMaybe = output.getOrDefault("inputs", listOf("_preamble.tex", "index.tex", "_postamble.tex"))
+            if (inputListMaybe is String) listOf(inputListMaybe) else inputListMaybe as? List<*> ?: return@mapNotNull null
+        }
+        else {
+            // See https://tectonic-typesetting.github.io/book/latest/ref/tectonic-toml.html#contents
+            val preamble = output?.getOrDefault("preamble", "_preamble.tex") as? String ?: return@mapNotNull null
+            val index = output.getOrDefault("index", "index.tex") as? String ?: return@mapNotNull null
+            val postamble = output.getOrDefault("postamble", "_postamble.tex") as? String ?: return@mapNotNull null
+            listOf(preamble, index, postamble)
+        }
         // Inputs can be either a map "inline" -> String or file name
         // Actually it can also be just a single file name, but then we don't need all this gymnastics
         inputs.filterIsInstance<String>().mapNotNull {
