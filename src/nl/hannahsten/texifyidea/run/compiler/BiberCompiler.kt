@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.compiler
 import com.intellij.openapi.project.Project
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
 
 /**
  * @author Thomas Schouten
@@ -18,7 +19,8 @@ internal object BiberCompiler : Compiler<BibtexRunConfiguration> {
         // Biber can find auxiliary files, but the flag is different from bibtex.
         // The following flag assumes the command is executed in the directory where the .bcf control file is.
         // The extra directory added is the directory from which the path to the .bib resource file is searched as specified in the .bcf file.
-        add("--input-directory=${runConfig.mainFile?.parent?.path ?: ""}")
+        val mainPath = runConfig.mainFile?.parent?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType()) ?: ""
+        add("--input-directory=$mainPath")
 
         runConfig.compilerArguments?.let { addAll(ParametersListUtil.parse(it)) }
 
