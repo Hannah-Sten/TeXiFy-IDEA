@@ -141,7 +141,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             // LaTeX distribution, use project SDK as backwards compatible default
             @Suppress("DialogTitleCapitalization")
             latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray() + arrayOf(LatexDistributionType.PROJECT_SDK)), "LaTeX Distribution")
-            panel.add(latexDistribution)
+            add(latexDistribution)
         }
     }
 }
