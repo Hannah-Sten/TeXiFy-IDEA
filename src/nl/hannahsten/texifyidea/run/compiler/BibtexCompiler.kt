@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
@@ -28,8 +29,9 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             // Include files from auxiliary directory on Windows
             // We (mis)use project SDK as default setting for backwards compatibility
             if ((runConfig.getLatexDistributionType() == LatexDistributionType.PROJECT_SDK && LatexSdkUtil.isMiktexAvailable) || runConfig.getLatexDistributionType().isMiktex(project)) {
-                add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
-                addAll(moduleRoots.map { "-include-directory=${it.path}" })
+                val mainPath = runConfig.mainFile?.parent?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType()) ?: ""
+                add("-include-directory=${mainPath}")
+                addAll(moduleRoots.map { "-include-directory=${it.path.toWslPathIfNeeded(runConfig.getLatexDistributionType())}" })
             }
 
             add(runConfig.mainFile?.nameWithoutExtension ?: return null)

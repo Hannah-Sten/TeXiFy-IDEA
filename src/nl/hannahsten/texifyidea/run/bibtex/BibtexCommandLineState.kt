@@ -8,7 +8,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.util.execution.ParametersListUtil
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPath
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 
 /**
@@ -34,7 +34,7 @@ open class BibtexCommandLineState(
                     .forEach { wslCommand += " $it" }
             }
 
-            wslCommand += " ${runConfig.bibWorkingDir?.path?.toWslPath(runConfig.getLatexDistributionType())}"
+            wslCommand += " ${runConfig.bibWorkingDir?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())}"
 
             mutableListOf("bash", "-ic", wslCommand)
         }

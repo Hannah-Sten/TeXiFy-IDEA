@@ -306,7 +306,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             "/out"
         }
         else {
-            runConfig.outputPath.getAndCreatePath()?.path?.toWslPath(runConfig.getLatexDistributionType())
+            runConfig.outputPath.getAndCreatePath()?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
 
         val auxilPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
@@ -316,7 +316,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             null
         }
         else {
-            runConfig.auxilPath.getAndCreatePath()?.path?.toWslPath(runConfig.getLatexDistributionType())
+            runConfig.auxilPath.getAndCreatePath()?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
 
         val command = createCommand(
@@ -336,7 +336,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                     .forEach { wslCommand += " $it" }
             }
 
-            wslCommand += " ${mainFile.path.toWslPath(runConfig.getLatexDistributionType())}"
+            wslCommand += " ${mainFile.path.toWslPathIfNeeded(runConfig.getLatexDistributionType())}"
 
             return mutableListOf("bash", "-ic", wslCommand)
         }
@@ -476,7 +476,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         /**
          * Convert Windows paths to WSL paths.
          */
-        fun String.toWslPath(distributionType: LatexDistributionType): String =
+        fun String.toWslPathIfNeeded(distributionType: LatexDistributionType): String =
             if (distributionType == LatexDistributionType.WSL_TEXLIVE) {
                 runCommand("wsl", "wslpath", "-a", this) ?: this
             }
