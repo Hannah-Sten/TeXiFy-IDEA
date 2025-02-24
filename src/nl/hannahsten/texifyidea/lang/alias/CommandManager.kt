@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.alias
 
+import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
@@ -12,7 +13,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
-import kotlin.collections.set
 
 /**
  * Manages all available LaTeX commands and their aliases.
@@ -149,9 +149,9 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         indexedDefinitions.filter {
             // Assume the parameter definition has the command being defined in the first required parameter,
             // and the command definition itself in the second
-            it.requiredParameter(1)?.containsAny(aliasSet) == true
+            runReadAction { it.requiredParameter(1)?.containsAny(aliasSet) == true }
         }
-            .mapNotNull { it.requiredParameter(0) }
+            .mapNotNull { runReadAction { it.requiredParameter(0) } }
             .forEach { registerAlias(firstAlias, it) }
 
         // Extract label parameter positions
@@ -159,53 +159,55 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
         if (aliasSet.intersect(CommandMagic.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
             indexedDefinitions.forEach { commandDefinition ->
-                val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
-                if (definedCommand.isBlank()) return@forEach
+                runReadAction {
+                    val definedCommand = commandDefinition.requiredParameter(0) ?: return@runReadAction
+                    if (definedCommand.isBlank()) return@runReadAction
 
-                val isFirstParameterOptional = commandDefinition.parameterList.filter { it.optionalParam != null }.size > 1
+                    val isFirstParameterOptional = commandDefinition.parameterList.filter { it.optionalParam != null }.size > 1
 
-                val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
-                    ?.requiredParamContentList
-                    ?.flatMap { it.childrenOfType(LatexCommands::class) }
-                    ?.asSequence()
+                    val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
+                        ?.requiredParamContentList
+                        ?.flatMap { it.childrenOfType(LatexCommands::class) }
+                        ?.asSequence()
 
-                // Positions of label parameters in the custom commands (starting from 0)
-                val positions = parameterCommands
-                    ?.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
-                    ?.mapNotNull { it.requiredParameter(0) }
-                    ?.mapNotNull {
-                        if (it.indexOf('#') != -1) {
-                            it.getOrNull(it.indexOf('#') + 1)
+                    // Positions of label parameters in the custom commands (starting from 0)
+                    val positions = parameterCommands
+                        ?.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                        ?.mapNotNull { it.requiredParameter(0) }
+                        ?.mapNotNull {
+                            if (it.indexOf('#') != -1) {
+                                it.getOrNull(it.indexOf('#') + 1)
+                            }
+                            else null
                         }
-                        else null
-                    }
-                    ?.map(Character::getNumericValue)
-                    // LaTeX starts from 1, we from 0 (consistent with how we count required parameters)
-                    ?.map { it - 1 }
-                    // For the moment we only consider required parameters and ignore the optional one
-                    ?.map { if (isFirstParameterOptional) it - 1 else it }
-                    ?.filter { it >= 0 }
-                    ?.toList() ?: return@forEach
-                if (positions.isEmpty()) return@forEach
+                        ?.map(Character::getNumericValue)
+                        // LaTeX starts from 1, we from 0 (consistent with how we count required parameters)
+                        ?.map { it - 1 }
+                        // For the moment we only consider required parameters and ignore the optional one
+                        ?.map { if (isFirstParameterOptional) it - 1 else it }
+                        ?.filter { it >= 0 }
+                        ?.toList() ?: return@runReadAction
+                    if (positions.isEmpty()) return@runReadAction
 
-                // Check if there is a command which increases a counter before the \label
-                // If so, the \label just labels the counter increasing command, and not whatever will appear before usages of the custom labeling command
-                val definitionContainsIncreaseCounterCommand =
-                    parameterCommands.takeWhile { it.name !in CommandMagic.labelDefinitionsWithoutCustomCommands }
-                        .any { it.name in CommandMagic.increasesCounter }
+                    // Check if there is a command which increases a counter before the \label
+                    // If so, the \label just labels the counter increasing command, and not whatever will appear before usages of the custom labeling command
+                    val definitionContainsIncreaseCounterCommand =
+                        parameterCommands.takeWhile { it.name !in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                            .any { it.name in CommandMagic.increasesCounter }
 
-                val prefix = parameterCommands.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
-                    .mapNotNull { it.requiredParameter(0) }
-                    .map {
-                        if (it.indexOf('#') != -1) {
-                            val prefix = it.substring(0, it.indexOf('#'))
-                            prefix.ifBlank { "" }
-                        }
-                        else ""
-                    }.firstOrNull() ?: ""
+                    val prefix = parameterCommands.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                        .mapNotNull { it.requiredParameter(0) }
+                        .map {
+                            if (it.indexOf('#') != -1) {
+                                val prefix = it.substring(0, it.indexOf('#'))
+                                prefix.ifBlank { "" }
+                            }
+                            else ""
+                        }.firstOrNull() ?: ""
 
-                labelAliasesInfo[definedCommand] =
-                    LabelingCommandInformation(positions, !definitionContainsIncreaseCounterCommand, prefix)
+                    labelAliasesInfo[definedCommand] =
+                        LabelingCommandInformation(positions, !definitionContainsIncreaseCounterCommand, prefix)
+                }
             }
         }
     }
