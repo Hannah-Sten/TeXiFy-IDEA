@@ -11,9 +11,6 @@ import java.util.concurrent.ConcurrentHashMap
  */
 abstract class AliasManager {
 
-    // This doesn't completely guarantee that only one refresh will happen at a time, but at least we limit the amount of unnecessary work
-    private var isCacheFillInProgress = false
-
     /**
      * Maps a command to a set of aliases including the command itself.
      * Similar for environments.
@@ -145,20 +142,14 @@ abstract class AliasManager {
         // Also do this the first time something is registered, because then we have to update aliases as well
         val hasChanged = this.indexedCommandDefinitions != indexedCommandDefinitions
         // If a refresh is already in progress, no need to start another one, but no need to block this thread either
-        if (!isCacheFillInProgress && (hasChanged || wasRegistered)) {
+        if (hasChanged || wasRegistered) {
             // Update everything, since it is difficult to know beforehand what aliases could be added or not
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
             // requested alias set (otherwise only the first alias set requesting an update will get it)
             // We have to deepcopy the set of alias sets before iterating over it, because we want to modify aliases
-            try {
-                isCacheFillInProgress = true
-                val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
-                for (copiedAliasSet in deepCopy) {
-                    findAllAliases(copiedAliasSet, indexedCommandDefinitions)
-                }
-            }
-            finally {
-                isCacheFillInProgress = false
+            val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
+            for (copiedAliasSet in deepCopy) {
+                findAllAliases(copiedAliasSet, indexedCommandDefinitions)
             }
 
             this.indexedCommandDefinitions = indexedCommandDefinitions.toSet()
