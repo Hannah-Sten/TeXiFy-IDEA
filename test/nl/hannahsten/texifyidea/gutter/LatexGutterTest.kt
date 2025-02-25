@@ -8,6 +8,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexGutterTest : BasePlatformTestCase() {
@@ -56,6 +57,16 @@ class LatexGutterTest : BasePlatformTestCase() {
         val gutters = myFixture.findAllGutters()
         assertEquals(5, gutters.size)
         assertTrue(gutters.all { g -> g.tooltipText == "Go to referenced file" })
+    }
+
+    fun testInfiniteColorLoop() {
+        myFixture.configureByText(LatexFileType, """
+            \usepackage{xcolor}
+            \colorlet{kameel}{oliefant}
+            \colorlet{oliefant}{kameel}
+        """.trimIndent())
+//        myFixture.checkHighlighting()
+        myFixture.findAllGutters()
     }
 
     private fun getLineMarkerLine(marker: LineMarkerInfo<*>): Int {

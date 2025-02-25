@@ -76,6 +76,7 @@ class LatexElementColorProvider : ElementColorProvider {
                     in ColorMagic.takeColorCommands -> {
                         command?.getRequiredArgumentValueByName("color")
                     }
+
                     else -> null
                 } ?: return null
                 // Find the color to show.
@@ -87,57 +88,59 @@ class LatexElementColorProvider : ElementColorProvider {
         return null
     }
 
-    fun findColor(colorName: String, file: PsiFile): Color? {
+    fun findColor(colorName: String, file: PsiFile, recursionDepth: Int = 0): Color? {
         val defaultHex = ColorMagic.defaultXcolors[colorName]
 
-        return if (defaultHex != null) Color(defaultHex)
-        else {
-            val colorDefiningCommands = LatexCommandsIndex.Util.getCommandsByNames(
-                file,
-                *ColorMagic.colorDefinitions.map { "\\${it.command}" }
-                    .toTypedArray()
-            )
-            // If this color is a single color (not a mix, and thus does not contain a !)
-            // and we did not find it in the default colors (above), it should be in the
-            // first parameter of a color definition command. If not, we can not find the
-            // color (and return null in the end).
-            if (
-                colorName.contains('!') ||
-                colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }.contains(colorName)
-            ) {
-                val colorDefinitionCommand =
-                    colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
-                when (colorDefinitionCommand?.name?.substring(1)) {
-                    LatexColorDefinitionCommand.COLORLET.command -> {
-                        getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"))
-                    }
-                    LatexColorDefinitionCommand.DEFINECOLOR.command, LatexColorDefinitionCommand.PROVIDECOLOR.command -> {
-                        getColorFromDefineColor(
-                            colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
-                            colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
-                        )
-                    }
-                    LatexColorDefinitionCommand.DEFINECOLORSERIES.command -> {
-                        getColorFromDefineColor(
-                            colorDefinitionCommand.getOptionalArgumentValueByName("b-model") ?: colorDefinitionCommand.getRequiredArgumentValueByName("core model"),
-                            colorDefinitionCommand.getRequiredArgumentValueByName("b-spec")
-                        )
-                    }
-                    else -> getColorFromColorParameter(file, colorName)
-                }
+        @Suppress("UseJBColor") // Should show actual color also in dark mode
+        if (defaultHex != null) return Color(defaultHex)
+
+        val colorDefiningCommands = LatexCommandsIndex.Util.getCommandsByNames(
+            file,
+            *ColorMagic.colorDefinitions.map { "\\${it.command}" }
+                .toTypedArray()
+        )
+        // If this color is a single color (not a mix, and thus does not contain a !)
+        // and we did not find it in the default colors (above), it should be in the
+        // first parameter of a color definition command. If not, we can not find the
+        // color (and return null in the end).
+        if (!colorName.contains('!') && !colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
+                .contains(colorName)) return null
+
+        val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
+        return when (colorDefinitionCommand?.name?.substring(1)) {
+            LatexColorDefinitionCommand.COLORLET.command -> {
+                getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"), recursionDepth)
             }
-            else return null
+
+            LatexColorDefinitionCommand.DEFINECOLOR.command, LatexColorDefinitionCommand.PROVIDECOLOR.command -> {
+                getColorFromDefineColor(
+                    colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
+                    colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
+                )
+            }
+
+            LatexColorDefinitionCommand.DEFINECOLORSERIES.command -> {
+                getColorFromDefineColor(
+                    colorDefinitionCommand.getOptionalArgumentValueByName("b-model") ?: colorDefinitionCommand.getRequiredArgumentValueByName("core model"),
+                    colorDefinitionCommand.getRequiredArgumentValueByName("b-spec")
+                )
+            }
+
+            else -> getColorFromColorParameter(file, colorName, recursionDepth)
         }
     }
 
     /**
      * Given the color parameter [definitionText] of a command, compute the defined color.
      */
-    private fun getColorFromColorParameter(file: PsiFile, definitionText: String?): Color? {
+    private fun getColorFromColorParameter(file: PsiFile, definitionText: String?, recursionDepth: Int): Color? {
+        // Infinite loops can occur with invalid color definitions.
+        if (recursionDepth > 42) return null
+
         definitionText ?: return null
         val colorParts = definitionText.split("!").filter { it.isNotBlank() }
         val colors = colorParts.filter { it.all { c -> c.isLetter() } }
-            .map { findColor(it, file) ?: return null }
+            .map { findColor(it, file, recursionDepth + 1) ?: return null }
         if (colors.isEmpty()) return null
         val numbers = colorParts.filter { it.all { c -> c.isDigit() } }
             .map { it.toInt() }
