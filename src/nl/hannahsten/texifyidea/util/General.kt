@@ -120,8 +120,9 @@ suspend fun runInBackground(project: Project, description: String, function: sus
     }
 }
 
+// https://plugins.jetbrains.com/docs/intellij/background-processes.html
 fun runInBackgroundWithoutProgress(function: () -> Unit) {
-    ApplicationManager.getApplication().invokeLater {
+    ApplicationManager.getApplication().executeOnPooledThread {
         function()
     }
 }
