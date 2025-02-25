@@ -147,10 +147,10 @@ abstract class AliasManager {
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
             // requested alias set (otherwise only the first alias set requesting an update will get it)
             // We have to deepcopy the set of alias sets before iterating over it, because we want to modify aliases
-                val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
-                for (copiedAliasSet in deepCopy) {
-                    findAllAliases(copiedAliasSet, indexedCommandDefinitions)
-                }
+            val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
+            for (copiedAliasSet in deepCopy) {
+                findAllAliases(copiedAliasSet, indexedCommandDefinitions)
+            }
 
             this.indexedCommandDefinitions = indexedCommandDefinitions.toSet()
         }
