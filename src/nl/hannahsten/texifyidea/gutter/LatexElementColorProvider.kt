@@ -103,8 +103,7 @@ class LatexElementColorProvider : ElementColorProvider {
         // and we did not find it in the default colors (above), it should be in the
         // first parameter of a color definition command. If not, we can not find the
         // color (and return null in the end).
-        if (!colorName.contains('!') && !colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }
-                .contains(colorName)) return null
+        if (!colorName.contains('!') && !colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }.contains(colorName)) return null
 
         val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
         return when (colorDefinitionCommand?.name?.substring(1)) {

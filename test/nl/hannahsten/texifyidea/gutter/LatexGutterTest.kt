@@ -60,12 +60,14 @@ class LatexGutterTest : BasePlatformTestCase() {
     }
 
     fun testInfiniteColorLoop() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \usepackage{xcolor}
             \colorlet{kameel}{oliefant}
             \colorlet{oliefant}{kameel}
-        """.trimIndent())
-//        myFixture.checkHighlighting()
+            """.trimIndent()
+        )
         myFixture.findAllGutters()
     }
 
