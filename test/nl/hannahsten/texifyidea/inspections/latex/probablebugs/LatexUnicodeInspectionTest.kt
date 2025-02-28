@@ -102,6 +102,13 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
         testNamedQuickFix("$ μ$", "$ \\mu$", "Escape Unicode character", 1)
     }
 
+    fun `test capital Omega`() {
+        setUnicodeSupport(false)
+
+        testNamedQuickFix("$ Ω$", "$ \\Omega$", "Escape Unicode character", 1)
+        testNamedQuickFix("$ Ω$", "$ \\ohm$", "Escape Unicode character", 1)
+    }
+
     @Suppress("NonAsciiCharacters")
     fun `test escape unicode quick fix î`() {
         setUnicodeSupport(false)

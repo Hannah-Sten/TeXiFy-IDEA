@@ -20,6 +20,7 @@ enum class LatexSiunitxCommand(
     UNIT("unit", "options".asOptional(), "unit".asRequired(), dependency = SIUNITX),
     QTY("qty", "options".asOptional(), "number".asRequired(), "unit".asRequired(), dependency = SIUNITX),
     MICRO("micro", display = "µ", dependency = SIUNITX),
+    OHM("ohm", display = "Ω", dependency = SIUNITX),
     NUMLIST("numlist", "options".asOptional(), "numbers".asRequired(), dependency = SIUNITX),
     NUMPRODUCT("numproduct", "options".asOptional(), "numbers".asRequired(), dependency = SIUNITX),
     NUMRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), dependency = SIUNITX),
