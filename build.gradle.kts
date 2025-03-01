@@ -169,7 +169,7 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.4")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.12.0")
 
     // Use junit 5 for test cases
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
