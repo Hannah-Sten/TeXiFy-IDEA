@@ -8,6 +8,7 @@
 * Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
 
 ### Fixed
+* Fix a possible UI freeze if pdflatex doesn't exit while TeXiFy is checking for files to index
 * Fix StackOverflowError when color definitions reference each other
 * Fix #3906 invalid element exception
 
