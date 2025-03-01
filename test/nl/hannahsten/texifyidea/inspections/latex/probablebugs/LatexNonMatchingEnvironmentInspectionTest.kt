@@ -17,6 +17,9 @@ class LatexNonMatchingEnvironmentInspectionTest : TexifyInspectionTestBase(Latex
         <error descr="DefaultEnvironment name does not match with the name in \end.">\begin{center}</error>
             bla
         <error descr="DefaultEnvironment name does not match with the name in \begin.">\end{left}</error>
+        <error descr="DefaultEnvironment name does not match with the name in \end.">\begin{center}</error>
+            bla
+        <error descr="DefaultEnvironment name does not match with the name in \begin.">\end{}</error>
         """.trimIndent()
     )
 
