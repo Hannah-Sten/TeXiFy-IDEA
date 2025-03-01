@@ -63,14 +63,15 @@ suspend fun runCommandNonBlocking(
         val output = if (!discardOutput) async { process.inputReader().use { readTextIgnoreClosedStream(it) } } else null
         val error = if (!discardOutput) async { process.errorReader().use { readTextIgnoreClosedStream(it) } } else null
 
-        withTimeoutOrNull(1_000 * timeout) {
-            process.awaitExit()
+        // Make sure the await() is done within the timeout, otherwise the timeout will not work, see example in #3921
+        val result = withTimeoutOrNull(1_000 * timeout) {
+            CommandResult(process.awaitExit(), output?.await()?.trim(), error?.await()?.trim())
         } ?: run {
             process.destroy()
             Log.debug("${commands.firstOrNull()} destroyed after timeout $timeout seconds")
+            CommandResult(-1, null, "Process destroyed after timeout $timeout seconds")
         }
 
-        val result = CommandResult(process.awaitExit(), output?.await()?.trim(), error?.await()?.trim())
         Log.debug("${commands.firstOrNull()} exited with ${result.exitCode} ${result.standardOutput?.take(100)} ${result.errorOutput?.take(100)}")
 
         // Update cache of where/which output
