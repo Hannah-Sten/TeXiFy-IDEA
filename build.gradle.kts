@@ -148,7 +148,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:3.1.0")
     implementation("io.ktor:ktor-client-content-negotiation:3.1.0")
     implementation("io.ktor:ktor-server-core:3.1.0")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.1.0")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.1.1")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
