@@ -34,8 +34,8 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
         val begins = file.childrenOfType(LatexBeginCommand::class)
         for (begin in begins) {
             val end = begin.endCommand() ?: continue
-            val beginEnvironment = begin.environmentName() ?: continue
-            val endEnvironment = end.environmentName() ?: continue
+            val beginEnvironment = begin.environmentName() ?: ""
+            val endEnvironment = end.environmentName() ?: ""
             if (beginEnvironment == endEnvironment) {
                 continue
             }
