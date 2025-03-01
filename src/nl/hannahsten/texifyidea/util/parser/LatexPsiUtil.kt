@@ -4,8 +4,11 @@ import com.intellij.codeInsight.PsiEquivalenceUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
+import com.jetbrains.rhizomedb.lookup
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
@@ -160,4 +163,13 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
     }
     searchRoot.acceptChildren(visitor)
     return visitor.foundOccurrences.map { it.asExtractable() }
+}
+
+fun PsiElement.findDependencies(): Set<LatexPackage> {
+    val commandsDependencies = this.childrenOfType<LatexCommands>(true)
+        .mapNotNull { LatexCommand.lookup(it)?.firstOrNull()?.dependency }
+    val environmentDependencies = this.childrenOfType<LatexEnvironment>(true)
+        .mapNotNull { Environment.lookup(it.getEnvironmentName())?.dependency }
+
+    return (commandsDependencies + environmentDependencies).filter { it.isDefault.not() }.toSet()
 }
