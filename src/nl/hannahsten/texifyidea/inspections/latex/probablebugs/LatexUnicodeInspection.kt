@@ -216,9 +216,9 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                     document?.psiFile(project)?.insertUsepackage(pkg)
                 }
 
-                // TODO check fix-all
                 val command = replacement.firstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
-                element.parent?.node?.replaceChild(element.parent.firstChild.node, command.node)
+                val unicodeElement = descriptor.psiElement.findElementAt(descriptor.textRangeInElement.startOffset) ?: return@runWriteCommandAction
+                unicodeElement.parent?.node?.replaceChild(unicodeElement.node, command.node)
             }
         }
 
