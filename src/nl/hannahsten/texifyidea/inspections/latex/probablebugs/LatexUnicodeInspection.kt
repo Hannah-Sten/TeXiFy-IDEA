@@ -37,6 +37,7 @@ import nl.hannahsten.texifyidea.util.parser.findDependencies
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import nl.hannahsten.texifyidea.util.selectedRunConfig
+import nl.hannahsten.texifyidea.util.toIntRange
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
@@ -212,8 +213,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                 }
 
                 val command = replacement.firstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
-                val unicodeElement = descriptor.psiElement.findElementAt(descriptor.textRangeInElement.startOffset) ?: return@runWriteCommandAction
-                unicodeElement.parent?.node?.replaceChild(unicodeElement.node, command.node)
+                element.parent?.node?.replaceChild(element.node, command.node)
             }
         }
 
@@ -224,12 +224,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             val replacement = getReplacementFromProblemDescriptor(previewDescriptor) ?: return IntentionPreviewInfo.EMPTY
             val element = previewDescriptor.psiElement
-            // We don't directly work on the document, as in a preview that is not available
-            val origText = element.text
-            val range = previewDescriptor.textRangeInElement
-            val modifiedText = origText.replaceRange(range.startOffset, range.endOffset, replacement.text)
 
-            return IntentionPreviewInfo.CustomDiff(LatexFileType, element.containingFile.name, origText, modifiedText)
+            return IntentionPreviewInfo.CustomDiff(LatexFileType, element.containingFile.name, element.text, replacement.text)
         }
 
         private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): PsiElement? {
@@ -256,7 +252,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                 ?: findReplacement(c)
 
             return replacementText?.let {
-                LatexPsiHelper(element.project).createFromText(it)
+                LatexPsiHelper(element.project).createFromText(element.text.replaceRange(descriptor.textRangeInElement.toIntRange(), it))
             }
         }
 

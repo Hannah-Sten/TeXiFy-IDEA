@@ -158,6 +158,12 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
         testNamedQuickFix("å", "\\aa", "Escape Unicode character", 2)
     }
 
+    fun `test escape unicode quick fix word`() {
+        setUnicodeSupport(false)
+
+        testNamedQuickFix("Umeå", "Ume\\aa", "Escape Unicode character", 2)
+    }
+
     fun `test escape unicode quick fix known math command`() {
         setUnicodeSupport(false)
 
