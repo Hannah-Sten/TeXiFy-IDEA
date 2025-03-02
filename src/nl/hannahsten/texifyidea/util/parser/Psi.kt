@@ -30,18 +30,13 @@ fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(tex
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
-fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>, recursive: Boolean = false): Collection<T> {
+fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
     return runReadAction {
         if (!this.isValid || project.isDisposed) {
             emptyList()
         }
         else {
-            val directChildren = PsiTreeUtil.findChildrenOfType(this, clazz.java)
-            if (recursive) {
-                directChildren + children.flatMap { it.childrenOfType(clazz, true) }
-            } else {
-                directChildren
-            }
+            PsiTreeUtil.findChildrenOfType(this, clazz.java)
         }
     }
 }
@@ -49,7 +44,7 @@ fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>, recursive: Bool
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
-inline fun <reified T : PsiElement> PsiElement.childrenOfType(recursive: Boolean = false): Collection<T> = childrenOfType(T::class, recursive)
+inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
 
 /**
  * Finds the first element that matches a given predicate.

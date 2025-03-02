@@ -165,9 +165,9 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
 }
 
 fun PsiElement.findDependencies(): Set<LatexPackage> {
-    val commandsDependencies = this.childrenOfType<LatexCommands>(true)
+    val commandsDependencies = this.childrenOfType<LatexCommands>()
         .mapNotNull { LatexCommand.lookup(it)?.firstOrNull()?.dependency }
-    val environmentDependencies = this.childrenOfType<LatexEnvironment>(true)
+    val environmentDependencies = this.childrenOfType<LatexEnvironment>()
         .mapNotNull { Environment.lookup(it.getEnvironmentName())?.dependency }
 
     return (commandsDependencies + environmentDependencies).filter { it.isDefault.not() }.toSet()
