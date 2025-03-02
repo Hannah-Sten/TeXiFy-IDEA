@@ -98,8 +98,51 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
     fun `test mu`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("$ µ$", "$ \\micro$", "Escape Unicode character", 1)
         testNamedQuickFix("$ μ$", "$ \\mu$", "Escape Unicode character", 1)
+        testNamedQuickFix(
+            """
+            \documentclass{article}
+            
+            \begin{document}
+                $ µ$
+            \end{document}
+            """.trimIndent(),
+            """
+            \documentclass{article}
+            \usepackage{siunitx}
+            
+            \begin{document}
+                $ \micro$
+            \end{document}
+            """.trimIndent(),
+            "Escape Unicode character",
+            1
+        )
+    }
+
+    fun `test capital Omega`() {
+        setUnicodeSupport(false)
+
+        testNamedQuickFix("$ Ω$", "$ \\Omega$", "Escape Unicode character", 1)
+        testNamedQuickFix(
+            """
+            \documentclass{article}
+            
+            \begin{document}
+                $ Ω$
+            \end{document}
+            """.trimIndent(),
+            """
+            \documentclass{article}
+            \usepackage{siunitx}
+            
+            \begin{document}
+                $ \ohm$
+            \end{document}
+            """.trimIndent(),
+            "Escape Unicode character",
+            1
+        )
     }
 
     @Suppress("NonAsciiCharacters")
@@ -113,6 +156,12 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
         setUnicodeSupport(false)
 
         testNamedQuickFix("å", "\\aa", "Escape Unicode character", 2)
+    }
+
+    fun `test escape unicode quick fix word`() {
+        setUnicodeSupport(false)
+
+        testNamedQuickFix("Umeå", "Ume\\aa", "Escape Unicode character", 2)
     }
 
     fun `test escape unicode quick fix known math command`() {
