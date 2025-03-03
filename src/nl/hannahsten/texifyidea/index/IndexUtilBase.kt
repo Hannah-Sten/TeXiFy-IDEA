@@ -124,7 +124,7 @@ abstract class IndexUtilBase<T : PsiElement>(
             // Cached values may have become invalid over time, so do a double check to be sure (#2976)
             cache[project]?.get(scope)?.let { return runReadAction { it.mapNotNull { pointer -> pointer.element }.filter(PsiElement::isValid) } }
         }
-        val result = getKeys(project).flatMap { getItemsByName(it, project, scope) }
+        val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope) } }
         runReadAction { cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() } }
         return result
     }

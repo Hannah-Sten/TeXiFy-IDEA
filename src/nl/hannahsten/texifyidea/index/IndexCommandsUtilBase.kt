@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
@@ -18,7 +19,7 @@ abstract class IndexCommandsUtilBase(
      */
     fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
         // Using cache creates a lot of test errors
-        return getItems(project, scope, useCache = false).filter { it.name in names }
+        return getItems(project, scope, useCache = false).filter { runReadAction { it.name in names } }
     }
 
     /**
