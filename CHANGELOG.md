@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Improve performance checking for external direct file inclusions to index
 * Improve performance of the alias manager
 * Add WSL support to the bibtex run configuration, using a new setting to choose the LaTeX distribution
 * Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
