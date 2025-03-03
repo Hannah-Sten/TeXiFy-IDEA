@@ -81,7 +81,6 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                 // Bibliography and direct input commands
                 val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
                 val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(commandNames, project, GlobalSearchScope.projectScope(project))
-
                     // We can't add single files, so take the parent
                     .mapNotNull {
                         val path = runReadAction { it.requiredParameter(0) } ?: return@mapNotNull null
