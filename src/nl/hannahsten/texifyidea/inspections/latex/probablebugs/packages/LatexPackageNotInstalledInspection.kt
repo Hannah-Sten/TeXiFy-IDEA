@@ -64,7 +64,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                 .map { it.groupValues.last() }.toMutableList()
         }
 
-        val installedPackages = TexLivePackages.packageList!!
+        val installedPackages = TexLivePackages.packageList ?: return descriptors
         val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
             LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project,
             file.project
