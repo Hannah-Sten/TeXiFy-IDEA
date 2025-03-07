@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.editor.autocompile
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.util.Key
-import nl.hannahsten.texifyidea.settings.TexifySettings
 
 /**
  * When autocompile is enabled, update autocompile state when compilation is done.
@@ -11,9 +10,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 class AutoCompileDoneListener : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        if (TexifySettings.getInstance().isAutoCompileEnabled()) {
-            AutoCompileState.scheduleCompilationIfNecessary()
-        }
+        AutoCompileState.scheduleCompilationIfNecessary()
     }
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {

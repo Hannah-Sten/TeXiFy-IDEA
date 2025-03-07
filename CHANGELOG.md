@@ -9,6 +9,7 @@
 * Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
 
 ### Fixed
+* Fix a UI freeze which could occur with autocompile on save on project open
 * Fix unicode inspection for \Ohm, by @slideclimb
 * Fix a false negative of the non-matching environment name inspection for empty parameters
 * Fix a possible UI freeze if pdflatex doesn't exit while TeXiFy is checking for files to index

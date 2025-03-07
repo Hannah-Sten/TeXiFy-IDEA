@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.openapi.wm.WindowManager
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 
 /**
  * If a LaTeX file is saved, do automatic compilation if desired.
@@ -27,7 +28,10 @@ class AutoCompileVfsListener : AsyncFileListener {
                     val project = ProjectManager.getInstance().openProjects.firstOrNull {
                         WindowManager.getInstance().suggestParentWindow(it)?.isActive == true
                     } ?: return@runInEdt
-                    AutoCompileState.documentChanged(project)
+                    runInBackgroundWithoutProgress {
+                        // This should not run in EDT, because getting a RunManager instance will run blocking, which means we may get a deadlock if something else requests a read action (#3931)
+                        AutoCompileState.documentChanged(project)
+                    }
                 }
             }
         }
