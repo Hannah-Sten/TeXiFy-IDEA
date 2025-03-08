@@ -31,6 +31,7 @@ import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
@@ -38,7 +39,6 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
-import java.util.*
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -239,7 +239,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Do not schedule to open the pdf viewer when this is not the last run config in the chain
         if (runConfig.isLastRunConfig) {
             addOpenViewerListener(handler, runConfig.allowFocusChange)
-            handler.addProcessListener(AutoCompileDoneListener())
+            if (TexifySettings.getInstance().autoCompileOption != TexifySettings.AutoCompile.OFF) {
+                handler.addProcessListener(AutoCompileDoneListener())
+            }
         }
     }
 
