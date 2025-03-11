@@ -9,7 +9,12 @@ If you run into troubles while using TeXiFy, you can try the following things.
 * Ask for help at [gitter](https://matrix.to/#/#TeXiFy-IDEA_Support:gitter.im)
 * [Open a discussion](https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions)
 
-## Debugging performance issues
+## Collecting debug log files
+
+To enable debug logging, go to <ui-path>Help | Diagnostic Tools | Debug Log Settings</ui-path> and add `#nl.hannahsten.texifyidea.util.Log`.
+Then reproduce the issue, go to <ui-path>Help | Show Log in Explorer/Finder</ui-path> and upload the `idea.log` file on GitHub.
+
+## Reporting performance issues
 
 If you are experiencing UI freezes, IntelliJ will generate a thread dump, please upload this file as well.
 
