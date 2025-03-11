@@ -13,11 +13,11 @@ import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
-import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 /**
  * @author Hannah Schellekens
@@ -64,7 +64,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             // Insert label
             val commandContent = command.firstParentOfType(LatexNoMathContent::class) ?: return
             val labelCommand =
-                commandContent.parent?.addAfter(factory.createLabelCommand(createdLabel.labelText), commandContent)
+                commandContent.parent?.addAfter(factory.createLabelCommand(createdLabel.labelText), commandContent) ?: return
 
             // Adjust caret offset.
             val caret = editor.caretModel
