@@ -13,14 +13,15 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.ui.PopupChooserCellRenderer
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.util.runWriteCommandAction
 
 class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verbatim command or environment") {
 
@@ -181,7 +182,7 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
         if (parent?.prevSibling is PsiWhiteSpace && parent.prevSibling.textContains('\n')) {
             parent.prevSibling.node.let { newLine ->
                 LatexPsiHelper(project).createSpacing()?.node?.let {
-                    newLine.psi.parent.node.replaceChild(newLine, it)
+                    newLine.psi.parent?.node?.replaceChild(newLine, it)
                 }
             }
         }
@@ -189,7 +190,7 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
         if (parent?.nextSibling is PsiWhiteSpace && parent.nextSibling.textContains('\n')) {
             parent.nextSibling.node.let { newLine ->
                 LatexPsiHelper(project).createSpacing()?.node?.let {
-                    newLine.psi.parent.node.replaceChild(newLine, it)
+                    newLine.psi.parent?.node?.replaceChild(newLine, it)
                 }
             }
         }

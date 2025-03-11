@@ -185,7 +185,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
                     cite.replace(psiHelper.createFromText(replacement).firstChild)
                 }
                 // Remove any other cite from the psi tree.
-                else cite.parent.node.removeChild(cite.node)
+                else cite.parent?.node?.removeChild(cite.node)
             }
         }
     }

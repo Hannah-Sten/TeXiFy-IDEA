@@ -64,7 +64,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             // Insert label
             val commandContent = command.firstParentOfType(LatexNoMathContent::class) ?: return
             val labelCommand =
-                commandContent.parent.addAfter(factory.createLabelCommand(createdLabel.labelText), commandContent)
+                commandContent.parent?.addAfter(factory.createLabelCommand(createdLabel.labelText), commandContent)
 
             // Adjust caret offset.
             val caret = editor.caretModel

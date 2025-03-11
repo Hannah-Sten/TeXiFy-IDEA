@@ -28,7 +28,7 @@ class LatexReferenceInsertHandler(private val remote: Boolean = false, private v
             val bibsInFile = context.file.originalFile.bibtexIdsInFileSet()
             // Add the bib item after the last item we found in the file set, and hope that that makes sense...
             bibsInFile.lastOrNull()?.let {
-                it.parent.addAfter(newBibEntry, it)
+                it.parent?.addAfter(newBibEntry, it)
             }
 
             // If there are no bib items in the fileset yet, see if there is a(n empty) bib file we can add the bib entry to.

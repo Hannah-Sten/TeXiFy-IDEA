@@ -30,10 +30,10 @@ open class LatexSurrounder(private val before: String, private val after: String
     override fun surroundElements(project: Project, editor: Editor, elements: Array<out PsiElement>): TextRange? {
         LatexPsiHelper(project).createFromText(before).children
             .map { it.node }
-            .forEach { elements.first().parent.node.addChild(it, elements.first().node) }
+            .forEach { elements.first().parent?.node?.addChild(it, elements.first().node) }
         LatexPsiHelper(project).createFromText(after).children
             .map { it.node }.reversed() // Insert before the (changing) nextSibling
-            .forEach { elements.last().parent.node.addChild(it, elements.last().nextSibling?.node) }
+            .forEach { elements.last().parent?.node?.addChild(it, elements.last().nextSibling?.node) }
 
         val endOffset = elements.last().endOffset() + after.length
         return TextRange(endOffset, endOffset)
