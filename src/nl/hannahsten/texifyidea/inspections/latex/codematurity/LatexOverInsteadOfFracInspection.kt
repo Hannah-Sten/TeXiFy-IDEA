@@ -84,7 +84,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
 
             // Add the replacement in the psi tree.
             val bla = next ?: content
-            bla.parent.addAfter(psiReplacement, bla)
+            bla.parent?.addAfter(psiReplacement, bla)
             // Remove the old fraction (numerator\over denominator), including a possible space between \over and the
             // denominator. Remove this space before removing the \over command so content still exists when removing
             // its next sibling. If there is no space after \over, this will remove the denominator (next) and removing

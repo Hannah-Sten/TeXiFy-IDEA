@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.ui.DialogBuilder
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
@@ -16,6 +17,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import org.jetbrains.annotations.NonNls
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -72,24 +74,43 @@ open class WordCountAction : AnAction() {
         // Prefer texcount, I think it is slightly more accurate
         val dialog = if (SystemEnvironment.isAvailable("texcount")) {
             val root = psiFile.findRootFile().virtualFile
-            // Make sure the file is written to disk before running an external tool on it
-            FileDocumentManager.getInstance().apply { saveDocument(getDocument(root) ?: return@apply) }
-            val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = File(root.parent.path))
-            if (exitCode == 0 && output?.toIntOrNull() != null) {
-                makeDialog(psiFile, output.toInt())
+            val workingDirectory = root.parent?.path
+
+            if (root == null || workingDirectory == null) {
+                defaultWordCount(psiFile)
             }
             else {
-                // If there is an error, the output will contain both word count and error message (which could indicate a problem with the document itself)
-                val words = "[0-9]+".toRegex().find(output ?: "")?.value
-                makeDialog(psiFile, wordCount = words?.toIntOrNull(), errorMessage = output?.drop(words?.length ?: 0))
+                runTexcount(root, workingDirectory, psiFile)
             }
         }
         else {
-            val (words, chars) = countWords(psiFile)
-            makeDialog(psiFile, words, chars)
+            defaultWordCount(psiFile)
         }
 
         dialog.show()
+    }
+
+    private fun runTexcount(
+        root: VirtualFile,
+        workingDirectory: @NonNls String,
+        psiFile: PsiFile
+    ): DialogBuilder {
+        // Make sure the file is written to disk before running an external tool on it
+        FileDocumentManager.getInstance().apply { saveDocument(getDocument(root) ?: return@apply) }
+        val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = File(workingDirectory))
+        return if (exitCode == 0 && output?.toIntOrNull() != null) {
+            makeDialog(psiFile, output.toInt())
+        }
+        else {
+            // If there is an error, the output will contain both word count and error message (which could indicate a problem with the document itself)
+            val words = "[0-9]+".toRegex().find(output ?: "")?.value
+            makeDialog(psiFile, wordCount = words?.toIntOrNull(), errorMessage = output?.drop(words?.length ?: 0))
+        }
+    }
+
+    private fun defaultWordCount(psiFile: PsiFile): DialogBuilder {
+        val (words, chars) = countWords(psiFile)
+        return makeDialog(psiFile, words, chars)
     }
 
     private fun formatAsHtml(type: String, message: String?): String {

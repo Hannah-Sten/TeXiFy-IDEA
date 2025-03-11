@@ -67,7 +67,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
             val oldNode = descriptor.psiElement.node
             val newText = oldNode.text.replaceFirst("../", "")
             val newNode = LatexPsiHelper(project).createFromText(newText).firstChild.node ?: return
-            descriptor.psiElement.parent.node.replaceChild(oldNode, newNode)
+            descriptor.psiElement.parent?.node?.replaceChild(oldNode, newNode)
 
             // Fix BIBINPUTS
             project

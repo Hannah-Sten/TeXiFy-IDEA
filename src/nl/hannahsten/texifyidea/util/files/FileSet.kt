@@ -82,7 +82,7 @@ suspend fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
         // Inputs can be either a map "inline" -> String or file name
         // Actually it can also be just a single file name, but then we don't need all this gymnastics
         inputs.filterIsInstance<String>().mapNotNull {
-            smartReadAction(project) { tomlFile.parent.findFile("src/$it")?.psiFile(project) }
+            smartReadAction(project) { tomlFile.parent?.findFile("src/$it")?.psiFile(project) }
         }.toSet()
     }
 

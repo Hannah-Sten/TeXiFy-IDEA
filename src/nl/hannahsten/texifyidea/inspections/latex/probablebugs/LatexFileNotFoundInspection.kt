@@ -47,7 +47,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         // Loop through commands of file
         for (command in commands) {
             // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent.parentsOfType(LatexCommands::class).any { it.name in CommandMagic.commandDefinitionsAndRedefinitions }) {
+            if (command.parent?.parentsOfType(LatexCommands::class)?.any { it.name in CommandMagic.commandDefinitionsAndRedefinitions } == true) {
                 continue
             }
 

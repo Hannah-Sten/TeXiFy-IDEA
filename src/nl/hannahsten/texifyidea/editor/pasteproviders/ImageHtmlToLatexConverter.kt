@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.currentTextEditor
 import org.apache.commons.io.FilenameUtils
 import org.jsoup.nodes.Element
 import java.awt.image.BufferedImage
+import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
 import javax.imageio.IIOException
@@ -40,11 +41,19 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         val url = URI(htmlIn.attr("src")).toURL()
+        fun sendNotification(e: Exception) {
+            Notification("LaTeX", "Could not download image from $url", e.message ?: "", NotificationType.ERROR).notify(file.project)
+        }
+
         val image = try {
             ImageIO.read(url)
         }
         catch (e: IIOException) {
-            Notification("LaTeX", "Could not download image from $url", e.message ?: "", NotificationType.ERROR).notify(file.project)
+            sendNotification(e)
+            return ""
+        }
+        catch (e: MalformedURLException) {
+            sendNotification(e)
             return ""
         }
         return saveFileAndGetLaTeX(file.project, file.virtualFile, image, url)
