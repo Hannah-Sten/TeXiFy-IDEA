@@ -27,10 +27,14 @@ class JlatexmathPreviewer : Previewer {
 
     override fun preview(input: String, previewForm: PreviewForm, project: Project, preamble: String, waitTime: Long) {
         val tempBaseName = Paths.get(System.getProperty("java.io.tmpdir"), "temp").toString()
+
+        // Some constructs are not supported by jlatexmath, but are not relevant for the preview
+        val latex = input.replace("\\\\label\\{[^}]*}".toRegex(), "")
+
         try {
             // Fonts should be shapes, otherwise the user would have needed to install the font to render it
             // when converting to png (because fonts are not saved in svg).
-            toSVG(input, tempBaseName, fontAsShapes = true)
+            toSVG(latex, tempBaseName, fontAsShapes = true)
             saveSvgAsPng(tempBaseName)
             val image = ImageIO.read(File("$tempBaseName.png"))
             SwingUtilities.invokeLater {
@@ -38,10 +42,10 @@ class JlatexmathPreviewer : Previewer {
             }
         }
         catch (e: ParseException) {
-            previewForm.setLatexErrorMessage(e.message ?: "There was an unknown problem with compiling the preview.")
+            previewForm.setLatexErrorMessage(e.message ?: "There was an unknown problem with compiling the preview.", showJlatexmathHint = true)
         }
         catch (e: FileNotFoundException) {
-            previewForm.setLatexErrorMessage(e.message ?: "There was an internal problem with JLatexmath")
+            previewForm.setLatexErrorMessage(e.message ?: "There was an internal problem with JLatexmath", showJlatexmathHint = true)
         }
     }
 

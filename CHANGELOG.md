@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Remove labels when using jlatexmath preview, as these are unsupported by jlatexmath
 * Improve performance checking for external direct file inclusions to index
 * Improve performance of the alias manager
 * Add WSL support to the bibtex run configuration, using a new setting to choose the LaTeX distribution

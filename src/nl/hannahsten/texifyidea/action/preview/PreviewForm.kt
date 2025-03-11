@@ -29,8 +29,11 @@ class PreviewForm {
         tabbedPane!!.selectedIndex = tabbedPane!!.indexOfComponent(equationTab)
     }
 
-    fun setLatexErrorMessage(errorMessage: String) {
+    fun setLatexErrorMessage(errorMessage: String, showJlatexmathHint: Boolean = false) {
         outputArea!!.text = errorMessage
+        if (showJlatexmathHint) {
+            outputArea!!.text += "\n\nNote: if something is not supported by JLaTeXMath, you can use \n%! Begin preamble = math ... %! End preamble = math\nmagic comments to specify any dependencies and use the inkscape-based previewer. \nSee https://hannah-sten.github.io/TeXiFy-IDEA/tool-windows.html#equation-preview"
+        }
         equationPanel!!.clearImage()
         tabbedPane!!.selectedIndex = tabbedPane!!.indexOfComponent(latexOutputTab)
     }

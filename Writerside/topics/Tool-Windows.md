@@ -104,11 +104,13 @@ The symbol tool window supports both light and dark mode.
 
 You can use the Equation Preview by making sure your cursor is in a math environment and clicking <ui-path>Tools | LaTeX | Preview Equation</ui-path>, or using <shortcut>Ctrl + Shift + X</shortcut>.
 
+#### Default previewer: jlatexmath
 Since version 0.7.11, if you don’t have a custom preamble we use jlatexmath (https://github.com/opencollab/jlatexmath) and it should work out of the box.
 
-If you do have a custom preamble, which jlatexmath does not support, TeXiFy creates a preview by putting your equation in a new temporary (fairly minimal) document and compiling that, and then uses Inkscape to convert to an image.
-You may need to have certain fonts installed to make this work.
+### Inkscape-based preview
+To use this preview, use the magic comments `%! begin preamble = math` and `%! end preamble = math` to enclose the part of your preamble that is needed for the preview, as in [this example](Tool-Windows.md#custom-preamble-for-equation-and-tikz-preview).
 
+If you do have a custom preamble, or anything else which jlatexmath does not support, TeXiFy creates a preview by putting your equation in a new temporary (fairly minimal) document and compiling that, and then uses Inkscape to convert to an image.
 The current implementation of the Equation Preview was contributed by Sergei Izmailov and requires external dependencies, for which installation instructions follow.
 It also relies on system installed fonts, because it converts svg to image, and svg doesn’t include fonts.
 
@@ -121,7 +123,7 @@ This is only necessary if you want to use a custom preamble (using magic comment
 <tab title="Instructions for Linux/MacOS">
 <procedure>
 <step>Install Inkscape from [inkscape.org/release](https://inkscape.org/release).</step>
-<step>If not using Inkscape 1.0 or later, you have to install the `pdf2svg` package for your distro, for example on Ubuntu with `sudo apt-get install pdf2svg` or on Arch Linux with `sudo pacman -S pdf2svg`.</step>
+<step>If not using Inkscape 1.0 or later, you have to install the <code>pdf2svg</code> package for your distro, for example on Ubuntu with <code>sudo apt-get install pdf2svg</code> or on Arch Linux with <code>sudo pacman -S pdf2svg</code>.</step>
 </procedure>
 </tab>
 
