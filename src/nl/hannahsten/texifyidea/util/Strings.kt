@@ -58,6 +58,11 @@ fun String.substringEnd(startIndex: Int, endIndex: Int): String = substring(leng
 fun String.substringEnd(range: IntRange): String = substringEnd(range.first, range.last + 1)
 
 /**
+ * Null if there would be an index out of bounds.
+ */
+fun String.substringOrNull(start: Int, end: Int): String? = if (start < 0 || end > length) null else substring(start, end)
+
+/**
  * Trims `startTrim` characters from the front, and `endTrim` characters from the end.
  */
 fun String.trimRange(startTrim: Int, endTrim: Int): String {
