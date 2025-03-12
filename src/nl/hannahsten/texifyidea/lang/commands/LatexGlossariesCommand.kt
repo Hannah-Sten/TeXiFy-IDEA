@@ -10,6 +10,9 @@ import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
+/**
+ * See CommandMagic#glossaryReference
+ */
 enum class LatexGlossariesCommand(
     override val command: String,
     override vararg val arguments: Argument = emptyArray(),
