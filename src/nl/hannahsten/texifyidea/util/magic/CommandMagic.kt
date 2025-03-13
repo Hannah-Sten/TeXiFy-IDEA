@@ -3,9 +3,8 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.ui.Gray
-import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
@@ -14,10 +13,9 @@ import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexTodoCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic.stylePrimitives
 
 object CommandMagic {
 
@@ -199,7 +197,7 @@ object CommandMagic {
     /**
      * All commands that reference a glossary entry from the glossaries package (e.g. \gls).
      */
-    val glossaryReference = hashSetOf(GLS, GLSUPPER, GLSPLURAL, GLSPLURALUPPER).map { it.cmd }.toSet()
+    val glossaryReference = LatexGlossariesCommand.entries.filter { cmd -> cmd.arguments.any { it.name == "label" } }.map { it.cmd }.toSet()
 
     /**
      * All commands that represent some kind of reference (think \ref and \cite).

@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add more \gls-like commands
 * Remove labels when using jlatexmath preview, as these are unsupported by jlatexmath
 * Improve performance checking for external direct file inclusions to index
 * Improve performance of the alias manager

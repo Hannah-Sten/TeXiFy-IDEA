@@ -103,7 +103,7 @@ fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
  * Gets the currently focused text editor.
  */
 fun Project.currentTextEditor(): TextEditor? {
-    return FileEditorManager.getInstance(this).focusedEditor as TextEditor?
+    return FileEditorManager.getInstance(this).focusedEditor as? TextEditor?
 }
 
 /**
