@@ -9,6 +9,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.merge
 import nl.hannahsten.texifyidea.util.overlaps
@@ -62,8 +63,8 @@ class LatexTextExtractor : TextExtractor() {
             // Always keep newlines, as they may be the only whitespace splitting consecutive commands
             .filter { text -> text !is PsiWhiteSpace || text.text.contains("\n") }
             // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
-            // Even commends which have no text as argument, for example certain reference commands like auteref, may need to be kept in to get correct punctuation
-            .filterNot { text -> text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true }
+            // Even commands which have no text as argument, for example certain reference commands like autoref, may need to be kept in to get correct punctuation
+            .filterNot { text -> text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.filter { it is RequiredArgument }?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true }
             // Environment names are never part of a sentence
             .filterNot { text -> text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null }
             // If we encounter an unescaped &, we are in some language construct like a tabular, so we ignore this because ofter a tabular does not contain full sentences
