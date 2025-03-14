@@ -43,6 +43,7 @@ enum class DefaultEnvironment(
     FLUSHLEFT(environmentName = "flushleft"),
     FLUSHRIGHT(environmentName = "flushright"),
     FOOTNOTESIZE(environmentName = "footnotesize"),
+    FRAME(environmentName = "frame", arguments = arrayOf(OptionalArgument("options"), RequiredArgument("title"))), // dependency=BEAMER class
     HUGE(environmentName = "huge"),
     CAPITAL_HUGE(environmentName = "Huge"),
     ITEMIZE(environmentName = "itemize", initialContents = "\\item "),
