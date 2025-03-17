@@ -21,7 +21,7 @@ class LatexExternalEnvironmentDataIndexer : DataIndexer<String, String, FileCont
 
     // e.g. \newenvironment{proof}{...} \newenvironment|\newtheorem|\NewDocumentEnvironment|\DeclareDocumentEnvironment|\ProvideDocumentEnvironment
     private val directDefinitionRegex by lazy {
-        """(${CommandMagic.environmentDefinitions.joinToString("|").replace("\\", "\\\\")})\*?\{(?<key>[a-zA-Z_:]+)}(?<value>)""".toRegex()
+        """(${CommandMagic.environmentDefinitions.joinToString("|").replace("\\", "\\\\")})[*<>]*\{(?<key>[a-zA-Z_:]+)}(?<value>)""".toRegex()
     }
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
