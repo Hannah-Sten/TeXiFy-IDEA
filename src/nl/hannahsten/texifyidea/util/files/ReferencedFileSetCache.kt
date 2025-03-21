@@ -161,7 +161,7 @@ class ReferencedFileSetCache {
                     Cache.fileSetCache.putAll(ConcurrentHashMap(newFileSetCache.toMutableMap()))
                     Cache.rootFilesCache.putAll(ConcurrentHashMap(newRootFilesCache.toMutableMap()))
                     // Many inspections use the file set, so a rerun could give different results
-                    file.rerunInspections()
+                    smartReadAction(file.project) { file.rerunInspections() }
                 }
                 finally {
                     Cache.isCacheFillInProgress.set(false)
