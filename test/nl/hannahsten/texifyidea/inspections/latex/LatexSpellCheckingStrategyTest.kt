@@ -30,4 +30,14 @@ class LatexSpellCheckingStrategyTest : TexifyInspectionTestBase(SpellCheckingIns
         )
         myFixture.checkHighlighting()
     }
+
+    fun testComment() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+               % <TYPO descr="Typo: In word 'Tpyo'">Tpyo</TYPO>
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

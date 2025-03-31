@@ -28,12 +28,16 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
 
         if (psiElement.elementType == LatexTypes.COMMAND_TOKEN ||
             psiElement.elementType == LatexTypes.COMMAND_IFNEXTCHAR ||
-            psiElement.elementType == LatexTypes.COMMENT_TOKEN ||
             psiElement.elementType == LatexTypes.LEFT ||
             psiElement.elementType == LatexTypes.RIGHT ||
             isBeginEnd(psiElement)
         ) {
             return EMPTY_TOKENIZER
+        }
+
+        // Allow comments to be spellchecked, depending on inspection settings
+        if (psiElement.elementType == LatexTypes.COMMENT_TOKEN) {
+            return TEXT_TOKENIZER
         }
 
         val argument = getArgument(psiElement)
