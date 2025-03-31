@@ -19,6 +19,7 @@
 * Fix a possible UI freeze if pdflatex doesn't exit while TeXiFy is checking for files to index
 * Fix StackOverflowError when color definitions reference each other
 * Fix #3906 invalid element exception
+* Fix spellcheck not working in comments
 
 ## [0.10.1] - 2025-02-08
 
