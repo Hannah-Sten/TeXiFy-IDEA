@@ -112,7 +112,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // Windows has a maximum length of a command, possibly 32k characters (#3956), so we log this info in the exception
-        if (SystemInfo.isWindows && command.sumOf { it.length} > 10_000) {
+        if (SystemInfo.isWindows && command.sumOf { it.length } > 10_000) {
             throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
         }
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
