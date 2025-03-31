@@ -4,7 +4,6 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.util.io.awaitExit
 import kotlinx.coroutines.*
-import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
 import javax.swing.SwingUtilities
@@ -59,27 +58,39 @@ suspend fun runCommandNonBlocking(
 
         val process = processBuilder.start()
 
-        process.outputWriter().use { if (input != null) it.write(input) }
-        val output = if (!discardOutput) async { process.inputReader().use { readTextIgnoreClosedStream(it) } } else null
-        val error = if (!discardOutput) async { process.errorReader().use { readTextIgnoreClosedStream(it) } } else null
+        // Closing the outputWriter, inputReador or errorReader also closes the socket which would make other readers or writers fail, so make sure to close after we are done
+        val outputWriter = process.outputWriter()
+        val inputReader = process.inputReader()
+        val errorReader = process.errorReader()
 
-        // Make sure the await() is done within the timeout, otherwise the timeout will not work, see example in #3921
-        val result = withTimeoutOrNull(1_000 * timeout) {
-            CommandResult(process.awaitExit(), output?.await()?.trim(), error?.await()?.trim())
-        } ?: run {
-            process.destroy()
-            Log.debug("${commands.firstOrNull()} destroyed after timeout $timeout seconds")
-            CommandResult(-1, null, "Process destroyed after timeout $timeout seconds")
+        try {
+            if (input != null) outputWriter.write(input)
+            val output = if (!discardOutput) async { inputReader.readText() } else null
+            val error = if (!discardOutput) async { errorReader.readText() } else null
+
+            // Make sure the await() is done within the timeout, otherwise the timeout will not work, see example in #3921
+            val result = withTimeoutOrNull(1_000 * timeout) {
+                CommandResult(process.awaitExit(), output?.await()?.trim(), error?.await()?.trim())
+            } ?: run {
+                process.destroy()
+                Log.debug("${commands.firstOrNull()} destroyed after timeout $timeout seconds")
+                CommandResult(-1, null, "Process destroyed after timeout $timeout seconds")
+            }
+
+            Log.debug("${commands.firstOrNull()} exited with ${result.exitCode} ${result.standardOutput?.take(100)} ${result.errorOutput?.take(100)}")
+
+            // Update cache of where/which output
+            if (isExecutableLocationCommand) {
+                SystemEnvironment.executableLocationCache[commands[1]] = result.standardOutput
+            }
+
+            return@withContext result
         }
-
-        Log.debug("${commands.firstOrNull()} exited with ${result.exitCode} ${result.standardOutput?.take(100)} ${result.errorOutput?.take(100)}")
-
-        // Update cache of where/which output
-        if (isExecutableLocationCommand) {
-            SystemEnvironment.executableLocationCache[commands[1]] = result.standardOutput
+        finally {
+            outputWriter.close()
+            inputReader.close()
+            errorReader.close()
         }
-
-        return@withContext result
     }
     catch (e: IOException) {
         Log.debug(e.message ?: "Unknown IOException occurred")
@@ -99,18 +110,6 @@ suspend fun runCommandNonBlocking(
             if (returnExceptionMessageAsErrorOutput) e.message else null
         )
     }
-}
-
-private fun readTextIgnoreClosedStream(reader: BufferedReader): String? = try {
-    reader.readText()
-}
-catch (e: IOException) {
-    // In some cases directly after IDE start (after a timeout?), the stream may be closed already, so ignore that
-    if (e.message?.contains("Stream closed") == true) {
-        Log.info("Ignored closed stream: " + e.message)
-        e.message
-    }
-    else throw e
 }
 
 /**
