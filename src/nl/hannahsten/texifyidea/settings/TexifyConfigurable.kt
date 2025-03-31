@@ -28,6 +28,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
     private var enableExternalIndex: JBCheckBox? = null
+    private var enableSpellcheckEverywhere: JBCheckBox? = null
     private var enableTextidote: JBCheckBox? = null
     private var textidoteOptions: RawCommandLineEditor? = null
     private var latexIndentOptions: RawCommandLineEditor? = null
@@ -48,6 +49,7 @@ class TexifyConfigurable : SearchableConfigurable {
         Pair(::includeBackslashInSelection, settings::includeBackslashInSelection),
         Pair(::showPackagesInStructureView, settings::showPackagesInStructureView),
         Pair(::enableExternalIndex, settings::enableExternalIndex),
+        Pair(::enableSpellcheckEverywhere, settings::enableSpellcheckEverywhere),
         Pair(::enableTextidote, settings::enableTextidote),
     )
 
@@ -70,6 +72,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                     enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
+                    enableSpellcheckEverywhere = addCheckbox("Enable spellcheck inspection in all scopes")
                     enableTextidote = addCheckbox("Enable the Textidote linter")
                     textidoteOptions = addCommandLineEditor("Textidote", TexifySettingsState().textidoteOptions)
                     latexIndentOptions = addCommandLineEditor("Latexindent", TexifySettingsState().latexIndentOptions)
