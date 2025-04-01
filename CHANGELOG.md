@@ -3,8 +3,10 @@
 ## [Unreleased]
 
 ### Added
+* Add setting to enable spellcheck in 'code' scope
 
 ### Fixed
+* Fix concurrency issues when reading output of system commands
 
 ## [0.10.2] - 2025-04-01
 
