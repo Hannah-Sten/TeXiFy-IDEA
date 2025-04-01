@@ -55,6 +55,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var includeBackslashInSelection = false
     var showPackagesInStructureView = false
     var enableExternalIndex = true
+    var enableSpellcheckEverywhere = false
     var enableTextidote = false
     var textidoteOptions = "--check en --output singleline --no-color"
     var latexIndentOptions = ""
@@ -81,6 +82,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             includeBackslashInSelection = includeBackslashInSelection,
             showPackagesInStructureView = showPackagesInStructureView,
             enableExternalIndex = enableExternalIndex,
+            enableSpellcheckEverywhere = enableSpellcheckEverywhere,
             enableTextidote = enableTextidote,
             textidoteOptions = textidoteOptions,
             latexIndentOptions = latexIndentOptions,
@@ -101,6 +103,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         includeBackslashInSelection = state.includeBackslashInSelection
         showPackagesInStructureView = state.showPackagesInStructureView
         enableExternalIndex = state.enableExternalIndex
+        enableSpellcheckEverywhere = state.enableSpellcheckEverywhere
         enableTextidote = state.enableTextidote
         textidoteOptions = state.textidoteOptions
         latexIndentOptions = state.latexIndentOptions

@@ -89,6 +89,24 @@ The index is persistent between restarts.
 However, because a full TeX Live installation contains an enormous amount of packages, it can take a long time to index.
 If this is a problem, you can turn this feature off by deselecting this checkbox.
 
+## Enable spellcheck in all scopes
+_Since 0.10.2_
+
+This setting enables spellcheck in the 'code' inspection scope, which approximately corresponds to non-typeset text.
+
+The spellcheck or 'Proofreading/Typo' inspection is a default inspection not provided by TeXiFy.
+In <ui-path>File | Settings | Editor | Inspections | Proofreading | Typo</ui-path>, scopes can be configured per language.
+Every scope consists of enabling spellcheck in a subset of code, literals or comments.
+For LaTeX, they mean:
+
+* Literals: Regular text, or text in commands for which TeXiFy knows that it contains text, like `\section`.
+* Code: Other text which is not typeset, like labels, or arguments in (custom) commands for which TeXiFy does not know the type.
+
+By default, the 'code' scope is enabled.
+However, in many cases for LaTeX this is not a good default, for example package names or labels often are not valid dictionary words.
+Therefore, this TeXiFy setting disables the 'code' scope by default.
+When this setting is enabled, the 'code' scope can still be disabled.
+
 ## Textidote linter
 
 See [Textidote](Spacing.md#textidote)
