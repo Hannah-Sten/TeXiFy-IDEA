@@ -7,7 +7,6 @@
 - [ ] Add welcome text to Changelog.md
 - [ ] Update version in gradle.properties
 - [ ] run patchChangelog
-- [ ] Delete alpha versions from changelog
 - [ ] runIDE and check the changelog is formatted correctly, then close the dev instance
 - [ ] Run publishPlugin
 - [ ] Re-exclude Sumatra dlls in build.gradle.kts
