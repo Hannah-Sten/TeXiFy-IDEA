@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.projectRoots.ProjectJdkTable
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -285,7 +286,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      *          The current project.
      */
     fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>? {
-        val rootManager = ProjectRootManager.getInstance(project)
         val mainFile = runConfig.mainFile ?: return null
         // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
         val moduleRoot = runConfig.outputPath.contentRoot
@@ -295,7 +295,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             emptyArray()
         }
         else {
-            rootManager.contentSourceRoots
+            // If the project contains other non-LaTeX modules ignore them, we are only interested in source roots relevant to this file
+            ModuleUtil.findModuleForFile(mainFile, runConfig.project)?.rootManager?.sourceRoots ?: emptyArray()
         }
 
         val outputPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {

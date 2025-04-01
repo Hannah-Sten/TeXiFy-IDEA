@@ -14,6 +14,7 @@ data class TexifySettingsState(
     var includeBackslashInSelection: Boolean = false,
     var showPackagesInStructureView: Boolean = false,
     var enableExternalIndex: Boolean = true,
+    var enableSpellcheckEverywhere: Boolean = false,
     var enableTextidote: Boolean = false,
     var textidoteOptions: String = "--check en --output singleline --no-color",
     var latexIndentOptions: String = "",
