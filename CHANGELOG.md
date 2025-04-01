@@ -11,6 +11,9 @@
 * Add WSL support to the bibtex run configuration, using a new setting to choose the LaTeX distribution
 * Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
 
+### Changed
+* Only the source root of the module containing the main file is used for -include-directory, instead of source roots of all modules
+
 ### Fixed
 * Fix exceptions #3938, #3939, #3940, #3955
 * Fix a UI freeze which could occur with autocompile on save on project open
