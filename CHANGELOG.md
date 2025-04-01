@@ -3,6 +3,18 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.10.2] - 2025-04-01
+
+Welcome to TeXiFy IDEA 0.10.2! This release has a lot of performance improvements, and fixes some minor bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
 * Improve code to find environment definitions in packages
 * Add more \gls-like commands
 * Remove labels when using jlatexmath preview, as these are unsupported by jlatexmath
@@ -12,9 +24,11 @@
 * Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
 
 ### Changed
+
 * Only the source root of the module containing the main file is used for -include-directory, instead of source roots of all modules
 
 ### Fixed
+
 * Fix exceptions #3938, #3939, #3940, #3955
 * Fix a UI freeze which could occur with autocompile on save on project open
 * Fix unicode inspection for \Ohm, by @slideclimb
@@ -531,7 +545,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.2...HEAD
+[0.10.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.10.0
 [0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
