@@ -1,8 +1,9 @@
 package nl.hannahsten.texifyidea.structure.filter
 
+import com.intellij.ide.util.FileStructureFilter
 import com.intellij.ide.util.treeView.smartTree.ActionPresentation
-import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
+import com.intellij.openapi.actionSystem.Shortcut
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
@@ -11,7 +12,7 @@ import javax.swing.Icon
 /**
  * @author Hannah Schellekens
  */
-class LabelFilter : Filter {
+class LabelFilter : FileStructureFilter {
 
     override fun isVisible(treeElement: TreeElement): Boolean {
         if (treeElement !is LatexStructureViewCommandElement) {
@@ -25,6 +26,10 @@ class LabelFilter : Filter {
     override fun getPresentation(): ActionPresentation = LatexLabelFilterPresentation.INSTANCE
 
     override fun getName(): String = "latex.texify.filter.label"
+
+    override fun getCheckBoxText() = "Label commands"
+
+    override fun getShortcut() = emptyArray<Shortcut>()
 
     /**
      * @author Hannah Schellekens

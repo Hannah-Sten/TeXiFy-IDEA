@@ -3,9 +3,11 @@
 ## [Unreleased]
 
 ### Added
+* Add filters to filter out some elements by default in the file structure popup
 * Add setting to enable spellcheck in 'code' scope
 
 ### Fixed
+* Make sure the external packagge inclusion cache refills are not attempted unnecessarily
 * Fix concurrency issues when reading output of system commands
 
 ## [0.10.2] - 2025-04-01
