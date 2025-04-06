@@ -36,7 +36,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
     val docClass by lazy {
-        LatexCommandsIndex.Util.getItems(element.getProject(), GlobalSearchScope.fileScope(element as PsiFile)).asSequence()
+        LatexCommandsIndex.Util.getItems(element.project, GlobalSearchScope.fileScope(element as PsiFile)).asSequence()
             .filter { cmd -> cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash && cmd.getRequiredParameters().isNotEmpty() }
             .mapNotNull { cmd -> cmd.getRequiredParameters().firstOrNull() }
             .firstOrNull() ?: "article"
