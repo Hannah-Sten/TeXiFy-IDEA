@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Improve performance of the file structure popup
 * Add filters to filter out some elements by default in the file structure popup
 * Add setting to enable spellcheck in 'code' scope
 

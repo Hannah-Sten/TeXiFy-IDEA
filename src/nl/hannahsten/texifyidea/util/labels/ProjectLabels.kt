@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 
 /**
  * Finds all defined labels within the project, including bibtex entries.
@@ -48,5 +49,14 @@ fun getLabelDefinitionCommandsNoUpdate() = CommandManager.getAliases(CommandMagi
 fun Project.getLabelDefinitionCommands(): Set<String> {
     // Check if updates are needed
     CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this)
+    return CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
+}
+
+/**
+ * See [getLabelDefinitionCommands], but will not wait until the update is finished.
+ */
+fun Project.getLabelDefinitionCommandsAndUpdateLater(): Set<String> {
+    // Check if updates are needed
+    runInBackgroundWithoutProgress { CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this) }
     return CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 }
