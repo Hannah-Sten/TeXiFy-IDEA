@@ -38,7 +38,7 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
             }
         }
 
-        val lookupItemsFromRemote = remoteEntries.map { createLookupElementFromBibtexEntry(it, true) }
+        val lookupItemsFromRemote = remoteEntries.mapNotNull { createLookupElementFromBibtexEntry(it, true) }
 
         val before = result.prefixMatcher.prefix
         val prefix =
