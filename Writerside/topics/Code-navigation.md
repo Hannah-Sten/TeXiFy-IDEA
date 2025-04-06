@@ -28,6 +28,7 @@ In general, you can go back to your previous cursor location with <shortcut>Ctrl
 
 This also works with usages of commands defined with `\newcommand` definitions (in your fileset, not in LaTeX packages), but only if your command definition includes braces, like `\newcommand{\mycommand}{definition}`.
 It also works for user defined environments that accept a label as parameter, for example using `\lstnewenvironment`.
+Glossary entries and acronyms from the glossaries and acronym packages are also supported.
 
 ![go-to-label-declaration](go-to-label-declaration.gif)
 

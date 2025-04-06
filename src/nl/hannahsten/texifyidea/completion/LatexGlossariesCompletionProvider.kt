@@ -72,6 +72,11 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     val short = optionsMap.getOrDefault("name", "")
                     buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
+                ACRO.cmd, NEWACRO.cmd, ACRODEF.cmd -> {
+                    val acronym = command.getRequiredParameters().getOrNull(0) ?: return@mapNotNull null
+                    val fullName = command.getRequiredParameters().getOrNull(1) ?: return@mapNotNull null
+                    buildLookupElement(command, acronym, "", fullName)
+                }
                 else -> {
                     null
                 }

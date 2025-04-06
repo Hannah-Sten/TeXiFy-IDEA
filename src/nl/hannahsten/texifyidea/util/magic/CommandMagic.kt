@@ -192,12 +192,12 @@ object CommandMagic {
      * When adding a command, define how to get the glossary name in [nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.extractGlossaryName].
      */
     val glossaryEntry =
-        hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION).map { it.cmd }.toSet()
+        hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION, NEWACRO, ACRO, ACRODEF).map { it.cmd }.toSet()
 
     /**
      * All commands that reference a glossary entry from the glossaries package (e.g. \gls).
      */
-    val glossaryReference = LatexGlossariesCommand.entries.filter { cmd -> cmd.arguments.any { it.name == "label" } }.map { it.cmd }.toSet()
+    val glossaryReference = LatexGlossariesCommand.entries.filter { cmd -> cmd.arguments.any { it.name == "label" || it.name == "acronym" } }.map { it.cmd }.toSet()
 
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
