@@ -111,7 +111,59 @@ enum class LatexGlossariesCommand(
             commaSeparatesArguments = false
         ),
         dependency = LatexPackage.GLOSSARIES
-    );
+    ),
+
+    AC("ac", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    AC_UPPER("Ac", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    AC_STAR("ac*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    AC_UPPER_STAR("Ac*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACF("acf", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACF_UPPER("Acf", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACF_STAR("acf*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACF_UPPER_STAR("Acf*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACS("acs", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACS_STAR("acs*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACL("acl", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACL_UPPER("Acl", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACL_STAR("acl*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACL_UPPER_STAR("Acl*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACP("acp", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACP_UPPER("Acp", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACP_STAR("acp*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACP_UPPER_STAR("Acp*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFP("acfp", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFP_UPPER("Acfp", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFP_STAR("acfp*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFP_UPPER_STAR("Acfp*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACSP("acsp", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACSP_STAR("acsp*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLP("aclp", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLP_UPPER("Aclp", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLP_STAR("aclp*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLP_UPPER_STAR("Aclp*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFI("acfi", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFI_UPPER("Acfi", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFI_STAR("acfi*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFI_UPPER_STAR("Acfi*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFIP("acfip", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFIP_UPPER("Acfip", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFIP_STAR("acfip*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACFIP_UPPER_STAR("Acfip*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACSU("acsu", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACSU_STAR("acsu*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLU("aclu", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLU_UPPER("Aclu", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLU_STAR("aclu*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACLU_UPPER_STAR("Aclu*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    IAC("iac", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    IAC_UPPER("Iac", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    IAC_STAR("iac*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+    IAC_UPPER_STAR("Iac*", "linebreak penalty".asOptional(), "acronym".asRequired(), dependency = LatexPackage.ACRONYM),
+
+    ACRO("acro", "acronym".asRequired(), "short name".asOptional(), "full name".asRequired(), dependency = LatexPackage.ACRONYM),
+    NEWACRO("newacro", "acronym".asRequired(), "short name".asOptional(), "full name".asRequired(), dependency = LatexPackage.ACRONYM),
+    ACRODEF("acrodef", "acronym".asRequired(), "short name".asOptional(), "full name".asRequired(), dependency = LatexPackage.ACRONYM),
+    ;
 
     companion object {
 
@@ -143,6 +195,9 @@ enum class LatexGlossariesCommand(
             }
             else if (setOf(NEWACRONYM, NEWABBREVIATION).map { it.cmd }.contains(command.name)) {
                 return command.requiredParameter(1)
+            }
+            else if (setOf(NEWACRO, ACRO, ACRODEF).map { it.cmd }.contains(command.name)) {
+                return command.requiredParameter(0)
             }
             else {
                 return null
