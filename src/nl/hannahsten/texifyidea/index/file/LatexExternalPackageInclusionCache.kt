@@ -21,14 +21,15 @@ object LatexExternalPackageInclusionCache {
 
     private val cache = concurrentMapOf<LatexPackage, Set<LatexPackage>>()
 
-    private var isFillingCache = AtomicBoolean(false)
+    // Make sure not to atttempt to re-fill the cache if the result was empty
+    private var cacheHasBeenFilled = AtomicBoolean(false)
 
     /**
      * Map every LaTeX package style file to all the style files it includes, directly or indirectly.
      */
     @Synchronized
     fun updateOrGetCache(project: Project): Map<LatexPackage, Set<LatexPackage>> {
-        if (cache.isNotEmpty() || DumbService.isDumb(project)) return cache
+        if (cacheHasBeenFilled.get() || DumbService.isDumb(project)) return cache
 
         // Make sure the index is ready (#3754)
         if (FileBasedIndex.getInstance().getIndexModificationStamp(LatexExternalPackageInclusionIndex.Cache.id, project) < 0) return cache
@@ -36,33 +37,28 @@ object LatexExternalPackageInclusionCache {
         val directChildren = mutableMapOf<LatexPackage, MutableSet<LatexPackage>>()
 
         // Get direct children from the index
-        if (isFillingCache.getAndSet(true)) return cache
         // ???
         runInEdt {
             runInBackgroundBlocking(project, "Retrieving LaTeX package inclusions...") { indicator ->
-                try {
-                    DumbService.getInstance(project).tryRunReadActionInSmartMode({ FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }, indicator.text)?.forEach { indexKey ->
-                        DumbService.getInstance(project).tryRunReadActionInSmartMode({
-                            FileBasedIndex.getInstance().processValues(
-                                LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
-                                    indicator.checkCanceled()
-                                    val key = LatexPackage(file.name.removeFileExtension())
-                                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
-                                    true
-                                },
-                                GlobalSearchScope.everythingScope(project)
-                            )
-                        }, indicator.text)
-                    }
+                DumbService.getInstance(project).tryRunReadActionInSmartMode({ FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }, indicator.text)?.forEach { indexKey ->
+                    DumbService.getInstance(project).tryRunReadActionInSmartMode({
+                        FileBasedIndex.getInstance().processValues(
+                            LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
+                                indicator.checkCanceled()
+                                val key = LatexPackage(file.name.removeFileExtension())
+                                directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
+                                true
+                            },
+                            GlobalSearchScope.everythingScope(project)
+                        )
+                    }, indicator.text)
+                }
 
-                    // Do some DFS for indirect inclusions
-                    for (latexPackage in directChildren.keys) {
-                        cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
-                    }
+                // Do some DFS for indirect inclusions
+                for (latexPackage in directChildren.keys) {
+                    cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
                 }
-                finally {
-                    isFillingCache.set(false)
-                }
+                cacheHasBeenFilled.set(true)
             }
         }
 
