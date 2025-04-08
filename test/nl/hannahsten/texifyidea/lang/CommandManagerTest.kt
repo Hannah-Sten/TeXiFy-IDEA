@@ -4,7 +4,6 @@ import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 import java.util.function.Function
 
 /**
@@ -501,12 +500,6 @@ class CommandManagerTest {
             it.next()
         }
         Assert.assertEquals("Original Iterator", originals.toLong(), count.toLong())
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun testExceptionRegisterCommand() {
-        resetup(defaultAliasGroups)
-        manager!!.registerCommand("\\one")
     }
 
     @Test(expected = IllegalArgumentException::class)

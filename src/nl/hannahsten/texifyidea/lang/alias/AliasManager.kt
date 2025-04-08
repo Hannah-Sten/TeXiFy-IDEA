@@ -54,7 +54,6 @@ abstract class AliasManager {
      * Register a new item, which creates a new alias set.
      */
     fun register(alias: String) {
-        require(!isRegistered(alias)) { "alias '$alias' has already been registered" }
         synchronized(aliases) {
             aliases[alias] = mutableSetOf(alias)
         }
