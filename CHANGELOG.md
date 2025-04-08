@@ -9,6 +9,7 @@
 * Add setting to enable spellcheck in 'code' scope
 
 ### Fixed
+* Fix graphic insertion wizard not opening after pasting an image from the clipboard
 * Fix exception #3967
 * Make sure the external packagge inclusion cache refills are not attempted unnecessarily
 * Fix concurrency issues when reading output of system commands
