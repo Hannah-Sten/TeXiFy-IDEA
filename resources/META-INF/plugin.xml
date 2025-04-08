@@ -80,7 +80,7 @@
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager"/>
 
-        <registryKey key="texify.delete.generated.files" defaultValue="true"
+        <registryKey key="texify.delete.generated.files" defaultValue="false"
                      description="Enable action to delete generated files"/>
     </extensions>
 
