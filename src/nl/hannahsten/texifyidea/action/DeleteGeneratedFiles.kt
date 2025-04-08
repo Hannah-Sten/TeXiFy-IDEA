@@ -2,10 +2,12 @@ package nl.hannahsten.texifyidea.action
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.Log
@@ -20,6 +22,13 @@ import java.security.PrivilegedActionException
  * Similar to [DeleteAuxFiles].
  */
 class DeleteGeneratedFiles : AnAction() {
+
+    // This action is disabled by default because it deletes directories so is unsafe, see #3983
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabledAndVisible = Registry.`is`("texify.delete.generated.files")
+    }
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun actionPerformed(event: AnActionEvent) {
         try {
