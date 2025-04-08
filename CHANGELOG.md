@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Remove action to delete all generated files
 * Add support for reference resolving and autocompletion for the acronym package
 * Improve performance of the file structure popup
 * Add filters to filter out some elements by default in the file structure popup

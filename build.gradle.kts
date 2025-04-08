@@ -247,6 +247,8 @@ tasks.runIde {
     systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
     // Some warning asked for this to be set explicitly
     systemProperty("idea.log.path", file("build/idea-sandbox/system/log").absolutePath)
+
+    systemProperty("texify.delete.generated.files", "true")
 }
 
 tasks.test {
