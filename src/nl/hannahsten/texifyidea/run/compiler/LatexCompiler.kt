@@ -296,7 +296,17 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
         else {
             // If the project contains other non-LaTeX modules ignore them, we are only interested in source roots relevant to this file
-            ModuleUtil.findModuleForFile(mainFile, runConfig.project)?.rootManager?.sourceRoots ?: emptyArray()
+            // Limit the number of roots, in case the user has hundreds of roots it can exceed the maximum command line length on Windows
+            val allRoots = ModuleUtil.findModuleForFile(mainFile, runConfig.project)?.rootManager?.sourceRoots ?: emptyArray()
+            var totalLength = 0
+            val roots = mutableListOf<VirtualFile>()
+            for (root in allRoots) {
+                totalLength += root.toString().length + " -include-directory=".length
+                // See LatexCommandLineState
+                if (totalLength > 10_000) break
+                roots.add(root)
+            }
+            roots.toTypedArray()
         }
 
         val outputPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
