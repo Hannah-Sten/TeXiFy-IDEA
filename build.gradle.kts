@@ -31,7 +31,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "12.1.0"
+    id("org.owasp.dependencycheck") version "12.1.1"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -95,7 +95,7 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdeaCommunity("2024.3")
+        intellijIdeaCommunity("2025.1")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
@@ -172,13 +172,13 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.12.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.12.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.12.2")
 
-    testImplementation("io.mockk:mockk:1.13.17")
+    testImplementation("io.mockk:mockk:1.14.0")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
