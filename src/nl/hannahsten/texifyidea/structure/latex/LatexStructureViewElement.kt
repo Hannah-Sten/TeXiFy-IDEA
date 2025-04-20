@@ -257,7 +257,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get the amount to modify with.
         val amount = required[1].toIntOrNull() ?: return
 
-        if (token == "\\setcounter") {
+        if (token == LatexGenericRegularCommand.SETCOUNTER.cmd) {
             numbering.setCounter(level, amount)
         }
         else {
@@ -273,7 +273,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun order(element: LatexStructureViewCommandElement) = order(element.commandName)
 
-    private fun order(commands: LatexCommands) = order(commands.commandToken.text)
+    private fun order(commands: LatexCommands) = order(commands.name)
 
-    private fun order(commandName: String) = CommandMagic.sectionMarkers.indexOf(commandName)
+    private fun order(commandName: String?) = CommandMagic.sectionMarkers.indexOf(commandName)
 }
