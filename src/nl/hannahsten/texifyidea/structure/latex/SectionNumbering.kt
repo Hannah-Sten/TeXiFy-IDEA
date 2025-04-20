@@ -21,6 +21,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
     private val counters = IntArray(7)
 
     fun increase(level: Int) {
+        if (level < 0 || level >= counters.size) return
         counters[level]++
 
         // Parts don't reset other counters.

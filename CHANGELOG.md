@@ -12,7 +12,7 @@
 ### Fixed
 * Fix the command line becoming too long when there are hundreds of source roots in the module
 * Fix graphic insertion wizard not opening after pasting an image from the clipboard
-* Fix exception #3967
+* Fix exceptions #3967, #3994
 * Make sure the external packagge inclusion cache refills are not attempted unnecessarily
 * Fix concurrency issues when reading output of system commands
 
