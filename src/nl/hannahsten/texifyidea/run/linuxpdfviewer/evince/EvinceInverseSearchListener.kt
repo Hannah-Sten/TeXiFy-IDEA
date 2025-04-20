@@ -58,6 +58,8 @@ object EvinceInverseSearchListener {
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
         currentCoroutineScope.launch {
+            // Delay execution and hope everything is ready (#3995)
+            delay(1000)
             startListening()
         }
     }
