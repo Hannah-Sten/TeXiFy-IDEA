@@ -25,5 +25,5 @@ data class TexifySettingsState(
     // Kept for backwards compatibility
     var autoCompile: Boolean = false,
     var autoCompileOnSaveOnly: Boolean = false,
-    var pdfViewer: InternalPdfViewer = InternalPdfViewer.firstAvailable
+    var pdfViewer: InternalPdfViewer? = null
 )

@@ -10,6 +10,7 @@
 * Add setting to enable spellcheck in 'code' scope
 
 ### Fixed
+* Fix a possible UI freeze when computing obsolete pdf viewer settings
 * Do not run grammar checks in graphicspath argument
 * Fix the command line becoming too long when there are hundreds of source roots in the module
 * Fix graphic insertion wizard not opening after pasting an image from the clipboard

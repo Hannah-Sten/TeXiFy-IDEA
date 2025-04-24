@@ -59,22 +59,22 @@ object SumatraAvailabilityChecker {
 
         var isCustomPathValid = false // if Sumatra is accessible in customPath
         val whereSumatraResult = runCommandWithExitCode("where", "SumatraPDF", workingDirectory = workingDir)
-        val isSumatraInAllPath = (whereSumatraResult.second == 0) // if Sumatra is accessible in PATH or customPath
+        val isSumatraInSystemPath = (whereSumatraResult.second == 0) // if Sumatra is accessible in PATH or customPath
 
-        if (workingDir != null && whereSumatraResult.first?.contains(sumatraCustomPath.toString()) == true && isSumatraInAllPath) {
+        if (workingDir != null && whereSumatraResult.first?.contains(sumatraCustomPath.toString()) == true && isSumatraInSystemPath) {
             isCustomPathValid = true
         }
 
         if (assignNewAvailability) {
             if (!isSumatraAvailable) {
-                isSumatraAvailable = isSumatraInAllPath
+                isSumatraAvailable = isSumatraInSystemPath
             }
             if (workingDir != null) {
                 sumatraDirectory = workingDir
             }
         }
 
-        return Pair(isSumatraInAllPath, isCustomPathValid)
+        return Pair(isSumatraInSystemPath, isCustomPathValid)
     }
 
     /**
