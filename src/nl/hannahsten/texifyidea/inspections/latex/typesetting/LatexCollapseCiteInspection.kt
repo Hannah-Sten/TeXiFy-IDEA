@@ -13,8 +13,11 @@ import com.intellij.psi.util.endOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
@@ -129,7 +132,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     }
 
     /**
-     * Check if [LatexContent] is a non breaking space.
+     * Check if [LatexNoMathContent] is a non breaking space.
      */
     private fun LatexNoMathContent.isNonBreakingSpace(): Boolean {
         val normalText = firstChildOfType(LatexNormalText::class) ?: return false

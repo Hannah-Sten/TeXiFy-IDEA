@@ -64,10 +64,17 @@ class LatexTextExtractor : TextExtractor() {
             .filter { text -> text !is PsiWhiteSpace || text.text.contains("\n") }
             // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
             // Even commands which have no text as argument, for example certain reference commands like autoref, may need to be kept in to get correct punctuation
-            .filterNot { text -> text is LatexParameterText && LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)?.firstOrNull()?.arguments?.filter { it is RequiredArgument }?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true }
+            .filterNot { text ->
+                LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)
+                    ?.firstOrNull()
+                    ?.arguments
+                    ?.filter { it is RequiredArgument }
+                    // Do not keep if it is not text
+                    ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
+            }
             // Environment names are never part of a sentence
             .filterNot { text -> text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null }
-            // If we encounter an unescaped &, we are in some language construct like a tabular, so we ignore this because ofter a tabular does not contain full sentences
+            // If we encounter an unescaped &, we are in some language construct like a tabular, so we ignore this because often a tabular does not contain full sentences
             .filter { text -> text.node.children().none { it.elementType == LatexTypes.AMPERSAND } }
             // NOTE: it is not allowed to start the text we send to Grazie with a newline! If we do, then Grazie will just not do anything. So we exclude whitespace at the start
             .dropWhile { it is PsiWhiteSpace }
@@ -114,7 +121,6 @@ class LatexTextExtractor : TextExtractor() {
             ranges.removeAll(overlapped.toSet())
             ranges.add(indent.merge(overlapped))
         }
-
         return ranges.sortedBy { it.first }
     }
 

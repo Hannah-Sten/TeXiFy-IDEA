@@ -10,10 +10,11 @@
 * Add setting to enable spellcheck in 'code' scope
 
 ### Fixed
+* Do not run grammar checks in graphicspath argument
 * Fix the command line becoming too long when there are hundreds of source roots in the module
 * Fix graphic insertion wizard not opening after pasting an image from the clipboard
 * Fix exceptions #3967, #3994, #3995
-* Make sure the external packagge inclusion cache refills are not attempted unnecessarily
+* Make sure the external package inclusion cache refills are not attempted unnecessarily
 * Fix concurrency issues when reading output of system commands
 
 ## [0.10.2] - 2025-04-01

@@ -53,7 +53,8 @@
 
 latexFile ::= content
 
-// Make sure that there is a root element with multiple children, for example for Grazie to allow ignoring certain types of no_math_content
+// Make sure that there is a root element with multiple children, for example for Grazie to allow ignoring certain types of no_math_content.
+// This means that 'content' should not be used in other elements
 content ::= no_math_content*
 
 // When updating this list, consider updating other _content lists
@@ -157,7 +158,9 @@ parameter_text ::= (commands | left_right | NORMAL_TEXT_WORD | STAR | AMPERSAND 
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterTextImplMixin"
 }
 
-group ::= OPEN_BRACE content CLOSE_BRACE { pin=1 }
+// For backwards compatibility reasons, if removed some inspections need to be fixed
+group_content ::= no_math_content*
+group ::= OPEN_BRACE group_content CLOSE_BRACE { pin=1 }
 
 // Use a separate element for inside parameters, because it has to contain parameter_text as leaf element
 parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }

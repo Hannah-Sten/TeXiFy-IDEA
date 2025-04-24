@@ -84,6 +84,12 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testGraphicsPath() {
+        // graphicspath argument should be ignored, but it's not direct parameter text since it's in a group
+        myFixture.configureByText(LatexFileType, """\graphicspath{{a apple}} is a sentence.""")
+        myFixture.checkHighlighting()
+    }
+
     fun testUnpairedSymbol() {
         myFixture.configureByText(
             LatexFileType,
