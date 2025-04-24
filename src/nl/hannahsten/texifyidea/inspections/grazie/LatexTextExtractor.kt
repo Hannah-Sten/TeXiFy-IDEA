@@ -65,12 +65,12 @@ class LatexTextExtractor : TextExtractor() {
             // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
             // Even commands which have no text as argument, for example certain reference commands like autoref, may need to be kept in to get correct punctuation
             .filterNot { text ->
-                    LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)
-                        ?.firstOrNull()
-                        ?.arguments
-                        ?.filter { it is RequiredArgument }
-                        // Do not keep if it is not text
-                        ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
+                LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)
+                    ?.firstOrNull()
+                    ?.arguments
+                    ?.filter { it is RequiredArgument }
+                    // Do not keep if it is not text
+                    ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
             }
             // Environment names are never part of a sentence
             .filterNot { text -> text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null }

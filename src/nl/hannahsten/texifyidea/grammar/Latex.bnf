@@ -158,7 +158,9 @@ parameter_text ::= (commands | left_right | NORMAL_TEXT_WORD | STAR | AMPERSAND 
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterTextImplMixin"
 }
 
-group ::= OPEN_BRACE no_math_content* CLOSE_BRACE { pin=1 }
+// For backwards compatibility reasons, if removed some inspections need to be fixed
+group_content ::= no_math_content*
+group ::= OPEN_BRACE group_content CLOSE_BRACE { pin=1 }
 
 // Use a separate element for inside parameters, because it has to contain parameter_text as leaf element
 parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }

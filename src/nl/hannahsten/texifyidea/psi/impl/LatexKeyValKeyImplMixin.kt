@@ -18,8 +18,8 @@ abstract class LatexKeyValKeyImplMixin(node: ASTNode) : ASTWrapperPsiElement(nod
         }
         return result.joinToString(separator = "") {
             when (it) {
-                is LatexOptionalParamContent -> it.group?.noMathContentList?.joinToString() ?: it.text
-                is LatexGroup -> it.noMathContentList.joinToString()
+                is LatexOptionalParamContent -> it.group?.let { g -> g.groupContent?.text ?: "" } ?: it.text
+                is LatexGroup -> it.groupContent?.text ?: ""
                 else -> it.text
             }
         }
