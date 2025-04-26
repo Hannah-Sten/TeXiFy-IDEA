@@ -9,7 +9,8 @@
 * Add filters to filter out some elements by default in the file structure popup
 * Add setting to enable spellcheck in 'code' scope
 
-### Fixed
+### Fixed  
+* Make sure not to start a new autocompile run if a previous one is still running
 * Fix validation when renaming a bibtex identifier
 * Fix a possible UI freeze when computing obsolete pdf viewer settings
 * Do not run grammar checks in graphicspath argument
