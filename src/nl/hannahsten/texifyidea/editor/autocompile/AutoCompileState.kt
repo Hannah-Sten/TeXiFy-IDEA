@@ -8,6 +8,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * State of autocompilation.
@@ -17,7 +18,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 object AutoCompileState {
 
     /** Whether an autocompile is in progress. */
-    private var isCompiling = false
+    private var isCompiling = AtomicBoolean(false)
 
     /** Whether the document has changed since the last triggered autocompile. */
     private var hasChanged = false
@@ -33,7 +34,7 @@ object AutoCompileState {
         this.project = project
 
         // Remember that the document changed, so a compilation should be scheduled later
-        if (isCompiling) {
+        if (isCompiling.get()) {
             hasChanged = true
         }
         else {
@@ -51,7 +52,7 @@ object AutoCompileState {
             scheduleCompilation()
         }
         else {
-            isCompiling = false
+            isCompiling.set(false)
         }
     }
 
@@ -61,9 +62,6 @@ object AutoCompileState {
 
             return
         }
-
-        isCompiling = true
-        hasChanged = false
 
         // Get run configuration selected in the combobox and run that one
         if (project!!.isDisposed) return
@@ -77,6 +75,11 @@ object AutoCompileState {
         // Changing focus would interrupt the user during typing
         (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
 
+        hasChanged = false
+        // Ensure we only trigger one compilation at a time
+        if (isCompiling.getAndSet(true)) return
+
+        // If the run config is already running, this may trigger a dialog asking the user whether to stop and rerun
         ExecutionManager.getInstance(project!!).restartRunProfile(
             project!!,
             DefaultRunExecutor.getRunExecutorInstance(),
