@@ -6,5 +6,6 @@
 
         <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
         <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
+        <lang.namesValidator language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexNamesValidator" />
     </extensions>
 </idea-plugin>
