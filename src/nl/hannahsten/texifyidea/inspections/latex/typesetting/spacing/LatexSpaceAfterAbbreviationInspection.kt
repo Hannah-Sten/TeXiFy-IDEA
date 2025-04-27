@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -9,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
@@ -107,6 +109,13 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
             val start = normalText.textOffset + whitespaceRange.last - 1
             val end = normalText.textOffset + whitespaceRange.last
             document.replaceString(start, end, "\\ ")
+        }
+
+        override fun generatePreview(project: Project, descriptor: ProblemDescriptor): IntentionPreviewInfo {
+            val text = (descriptor.psiElement as? LatexNormalText)?.text ?: return IntentionPreviewInfo.EMPTY
+            return (whitespaceRange.last - 1).let {
+                IntentionPreviewInfo.CustomDiff(LatexFileType, text, "${text.substring(0..<it)}\\${text.substring(it)}")
+            }
         }
     }
 }
