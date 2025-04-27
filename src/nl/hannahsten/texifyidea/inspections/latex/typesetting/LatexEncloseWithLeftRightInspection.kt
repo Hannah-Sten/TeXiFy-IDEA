@@ -219,7 +219,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
         }
 
         /**
-         * See documentation [https://www.jetbrains.com/help/inspectopedia/ActionIsNotPreviewFriendly.html](ActionIsNotPreviewFriendly), overriding this method implements fix 2:
+         * See documentation [ActionIsNotPreviewFriendly](https://www.jetbrains.com/help/inspectopedia/ActionIsNotPreviewFriendly.html), overriding this method implements fix 2:
          * > You may override getFileModifierForPreview() method and create a copy of the quick-fix rebinding it to the non-physical file copy which is supplied as a parameter. Use PsiTreeUtil.findSameElementInCopy() to find the corresponding PSI elements inside the supplied non-physical copy.
          */
         override fun getFileModifierForPreview(target: PsiFile): FileModifier? {
