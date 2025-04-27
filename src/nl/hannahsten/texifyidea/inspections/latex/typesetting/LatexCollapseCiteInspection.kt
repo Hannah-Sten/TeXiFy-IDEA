@@ -197,9 +197,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             val targetCite = if (bundleContainsGap) {
                 val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return null
                 sortedBundle.value.firstOrNull { it.endOffset >= editor.caretOffset() }
-                // When something went wrong with finding a cite at the caret we target the last of the cites
-                // based on the assumption that cites that have an optional argument are more specific and/or
-                // important cites and "should" come first.
+                    // When something went wrong with finding a cite at the caret we target the last of the cites
+                    // based on the assumption that cites that have an optional argument are more specific and/or
+                    // important cites and "should" come first.
                     ?: sortedBundle.value.lastOrNull() ?: return null
             }
             // When the bundle does not contain a gap this is the first command, as it doesn't matter

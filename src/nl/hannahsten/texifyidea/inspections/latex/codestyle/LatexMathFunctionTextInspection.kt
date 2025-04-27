@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
