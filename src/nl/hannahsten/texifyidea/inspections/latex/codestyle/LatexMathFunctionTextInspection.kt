@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -10,6 +11,7 @@ import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -62,8 +64,19 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val textCommand = textCommandPointer.element ?: return
             val document = textCommand.containingFile.document() ?: return
-            val mathFunction = textCommand.requiredParameter(0)?.trim() ?: return
-            document.replaceString(textCommand.startOffset, textCommand.requiredParameters()[0].endOffset, "\\$mathFunction")
+            val mathFunction = replacementString(textCommand) ?: return
+            document.replaceString(textCommand.startOffset, textCommand.requiredParameters()[0].endOffset, mathFunction)
+        }
+
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
+            val textCommand = textCommandPointer.element ?: return IntentionPreviewInfo.EMPTY
+            return replacementString(textCommand)
+                ?.let { IntentionPreviewInfo.CustomDiff(LatexFileType, textCommand.text, it) }
+                ?: IntentionPreviewInfo.EMPTY
+        }
+
+        private fun replacementString(textCommandElement: LatexCommands): String? {
+            return textCommandElement.requiredParameter(0)?.trim()?.let { "\\$it" }
         }
     }
 
