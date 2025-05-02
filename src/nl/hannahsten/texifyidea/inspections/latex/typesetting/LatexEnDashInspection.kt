@@ -16,7 +16,7 @@ open class LatexEnDashInspection : TexifyRegexInspection(
     quickFixName = { "Convert to en dash" },
     cancelIf = { matcher, _ -> PatternMagic.correctEnDash.matcher(matcher.group(1)).matches() },
     replacementRange = { it.groupRange(1) },
-    replacement = { matcher, _ -> "${matcher.group(2)}--${matcher.group(3)}"},
+    replacement = { matcher, _ -> "${matcher.group(2)}--${matcher.group(3)}" },
     highlightRange = { it.groupRange(1).toTextRange() },
     groupFetcher = { listOf(it.group(2), it.group(3)) }
 )

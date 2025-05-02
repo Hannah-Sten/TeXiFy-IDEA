@@ -21,7 +21,7 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
     errorMessage = { "\\cite is placed after interpunction" },
     pattern = Pattern.compile("([.,?!;:]~)(\\\\cite)"),
     mathMode = false,
-    replacement = { m, f -> findReplacement(m, f)},
+    replacement = { m, f -> findReplacement(m, f) },
     replacementRange = { it.groupRange(1) },
     highlightRange = { it.groupRange(2).toTextRange() },
     quickFixName = { "Move interpunction to the back of \\cite" },

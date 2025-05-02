@@ -296,7 +296,7 @@ abstract class TexifyRegexInspection(
     /**
      * Generates the preview of applying the quick fix of the element at the cursor.
      */
-    fun generatePreview(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>,): IntentionPreviewInfo {
+    fun generatePreview(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>): IntentionPreviewInfo {
         val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return IntentionPreviewInfo.EMPTY
         // +1 because the caret seems to always be at the start of the text highlighted in the inspection.
         // Take the first replacement as best guess default.
