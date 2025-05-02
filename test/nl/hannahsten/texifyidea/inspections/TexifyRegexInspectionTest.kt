@@ -40,7 +40,8 @@ class TexifyRegexInspectionTest {
                 replacements,
                 replacementRanges,
                 groups,
-                this::applyFixes
+                this::applyFixes,
+                this::generatePreview
             )
         }
 
