@@ -1,13 +1,16 @@
 package nl.hannahsten.texifyidea.inspections
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.LatexRawText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -17,6 +20,7 @@ import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.math.max
 
 /**
  * @author Hannah Schellekens
@@ -184,7 +188,8 @@ abstract class TexifyRegexInspection(
                     replacements,
                     replacementRanges,
                     groups,
-                    this::applyFixes
+                    this::applyFixes,
+                    this::generatePreview
                 )
             )
 
@@ -236,7 +241,8 @@ abstract class TexifyRegexInspection(
                         arrayListOf(replacementContent),
                         arrayListOf(range),
                         arrayListOf(groups),
-                        this::applyFixes
+                        this::applyFixes,
+                        this::generatePreview
                     )
                 )
             )
@@ -273,6 +279,8 @@ abstract class TexifyRegexInspection(
     /**
      * Replaces all text in the replacementRange by the correct replacement.
      *
+     * When overriding this, probably also override [generatePreview] to fix the intention preview.
+     *
      * @return The total increase in document length, e.g. if << is replaced by
      * \ll and \usepackage{amsmath} is added then the total increase is 3 + 20 - 2.
      */
@@ -283,6 +291,27 @@ abstract class TexifyRegexInspection(
         document.replaceString(replacementRange.first, replacementRange.last, replacement)
 
         return replacement.length - replacementRange.length
+    }
+
+    /**
+     * Generates the preview of applying the quick fix of the element at the cursor.
+     */
+    fun generatePreview(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>,): IntentionPreviewInfo {
+        val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return IntentionPreviewInfo.EMPTY
+        // +1 because the caret seems to always be at the start of the text highlighted in the inspection.
+        // Take the first replacement as best guess default.
+        val replacementIndex = max(replacementRanges.indexOfFirst { it.contains(editor.caretOffset() + 1) }, 0)
+        return generatePreview(project, descriptor, replacementRanges[replacementIndex], replacements[replacementIndex], groups[replacementIndex])
+    }
+
+    /**
+     * Generates the preview for a single replacement.
+     *
+     * Override when overriding [applyFix].
+     */
+    open fun generatePreview(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): IntentionPreviewInfo {
+        val original = descriptor.psiElement.containingFile.text.substring(replacementRange)
+        return IntentionPreviewInfo.CustomDiff(LatexFileType, original, replacement)
     }
 
     /**
@@ -341,13 +370,18 @@ abstract class TexifyRegexInspection(
         val replacements: List<String>,
         val replacementRanges: List<IntRange>,
         val groups: List<List<String>>,
-        val fixFunction: (ProblemDescriptor, List<IntRange>, List<String>, List<List<String>>) -> Unit
+        val fixFunction: (ProblemDescriptor, List<IntRange>, List<String>, List<List<String>>) -> Unit,
+        val previewFunction: (Project, ProblemDescriptor, List<IntRange>, List<String>, List<List<String>>) -> IntentionPreviewInfo
     ) : LocalQuickFix {
 
         override fun getFamilyName(): String = fixName
 
         override fun applyFix(project: Project, problemDescriptor: ProblemDescriptor) {
             fixFunction(problemDescriptor, replacementRanges, replacements, groups)
+        }
+
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
+            return previewFunction(project, previewDescriptor, replacementRanges, replacements, groups)
         }
     }
 }
