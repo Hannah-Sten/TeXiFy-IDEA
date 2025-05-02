@@ -61,7 +61,8 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val textCommand = textCommandPointer.element ?: return
             val mathFunction = extractFunction(textCommand) ?: return
-            textCommand.replace(LatexPsiHelper(project).createFromText(mathFunction).firstChild)
+            textCommand.node.removeChild(textCommand.parameterList[0].node)
+            textCommand.node.replaceChild(textCommand.commandToken.node, LatexPsiHelper(project).createFromText(mathFunction).firstChild.node)
         }
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
