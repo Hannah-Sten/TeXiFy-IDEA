@@ -1,12 +1,11 @@
 package nl.hannahsten.texifyidea.inspections.bibtex
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
@@ -15,10 +14,8 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Sten Wessel
@@ -43,46 +40,39 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Map each bibliography file to all the commands which include it
-        val groupedIncludes = mutableMapOf<String, MutableList<LatexCommands>>()
+        val groupedIncludes = mutableMapOf<Pair<String, String>, MutableList<LatexCommands>>()
 
         LatexIncludesIndex.Util.getItemsInFileSet(file).asSequence()
             .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
             .forEach { command ->
-                for (fileName in command.getIncludedFiles(false).map { it.name }) {
-                    groupedIncludes.getOrPut(fileName) { mutableListOf() }.add(command)
+                for ((filePath, fileName) in command.getIncludedFiles(false).map { it.virtualFile.path to it.name }) {
+                    groupedIncludes.getOrPut(filePath to fileName) { mutableListOf() }.add(command)
                 }
             }
 
         groupedIncludes.asSequence()
             .filter { (_, commands) -> commands.size > 1 }
-            .forEach { (fileName, commands) ->
+            .forEach { (fileKey, commands) ->
                 for (command in commands.distinct()) {
                     if (command.containingFile != file) continue
-
-                    val parameterIndex = command.requiredParameter(0)?.indexOf(fileName) ?: break
-                    if (parameterIndex < 0) break
-
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            TextRange(parameterIndex, parameterIndex + fileName.length).shiftRight(command.commandToken.textLength + 1),
-                            "Bibliography file '$fileName' is included multiple times",
+                            "Bibliography file '${fileKey.second}' is included multiple times",
+                            RemoveOtherCommandsFix(fileKey.second, commands.map { it.createSmartPointer() }),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly,
-                            RemoveOtherCommandsFix(fileName, commands.map { it.createSmartPointer() })
+                            isOntheFly
                         )
                     )
                 }
             }
-
         return descriptors
     }
 
     /**
      * @author Sten Wessel
      */
-    class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<SmartPsiElementPointer<LatexCommands>>) :
-        LocalQuickFix {
+    class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<SmartPsiElementPointer<LatexCommands>>) : LocalQuickFix {
 
         override fun getFamilyName(): String {
             return "Remove other includes of $bibName"
@@ -90,35 +80,14 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val currentCommand = descriptor.psiElement as LatexCommands
-            val documentManager = PsiDocumentManager.getInstance(project)
-
-            // For all commands to be fixed, remove the matching bibName
-            // Handle commands by descending offset, to make sure the replaceString calls work correctly
-            for (command in commandsToFix.mapNotNull { it.element }.sortedByDescending { it.textOffset }) {
-                val document = command.containingFile.document() ?: continue
-                val param = command.parameterList.first()
-
-                // If we handle the current command, find the first occurrence of bibName and leave it intact
-                val firstBibIndex = if (command == currentCommand) {
-                    param.text.trimRange(1, 1).splitToSequence(',').indexOfFirst { it.trim() == bibName }
-                }
-                else -1
-
-                val replacement = param.text.trimRange(1, 1).splitToSequence(',')
-                    // Parameter should stay if it is at firstBibIndex or some other bibliography file
-                    .filterIndexed { i, it -> i <= firstBibIndex || it.trim() != bibName }
-                    .joinToString(",", prefix = "{", postfix = "}")
-
-                // When no arguments are left, just delete the command
-                if (replacement.trimRange(1, 1).isBlank()) {
-                    command.delete()
-                }
-                else {
-                    document.replaceString(param.textRange, replacement)
-                }
-                documentManager.doPostponedOperationsAndUnblockDocument(document)
-                documentManager.commitDocument(document)
+            commandsToFix.map { it.element }.filterNot { it == currentCommand || it == null }.forEach {
+                it?.parent?.node?.removeChild(it.node)
             }
+        }
+
+        override fun generatePreview(project: Project, descriptor: ProblemDescriptor): IntentionPreviewInfo {
+            // Removes elements that are not at the cursor, so showing the diff of removing the element which also happens to be at the cursor can be confusing.
+            return IntentionPreviewInfo.EMPTY
         }
     }
 }
