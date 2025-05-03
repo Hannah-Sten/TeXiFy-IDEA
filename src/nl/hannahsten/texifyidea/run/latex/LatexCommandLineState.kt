@@ -56,7 +56,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
             {
-                if (runConfig.outputPath.virtualFile == null) {
+                if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
                     runConfig.outputPath.getAndCreatePath()
                 }
             },
