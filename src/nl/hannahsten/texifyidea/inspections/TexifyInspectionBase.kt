@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemDescriptor
@@ -154,6 +155,12 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
             magicComment.addValue(DefaultMagicKeys.SUPPRESS, inspectionId)
             targetElement.element?.addMagicCommentToPsiElement(magicComment)
         }
+
+        /**
+         * There is no use for a preview for suppression "fixes" (there also is no preview when suppressing Java and Kotlin inspections),
+         * disable it manually to avoid [Field blocks intention preview](https://www.jetbrains.com/help/inspectopedia/ActionIsNotPreviewFriendly.html) warnings.
+         */
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = IntentionPreviewInfo.EMPTY
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean {
             return context.containingFile.fileType == LatexFileType
