@@ -10,11 +10,11 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
+import nl.hannahsten.texifyidea.util.parser.endOffset
 
 /**
  * @author Hannah Schellekens
@@ -33,7 +33,7 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.commandsInFileSet()
+        val commands = file.commandsInFileSet(useIndexCache = false)
         val bibCmd = commands.find { it.containingFile == file && it.name == "\\bibliography" } ?: return descriptors
         if (commands.none { it.name == "\\bibliographystyle" }) {
             descriptors.add(

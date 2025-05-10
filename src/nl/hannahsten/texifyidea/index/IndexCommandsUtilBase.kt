@@ -17,9 +17,8 @@ abstract class IndexCommandsUtilBase(
     /**
      * Get all the commands that are in a given set of names (without slash).
      */
-    fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
-        // Using cache creates a lot of test errors
-        return getItems(project, scope, useCache = false).filter { runReadAction { it.name in names } }
+    fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<LatexCommands> {
+        return getItems(project, scope, useCache).filter { runReadAction { it.name in names } }
     }
 
     /**

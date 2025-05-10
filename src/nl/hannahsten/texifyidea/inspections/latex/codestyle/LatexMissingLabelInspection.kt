@@ -53,7 +53,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             requireLabel.filter { c -> c.type == LabelConventionType.COMMAND }.map { "\\" + it.name }.toMutableSet()
 
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
-        if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
+        if (file.findRootFile(useIndexCache = false).documentClass() == LatexDocumentClass.EXAM.name) {
             labeledCommands.remove("\\part")
         }
 
