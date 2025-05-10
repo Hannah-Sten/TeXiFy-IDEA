@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.isTestProject
 
 /**
  * @author Hannah Schellekens
@@ -17,9 +18,9 @@ abstract class IndexCommandsUtilBase(
     /**
      * Get all the commands that are in a given set of names (without slash).
      */
-    fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
-        // Using cache creates a lot of test errors
-        return getItems(project, scope, useCache = false).filter { runReadAction { it.name in names } }
+    fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<LatexCommands> {
+        val cache = if (project.isTestProject()) false else useCache
+        return getItems(project, scope, cache).filter { runReadAction { it.name in names } }
     }
 
     /**
