@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.isTestProject
 
 /**
  * @author Hannah Schellekens
@@ -122,7 +123,7 @@ abstract class IndexUtilBase<T : PsiElement>(
     fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
         // Cached values may have become invalid over time, so do a double check to be sure (#2976)
         val cachedValues = cache[project]?.get(scope)?.let { runReadAction { it.mapNotNull { pointer -> pointer.element }.filter(PsiElement::isValid) } }
-        if (useCache && cachedValues != null) {
+        if (useCache && cachedValues != null && !project.isTestProject()) {
             return cachedValues
         }
         val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope) } }
