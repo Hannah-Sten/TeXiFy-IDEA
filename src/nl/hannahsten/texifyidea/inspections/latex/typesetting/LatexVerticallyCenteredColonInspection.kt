@@ -35,7 +35,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
         // It is impossible to determine whether this option is actually set (think scoping, but this option can also be
         // turned of with \mathtoolsset{centercolon=false})
         // Thus, whenever someone fiddles with this, we turn off the inspection to prevent false positives.
-        file.commandsInFileSet().any { it.name == "\\mathtoolsset" && it.requiredParameter(0)?.contains("centercolon") == true }
+        file.commandsInFileSet(useIndexCache = false).any { it.name == "\\mathtoolsset" && it.requiredParameter(0)?.contains("centercolon") == true }
     }
 ) {
 

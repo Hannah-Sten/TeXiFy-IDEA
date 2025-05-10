@@ -12,9 +12,9 @@ class ReferencedFileSetServiceImpl : ReferencedFileSetService {
 
     private val cache = ReferencedFileSetCache()
 
-    override fun referencedFileSetOf(psiFile: PsiFile) = cache.fileSetFor(psiFile)
+    override fun referencedFileSetOf(psiFile: PsiFile, useIndexCache: Boolean) = cache.fileSetFor(psiFile, useIndexCache)
 
-    override fun rootFilesOf(psiFile: PsiFile): Set<PsiFile> = cache.rootFilesFor(psiFile)
+    override fun rootFilesOf(psiFile: PsiFile, useIndexCache: Boolean): Set<PsiFile> = cache.rootFilesFor(psiFile, useIndexCache)
 
     override fun dropCaches(file: VirtualFile) = cache.dropCaches(file)
 

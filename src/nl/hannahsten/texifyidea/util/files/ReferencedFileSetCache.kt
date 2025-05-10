@@ -62,13 +62,13 @@ class ReferencedFileSetCache {
      * When the cache is outdated, this will first update the cache.
      */
     @Synchronized
-    fun fileSetFor(file: PsiFile): Set<PsiFile> {
-        return getSetFromCache(file, Cache.fileSetCache)
+    fun fileSetFor(file: PsiFile, useIndexCache: Boolean = true): Set<PsiFile> {
+        return getSetFromCache(file, Cache.fileSetCache, useIndexCache)
     }
 
     @Synchronized
-    fun rootFilesFor(file: PsiFile): Set<PsiFile> {
-        return getSetFromCache(file, Cache.rootFilesCache)
+    fun rootFilesFor(file: PsiFile, useIndexCache: Boolean = true): Set<PsiFile> {
+        return getSetFromCache(file, Cache.rootFilesCache, useIndexCache)
     }
 
     /**
@@ -140,14 +140,14 @@ class ReferencedFileSetCache {
     /**
      * In a thread-safe way, get the value from the cache and if needed refresh the cache first.
      */
-    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>): Set<PsiFile> {
+    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>, useIndexCache: Boolean = true): Set<PsiFile> {
         if (file.virtualFile == null) {
             return setOf(file)
         }
 
         // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
         // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
-        val includes = LatexIncludesIndex.Util.getItems(file.project)
+        val includes = LatexIncludesIndex.Util.getItems(file.project, useCache = useIndexCache)
 
         // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
         if (includes.size != Cache.numberOfIncludes[file.project] && !Cache.isCacheFillInProgress.getAndSet(true)) {
