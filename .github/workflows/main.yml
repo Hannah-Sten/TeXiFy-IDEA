@@ -36,8 +36,7 @@ jobs:
           args: >
             --baseline,qodana.sarif.json,
             --source-directory,src
-#          cache-default-branch-only: true
-          use-caches: false
+          cache-default-branch-only: true
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
