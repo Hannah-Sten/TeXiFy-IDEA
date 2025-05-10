@@ -3,9 +3,6 @@ linter: jetbrains/qodana-jvm-community:latest
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
-# https://youtrack.jetbrains.com/issue/QD-10820/Qodana-reports-false-inspection-for-a-multi-module-Gradle-project#focus=Comments-27-11464136.0-0
-bootstrap: |
-  ./gradlew clean build
 exclude: # Some of these are valid inspections but not important or accurate enough to fail the build
   - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag
