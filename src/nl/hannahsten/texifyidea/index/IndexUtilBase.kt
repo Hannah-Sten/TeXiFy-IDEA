@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.isTestProject
 
 /**
  * @author Hannah Schellekens
@@ -44,10 +45,10 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param baseFile
      *          The file from which to look.
      */
-    fun getItemsInFileSet(baseFile: PsiFile): Collection<T> {
+    fun getItemsInFileSet(baseFile: PsiFile, useIndexCache: Boolean = true): Collection<T> {
         // Setup search set.
         val project = baseFile.project
-        val searchFiles = baseFile.referencedFileSet().asSequence()
+        val searchFiles = baseFile.referencedFileSet(useIndexCache).asSequence()
             .map { it.virtualFile }
             .toMutableSet()
         searchFiles.add(baseFile.virtualFile)
@@ -63,7 +64,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 
         // Search index.
         val scope = GlobalSearchScope.filesScope(project, searchFiles.filterNotNull())
-        return getItems(project, scope)
+        return getItems(project, scope, useIndexCache)
     }
 
     /**
@@ -96,9 +97,9 @@ abstract class IndexUtilBase<T : PsiElement>(
      *
      * NOTE: this does not preserve the order of the commands.
      */
-    fun getItems(file: PsiFile): Collection<T> {
+    fun getItems(file: PsiFile, useCache: Boolean = true): Collection<T> {
         return if (!file.project.isDisposed) {
-            getItems(file.project, GlobalSearchScope.fileScope(file))
+            getItems(file.project, GlobalSearchScope.fileScope(file), useCache)
         }
         else {
             emptySet()
@@ -108,7 +109,7 @@ abstract class IndexUtilBase<T : PsiElement>(
     /**
      * Get all the items in the index that are in the given project.
      */
-    fun getItems(project: Project) = getItems(project, GlobalSearchScope.projectScope(project))
+    fun getItems(project: Project, useCache: Boolean = true) = getItems(project, GlobalSearchScope.projectScope(project), useCache)
 
     /**
      * Get all the items in the index.
@@ -120,28 +121,30 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     @Deprecated("Use getItemsNonBlocking")
     fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
-        if (useCache) {
-            // Cached values may have become invalid over time, so do a double check to be sure (#2976)
-            cache[project]?.get(scope)?.let { return runReadAction { it.mapNotNull { pointer -> pointer.element }.filter(PsiElement::isValid) } }
+        // Cached values may have become invalid over time, so do a double check to be sure (#2976)
+        val cachedValues = cache[project]?.get(scope)?.let { runReadAction { it.mapNotNull { pointer -> pointer.element }.filter(PsiElement::isValid) } }
+        if (useCache && cachedValues != null && !project.isTestProject()) {
+            return cachedValues
         }
         val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope) } }
-        runReadAction { cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { it.createSmartPointer() } }
-        return result
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { runReadAction { it.createSmartPointer() } }
+        // Because the stub index may not always be reliable (#4006), include cached values
+        val cached = cachedValues ?: emptyList()
+        return (result + cached).toSet()
     }
 
+    // Same as getItems but runReadAction is replaced by smartReadAction(project)
     suspend fun getItemsNonBlocking(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
-        if (useCache) {
-            // Cached values may have become invalid over time, so do a double check to be sure (#2976)
-            cache[project]?.get(scope)?.let {
-                return smartReadAction(project) {
-                    it.mapNotNull { pointer -> pointer.element }
-                        .filter { it.isValid }
-                }
-            }
+        // Cached values may have become invalid over time, so do a double check to be sure (#2976)
+        val cachedValues = cache[project]?.get(scope)?.let { smartReadAction(project) { it.mapNotNull { pointer -> pointer.element }.filter(PsiElement::isValid) } }
+        if (useCache && cachedValues != null) {
+            return cachedValues
         }
         val result = smartReadAction(project) { getKeys(project) }.flatMap { smartReadAction(project) { getItemsByName(it, project, scope) } }
         cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { smartReadAction(project) { it.createSmartPointer() } }
-        return result
+        // Because the stub index may not always be reliable (#4006), include cached values
+        val cached = cachedValues ?: emptyList()
+        return (result + cached).toSet()
     }
 
     /**

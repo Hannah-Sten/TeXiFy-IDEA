@@ -39,7 +39,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Check if a bibliography is present.
-        val commands = file.commandsInFileSet()
+        val commands = file.commandsInFileSet(useIndexCache = false)
         commands.find { it.name == "\\bibliography" } ?: return descriptors
 
         if (commands.findAtLeast(2) { it.name == "\\bibliographystyle" }) {
@@ -75,7 +75,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
 
-            file.commandsInFileSet().asSequence()
+            file.commandsInFileSet(useIndexCache = false).asSequence()
                 .filter { it.name == "\\bibliographystyle" && it != command }
                 .forEach {
                     it.delete()

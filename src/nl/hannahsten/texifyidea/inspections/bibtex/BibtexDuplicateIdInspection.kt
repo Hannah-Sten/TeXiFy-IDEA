@@ -30,7 +30,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Contains all the \bibitem commands in the file set.
-        val bibitems = file.commandsInFileSet().asSequence().findLatexCommandsLabels(file.project)
+        val bibitems = file.commandsInFileSet(useIndexCache = false).asSequence().findLatexCommandsLabels(file.project)
             .filter { it.name == "\\bibitem" }
             .mapNotNull { it.requiredParameter(0) }
             .toSet()

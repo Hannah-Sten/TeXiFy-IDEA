@@ -122,8 +122,8 @@ fun VirtualFile.findTectonicTomlFile(): VirtualFile? {
  *
  * @return All the files that are cross referenced between each other.
  */
-fun PsiFile.referencedFileSet(): Set<PsiFile> {
-    return ReferencedFileSetService.getInstance().referencedFileSetOf(this)
+fun PsiFile.referencedFileSet(useIndexCache: Boolean = true): Set<PsiFile> {
+    return ReferencedFileSetService.getInstance().referencedFileSetOf(this, useIndexCache)
 }
 
 /**
@@ -134,7 +134,7 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet
 /**
  * @see [LatexCommandsIndex.Util.getItemsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.Util.getItemsInFileSet(this)
+fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
 
 /**
  * @see [LatexCommandsIndex.Util.getItemsAndFilesInFileSet]

@@ -20,9 +20,9 @@ interface ReferencedFileSetService {
     /**
      * [findReferencedFileSetWithoutCache], but then with cached values.
      */
-    fun referencedFileSetOf(psiFile: PsiFile): Set<PsiFile>
+    fun referencedFileSetOf(psiFile: PsiFile, useIndexCache: Boolean = true): Set<PsiFile>
 
-    fun rootFilesOf(psiFile: PsiFile): Set<PsiFile>
+    fun rootFilesOf(psiFile: PsiFile, useIndexCache: Boolean = true): Set<PsiFile>
 
     fun dropCaches(file: VirtualFile)
 

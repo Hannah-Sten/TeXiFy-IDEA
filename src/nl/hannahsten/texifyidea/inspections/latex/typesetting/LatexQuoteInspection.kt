@@ -67,7 +67,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
             "`" to "'",
             "``" to "''",
         )
-        val commands = file.commandsInFileSet()
+        val commands = file.commandsInFileSet(useIndexCache = false)
 
         // When Ligatures=TeXOff is set, straight quotes will be used. This setting can be applied in certain fontspec commands
         val fontspecCommands = LatexGenericRegularCommand.entries.filter { it.dependency == LatexPackage.FONTSPEC }.map { it.cmd }
