@@ -95,7 +95,7 @@ class InputFileReference(
      *              (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve
      *              (if requested by the user).
      */
-    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false, checkImportPath: Boolean = true, checkAddToLuatexPath: Boolean = true): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set,
         // because this function is used to find the file set so that would cause an infinite loop
 
@@ -196,7 +196,7 @@ class InputFileReference(
                 .firstNotNullOfOrNull { findFileByPath(it) }
         }
 
-        if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
+        if (targetFile == null && checkImportPath) targetFile = searchFileByImportPaths(element)?.virtualFile
 
         // \externaldocument uses the .aux file in the output directory, we are only interested in the source file, but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
         // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are
@@ -205,7 +205,7 @@ class InputFileReference(
         }
 
         // addtoluatexpath package
-        if (targetFile == null) {
+        if (targetFile == null && checkAddToLuatexPath) {
             for (path in addToLuatexPathSearchDirectories(element.project)) {
                 targetFile = path.findFile(processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
