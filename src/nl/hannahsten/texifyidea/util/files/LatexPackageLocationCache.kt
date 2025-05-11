@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache.Cache
 import nl.hannahsten.texifyidea.util.runCommandNonBlocking
 import java.io.File
 
@@ -30,7 +29,7 @@ object LatexPackageLocationCache {
      * Note: this can take a long time.
      */
     suspend fun fillCacheWithKpsewhich(project: Project) {
-        if (Cache.isCacheFillInProgress.getAndSet(true)) return
+        if (isCacheFillInProgress.getAndSet(true)) return
 
         try {
             // We will get all search paths that kpsewhich has, expand them and find all files
