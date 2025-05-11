@@ -22,7 +22,14 @@ import nl.hannahsten.texifyidea.util.runCommand
 class LatexProjectSdkSetupValidator : ProjectSdkSetupValidator {
 
     object Cache {
-        val isPdflatexInPath by lazy { runCommand("pdflatex", "--version", timeout = 10)?.contains("pdfTeX") == true }
+        val isPdflatexInPath by lazy {
+            for (retry in 0..5) {
+                runCommand("pdflatex", "--version", timeout = 10)?.let {
+                    return@lazy it.contains("pdfTeX")
+                }
+            }
+            false
+        }
     }
 
     override fun isApplicableFor(project: Project, file: VirtualFile): Boolean {

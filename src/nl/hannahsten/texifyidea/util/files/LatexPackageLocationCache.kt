@@ -1,11 +1,13 @@
 package nl.hannahsten.texifyidea.util.files
 
+import arrow.atomic.AtomicBoolean
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache.Cache
 import nl.hannahsten.texifyidea.util.runCommandNonBlocking
 import java.io.File
 
@@ -19,26 +21,43 @@ object LatexPackageLocationCache {
     /** Map filename with extension to full path. */
     private var cache: MutableMap<String, String?>? = null
 
+    private var isCacheFillInProgress = AtomicBoolean(false)
+
+    private var retries = 0
+
     /**
      * Fill cache with all paths of all files in the LaTeX installation.
      * Note: this can take a long time.
      */
     suspend fun fillCacheWithKpsewhich(project: Project) {
-        // We will get all search paths that kpsewhich has, expand them and find all files
-        // Source: https://www.tug.org/texinfohtml/kpathsea.html#Casefolding-search
-        // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.
-        // We cannot rely on ls-R databases because they are not always populated, and running mktexlsr may run into permission issues.
-        val executableName = LatexSdkUtil.getExecutableName("kpsewhich", project)
-        val searchPaths = (runCommandNonBlocking(executableName, "-show-path=tex").standardOutput ?: ".") + File.pathSeparator + (runCommandNonBlocking(executableName, "-show-path=bib").standardOutput ?: ".")
+        if (Cache.isCacheFillInProgress.getAndSet(true)) return
 
-        cache = runCommandNonBlocking(executableName, "-expand-path", searchPaths, timeout = 10).standardOutput?.split(File.pathSeparator)
-            ?.flatMap { LocalFileSystem.getInstance().findFileByPath(it)?.children?.toList() ?: emptyList() }
-            ?.filter { !it.isDirectory }
-            ?.toSet()
-            ?.associate { it.name to it.path }
-            ?.toMutableMap() ?: mutableMapOf()
+        try {
+            // We will get all search paths that kpsewhich has, expand them and find all files
+            // Source: https://www.tug.org/texinfohtml/kpathsea.html#Casefolding-search
+            // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.
+            // We cannot rely on ls-R databases because they are not always populated, and running mktexlsr may run into permission issues.
+            val executableName = LatexSdkUtil.getExecutableName("kpsewhich", project)
+            val texPaths = runCommandNonBlocking(executableName, "-show-path=tex", timeout = 10).standardOutput
+            // I think this should always return something, so if it doesn't we assume something went wrong and we need to try again later
+            if (texPaths.isNullOrBlank() && retries < 5) {
+                retries += 1
+                return
+            }
+            val searchPaths = texPaths + File.pathSeparator + (runCommandNonBlocking(executableName, "-show-path=bib").standardOutput ?: ".")
 
-        Log.debug("Latex package location cache generated with ${cache?.size} paths")
+            cache = runCommandNonBlocking(executableName, "-expand-path", searchPaths, timeout = 10).standardOutput?.split(File.pathSeparator)
+                ?.flatMap { LocalFileSystem.getInstance().findFileByPath(it)?.children?.toList() ?: emptyList() }
+                ?.filter { !it.isDirectory }
+                ?.toSet()
+                ?.associate { it.name to it.path }
+                ?.toMutableMap() ?: mutableMapOf()
+
+            Log.debug("Latex package location cache generated with ${cache?.size} paths")
+        }
+        finally {
+            isCacheFillInProgress.set(false)
+        }
     }
 
     /**
