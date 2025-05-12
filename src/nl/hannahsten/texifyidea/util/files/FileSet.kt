@@ -49,7 +49,7 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     return roots
         .associateWith { root ->
             // Map root to all directly referenced files.
-            reporter?.sizedStep((1000 / roots.size).toInt()) {
+            reporter?.sizedStep((1000 / roots.size)) {
                 root.referencedFiles(root.virtualFile) + root
             } ?: (root.referencedFiles(root.virtualFile) + root)
         }
@@ -110,7 +110,7 @@ fun VirtualFile.findTectonicTomlFile(): VirtualFile? {
             break
         }
 
-        parent?.findFile("Tectonic.toml")?.let { return it }
+        parent.findFile("Tectonic.toml")?.let { return it }
     }
     return null
 }
@@ -174,7 +174,7 @@ fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
             basePath.allChildDirectories()
         }
         else if (it.endsWith("/*")) {
-            basePath.children.filter { it.isDirectory }
+            basePath.children.filter { child -> child.isDirectory }
         }
         else {
             listOf(basePath)
