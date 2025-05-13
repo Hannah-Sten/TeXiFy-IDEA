@@ -60,7 +60,14 @@ object EvinceInverseSearchListener {
         currentCoroutineScope.launch {
             // Delay execution and hope everything is ready (#3995)
             delay(1000)
-            startListening()
+            try {
+                startListening()
+            }
+            catch (e: Exception) {
+                // See e.g. #3955, #4030, let's try again
+                sessionConnection?.register()
+                startListening()
+            }
         }
     }
 
