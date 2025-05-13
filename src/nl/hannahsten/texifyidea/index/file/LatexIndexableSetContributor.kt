@@ -83,12 +83,12 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                 val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(commandNames, project, GlobalSearchScope.projectScope(project))
                     // We can't add single files, so take the parent
                     .mapNotNull {
-                        val path = runReadAction { it.requiredParameter(0) } ?: return@mapNotNull null
+                        val path = runReadAction { if (!it.isValid) null else it.requiredParameter(0) } ?: return@mapNotNull null
                         val file = if (File(path).isAbsolute) {
                             LocalFileSystem.getInstance().findFileByPath(path)
                         }
                         else {
-                            runReadAction { it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
+                            runReadAction { if (!it.isValid) null else it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
                         }
                         runReadAction { file?.parent }
                     }

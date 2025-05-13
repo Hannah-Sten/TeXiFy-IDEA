@@ -126,8 +126,8 @@ abstract class IndexUtilBase<T : PsiElement>(
         if (useCache && cachedValues != null && !project.isTestProject()) {
             return cachedValues
         }
-        val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope) } }
-        cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { runReadAction { it.createSmartPointer() } }
+        val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { runReadAction { if (!it.isValid) null else it.createSmartPointer() } }
         // Because the stub index may not always be reliable (#4006), include cached values
         val cached = cachedValues ?: emptyList()
         return (result + cached).toSet()
@@ -140,8 +140,8 @@ abstract class IndexUtilBase<T : PsiElement>(
         if (useCache && cachedValues != null) {
             return cachedValues
         }
-        val result = smartReadAction(project) { getKeys(project) }.flatMap { smartReadAction(project) { getItemsByName(it, project, scope) } }
-        cache.getOrPut(project) { mutableMapOf() }[scope] = result.map { smartReadAction(project) { it.createSmartPointer() } }
+        val result = smartReadAction(project) { getKeys(project) }.flatMap { smartReadAction(project) { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { smartReadAction(project) { if (!it.isValid) null else it.createSmartPointer() } }
         // Because the stub index may not always be reliable (#4006), include cached values
         val cached = cachedValues ?: emptyList()
         return (result + cached).toSet()

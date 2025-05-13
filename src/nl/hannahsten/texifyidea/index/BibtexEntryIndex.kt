@@ -7,8 +7,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
+import com.intellij.psi.stubs.StubTextInconsistencyException
 import com.intellij.util.ArrayUtil
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 /**
@@ -59,7 +61,14 @@ class BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
     }
 
     fun getEntryByName(name: String, project: Project, scope: GlobalSearchScope): Collection<BibtexEntry> {
-        return StubIndex.getElements(key, name, project, scope, BibtexEntry::class.java)
+        return try {
+            StubIndex.getElements(key, name, project, scope, BibtexEntry::class.java)
+        }
+        catch (e: StubTextInconsistencyException) {
+            // #4008
+            Log.warn(e.toString())
+            emptyList()
+        }
     }
 
     private fun getKeys(project: Project): Array<String> {
