@@ -119,7 +119,7 @@ internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile, isImportPack
 @Suppress("RedundantSuspendModifier", "RedundantSuppression")
 internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean) {
     LatexIncludesIndex.Util.getItemsNonBlocking(project, fileSearchScope).forEach command@{ command ->
-        smartReadAction(project) { command.references }.filterIsInstance<InputFileReference>()
+        smartReadAction(project) { if (!command.isValid) arrayOf() else command.references }.filterIsInstance<InputFileReference>()
             .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true, checkImportPath = isImportPackageUsed, checkAddToLuatexPath = usesLuatexPaths) } }
             .forEach {
                 // Do not re-add all referenced files if we already did that
