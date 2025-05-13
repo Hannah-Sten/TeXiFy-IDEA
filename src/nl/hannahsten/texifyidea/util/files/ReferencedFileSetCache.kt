@@ -116,21 +116,23 @@ class ReferencedFileSetCache {
         }
 
         for (fileset in filesets.values) {
+            val validFiles = fileset.mapNotNull {
+                smartReadAction(requestedFile.project) {
+                    if (it.isValid) it.createSmartPointer() else null
+                }
+            }.toSet()
             for (file in fileset) {
-                newFileSetCache[file.virtualFile.path] = fileset.mapNotNull {
-                    smartReadAction(requestedFile.project) {
-                        if (it.isValid) it.createSmartPointer() else null
-                    }
-                }.toSet()
+                newFileSetCache[file.virtualFile.path] = validFiles
             }
 
             val rootFiles = requestedFile.findRootFilesWithoutCache(fileset)
+            val validRootFiles = rootFiles.mapNotNull {
+                smartReadAction(requestedFile.project) {
+                    if (it.isValid) it.createSmartPointer() else null
+                }
+            }.toSet()
             for (file in fileset) {
-                newRootFilesCache[file.virtualFile.path] = rootFiles.mapNotNull {
-                    smartReadAction(requestedFile.project) {
-                        if (it.isValid) it.createSmartPointer() else null
-                    }
-                }.toSet()
+                newRootFilesCache[file.virtualFile.path] = validRootFiles
             }
         }
 

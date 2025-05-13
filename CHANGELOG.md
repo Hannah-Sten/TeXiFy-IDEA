@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Improve performance of file set cache refresh
 * Always create output directory if it does not exist
 * Remove action to delete all generated files
 * Add support for reference resolving and autocompletion for the acronym package

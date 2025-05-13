@@ -87,18 +87,17 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         val requiredParameters = getRequiredParameters(this)
         val firstParam = requiredParameters.getOrNull(0)
 
-        val references = mutableListOf<PsiReference>()
-
         // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
         if (this.project.getLabelReferenceCommands().contains(this.commandToken.text) && firstParam != null) {
-            references.addAll(extractLabelReferences(this, requiredParameters))
+            // To improve performance, don't continue with other reference types
+            extractLabelReferences(this, requiredParameters).let { if (it.isNotEmpty()) return it.toTypedArray() }
         }
 
         // If it is a reference to a file
-        references.addAll(this.getFileArgumentsReferences())
+        this.getFileArgumentsReferences().let { if (it.isNotEmpty()) return it.toTypedArray() }
 
         if (CommandMagic.urls.contains(this.getName()) && firstParam != null) {
-            references.addAll(this.extractUrlReferences(firstParam))
+            this.extractUrlReferences(firstParam).let { if (it.isNotEmpty()) return it }
         }
 
         // Else, we assume the command itself is important instead of its parameters,
@@ -106,10 +105,10 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         val definitionReference = CommandDefinitionReference(this)
         // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
         if (definitionReference.multiResolve(false).isNotEmpty()) {
-            references.add(definitionReference)
+            return arrayOf(definitionReference)
         }
 
-        return references.toTypedArray()
+        return arrayOf()
     }
 
     /**

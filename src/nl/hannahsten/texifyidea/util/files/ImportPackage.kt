@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -21,19 +22,7 @@ import kotlin.math.min
  */
 fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
     // Check if import commands are used (do this now, to only search for import paths when needed)
-    val allRelativeImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
-        CommandMagic.relativeImportCommands,
-        command.project,
-        GlobalSearchScope.projectScope(command.project)
-    )
-    val allAbsoluteImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
-        CommandMagic.absoluteImportCommands,
-        command.project,
-        GlobalSearchScope.projectScope(command.project)
-    )
-    if (allAbsoluteImportCommands.isEmpty() && allRelativeImportCommands.isEmpty()) {
-        return null
-    }
+    if (isImportPackageUsed(command.project)) return null
 
     // Use references to get filenames, take care not to resolve the references because this method is called during resolving them so that would be a loop. This line will take a very long time for large projects, as it has to do a lot of recursive navigation in the psi tree in order to get the text required for building the reference keys.
     val references = command.references.filterIsInstance<InputFileReference>()
@@ -50,6 +39,20 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
     }
 
     return null
+}
+
+fun isImportPackageUsed(project: Project): Boolean {
+    val allRelativeImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
+        CommandMagic.relativeImportCommands,
+        project,
+        GlobalSearchScope.projectScope(project)
+    )
+    val allAbsoluteImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
+        CommandMagic.absoluteImportCommands,
+        project,
+        GlobalSearchScope.projectScope(project)
+    )
+    return allAbsoluteImportCommands.isNotEmpty() || allRelativeImportCommands.isNotEmpty()
 }
 
 /**

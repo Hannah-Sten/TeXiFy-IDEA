@@ -109,23 +109,23 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  */
 // Suppress for Qodana only
 @Suppress("RedundantSuspendModifier", "RedundantSuppression")
-internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
+internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean): Set<PsiFile> {
     // Using a single set avoids infinite loops
     val result = mutableSetOf<PsiFile>()
-    referencedFiles(result, rootFile)
+    referencedFiles(result, rootFile, isImportPackageUsed, usesLuatexPaths)
     return result
 }
 
 @Suppress("RedundantSuspendModifier", "RedundantSuppression")
-internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
+internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean) {
     LatexIncludesIndex.Util.getItemsNonBlocking(project, fileSearchScope).forEach command@{ command ->
         smartReadAction(project) { command.references }.filterIsInstance<InputFileReference>()
-            .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true) } }
+            .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true, checkImportPath = isImportPackageUsed, checkAddToLuatexPath = usesLuatexPaths) } }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
                 files.add(it)
-                it.referencedFiles(files, rootFile)
+                it.referencedFiles(files, rootFile, isImportPackageUsed, usesLuatexPaths)
             }
     }
 }
