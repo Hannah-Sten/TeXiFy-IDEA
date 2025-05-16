@@ -15,6 +15,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -104,7 +105,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
 
-        @Suppress("UnstableApiUsage")
         val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
             ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
                 mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
@@ -118,7 +118,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withEnvironment(envVariables)
-        val handler = KillableProcessHandler(commandLine)
+        val handler = runWithModalProgressBlocking(environment.project, "Creating command line process...") {
+            KillableProcessHandler(commandLine)
+        }
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
@@ -137,10 +139,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runReadAction { runConfig.generateBibRunConfig() }
 
             runConfig.bibRunConfigs.forEach {
-                val bibSettings = it
-
                 // Pass necessary latex run configurations settings to the bibtex run configuration.
-                (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
+                (it.configuration as? BibtexRunConfiguration)?.apply {
                     // Check if the aux, out, or src folder should be used as bib working dir.
                     // This involves a synchronous refreshAndFindFileByPath, and hence cannot be done in a read action
                     this.bibWorkingDir = runConfig.getAuxilDirectory()

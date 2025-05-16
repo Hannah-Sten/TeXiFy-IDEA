@@ -36,6 +36,11 @@ class LatexTextExtractor : TextExtractor() {
         // However, we do need it as a root because we need to filter out certain things like inline math ourselves, so that we can make sure all the whitespace around ignored items is correct.
         val domain = TextContent.TextDomain.PLAIN_TEXT
 
+        // #4044
+        if (root.textLength > root.containingFile.textLength) {
+            return null
+        }
+
         val textContent = TextContent.builder().build(root, domain) ?: return null
         val stealthyRanges = getStealthyRanges(root)
             // Convert IntRange (inclusive end) to TextRange (exclusive end)

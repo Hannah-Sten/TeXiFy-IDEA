@@ -170,6 +170,15 @@ abstract class IndexUtilBase<T : PsiElement>(
             }
             Log.warn(e.toString())
         }
+        catch (e: Throwable) {
+            if ("TextMateFileType" in e.toString()) {
+                // If users had a LaTeX TextMate bundle before installing TeXiFy, the index may be confused. We can ignore this because the next valid indexing action will fix this, see #4035
+                Log.warn(e.toString())
+            }
+            else {
+                throw e
+            }
+        }
         return emptySet()
     }
 
