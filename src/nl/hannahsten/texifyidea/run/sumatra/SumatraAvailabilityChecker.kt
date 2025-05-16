@@ -85,8 +85,9 @@ object SumatraAvailabilityChecker {
         // Try if Sumatra is in PATH
         val guessedPaths = listOf(
             null,
-            "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}AppData\\Local\\SumatraPDF",
+            "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}\\AppData\\Local\\SumatraPDF",
             "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF",
+            "C:\\Program Files\\SumatraPDF",
         )
         for (path in guessedPaths) {
             if (isSumatraPathAvailable(sumatraCustomPath = path, assignNewAvailability = true).first) {

@@ -48,6 +48,13 @@ You can also do the reverse of the forward search lookup.
 To configure this, the first time you have to press <ui-path>Tools | LaTeX | SumatraPDF | Configure Inverse Search</ui-path>, this will update a setting in SumatraPDF.
 You also have to do this every time after you update IntelliJ.
 
+Make sure the installation directory of SumatraPDF is added to your PATH, and that you rebooted after adding it.
+If it still does not work, you can run the following command in the directory containing SumatraPDF, replacing the path to your IntelliJ installation:
+
+```
+cmd.exe /C start SumatraPDF -inverse-search "\"C:\path\to\idea\bin\idea64.exe\" --line %l \"%f\""
+```
+
 Now you can double left-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ.
 
 ### Portable SumatraPDF
