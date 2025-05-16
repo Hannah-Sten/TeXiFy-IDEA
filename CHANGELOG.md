@@ -8,6 +8,7 @@
 
 ### Fixed
 
+* Fix exceptions #4035, #4044
 * Create run configuration process in background
 
 ## [0.10.3] - 2025-05-16
