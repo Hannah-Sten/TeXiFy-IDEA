@@ -31,6 +31,11 @@ For any performance issue: if you do not have a favourite profiler yet, you can 
 * Take a Snapshot to view and save results. Note that you may have to click a few more levels open to see the actual methods.
 * Now you can zip the nps file and upload it here on GitHub.
 
+## Using TeXiFy with JetBrains Gateway
+
+If you use Gateway, make sure to install TeXiFy _only_ on the host, not on the client.
+If you install the plugin in both, the IntelliJ UI may not work as expected.
+
 ## I don't see any syntax highlighting
 
 If you have the TeXiFy plugin installed but still don't see any syntax highlighting, you may accidentally have reassigned the `.tex` file type to plain text.
