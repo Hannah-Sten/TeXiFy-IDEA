@@ -8,6 +8,8 @@
 
 ### Fixed
 
+* Create run configuration process in background
+
 ## [0.10.3] - 2025-05-16
 
 Welcome to TeXiFy IDEA 0.10.3! This release has again a lot of performance improvements, and fixes a critical issue if you have many source roots in your LaTeX module.
