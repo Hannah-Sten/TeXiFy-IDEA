@@ -4,6 +4,8 @@
 
 ### Added
 
+* Support user defined commands when checking for text arguments for Grazie
+
 ### Fixed
 
 ## [0.10.3] - 2025-05-16

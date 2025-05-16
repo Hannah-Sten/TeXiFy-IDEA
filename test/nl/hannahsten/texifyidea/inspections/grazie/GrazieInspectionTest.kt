@@ -191,6 +191,21 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testCustomCommand() {
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.DT_JJ_NO_NOUN", "LanguageTool.EN.DT_JJ_NO_NOUN [1]", "LanguageTool.EN.DT_JJ_NO_NOUN [2]", "LanguageTool.EN.MISSING_NOUN [1]", "LanguageTool.EN.MISSING_NOUN")) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \documentclass[11pt]{article}
+                \newcommand{\TIdVar}{\texttt{ThingIdVars}}
+                \begin{document}
+                    I need to get this for the \TIdVar{} to fix something.
+                \end{document} 
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     /*
      * Grazie Pro
      *

@@ -4,18 +4,18 @@ import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
 import com.intellij.lang.tree.util.children
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.merge
-import nl.hannahsten.texifyidea.util.overlaps
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.parser.*
-import nl.hannahsten.texifyidea.util.substringOrNull
-import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
  * Explains to Grazie which psi elements contain text and which don't.
@@ -55,7 +55,7 @@ class LatexTextExtractor : TextExtractor() {
         val rootText = root.text
 
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
-        val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>() + root.childrenOfType<PsiWhiteSpace>())
+        val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>() + root.childrenOfType<PsiWhiteSpace>() + root.childrenOfType<LatexCommands>())
             .asSequence()
             .filter { !it.inMathContext() && it.isNotInSquareBrackets() }
             // Ordering is relevant for whitespace
@@ -64,13 +64,13 @@ class LatexTextExtractor : TextExtractor() {
             .filter { text -> text !is PsiWhiteSpace || text.text.contains("\n") }
             // Skip arguments of non-text commands, but keep arguments of unknown commands, in particular if they are in the middle of a sentence
             // Even commands which have no text as argument, for example certain reference commands like autoref, may need to be kept in to get correct punctuation
-            .filterNot { text ->
-                LatexCommand.lookup(text.firstParentOfType(LatexCommands::class)?.name)
-                    ?.firstOrNull()
-                    ?.arguments
-                    ?.filter { it is RequiredArgument }
-                    // Do not keep if it is not text
-                    ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
+            .filter { text ->
+                if (text is LatexCommands) {
+                    isUserDefinedTextCommand(text.name ?: return@filter false, text.project)
+                }
+                else {
+                    !hasNonTextArgument(text.firstParentOfType(LatexCommands::class)?.name ?: return@filter true, text.project)
+                }
             }
             // Environment names are never part of a sentence
             .filterNot { text -> text.firstParentOfType<LatexBeginCommand>() != null || text.firstParentOfType<LatexEndCommand>() != null }
@@ -122,6 +122,28 @@ class LatexTextExtractor : TextExtractor() {
             ranges.add(indent.merge(overlapped))
         }
         return ranges.sortedBy { it.first }
+    }
+
+    /**
+     * Keep the command if the command will probably be replaced by some text in the typeset document, e.g. \texttt{arg} should read just "arg" to Grazie
+     */
+    private fun hasNonTextArgument(commandName: String, project: Project): Boolean {
+        return LatexCommand.lookup(commandName)
+            ?.firstOrNull()
+            ?.arguments
+            ?.filter { it is RequiredArgument }
+            // Do not keep if it is not text
+            ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
+    }
+
+    /**
+     * Maybe it is a user defined command which contains text.
+     * Special case: if the command does not have parameters but the definition contains a text command, we assume the command itself will fit into the sentence (as we can't do a text replacement before sending to Grazie).
+     */
+    private fun isUserDefinedTextCommand(commandName: String, project: Project): Boolean {
+        // todo cache
+        val allTextCommands = LatexRegularCommand.ALL.filter { command -> command.arguments.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } }.map { it.commandWithSlash }.toSet()
+        return LatexDefinitionIndex.Util.getItems(project).filter { it.definedCommandName() == commandName }.any { it.text.containsAny(allTextCommands) }
     }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }
