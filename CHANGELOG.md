@@ -4,6 +4,7 @@
 
 ### Added
 
+* Update wsl command to use wsl --exec
 * Support user defined commands when checking for text arguments for Grazie
 
 ### Fixed
