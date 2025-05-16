@@ -10,6 +10,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 
 /**
  * @author Sten Wessel
@@ -36,7 +37,7 @@ open class BibtexCommandLineState(
 
             wslCommand += " ${runConfig.bibWorkingDir?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())}"
 
-            mutableListOf("bash", "-ic", wslCommand)
+            mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
         }
         else {
             compilerCommand

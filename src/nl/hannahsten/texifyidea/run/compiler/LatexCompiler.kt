@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
@@ -349,7 +350,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             wslCommand += " ${mainFile.path.toWslPathIfNeeded(runConfig.getLatexDistributionType())}"
 
-            return mutableListOf("bash", "-ic", wslCommand)
+            return mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
         }
 
         if (runConfig.getLatexDistributionType().isDocker()) {

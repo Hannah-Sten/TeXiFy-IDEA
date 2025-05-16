@@ -19,6 +19,8 @@ class SystemEnvironment {
 
     companion object {
 
+        val wslCommand = arrayOf("wsl", "--exec", "bash", "-ic")
+
         val inkscapeMajorVersion: Int by lazy {
             "inkscape --version".runCommand()
                 ?.split(" ")?.getOrNull(1)
