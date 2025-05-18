@@ -9,6 +9,7 @@
 
 ### Fixed
 
+* Fix extra whitespace when inserting commands in math mode, by @Ezrnest
 * Fix exceptions #4035, #4044
 * Create run configuration process in background
 
