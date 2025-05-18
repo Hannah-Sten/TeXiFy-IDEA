@@ -96,7 +96,6 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
             .startTemplate(context.editor, parameterTemplate)
     }
 
-
     companion object {
         /**
          * Remove whitespaces and everything after that that was inserted by the lookup text.
@@ -112,7 +111,6 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
             document.deleteString(context.startOffset + indexFirstSpace, offset)
         }
     }
-
 
     /**
      * Makes sure environments get imported if required.
