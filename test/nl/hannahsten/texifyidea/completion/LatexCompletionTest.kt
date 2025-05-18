@@ -1,9 +1,15 @@
 package nl.hannahsten.texifyidea.completion
 
+import com.intellij.codeInsight.completion.CompletionInitializationContext
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.codeInsight.completion.InsertionContext
+import com.intellij.codeInsight.completion.OffsetMap
+import com.intellij.psi.util.endOffset
+import com.intellij.psi.util.startOffset
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import org.junit.Test
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.runWriteCommandAction
 
 class LatexCompletionTest : BasePlatformTestCase() {
 
@@ -12,7 +18,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
         super.setUp()
     }
 
-    @Test
     fun testCompleteLatexReferences() {
         // given
         myFixture.configureByText(LatexFileType, """\ap<caret>""")
@@ -24,7 +29,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
         assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString.startsWith("appendix") })
     }
 
-    @Test
     fun testCompleteCustomCommandReferences() {
         // given
         myFixture.configureByText(
@@ -68,6 +72,28 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         assertTrue(result.any { it.lookupString.startsWith("textbf") })
+    }
+
+    fun testCompletionInMathMode() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \[ \sqrt<caret> \]
+            """.trimIndent()
+        )
+
+        val result = myFixture.complete(CompletionType.BASIC)
+        val offsetMap = OffsetMap(myFixture.file.document())
+        offsetMap.addOffset(CompletionInitializationContext.START_OFFSET, myFixture.editor.caretModel.offset)
+        runWriteCommandAction(myFixture.project) {
+            // Replace element at caret
+            val element = myFixture.file.findElementAt(myFixture.editor.caretModel.offset - 1)!!
+            val lookupElement = result.first { it.lookupString == "sqrt " }
+            myFixture.editor.document.replaceString(element.startOffset, element.endOffset, "\\" + lookupElement.lookupString)
+            lookupElement.handleInsert(InsertionContext(offsetMap, "\n".toCharArray().first(), result, myFixture.file, myFixture.editor, false))
+        }
+
+        myFixture.checkResult("""\[ \sqrt{<caret>} \]""")
     }
 
     // fun testCustomCommandAliasCompletion() {
