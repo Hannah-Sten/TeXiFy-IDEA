@@ -31,7 +31,6 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
-import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
@@ -291,7 +290,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Sumatra does not support DVI
         else if (((runConfig.pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable)) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
             // Open Sumatra after compilation & execute inverse search.
-            handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
+//            handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
+            ViewerForwardSearch(InternalPdfViewer.SUMATRA).execute(handler, runConfig, environment, focusAllowed)
         }
         else if (runConfig.pdfViewer is ExternalPdfViewer ||
             runConfig.pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)
