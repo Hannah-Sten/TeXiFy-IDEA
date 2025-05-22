@@ -23,11 +23,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
-        when (viewer) {
-            is ExternalPdfViewer -> (viewer as ExternalPdfViewer).forwardSearch(null, file.path, line, project, focusAllowed = true)
-            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(null, file.path, line, project, focusAllowed = true)
-            else -> return
-        }
+        viewer?.forwardSearch(null, file.path, line, project, focusAllowed = true)
     }
 
     override fun update(e: AnActionEvent) {

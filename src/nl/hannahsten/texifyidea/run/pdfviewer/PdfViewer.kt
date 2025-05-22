@@ -20,14 +20,14 @@ interface PdfViewer {
     val displayName: String?
 
     fun isAvailable(): Boolean
+
+    fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 }
 
 /**
  * Define behaviour that external pdf viewers should inherit.
  */
 interface ExternalPdfViewer : PdfViewer {
-
-    fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 }
 
 /**

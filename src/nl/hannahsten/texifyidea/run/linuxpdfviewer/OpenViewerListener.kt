@@ -29,11 +29,13 @@ class OpenViewerListener(
         if (event.exitCode == 0) {
             runAsync {
                 try {
-                    when (viewer) {
-                        is InternalPdfViewer -> viewer.conversation?.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-                        is ExternalPdfViewer -> viewer.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-                        else -> {}
-                    }
+                    viewer.forwardSearch(
+                        pdfPath = runConfig.outputFilePath,
+                        sourceFilePath = sourceFilePath,
+                        line = line,
+                        project = project,
+                        focusAllowed = focusAllowed
+                    )
                     // Set this viewer as viewer to forward search to in the future.
                     (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
                 }

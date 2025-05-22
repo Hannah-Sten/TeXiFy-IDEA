@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.linuxpdfviewer
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
@@ -18,9 +19,9 @@ import nl.hannahsten.texifyidea.util.runCommand
  * @param conversation The conversation class needed/used to talk to this viewer.
  */
 enum class InternalPdfViewer(
-    private val viewerCommand: String,
     override val displayName: String,
-    val conversation: ViewerConversation?
+    private val viewerCommand: String,
+    private val conversation: ViewerConversation?
 ) : PdfViewer {
 
     EVINCE("evince", "Evince", EvinceConversation),
@@ -59,6 +60,10 @@ enum class InternalPdfViewer(
     }
 
     override fun toString(): String = displayName
+
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        conversation?.forwardSearch(pdfPath, sourceFilePath, line, project, focusAllowed)
+    }
 
     companion object {
 
