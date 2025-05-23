@@ -22,13 +22,14 @@ interface PdfViewer {
     fun isAvailable(): Boolean
 
     fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
+
+    fun openFile(pdfFilePath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false)
 }
 
 /**
  * Define behaviour that external pdf viewers should inherit.
  */
-interface ExternalPdfViewer : PdfViewer {
-}
+interface ExternalPdfViewer : PdfViewer
 
 /**
  * Define functions that handle all external pdf viewers one by one.
