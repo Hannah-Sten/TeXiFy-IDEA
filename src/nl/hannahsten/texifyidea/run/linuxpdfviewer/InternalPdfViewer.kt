@@ -65,10 +65,10 @@ enum class InternalPdfViewer(
         conversation?.forwardSearch(pdfPath, sourceFilePath, line, project, focusAllowed)
     }
 
-    override fun openFile(pdfFilePath: String, project: Project, newWindow: Boolean, focus: Boolean, forceRefresh: Boolean) {
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focus: Boolean, forceRefresh: Boolean) {
         when (this) {
-            SUMATRA -> SumatraConversation.openFile(pdfFilePath, newWindow, focus, forceRefresh)
-            EVINCE -> EvinceConversation.openFile(pdfFilePath, project)
+            SUMATRA -> SumatraConversation.openFile(pdfPath, newWindow, focus, forceRefresh)
+            EVINCE -> EvinceConversation.openFile(pdfPath, project)
             else -> return // No other viewer has this functionality yet.
         }
     }
