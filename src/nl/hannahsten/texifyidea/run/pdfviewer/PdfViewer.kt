@@ -27,8 +27,7 @@ interface PdfViewer {
 /**
  * Define behaviour that external pdf viewers should inherit.
  */
-interface ExternalPdfViewer : PdfViewer {
-}
+interface ExternalPdfViewer : PdfViewer
 
 /**
  * Define functions that handle all external pdf viewers one by one.

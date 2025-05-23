@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.action
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -37,9 +35,9 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = (
-                e.project?.selectedRunConfig()?.pdfViewer == viewer
-                        || (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.pdfViewer == viewer)
-                ) && e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
+            e.project?.selectedRunConfig()?.pdfViewer == viewer
+                || (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.pdfViewer == viewer)
+            ) && e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
