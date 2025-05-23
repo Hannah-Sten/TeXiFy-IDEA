@@ -295,9 +295,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (pdfViewer is ExternalPdfViewer
             || pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)
             || (
-                    pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable
-                            && runConfig.outputFormat == LatexCompiler.Format.PDF
-                    ) // Sumatra does not support DVI
+                pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable
+                    && runConfig.outputFormat == LatexCompiler.Format.PDF
+                ) // Sumatra does not support DVI
         ) {
             scheduleForwardSearchAfterCompile(pdfViewer!!, handler, runConfig, environment, focusAllowed)
         }
@@ -329,7 +329,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Get the currently open file to use for forward search.
         val currentPsiFile = editor?.document?.psiFile(environment.project)
-        // Get the main file from the run configuration as a fallback.
+            // Get the main file from the run configuration as a fallback.
             ?: runConfig.mainFile?.psiFile(environment.project)
             ?: return
 
