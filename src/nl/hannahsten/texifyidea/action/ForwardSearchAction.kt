@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.action
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -24,11 +26,10 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
             viewer?.forwardSearch(null, file.path, line, project, focusAllowed = true)
         }
         catch (e: Exception) {
-//            Notification(
-//                "LaTeX", "Forward search error", "Could not execute forward search with ${viewer?.displayName}.",
-//                NotificationType.WARNING
-//            ).notify(project)
-            // Ignore exception, such as when the file is not found.
+            Notification(
+                "LaTeX", "Forward search error", "${e.message}",
+                NotificationType.WARNING
+            ).notify(project)
         }
     }
 

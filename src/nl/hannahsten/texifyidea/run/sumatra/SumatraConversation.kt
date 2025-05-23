@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run.sumatra
 
 import com.intellij.openapi.project.Project
+import com.pretty_tools.dde.DDEException
+import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
@@ -71,18 +73,32 @@ object SumatraConversation : ViewerConversation() {
         execute("SetView(\"$pdfFilePath\", \"${viewMode.description}\", ${zoomLevel.percentage}$s)")
     }
 
+
     private fun execute(vararg commands: String) {
         openConversation()
         try {
             conversation!!.connect(SERVER, TOPIC)
             conversation!!.execute(commands.joinToString(separator = "") { "[$it]" })
         }
-        catch (e: Exception) {
+        catch (e: DDEException) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
         }
         finally {
             conversation?.disconnect()
         }
+    }
+
+    private fun convertErrorAndMessage(e: DDEException): TeXception {
+        if (e !is DDEMLException) {
+            return TeXception("Failed to execute command in SumatraPDF.", e)
+        }
+        val message =
+            when (e.errorCode) {
+                //
+                DDEMLException.DMLERR_NOTPROCESSED -> "File not found."
+                else -> e.message ?: "Unknown error."
+            }
+        return TeXception(message, e)
     }
 
     /**
