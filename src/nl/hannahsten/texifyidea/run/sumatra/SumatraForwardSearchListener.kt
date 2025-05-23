@@ -74,9 +74,6 @@ class SumatraForwardSearchListener(
                 }
             }
         }
-
-        // Reset to default
-        runConfig.allowFocusChange = true
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {
