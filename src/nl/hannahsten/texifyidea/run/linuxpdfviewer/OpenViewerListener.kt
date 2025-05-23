@@ -28,6 +28,8 @@ class OpenViewerListener(
         if (event.exitCode == 0) {
             runAsync {
                 try {
+                    // ensure the viewer is open, especially for Sumatra
+                    viewer.openFile(runConfig.outputFilePath, project)
                     viewer.forwardSearch(
                         pdfPath = runConfig.outputFilePath,
                         sourceFilePath = sourceFilePath,

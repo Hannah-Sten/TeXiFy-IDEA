@@ -22,6 +22,8 @@ interface PdfViewer {
     fun isAvailable(): Boolean
 
     fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
+
+    fun openFile(pdfFilePath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false)
 }
 
 /**
