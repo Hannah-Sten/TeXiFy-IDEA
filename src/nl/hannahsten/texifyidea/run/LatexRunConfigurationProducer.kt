@@ -60,8 +60,10 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             runConfiguration.compileSteps.add(PdfViewerStepProvider.createStep(runConfiguration))
         }
         else {
+            // Clone the steps from the template so the template is not changed when editing these steps.
+            val clonedSteps = runConfiguration.compileSteps.map { it.clone() }
             runConfiguration.compileSteps.clear()
-            runConfiguration.compileSteps.addAll(runConfiguration.compileSteps.map { it.clone() })
+            runConfiguration.compileSteps.addAll(clonedSteps)
         }
         runConfiguration.compileSteps.forEach { it.configuration = runConfiguration }
 

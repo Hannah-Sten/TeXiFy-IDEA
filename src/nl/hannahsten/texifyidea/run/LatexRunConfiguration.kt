@@ -32,7 +32,7 @@ import java.nio.file.Path
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexRunConfiguration constructor(
+class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
