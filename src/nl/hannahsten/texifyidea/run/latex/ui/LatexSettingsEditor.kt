@@ -19,6 +19,7 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.ui.layout.selected
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -75,6 +76,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
     private lateinit var pdfViewer: LabeledComponent<ComboBox<out PdfViewer>>
 
+    /** Whether to require focus after compilation. */
+    private lateinit var requireFocus: JBCheckBox
+
     /** Whether to enable the custom pdf viewer command text field. */
     private lateinit var enableViewerCommand: JBCheckBox
 
@@ -97,6 +101,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         pdfViewer.component.selectedItem = runConfiguration.pdfViewer
+        requireFocus.isSelected = runConfiguration.requireFocus
 
         // Reset the pdf viewer command
         viewerCommand.text = runConfiguration.viewerCommand ?: ""
@@ -206,6 +211,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable
+        runConfiguration.requireFocus = requireFocus.isSelected
 
         // Apply custom pdf viewer command
         runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
@@ -510,6 +516,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val viewerField = ComboBox(viewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
         panel.add(pdfViewer)
+
+        requireFocus= JBCheckBox("Require focus after compilation")
+        requireFocus.isSelected = true
+        panel.add(requireFocus)
 
         enableViewerCommand = JBCheckBox("Select custom PDF viewer command, using {pdf} for the pdf file if not the last argument")
         panel.add(enableViewerCommand)

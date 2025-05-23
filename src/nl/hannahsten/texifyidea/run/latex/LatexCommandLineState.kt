@@ -95,7 +95,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
+        if (runConfig.isAutoCompiling) {
+            handler.addProcessListener(AutoCompileDoneListener())
+            runConfig.isAutoCompiling = false // reset this flag
+        }
         scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
+
+
 
         return handler
     }
@@ -242,12 +248,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     }
 
     private fun schedulePdfViewerIfNeeded(handler: KillableProcessHandler) {
-        // Do not schedule to open the pdf viewer when this is not the last run config in the chain
-        if (runConfig.isLastRunConfig) {
-            addOpenViewerListener(handler, runConfig.allowFocusChange)
-            if (TexifySettings.getInstance().autoCompileOption != TexifySettings.AutoCompile.OFF) {
-                handler.addProcessListener(AutoCompileDoneListener())
-            }
+        // Do not schedule to open the pdf viewer when this is not the last run config in the chain or it is an auto compile
+        if (runConfig.isLastRunConfig && !runConfig.isAutoCompiling) {
+            addOpenViewerListener(handler, runConfig.requireFocus)
         }
     }
 

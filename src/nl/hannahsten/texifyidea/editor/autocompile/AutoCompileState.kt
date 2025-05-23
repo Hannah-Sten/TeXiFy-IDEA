@@ -32,12 +32,9 @@ object AutoCompileState {
     @Synchronized
     fun documentChanged(project: Project) {
         this.project = project
-
+        hasChanged = true
         // Remember that the document changed, so a compilation should be scheduled later
-        if (isCompiling.get()) {
-            hasChanged = true
-        }
-        else {
+        if (!isCompiling.get()) {
             scheduleCompilation()
         }
     }
@@ -46,20 +43,17 @@ object AutoCompileState {
      * Tell the state a compilation has just finished.
      */
     @Synchronized
-    fun scheduleCompilationIfNecessary() {
+    fun compilationFinished() {
+        isCompiling.set(false)
         // Only compile again if needed
         if (hasChanged) {
             scheduleCompilation()
-        }
-        else {
-            isCompiling.set(false)
         }
     }
 
     private fun scheduleCompilation() {
         if (project == null) {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
-
             return
         }
 
@@ -67,17 +61,19 @@ object AutoCompileState {
         if (project!!.isDisposed) return
         val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration
 
-        if (runConfigSettings?.configuration !is LatexRunConfiguration) {
+
+        val runConfig = runConfigSettings?.configuration
+        if (runConfig !is LatexRunConfiguration) {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have a valid LaTeX run configuration selected.", NotificationType.WARNING).notify(null)
             return
         }
 
-        // Changing focus would interrupt the user during typing
-        (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
-
-        hasChanged = false
         // Ensure we only trigger one compilation at a time
         if (isCompiling.getAndSet(true)) return
+
+        hasChanged = false
+        // Remember that it is auto compiling so we won't interrupt the user during typing
+        runConfig.isAutoCompiling = true
 
         // If the run config is already running, this may trigger a dialog asking the user whether to stop and rerun
         ExecutionManager.getInstance(project!!).restartRunProfile(
