@@ -30,7 +30,6 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 //            ).notify(project)
             // Ignore exception, such as when the file is not found.
         }
-
     }
 
     override fun update(e: AnActionEvent) {
