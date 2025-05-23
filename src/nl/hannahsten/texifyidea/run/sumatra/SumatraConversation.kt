@@ -93,8 +93,8 @@ object SumatraConversation : ViewerConversation() {
         }
         val message =
             when (e.errorCode) {
-                //
-                DDEMLException.DMLERR_NOTPROCESSED -> "File not found."
+                // This occurs when an output file is not found
+                DDEMLException.DMLERR_NOTPROCESSED -> "Cannot find the output file."
                 else -> e.message ?: "Unknown error."
             }
         return TeXception(message, e)
