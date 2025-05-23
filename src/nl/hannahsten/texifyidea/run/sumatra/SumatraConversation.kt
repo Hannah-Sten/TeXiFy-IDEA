@@ -73,7 +73,6 @@ object SumatraConversation : ViewerConversation() {
         execute("SetView(\"$pdfFilePath\", \"${viewMode.description}\", ${zoomLevel.percentage}$s)")
     }
 
-
     private fun execute(vararg commands: String) {
         openConversation()
         try {
@@ -81,7 +80,7 @@ object SumatraConversation : ViewerConversation() {
             conversation!!.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: DDEException) {
-            throw TeXception("Connection to SumatraPDF was disrupted.", e)
+            throw convertErrorAndMessage(e)
         }
         finally {
             conversation?.disconnect()

@@ -41,7 +41,7 @@ interface PdfViewer {
      * @param focus Indicates whether the viewer should take focus when opening the file. Defaults to false.
      * @param forceRefresh Indicates whether the viewer should force a refresh of the file content. Defaults to false.
      */
-    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false){
+    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
         // Default implementation does nothing.
     }
 }
