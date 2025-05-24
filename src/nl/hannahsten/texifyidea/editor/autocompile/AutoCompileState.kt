@@ -8,6 +8,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -54,6 +55,9 @@ object AutoCompileState {
     private fun scheduleCompilation() {
         if (project == null) {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
+            return
+        }
+        if (!TexifySettings.getInstance().isAutoCompileEnabled()){
             return
         }
 
