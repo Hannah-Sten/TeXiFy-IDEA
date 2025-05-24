@@ -33,7 +33,8 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-
+        // Improvement needed:
+        // this should be done in a more efficient way rather than traversing the whole tree
         val children = root.childrenOfType<PsiElement>()
         val commands = children.filterTyped<LatexCommands> {
             // If it has no parameters, it is probably not an actual section but in a command definition
