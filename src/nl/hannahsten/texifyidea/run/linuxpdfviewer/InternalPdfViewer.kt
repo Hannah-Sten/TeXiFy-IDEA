@@ -24,12 +24,12 @@ enum class InternalPdfViewer(
     private val conversation: ViewerConversation?
 ) : PdfViewer {
 
-    EVINCE("evince", "Evince", EvinceConversation),
-    OKULAR("okular", "Okular", OkularConversation),
-    ZATHURA("zathura", "Zathura", ZathuraConversation),
-    SKIM("skim", "Skim", SkimConversation),
-    SUMATRA("sumatra", "Sumatra", SumatraConversation),
-    NONE("", "No PDF viewer", null);
+    EVINCE(viewerCommand = "evince", displayName = "Evince", conversation = EvinceConversation),
+    OKULAR(viewerCommand = "okular", displayName = "Okular", conversation = OkularConversation),
+    ZATHURA(viewerCommand = "zathura", displayName = "Zathura", conversation = ZathuraConversation),
+    SKIM(viewerCommand = "skim", displayName = "Skim", conversation = SkimConversation),
+    SUMATRA(viewerCommand = "sumatra", displayName = "Sumatra", conversation = SumatraConversation),
+    NONE(viewerCommand = "", displayName = "No PDF viewer", conversation = null);
 
     /**
      * Check if the viewer is installed and available from the path.
