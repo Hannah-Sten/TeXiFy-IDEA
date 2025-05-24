@@ -154,7 +154,17 @@ fun <T> Stream<T>.mutableSet(): MutableSet<T> = this.collect(Collectors.toSet())
  */
 fun <T> Collection<T>.toVector() = Vector(this)
 
-inline fun <reified S> Array<out Any>.filterTyped(predicate: (S) -> Boolean): List<S> {
+inline fun <reified S> Array<out Any?>.filterTyped(predicate: (S) -> Boolean): List<S> {
+    val result = mutableListOf<S>()
+    for (item in this) {
+        if (item is S && predicate(item)) {
+            result.add(item)
+        }
+    }
+    return result
+}
+
+inline fun <reified S> Iterable<Any?>.filterTyped(predicate: (S) -> Boolean): List<S> {
     val result = mutableListOf<S>()
     for (item in this) {
         if (item is S && predicate(item)) {

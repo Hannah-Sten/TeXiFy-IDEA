@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.structure.latex
 
+import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder
@@ -35,6 +36,15 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
     override fun getParent(element: PsiElement): PsiElement? {
         val document = element.containingFile.document() ?: return super.getParent(element)
         // Add sections
+//        val parent = LatexSectionFoldingBuilder().buildFoldRegions(element.containingFile, document, quick = true)
+//            // Only top-level elements in the section should have the section as parents, other elements should keep their direct parent (e.g. an environment)
+//            .filter { it.range.contains(element.textRange ?: return@filter false) }
+//            .filter { !it.range.contains(element.parent?.textRange ?: return@filter false) }
+//            // Avoid creating a loop
+//            .filter { it.element.psi != element }
+//            .filter { it.element.psi?.parents()?.contains(element) != true }
+//            .minByOrNull { it.range.endOffset - it.range.startOffset }
+//            ?.element?.psi
         val parent = LatexSectionFoldingBuilder().buildFoldRegions(element.containingFile, document, quick = true)
             .filter { descriptor ->
                 val range = descriptor.range

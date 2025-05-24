@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.editor.folding
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
+import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -13,6 +15,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.filterTyped
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
+import kotlin.jvm.Throws
 
 /**
  * Recursively folds section commands
@@ -30,7 +33,8 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-        val children = root.children
+
+        val children = root.childrenOfType<PsiElement>()
         val commands = children.filterTyped<LatexCommands> {
             // If it has no parameters, it is probably not an actual section but in a command definition
             it.name in sectionCommands
@@ -45,6 +49,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
         val customRegions = children.filterTyped<LatexMagicComment> {
             it.isStartRegion() || it.isEndRegion()
         }
+
         val sectionElements: List<PsiElement> = (commands + comments).sortedBy { it.textOffset }
 
         if (sectionElements.isEmpty()) {
