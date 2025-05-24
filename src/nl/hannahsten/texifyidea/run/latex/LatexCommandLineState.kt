@@ -27,12 +27,14 @@ import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
-import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.caretOffset
+import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
@@ -283,20 +285,21 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 // If no placeholder was used, assume the path is the final argument
                 commandList += runConfig.outputFilePath
             }
-
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
+            return
         }
+        val pdfViewer = runConfig.pdfViewer
         // Do nothing if the user selected that they do not want a viewer to open.
-        else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
-        // Sumatra does not support DVI
-        else if (((runConfig.pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable)) && runConfig.outputFormat == LatexCompiler.Format.PDF) {
-            // Open Sumatra after compilation & execute inverse search.
-            handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
-        }
-        else if (runConfig.pdfViewer is ExternalPdfViewer ||
-            runConfig.pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)
+        if (pdfViewer == InternalPdfViewer.NONE) return
+
+        if (pdfViewer is ExternalPdfViewer
+            || pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)
+            || (
+                pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable
+                    && runConfig.outputFormat == LatexCompiler.Format.PDF
+                ) // Sumatra does not support DVI
         ) {
-            ViewerForwardSearch(runConfig.pdfViewer ?: InternalPdfViewer.NONE).execute(handler, runConfig, environment, focusAllowed)
+            scheduleForwardSearchAfterCompile(pdfViewer!!, handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
@@ -309,5 +312,28 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
         }
+    }
+
+    /**
+     * Execute forward search when the process is done.
+     *
+     * In the case that no tex file is open, forward search from the first line of the main file that is selected in the
+     * run config.
+     */
+    fun scheduleForwardSearchAfterCompile(viewer: PdfViewer, handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment, focusAllowed: Boolean = true) {
+        // We have to find the file and line number before scheduling the forward search.
+        val editor = environment.project.currentTextEditor()?.editor
+
+        // Get the line number in the currently open file
+        val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0
+
+        // Get the currently open file to use for forward search.
+        val currentPsiFile = editor?.document?.psiFile(environment.project)
+            // Get the main file from the run configuration as a fallback.
+            ?: runConfig.mainFile?.psiFile(environment.project)
+            ?: return
+
+        // Set the OpenViewerListener to execute when the compilation is done.
+        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, environment.project, focusAllowed))
     }
 }

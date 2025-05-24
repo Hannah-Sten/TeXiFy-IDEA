@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.linuxpdfviewer
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
@@ -18,17 +19,17 @@ import nl.hannahsten.texifyidea.util.runCommand
  * @param conversation The conversation class needed/used to talk to this viewer.
  */
 enum class InternalPdfViewer(
-    private val viewerCommand: String,
     override val displayName: String,
-    val conversation: ViewerConversation?
+    private val viewerCommand: String,
+    private val conversation: ViewerConversation?
 ) : PdfViewer {
 
-    EVINCE("evince", "Evince", EvinceConversation),
-    OKULAR("okular", "Okular", OkularConversation),
-    ZATHURA("zathura", "Zathura", ZathuraConversation),
-    SKIM("skim", "Skim", SkimConversation),
-    SUMATRA("sumatra", "Sumatra", SumatraConversation),
-    NONE("", "No PDF viewer", null);
+    EVINCE(viewerCommand = "evince", displayName = "Evince", conversation = EvinceConversation),
+    OKULAR(viewerCommand = "okular", displayName = "Okular", conversation = OkularConversation),
+    ZATHURA(viewerCommand = "zathura", displayName = "Zathura", conversation = ZathuraConversation),
+    SKIM(viewerCommand = "skim", displayName = "Skim", conversation = SkimConversation),
+    SUMATRA(viewerCommand = "sumatra", displayName = "Sumatra", conversation = SumatraConversation),
+    NONE(viewerCommand = "", displayName = "No PDF viewer", conversation = null);
 
     /**
      * Check if the viewer is installed and available from the path.
@@ -59,6 +60,18 @@ enum class InternalPdfViewer(
     }
 
     override fun toString(): String = displayName
+
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        conversation?.forwardSearch(pdfPath, sourceFilePath, line, project, focusAllowed)
+    }
+
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focus: Boolean, forceRefresh: Boolean) {
+        when (this) {
+            SUMATRA -> SumatraConversation.openFile(pdfPath, newWindow, focus, forceRefresh)
+            EVINCE -> EvinceConversation.openFile(pdfPath, project)
+            else -> return // No other viewer has this functionality yet.
+        }
+    }
 
     companion object {
 

@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import org.jetbrains.concurrency.runAsync
 
@@ -29,11 +28,15 @@ class OpenViewerListener(
         if (event.exitCode == 0) {
             runAsync {
                 try {
-                    when (viewer) {
-                        is InternalPdfViewer -> viewer.conversation?.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-                        is ExternalPdfViewer -> viewer.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-                        else -> {}
-                    }
+                    // ensure the viewer is open, especially for Sumatra
+                    viewer.openFile(runConfig.outputFilePath, project)
+                    viewer.forwardSearch(
+                        pdfPath = runConfig.outputFilePath,
+                        sourceFilePath = sourceFilePath,
+                        line = line,
+                        project = project,
+                        focusAllowed = focusAllowed
+                    )
                     // Set this viewer as viewer to forward search to in the future.
                     (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
                 }
