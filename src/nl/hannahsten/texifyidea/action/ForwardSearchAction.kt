@@ -1,11 +1,14 @@
 package nl.hannahsten.texifyidea.action
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
@@ -23,12 +26,12 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
         try {
             viewer?.forwardSearch(null, file.path, line, project, focusAllowed = true)
         }
-        catch (e: Exception) {
-//            Notification(
-//                "LaTeX", "Forward search error", "Could not execute forward search with ${viewer?.displayName}.",
-//                NotificationType.WARNING
-//            ).notify(project)
-            // Ignore exception, such as when the file is not found.
+        catch (e: TeXception) {
+            // Show a notification if the forward search fails, but only catch TeXception and let other unexpected exceptions bubble up.
+            Notification(
+                "LaTeX", "Forward search error", "${e.message}",
+                NotificationType.WARNING
+            ).notify(project)
         }
     }
 

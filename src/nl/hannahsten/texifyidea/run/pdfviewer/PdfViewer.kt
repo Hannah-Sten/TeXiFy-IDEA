@@ -21,9 +21,29 @@ interface PdfViewer {
 
     fun isAvailable(): Boolean
 
+    /**
+     * Performs a forward search to navigate from the source file to the corresponding location in the PDF document.
+     *
+     * @param pdfPath The file path to the PDF document. If null, the viewer may attempt to determine the path automatically.
+     * @param sourceFilePath The file path to the source file (e.g., a LaTeX file) that corresponds to the PDF document.
+     * @param line The line number in the source file to which the PDF viewer should navigate.
+     * @param project The project context in which the forward search is performed.
+     * @param focusAllowed Indicates whether the PDF viewer is allowed to take focus when performing the forward search. If false, the viewer may remain in the background.
+     */
     fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 
-    fun openFile(pdfFilePath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false)
+    /**
+     * Opens a PDF file in the viewer.
+     *
+     * @param pdfPath The file path to the PDF document that should be opened.
+     * @param project The project context associated with the PDF file.
+     * @param newWindow Indicates whether the PDF should be opened in a new window. Defaults to false.
+     * @param focus Indicates whether the viewer should take focus when opening the file. Defaults to false.
+     * @param forceRefresh Indicates whether the viewer should force a refresh of the file content. Defaults to false.
+     */
+    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+        // Default implementation does nothing.
+    }
 }
 
 /**
