@@ -10,6 +10,7 @@ import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.lang.magic.CustomMagicKey
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.filterTyped
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
@@ -29,15 +30,21 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-        val commands = root.childrenOfType<LatexCommands>().filter { it.name in sectionCommands }
+        val children = root.children
+        val commands = children.filterTyped<LatexCommands> {
             // If it has no parameters, it is probably not an actual section but in a command definition
-            .filter { it.parameterList.isNotEmpty() }
-            // Similarly, if the section command is in a parameter it is probably in the preamble, and we should not fold
-            .filter { it.firstParentOfType<LatexParameter>() == null }
-            .sortedBy { it.textOffset }
-        val comments = root.childrenOfType<LatexMagicComment>().filter { it.key() == DefaultMagicKeys.FAKE }
+            it.name in sectionCommands
+                && it.parameterList.isNotEmpty()
+                // Similarly, if the section command is in a parameter it is probably in the preamble, and we should not fold
+                && it.firstParentOfType<LatexParameter>() == null
+        }.sortedBy { it.textOffset }
+        val comments = children.filterTyped<LatexMagicComment> {
+            it.key() == DefaultMagicKeys.FAKE
+        }
         // If the user has a custom folding region interleaving with sections, e.g. spanning multiple sections but ending inside a section, we give the user priority over the default section folding (so that the user does not need to put fake sections everywhere)
-        val customRegions = root.childrenOfType<LatexMagicComment>().filter { it.isStartRegion() || it.isEndRegion() }
+        val customRegions = children.filterTyped<LatexMagicComment> {
+            it.isStartRegion() || it.isEndRegion()
+        }
         val sectionElements: List<PsiElement> = (commands + comments).sortedBy { it.textOffset }
 
         if (sectionElements.isEmpty()) {

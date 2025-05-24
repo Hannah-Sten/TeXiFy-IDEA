@@ -36,13 +36,17 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
         val document = element.containingFile.document() ?: return super.getParent(element)
         // Add sections
         val parent = LatexSectionFoldingBuilder().buildFoldRegions(element.containingFile, document, quick = true)
-            // Only top-level elements in the section should have the section as parents, other elements should keep their direct parent (e.g. an environment)
-            .filter { it.range.contains(element.textRange ?: return@filter false) }
-            .filter { !it.range.contains(element.parent?.textRange ?: return@filter false) }
-            // Avoid creating a loop
-            .filter { it.element.psi != element }
-            .filter { it.element.psi?.parents()?.contains(element) != true }
-            .minByOrNull { it.range.endOffset - it.range.startOffset }
+            .filter { descriptor ->
+                val range = descriptor.range
+                val elementRange = element.textRange ?: return@filter false
+                val parentRange = element.parent?.textRange ?: return@filter false
+                // Only top-level elements in the section should have the section as parents, other elements should keep their direct parent (e.g. an environment)
+                range.contains(elementRange) && (!range.contains(parentRange)) &&
+                    // Avoid creating a loop
+                    descriptor.element.psi != element &&
+                    descriptor.element.psi?.parents()?.contains(element) != true
+            }
+            .minByOrNull { it.range.length }
             ?.element?.psi
         return parent ?: super.getParent(element)
     }
