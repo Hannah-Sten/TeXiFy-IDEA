@@ -121,4 +121,15 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
         }
     }
+
+    /**
+     * Returns true if the auto compile should be triggered immediately after a change in the document.
+     */
+    fun isAutoCompileImmediate(): Boolean {
+        return when(autoCompileOption) {
+            AutoCompile.ALWAYS -> true
+            AutoCompile.OFF, AutoCompile.AFTER_DOCUMENT_SAVE -> false
+            AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
+        }
+    }
 }
