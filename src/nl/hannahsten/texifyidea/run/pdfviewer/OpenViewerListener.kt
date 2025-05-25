@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.linuxpdfviewer
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import org.jetbrains.concurrency.runAsync
 
 /**
@@ -31,16 +30,16 @@ class OpenViewerListener(
                     // ensure the viewer is open, especially for Sumatra
                     viewer.openFile(runConfig.outputFilePath, project)
                     viewer.forwardSearch(
-                        pdfPath = runConfig.outputFilePath,
+                        outputPath = runConfig.outputFilePath,
                         sourceFilePath = sourceFilePath,
                         line = line,
                         project = project,
                         focusAllowed = focusAllowed
                     )
                     // Set this viewer as viewer to forward search to in the future.
-                    (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
-                }
-                catch (ignored: TeXception) {
+                    (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer =
+                        viewer
+                } catch (ignored: TeXception) {
                 }
             }
         }

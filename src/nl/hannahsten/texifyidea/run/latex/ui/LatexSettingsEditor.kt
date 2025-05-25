@@ -28,9 +28,10 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
+import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.NoneViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -441,10 +442,17 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compilerPath)
     }
 
+    private fun getPdfViewerListForSelect() : List<PdfViewer> {
+        return InternalPdfViewer.availableSubset +
+                ExternalPdfViewers.getExternalPdfViewers() +
+                listOf(NoneViewer)
+    }
+
     private fun updatePdfViewerComboBox() {
-        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
-            ExternalPdfViewers.getExternalPdfViewers() +
-            listOf(InternalPdfViewer.NONE)
+//        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
+//            ExternalPdfViewers.getExternalPdfViewers() +
+//            listOf(InternalPdfViewer.NONE)
+        val viewers = getPdfViewerListForSelect()
 
         pdfViewer.component.removeAllItems()
         for (i in viewers.indices) {
@@ -507,17 +515,23 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
-            ExternalPdfViewers.getExternalPdfViewers() +
-            listOf(InternalPdfViewer.NONE)
+        val viewers = getPdfViewerListForSelect()
 
         val viewerField = ComboBox(viewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
         panel.add(pdfViewer)
 
-        requireFocus= JBCheckBox("Require focus after compilation")
+        requireFocus = JBCheckBox("Require focus after compilation")
         requireFocus.isSelected = true
         panel.add(requireFocus)
+
+        // register a listener on pdfViewer when a viewer is selected
+        pdfViewer.component.addItemListener { e ->
+            if (e.stateChange == ItemEvent.SELECTED) {
+                val selectedViewer = pdfViewer.component.selectedItem as PdfViewer
+                requireFocus.isVisible = selectedViewer.isForwardSearchSupported()
+            }
+        }
 
         enableViewerCommand = JBCheckBox("Select custom PDF viewer command, using {pdf} for the pdf file if not the last argument")
         panel.add(enableViewerCommand)

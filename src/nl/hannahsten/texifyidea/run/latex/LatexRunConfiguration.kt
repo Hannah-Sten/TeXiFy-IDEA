@@ -32,8 +32,9 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
+import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.NoneViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -268,9 +269,12 @@ class LatexRunConfiguration(
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
         try {
+//            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
+//                ?: InternalPdfViewer.entries.firstOrNull { it.name == viewerName && it.isAvailable() }
+//                ?: InternalPdfViewer.NONE
             this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
-                ?: InternalPdfViewer.entries.firstOrNull { it.name == viewerName && it.isAvailable() }
-                ?: InternalPdfViewer.NONE
+                ?: InternalPdfViewer.allViewers.firstOrNull { it.name == viewerName }
+                ?: NoneViewer
         }
         catch (e: IllegalArgumentException) {
             // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).

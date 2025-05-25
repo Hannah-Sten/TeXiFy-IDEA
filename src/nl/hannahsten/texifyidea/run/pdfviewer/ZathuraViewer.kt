@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.linuxpdfviewer.zathura
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
@@ -11,15 +11,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
-object ZathuraConversation : ViewerConversation() {
+object ZathuraViewer : InternalPdfViewer("Zathura", "zathura") {
 
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-        val pdfPathGuess = pdfPath ?: guessPdfPath(project, sourceFilePath)
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)
 
         if (pdfPathGuess != null) {
             val path = PathManager.getBinPath()
@@ -54,7 +53,6 @@ object ZathuraConversation : ViewerConversation() {
             runConfigThatCompilesFile(sourceVirtualFile, project)?.outputFilePath ?: return null
         }
     }
-
     /**
      * Get the run config that compiles the virtualFile, i.e.,
      * the run configuration that has [virtualFile] as its main file.

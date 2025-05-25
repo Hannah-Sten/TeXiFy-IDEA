@@ -1,11 +1,11 @@
-package nl.hannahsten.texifyidea.run.sumatra
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.project.Project
 import com.pretty_tools.dde.DDEException
 import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
+import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 /**
@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
  * @author Sten Wessel
  * @since b0.4
  */
-object SumatraConversation : ViewerConversation() {
+object SumatraViewer : InternalPdfViewer("SumatraPDF", "SumatraPDF") {
 
     private const val SERVER = "SUMATRA"
     private const val TOPIC = "control"
@@ -36,20 +36,21 @@ object SumatraConversation : ViewerConversation() {
     /**
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focus: Boolean, forceRefresh: Boolean) {
         try {
-            execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
+            execute("Open(\"$pdfPath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
             // Make sure Windows popup error doesn't appear and we will still open Sumatra
             if (SumatraAvailabilityChecker.isSumatraAvailable) {
-                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath, workingDirectory = SumatraAvailabilityChecker.sumatraDirectory, discardOutput = true)
+                runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = SumatraAvailabilityChecker.sumatraDirectory, discardOutput = true)
             }
         }
     }
 
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-        forwardSearch(pdfPath, sourceFilePath, line, focus = focusAllowed)
+
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        forwardSearch(outputPath, sourceFilePath, line, focus = focusAllowed)
     }
 
     /**
