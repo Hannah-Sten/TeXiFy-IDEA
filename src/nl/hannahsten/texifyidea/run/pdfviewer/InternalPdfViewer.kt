@@ -11,6 +11,10 @@ sealed class InternalPdfViewer(
     override val name: String
         get() = viewerCommand
 
+    override fun toString(): String {
+        return displayName
+    }
+
     override fun isAvailable(): Boolean {
         if (SystemInfo.isWindows) {
             val output = "where $viewerCommand".runCommand()
@@ -35,7 +39,6 @@ sealed class InternalPdfViewer(
     override fun isForwardSearchSupported(): Boolean {
         return true
     }
-
 
     companion object {
 

@@ -33,7 +33,6 @@ import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.NoneViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
 import java.awt.event.ItemEvent
@@ -501,7 +500,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             enableSumatraPath.addItemListener { e ->
                 if (e.stateChange != ItemEvent.SELECTED) {
                     // Removes the custom Sumatra path from SumatraAvailabilityChecker when unchecked
-                    SumatraAvailabilityChecker.isSumatraPathAvailable(null)
+                    // TODO
+//                    SumatraAvailabilityChecker.isSumatraPathAvailable(null)
                     updatePdfViewerComboBox()
                 }
                 sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED

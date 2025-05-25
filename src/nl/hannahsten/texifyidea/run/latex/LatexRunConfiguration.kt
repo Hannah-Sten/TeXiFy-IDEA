@@ -36,7 +36,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.NoneViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -213,12 +213,12 @@ class LatexRunConfiguration(
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
-
-        // Updates the SumatraAvailabilityChecker with the path in sumatraPath after change.
-        // Also checks if the path leads to a correct directory containing Sumatra.
-        if (enableSumatraPath == true && !SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second) {
-            throw RuntimeConfigurationError("Run configuration is invalid: custom Sumatra path doesn't point to a valid directory")
-        }
+//            TODO
+//        // Updates the SumatraAvailabilityChecker with the path in sumatraPath after change.
+//        // Also checks if the path leads to a correct directory containing Sumatra.
+//        if (enableSumatraPath == true && !SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second) {
+//            throw RuntimeConfigurationError("Run configuration is invalid: custom Sumatra path doesn't point to a valid directory")
+//        }
     }
 
     @Throws(ExecutionException::class)
@@ -264,7 +264,7 @@ class LatexRunConfiguration(
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
         // Updates the SumatraAvailabilityChecker at startup
-        SumatraAvailabilityChecker.isSumatraPathAvailable(this.sumatraPath)
+//        SumatraViewer.isSumatraPathAvailable(this.sumatraPath) TODO
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)

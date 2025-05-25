@@ -12,10 +12,13 @@ import com.intellij.openapi.project.Project
 private val EP_NAME = ExtensionPointName<ExternalPdfViewer>("nl.rubensten.texifyidea.pdfViewer")
 
 /**
- * Interface that defines a pdf viewer so we can use both [nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer]s and [ExternalPdfViewer]s interchangeably.
+ * Interface that defines general behaviour of a PDF viewer.
  */
 interface PdfViewer {
 
+    /**
+     * The identifier of the viewer.
+     */
     val name: String?
     val displayName: String?
 
