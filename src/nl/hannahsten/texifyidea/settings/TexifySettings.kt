@@ -117,7 +117,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     fun isAutoCompileEnabled(): Boolean {
         return when (autoCompileOption) {
             AutoCompile.OFF -> false
-            AutoCompile.ALWAYS,AutoCompile.AFTER_DOCUMENT_SAVE -> true
+            AutoCompile.ALWAYS, AutoCompile.AFTER_DOCUMENT_SAVE -> true
             AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
         }
     }

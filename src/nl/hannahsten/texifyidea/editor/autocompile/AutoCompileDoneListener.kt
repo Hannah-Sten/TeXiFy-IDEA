@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.editor.autocompile
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.util.Key
-import nl.hannahsten.texifyidea.settings.TexifySettings
 
 /**
  * When autocompile is enabled, update autocompile state when compilation is done.
