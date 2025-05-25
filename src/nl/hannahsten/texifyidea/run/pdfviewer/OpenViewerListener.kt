@@ -25,22 +25,21 @@ class OpenViewerListener(
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
-            runAsync {
-                try {
-                    // ensure the viewer is open, especially for Sumatra
-                    viewer.openFile(runConfig.outputFilePath, project)
-                    viewer.forwardSearch(
-                        outputPath = runConfig.outputFilePath,
-                        sourceFilePath = sourceFilePath,
-                        line = line,
-                        project = project,
-                        focusAllowed = focusAllowed
-                    )
-                    // Set this viewer as viewer to forward search to in the future.
-                    (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer =
-                        viewer
-                } catch (ignored: TeXception) {
-                }
+            try {
+                // ensure the viewer is open, especially for Sumatra
+                viewer.openFile(runConfig.outputFilePath, project)
+                viewer.forwardSearch(
+                    outputPath = runConfig.outputFilePath,
+                    sourceFilePath = sourceFilePath,
+                    line = line,
+                    project = project,
+                    focusAllowed = focusAllowed
+                )
+                // Set this viewer as viewer to forward search to in the future.
+                (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer =
+                    viewer
+            }
+            catch (ignored: TeXception) {
             }
         }
     }
