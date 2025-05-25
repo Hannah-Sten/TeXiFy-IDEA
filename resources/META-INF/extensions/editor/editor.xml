@@ -34,9 +34,9 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileTypedHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspaceHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
-        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.InlineMathBackspaceHandler" />
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>

@@ -19,21 +19,24 @@ import java.util.concurrent.atomic.AtomicBoolean
 object AutoCompileState {
 
     /** Whether an autocompile is in progress. */
-    private var isCompiling = AtomicBoolean(false)
+    private val isCompiling = AtomicBoolean(false)
 
-    /** Whether the document has changed since the last triggered autocompile. */
-    private var hasChanged = false
+    /**
+     * Whether there is a (pending) request to trigger autocompile,
+     * not necessarily meaning that the document has changed.
+     */
+    private var recentRequest = false
 
     /** Needed to get the selected run config. */
     private var project: Project? = null
 
     /**
-     * Tell the state the document has been changed by the user.
+     * Request an auto compilation of the document.
      */
     @Synchronized
-    fun documentChanged(project: Project) {
+    fun requestAutoCompilation(project: Project) {
         this.project = project
-        hasChanged = true
+        recentRequest = true
         // Remember that the document changed, so a compilation should be scheduled later
         if (!isCompiling.get()) {
             scheduleCompilation()
@@ -46,14 +49,15 @@ object AutoCompileState {
     @Synchronized
     fun compilationFinished() {
         isCompiling.set(false)
-        // Only compile again if needed
-        if (hasChanged) {
+        // Process any pending requests to compile
+        if (recentRequest) {
             scheduleCompilation()
         }
     }
 
     private fun scheduleCompilation() {
-        if (project == null) {
+        val proj = this.project
+        if (proj == null) {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
             return
         }
@@ -62,9 +66,8 @@ object AutoCompileState {
         }
 
         // Get run configuration selected in the combobox and run that one
-        if (project!!.isDisposed) return
-        val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration
-
+        if (proj.isDisposed) return
+        val runConfigSettings = RunManager.getInstance(proj).selectedConfiguration
 
         val runConfig = runConfigSettings?.configuration
         if (runConfig !is LatexRunConfiguration) {
@@ -75,15 +78,15 @@ object AutoCompileState {
         // Ensure we only trigger one compilation at a time
         if (isCompiling.getAndSet(true)) return
 
-        hasChanged = false
+        recentRequest = false
         // Remember that it is auto compiling so we won't interrupt the user during typing
         runConfig.isAutoCompiling = true
 
         // If the run config is already running, this may trigger a dialog asking the user whether to stop and rerun
-        ExecutionManager.getInstance(project!!).restartRunProfile(
-            project!!,
+        ExecutionManager.getInstance(proj).restartRunProfile(
+            proj,
             DefaultRunExecutor.getRunExecutorInstance(),
-            ExecutionTargetManager.getInstance(project!!).activeTarget,
+            ExecutionTargetManager.getInstance(proj).activeTarget,
             runConfigSettings,
             null
         )

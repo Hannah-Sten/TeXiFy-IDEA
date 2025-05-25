@@ -92,15 +92,15 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         runConfig.hasBeenRun = true
 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
+
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
         if (runConfig.isAutoCompiling) {
             handler.addProcessListener(AutoCompileDoneListener())
-            runConfig.isAutoCompiling = false // reset this flag
+            runConfig.isAutoCompiling = false
+            // reset this flag, which will be set in each auto-compile
         }
         scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
-
-
 
         return handler
     }
