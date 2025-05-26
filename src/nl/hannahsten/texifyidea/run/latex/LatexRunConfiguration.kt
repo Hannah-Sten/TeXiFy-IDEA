@@ -32,12 +32,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
-import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.NoneViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -142,7 +137,7 @@ class LatexRunConfiguration(
     var hasBeenRun = false
 
     /** Whether the pdf viewer should claim focus after compilation. */
-    var requireFocus = false
+    var requireFocus = true
 
     /** Whether the run configuration is currently auto-compiling.     */
     var isAutoCompiling = false
@@ -260,26 +255,14 @@ class LatexRunConfiguration(
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
         this.compilerPath = if (compilerPathRead.isNullOrEmpty()) null else compilerPathRead
 
-        // Read SumatraPDF custom path
+        // Read SumatraPDF custom path TODO, remove it
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
-        // Updates the SumatraAvailabilityChecker at startup
-//        SumatraViewer.isSumatraPathAvailable(this.sumatraPath) TODO
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
-        try {
-//            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
-//                ?: InternalPdfViewer.entries.firstOrNull { it.name == viewerName && it.isAvailable() }
-//                ?: InternalPdfViewer.NONE
-            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
-                ?: InternalPdfViewer.allViewers.firstOrNull { it.name == viewerName }
-                ?: NoneViewer
-        }
-        catch (e: IllegalArgumentException) {
-            // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
-            this.pdfViewer = TexifySettings.getInstance().pdfViewer
-        }
+        this.pdfViewer = PdfViewer.availableViewers.firstOrNull {it.name == viewerName} ?:
+                PdfViewer.firstAvailableViewer
 
         this.requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
 
@@ -547,7 +530,7 @@ class LatexRunConfiguration(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = InternalPdfViewer.firstAvailable
+        pdfViewer = PdfViewer.firstAvailableViewer
     }
 
     fun setDefaultOutputFormat() {

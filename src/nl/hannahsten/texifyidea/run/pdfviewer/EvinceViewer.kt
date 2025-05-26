@@ -32,7 +32,7 @@ import java.io.IOException
  *
  * @author Thomas Schouten
  */
-object EvinceViewer : InternalPdfViewer("Evince","evince") {
+object EvinceViewer : SystemPdfViewer("Evince","evince") {
 
     /**
      * Object path of the Evince daemon. Together with the object name, this allows us to find the

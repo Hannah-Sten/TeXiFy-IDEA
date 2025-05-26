@@ -19,12 +19,14 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        if (viewer?.isAvailable() != true || file.fileType !is LatexFileType) return
+        if (file.fileType !is LatexFileType) return
+        val viewer = this.viewer ?: return
+        if (!viewer.isAvailable() || !viewer.isForwardSearchSupported()) return
 
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
         try {
-            viewer?.forwardSearch(null, file.path, line, project, focusAllowed = true)
+            viewer.forwardSearch(null, file.path, line, project, focusAllowed = true)
         }
         catch (e: TeXception) {
             // Show a notification if the forward search fails, but only catch TeXception and let other unexpected exceptions bubble up.
@@ -37,9 +39,9 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = (
-            e.project?.selectedRunConfig()?.pdfViewer == viewer
-                || (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.pdfViewer == viewer)
-            ) && e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
+                e.project?.selectedRunConfig()?.pdfViewer == viewer
+                        || (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.pdfViewer == viewer)
+                ) && e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT

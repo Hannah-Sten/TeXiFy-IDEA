@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
  *
  * @author Stephan Sundermann
  */
-object SkimViewer : InternalPdfViewer("Skim", "skim") {
+object SkimViewer : SystemPdfViewer("Skim", "skim") {
 
     private var pdfFilePath: String? = null
 

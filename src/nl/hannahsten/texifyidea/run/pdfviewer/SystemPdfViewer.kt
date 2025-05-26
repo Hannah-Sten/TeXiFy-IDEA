@@ -2,8 +2,9 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.util.runCommand
+import java.io.File
 
-sealed class InternalPdfViewer(
+abstract class SystemPdfViewer(
     final override val displayName: String,
     val viewerCommand: String,
 ) : PdfViewer {
@@ -15,7 +16,7 @@ sealed class InternalPdfViewer(
         return displayName
     }
 
-    override fun isAvailable(): Boolean {
+    open fun refreshAvailabilityOnSystem() : Boolean {
         if (SystemInfo.isWindows) {
             val output = "where $viewerCommand".runCommand()
             return output?.contains("\\$viewerCommand") ?: false
@@ -35,6 +36,16 @@ sealed class InternalPdfViewer(
             return false
         }
     }
+    var availability: Boolean? = null
+
+    override fun isAvailable(): Boolean {
+        synchronized(this) {
+            if (availability == null) {
+                availability = refreshAvailabilityOnSystem()
+            }
+            return availability ?: false
+        }
+    }
 
     override fun isForwardSearchSupported(): Boolean {
         return true
@@ -43,29 +54,5 @@ sealed class InternalPdfViewer(
     companion object {
 
 
-        /**
-         * The list of all available internal PDF viewers.
-         */
-        val allViewers : List<InternalPdfViewer> = listOf(
-            SumatraViewer, EvinceViewer, OkularViewer, ZathuraViewer, SkimViewer, NoneViewer
-        )
-
-        // These properties may be used often when opening a project or during project use because of settings state initialization, so we cache them.
-        val availableSubset: List<InternalPdfViewer> by lazy {
-            allViewers.filter { it.isAvailable() }
-        }
-
-        val firstAvailable: InternalPdfViewer by lazy {
-            // Use system default if possible
-            if (SystemInfo.isLinux) {
-                // e.g. okularApplication_pdf.desktop or org.gnome.Evince.desktop
-                runCommand("xdg-mime", "query", "default", "application/pdf", timeout = 1)?.let {
-                    availableSubset.firstOrNull { viewer -> viewer.name.lowercase() in it.lowercase() }
-                } ?: availableSubset.first()
-            }
-            else {
-                availableSubset.first()
-            }
-        }
     }
 }

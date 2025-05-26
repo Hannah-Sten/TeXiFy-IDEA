@@ -29,9 +29,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
-import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.NoneViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
@@ -72,7 +69,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     /** Allow users to specify a custom path to SumatraPDF.  */
     private lateinit var sumatraPath: TextFieldWithBrowseButton
 
-    private lateinit var pdfViewer: LabeledComponent<ComboBox<out PdfViewer>>
+    private lateinit var pdfViewer: LabeledComponent<ComboBox<PdfViewer?>>
 
     /** Whether to require focus after compilation. */
     private lateinit var requireFocus: JBCheckBox
@@ -100,6 +97,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         pdfViewer.component.selectedItem = runConfiguration.pdfViewer
         requireFocus.isSelected = runConfiguration.requireFocus
+        requireFocus.isVisible = runConfiguration.pdfViewer?.isForwardSearchSupported() ?: false
 
         // Reset the pdf viewer command
         viewerCommand.text = runConfiguration.viewerCommand ?: ""
@@ -208,7 +206,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
         }
 
-        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable
+        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
         runConfiguration.requireFocus = requireFocus.isSelected
 
         // Apply custom pdf viewer command
@@ -441,22 +439,20 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compilerPath)
     }
 
-    private fun getPdfViewerListForSelect() : List<PdfViewer> {
-        return InternalPdfViewer.availableSubset +
-                ExternalPdfViewers.getExternalPdfViewers() +
-                listOf(NoneViewer)
-    }
+//    private fun getPdfViewerListForSelect() : List<PdfViewer> {
+//        return InternalPdfViewer.availableSubset +
+//                ExternalPdfViewers.getExternalPdfViewers() +
+//                listOf(NoneViewer)
+//    }
 
     private fun updatePdfViewerComboBox() {
 //        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
 //            ExternalPdfViewers.getExternalPdfViewers() +
 //            listOf(InternalPdfViewer.NONE)
-        val viewers = getPdfViewerListForSelect()
-
+        val component = pdfViewer.component as ComboBox<PdfViewer?>
         pdfViewer.component.removeAllItems()
-        for (i in viewers.indices) {
-            @Suppress("UNCHECKED_CAST")
-            (pdfViewer.component as ComboBox<PdfViewer>).addItem(viewers[i])
+        for (viewer in PdfViewer.availableViewers) {
+            component.addItem(viewer)
         }
         pdfViewer.updateUI()
     }
@@ -515,9 +511,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        val viewers = getPdfViewerListForSelect()
-
-        val viewerField = ComboBox(viewers.toTypedArray())
+        val viewerField = ComboBox(PdfViewer.availableViewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
         panel.add(pdfViewer)
 

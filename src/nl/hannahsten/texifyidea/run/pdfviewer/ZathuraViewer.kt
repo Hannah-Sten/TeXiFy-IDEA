@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
-object ZathuraViewer : InternalPdfViewer("Zathura", "zathura") {
+object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
 
     override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
         val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)

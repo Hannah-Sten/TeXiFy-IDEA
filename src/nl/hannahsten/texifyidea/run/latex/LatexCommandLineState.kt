@@ -28,8 +28,6 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor

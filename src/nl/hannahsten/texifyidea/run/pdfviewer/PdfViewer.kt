@@ -2,6 +2,9 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
+import nl.hannahsten.texifyidea.util.runCommand
+import kotlin.collections.firstOrNull
 
 /**
  * Allow other plugins to define their own pdf viewers.
@@ -22,8 +25,11 @@ interface PdfViewer {
     val name: String?
     val displayName: String?
 
-    fun isAvailable(): Boolean
 
+    /**
+     * Tells whether the PDF viewer is available.
+     */
+    fun isAvailable(): Boolean
 
     fun isForwardSearchSupported(): Boolean {
         return false
@@ -38,7 +44,9 @@ interface PdfViewer {
      * @param project The project context in which the forward search is performed.
      * @param focusAllowed Indicates whether the viewer is allowed to take focus when performing the forward search. If false, the viewer may remain in the background.
      */
-    fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
+    fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        // Default implementation does nothing.
+    }
 
     /**
      * Opens a PDF file in the viewer.
@@ -52,17 +60,51 @@ interface PdfViewer {
     fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
         // Default implementation does nothing.
     }
+
+    companion object {
+
+        val internalViewers = listOf(
+            SumatraViewer, EvinceViewer, OkularViewer, ZathuraViewer, SkimViewer, NoViewer
+        )
+
+        val externalViewers
+            get() = EP_NAME.extensionList
+
+        /**
+         * Gets the list of all PDF viewers, both internal and external.
+         */
+        val allViewers: List<PdfViewer>
+            get() = externalViewers + internalViewers
+
+        /**
+         * Gets the list of all available PDF viewers, both internal and external.
+         */
+        val availableViewers: List<PdfViewer>
+            by lazy {
+                allViewers.filter { it.isAvailable() }
+            }
+
+        val firstAvailableViewer: PdfViewer
+            get() {
+                if (SystemInfo.isLinux) {
+                    // Use system default if possible
+                    return runCommand("xdg-mime", "query", "default", "application/pdf", timeout = 1)?.let { mime ->
+                        availableViewers.firstOrNull { viewer ->
+                            val name = viewer.name ?: return@firstOrNull false
+                            name.lowercase() in mime.lowercase()
+                        }
+                    } ?: availableViewers.first()
+                }
+                else {
+                    return availableViewers.first()
+                }
+            }
+    }
 }
 
 /**
  * Define behaviour that external pdf viewers should inherit.
+ *
+ * This interface is kept for backwards compatibility.
  */
 interface ExternalPdfViewer : PdfViewer
-
-/**
- * Define functions that handle all external pdf viewers one by one.
- */
-object ExternalPdfViewers {
-
-    fun getExternalPdfViewers(): List<ExternalPdfViewer> = EP_NAME.extensionList
-}

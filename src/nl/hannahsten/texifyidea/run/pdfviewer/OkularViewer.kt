@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
  *
  * @author Abby Berkers
  */
-object OkularViewer : InternalPdfViewer("Okular", "okular") {
+object OkularViewer : SystemPdfViewer("Okular", "okular") {
 
 
     /**
