@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
@@ -33,6 +32,9 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     https://github.com/sumatrapdfreader/sumatrapdf/blob/master/docs/md/Command-line-arguments.md
      */
 
+    /**
+     * A thread-safe DDE conversation to communicate with SumatraPDF.
+     */
     private val conversation: DDEClientConversation? by lazy {
         try {
             DDEClientConversation()
@@ -64,18 +66,6 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     @Volatile
     private var previousPdfPath: String? = null
 
-//    @Synchronized
-//    private fun initConversation(): DDEClientConversation {
-//        this.conversation?.let { return it }
-//        try {
-//            val conversation = DDEClientConversation()
-//            this.conversation = conversation
-//            return conversation
-//        }
-//        catch (e: NoClassDefFoundError) {
-//            throw TeXception("Native library DLLs could not be found.", e)
-//        }
-//    }
 
     private fun getWherePath(res: Pair<String?, Int>): String? {
         val (paths, exitCode) = res
@@ -106,10 +96,16 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     /**
      * Checks the availability of SumatraPDF on the system and sets the [sumatraRunnable] variable
      */
-    override fun refreshAvailabilityOnSystem(): Boolean {
+    override fun checkAvailabilityOnSystem(possiblePath: String?): Boolean {
         if (!SystemInfo.isWindows) return false
+        if (possiblePath != null && trySumatraRunnablePath(possiblePath)) {
+            // If a possible path is provided, we can try to assign it directly
+            return true
+        }
         // If we already know a valid path, we can skip the rest of the checks
-        if (sumatraRunnable != null) return true
+        sumatraRunnable?.let {
+            if (trySumatraRunnablePath(it.absolutePath)) return true
+        }
 
         val paths = runCommand("where", "SumatraPDF", workingDirectory = null)
         paths?.split("\n")?.firstOrNull()?.let {
@@ -157,8 +153,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return false
     }
 
-    @Synchronized
-    fun assignSumatraRunnable(path: String): Boolean {
+    fun trySumatraRunnablePath(path: String): Boolean {
         if (path.isEmpty()) return false
         val file = File(path)
         if (!file.exists()) return false

@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.util.runCommand
-import java.io.File
 
 abstract class SystemPdfViewer(
     final override val displayName: String,
@@ -16,7 +15,10 @@ abstract class SystemPdfViewer(
         return displayName
     }
 
-    open fun refreshAvailabilityOnSystem() : Boolean {
+    /**
+     * Check if the PDF viewer is available on the system, the result of this function is cached.
+     */
+    protected open fun checkAvailabilityOnSystem(possiblePath : String? = null): Boolean {
         if (SystemInfo.isWindows) {
             val output = "where $viewerCommand".runCommand()
             return output?.contains("\\$viewerCommand") ?: false
@@ -36,23 +38,28 @@ abstract class SystemPdfViewer(
             return false
         }
     }
-    var availability: Boolean? = null
+
+    /**
+     * Cached availability of the PDF viewer, using [Volatile] to ensure visibility and atomicity
+     */
+    @Volatile
+    private var availability: Boolean? = null
+
+    /**
+     * Refresh the availability of the PDF viewer.
+     * For example, when the user installs or uninstalls the viewer, this method can be called.
+     */
+    fun refreshAvailability(possiblePath : String? = null) {
+        availability = checkAvailabilityOnSystem(possiblePath)
+    }
 
     override fun isAvailable(): Boolean {
-        synchronized(this) {
-            if (availability == null) {
-                availability = refreshAvailabilityOnSystem()
-            }
-            return availability ?: false
+        return availability ?: checkAvailabilityOnSystem().also {
+            availability = it
         }
     }
 
     override fun isForwardSearchSupported(): Boolean {
         return true
-    }
-
-    companion object {
-
-
     }
 }
