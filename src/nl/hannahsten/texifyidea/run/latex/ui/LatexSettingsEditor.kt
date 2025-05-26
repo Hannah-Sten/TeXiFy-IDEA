@@ -515,7 +515,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
         panel.add(pdfViewer)
 
-        requireFocus = JBCheckBox("Require focus after compilation")
+        requireFocus = JBCheckBox("Allow PDF viewer to focus after compilation")
         requireFocus.isSelected = true
         panel.add(requireFocus)
 
