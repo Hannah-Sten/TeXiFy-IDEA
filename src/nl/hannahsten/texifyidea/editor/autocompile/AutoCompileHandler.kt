@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 class AutocompileTypedHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        if(file.fileType == LatexFileType && TexifySettings.getInstance().autoCompileOption == TexifySettings.AutoCompile.ALWAYS) {
+        if(file.fileType == LatexFileType && TexifySettings.getInstance().isAutoCompileImmediate()) {
             // Only do this for latex files and if the option is enabled
             AutoCompileState.requestAutoCompilation(project)
         }
@@ -30,7 +30,7 @@ class AutoCompileBackspaceHandler : BackspaceHandlerDelegate() {
 
     override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {
         val project = editor.project
-        if (file.isLatexFile() && project != null && TexifySettings.getInstance().autoCompileOption == TexifySettings.AutoCompile.ALWAYS) {
+        if (file.isLatexFile() && project != null && TexifySettings.getInstance().isAutoCompileImmediate()) {
             AutoCompileState.requestAutoCompilation(project)
         }
         return false

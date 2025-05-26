@@ -61,7 +61,7 @@ object AutoCompileState {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
             return
         }
-        if (!TexifySettings.getInstance().isAutoCompileEnabled()){
+        if (!TexifySettings.getInstance().isAutoCompileEnabled()) {
             return
         }
 
