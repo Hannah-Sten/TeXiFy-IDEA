@@ -176,6 +176,21 @@ Selecting a supported viewer as default means that you get forward and inverse s
 The supported pdf viewers are the [internal PDF viewer](PDF-viewers.md#pdf-viewer-intellij-plugin) on all platforms, [Sumatra](PDF-viewers.md#sumatrapdf) for Windows, and [Evince](PDF-viewers.md#evince), [Okular](PDF-viewers.md#okular), and [Zathura](PDF-viewers.md#zathura) for linux, or no pdf viewer at all.
 You can use any other pdf viewer by selecting the option Custom PDF Viewer.
 
+## Allow PDF viewer to focus after compilation
+
+In general, TeXiFy will try to forward search to the pdf viewer after compilation.
+Depending on the pdf viewer, this may transfer focus away from the IDE.
+If you do not want this, you can deselect this option.
+
+At the moment, the behaviour is:
+
+* _Evince_: will forward search and focus when this option is selected, will not forward search otherwise
+* _Okular_: will always forward search and never focus
+* _Skim_: will always forward search, will focus depending on the option
+* _Zathura_: will always forward search and focus
+* _SumatraPDF_: will always forward search, will focus depending on the option
+* _PDF Viewer Plugin_: will always forward search and never focus
+
 ## Custom pdf viewer
 
 In the Custom pdf viewer field you can specify the command for your favourite pdf viewer, so for example if the command is `okular somefile.pdf` then you can fill in `okular`  here.

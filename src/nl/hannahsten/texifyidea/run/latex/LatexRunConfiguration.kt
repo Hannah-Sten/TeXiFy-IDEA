@@ -67,6 +67,7 @@ class LatexRunConfiguration(
         private const val COMPILER_PATH = "compiler-path"
         private const val SUMATRA_PATH = "sumatra-path"
         private const val PDF_VIEWER = "pdf-viewer"
+        private const val REQUIRE_FOCUS = "require-focus"
         private const val VIEWER_COMMAND = "viewer-command"
         private const val COMPILER_ARGUMENTS = "compiler-arguments"
         private const val BEFORE_RUN_COMMAND = "before-run-command"
@@ -139,8 +140,11 @@ class LatexRunConfiguration(
     // Whether the run configuration has already been run or not, since it has been created
     var hasBeenRun = false
 
-    /** Whether the pdf viewer is allowed to claim focus after compilation. */
-    var allowFocusChange = true
+    /** Whether the pdf viewer should claim focus after compilation. */
+    var requireFocus = false
+
+    /** Whether the run configuration is currently auto-compiling.     */
+    var isAutoCompiling = false
 
     private var bibRunConfigIds = mutableSetOf<String>()
     var bibRunConfigs: Set<RunnerAndConfigurationSettings>
@@ -273,6 +277,8 @@ class LatexRunConfiguration(
             this.pdfViewer = TexifySettings.getInstance().pdfViewer
         }
 
+        this.requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
+
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
@@ -387,6 +393,7 @@ class LatexRunConfiguration(
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
+        parent.addContent(Element(REQUIRE_FOCUS).also { it.text = requireFocus.toString() })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)

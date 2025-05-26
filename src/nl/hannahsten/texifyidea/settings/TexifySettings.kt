@@ -115,6 +115,21 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     }
 
     fun isAutoCompileEnabled(): Boolean {
-        return autoCompileOption == AutoCompile.ALWAYS || (!PowerSaveMode.isEnabled() && autoCompileOption == AutoCompile.DISABLE_ON_POWER_SAVE)
+        return when (autoCompileOption) {
+            AutoCompile.OFF -> false
+            AutoCompile.ALWAYS, AutoCompile.AFTER_DOCUMENT_SAVE -> true
+            AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
+        }
+    }
+
+    /**
+     * Returns true if the auto compile should be triggered immediately after a change in the document.
+     */
+    fun isAutoCompileImmediate(): Boolean {
+        return when(autoCompileOption) {
+            AutoCompile.ALWAYS -> true
+            AutoCompile.OFF, AutoCompile.AFTER_DOCUMENT_SAVE -> false
+            AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
+        }
     }
 }

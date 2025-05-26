@@ -20,7 +20,7 @@ class OpenViewerListener(
     private val sourceFilePath: String,
     val line: Int,
     val project: Project,
-    val focusAllowed: Boolean = true
+    val focusAllowed: Boolean = false
 ) :
     ProcessListener {
 
@@ -44,9 +44,6 @@ class OpenViewerListener(
                 }
             }
         }
-
-        // Reset to default
-        runConfig.allowFocusChange = true
     }
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
