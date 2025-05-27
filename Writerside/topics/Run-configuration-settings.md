@@ -276,6 +276,14 @@ Custom output directories are supported.
 * You have to login to GitHub to use the Docker image: get a github token from [https://github.com/settings/tokens,](https://github.com/settings/tokens,) save it somewhere secure and run `echo my_token | docker login https://docker.pkg.github.com -u myusername --password-stdin`
   See [https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages) for more info.
 
+#### Advanced Docker setups
+
+TeXiFy provides a very limited interface to Docker: you can select images and configure the path to your docker executable, but most is hardcoded.
+For more advanced Docker configuration, we recommend to use the [Docker plugin](https://www.jetbrains.com/help/idea/docker.html).
+As a starting point, you can have a look at the command that TeXiFy runs if you select Docker in the run configuration, it will be at the top of the console output window.
+You can create a Docker run configuration to run a TeX Live or MiKTeX docker container.
+Then you can use any Docker flags or other features like podman support.
+
 ### Dockerized TeX Live
 
 Similar to the MiKTeX docker image, you can also use a texlive docker image if you have it installed.
