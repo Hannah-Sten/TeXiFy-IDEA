@@ -35,7 +35,7 @@ open class ConfigureInverseSearchAction : AnAction() {
             addOkAction()
             addCancelAction()
             setOkOperation {
-                SumatraViewer.configureInverseSearch()
+                SumatraViewer.configureInverseSearch(e.project)
                 dialogWrapper.close(0)
             }
 

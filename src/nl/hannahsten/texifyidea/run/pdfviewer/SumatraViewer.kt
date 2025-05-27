@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
@@ -10,19 +12,13 @@ import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer.sumatraRunnable
 import nl.hannahsten.texifyidea.util.runCommand
-import nl.hannahsten.texifyidea.util.runCommandNonBlocking
-import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.nio.file.Files
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.exists
-import kotlin.io.path.name
-import kotlin.io.path.pathString
+import kotlin.io.path.*
 
 /**
  * Send commands to SumatraPDF.
@@ -190,15 +186,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     }
 
     private fun sendSumatraCommand(vararg args: String) {
-        // Run the command in a new process and return the output and exit code
-        val sumatraCommand = sumatraRunnable?.pathString ?: return
-        GeneralCommandLine(sumatraCommand, *args)
+        val sumatraRunnable = this.sumatraRunnable
+        val sumatraCommand = sumatraRunnable?.pathString ?: "SumatraPDF"
+        val builder = GeneralCommandLine(sumatraCommand, *args)
             .withWorkingDirectory(sumatraRunnable?.parent)
             .toProcessBuilder()
-            .start()
-//        PdfViewerService.getInstance().coroutineScope.launch {
-//            runCommandNonBlocking(sumatraCommand, *args, discardOutput = true)
-//        }
+        builder.start()
     }
 
     /**
@@ -216,16 +209,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             catch (e: TeXception) {
             }
         }
-        GeneralCommandLine("cmd", "start", "SumatraPDF", "-reuse-instance", pdfPath)
+        val sumatraRunnable = this.sumatraRunnable
+        val sumatraCommand = sumatraRunnable?.pathString ?: "SumatraPDF"
+        GeneralCommandLine("cmd", "start", sumatraCommand, "-reuse-instance", pdfPath)
             .withWorkingDirectory(sumatraRunnable?.parent)
             .toProcessBuilder()
             .start()
-//        PdfViewerService.runInBackground {
-//            runCommandNonBlocking(
-//                "cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = sumatraRunnable?.parent?.toFile(),
-//                discardOutput = true
-//            )
-//        }
     }
 
     override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
@@ -296,32 +285,35 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return TeXception(message, e)
     }
 
-    fun configureInverseSearch() {
-        val sumatraWorkingDir = sumatraRunnable?.parent?.toFile() ?: return
+    fun configureInverseSearch(project: Project?) {
+        val sumatraRunnable = this.sumatraRunnable
+        if (sumatraRunnable == null) {
+            Notification("LaTeX", "SumatraPDF not found", "Please install SumatraPDF to use inverse search.", NotificationType.WARNING)
+                .notify(project)
+            return
+        }
 
         // First kill Sumatra to avoid having two instances open of which only one has the correct setting
         Runtime.getRuntime().exec(arrayOf("taskkill", "/IM", "SumatraPDF.exe"))
-        val path = PathManager.getBinPath()
-        var name = ApplicationNamesInfo.getInstance().scriptName
 
+        var name = ApplicationNamesInfo.getInstance().scriptName
         // If we can find a 64-bits Java, then we can start (the equivalent of) idea64.exe since that will use the 64-bits Java
         // see issue 104 and https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/809
         // If we find a 32-bits Java or nothing at all, we will keep (the equivalent of) idea.exe which is the default
         if (System.getProperty("sun.arch.data.model") == "64") {
             // We will assume that since the user is using a 64-bit IDEA that name64 exists, this is at least true for idea64.exe and pycharm64.exe on Windows
-            name += "64"
             // We also remove an extra "" because it opens an empty IDEA instance when present
-            runCommandWithExitCode(
-                "cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"",
-                workingDirectory = sumatraWorkingDir, discardOutput = true
-            )
+            name += "64"
         }
-        else {
-            runCommandWithExitCode(
-                "cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"",
-                workingDirectory = sumatraWorkingDir, discardOutput = true
-            )
-        }
+        name += ".exe"
+        val ideScriptPath = Path(PathManager.getHomePath(), "bin", name).absolutePathString()
+        GeneralCommandLine(
+            "cmd.exe", "/C", "start",
+            sumatraRunnable.pathString, "-inverse-search", "\"$ideScriptPath\" --line %l \"%f\""
+        )
+            .withWorkingDirectory(sumatraRunnable.parent)
+            .toProcessBuilder()
+            .start()
     }
 
     /**
