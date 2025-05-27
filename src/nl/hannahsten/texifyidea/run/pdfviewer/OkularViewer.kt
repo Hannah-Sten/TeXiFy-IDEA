@@ -17,6 +17,9 @@ object OkularViewer : SystemPdfViewer("Okular", "okular") {
      */
     private var pdfFilePath: String? = null
 
+    override val isFocusSupported: Boolean
+        get() = false
+
     /**
      * Execute a forward search, opens the pdf file in okular with the line that corresponds to the cursor roughly in the center.
      * Unfortunately this line does not get highlighted.

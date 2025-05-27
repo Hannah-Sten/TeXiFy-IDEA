@@ -59,7 +59,6 @@ abstract class SystemPdfViewer(
         }
     }
 
-    override fun isForwardSearchSupported(): Boolean {
-        return true
-    }
+    override val isForwardSearchSupported: Boolean
+        get() = true
 }

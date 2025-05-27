@@ -97,7 +97,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         pdfViewer.component.selectedItem = runConfiguration.pdfViewer
         requireFocus.isSelected = runConfiguration.requireFocus
-        requireFocus.isVisible = runConfiguration.pdfViewer?.isForwardSearchSupported() ?: false
+        requireFocus.isVisible = runConfiguration.pdfViewer?.let {
+            it.isForwardSearchSupported && it.isFocusSupported
+        } ?: false
 
         // Reset the pdf viewer command
         viewerCommand.text = runConfiguration.viewerCommand ?: ""
@@ -523,7 +525,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         pdfViewer.component.addItemListener { e ->
             if (e.stateChange == ItemEvent.SELECTED) {
                 val selectedViewer = pdfViewer.component.selectedItem as PdfViewer
-                requireFocus.isVisible = selectedViewer.isForwardSearchSupported()
+                requireFocus.isVisible = selectedViewer.isForwardSearchSupported && selectedViewer.isFocusSupported
             }
         }
 

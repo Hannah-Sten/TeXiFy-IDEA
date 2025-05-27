@@ -66,6 +66,9 @@ object EvinceViewer : SystemPdfViewer("Evince","evince") {
         findProcessOwner(pdfFilePath, project)
     }
 
+    override val isFocusSupported: Boolean
+        get() = false
+
     /**
      * Execute forward search, highlighting a certain line in Evince.
      * If a pdf file is given, it will execute FindDocument and open the pdf file again to find the latest process owner. If the pdf file is already open, this will do nothing.

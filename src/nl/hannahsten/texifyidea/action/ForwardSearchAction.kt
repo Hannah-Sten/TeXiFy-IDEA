@@ -21,7 +21,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (file.fileType !is LatexFileType) return
         val viewer = this.viewer ?: return
-        if (!viewer.isAvailable() || !viewer.isForwardSearchSupported()) return
+        if (!viewer.isAvailable() || !viewer.isForwardSearchSupported) return
 
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1

@@ -8,9 +8,16 @@ import com.pretty_tools.dde.DDEException
 import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer.sumatraRunnable
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.InvalidPathException
+import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.exists
+import kotlin.io.path.name
+import kotlin.io.path.pathString
 
 /**
  * Send commands to SumatraPDF.
@@ -61,7 +68,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
      *
      */
     @Volatile
-    private var sumatraRunnable: File? = null
+    private var sumatraRunnable: Path? = null
 
     @Volatile
     private var previousPdfPath: String? = null
@@ -104,12 +111,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         }
         // If we already know a valid path, we can skip the rest of the checks
         sumatraRunnable?.let {
-            if (trySumatraRunnablePath(it.absolutePath)) return true
+            if (trySumatraRunnablePath(it)) return true
         }
 
         val paths = runCommand("where", "SumatraPDF", workingDirectory = null)
         paths?.split("\n")?.firstOrNull()?.let {
-            sumatraRunnable = File(it)
+            sumatraRunnable = Path(it).toAbsolutePath()
             return true
         }
         // Try SumatraPDF in the following locations
@@ -117,10 +124,10 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe",
             "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe",
             "C:\\Program Files\\SumatraPDF\\SumatraPDF.exe",
-        ).map { File(it) }
+        ).map { Path(it) }
             .forEach {
                 if (it.exists()) {
-                    sumatraRunnable = it
+                    sumatraRunnable = it.toAbsolutePath()
                     return true
                 }
             }
@@ -137,7 +144,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
             val res = runCommand("reg", "query", commandPath, "/ve") ?: continue
             val runnablePath = parseRegSumatraPath(res) ?: continue
-            sumatraRunnable = File(runnablePath)
+            sumatraRunnable = Path(runnablePath).toAbsolutePath()
             return true
         }
 
@@ -154,20 +161,28 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     }
 
     fun trySumatraRunnablePath(path: String): Boolean {
-        if (path.isEmpty()) return false
-        val file = File(path)
-        if (!file.exists()) return false
-        if (!file.canExecute()) return false
-        if (!file.isFile) return false
-        if (file.name != "SumatraPDF.exe") return false
-        sumatraRunnable = file
+        return try {
+            trySumatraRunnablePath(Path(path))
+        }
+        catch (e: InvalidPathException) {
+            // If the path is not valid, we just return false
+            false
+        }
+    }
+
+    fun trySumatraRunnablePath(path: Path): Boolean {
+        if (!Files.exists(path) || !Files.isExecutable(path)) {
+            return false
+        }
+        if (path.name != "SumatraPDF.exe") return false
+        sumatraRunnable = path
         return true
     }
 
 
     private fun runSumatraCommand(vararg args: String): Pair<String?, Int> {
         // Run the command in a new process and return the output and exit code
-        val sumatraCommand = sumatraRunnable?.absolutePath ?: return Pair(null, 1)
+        val sumatraCommand = sumatraRunnable?.pathString ?: return Pair(null, 1)
         val res = runCommandWithExitCode(sumatraCommand, *args)
         return res
     }
@@ -186,7 +201,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             catch (e: TeXception) {
             }
         }
-        runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = sumatraRunnable?.parentFile, discardOutput = true)
+        runCommand("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = sumatraRunnable?.parent?.toFile())
 //        runSumatraCommand("-reuse-instance", quotedPdfPath)
     }
 
@@ -260,7 +275,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
 
     fun configureInverseSearch() {
-        val sumatraWorkingDir = sumatraRunnable?.parentFile ?: return
+        val sumatraWorkingDir = sumatraRunnable?.parent?.toFile() ?: return
 
         // First kill Sumatra to avoid having two instances open of which only one has the correct setting
         Runtime.getRuntime().exec(arrayOf("taskkill", "/IM", "SumatraPDF.exe"))
@@ -274,10 +289,16 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             // We will assume that since the user is using a 64-bit IDEA that name64 exists, this is at least true for idea64.exe and pycharm64.exe on Windows
             name += "64"
             // We also remove an extra "" because it opens an empty IDEA instance when present
-            runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, discardOutput = true)
+            runCommandWithExitCode(
+                "cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"",
+                workingDirectory = sumatraWorkingDir, discardOutput = true
+            )
         }
         else {
-            runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, discardOutput = true)
+            runCommandWithExitCode(
+                "cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"",
+                workingDirectory = sumatraWorkingDir, discardOutput = true
+            )
         }
     }
 

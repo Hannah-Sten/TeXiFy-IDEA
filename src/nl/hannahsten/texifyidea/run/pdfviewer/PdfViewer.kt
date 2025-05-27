@@ -15,7 +15,7 @@ import kotlin.collections.firstOrNull
 private val EP_NAME = ExtensionPointName<ExternalPdfViewer>("nl.rubensten.texifyidea.pdfViewer")
 
 /**
- * Interface that defines general behaviour of a PDF viewer.
+ * Interface that defines the general behavior of a PDF viewer.
  */
 interface PdfViewer {
 
@@ -31,9 +31,17 @@ interface PdfViewer {
      */
     fun isAvailable(): Boolean
 
-    fun isForwardSearchSupported(): Boolean {
-        return false
-    }
+    /**
+     * Whether the PDF viewer supports forward search.
+     */
+    val isForwardSearchSupported : Boolean
+        get() = false
+
+    /**
+     * Whether the PDF viewer supports focus change during forward search.
+     */
+    val isFocusSupported : Boolean
+        get() = false
 
     /**
      * Performs a forward search to navigate from the source file to the corresponding location in the document.

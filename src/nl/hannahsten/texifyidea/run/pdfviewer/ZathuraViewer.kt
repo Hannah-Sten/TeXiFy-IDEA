@@ -17,6 +17,9 @@ import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
 
+    override val isFocusSupported: Boolean
+        get() = true
+
     override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
         val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)
 
