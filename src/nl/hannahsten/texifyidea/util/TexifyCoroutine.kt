@@ -8,11 +8,11 @@ import kotlinx.coroutines.launch
 
 /**
  * Provides a service for running coroutines in the Texify plugin.
+ *
+ * We should not create [CoroutineScope] manually, but let the platform create it for us.
  */
 @Service
-class TexifyCoroutine(
-    val coroutineScope: CoroutineScope
-) {
+class TexifyCoroutine(val coroutineScope: CoroutineScope) {
     companion object {
         fun getInstance(): TexifyCoroutine {
             return ApplicationManager.getApplication().getService(TexifyCoroutine::class.java)

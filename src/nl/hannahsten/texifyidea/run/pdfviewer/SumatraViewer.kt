@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
@@ -191,9 +192,13 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     private fun sendSumatraCommand(vararg args: String) {
         // Run the command in a new process and return the output and exit code
         val sumatraCommand = sumatraRunnable?.pathString ?: return
-        PdfViewerService.getInstance().coroutineScope.launch {
-            runCommandNonBlocking(sumatraCommand, *args, discardOutput = true)
-        }
+        GeneralCommandLine(sumatraCommand, *args)
+            .withWorkingDirectory(sumatraRunnable?.parent)
+            .toProcessBuilder()
+            .start()
+//        PdfViewerService.getInstance().coroutineScope.launch {
+//            runCommandNonBlocking(sumatraCommand, *args, discardOutput = true)
+//        }
     }
 
     /**
@@ -211,12 +216,16 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             catch (e: TeXception) {
             }
         }
-        PdfViewerService.runInBackground {
-            runCommandNonBlocking(
-                "cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = sumatraRunnable?.parent?.toFile(),
-                discardOutput = true
-            )
-        }
+        GeneralCommandLine("cmd", "start", "SumatraPDF", "-reuse-instance", pdfPath)
+            .withWorkingDirectory(sumatraRunnable?.parent)
+            .toProcessBuilder()
+            .start()
+//        PdfViewerService.runInBackground {
+//            runCommandNonBlocking(
+//                "cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = sumatraRunnable?.parent?.toFile(),
+//                discardOutput = true
+//            )
+//        }
     }
 
     override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
