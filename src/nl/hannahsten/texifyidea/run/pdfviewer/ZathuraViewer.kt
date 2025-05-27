@@ -56,6 +56,7 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
             runConfigThatCompilesFile(sourceVirtualFile, project)?.outputFilePath ?: return null
         }
     }
+
     /**
      * Get the run config that compiles the virtualFile, i.e.,
      * the run configuration that has [virtualFile] as its main file.

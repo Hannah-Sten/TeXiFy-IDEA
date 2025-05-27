@@ -261,8 +261,8 @@ class LatexRunConfiguration(
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
-        this.pdfViewer = PdfViewer.availableViewers.firstOrNull {it.name == viewerName} ?:
-                PdfViewer.firstAvailableViewer
+        this.pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName } ?:
+            PdfViewer.firstAvailableViewer
 
         this.requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
 

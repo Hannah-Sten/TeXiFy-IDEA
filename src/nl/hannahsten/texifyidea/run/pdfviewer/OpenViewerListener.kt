@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import org.jetbrains.concurrency.runAsync
 
 /**
  * Execute a forward search with the selected viewer after the compilation is done.

@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project
  */
 object OkularViewer : SystemPdfViewer("Okular", "okular") {
 
-
     /**
      * Temporary variable to store the pdf file path.
      */

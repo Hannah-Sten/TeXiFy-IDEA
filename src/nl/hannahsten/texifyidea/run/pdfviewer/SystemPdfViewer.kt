@@ -18,7 +18,7 @@ abstract class SystemPdfViewer(
     /**
      * Check if the PDF viewer is available on the system, the result of this function is cached.
      */
-    protected open fun checkAvailabilityOnSystem(possiblePath : String? = null): Boolean {
+    protected open fun checkAvailabilityOnSystem(possiblePath: String? = null): Boolean {
         if (SystemInfo.isWindows) {
             val output = "where $viewerCommand".runCommand()
             return output?.contains("\\$viewerCommand") ?: false
@@ -49,7 +49,7 @@ abstract class SystemPdfViewer(
      * Refresh the availability of the PDF viewer.
      * For example, when the user installs or uninstalls the viewer, this method can be called.
      */
-    fun refreshAvailability(possiblePath : String? = null) {
+    fun refreshAvailability(possiblePath: String? = null) {
         availability = checkAvailabilityOnSystem(possiblePath)
     }
 

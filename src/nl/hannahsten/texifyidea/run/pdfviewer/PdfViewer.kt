@@ -25,7 +25,6 @@ interface PdfViewer {
     val name: String?
     val displayName: String?
 
-
     /**
      * Tells whether the PDF viewer is available.
      */
@@ -34,13 +33,13 @@ interface PdfViewer {
     /**
      * Whether the PDF viewer supports forward search.
      */
-    val isForwardSearchSupported : Boolean
+    val isForwardSearchSupported: Boolean
         get() = false
 
     /**
      * Whether the PDF viewer supports focus change during forward search.
      */
-    val isFocusSupported : Boolean
+    val isFocusSupported: Boolean
         get() = false
 
     /**

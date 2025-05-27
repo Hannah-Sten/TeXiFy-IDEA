@@ -32,7 +32,6 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     private const val SERVER = "SUMATRA"
     private const val TOPIC = "control"
 
-
     /*
     SumatraPDF can be used in two ways: command line and DDE.
 
@@ -55,13 +54,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         }
     }
 
-
     /*
- * Indicates whether SumatraPDF is installed and DDE communication is enabled.
- *
- * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
- * install SumatraPDF while running TeXiFy.
- */
+     * Indicates whether SumatraPDF is installed and DDE communication is enabled.
+     *
+     * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
+     * install SumatraPDF while running TeXiFy.
+     */
 
     /**
      * If we know a valid path containing SumatraPDF.exe, it will be stored here, in case as a last resort you really just want to open a Sumatra, doesn't matter which one.
@@ -72,7 +70,6 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
     @Volatile
     private var previousPdfPath: String? = null
-
 
     private fun getWherePath(res: Pair<String?, Int>): String? {
         val (paths, exitCode) = res
@@ -179,7 +176,6 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return true
     }
 
-
     private fun runSumatraCommand(vararg args: String): Pair<String?, Int> {
         // Run the command in a new process and return the output and exit code
         val sumatraCommand = sumatraRunnable?.pathString ?: return Pair(null, 1)
@@ -246,7 +242,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     private fun execute(vararg commands: String) {
         val conversation = this.conversation ?: throw TeXception(
             "DDE conversation could not be initialized. " +
-                    "Please ensure that the native library DLLs are available in the classpath."
+                "Please ensure that the native library DLLs are available in the classpath."
         )
         try {
             conversation.connect(SERVER, TOPIC)
@@ -272,7 +268,6 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             }
         return TeXception(message, e)
     }
-
 
     fun configureInverseSearch() {
         val sumatraWorkingDir = sumatraRunnable?.parent?.toFile() ?: return

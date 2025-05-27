@@ -30,7 +30,6 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
         if (pdfFilePath == null) {
             Notification("LaTeX", "Could not execute forward search", "Please make sure you have compiled the document first.", NotificationType.ERROR).notify(project)
             return
-
         }
         // This command opens the pdf file using the destination coming from the line in the tex file.
         val backgroundParameter = if (focusAllowed) "" else "-g"

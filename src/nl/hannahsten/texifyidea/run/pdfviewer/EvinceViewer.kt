@@ -25,14 +25,13 @@ import org.gnome.evince.SyncViewSourcePointStruct
 import org.gnome.evince.Window
 import java.io.IOException
 
-
 /**
  * Send commands to Evince.
  * For more information about D-Bus and forward/inverse search, see https://github.com/PHPirates/evince_dbus
  *
  * @author Thomas Schouten
  */
-object EvinceViewer : SystemPdfViewer("Evince","evince") {
+object EvinceViewer : SystemPdfViewer("Evince", "evince") {
 
     /**
      * Object path of the Evince daemon. Together with the object name, this allows us to find the
@@ -148,8 +147,6 @@ object EvinceViewer : SystemPdfViewer("Evince","evince") {
             Notification("LaTeX", "Cannot communicate to Evince", "The connection could not be established.", NotificationType.ERROR).notify(project)
         }
     }
-
-
 }
 
 /**
