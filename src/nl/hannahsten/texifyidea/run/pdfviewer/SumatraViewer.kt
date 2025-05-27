@@ -7,9 +7,13 @@ import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.DDEException
 import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer.sumatraRunnable
 import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.runCommandNonBlocking
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.nio.file.Files
 import java.nio.file.InvalidPathException
@@ -28,6 +32,14 @@ import kotlin.io.path.pathString
  * @since b0.4
  */
 object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
+
+    override val isFocusSupported: Boolean
+        get() = true
+
+    override val isForwardSearchSupported: Boolean
+        get() = true
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private const val SERVER = "SUMATRA"
     private const val TOPIC = "control"
@@ -176,11 +188,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return true
     }
 
-    private fun runSumatraCommand(vararg args: String): Pair<String?, Int> {
+    private fun sendSumatraCommand(vararg args: String) {
         // Run the command in a new process and return the output and exit code
-        val sumatraCommand = sumatraRunnable?.pathString ?: return Pair(null, 1)
-        val res = runCommandWithExitCode(sumatraCommand, *args)
-        return res
+        val sumatraCommand = sumatraRunnable?.pathString ?: return
+        PdfViewerService.getInstance().coroutineScope.launch {
+            runCommandNonBlocking(sumatraCommand, *args, discardOutput = true)
+        }
     }
 
     /**
@@ -189,6 +202,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focus: Boolean, forceRefresh: Boolean) {
         if (!isAvailable()) return
         val quotedPdfPath = "\"$pdfPath\""
+
         if (conversation != null) {
             try {
                 execute("Open($quotedPdfPath, ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
@@ -197,8 +211,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             catch (e: TeXception) {
             }
         }
-        runCommand("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = sumatraRunnable?.parent?.toFile())
-//        runSumatraCommand("-reuse-instance", quotedPdfPath)
+        PdfViewerService.runInBackground {
+            runCommandNonBlocking(
+                "cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfPath, workingDirectory = sumatraRunnable?.parent?.toFile(),
+                discardOutput = true
+            )
+        }
     }
 
     override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
@@ -221,7 +239,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         else {
             // Use command line to perform forward search, then we'd better have a valid pdfFilePath
             val pdfPath = pdfFilePath ?: previousPdfPath ?: ""
-            runSumatraCommand("-forward-search", sourceFilePath, line.toString(), pdfPath)
+            sendSumatraCommand("-forward-search", sourceFilePath, line.toString(), pdfPath)
             return
         }
     }
@@ -242,7 +260,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     private fun execute(vararg commands: String) {
         val conversation = this.conversation ?: throw TeXception(
             "DDE conversation could not be initialized. " +
-                "Please ensure that the native library DLLs are available in the classpath."
+                    "Please ensure that the native library DLLs are available in the classpath."
         )
         try {
             conversation.connect(SERVER, TOPIC)

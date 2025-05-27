@@ -7,13 +7,13 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.freedesktop.dbus.errors.NoReply
@@ -158,7 +158,8 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
  */
 object EvinceInverseSearchListener {
 
-    private var currentCoroutineScope = CoroutineScope(Dispatchers.Default)
+    private val currentCoroutineScope : CoroutineScope
+        get() = TexifyCoroutine.getInstance().coroutineScope
 
     private var sessionConnection: DBusConnection? = null
 

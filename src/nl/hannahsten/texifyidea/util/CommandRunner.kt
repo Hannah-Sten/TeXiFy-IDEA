@@ -6,6 +6,7 @@ import com.intellij.util.io.awaitExit
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
+import java.nio.file.Path
 import javax.swing.SwingUtilities
 
 data class CommandResult(
@@ -110,6 +111,29 @@ suspend fun runCommandNonBlocking(
             if (returnExceptionMessageAsErrorOutput) e.message else null
         )
     }
+}
+
+
+suspend fun sendCommandNonBlocking(
+    vararg commands: String,
+    workingDirectory: Path? = null,
+    timeout: Long = 3
+) : Int {
+    val processBuilder = GeneralCommandLine(*commands).withWorkingDirectory(workingDirectory)
+        .toProcessBuilder()
+    processBuilder.redirectError(ProcessBuilder.Redirect.DISCARD)
+    processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD)
+    val process = processBuilder.start()
+    val exitCode = withTimeoutOrNull(1_000 * timeout) {
+        withContext(Dispatchers.IO) {
+            process.awaitExit()
+        }
+    } ?: run {
+        process.destroy()
+        Log.debug("${commands.firstOrNull()} destroyed after timeout $timeout seconds")
+        -1
+    }
+    return exitCode
 }
 
 /**
