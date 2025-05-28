@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings
 
+import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
@@ -13,7 +14,6 @@ import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
-import javax.swing.InputVerifier
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -146,7 +146,7 @@ class TexifyConfigurable : SearchableConfigurable {
         }
         val subPanel = JPanel(FlowLayout(FlowLayout.LEFT))
 
-        val enableSumatraPath = JBLabel("Select custom path to SumatraPDF:")
+        val enableSumatraPath = JBLabel("Path to SumatraPDF (optional):")
         subPanel.add(enableSumatraPath)
 
         val sumatraPath = TextFieldWithBrowseButton()
@@ -163,13 +163,6 @@ class TexifyConfigurable : SearchableConfigurable {
             )
         )
         sumatraPath.isEnabled = true
-
-        sumatraPath.textField.inputVerifier = object : InputVerifier() {
-            override fun verify(input: JComponent?): Boolean {
-                val text = sumatraPath.text
-                return text.isBlank() || SumatraViewer.trySumatraPath(text)
-            }
-        }
         subPanel.add(sumatraPath)
         // set the path field to stretch to the right
         sumatraPath.preferredSize = Dimension(400, sumatraPath.preferredSize.height)
@@ -199,7 +192,13 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.entries.toTypedArray()[automaticQuoteReplacement?.selectedIndex ?: 0]
         settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
         settings.autoCompileOption = TexifySettings.AutoCompile.entries.toTypedArray()[autoCompileOption?.selectedIndex ?: 0]
-        settings.pathToSumatra = getUISumatraPath()
+        val path = getUISumatraPath()
+        if(path != null) {
+            if(!SumatraViewer.trySumatraPath(path)) {
+                throw RuntimeConfigurationError("Path to SumatraPDF is not valid: $path")
+            }
+            settings.pathToSumatra = path
+        }
     }
 
     override fun reset() {
