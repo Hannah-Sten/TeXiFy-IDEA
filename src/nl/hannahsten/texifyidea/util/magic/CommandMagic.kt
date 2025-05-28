@@ -374,6 +374,8 @@ object CommandMagic {
         INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
         USEPACKAGE.cmd to listOf(".sty"),
         EXTERNALDOCUMENT.cmd to listOf(".tex"),
+        TIKZFIG.cmd to listOf("tikz"),
+        CTIKZFIG.cmd to listOf("tikz"),
     )
 
     /**

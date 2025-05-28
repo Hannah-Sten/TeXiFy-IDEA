@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NTHEOREM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SVG
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TIKZIT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.VARIOREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
@@ -375,6 +376,8 @@ enum class LatexGenericRegularCommand(
     THINLINES("thinlines"),
     THISPAGESTYLE("thispagestyle", "style".asRequired()),
     THREF("thref", "label".asRequired(), dependency = NTHEOREM),
+    TIKZFIG("tikzfig", RequiredFileArgument("file name", false, false, "tikz", supportsAnyExtension = false), dependency = TIKZIT),
+    CTIKZFIG("ctikzfig", RequiredFileArgument("file name", false, false, "tikz", supportsAnyExtension = false), dependency = TIKZIT),
     TIME("time"),
     TINY("tiny"),
     TITLE("title", "text".asRequired(Argument.Type.TEXT)),
