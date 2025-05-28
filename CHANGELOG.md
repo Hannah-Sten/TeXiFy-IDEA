@@ -4,6 +4,7 @@
 
 ### Added
 
+* Improve performance on startup
 * Add support for file references for the tikzfig command
 * Add run configuration option to configure pdf viewer focus after compilation, by @Ezrnest
 * Update wsl command to use wsl --exec
