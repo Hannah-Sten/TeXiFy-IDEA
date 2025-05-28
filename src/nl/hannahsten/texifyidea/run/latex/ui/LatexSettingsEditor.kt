@@ -18,7 +18,6 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
-import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -210,7 +209,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         val filePath = txtFile.text
 
         // Might result in requiring a content root (for relative paths), so we have to run in the background
-        runInBackgroundNonBlocking(project, "Resolving main file..."){
+        runInBackgroundNonBlocking(project, "Resolving main file...") {
             runConfiguration.setMainFile(filePath)
         }
 

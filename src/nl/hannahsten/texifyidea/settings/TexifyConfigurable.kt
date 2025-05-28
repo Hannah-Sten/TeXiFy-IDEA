@@ -146,7 +146,7 @@ class TexifyConfigurable : SearchableConfigurable {
         }
         val subPanel = JPanel(FlowLayout(FlowLayout.LEFT))
 
-        val enableSumatraPath = JBLabel("Select custom path to SumatraPDF")
+        val enableSumatraPath = JBLabel("Select custom path to SumatraPDF:")
         subPanel.add(enableSumatraPath)
 
         val sumatraPath = TextFieldWithBrowseButton()
