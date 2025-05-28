@@ -18,6 +18,7 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
+import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -30,7 +31,7 @@ import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurat
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
+import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -39,7 +40,7 @@ import javax.swing.JPanel
 /**
  * @author Sten Wessel
  */
-class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexRunConfiguration>() {
+class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRunConfiguration>() {
 
     private lateinit var panel: JPanel
     private lateinit var compiler: LabeledComponent<ComboBox<LatexCompiler>>
@@ -207,8 +208,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply main file.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
         val filePath = txtFile.text
+
         // Might result in requiring a content root (for relative paths), so we have to run in the background
-        runInBackgroundBlocking(project, "Resolving main file...") {
+        runInBackgroundNonBlocking(project, "Resolving main file..."){
             runConfiguration.setMainFile(filePath)
         }
 
@@ -277,7 +279,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val argumentsEditor = EditorTextField("", project, PlainTextFileType.INSTANCE)
         argumentsLabel.labelFor = argumentsEditor
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler
-        project?.let { project ->
+        project.let { project ->
             val options = LatexCommandLineOptionsCache.getOptionsOrFillCache(selectedCompiler.executableName, project)
             LatexArgumentsCompletionProvider(options).apply(argumentsEditor)
         }
@@ -324,7 +326,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 FileChooserDescriptorFactory.createSingleFileDescriptor()
                     .withTitle("Choose a File to Compile")
                     .withExtensionFilter("tex")
-                    .withRoots(*ProjectRootManager.getInstance(project!!).contentRootsFromAllModules.toSet().toTypedArray())
+                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
@@ -344,13 +346,13 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // LaTeX distribution
         @Suppress("DialogTitleCapitalization")
-        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project!!) }.toTypedArray()), "LaTeX Distribution")
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray()), "LaTeX Distribution")
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
 
         // Extension panel
-        externalToolsPanel = RunConfigurationPanel(project!!, "External LaTeX programs: ")
+        externalToolsPanel = RunConfigurationPanel(project, "External LaTeX programs: ")
         panel.add(externalToolsPanel)
     }
 
@@ -363,7 +365,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                     FileChooserDescriptor(false, true, false, false, false, false)
                         .withTitle("Auxiliary Files Directory")
                         .withRoots(
-                            *ProjectRootManager.getInstance(project!!)
+                            *ProjectRootManager.getInstance(project)
                                 .contentRootsFromAllModules
                         )
                 )
@@ -378,7 +380,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 FileChooserDescriptor(false, true, false, false, false, false)
                     .withTitle("Output Files Directory")
                     .withRoots(
-                        *ProjectRootManager.getInstance(project!!)
+                        *ProjectRootManager.getInstance(project)
                             .contentRootsFromAllModules
                     )
             )

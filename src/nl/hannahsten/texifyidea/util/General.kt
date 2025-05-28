@@ -85,7 +85,7 @@ fun TextRange.toIntRange() = startOffset until endOffset
 fun Pattern.matches(sequence: CharSequence?) = if (sequence != null) matcher(sequence).matches() else false
 
 /**
- * Use [runInBackgroundNonBlocking] instead
+ * Use [runInBackgroundNonBlocking] instead, this is also not a blocking call.
  */
 @Deprecated("Use runInBackground, and convert all runReadAction to smartReadAction")
 fun runInBackgroundBlocking(project: Project?, description: String, function: (indicator: ProgressIndicator) -> Unit) {
@@ -103,7 +103,7 @@ fun runInBackgroundNonBlocking(project: Project, description: String, function: 
     // We don't need to block until it finished
     TexifyCoroutine.runInBackground {
         withBackgroundProgress(project, description) {
-            // Work size only allows integers, but we don't know the size here yet, so we start at 100.0%
+            // Work size only allows integers, but we don't know the total size here yet, so we set it to 1000.
             reportProgress(size = 1000) { function(it) }
         }
     }
