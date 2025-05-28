@@ -113,12 +113,11 @@ suspend fun runCommandNonBlocking(
     }
 }
 
-
 suspend fun sendCommandNonBlocking(
     vararg commands: String,
     workingDirectory: Path? = null,
     timeout: Long = 3
-) : Int {
+): Int {
     val processBuilder = GeneralCommandLine(*commands).withWorkingDirectory(workingDirectory)
         .toProcessBuilder()
     processBuilder.redirectError(ProcessBuilder.Redirect.DISCARD)

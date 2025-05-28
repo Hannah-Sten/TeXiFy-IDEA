@@ -5,7 +5,6 @@ import com.intellij.openapi.components.Service
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 /**
  * Provides a service for running coroutines in the Texify plugin.
  *

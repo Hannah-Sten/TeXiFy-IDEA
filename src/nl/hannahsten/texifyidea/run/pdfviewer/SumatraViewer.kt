@@ -10,10 +10,8 @@ import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.DDEException
 import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer.sumatraRunnable
+import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Files
 import java.nio.file.InvalidPathException
@@ -21,11 +19,9 @@ import java.nio.file.Path
 import kotlin.io.path.*
 
 /**
- * Send commands to SumatraPDF.
+ * The SumatraPDF viewer, which is a lightweight PDF viewer for Windows.
  *
- * This is available on Windows only.
- *
- * @author Sten Wessel
+ * @author Sten Wessel, Li Ernest
  * @since b0.4
  */
 object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
@@ -36,13 +32,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     override val isForwardSearchSupported: Boolean
         get() = true
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     private const val SERVER = "SUMATRA"
     private const val TOPIC = "control"
 
     /*
-    SumatraPDF can be used in two ways: command line and DDE.
+    SumatraPDF can be used in two ways: command line and DDE,
+    we use DDE if available, otherwise we fall back to command line.
 
     https://github.com/sumatrapdfreader/sumatrapdf/blob/master/docs/md/Command-line-arguments.md
      */
@@ -72,15 +67,14 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
     /**
      * If we know a valid path containing SumatraPDF.exe, it will be stored here, in case as a last resort you really just want to open a Sumatra, doesn't matter which one.
-     *
      */
     @Volatile
-    private var sumatraRunnable: Path? = null
+    private var sumatraPath: Path? = null
 
     @Volatile
     private var previousPdfPath: String? = null
 
-    private fun getWherePath(res: Pair<String?, Int>): String? {
+    private fun parsePathFromCommandWhere(res: Pair<String?, Int>): String? {
         val (paths, exitCode) = res
         if (exitCode != 0 || paths == null) {
             return null
@@ -88,7 +82,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return paths.split("\n").firstOrNull()
     }
 
-    private fun parseRegSumatraPath(regOutput: String): String? {
+    private fun parseRegistrySumatraPath(regOutput: String): String? {
         /*
         Example output of the command:
 
@@ -107,22 +101,19 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     }
 
     /**
-     * Checks the availability of SumatraPDF on the system and sets the [sumatraRunnable] variable
+     * Checks the availability of SumatraPDF on the system and (re)sets the SumatraPDF executable path.
      */
     override fun checkAvailabilityOnSystem(possiblePath: String?): Boolean {
         if (!SystemInfo.isWindows) return false
-        if (possiblePath != null && trySumatraRunnablePath(possiblePath)) {
+        if (possiblePath != null && trySumatraPath(possiblePath)) {
             // If a possible path is provided, we can try to assign it directly
             return true
         }
         // If we already know a valid path, we can skip the rest of the checks
-        sumatraRunnable?.let {
-            if (trySumatraRunnablePath(it)) return true
-        }
 
         val paths = runCommand("where", "SumatraPDF", workingDirectory = null)
         paths?.split("\n")?.firstOrNull()?.let {
-            sumatraRunnable = Path(it).toAbsolutePath()
+            sumatraPath = Path(it).toAbsolutePath()
             return true
         }
         // Try SumatraPDF in the following locations
@@ -133,7 +124,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         ).map { Path(it) }
             .forEach {
                 if (it.exists()) {
-                    sumatraRunnable = it.toAbsolutePath()
+                    sumatraPath = it.toAbsolutePath()
                     return true
                 }
             }
@@ -147,10 +138,9 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         )
         for (reg in regEntries) {
             val commandPath = "$reg\\shell\\open\\command"
-
             val res = runCommand("reg", "query", commandPath, "/ve") ?: continue
-            val runnablePath = parseRegSumatraPath(res) ?: continue
-            sumatraRunnable = Path(runnablePath).toAbsolutePath()
+            val runnablePath = parseRegistrySumatraPath(res) ?: continue
+            sumatraPath = Path(runnablePath).toAbsolutePath()
             return true
         }
 
@@ -166,9 +156,13 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return false
     }
 
-    fun trySumatraRunnablePath(path: String): Boolean {
+    /**
+     * Try to set the path to the SumatraPDF executable.
+     * Returns true if the path is valid and points to SumatraPDF.exe.
+     */
+    fun trySumatraPath(path: String): Boolean {
         return try {
-            trySumatraRunnablePath(Path(path))
+            trySumatraPath(Path(path))
         }
         catch (e: InvalidPathException) {
             // If the path is not valid, we just return false
@@ -176,17 +170,26 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         }
     }
 
-    fun trySumatraRunnablePath(path: Path): Boolean {
+    /**
+     * Try to set the path to the SumatraPDF executable.
+     * Returns true if the path is valid and points to SumatraPDF.exe.
+     */
+    fun trySumatraPath(path: Path): Boolean {
+        if(!SystemInfo.isWindows) return false
         if (!Files.exists(path) || !Files.isExecutable(path)) {
             return false
         }
         if (path.name != "SumatraPDF.exe") return false
-        sumatraRunnable = path
+        sumatraPath = path
         return true
     }
 
+    fun getSumatraPath(): Path? {
+        return sumatraPath
+    }
+
     private fun sendSumatraCommand(vararg args: String) {
-        val sumatraRunnable = this.sumatraRunnable
+        val sumatraRunnable = this.sumatraPath
         val sumatraCommand = sumatraRunnable?.pathString ?: "SumatraPDF"
         val builder = GeneralCommandLine(sumatraCommand, *args)
             .withWorkingDirectory(sumatraRunnable?.parent)
@@ -203,13 +206,13 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
         if (conversation != null) {
             try {
-                execute("Open($quotedPdfPath, ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
+                execute("Open($quotedPdfPath, ${newWindow.int}, ${focus.int}, ${forceRefresh.int})")
                 return
             }
             catch (e: TeXception) {
             }
         }
-        val sumatraRunnable = this.sumatraRunnable
+        val sumatraRunnable = this.sumatraPath
         val sumatraCommand = sumatraRunnable?.pathString ?: "SumatraPDF"
         GeneralCommandLine("cmd", "start", sumatraCommand, "-reuse-instance", pdfPath)
             .withWorkingDirectory(sumatraRunnable?.parent)
@@ -232,7 +235,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         if (conversation != null) {
             // let SumatraPDF determine the PDF file path if it is not provided
             val pdfPath = if (pdfFilePath != null) "\"$pdfFilePath\", " else ""
-            execute("ForwardSearch($pdfPath\"$sourceFilePath\", $line, 0, ${newWindow.bit}, ${focus.bit})")
+            execute("ForwardSearch($pdfPath\"$sourceFilePath\", $line, 0, ${newWindow.int}, ${focus.int})")
         }
         else {
             // Use command line to perform forward search, then we'd better have a valid pdfFilePath
@@ -258,7 +261,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     private fun execute(vararg commands: String) {
         val conversation = this.conversation ?: throw TeXception(
             "DDE conversation could not be initialized. " +
-                    "Please ensure that the native library DLLs are available in the classpath."
+                "Please ensure that the native library DLLs are available in the classpath."
         )
         try {
             conversation.connect(SERVER, TOPIC)
@@ -286,7 +289,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     }
 
     fun configureInverseSearch(project: Project?) {
-        val sumatraRunnable = this.sumatraRunnable
+        val sumatraRunnable = this.sumatraPath
         if (sumatraRunnable == null) {
             Notification("LaTeX", "SumatraPDF not found", "Please install SumatraPDF to use inverse search.", NotificationType.WARNING)
                 .notify(project)
@@ -346,6 +349,3 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         }
     }
 }
-
-private val Boolean.bit: Int
-    get() = if (this) 1 else 0

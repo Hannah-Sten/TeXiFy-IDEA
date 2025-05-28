@@ -158,7 +158,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
  */
 object EvinceInverseSearchListener {
 
-    private val currentCoroutineScope : CoroutineScope
+    private val currentCoroutineScope: CoroutineScope
         get() = TexifyCoroutine.getInstance().coroutineScope
 
     private var sessionConnection: DBusConnection? = null

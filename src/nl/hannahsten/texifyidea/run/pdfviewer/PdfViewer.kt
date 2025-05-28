@@ -70,9 +70,8 @@ interface PdfViewer {
 
     companion object {
 
-        val internalViewers = listOf(
-            SumatraViewer, EvinceViewer, OkularViewer, ZathuraViewer, SkimViewer, NoViewer
-        )
+        val internalViewers
+            get() = listOf(SumatraViewer, EvinceViewer, OkularViewer, ZathuraViewer, SkimViewer, NoViewer)
 
         val externalViewers
             get() = EP_NAME.extensionList
@@ -87,9 +86,7 @@ interface PdfViewer {
          * Gets the list of all available PDF viewers, both internal and external.
          */
         val availableViewers: List<PdfViewer>
-            by lazy {
-                allViewers.filter { it.isAvailable() }
-            }
+            get() = allViewers.filter { it.isAvailable() }
 
         val firstAvailableViewer: PdfViewer
             get() {
@@ -103,7 +100,7 @@ interface PdfViewer {
                     } ?: availableViewers.first()
                 }
                 else {
-                    return availableViewers.first()
+                    return allViewers.first { it.isAvailable() }
                 }
             }
     }

@@ -7,6 +7,7 @@ import com.intellij.openapi.components.RoamingType
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 
 /**
  * @author Sten Wessel
@@ -62,6 +63,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var htmlPasteTranslator = HtmlPasteTranslator.BUILTIN
     var autoCompileOption = AutoCompile.OFF
+    var pathToSumatra: String? = null
 
     /**
      * Backwards compatibility. This value is never altered, only read from/to memory.
@@ -89,7 +91,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             automaticQuoteReplacement = automaticQuoteReplacement,
             htmlPasteTranslator = htmlPasteTranslator,
             autoCompileOption = autoCompileOption,
-            pdfViewer = pdfViewer
+            pdfViewer = pdfViewer,
+            pathToSumatra = pathToSumatra,
         )
     }
 
@@ -112,6 +115,13 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         // Backwards compatibility
         autoCompileOption = state.autoCompileOption ?: if (state.autoCompileOnSaveOnly) AutoCompile.AFTER_DOCUMENT_SAVE else if (state.autoCompile) AutoCompile.ALWAYS else AutoCompile.OFF
         pdfViewer = state.pdfViewer
+        pathToSumatra = state.pathToSumatra
+    }
+
+    override fun initializeComponent() {
+        pathToSumatra?.let {
+            SumatraViewer.trySumatraPath(it)
+        }
     }
 
     fun isAutoCompileEnabled(): Boolean {

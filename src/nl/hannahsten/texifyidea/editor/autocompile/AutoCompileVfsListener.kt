@@ -27,7 +27,7 @@ class AutoCompileVfsListener : AsyncFileListener {
                 // In order to figure out which run configuration should run, we currently just run the selected run configuration in the currently open project
                 // suggestParentWindow needs to run in EDT
                 TexifyCoroutine.runInBackground {
-                    val project =  withContext(Dispatchers.EDT) {
+                    val project = withContext(Dispatchers.EDT) {
                         ProjectManager.getInstance().openProjects.firstOrNull {
                             WindowManager.getInstance().suggestParentWindow(it)?.isActive == true
                         }

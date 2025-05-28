@@ -10,7 +10,6 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.EditorTextField
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
@@ -33,7 +32,6 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
 import java.awt.event.ItemEvent
-import javax.swing.InputVerifier
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -63,12 +61,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var externalToolsPanel: RunConfigurationPanel
 
-    /** Whether to enable the sumatraPath text field. */
-    private lateinit var enableSumatraPath: JBCheckBox
-
-    /** Allow users to specify a custom path to SumatraPDF.  */
-    private lateinit var sumatraPath: TextFieldWithBrowseButton
-
     private lateinit var pdfViewer: LabeledComponent<ComboBox<PdfViewer?>>
 
     /** Whether to require focus after compilation. */
@@ -88,12 +80,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Reset the custom compiler path
         compilerPath.text = runConfiguration.compilerPath ?: ""
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
-
-        if (::sumatraPath.isInitialized) {
-            // Reset the custom SumatraPDF path
-            sumatraPath.text = runConfiguration.sumatraPath ?: ""
-            enableSumatraPath.isSelected = runConfiguration.sumatraPath != null
-        }
 
         pdfViewer.component.selectedItem = runConfiguration.pdfViewer
         requireFocus.isSelected = runConfiguration.requireFocus
@@ -201,13 +187,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply custom compiler path if applicable
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
 
-        if (::sumatraPath.isInitialized) {
-            // Apply custom SumatraPDF path if applicable
-            runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
-
-            runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
-        }
-
         runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
         runConfiguration.requireFocus = requireFocus.isSelected
 
@@ -290,8 +269,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
         addCompilerPathField(panel)
-
-        addSumatraPathField(panel)
 
         addPdfViewerCommandField(panel)
 
@@ -457,56 +434,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             component.addItem(viewer)
         }
         pdfViewer.updateUI()
-    }
-
-    /**
-     * Optional custom path for SumatraPDF.
-     */
-    private fun addSumatraPathField(panel: JPanel) {
-        class PathInputVerifier : InputVerifier() {
-
-            override fun verify(input: JComponent?): Boolean {
-                updatePdfViewerComboBox()
-                return true
-            }
-        }
-
-        if (SystemInfo.isWindows) {
-            enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
-            panel.add(enableSumatraPath)
-
-            sumatraPath = TextFieldWithBrowseButton().apply {
-                @Suppress("DialogTitleCapitalization")
-                addBrowseFolderListener(
-                    TextBrowseFolderListener(
-                        FileChooserDescriptor(false, true, false, false, false, false)
-                            .withTitle("SumatraPDF.exe Location")
-                    )
-                )
-
-                isEnabled = false
-
-                addPropertyChangeListener("enabled") { e ->
-                    if (!(e.newValue as Boolean)) {
-                        this.setText(null)
-                    }
-                }
-            }
-
-            sumatraPath.textField.inputVerifier = PathInputVerifier()
-
-            enableSumatraPath.addItemListener { e ->
-                if (e.stateChange != ItemEvent.SELECTED) {
-                    // Removes the custom Sumatra path from SumatraAvailabilityChecker when unchecked
-                    // TODO
-//                    SumatraAvailabilityChecker.isSumatraPathAvailable(null)
-                    updatePdfViewerComboBox()
-                }
-                sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED
-            }
-
-            panel.add(sumatraPath)
-        }
     }
 
     /**
