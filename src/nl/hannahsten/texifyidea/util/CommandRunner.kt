@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.util.io.awaitExit
 import kotlinx.coroutines.*
+import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
 import javax.swing.SwingUtilities
@@ -65,8 +66,8 @@ suspend fun runCommandNonBlocking(
 
         try {
             if (input != null) outputWriter.write(input)
-            val output = if (!discardOutput) async { inputReader.readText() } else null
-            val error = if (!discardOutput) async { errorReader.readText() } else null
+            val output = if (!discardOutput) async { readTextIgnoreClosedStream(inputReader) } else null
+            val error = if (!discardOutput) async { readTextIgnoreClosedStream(errorReader) } else null
 
             // Make sure the await() is done within the timeout, otherwise the timeout will not work, see example in #3921
             val result = withTimeoutOrNull(1_000 * timeout) {
@@ -110,6 +111,18 @@ suspend fun runCommandNonBlocking(
             if (returnExceptionMessageAsErrorOutput) e.message else null
         )
     }
+}
+
+private fun readTextIgnoreClosedStream(reader: BufferedReader): String? = try {
+    reader.readText()
+}
+catch (e: IOException) {
+    // Not sure how this can happen (#4062)
+    if (e.message?.contains("Stream closed") == true) {
+        Log.info("Ignored closed stream: " + e.message)
+        e.message
+    }
+    else throw e
 }
 
 /**
