@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.openapi.application.runReadAction
+import arrow.atomic.AtomicBoolean
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
@@ -13,13 +14,10 @@ import com.intellij.util.indexing.IndexableSetContributor
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.addToLuatexPathSearchDirectories
-import nl.hannahsten.texifyidea.util.getTexinputsPaths
-import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
-import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
@@ -33,7 +31,9 @@ import java.nio.file.Path
 class LatexIndexableSetContributor : IndexableSetContributor() {
 
     object Cache {
-        var externalDirectFileInclusions: Set<VirtualFile>? = null
+        var externalDirectFileInclusions = mutableMapOf<Project, Set<VirtualFile>>()
+
+        val cacheFillInProgress = AtomicBoolean(false)
     }
 
     override fun getAdditionalProjectRootsToIndex(project: Project): MutableSet<VirtualFile> {
@@ -76,21 +76,36 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         roots.addAll(getTexinputsPaths(project, rootFiles = listOf(), expandPaths = false).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) })
 
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
-        if (Cache.externalDirectFileInclusions == null && !DumbService.isDumb(project)) {
-            runInBackgroundBlocking(project, "Searching for inclusions by absolute path...") {
+        fillExternalDirectFileInclusionsCache(project)
+        roots.addAll(Cache.externalDirectFileInclusions.getOrDefault(project, emptySet()).filter { it.exists() })
+
+        Log.debug("Indexing source roots $roots")
+        return roots
+    }
+
+    private fun fillExternalDirectFileInclusionsCache(project: Project) {
+        if (!Cache.externalDirectFileInclusions.keys.contains(project).not() || DumbService.isDumb(project)) return
+        if (!Cache.cacheFillInProgress.getAndSet(true).not()) return
+        // Don't wait for the result, as somehow this may block the UI? #4055 This function seems to be called quite often so let's hope it's okay to miss it the first time
+        runInBackgroundNonBlocking(project, "Searching for inclusions by absolute path...") { reporter ->
+            try {
                 // Bibliography and direct input commands
                 val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
-                val externalFiles = LatexIncludesIndex.Util.getCommandsByNames(commandNames, project, GlobalSearchScope.projectScope(project))
+                val includeCommands = LatexIncludesIndex.Util.getCommandsByNamesNonBlocking(commandNames, project, GlobalSearchScope.projectScope(project), useCache = false)
+                val workSize = includeCommands.size
+                val externalFiles = includeCommands
                     // We can't add single files, so take the parent
                     .mapNotNull {
-                        val path = runReadAction { if (!it.isValid) null else it.requiredParameter(0) } ?: return@mapNotNull null
-                        val file = if (File(path).isAbsolute) {
-                            LocalFileSystem.getInstance().findFileByPath(path)
+                        reporter.sizedStep((PROGRESS_SIZE / workSize)) {
+                            val path = smartReadAction(project) { if (!it.isValid) null else it.requiredParameter(0) } ?: return@sizedStep null
+                            val file = if (File(path).isAbsolute) {
+                                LocalFileSystem.getInstance().findFileByPath(path)
+                            }
+                            else {
+                                smartReadAction(project) { if (!it.isValid) null else it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
+                            }
+                            smartReadAction(project) { file?.parent }
                         }
-                        else {
-                            runReadAction { if (!it.isValid) null else it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
-                        }
-                        runReadAction { file?.parent }
                     }
                     .toMutableList()
 
@@ -98,13 +113,12 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                 val luatexPathDirectories = addToLuatexPathSearchDirectories(project)
                 externalFiles.addAll(luatexPathDirectories)
 
-                Cache.externalDirectFileInclusions = externalFiles.toSet()
+                Cache.externalDirectFileInclusions[project] = externalFiles.toSet()
+            }
+            finally {
+                Cache.cacheFillInProgress.set(false)
             }
         }
-        roots.addAll(Cache.externalDirectFileInclusions?.filter { it.exists() } ?: emptyList())
-
-        Log.debug("Indexing source roots $roots")
-        return roots
     }
 
     /**
@@ -117,6 +131,8 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
     private fun extractMiktexFiles(root: VirtualFile, indicator: ProgressIndicator): Boolean {
         val txArchiver = TarXZUnArchiver()
         val zips = File(root.path).list { _, name -> name.endsWith("tar.xz") } ?: return false
+        // See AbstractProgressIndicatorBase.java:213
+        indicator.isIndeterminate = false
         for ((index, zipName) in zips.withIndex()) {
             indicator.fraction = index.toDouble() / zips.size
             txArchiver.sourceFile = File(root.path, zipName)

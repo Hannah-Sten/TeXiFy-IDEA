@@ -110,12 +110,20 @@ fun runInBackgroundNonBlocking(project: Project, description: String, function: 
     }
 }
 
+const val PROGRESS_SIZE = 1000
+
+/**
+ * See https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#coroutine-read-actions-api
+ *
+ * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
+ * Use smartReadAction instead.
+ */
 suspend fun runInBackground(project: Project, description: String, function: suspend (ProgressReporter) -> Unit) = withContext(Dispatchers.IO) {
     // We don't need to suspend and wait for the result
     launch {
         withBackgroundProgress(project, description) {
             // Work size only allows integers, but we don't know the size here yet, so we start at 100.0%
-            reportProgress(size = 1000) { function(it) }
+            reportProgress(size = PROGRESS_SIZE) { function(it) }
         }
     }
 }

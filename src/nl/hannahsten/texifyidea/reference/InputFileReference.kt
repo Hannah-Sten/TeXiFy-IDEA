@@ -13,6 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -212,7 +213,8 @@ class InputFileReference(
 
         // addtoluatexpath package
         if (targetFile == null && checkAddToLuatexPath) {
-            for (path in addToLuatexPathSearchDirectories(element.project)) {
+            // Reused cached values (provided shortly after project open) for performance reasons
+            for (path in LatexIndexableSetContributor.Cache.externalDirectFileInclusions.getOrDefault(element.project, emptySet())) {
                 targetFile = path.findFile(processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
             }
