@@ -648,10 +648,10 @@ class LatexRunConfiguration(
 
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
-                ", compilerPath=" + compilerPath +
-                ", mainFile=" + mainFile +
-                ", outputFormat=" + outputFormat +
-                '}'.toString()
+            ", compilerPath=" + compilerPath +
+            ", mainFile=" + mainFile +
+            ", outputFormat=" + outputFormat +
+            '}'.toString()
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects

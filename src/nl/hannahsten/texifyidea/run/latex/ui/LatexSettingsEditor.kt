@@ -30,7 +30,6 @@ import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurat
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JLabel
