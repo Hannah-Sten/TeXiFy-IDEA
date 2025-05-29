@@ -208,10 +208,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         val txtFile = mainFile.component as TextFieldWithBrowseButton
         val filePath = txtFile.text
 
-        // Might result in requiring a content root (for relative paths), so we have to run in the background
-        runInBackgroundNonBlocking(project, "Resolving main file...") {
-            runConfiguration.setMainFile(filePath)
-        }
+        runConfiguration.setMainFile(filePath)
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
         if (!outputPathTextField.text.endsWith("/bin")) {

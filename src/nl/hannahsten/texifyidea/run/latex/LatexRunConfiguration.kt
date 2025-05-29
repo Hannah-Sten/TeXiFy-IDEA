@@ -11,6 +11,8 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -251,8 +253,7 @@ class LatexRunConfiguration(
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
-        this.pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName } ?:
-            PdfViewer.firstAvailableViewer
+        this.pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName } ?: PdfViewer.firstAvailableViewer
 
         this.requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
 
@@ -494,24 +495,39 @@ class LatexRunConfiguration(
             this.mainFile = null
             return
         }
+        val isDispatchThread = ApplicationManager.getApplication().isDispatchThread
         val fileSystem = LocalFileSystem.getInstance()
         // Check if the file is valid and exists
-        val mainFile = fileSystem.findFileByPath(mainFilePath)
+        val mainFile = if (isDispatchThread) {
+            fileSystem.findFileByPath(mainFilePath)
+        }
+        else {
+            // this is a read action
+            ReadAction.compute<VirtualFile?, Throwable> { fileSystem.findFileByPath(mainFilePath) }
+        }
+
         if (mainFile?.extension == "tex") {
             this.mainFile = mainFile
             return
         }
+        // Maybe it is a relative path
+        val projectRootManager =
+            ProjectRootManager.getInstance(project)
+        val contentRoots = if (isDispatchThread) {
+            projectRootManager.contentRoots
+        }
         else {
-            // Maybe it is a relative path
-            ProjectRootManager.getInstance(project).contentRoots.forEach {
-                val file = it.findFileByRelativePath(mainFilePath)
-                if (file?.extension == "tex") {
-                    this.mainFile = file
-                    return
-                }
+            // a read action again
+            ReadAction.compute<Array<VirtualFile>, Throwable> { projectRootManager.contentRoots }
+        }
+        for (contentRoot in contentRoots) {
+            // Check if the file exists in the content root
+            val file = contentRoot.findFileByRelativePath(mainFilePath)
+            if (file?.extension == "tex") {
+                this.mainFile = file
+                return
             }
         }
-
         this.mainFile = null
     }
 
@@ -636,11 +652,11 @@ class LatexRunConfiguration(
 
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
-            ", compilerPath=" + compilerPath +
-            ", sumatraPath=" + sumatraPath +
-            ", mainFile=" + mainFile +
-            ", outputFormat=" + outputFormat +
-            '}'.toString()
+                ", compilerPath=" + compilerPath +
+                ", sumatraPath=" + sumatraPath +
+                ", mainFile=" + mainFile +
+                ", outputFormat=" + outputFormat +
+                '}'.toString()
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
