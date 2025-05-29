@@ -12,6 +12,7 @@
 
 ### Fixed
 
+* Fix an issue with the file set cache when opening multiple projects
 * Fix auto compilation not rerunning correctly, by @Ezrnest
 * Fix SumatraPDF forward search not using the correct file, by @Ezrnest
 * Fix extra whitespace when inserting commands in math mode, by @Ezrnest
