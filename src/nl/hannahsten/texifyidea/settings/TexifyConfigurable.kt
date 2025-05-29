@@ -170,7 +170,8 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     private fun getUISumatraPath(): String? {
-        return sumatraPath?.text?.takeIf { it.isNotBlank() }
+        val res = sumatraPath?.text?.takeIf { it.isNotBlank() }
+        return res
     }
 
     override fun isModified(): Boolean {
@@ -197,8 +198,8 @@ class TexifyConfigurable : SearchableConfigurable {
             if(!SumatraViewer.trySumatraPath(path)) {
                 throw RuntimeConfigurationError("Path to SumatraPDF is not valid: $path")
             }
-            settings.pathToSumatra = path
         }
+        settings.pathToSumatra = path
     }
 
     override fun reset() {
