@@ -1,14 +1,15 @@
 package nl.hannahsten.texifyidea.action
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
 import nl.hannahsten.texifyidea.util.selectedRunConfig
@@ -22,11 +23,15 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
-
-        when (viewer) {
-            is ExternalPdfViewer -> (viewer as ExternalPdfViewer).forwardSearch(null, file.path, line, project, focusAllowed = true)
-            is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(null, file.path, line, project, focusAllowed = true)
-            else -> return
+        try {
+            viewer?.forwardSearch(null, file.path, line, project, focusAllowed = true)
+        }
+        catch (e: TeXception) {
+            // Show a notification if the forward search fails, but only catch TeXception and let other unexpected exceptions bubble up.
+            Notification(
+                "LaTeX", "Forward search error", "${e.message}",
+                NotificationType.WARNING
+            ).notify(project)
         }
     }
 

@@ -4,13 +4,18 @@
 
 ### Added
 
+* Improve performance on startup
+* Add support for file references for the tikzfig command
+* Add run configuration option to configure pdf viewer focus after compilation, by @Ezrnest
 * Update wsl command to use wsl --exec
 * Support user defined commands when checking for text arguments for Grazie
 
 ### Fixed
 
+* Fix auto compilation not rerunning correctly, by @Ezrnest
+* Fix SumatraPDF forward search not using the correct file, by @Ezrnest
 * Fix extra whitespace when inserting commands in math mode, by @Ezrnest
-* Fix exceptions #4035, #4044
+* Fix exceptions #4035, #4044, #4058
 * Create run configuration process in background
 
 ## [0.10.3] - 2025-05-16

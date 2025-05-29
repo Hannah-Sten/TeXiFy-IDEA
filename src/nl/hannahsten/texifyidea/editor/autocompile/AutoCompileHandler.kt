@@ -10,34 +10,29 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
- * On every added (or deleted, see [AutoCompileBackspacehandler]) character, make sure the document is compiled.
+ * On every added (or deleted, see [AutoCompileBackspaceHandler]) character, make sure the document is compiled.
  */
-class AutocompileHandler : TypedHandlerDelegate() {
+class AutocompileTypedHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        run {
+        if(file.fileType == LatexFileType && TexifySettings.getInstance().isAutoCompileImmediate()) {
             // Only do this for latex files and if the option is enabled
-            if (file.fileType != LatexFileType || !TexifySettings.getInstance().isAutoCompileEnabled()) {
-                return@run
-            }
-
-            AutoCompileState.documentChanged(project)
+            AutoCompileState.requestAutoCompilation(project)
         }
-
         return super.charTyped(char, project, editor, file)
     }
 }
 
-class AutoCompileBackspacehandler : BackspaceHandlerDelegate() {
+class AutoCompileBackspaceHandler : BackspaceHandlerDelegate() {
 
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {
-        val project = editor.project
-        if (file.isLatexFile() && project != null && TexifySettings.getInstance().isAutoCompileEnabled()) {
-            AutoCompileState.documentChanged(project)
-        }
     }
 
     override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {
+        val project = editor.project
+        if (file.isLatexFile() && project != null && TexifySettings.getInstance().isAutoCompileImmediate()) {
+            AutoCompileState.requestAutoCompilation(project)
+        }
         return false
     }
 }

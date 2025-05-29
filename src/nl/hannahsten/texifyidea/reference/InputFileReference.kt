@@ -4,6 +4,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.findDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -12,6 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -110,7 +112,7 @@ class InputFileReference(
             // If the current file is a root file, then we assume paths have to be relative to this file. In particular, when using subfiles then parts that are relative to one of the other root files should not be valid
             .let { if (element.containingFile in it) listOf(element.containingFile) else it }
             .mapNotNull { it.virtualFile }
-        val rootDirectories = rootFiles.mapNotNull { it.parent }
+        val rootDirectories = rootFiles.mapNotNull { it.parent }.toMutableList()
 
         // Check environment variables
         searchPaths += getTexinputsPaths(element.project, rootFiles, expandPaths = true, latexmkSearchDirectory = element.containingFile?.virtualFile?.parent)
@@ -149,6 +151,11 @@ class InputFileReference(
         var processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
         // Leading and trailing whitespaces seem to be ignored, at least it holds for \include-like commands
         processedKey = processedKey.trim()
+
+        // This command has a hardcoded path, this is difficult to detect automatically
+        if (element.name == LatexGenericRegularCommand.TIKZFIG.commandWithSlash || element.name == LatexGenericRegularCommand.CTIKZFIG.commandWithSlash) {
+            rootDirectories.addAll(rootDirectories.mapNotNull { it.findDirectory("figures") })
+        }
 
         var targetFile: VirtualFile? = null
 
@@ -206,7 +213,8 @@ class InputFileReference(
 
         // addtoluatexpath package
         if (targetFile == null && checkAddToLuatexPath) {
-            for (path in addToLuatexPathSearchDirectories(element.project)) {
+            // Reused cached values (provided shortly after project open) for performance reasons
+            for (path in LatexIndexableSetContributor.Cache.externalDirectFileInclusions.getOrDefault(element.project, emptySet())) {
                 targetFile = path.findFile(processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
             }

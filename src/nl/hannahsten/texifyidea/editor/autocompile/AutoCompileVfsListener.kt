@@ -30,7 +30,7 @@ class AutoCompileVfsListener : AsyncFileListener {
                     } ?: return@runInEdt
                     runInBackgroundWithoutProgress {
                         // This should not run in EDT, because getting a RunManager instance will run blocking, which means we may get a deadlock if something else requests a read action (#3931)
-                        AutoCompileState.documentChanged(project)
+                        AutoCompileState.requestAutoCompilation(project)
                     }
                 }
             }

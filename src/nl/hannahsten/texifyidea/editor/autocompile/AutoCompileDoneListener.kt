@@ -10,7 +10,7 @@ import com.intellij.openapi.util.Key
 class AutoCompileDoneListener : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        AutoCompileState.scheduleCompilationIfNecessary()
+        AutoCompileState.compilationFinished()
     }
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
