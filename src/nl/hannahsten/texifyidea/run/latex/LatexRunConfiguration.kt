@@ -63,7 +63,6 @@ class LatexRunConfiguration(
         private const val TEXIFY_PARENT = "texify"
         private const val COMPILER = "compiler"
         private const val COMPILER_PATH = "compiler-path"
-        private const val SUMATRA_PATH = "sumatra-path"
         private const val PDF_VIEWER = "pdf-viewer"
         private const val REQUIRE_FOCUS = "require-focus"
         private const val VIEWER_COMMAND = "viewer-command"
@@ -87,8 +86,6 @@ class LatexRunConfiguration(
 
     var compiler: LatexCompiler? = null
     var compilerPath: String? = null
-    var sumatraPath: String? = null
-    var enableSumatraPath: Boolean? = false
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
@@ -369,7 +366,6 @@ class LatexRunConfiguration(
 
         parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
-        parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(REQUIRE_FOCUS).also { it.text = requireFocus.toString() })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
@@ -653,7 +649,6 @@ class LatexRunConfiguration(
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
                 ", compilerPath=" + compilerPath +
-                ", sumatraPath=" + sumatraPath +
                 ", mainFile=" + mainFile +
                 ", outputFormat=" + outputFormat +
                 '}'.toString()
