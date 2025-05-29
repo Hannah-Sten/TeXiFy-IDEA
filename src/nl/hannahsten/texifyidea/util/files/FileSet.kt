@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -18,6 +17,7 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.PROGRESS_SIZE
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.isDefinition
@@ -54,7 +54,7 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     return roots
         .associateWith { root ->
             // Map root to all directly referenced files.
-            reporter?.sizedStep((1000 / roots.size)) {
+            reporter?.sizedStep((PROGRESS_SIZE / roots.size)) {
                 root.referencedFiles(root.virtualFile, isImportPackageUsed, usesLuatexPaths) + root
             } ?: (root.referencedFiles(root.virtualFile, isImportPackageUsed, usesLuatexPaths) + root)
         }
@@ -164,7 +164,7 @@ fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
 /**
  * The addtoluatexpath package supports adding to \input@path in different ways
  */
-fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
+suspend fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
     val luatexPaths = getLuatexPaths(project)
 
     val luatexPathDirectories = luatexPaths.flatMap {
@@ -182,13 +182,13 @@ fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
     return luatexPathDirectories
 }
 
-fun getLuatexPaths(project: Project): List<String> {
-    val direct = runReadAction { LatexCommandsIndex.Util.getCommandsByNames(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project)) }
-        .mapNotNull { command -> runReadAction { command.requiredParameter(0) } }
+suspend fun getLuatexPaths(project: Project): List<String> {
+    val direct = LatexCommandsIndex.Util.getCommandsByNamesNonBlocking(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project))
+        .mapNotNull { command -> smartReadAction(project) { command.requiredParameter(0) } }
         .flatMap { it.split(",") }
-    val viaUsepackage = runReadAction { LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.packageInclusionCommands, project, GlobalSearchScope.projectScope(project)) }
-        .filter { runReadAction { it.requiredParameter(0) } == LatexPackage.ADDTOLUATEXPATH.name }
-        .flatMap { runReadAction { it.getOptionalParameterMap().keys } }
+    val viaUsepackage = LatexIncludesIndex.Util.getCommandsByNamesNonBlocking(CommandMagic.packageInclusionCommands, project, GlobalSearchScope.projectScope(project))
+        .filter { smartReadAction(project) { it.requiredParameter(0) } == LatexPackage.ADDTOLUATEXPATH.name }
+        .flatMap { smartReadAction(project) { it.getOptionalParameterMap().keys } }
         .flatMap { it.text.split(",") }
 
     return direct + viaUsepackage

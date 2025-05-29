@@ -96,6 +96,8 @@ fun runInBackgroundBlocking(project: Project?, description: String, function: (i
     })
 }
 
+const val PROGRESS_SIZE = 1000
+
 /**
  * Runs the given function in a background thread, with a fake progress indicator, using [TexifyCoroutine.coroutineScope].
  */
@@ -103,11 +105,17 @@ fun runInBackgroundNonBlocking(project: Project, description: String, function: 
     // We don't need to block until it finished
     TexifyCoroutine.runInBackground {
         withBackgroundProgress(project, description) {
-            // Work size only allows integers, but we don't know the total size here yet, so we set it to 1000.
-            reportProgress(size = 1000) { function(it) }
+            reportProgress(size = PROGRESS_SIZE) { function(it) }
         }
     }
 }
+
+/*
+ * See https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#coroutine-read-actions-api
+ *
+ * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
+ * Use smartReadAction instead.
+ */
 
 // https://plugins.jetbrains.com/docs/intellij/background-processes.html
 fun runInBackgroundWithoutProgress(function: () -> Unit) {
