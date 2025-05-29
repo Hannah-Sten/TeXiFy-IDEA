@@ -22,6 +22,9 @@ data class TexifySettingsState(
     var htmlPasteTranslator: TexifySettings.HtmlPasteTranslator = TexifySettings.HtmlPasteTranslator.BUILTIN,
     var autoCompileOption: TexifySettings.AutoCompile? = null,
     var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
+
+    var hasApprovedDetexify: Boolean = false,
+
     // Kept for backwards compatibility
     var autoCompile: Boolean = false,
     var autoCompileOnSaveOnly: Boolean = false,

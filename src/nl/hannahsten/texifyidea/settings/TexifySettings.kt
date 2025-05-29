@@ -63,6 +63,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var htmlPasteTranslator = HtmlPasteTranslator.BUILTIN
     var autoCompileOption = AutoCompile.OFF
 
+    var hasApprovedDetexify = false
+
     /**
      * Backwards compatibility. This value is never altered, only read from/to memory.
      *
@@ -89,7 +91,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             automaticQuoteReplacement = automaticQuoteReplacement,
             htmlPasteTranslator = htmlPasteTranslator,
             autoCompileOption = autoCompileOption,
-            pdfViewer = pdfViewer
+            pdfViewer = pdfViewer,
+            hasApprovedDetexify = hasApprovedDetexify
         )
     }
 
@@ -112,6 +115,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         // Backwards compatibility
         autoCompileOption = state.autoCompileOption ?: if (state.autoCompileOnSaveOnly) AutoCompile.AFTER_DOCUMENT_SAVE else if (state.autoCompile) AutoCompile.ALWAYS else AutoCompile.OFF
         pdfViewer = state.pdfViewer
+        hasApprovedDetexify = state.hasApprovedDetexify
     }
 
     fun isAutoCompileEnabled(): Boolean {
