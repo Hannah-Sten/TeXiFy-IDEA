@@ -32,7 +32,7 @@ It can be downloaded from [https://www.sumatrapdfreader.org/download-free-pdf-vi
 If you know you are on a 64-bit system you can download the 64-bit build installer. If you have no idea, download the normal installer which is the top-most link.
 
 Normally, the plugin will automatically detect the SumatraPDF executable if it is in your PATH or if you have installed it in one of the default locations.
-If it does not, you can specify the path to the executable in the [TeXiFy settings](TeXiFy-settings.md#sumatrapdf-executable-path).
+If it does not, you can specify the path to the executable in the [TeXiFy settings](TeXiFy-settings.md#path-to-sumatrapdf-windows-only).
 
 ### Shortcuts {id="sumatra-shortcuts"}
 
