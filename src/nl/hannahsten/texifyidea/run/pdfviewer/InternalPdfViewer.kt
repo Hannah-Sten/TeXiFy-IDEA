@@ -79,3 +79,10 @@ class Okular(override val name: String = "Okular") : InternalPdfViewer("okular",
 class Zathura(override val name: String = "Zathura") : InternalPdfViewer("zathura", "Zathura", ZathuraConversation)
 class Skim(override val name: String = "Skim") : InternalPdfViewer("skim", "Skim", SkimConversation)
 class Sumatra(override val name: String = "Sumatra") : InternalPdfViewer("sumatra", "Sumatra", SumatraConversation)
+class DefaultSystemViewer(override val name: String = "System default") : InternalPdfViewer(when {
+    SystemInfo.isMac -> "open"
+    SystemInfo.isLinux -> "xdg-open"
+    else -> ""
+}, "System default", null) {
+    override fun isAvailable(): Boolean = this.executableName.isNotBlank()
+}

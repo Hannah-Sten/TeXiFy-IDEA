@@ -8,6 +8,7 @@ import com.intellij.execution.ui.FragmentedSettingsUtil
 import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.project.Project
@@ -18,6 +19,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.util.ui.JBDimension
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.Compiler
 import nl.hannahsten.texifyidea.run.compiler.latex.CustomLatexCompiler
@@ -148,8 +150,7 @@ object CommonLatexFragments {
     fun createMainFileFragment(commandLinePosition: Int, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, TextFieldWithBrowseButton> {
         val mainFileField = TextFieldWithBrowseButton()
         mainFileField.minimumSize = standardDimension
-        mainFileField.addBrowseFolderListener("Choose a File to Compile", "Select the main LaTeX file passed to the compiler", project,
-            FileTypeDescriptor("LaTeX File", ".tex"))
+        mainFileField.addBrowseFolderListener(project, FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType))
 
         MacrosDialog.addMacroSupport(mainFileField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
         setMonospaced(mainFileField.textField)

@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.DefaultSystemViewer
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -86,6 +87,20 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
                 0
             }
 
+            is DefaultSystemViewer, is CustomPdfViewer -> {
+                val executable = if (viewer is DefaultSystemViewer) {
+                    (viewer as DefaultSystemViewer).executableName
+                }
+                else {
+                    (viewer as CustomPdfViewer).executablePath
+                }
+                // todo working dir, arguments, env vars
+                // Keep process running after timeout, for example the Evince command will not exit
+                // when a pdf is opened, regardless of whether there is an error or not
+                // but we might need to continue with other steps.
+                runCommandWithExitCode(executable, absolutePdfPath, timeout = 1L, killAfterTimeout = false).second
+            }
+
             is InternalPdfViewer -> (viewer as InternalPdfViewer).conversation?.forwardSearch(
                 absolutePdfPath,
                 texFile.path,
@@ -93,15 +108,6 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
                 project,
                 focusAllowed = true
             ) ?: throw TeXception("There was a problem communicating with pdf viewer $viewer")
-
-            is CustomPdfViewer -> {
-                val executable = (viewer as CustomPdfViewer).executablePath
-                // todo working dir, arguments, env vars
-                // Keep process running after timeout, for example the Evince command will not exit
-                // when a pdf is opened, regardless of whether there is an error or not
-                // but we might need to continue with other steps.
-                runCommandWithExitCode(executable, absolutePdfPath, timeout = 1L, killAfterTimeout = false).second
-            }
 
             else -> throw TeXception("Running pdf viewer $viewer is not yet implemented.")
         }
