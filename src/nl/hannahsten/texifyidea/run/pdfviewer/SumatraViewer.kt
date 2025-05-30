@@ -121,13 +121,17 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             "${System.getenv("HOMEDRIVE")}${System.getenv("HOMEPATH")}\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe",
             "C:\\Users\\${System.getenv("USERNAME")}\\AppData\\Local\\SumatraPDF\\SumatraPDF.exe",
             "C:\\Program Files\\SumatraPDF\\SumatraPDF.exe",
-        ).map { Path(it) }
-            .forEach {
-                if (it.exists()) {
-                    sumatraPath = it.toAbsolutePath()
+        ).forEach {
+            try {
+                val path = Path(it)
+                if (path.exists()) {
+                    sumatraPath = path.toAbsolutePath()
                     return true
                 }
+            } catch (ignored: InvalidPathException) {
+                // If the path is not valid, we just skip it
             }
+        }
 
         // Try some SumatraPDF registry keys
         // For some reason this first one isn't always present anymore, it used to be
@@ -164,7 +168,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return try {
             trySumatraPath(Path(path))
         }
-        catch (e: InvalidPathException) {
+        catch (ignored: InvalidPathException) {
             // If the path is not valid, we just return false
             false
         }
@@ -209,7 +213,8 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
                 execute("Open($quotedPdfPath, ${newWindow.int}, ${focus.int}, ${forceRefresh.int})")
                 return
             }
-            catch (e: TeXception) {
+            catch (ignored: TeXception) {
+                // If the DDE command fails, we fall back to the command line.
             }
         }
         val sumatraRunnable = this.sumatraPath
