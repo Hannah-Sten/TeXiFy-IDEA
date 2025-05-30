@@ -163,10 +163,6 @@ For example, if your LaTeX file contains
 then you can put `\newcommand{\waarde}{false}` in this field in your run configuration to set the value of the boolean to `false`.
 This works for at least pdflatex, lualatex, xelatex and latexmk.
 
-## Custom SumatraPDF path
-
-See [(Windows) Choose a custom path to SumatraPDF](PDF-viewers.md#portable-sumatrapdf).
-
 ## Choose pdf viewer
 _Since b0.7.2_
 

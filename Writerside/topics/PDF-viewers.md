@@ -31,6 +31,9 @@ On Windows, TeXiFy supports SumatraPDF as a pdf viewer with forward and inverse 
 It can be downloaded from [https://www.sumatrapdfreader.org/download-free-pdf-viewer.html](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html).
 If you know you are on a 64-bit system you can download the 64-bit build installer. If you have no idea, download the normal installer which is the top-most link.
 
+Normally, the plugin will automatically detect the SumatraPDF executable if it is in your PATH or if you have installed it in one of the default locations.
+If it does not, you can specify the path to the executable in the [TeXiFy settings](TeXiFy-settings.md#sumatrapdf-executable-path).
+
 ### Shortcuts {id="sumatra-shortcuts"}
 
 The default shortcut for forward search in IntelliJ is <shortcut>Ctrl + Alt + Shift + .</shortcut>.
@@ -57,14 +60,13 @@ cmd.exe /C start SumatraPDF -inverse-search "\"C:\path\to\idea\bin\idea64.exe\" 
 
 Now you can double left-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ.
 
-### Portable SumatraPDF
+### Portable SumatraPDF {id="sumatra-portable"}
 _Since b0.6.6_
 
 There also is support for portable SumatraPDF installations, in case you cannot install use the normal installer for example if you do not have administrator rights.
-Open your [run configuration](Running-a-LaTeX-file.md), click Select custom SumatraPDF path and specify in the text field the folder which contains `SumatraPDF.exe`, either by editing the field or by clicking the folder icon on the right.
-When you run the run configuration, SumatraPDF should open.
+Open your [TeXiFy settings](TeXiFy-settings.md), find the setting "SumatraPDF executable path"
+and specify in the text field the path to `SumatraPDF.exe`, either by editing the field or by clicking the folder icon on the right.
 
-Note that to use forward and inverse search, the folder containing `SumatraPDF.exe` should be added to your PATH, or the registry key `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\SumatraPDF.exe` should be set to the path to `SumatraPDF.exe`.
 
 ### "No synchronization info at this position" or "Synchronization file cannot be opened"
 After compiling your file and after SumatraPDF opens up, if you get errors in SumatraPDF such as "No synchronization info at this position" or "Synchronization file cannot be opened", it might be an issue with SumatraPDF itself (see here : [https://github.com/sumatrapdfreader/sumatrapdf/discussions/2741,](https://github.com/sumatrapdfreader/sumatrapdf/discussions/2741,) https://github.com/sumatrapdfreader/sumatrapdf/issues/2642). The issue doesn’t seem to appear when closing the file in SumatraPDF, and then opening it without compiling. The issue seems to appear only after a compilation. A fix that seems to work is to install the portable version of SumatraPDF. Don’t forget to add "SumatraPDF.exe" to your PATH variables or in the registry editor (see above in Portable SumatraPDF section).
