@@ -113,7 +113,7 @@ See [Textidote](Spacing.md#textidote)
 
 ## Path to SumatraPDF (Windows only)
 
-[//]: # (_Since b0.10_ specify the version) 
+_Since b0.10.4_
 
 Sets the custom path to the SumatraPDF executable, see [SumatraPDF](PDF-viewers.md#sumatrapdf). 
 
