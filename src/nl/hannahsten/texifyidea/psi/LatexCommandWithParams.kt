@@ -1,12 +1,11 @@
 package nl.hannahsten.texifyidea.psi
 
-import com.intellij.psi.PsiElement
 
 /**
  * This class allows the LatexCommandsImplMixin class to 'inject' methods into LatexCommands(Impl).
  * In general, it is more straightforward to provide extension methods in LatexCommandsUtil.
  */
-interface LatexCommandWithParams : PsiElement {
+interface LatexCommandWithParams : LatexComposite {
 
     /**
      * Get the name of the command, for example \newcommand, from the stub if available, otherwise default to getting the text from psi.
