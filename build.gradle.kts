@@ -111,8 +111,7 @@ dependencies {
 
         bundledPlugin("com.intellij.java")
         bundledPlugin("tanvd.grazi")
-        // todo support pdf viewer plugin
-//        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.0")
+        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.0")
         plugin("com.jetbrains.hackathon.indices.viewer:1.29")
         // Does not work in tests: https://youtrack.jetbrains.com/issue/GRZ-5023
 //        plugin("com.intellij.grazie.pro:0.3.347")

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.action
 
 import com.intellij.execution.RunManager
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -79,7 +80,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
         val line = textEditor?.editor?.document?.getLineNumber(textEditor.editor.caretModel.offset)?.plus(1) ?: 1
 
-        return when (viewer) {
+        val exitCode = when (viewer) {
             is ExternalPdfViewer -> {
                 (viewer as ExternalPdfViewer).forwardSearch(absolutePdfPath, texFile.path, line, project, focusAllowed = true)
                 0
@@ -104,6 +105,13 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
             else -> throw TeXception("Running pdf viewer $viewer is not yet implemented.")
         }
+
+        if (exitCode == 0) {
+            // Set this viewer as viewer to forward search to in the future.
+            (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
+        }
+
+        return exitCode
     }
 
 }
