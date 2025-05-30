@@ -115,10 +115,10 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         paths?.split("\n")?.firstOrNull()?.let {
             try {
                 sumatraPath = Path(it).toAbsolutePath()
+                return true
             } catch (ignored: InvalidPathException) {
                 // If the path is not valid, we just skip it
             }
-            return true
         }
         // Try SumatraPDF in the following locations
         listOf(
