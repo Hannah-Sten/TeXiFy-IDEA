@@ -113,7 +113,11 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
         val paths = runCommand("where", "SumatraPDF", workingDirectory = null)
         paths?.split("\n")?.firstOrNull()?.let {
-            sumatraPath = Path(it).toAbsolutePath()
+            try {
+                sumatraPath = Path(it).toAbsolutePath()
+            } catch (ignored: InvalidPathException) {
+                // If the path is not valid, we just skip it
+            }
             return true
         }
         // Try SumatraPDF in the following locations
@@ -144,7 +148,11 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             val commandPath = "$reg\\shell\\open\\command"
             val res = runCommand("reg", "query", commandPath, "/ve") ?: continue
             val runnablePath = parseRegistrySumatraPath(res) ?: continue
-            sumatraPath = Path(runnablePath).toAbsolutePath()
+            try {
+                sumatraPath = Path(runnablePath).toAbsolutePath()
+            } catch (ignored: InvalidPathException) {
+                // If the path is not valid, we just skip it
+            }
             return true
         }
 
