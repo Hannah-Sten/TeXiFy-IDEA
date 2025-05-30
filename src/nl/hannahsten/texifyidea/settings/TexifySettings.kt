@@ -65,6 +65,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var autoCompileOption = AutoCompile.OFF
     var pathToSumatra: String? = null
 
+    var hasApprovedDetexify = false
+
     /**
      * Backwards compatibility. This value is never altered, only read from/to memory.
      *
@@ -93,6 +95,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             autoCompileOption = autoCompileOption,
             pdfViewer = pdfViewer,
             pathToSumatra = pathToSumatra,
+            hasApprovedDetexify = hasApprovedDetexify,
         )
     }
 
@@ -115,6 +118,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         // Backwards compatibility
         autoCompileOption = state.autoCompileOption ?: if (state.autoCompileOnSaveOnly) AutoCompile.AFTER_DOCUMENT_SAVE else if (state.autoCompile) AutoCompile.ALWAYS else AutoCompile.OFF
         pdfViewer = state.pdfViewer
+        hasApprovedDetexify = state.hasApprovedDetexify
         pathToSumatra = state.pathToSumatra
     }
 

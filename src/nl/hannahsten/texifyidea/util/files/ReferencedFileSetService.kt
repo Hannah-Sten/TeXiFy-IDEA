@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 
 /**
@@ -24,9 +24,7 @@ interface ReferencedFileSetService {
 
     fun rootFilesOf(psiFile: PsiFile, useIndexCache: Boolean = true): Set<PsiFile>
 
-    fun dropCaches(file: VirtualFile)
-
-    fun dropAllCaches()
+    fun dropAllCaches(project: Project)
 
     fun markCacheOutOfDate()
 }

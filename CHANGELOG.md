@@ -4,6 +4,7 @@
 
 ### Added
 
+* Add warning to Detexify tool window
 * Improve performance on startup
 * Add support for file references for the tikzfig command
 * Add run configuration option to configure pdf viewer focus after compilation, by @Ezrnest
@@ -12,6 +13,7 @@
 
 ### Fixed
 
+* Fix an issue with the file set cache when opening multiple projects
 * Fix auto compilation not rerunning correctly, by @Ezrnest
 * Fix SumatraPDF forward search not using the correct file, by @Ezrnest
 * Fix extra whitespace when inserting commands in math mode, by @Ezrnest
