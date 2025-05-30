@@ -150,10 +150,10 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             val runnablePath = parseRegistrySumatraPath(res) ?: continue
             try {
                 sumatraPath = Path(runnablePath).toAbsolutePath()
+                return true
             } catch (ignored: InvalidPathException) {
                 // If the path is not valid, we just skip it
             }
-            return true
         }
 
         // https://github.com/sumatrapdfreader/sumatrapdf/discussions/2855#discussioncomment-3336646
