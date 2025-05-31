@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.linuxpdfviewer.zathura
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
@@ -11,17 +11,23 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
-object ZathuraConversation : ViewerConversation() {
+object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
 
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-        val pdfPathGuess = pdfPath ?: guessPdfPath(project, sourceFilePath)
+    override val isFocusSupported: Boolean
+        get() = true
+
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)
 
         if (pdfPathGuess != null) {
+            if(!focusAllowed) {
+                // The following command will take focus, so we have to abort
+                return
+            }
             val path = PathManager.getBinPath()
             val name = ApplicationNamesInfo.getInstance().scriptName
             val command =

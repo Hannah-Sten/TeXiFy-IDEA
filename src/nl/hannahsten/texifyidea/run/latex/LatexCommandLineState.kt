@@ -26,12 +26,9 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.OpenViewerListener
+import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -292,16 +289,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
         val pdfViewer = runConfig.pdfViewer
         // Do nothing if the user selected that they do not want a viewer to open.
-        if (pdfViewer == InternalPdfViewer.NONE) return
 
-        if (pdfViewer is ExternalPdfViewer
-            || pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)
-            || (
-                pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable
-                    && runConfig.outputFormat == LatexCompiler.Format.PDF
-                ) // Sumatra does not support DVI
-        ) {
-            scheduleForwardSearchAfterCompile(pdfViewer!!, handler, runConfig, environment, focusAllowed)
+        if (pdfViewer != null) {
+            // the pdf viewer is well defined, so we can use it
+            scheduleForwardSearchAfterCompile(pdfViewer, handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

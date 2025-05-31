@@ -111,6 +111,12 @@ When this setting is enabled, the 'code' scope can still be disabled.
 
 See [Textidote](Spacing.md#textidote)
 
+## Path to SumatraPDF (Windows only)
+
+_Since b0.10.4_
+
+Sets the custom path to the SumatraPDF executable, see [SumatraPDF](PDF-viewers.md#sumatrapdf). 
+
 ## Latexindent command line options
 
 Extra command line options to [Latexindent](Code-formatting.md#latexindent)
