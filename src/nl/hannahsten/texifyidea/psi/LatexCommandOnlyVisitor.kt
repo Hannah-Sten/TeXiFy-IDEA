@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.psi
 
-import com.intellij.psi.PsiElement
+import com.intellij.openapi.progress.ProgressIndicatorProvider
 
 /**
  * A visitor that only visits [LatexCommands] elements.
@@ -22,8 +22,8 @@ abstract class LatexCommandOnlyVisitor : LatexVisitor(){
      */
     abstract override fun visitMagicComment(o: LatexMagicComment)
 
-    final override fun visitElement(element: PsiElement) {
-        super.visitElement(element)
-        element.acceptChildren(this)
+    final override fun visitComposite(o: LatexComposite) {
+        ProgressIndicatorProvider.checkCanceled()
+        o.acceptChildren(this)
     }
 }
