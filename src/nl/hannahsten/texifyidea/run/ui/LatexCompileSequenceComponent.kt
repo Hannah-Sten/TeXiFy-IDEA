@@ -37,7 +37,7 @@ import javax.swing.*
  * @author Sten Wessel
  */
 class LatexCompileSequenceComponent(parentDisposable: Disposable) :
-    JPanel(WrapLayout(FlowLayout.LEADING, 0, FragmentedSettingsBuilder.TAG_VGAP)),
+    JPanel(WrapLayout(FlowLayout.LEADING, 0, JBUI.scale(FragmentedSettingsBuilder.TAG_VGAP))),
       DnDTarget, Disposable {
 
     private val dropFirst = JLabel(AllIcons.General.DropPlace).apply {

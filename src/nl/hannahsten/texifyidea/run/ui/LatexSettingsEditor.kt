@@ -1,12 +1,8 @@
 package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.execution.ui.*
-import com.intellij.util.ui.JBDimension
-import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
-import java.awt.Font
-import javax.swing.JLabel
 
 /**
  * UI for the [LatexRunConfiguration].
@@ -20,26 +16,17 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
 
-        // Before run
-        val beforeRunComponent = BeforeRunComponent(this)
-        fragments.add(BeforeRunFragment.createBeforeRun(beforeRunComponent, null))
+        // Before run optional pills
         fragments.addAll(BeforeRunFragment.createGroup())
 
         // Compile sequence
         val compileSequenceComponent = LatexCompileSequenceComponent(this)
-        // todo Avoid next fragments being placed next to this one? (it reflows, but we want a hardcoded linebreak here)
-        compileSequenceComponent.minimumSize = JBDimension(300, 30)
-        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent, 1)
+        val compileSequenceFragment = LatexCompileSequenceFragment(compileSequenceComponent, -2)
         fragments.add(compileSequenceFragment)
 
-        // Label
-        val compileLabel = JLabel("Compile LaTeX").apply {
-            font = JBUI.Fonts.label().deriveFont(Font.BOLD)
-        }
-        val compileLabelFragment = SettingsEditorFragment<LatexRunConfiguration, JLabel>("compileLabel", null, null, compileLabel, 2, { _, _ -> }, { _, _ -> }) { true }
-        fragments.add(compileLabelFragment)
+        fragments.add(CommonParameterFragments.createHeader(latexGroupName))
 
-        // LaTeX compiler arguments
+        // LaTeX compiler arguments. Define them before the compiler (which comes first in the UI) because changing the compiler should change the default arguments.
         val compilerArguments = CommonLatexFragments.createProgramArgumentsFragment(
             "compilerArguments", "Compiler arguments", 4,
             { s -> (s.configuration as LatexRunConfiguration).options::compilerArguments },
