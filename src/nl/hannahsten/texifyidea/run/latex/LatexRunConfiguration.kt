@@ -13,7 +13,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.options.SettingsEditor
@@ -50,7 +50,6 @@ import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
-import nl.hannahsten.texifyidea.util.runWriteAction
 import org.jdom.Element
 import java.io.File
 import java.nio.file.InvalidPathException
@@ -271,19 +270,23 @@ class LatexRunConfiguration(
         // Backwards compatibility: path to SumatraPDF executable
         parent.getChildText(SUMATRA_PATH)?.let { folder ->
             // the previous setting was the folder containing the SumatraPDF executable
-            if(!SumatraViewer.isAvailable()) {
+            runInBackgroundNonBlocking(project, "Set SumatraPDF path") {
+                // a write action
+                val settings = TexifySettings.getInstance()
+                val isSumatraPathSet = readAction { settings.pathToSumatra != null }
+                if (isSumatraPathSet) {
+                    return@runInBackgroundNonBlocking
+                }
                 val path = try {
                     Path(folder).resolve("SumatraPDF.exe")
-                } catch (e: InvalidPathException) {
-                    return@let
+                }
+                catch (e: InvalidPathException) {
+                    return@runInBackgroundNonBlocking
                     // If the path is invalid, we just ignore it
                 }
-                if(SumatraViewer.trySumatraPath(path)) {
-                    runInBackgroundNonBlocking(project, "Set SumatraPDF path") {
-                        // a write action
-                        writeAction {
-                            TexifySettings.getInstance().pathToSumatra = path.absolutePathString()
-                        }
+                if (SumatraViewer.trySumatraPath(path)) {
+                    writeAction {
+                        TexifySettings.getInstance().pathToSumatra = path.absolutePathString()
                     }
                 }
             }
