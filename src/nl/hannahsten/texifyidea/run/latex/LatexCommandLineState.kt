@@ -290,18 +290,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val pdfViewer = runConfig.pdfViewer
         // Do nothing if the user selected that they do not want a viewer to open.
 
-//
-//        if (pdfViewer == None) return
-//
-//        if (pdfViewer is ExternalPdfViewer
-//            || pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)
-//            || (
-//                pdfViewer == InternalPdfViewer.SUMATRA && SumatraAvailabilityChecker.isSumatraAvailable
-//                    && runConfig.outputFormat == LatexCompiler.Format.PDF
-//                ) // Sumatra does not support DVI
-//        ) {
-//
-//        }
         if (pdfViewer != null) {
             // the pdf viewer is well defined, so we can use it
             scheduleForwardSearchAfterCompile(pdfViewer, handler, runConfig, environment, focusAllowed)
