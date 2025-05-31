@@ -1,9 +1,7 @@
 package nl.hannahsten.texifyidea.structure.latex
 
-import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
-import nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -11,7 +9,6 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.name
-import nl.hannahsten.texifyidea.util.parser.parents
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**

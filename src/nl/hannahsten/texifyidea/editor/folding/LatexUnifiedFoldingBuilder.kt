@@ -146,7 +146,7 @@ open class LatexSectionFoldingBuilder1 : FoldingBuilderEx() {
     private fun LatexMagicComment.isEndRegion(): Boolean = key() == CustomMagicKey("endregion")
 }
 
-class LatexSectionFoldingBuilder : FoldingBuilderEx() {
+class LatexUnifiedFoldingBuilder : FoldingBuilderEx() {
     /*
     Rules:
 
