@@ -7,9 +7,11 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.SettingsEditor
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.EditorTextField
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
@@ -29,8 +31,12 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import java.awt.Cursor
 import java.awt.event.ItemEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -415,24 +421,6 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel.add(compilerPath)
     }
 
-//    private fun getPdfViewerListForSelect() : List<PdfViewer> {
-//        return InternalPdfViewer.availableSubset +
-//                ExternalPdfViewers.getExternalPdfViewers() +
-//                listOf(NoneViewer)
-//    }
-
-    private fun updatePdfViewerComboBox() {
-//        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
-//            ExternalPdfViewers.getExternalPdfViewers() +
-//            listOf(InternalPdfViewer.NONE)
-        val component = pdfViewer.component as ComboBox<PdfViewer?>
-        pdfViewer.component.removeAllItems()
-        for (viewer in PdfViewer.availableViewers) {
-            component.addItem(viewer)
-        }
-        pdfViewer.updateUI()
-    }
-
     /**
      * Optional custom pdf viewer command text field.
      */
@@ -445,12 +433,19 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         requireFocus.isSelected = true
         panel.add(requireFocus)
 
-        // register a listener on pdfViewer when a viewer is selected
-        pdfViewer.component.addItemListener { e ->
-            if (e.stateChange == ItemEvent.SELECTED) {
-                val selectedViewer = pdfViewer.component.selectedItem as PdfViewer
-                requireFocus.isVisible = selectedViewer.isForwardSearchSupported && selectedViewer.isFocusSupported
+        if (SystemInfo.isWindows && !SumatraViewer.isAvailable()) {
+            val label = JLabel(
+                "<html>Failed to detect SumatraPDF. If you have SumatraPDF installed, you can add it manually in " +
+                    "<a href=''>TeXiFy Settings</a>.</html>"
+            ).apply {
+                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
             }
+            label.addMouseListener(object : MouseAdapter() {
+                override fun mouseClicked(e: MouseEvent) {
+                    ShowSettingsUtil.getInstance().showSettingsDialog(project, "TexifyConfigurable")
+                }
+            })
+            panel.add(label)
         }
 
         enableViewerCommand = JBCheckBox("Select custom PDF viewer command, using {pdf} for the pdf file if not the last argument")
