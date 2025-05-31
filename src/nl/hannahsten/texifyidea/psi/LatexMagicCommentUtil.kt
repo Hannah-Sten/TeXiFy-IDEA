@@ -20,3 +20,6 @@ fun LatexMagicComment.key(): MagicKey<String> {
  * Get the value from a [LatexMagicComment] psi element.
  */
 fun LatexMagicComment.value(): String? = getMagicComment().value(key())
+
+val LatexMagicComment.name : String?
+    get() =  value()?.trim()?.split(" ")?.firstOrNull()

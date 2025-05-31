@@ -14,6 +14,7 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
+    implements="nl.hannahsten.texifyidea.psi.LatexComposite"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.LatexElementType"
