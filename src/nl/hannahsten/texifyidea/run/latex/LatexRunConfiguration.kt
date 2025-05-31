@@ -13,7 +13,9 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -35,6 +37,8 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -45,9 +49,14 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
+import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
+import nl.hannahsten.texifyidea.util.runWriteAction
 import org.jdom.Element
 import java.io.File
+import java.nio.file.InvalidPathException
 import java.util.*
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -63,6 +72,7 @@ class LatexRunConfiguration(
         private const val TEXIFY_PARENT = "texify"
         private const val COMPILER = "compiler"
         private const val COMPILER_PATH = "compiler-path"
+        private const val SUMATRA_PATH = "sumatra-path"
         private const val PDF_VIEWER = "pdf-viewer"
         private const val REQUIRE_FOCUS = "require-focus"
         private const val VIEWER_COMMAND = "viewer-command"
@@ -257,6 +267,27 @@ class LatexRunConfiguration(
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
+
+        // Backwards compatibility: path to SumatraPDF executable
+        parent.getChildText(SUMATRA_PATH)?.let { folder ->
+            // the previous setting was the folder containing the SumatraPDF executable
+            if(!SumatraViewer.isAvailable()) {
+                val path = try {
+                    Path(folder).resolve("SumatraPDF.exe")
+                } catch (e: InvalidPathException) {
+                    return@let
+                    // If the path is invalid, we just ignore it
+                }
+                if(SumatraViewer.trySumatraPath(path)) {
+                    runInBackgroundNonBlocking(project, "Set SumatraPDF path") {
+                        // a write action
+                        writeAction {
+                            TexifySettings.getInstance().pathToSumatra = path.absolutePathString()
+                        }
+                    }
+                }
+            }
+        }
 
         // Read compiler arguments.
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
