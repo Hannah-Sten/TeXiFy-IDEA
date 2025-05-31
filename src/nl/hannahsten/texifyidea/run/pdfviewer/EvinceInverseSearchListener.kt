@@ -27,7 +27,7 @@ import java.io.IOException
 object EvinceInverseSearchListener {
 
     private val currentCoroutineScope: CoroutineScope
-        get() = TexifyCoroutine.Companion.getInstance().coroutineScope
+        get() = TexifyCoroutine.getInstance().coroutineScope
 
     private var sessionConnection: DBusConnection? = null
 
@@ -39,7 +39,7 @@ object EvinceInverseSearchListener {
     fun start(project: Project) {
         // Check if Evince version supports dbus
         // The exact version required is not know, but 3.28 works and 3.0.2 does not (#2087), even though dbus is supported since 2.32
-        if (SystemEnvironment.Companion.evinceVersion.majorVersion <= 3 && SystemEnvironment.Companion.evinceVersion.minorVersion <= 28) {
+        if (SystemEnvironment.evinceVersion.majorVersion <= 3 && SystemEnvironment.evinceVersion.minorVersion <= 28) {
             Notification(
                 "LaTeX",
                 "Old Evince version found",
