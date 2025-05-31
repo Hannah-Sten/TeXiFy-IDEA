@@ -37,7 +37,7 @@ interface PdfViewer {
         get() = false
 
     /**
-     * Whether the PDF viewer supports focus change during forward search.
+     * Whether the PDF viewer supports customized focus change during forward search, namely, it can determine to take focus or not when performing forward search.
      */
     val isFocusSupported: Boolean
         get() = false
@@ -49,7 +49,8 @@ interface PdfViewer {
      * @param sourceFilePath The file path to the source file (e.g., a LaTeX file) that corresponds to the document.
      * @param line The line number in the source file to which the viewer should navigate.
      * @param project The project context in which the forward search is performed.
-     * @param focusAllowed Indicates whether the viewer is allowed to take focus when performing the forward search. If false, the viewer may remain in the background.
+     * @param focusAllowed Indicates whether the viewer is allowed to take focus when performing the forward search.
+     * **If false, the viewer should not take focus anyway, even if it has to abort the operation.** (In order to not disturb the user.)
      */
     fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
         // Default implementation does nothing.
@@ -60,11 +61,12 @@ interface PdfViewer {
      *
      * @param pdfPath The file path to the PDF document that should be opened.
      * @param project The project context associated with the PDF file.
-     * @param newWindow Indicates whether the PDF should be opened in a new window. Defaults to false.
-     * @param focus Indicates whether the viewer should take focus when opening the file. Defaults to false.
-     * @param forceRefresh Indicates whether the viewer should force a refresh of the file content. Defaults to false.
+     * @param newWindow Indicates whether the PDF should be opened in a new window.
+     * @param focusAllowed Indicates whether the viewer should take focus when opening the file.
+     * **If false, the viewer should not take focus anyway, even if it has to abort the operation.** (In order to not disturb the user.)
+     * @param forceRefresh Indicates whether the viewer should force a refresh of the file content.
      */
-    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focusAllowed: Boolean = true, forceRefresh: Boolean = false) {
         // Default implementation does nothing.
     }
 

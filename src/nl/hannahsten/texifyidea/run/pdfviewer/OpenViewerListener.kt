@@ -26,7 +26,7 @@ class OpenViewerListener(
         if (event.exitCode == 0) {
             try {
                 // ensure the viewer is open, especially for Sumatra
-                viewer.openFile(runConfig.outputFilePath, project, focus = focusAllowed)
+                viewer.openFile(runConfig.outputFilePath, project, focusAllowed = focusAllowed)
                 viewer.forwardSearch(
                     outputPath = runConfig.outputFilePath,
                     sourceFilePath = sourceFilePath,

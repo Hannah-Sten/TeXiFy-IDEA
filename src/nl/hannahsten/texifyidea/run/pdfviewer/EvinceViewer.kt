@@ -45,6 +45,12 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
      */
     private var processOwner: String? = null
 
+
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
+        // TODO: should we abort the operation if focus is false?
+        openFile(pdfPath, project)
+    }
+
     /**
      * Open a file in Evince, starting it if it is not running yet. This also finds the process owner of the pdf, so we can execute forward search later.
      */

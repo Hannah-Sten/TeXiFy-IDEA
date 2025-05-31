@@ -24,6 +24,10 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
         val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)
 
         if (pdfPathGuess != null) {
+            if(!focusAllowed){
+                // The following command will take focus, so we have to abort
+                return
+            }
             val path = PathManager.getBinPath()
             val name = ApplicationNamesInfo.getInstance().scriptName
             val command =

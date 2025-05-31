@@ -212,18 +212,22 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     /**
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
-    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focus: Boolean, forceRefresh: Boolean) {
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
         if (!isAvailable()) return
         val quotedPdfPath = "\"$pdfPath\""
 
         if (conversation != null) {
             try {
-                execute("Open($quotedPdfPath, ${newWindow.int}, ${focus.int}, ${forceRefresh.int})")
+                execute("Open($quotedPdfPath, ${newWindow.int}, ${focusAllowed.int}, ${forceRefresh.int})")
                 return
             }
             catch (ignored: TeXception) {
                 // If the DDE command fails, we fall back to the command line.
             }
+        }
+        if(!focusAllowed){
+            // The following command will always take focus, we have to abort
+            return
         }
         val sumatraRunnable = this.sumatraPath
         val sumatraCommand = sumatraRunnable?.pathString ?: "SumatraPDF"
@@ -251,10 +255,13 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             execute("ForwardSearch($pdfPath\"$sourceFilePath\", $line, 0, ${newWindow.int}, ${focus.int})")
         }
         else {
+            if(!focus) {
+                // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with SumatraPDF
+                return
+            }
             // Use command line to perform forward search, then we'd better have a valid pdfFilePath
             val pdfPath = pdfFilePath ?: previousPdfPath ?: ""
             sendSumatraCommand("-forward-search", sourceFilePath, line.toString(), pdfPath)
-            return
         }
     }
 
