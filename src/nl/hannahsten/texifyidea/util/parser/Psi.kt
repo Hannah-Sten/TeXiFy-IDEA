@@ -31,6 +31,7 @@ fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(tex
  * @see [PsiTreeUtil.getChildrenOfType]
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
+    // TODO: Performance, as it traverses the whole tree.
     return runReadAction {
         if (!this.isValid || project.isDisposed) {
             emptyList()
@@ -147,6 +148,7 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
+    // TODO: performance
     // Do the cheap tests first.
     return inDirectMathContext()
         // Check if any of the parents are in math context, because the direct environment might not be explicitly
@@ -163,6 +165,7 @@ fun PsiElement.inDirectMathContext(): Boolean =
         || hasParent(LatexMathEnvironment::class)
         || hasParent(LatexInlineMath::class)
         || inDirectEnvironmentContext(Environment.Context.MATH)
+// TODO: performance
 
 /**
  * Returns the outer math environment.
