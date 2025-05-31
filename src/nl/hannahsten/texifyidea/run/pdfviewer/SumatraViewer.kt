@@ -225,7 +225,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
                 // If the DDE command fails, we fall back to the command line.
             }
         }
-        if(!focusAllowed){
+        if(!focusAllowed) {
             // The following command will always take focus, we have to abort
             return
         }

@@ -45,7 +45,6 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
      */
     private var processOwner: String? = null
 
-
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
         // TODO: should we abort the operation if focus is false?
         openFile(pdfPath, project)
