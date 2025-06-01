@@ -30,6 +30,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SupportedPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
+import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.caretOffset
@@ -49,6 +50,8 @@ class PdfViewerStep internal constructor(
 ) : Step, PersistentStateComponent<PdfViewerStep.State> {
 
     override val name = "PDF Viewer step"
+
+    override fun getDescription(): String = provider.name + (state.pdfViewer?.let { " (${it.name})" } ?: "")
 
     class State : BaseState() {
 
@@ -95,7 +98,7 @@ class PdfViewerStep internal constructor(
         return state.pdfViewer != null
     }
 
-    override fun configure(context: DataContext, button: JButton) {
+    override fun configure(context: DataContext, button: LatexCompileSequenceComponent.StepButton) {
         val viewerEditor = ExecutableEditor<SupportedPdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
         setDefaultLayout(viewerEditor, state.pdfViewer)
 

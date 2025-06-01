@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.CustomBibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
+import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import javax.swing.JButton
@@ -66,7 +67,7 @@ class BibliographyCompileStep internal constructor(
 
     private var state = State()
 
-    override fun configure(context: DataContext, button: JButton) {
+    override fun configure(context: DataContext, button: LatexCompileSequenceComponent.StepButton) {
         val executableEditor = ExecutableEditor<SupportedBibliographyCompiler, BibliographyCompiler>("Compiler", CompilerMagic.bibliographyCompilerByExecutableName.values) {
             CustomBibliographyCompiler(it)
         }

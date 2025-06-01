@@ -111,7 +111,8 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         steps.add(tag)
         buildPanel()
         changeListener()
-        step.configure(e.dataContext, tag.getButton())
+        step.configure(e.dataContext, tag)
+        step.onConfigured(tag)
     }
 
     fun resetEditorFrom(c: LatexRunConfiguration) {
@@ -209,7 +210,7 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         dropFirst.isVisible = false
     }
 
-    private inner class StepButton(val step: Step) : TagButton(step.getDescription(), { changeListener() }), DnDSource {
+    inner class StepButton(val step: Step) : TagButton(step.getDescription(), { changeListener() }), DnDSource {
 
         private val dropPlace = JLabel(AllIcons.General.DropPlace)
 
@@ -223,7 +224,8 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
-                        step.configure(DataManager.getInstance().getDataContext(myButton), myButton)
+                        step.configure(DataManager.getInstance().getDataContext(myButton), this@StepButton)
+                        step.onConfigured(this@StepButton)
                     }
                 }
             })
@@ -254,6 +256,10 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         }
 
         fun getButton(): JButton = myButton
+
+        fun updateButton() {
+            updateButton(step.getDescription(), step.getIcon())
+        }
     }
 
     private inner class TagAction(private val provider: StepProvider) : AnAction(provider.name, null, provider.icon) {

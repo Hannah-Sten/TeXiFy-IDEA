@@ -4,6 +4,7 @@ import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.openapi.actionSystem.DataContext
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import javax.swing.JButton
 
 class LatexCompileStep internal constructor(
@@ -13,7 +14,7 @@ class LatexCompileStep internal constructor(
 
     override val name = "LaTeX compile step"
 
-    override fun configure(context: DataContext, button: JButton) {
+    override fun configure(context: DataContext, button: LatexCompileSequenceComponent.StepButton) {
     }
 
     override fun getCommand() = configuration.options.compiler?.getCommand(this) ?: throw TeXception("Skipping step $name because no command is available")

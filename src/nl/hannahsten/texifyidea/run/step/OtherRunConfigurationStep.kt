@@ -18,6 +18,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindowManager
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import java.io.OutputStream
 import javax.swing.JButton
@@ -65,7 +66,7 @@ class OtherRunConfigurationStep internal constructor(
             this.state.targetId = target?.id
         }
 
-    override fun configure(context: DataContext, button: JButton) {
+    override fun configure(context: DataContext, button: LatexCompileSequenceComponent.StepButton) {
         // See RunConfigurationBeforeRunProvider#configureTask
         val project = configuration.project
         val runManager = RunManagerImpl.getInstanceImpl(project)
@@ -79,7 +80,7 @@ class OtherRunConfigurationStep internal constructor(
                 ?.let { runManager.getSettings(it) } ?: return@createPopup
 
             mySettingsWithTarget = Pair(selectedSettings, selectedTarget)
-            button.name = getDescription() // todo button name doesn't update
+            onConfigured(button)
         }.showInBestPositionFor(context)
     }
 

@@ -15,6 +15,7 @@ import com.intellij.ui.layout.panel
 import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import javax.swing.JButton
 
 /**
@@ -29,6 +30,8 @@ class CommandLineStep internal constructor(
     private var state = State()
 
     override val name = "Command Line step"
+
+    override fun getDescription(): String = super.getDescription() + state.commandLine?.let {" (${it.split(" ", limit = 2).first()})"}
 
     class State : BaseState() {
         @get:Attribute
@@ -54,7 +57,7 @@ class CommandLineStep internal constructor(
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(state.envs, state.isPassParentEnvs)
 
-    override fun configure(context: DataContext, button: JButton) {
+    override fun configure(context: DataContext, button: LatexCompileSequenceComponent.StepButton) {
         // todo duplicate from bib step
 
         val commandLineField = createParametersTextField("Command line", state.commandLine)
