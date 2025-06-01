@@ -13,6 +13,8 @@ object SystemDefaultViewer : PdfViewer {
 
     override val name: String = ""
     override val displayName: String = "System default"
+    override val isFocusSupported = false
+    override val isForwardSearchSupported = false
 
     override fun toString(): String {
         return displayName

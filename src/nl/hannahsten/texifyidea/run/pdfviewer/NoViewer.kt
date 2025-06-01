@@ -4,6 +4,8 @@ object NoViewer : PdfViewer {
 
     override val name: String = ""
     override val displayName: String = "No PDF viewer"
+    override val isFocusSupported = false
+    override val isForwardSearchSupported = false
 
     override fun toString(): String {
         return displayName

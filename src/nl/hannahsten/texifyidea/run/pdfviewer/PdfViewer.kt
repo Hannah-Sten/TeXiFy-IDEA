@@ -31,9 +31,10 @@ interface PdfViewer {
 
     /**
      * Whether the PDF viewer supports forward search.
+     * Default is true for backwards compatibility with the PDF Viewer plugin
      */
     val isForwardSearchSupported: Boolean
-        get() = false
+        get() = true
 
     /**
      * Whether the PDF viewer supports customized focus change during forward search, namely, it can determine to take focus or not when performing forward search.
