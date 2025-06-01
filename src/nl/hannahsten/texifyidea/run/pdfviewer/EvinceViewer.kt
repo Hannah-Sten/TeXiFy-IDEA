@@ -46,7 +46,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
     private var processOwner: String? = null
 
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
-        // TODO: should we abort the operation if focus is false?
+        // Opening the file when not already open will lose focus, so we don't want to do that. However, we have to, otherwise manual forward search will not work
         openFile(pdfPath, project)
     }
 
@@ -58,8 +58,8 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
         findProcessOwner(pdfFilePath, project)
     }
 
-    override val isFocusSupported: Boolean
-        get() = false
+    // This is not really correct since Evince will always focus on forward search, but we still want to show the option to users so that they can use it to disable forward search if they don't want to lose focus after compilation.
+    override val isFocusSupported = true
 
     /**
      * Execute forward search, highlighting a certain line in Evince.
