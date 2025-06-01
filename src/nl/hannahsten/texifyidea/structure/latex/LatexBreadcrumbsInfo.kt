@@ -5,7 +5,6 @@ import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.name
@@ -31,7 +30,8 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
     }
 
     override fun getParent(element: PsiElement): PsiElement? {
-        val document = element.containingFile.document() ?: return super.getParent(element)
+        // TODO
+//        val document = element.containingFile.document() ?: return super.getParent(element)
         // Add sections
 //        val parent = LatexSectionFoldingBuilder().buildFoldRegions(element.containingFile, document, quick = true)
 //            // Only top-level elements in the section should have the section as parents, other elements should keep their direct parent (e.g. an environment)

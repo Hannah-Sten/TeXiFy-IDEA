@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <extensions defaultExtensionNs="com.intellij">
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>
+<!--        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>-->
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEnvironmentFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexFootnoteFoldingBuilder"/>

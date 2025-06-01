@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.psi
 
-
 /**
  * This class allows the LatexCommandsImplMixin class to 'inject' methods into LatexCommands(Impl).
  * In general, it is more straightforward to provide extension methods in LatexCommandsUtil.

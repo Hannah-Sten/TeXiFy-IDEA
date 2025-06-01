@@ -21,5 +21,5 @@ fun LatexMagicComment.key(): MagicKey<String> {
  */
 fun LatexMagicComment.value(): String? = getMagicComment().value(key())
 
-val LatexMagicComment.name : String?
-    get() =  value()?.trim()?.split(" ")?.firstOrNull()
+val LatexMagicComment.name: String?
+    get() = value()?.trim()?.split(" ")?.firstOrNull()
