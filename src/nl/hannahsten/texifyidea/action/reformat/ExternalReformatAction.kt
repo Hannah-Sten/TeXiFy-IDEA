@@ -56,7 +56,7 @@ abstract class ExternalReformatAction(val isValidFile: (file: PsiFile) -> Boolea
      */
     abstract fun getCommand(file: PsiFile): List<String>
 
-    override fun actionPerformed(event: AnActionEvent ) {
+    override fun actionPerformed(event: AnActionEvent) {
         val dataContext = event.dataContext
         val project = CommonDataKeys.PROJECT.getData(dataContext) ?: return
         val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return
