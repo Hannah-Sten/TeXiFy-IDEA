@@ -427,6 +427,11 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     private fun addPdfViewerCommandField(panel: JPanel) {
         val viewerField = ComboBox(PdfViewer.availableViewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
+        pdfViewer.component.addActionListener {
+            requireFocus.isVisible = (pdfViewer.component.selectedItem as? PdfViewer)?.let {
+                it.isForwardSearchSupported && it.isFocusSupported
+            } ?: false
+        }
         panel.add(pdfViewer)
 
         requireFocus = JBCheckBox("Allow PDF viewer to focus after compilation")
