@@ -37,7 +37,7 @@ object OkularViewer : SystemPdfViewer("Okular", "okular") {
             return
         }
         // This okular command opens the pdf file using the destination coming from the line in the tex file.
-        val command = "okular --noraise --unique '$outputPath#src:$line $sourceFilePath'"
+        val command = "okular --noraise --unique '$pdfFilePath#src:$line $sourceFilePath'"
         Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
     }
 }

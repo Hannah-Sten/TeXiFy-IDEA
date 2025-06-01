@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.util.runCommand
  */
 object SystemDefaultViewer : PdfViewer {
 
-    override val name: String = ""
+    override val name: String = "default"
     override val displayName: String = "System default"
     override val isFocusSupported = false
     override val isForwardSearchSupported = false
