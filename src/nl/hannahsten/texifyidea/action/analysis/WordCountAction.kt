@@ -18,11 +18,11 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.jetbrains.annotations.NonNls
-import java.io.File
 import java.util.*
 import java.util.regex.Pattern
 import javax.swing.JLabel
 import javax.swing.SwingConstants
+import kotlin.io.path.Path
 
 /**
  * @author Hannah Schellekens
@@ -97,7 +97,7 @@ open class WordCountAction : AnAction() {
     ): DialogBuilder {
         // Make sure the file is written to disk before running an external tool on it
         FileDocumentManager.getInstance().apply { saveDocument(getDocument(root) ?: return@apply) }
-        val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = File(workingDirectory))
+        val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = Path(workingDirectory))
         return if (exitCode == 0 && output?.toIntOrNull() != null) {
             makeDialog(psiFile, output.toInt())
         }

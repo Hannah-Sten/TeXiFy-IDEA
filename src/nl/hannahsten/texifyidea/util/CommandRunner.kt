@@ -5,7 +5,6 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.util.io.awaitExit
 import kotlinx.coroutines.*
 import java.io.BufferedReader
-import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import javax.swing.SwingUtilities
@@ -31,7 +30,7 @@ data class CommandResult(
  */
 suspend fun runCommandNonBlocking(
     vararg commands: String,
-    workingDirectory: File? = null,
+    workingDirectory: Path? = null,
     input: String? = null,
     discardOutput: Boolean = false,
     returnExceptionMessageAsErrorOutput: Boolean = false,
@@ -50,7 +49,7 @@ suspend fun runCommandNonBlocking(
 
         val processBuilder = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .withWorkDirectory(workingDirectory)
+            .apply { if (workingDirectory != null) withWorkingDirectory(workingDirectory) }
             .toProcessBuilder()
 
         if (discardOutput) {
@@ -153,7 +152,7 @@ suspend fun sendCommandNonBlocking(
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun runCommand(vararg commands: String, workingDirectory: File? = null, timeout: Long = 3): String? =
+fun runCommand(vararg commands: String, workingDirectory: Path? = null, timeout: Long = 3): String? =
     runBlocking {
         runCommandNonBlocking(*commands, workingDirectory = workingDirectory, timeout = timeout).output
     }
@@ -167,7 +166,7 @@ fun runCommand(vararg commands: String, workingDirectory: File? = null, timeout:
  */
 fun runCommandWithExitCode(
     vararg commands: String,
-    workingDirectory: File? = null,
+    workingDirectory: Path? = null,
     timeout: Long = 3,
     returnExceptionMessage: Boolean = false,
     discardOutput: Boolean = false,

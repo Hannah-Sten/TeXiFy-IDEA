@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.Path
 
 /**
  * An action which performs a reformat of the currently open file using a certain external tool.
@@ -62,9 +63,10 @@ abstract class ExternalReformatAction(val isValidFile: (file: PsiFile) -> Boolea
         val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document) ?: return
         if (!isValidFile(file)) return
         val command = getCommand(file)
+        val workingDirectory = file.containingDirectory?.virtualFile?.path ?: return
         val process = try {
             GeneralCommandLine(command)
-                .withWorkDirectory(file.containingDirectory?.virtualFile?.path)
+                .withWorkingDirectory(Path(workingDirectory))
                 .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
                 .createProcess()
         }

@@ -17,7 +17,7 @@
 * Fix auto compilation not rerunning correctly, by @Ezrnest
 * Fix SumatraPDF forward search not using the correct file, by @Ezrnest
 * Fix extra whitespace when inserting commands in math mode, by @Ezrnest
-* Fix exceptions #4035, #4044, #4058
+* Fix exceptions #4035, #4044, #4058, #4072
 * Create run configuration process in background
 
 ## [0.10.3] - 2025-05-16
