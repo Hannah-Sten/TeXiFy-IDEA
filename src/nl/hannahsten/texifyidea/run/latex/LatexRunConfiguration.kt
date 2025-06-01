@@ -11,11 +11,7 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.application.readAction
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.application.writeAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -259,7 +255,8 @@ class LatexRunConfiguration(
 
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
-        this.pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName } ?: PdfViewer.firstAvailableViewer
+        // For backwards compatibility (0.10.3 and earlier), handle uppercase names
+        this.pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName || it.name?.uppercase() == viewerName } ?: PdfViewer.firstAvailableViewer
 
         this.requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
 
@@ -267,7 +264,7 @@ class LatexRunConfiguration(
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
 
-        // Backwards compatibility: path to SumatraPDF executable
+        // Backwards compatibility (0.10.3 and earlier): path to SumatraPDF executable
         parent.getChildText(SUMATRA_PATH)?.let { folder ->
             // the previous setting was the folder containing the SumatraPDF executable
             runInBackgroundNonBlocking(project, "Set SumatraPDF path") {
