@@ -41,10 +41,10 @@ suspend fun runCommandNonBlocking(
 
         // where/which commands occur often but do not change since the output depends on PATH, so can be cached
         val isExecutableLocationCommand = commands.size == 2 && listOf("where", "which").contains(commands[0])
-        if (isExecutableLocationCommand && SystemEnvironment.executableLocationCache[commands[1]] != null) {
-            val standardOutput = SystemEnvironment.executableLocationCache[commands[1]]
-            Log.debug("Retrieved output of $commands from cache: $standardOutput")
-            return@withContext CommandResult(0, standardOutput, null)
+        val cachedExecutableLocation = SystemEnvironment.executableLocationCache[commands[1]]
+        if (isExecutableLocationCommand && cachedExecutableLocation != null) {
+            Log.debug("Retrieved output of $commands from cache: $cachedExecutableLocation")
+            return@withContext CommandResult(0, cachedExecutableLocation, null)
         }
 
         val processBuilder = GeneralCommandLine(*commands)

@@ -163,10 +163,6 @@ For example, if your LaTeX file contains
 then you can put `\newcommand{\waarde}{false}` in this field in your run configuration to set the value of the boolean to `false`.
 This works for at least pdflatex, lualatex, xelatex and latexmk.
 
-## Custom SumatraPDF path
-
-See [(Windows) Choose a custom path to SumatraPDF](PDF-viewers.md#portable-sumatrapdf).
-
 ## Choose pdf viewer
 _Since b0.7.2_
 
@@ -174,6 +170,7 @@ This lists all supported pdf viewers that are installed on your system, which yo
 Selecting a supported viewer as default means that you get forward and inverse search, and that the selected pdf viewer is the viewer that will open when compilation is done.
 
 The supported pdf viewers are the [internal PDF viewer](PDF-viewers.md#pdf-viewer-intellij-plugin) on all platforms, [Sumatra](PDF-viewers.md#sumatrapdf) for Windows, and [Evince](PDF-viewers.md#evince), [Okular](PDF-viewers.md#okular), and [Zathura](PDF-viewers.md#zathura) for linux, or no pdf viewer at all.
+For Mac/Linux, you can also select `System default`, which will just run `open`/`xdg-open`, without forward search.
 You can use any other pdf viewer by selecting the option Custom PDF Viewer.
 
 ## Allow PDF viewer to focus after compilation

@@ -11,7 +11,7 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.*
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -32,10 +32,8 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -47,9 +45,13 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
+import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import org.jdom.Element
 import java.io.File
+import java.nio.file.InvalidPathException
 import java.util.*
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -89,8 +91,6 @@ class LatexRunConfiguration(
 
     var compiler: LatexCompiler? = null
     var compilerPath: String? = null
-    var sumatraPath: String? = null
-    var enableSumatraPath: Boolean? = false
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
@@ -141,7 +141,7 @@ class LatexRunConfiguration(
     var hasBeenRun = false
 
     /** Whether the pdf viewer should claim focus after compilation. */
-    var requireFocus = false
+    var requireFocus = true
 
     /** Whether the run configuration is currently auto-compiling.     */
     var isAutoCompiling = false
@@ -212,12 +212,6 @@ class LatexRunConfiguration(
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
-
-        // Updates the SumatraAvailabilityChecker with the path in sumatraPath after change.
-        // Also checks if the path leads to a correct directory containing Sumatra.
-        if (enableSumatraPath == true && !SumatraAvailabilityChecker.isSumatraPathAvailable(sumatraPath).second) {
-            throw RuntimeConfigurationError("Run configuration is invalid: custom Sumatra path doesn't point to a valid directory")
-        }
     }
 
     @Throws(ExecutionException::class)
@@ -259,29 +253,41 @@ class LatexRunConfiguration(
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
         this.compilerPath = if (compilerPathRead.isNullOrEmpty()) null else compilerPathRead
 
-        // Read SumatraPDF custom path
-        val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
-        this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
-        // Updates the SumatraAvailabilityChecker at startup
-        SumatraAvailabilityChecker.isSumatraPathAvailable(this.sumatraPath)
-
         // Read pdf viewer.
         val viewerName = parent.getChildText(PDF_VIEWER)
-        try {
-            this.pdfViewer = ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == viewerName }
-                ?: InternalPdfViewer.entries.firstOrNull { it.name == viewerName && it.isAvailable() }
-                ?: InternalPdfViewer.NONE
-        }
-        catch (e: IllegalArgumentException) {
-            // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
-            this.pdfViewer = TexifySettings.getInstance().pdfViewer
-        }
+        // For backwards compatibility (0.10.3 and earlier), handle uppercase names
+        this.pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName || it.name?.uppercase() == viewerName } ?: PdfViewer.firstAvailableViewer
 
         this.requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
 
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
+
+        // Backwards compatibility (0.10.3 and earlier): path to SumatraPDF executable
+        parent.getChildText(SUMATRA_PATH)?.let { folder ->
+            // the previous setting was the folder containing the SumatraPDF executable
+            runInBackgroundNonBlocking(project, "Set SumatraPDF path") {
+                // a write action
+                val settings = TexifySettings.getInstance()
+                val isSumatraPathSet = readAction { settings.pathToSumatra != null }
+                if (isSumatraPathSet) {
+                    return@runInBackgroundNonBlocking
+                }
+                val path = try {
+                    Path(folder).resolve("SumatraPDF.exe")
+                }
+                catch (e: InvalidPathException) {
+                    return@runInBackgroundNonBlocking
+                    // If the path is invalid, we just ignore it
+                }
+                if (SumatraViewer.trySumatraPath(path)) {
+                    writeAction {
+                        TexifySettings.getInstance().pathToSumatra = path.absolutePathString()
+                    }
+                }
+            }
+        }
 
         // Read compiler arguments.
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
@@ -391,7 +397,6 @@ class LatexRunConfiguration(
 
         parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
-        parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
         parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(REQUIRE_FOCUS).also { it.text = requireFocus.toString() })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
@@ -517,24 +522,39 @@ class LatexRunConfiguration(
             this.mainFile = null
             return
         }
+        val isDispatchThread = ApplicationManager.getApplication().isDispatchThread
         val fileSystem = LocalFileSystem.getInstance()
         // Check if the file is valid and exists
-        val mainFile = fileSystem.findFileByPath(mainFilePath)
+        val mainFile = if (isDispatchThread) {
+            fileSystem.findFileByPath(mainFilePath)
+        }
+        else {
+            // this is a read action
+            ReadAction.compute<VirtualFile?, Throwable> { fileSystem.findFileByPath(mainFilePath) }
+        }
+
         if (mainFile?.extension == "tex") {
             this.mainFile = mainFile
             return
         }
+        // Maybe it is a relative path
+        val projectRootManager =
+            ProjectRootManager.getInstance(project)
+        val contentRoots = if (isDispatchThread) {
+            projectRootManager.contentRoots
+        }
         else {
-            // Maybe it is a relative path
-            ProjectRootManager.getInstance(project).contentRoots.forEach {
-                val file = it.findFileByRelativePath(mainFilePath)
-                if (file?.extension == "tex") {
-                    this.mainFile = file
-                    return
-                }
+            // a read action again
+            ReadAction.compute<Array<VirtualFile>, Throwable> { projectRootManager.contentRoots }
+        }
+        for (contentRoot in contentRoots) {
+            // Check if the file exists in the content root
+            val file = contentRoot.findFileByRelativePath(mainFilePath)
+            if (file?.extension == "tex") {
+                this.mainFile = file
+                return
             }
         }
-
         this.mainFile = null
     }
 
@@ -543,7 +563,7 @@ class LatexRunConfiguration(
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = InternalPdfViewer.firstAvailable
+        pdfViewer = PdfViewer.firstAvailableViewer
     }
 
     fun setDefaultOutputFormat() {
@@ -660,7 +680,6 @@ class LatexRunConfiguration(
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
             ", compilerPath=" + compilerPath +
-            ", sumatraPath=" + sumatraPath +
             ", mainFile=" + mainFile +
             ", outputFormat=" + outputFormat +
             '}'.toString()

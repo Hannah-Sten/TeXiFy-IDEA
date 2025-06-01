@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.linuxpdfviewer
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
@@ -8,8 +8,6 @@ import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import org.jetbrains.concurrency.runAsync
 
 /**
  * Execute a forward search with the selected viewer after the compilation is done.
@@ -26,22 +24,21 @@ class OpenViewerListener(
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
-            runAsync {
-                try {
-                    // ensure the viewer is open, especially for Sumatra
-                    viewer.openFile(runConfig.outputFilePath, project)
-                    viewer.forwardSearch(
-                        pdfPath = runConfig.outputFilePath,
-                        sourceFilePath = sourceFilePath,
-                        line = line,
-                        project = project,
-                        focusAllowed = focusAllowed
-                    )
-                    // Set this viewer as viewer to forward search to in the future.
-                    (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = viewer
-                }
-                catch (ignored: TeXception) {
-                }
+            try {
+                // ensure the viewer is open, especially for Sumatra
+                viewer.openFile(runConfig.outputFilePath, project, focusAllowed = focusAllowed)
+                viewer.forwardSearch(
+                    outputPath = runConfig.outputFilePath,
+                    sourceFilePath = sourceFilePath,
+                    line = line,
+                    project = project,
+                    focusAllowed = focusAllowed
+                )
+                // Set this viewer as viewer to forward search to in the future.
+                (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer =
+                    viewer
+            }
+            catch (ignored: TeXception) {
             }
         }
     }

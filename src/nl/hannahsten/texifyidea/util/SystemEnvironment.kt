@@ -7,7 +7,9 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rd.util.ConcurrentHashMap
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.SystemEnvironment.Companion.isAvailable
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
@@ -56,7 +58,7 @@ class SystemEnvironment {
 
         // Map a system command to the full location, as raw output (so may be multiple paths on Windows) from the where/which command
         // This is cached because the value will not change between restarts
-        var executableLocationCache = mutableMapOf<String, String?>()
+        var executableLocationCache = ConcurrentHashMap<String, String?>()
 
         // Assumes version will be given in the format GNOME Document Viewer 3.34.2
         val evinceVersion: DefaultArtifactVersion by lazy {

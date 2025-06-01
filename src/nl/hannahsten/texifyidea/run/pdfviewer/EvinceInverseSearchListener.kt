@@ -1,13 +1,17 @@
-package nl.hannahsten.texifyidea.run.linuxpdfviewer.evince
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.gnome.evince.Window
@@ -22,7 +26,8 @@ import java.io.IOException
  */
 object EvinceInverseSearchListener {
 
-    private var currentCoroutineScope = CoroutineScope(Dispatchers.Default)
+    private val currentCoroutineScope: CoroutineScope
+        get() = TexifyCoroutine.getInstance().coroutineScope
 
     private var sessionConnection: DBusConnection? = null
 
@@ -35,7 +40,12 @@ object EvinceInverseSearchListener {
         // Check if Evince version supports dbus
         // The exact version required is not know, but 3.28 works and 3.0.2 does not (#2087), even though dbus is supported since 2.32
         if (SystemEnvironment.evinceVersion.majorVersion <= 3 && SystemEnvironment.evinceVersion.minorVersion <= 28) {
-            Notification("LaTeX", "Old Evince version found", "Please update Evince to at least version 3.28 to use forward/backward search", NotificationType.ERROR).notify(project)
+            Notification(
+                "LaTeX",
+                "Old Evince version found",
+                "Please update Evince to at least version 3.28 to use forward/backward search",
+                NotificationType.ERROR
+            ).notify(project)
             return
         }
 
@@ -45,7 +55,12 @@ object EvinceInverseSearchListener {
                 sessionConnection = DBusConnectionBuilder.forSessionBus().build()
             }
             catch (e: Exception) {
-                Notification("LaTeX", "Cannot get connection to DBus", "Check if the correct packages are installed", NotificationType.ERROR).notify(project)
+                Notification(
+                    "LaTeX",
+                    "Cannot get connection to DBus",
+                    "Check if the correct packages are installed",
+                    NotificationType.ERROR
+                ).notify(project)
                 return
             }
         }
@@ -107,6 +122,6 @@ object EvinceInverseSearchListener {
         syncSourceHandler?.close()
         // Properly close the connection
         sessionConnection?.close()
-        currentCoroutineScope.cancel(CancellationException(("Unloading the plugin")))
+        currentCoroutineScope.cancel(kotlinx.coroutines.CancellationException(("Unloading the plugin")))
     }
 }

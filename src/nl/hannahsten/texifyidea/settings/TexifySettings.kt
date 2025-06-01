@@ -6,7 +6,8 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.RoamingType
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 
 /**
  * @author Sten Wessel
@@ -62,6 +63,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var htmlPasteTranslator = HtmlPasteTranslator.BUILTIN
     var autoCompileOption = AutoCompile.OFF
+    var pathToSumatra: String? = null
 
     var hasApprovedDetexify = false
 
@@ -71,7 +73,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
      * We keep it here so that when the user migrates from when the pdf viewer was set in TeXiFy settings to when it is
      * set in the run config, we can recover their old setting.
      */
-    var pdfViewer: InternalPdfViewer? = null
+    var pdfViewer: PdfViewer? = null
 
     override fun getState(): TexifySettingsState {
         return TexifySettingsState(
@@ -92,7 +94,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             htmlPasteTranslator = htmlPasteTranslator,
             autoCompileOption = autoCompileOption,
             pdfViewer = pdfViewer,
-            hasApprovedDetexify = hasApprovedDetexify
+            pathToSumatra = pathToSumatra,
+            hasApprovedDetexify = hasApprovedDetexify,
         )
     }
 
@@ -116,6 +119,13 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         autoCompileOption = state.autoCompileOption ?: if (state.autoCompileOnSaveOnly) AutoCompile.AFTER_DOCUMENT_SAVE else if (state.autoCompile) AutoCompile.ALWAYS else AutoCompile.OFF
         pdfViewer = state.pdfViewer
         hasApprovedDetexify = state.hasApprovedDetexify
+        pathToSumatra = state.pathToSumatra
+    }
+
+    override fun initializeComponent() {
+        pathToSumatra?.let {
+            SumatraViewer.trySumatraPath(it)
+        }
     }
 
     fun isAutoCompileEnabled(): Boolean {
