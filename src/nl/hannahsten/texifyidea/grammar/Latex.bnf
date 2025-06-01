@@ -21,15 +21,15 @@
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
-    implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
+    implements("environment")=["com.intellij.psi.PsiLanguageInjectionHost" "nl.hannahsten.texifyidea.psi.LatexComposite"]
 
     implements("begin_command") = "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"
 
     extends("magic_comment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub>"
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
-    implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
+    implements("parameter_text")=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexComposite"]
 
-    implements("parameter")="com.intellij.psi.PsiLanguageInjectionHost"
+    implements("parameter")=["com.intellij.psi.PsiLanguageInjectionHost" "nl.hannahsten.texifyidea.psi.LatexComposite"]
 
     // Used for displaying something else than the token name in the psi tree
     tokens=[

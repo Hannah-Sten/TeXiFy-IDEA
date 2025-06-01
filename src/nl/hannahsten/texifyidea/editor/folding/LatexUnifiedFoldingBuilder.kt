@@ -13,11 +13,15 @@ import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
 
 /**
- * Fold
+ * Fold sections, custom regions, begin-end environments, symbols, and footnotes in LaTeX documents.
+ *
+ * These folding are unified in a single folding builder to reduce the number of whole-tree traversals and improve performance.
  *
  * @author Li Ernest
  */
@@ -62,11 +66,54 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         )
     }
 
-    private fun foldingDescriptorMathCommand(cmdToken: PsiElement, display: String): FoldingDescriptor {
+    /**
+     * A map of math commands (including `\`) to their folded symbols.
+     * The keys are the commands with a backslash, e.g. `\alpha`, and the values are the symbols, e.g. `α`.
+     */
+    private val commandToFoldedSymbol: Map<String, String> = buildMap {
+        val escapedSymbols = listOf("%", "#", "&", "_", "$")
+        for (s in escapedSymbols) {
+            put("\\$s", s) // e.g. \% -> %
+        }
+        for (cmd in LatexMathCommand.values()) {
+            val display = cmd.display ?: continue
+            putIfAbsent(cmd.commandWithSlash, display) // e.g. \alpha -> α
+        }
+    }
+
+    private fun foldingDescriptorSymbol(cmdToken: PsiElement, display: String): FoldingDescriptor {
         return foldingDescriptor(
             cmdToken, cmdToken.textRange,
             placeholderText = display,
-            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldMathSymbols
+            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSymbols
+        )
+    }
+
+    private fun foldingDescriptorEnvironment(o: LatexEnvironment, range: TextRange): FoldingDescriptor {
+        return foldingDescriptor(
+            o, range,
+            placeholderText = "...",
+            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldEnvironments
+        )
+    }
+
+    /**
+     * Minimum length of a footnote to fold.
+     */
+    private val MIN_FOOTNOTE_LENGTH = 8
+
+    private fun foldingDescriptorFootnote(o: LatexCommands, range: TextRange): FoldingDescriptor {
+        val parsedText = o.text.substring(1).trim()
+        val placeHolderText = if (parsedText.length > MIN_FOOTNOTE_LENGTH) {
+            parsedText.substring(0, MIN_FOOTNOTE_LENGTH) + "..."
+        }
+        else {
+            parsedText.substring(0, parsedText.length - 1)
+        }
+        return foldingDescriptor(
+            o, range,
+            placeholderText = placeHolderText,
+            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldFootnotes
         )
     }
 
@@ -154,6 +201,19 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
         }
 
+        override fun visitCommands(o: LatexCommands) {
+            /*
+            \section, \subsection, etc. are section commands.
+             */
+            val element = o
+            val name = element.name ?: return
+
+            visitPossibleSectionCommand(element, name)
+            visitPossibleSymbol(element, name)
+
+            element.acceptChildren(this)
+        }
+
         private fun visitPossibleSectionCommand(element: LatexCommands, name: String) {
             /*
             If the command is a section command, we add it to the stack.
@@ -168,29 +228,36 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
         }
 
-        private fun visitPossibleMathCommand(element: LatexCommands, name: String) {
+        private fun visitPossibleSymbol(element: LatexCommands, name: String) {
             /*
             If the command is a math command, we add it to the stack.
             If the command is not a math command, we end all sections that are still open.
              */
-            val mathCommand = LatexMathCommand.getWithSlash(name) ?: return
-            val display = mathCommand.first().display ?: return
-            val descriptor = foldingDescriptorMathCommand(element.commandToken, display)
+            val display = commandToFoldedSymbol[name] ?: return
+            val descriptor = foldingDescriptorSymbol(element.commandToken, display)
             descriptors.add(descriptor)
         }
 
-        override fun visitCommands(o: LatexCommands) {
-            /*
-            \section, \subsection, etc. are section commands.
-             */
-            val element = o
-            val name = element.name ?: return
 
-            visitPossibleSectionCommand(element, name)
-            visitPossibleMathCommand(element, name)
+        private fun visitPossibleFootnoteCommand(element: LatexCommands, name: String) {
+            if (name in CommandMagic.foldableFootnotes) {
+                element.traverseRequiredParams {
+                    val textRange = it.textRange
+                    // If the footnote has a required parameter, we fold it
+                    if (textRange.length <= 2) {
+                        return@traverseRequiredParams true // Skip empty parameters like {}
+                    }
+                    val descriptor = foldingDescriptorFootnote(
+                        element,
+                        TextRange(textRange.startOffset + 1, textRange.endOffset - 1)
+                    )
+                    descriptors.add(descriptor)
 
-            element.acceptChildren(this)
+                    true
+                }
+            }
         }
+
 
         override fun visitMagicComment(o: LatexMagicComment) {
             val element = o
@@ -211,6 +278,16 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 endRegionCommand(element)
                 return
             }
+        }
+
+        override fun visitEnvironment(o: LatexEnvironment) {
+            val start = o.beginCommand.endOffset()
+            val end = o.endCommand?.textOffset ?: return
+            if (start < end) {
+                val descriptor = foldingDescriptorEnvironment(o, TextRange(start, end))
+                descriptors.add(descriptor)
+            }
+            o.acceptChildren(this)
         }
     }
 }

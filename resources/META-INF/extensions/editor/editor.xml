@@ -1,12 +1,12 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
-    <extensions defaultExtensionNs="com.intellij">
-<!--        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>-->
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEnvironmentFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexFootnoteFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCommentFoldingBuilder"/>
+        <extensions defaultExtensionNs="com.intellij">
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexUnifiedFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEscapedSymbolFoldingBuilder"/>
+<!--        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>-->
+<!--        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEnvironmentFoldingBuilder"/>-->
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder"/>
+<!--        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexFootnoteFoldingBuilder"/>-->
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCommentFoldingBuilder"/>
+<!--        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEscapedSymbolFoldingBuilder"/>-->
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.folding.BibtexEntryFoldingBuilder"/>
         <codeFoldingOptionsProvider instance="nl.hannahsten.texifyidea.editor.folding.LatexCodeFoldingOptionsProvider" />

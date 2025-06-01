@@ -2,9 +2,7 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.psi.LatexCommandTraverser
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexMathEnvMarker
+import nl.hannahsten.texifyidea.psi.*
 
 /*
  * This file contains utility functions paralleling [Psi] but with improved performance.
@@ -49,7 +47,41 @@ fun PsiElement.inMathContext(): Boolean {
  *
  * @param action The action to apply to each [LatexCommands] element found in the PSI tree.
  */
-fun PsiElement.traverseCommands(action: (LatexCommands) -> Unit) {
+fun PsiElement.traverseCommands(action: (LatexCommands) -> Unit)  {
     // Traverse the PSI tree and apply the action to each command element
     this.accept(LatexCommandTraverser(action))
+}
+
+/**
+ * Iterate through all direct children of the PsiElement and apply the action to each child
+ *
+ * @param action The action to apply to each child element. If the action returns false, the iteration stops.
+ */
+fun PsiElement.forEachDirectChild(action: (PsiElement) -> Boolean) : Boolean {
+    for(child in this.children) {
+        if(!action(child)) return false
+    }
+    return true
+}
+
+/**
+ * Apply the given action to each [LatexRequiredParam] in the command.
+ *
+ * @param action The action to apply to each [LatexRequiredParam] element found in the command. If the action returns false, the traversal stops.
+ */
+fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) -> Boolean) {
+    /*
+    Recall the bnf:
+    commands ::= COMMAND_TOKEN parameter*
+    parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM
+     */
+    forEachDirectChild { param ->
+        param.forEachDirectChild {
+            if (it is LatexRequiredParam) {
+                val res = action(it)
+                if(!res) return@forEachDirectChild false
+            }
+            true
+        }
+    }
 }

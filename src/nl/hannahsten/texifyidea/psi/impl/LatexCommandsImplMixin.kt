@@ -23,7 +23,7 @@ import nl.hannahsten.texifyidea.util.parser.*
 /**
  * This class is a mixin for LatexCommandsImpl.
  */
-abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands, LatexCommandWithParams {
+abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands {
 
     @JvmField
     var name: String? = null
