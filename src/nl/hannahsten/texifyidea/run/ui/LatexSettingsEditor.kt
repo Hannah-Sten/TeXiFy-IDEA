@@ -45,16 +45,18 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         val mainFile = CommonLatexFragments.createMainFileFragment(5, project)
         fragments.add(mainFile)
 
+        // Elements that do not (literally) form the command line get index 0, which sets their [com.intellij.execution.ui.SettingsEditorFragmentType]
+        // to [EDITOR] and avoids strange tiling behaviour of the COMMAND_LINE type.
         // Environment variables
-        fragments.add(CommonLatexFragments.createEnvParametersFragment(latexGroupName, 6))
+        fragments.add(CommonLatexFragments.createEnvParametersFragment(latexGroupName, 0))
 
         // Working directory
-        fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 7, project))
+        fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 0, project))
 
         // Output path
         fragments.add(CommonLatexFragments.createOutputPathFragment(
             latexGroupName,
-            8,
+            0,
             project,
             "output",
             reset = { s -> s.options.outputPath.pathWithMacro ?: "" }, // todo LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
@@ -66,7 +68,7 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         // Path for auxiliary output files
         fragments.add(CommonLatexFragments.createOutputPathFragment(
             latexGroupName,
-            8,
+            0,
             project,
             "auxiliary",
             reset = { s -> s.options.auxilPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", project).pathWithMacro!! },
@@ -76,10 +78,10 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         ))
 
         // Output format
-        fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 10, mySettings))
+        fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 0, mySettings))
 
         // LaTeX distribution
-        fragments.add(CommonLatexFragments.createLatexDistributionFragment(latexGroupName, 11, mySettings))
+        fragments.add(CommonLatexFragments.createLatexDistributionFragment(latexGroupName, 0, mySettings))
 
         // Allow parallel run
         fragments.add(CommonTags.parallelRun())
