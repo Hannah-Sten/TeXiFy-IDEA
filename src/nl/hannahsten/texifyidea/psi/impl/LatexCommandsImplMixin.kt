@@ -61,6 +61,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     }
 
     override fun getName(): String? {
+        // TODO: performance
         val stub = this.stub
         return if (stub != null) stub.name else this.commandToken.text
     }

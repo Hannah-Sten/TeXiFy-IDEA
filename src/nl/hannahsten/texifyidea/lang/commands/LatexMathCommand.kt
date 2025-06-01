@@ -24,6 +24,7 @@ object LatexMathCommand {
 
     private val lookup = HashMap<String, NonEmptySet<LatexCommand>>()
     private val lookupDisplay = HashMap<String, NonEmptySet<LatexCommand>>()
+    private val lookupWithSlash: Map<String, NonEmptySet<LatexCommand>>
 
     init {
         ALL.forEach { cmd ->
@@ -32,6 +33,7 @@ object LatexMathCommand {
                 lookupDisplay[cmd.display!!] = lookupDisplay.getOrNone(cmd.display!!).fold({ nonEmptySetOf(cmd) }, { it + nonEmptySetOf(cmd) })
             }
         }
+        lookupWithSlash = lookup.mapKeys { (key, _) -> "\\$key" }
     }
 
     @JvmStatic
@@ -39,6 +41,9 @@ object LatexMathCommand {
 
     @JvmStatic
     operator fun get(command: String) = lookup[command]
+
+    @JvmStatic
+    fun getWithSlash(command: String) = lookupWithSlash[command]
 
     @JvmStatic
     fun findByDisplay(display: String) = lookupDisplay[display]

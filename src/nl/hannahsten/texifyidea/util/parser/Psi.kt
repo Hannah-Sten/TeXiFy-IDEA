@@ -30,8 +30,9 @@ fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(tex
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
+@Deprecated("Performance")
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
-    // TODO: Performance, as it traverses the whole tree.
+    // TODO: Performance, as it traverses the whole tree and also run read action.
     return runReadAction {
         if (!this.isValid || project.isDisposed) {
             emptyList()
@@ -70,7 +71,9 @@ fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolea
  * Finds the first child of a certain type.
  */
 @Suppress("UNCHECKED_CAST")
+@Deprecated("Performance")
 fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
+    // we should not runReadAction
     val children = runReadAction { this.children }
     for (child in children) {
         if (clazz.java.isAssignableFrom(child.javaClass)) {
@@ -141,20 +144,6 @@ fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil
  * Checks if the psi element has a parent of a given class.
  */
 fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfType(clazz) != null
-
-/**
- * Checks if the psi element is in math mode or not.
- *
- * @return `true` when the element is in math mode, `false` when the element is in no math mode.
- */
-fun PsiElement.inMathContext(): Boolean {
-    // TODO: performance
-    // Do the cheap tests first.
-    return inDirectMathContext()
-        // Check if any of the parents are in math context, because the direct environment might not be explicitly
-        // defined as math context.
-        || parents().any { it.inDirectMathContext() }
-}
 
 /**
  * Checks if the psi element is in a direct math context or not.

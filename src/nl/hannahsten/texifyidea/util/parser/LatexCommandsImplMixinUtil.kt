@@ -166,10 +166,18 @@ fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): Lin
 }
 
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String> {
-    return parameters.mapNotNull { it.requiredParam }
-        .map { param ->
-            param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
+//    return parameters.mapNotNull { it.requiredParam }
+//        .map { param ->
+//            param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
+//        }
+    // A minor improvement
+    return parameters.mapNotNull {
+        val param = it.requiredParam ?: return@mapNotNull null
+        val text = param.text
+        text.trim { c ->
+            c == '{' || c == '}' || c.isWhitespace()
         }
+    }
 }
 
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
