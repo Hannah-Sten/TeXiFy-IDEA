@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 
@@ -51,6 +52,28 @@ fun PsiElement.inMathContext(): Boolean {
 fun PsiElement.traverseCommands(action: (LatexCommands) -> Unit) {
     // Traverse the PSI tree and apply the action to each command element
     this.accept(LatexCommandTraverser(action))
+}
+
+/**
+ * Traverse the PSI tree and apply the action to each command element.
+ *
+ * @param action The action to apply to each [LatexCommands] element found in the PSI tree.
+ */
+fun PsiElement.traverse(action: (LatexCommands) -> Boolean): Boolean {
+    // Traverse the PSI tree and apply the action to each command element
+    val visitor = LatexCommandTraverserStoppable(action)
+    this.accept(visitor)
+    return visitor.traversalStopped
+}
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
+ *
+ * **This method would be slow as it traverses the entire subtree of the PsiElement.**
+ */
+fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiElement> {
+    // Collect all children of the PsiElement that match the predicate
+    return PsiTreeUtil.collectElements(this) { element -> predicate(element) }.asList()
 }
 
 /**

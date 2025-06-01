@@ -99,12 +99,12 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * Minimum length of a footnote to fold.
      */
-    private val MIN_FOOTNOTE_LENGTH = 8
+    private val minFootnoteLength = 8
 
     private fun foldingDescriptorFootnote(o: LatexCommands, range: TextRange): FoldingDescriptor {
         val parsedText = o.text.substring(1).trim()
-        val placeHolderText = if (parsedText.length > MIN_FOOTNOTE_LENGTH) {
-            parsedText.substring(0, MIN_FOOTNOTE_LENGTH) + "..."
+        val placeHolderText = if (parsedText.length > minFootnoteLength) {
+            parsedText.substring(0, minFootnoteLength) + "..."
         }
         else {
             parsedText.substring(0, parsedText.length - 1)
@@ -257,14 +257,13 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         override fun visitMagicComment(o: LatexMagicComment) {
-            val element = o
-            val text = element.text
+            val text = o.text
             startRegionRegex.find(text)?.let { match ->
                 val groups = match.groups
                 val name = groups["description"]?.value ?: groups["description2"]?.value?.trim() ?: ""
                 // Add a `\` to the name to match the section command format
                 val endLevel = sectionLevels["\\$name"] ?: Int.MAX_VALUE // custom region commands do not terminate sections
-                val s = FoldingEntry(element, Int.MIN_VALUE, name)
+                val s = FoldingEntry(o, Int.MIN_VALUE, name)
                 addSectionCommand(s, endLevel)
                 return
             }
@@ -272,7 +271,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             endRegionRegex.find(text)?.let { match ->
                 // If the end region is found, we pop the last section command from the stack
                 // and create a folding descriptor for it
-                endRegionCommand(element)
+                endRegionCommand(o)
                 return
             }
         }

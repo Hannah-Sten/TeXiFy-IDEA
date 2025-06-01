@@ -60,24 +60,25 @@ class LatexCommandTraverser(private val action: (LatexCommands) -> Unit) : Latex
 
 class LatexCommandTraverserStoppable(private val action: (LatexCommands) -> Boolean) : LatexRecursiveIgnoreTextVisitor() {
 
-    private var stopTraversal = false
+    var traversalStopped = false
+        private set
 
     override fun visitElement(element: PsiElement) {
-        if (stopTraversal) return
+        if (traversalStopped) return
         super.visitElement(element)
     }
 
     override fun visitCommands(o: LatexCommands) {
-        if (stopTraversal) return
+        if (traversalStopped) return
         if(!action(o)) {
-            stopTraversal = true
+            traversalStopped = true
             return
         }
         o.acceptChildren(this)
     }
 
     override fun visitMagicComment(o: LatexMagicComment) {
-        if (stopTraversal) return
+        if (traversalStopped) return
         // Do nothing, we only want to visit commands
         o.acceptChildren(this)
     }

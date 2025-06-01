@@ -28,9 +28,14 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
 fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(textOffset)
 
 /**
+ *
+ * Do not use this method due to performance issues.
+ *
+ * Think of better ways to get the children of a certain type, or at least filter the children before collecting them.
+ *
  * @see [PsiTreeUtil.getChildrenOfType]
  */
-@Deprecated("Performance")
+@Deprecated("Poor performance, consider add more filtering. ", replaceWith = ReplaceWith("collectSubtree { it -> it is T }"))
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
     // TODO: Performance, as it traverses the whole tree and also run read action.
     return runReadAction {
@@ -71,7 +76,6 @@ fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolea
  * Finds the first child of a certain type.
  */
 @Suppress("UNCHECKED_CAST")
-@Deprecated("Performance")
 fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
     // we should not runReadAction
     val children = runReadAction { this.children }
