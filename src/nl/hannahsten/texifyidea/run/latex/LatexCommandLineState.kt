@@ -26,8 +26,8 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
-import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
+import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
@@ -293,17 +293,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (pdfViewer != null) {
             // the pdf viewer is well defined, so we can use it
             scheduleForwardSearchAfterCompile(pdfViewer, handler, runConfig, environment, focusAllowed)
-        }
-        else if (SystemInfo.isMac) {
-            // Open default system viewer, source: https://ss64.com/osx/open.html
-            val commandList = arrayListOf("open", runConfig.outputFilePath)
-            // Fail silently, otherwise users who have set up something themselves get an exception every time when this command fails
-            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
-        }
-        else if (SystemInfo.isLinux) {
-            // Open default system viewer using xdg-open, since this is available in almost all desktop environments
-            val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
-            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
         }
     }
 

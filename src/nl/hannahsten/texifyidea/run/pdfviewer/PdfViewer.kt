@@ -4,7 +4,6 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.util.runCommand
-import kotlin.collections.firstOrNull
 
 /**
  * Allow other plugins to define their own pdf viewers.
@@ -73,7 +72,7 @@ interface PdfViewer {
     companion object {
 
         val internalViewers
-            get() = listOf(SumatraViewer, EvinceViewer, OkularViewer, ZathuraViewer, SkimViewer, NoViewer)
+            get() = listOf(SumatraViewer, EvinceViewer, OkularViewer, ZathuraViewer, SkimViewer, SystemDefaultViewer, NoViewer)
 
         val externalViewers
             get() = EP_NAME.extensionList

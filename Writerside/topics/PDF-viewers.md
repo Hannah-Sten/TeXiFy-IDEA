@@ -161,6 +161,4 @@ See the [Skim documentation](https://skim-app.sourceforge.io/manual/SkimHelp_51.
 
 ## Other pdf viewers
 
-If none of the known PDF viewers are detected, TeXiFy will try to open the system default pdf viewer.
-
 If you have a different pdf viewer not in the list, you can still let TeXiFy automatically open it after compilation, see [Run configuration settings](Run-configuration-settings.md#custom-pdf-viewer).
