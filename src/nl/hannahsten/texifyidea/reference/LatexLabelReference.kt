@@ -7,8 +7,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.findCommandInFileSet
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findBibtexItems
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
@@ -63,11 +64,12 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
         }
         else if (element.project.getLabelReferenceCommands().contains(command)) {
             // Create autocompletion entries for each element we could possibly resolve to
-            val allCommands = file.commandsInFileSet()
+//            val allCommands = file.commandsInFileSet()
+            val externalDocumentCommand = file.findCommandInFileSet(LatexGenericRegularCommand.EXTERNALDOCUMENT)
             return file.findLatexLabelingElementsInFileSet()
                 .toSet()
                 .mapNotNull { labelingElement: PsiElement ->
-                    val extractedLabel = labelingElement.extractLabelName(referencingFileSetCommands = allCommands)
+                    val extractedLabel = labelingElement.extractLabelName(externalDocumentCommand)
                     if (extractedLabel.isBlank()) return@mapNotNull null
 
                     LookupElementBuilder
