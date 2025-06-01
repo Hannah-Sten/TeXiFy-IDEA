@@ -10,6 +10,7 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
+import kotlin.io.path.Path
 
 /**
  * Run an external tool.
@@ -29,7 +30,8 @@ class ExternalToolCommandLineState(
         }
 
         val command = listOf(tool.executableName, mainFile.nameWithoutExtension)
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)
+        val workDirectory = workingDirectory?.path ?: throw ExecutionException("Working directory is not given.")
+        val commandLine = GeneralCommandLine(command).withWorkingDirectory(Path(workDirectory))
             .withEnvironment(environmentVariables.envs)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)

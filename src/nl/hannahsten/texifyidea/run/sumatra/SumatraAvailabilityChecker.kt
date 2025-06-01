@@ -6,6 +6,8 @@ import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.Path
 
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
@@ -19,7 +21,7 @@ object SumatraAvailabilityChecker {
         private set
 
     /** If we know a valid path containing SumatraPDF.exe, it will be stored here, in case as a last resort you really just want to open a Sumatra, doesn't matter which one. */
-    var sumatraDirectory: File? = null
+    var sumatraDirectory: Path? = null
 
     private fun isSumatraInstalledAndAvailable(): Boolean {
         if (!SystemInfo.isWindows || !isSumatraInstalled()) return false
@@ -52,9 +54,9 @@ object SumatraAvailabilityChecker {
         sumatraCustomPath: String? = null,
         assignNewAvailability: Boolean = true
     ): Pair<Boolean, Boolean> {
-        var workingDir: File? = null
+        var workingDir: Path? = null
         if (!sumatraCustomPath.isNullOrEmpty() && File(sumatraCustomPath).isDirectory) {
-            workingDir = File(sumatraCustomPath)
+            workingDir = Path(sumatraCustomPath)
         }
 
         var isCustomPathValid = false // if Sumatra is accessible in customPath

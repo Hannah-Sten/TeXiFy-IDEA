@@ -14,7 +14,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.Path
 
 @JvmInline value class FileName(val value: String)
 
@@ -28,7 +29,7 @@ import java.io.File
 
 data class TextidoteAnnotatorInitialInfo(
     val fileName: String,
-    val workingDirectory: File,
+    val workingDirectory: Path,
     val project: Project,
     val document: Document,
 )
@@ -54,7 +55,7 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
 
         return TextidoteAnnotatorInitialInfo(
             file.virtualFile.name,
-            File(file.containingDirectory?.virtualFile?.path ?: return null),
+            Path(file.containingDirectory?.virtualFile?.path ?: return null),
             file.project,
             editor.document,
         )

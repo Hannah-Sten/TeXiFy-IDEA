@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.util.toHex
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
+import java.nio.file.Path
 import java.nio.file.Paths
 import javax.imageio.ImageIO
 import javax.swing.SwingUtilities
@@ -30,7 +31,7 @@ class InkscapePreviewer : Previewer {
                     // Snap apps are confined to the users home directory
                     if (SystemEnvironment.isInkscapeInstalledAsSnap) {
                         setPreviewCodeInTemp(
-                            FileUtil.createTempDirectory(File(System.getProperty("user.home")), "preview", null),
+                            FileUtil.createTempDirectory(File(System.getProperty("user.home")), "preview", null).toPath(),
                             input,
                             project,
                             preamble,
@@ -39,7 +40,7 @@ class InkscapePreviewer : Previewer {
                         )
                     }
                     else {
-                        setPreviewCodeInTemp(FileUtil.createTempDirectory("preview", null), input, project, preamble, previewForm, waitTime)
+                        setPreviewCodeInTemp(FileUtil.createTempDirectory("preview", null).toPath(), input, project, preamble, previewForm, waitTime)
                     }
                 }
                 catch (exception: AccessDeniedException) {
@@ -58,7 +59,7 @@ class InkscapePreviewer : Previewer {
      * temp directory in case the usual fails.
      */
     private fun setPreviewCodeInTemp(
-        tempDirectory: File,
+        tempDirectory: Path,
         previewCode: String,
         project: Project,
         preamble: String,
@@ -66,7 +67,7 @@ class InkscapePreviewer : Previewer {
         waitTime: Long
     ) {
         try {
-            val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
+            val tempBasename = Paths.get(tempDirectory.toString(), "temp").toString()
             val writer = PrintWriter("$tempBasename.tex", "UTF-8")
 
             val tmpContent =
@@ -101,14 +102,14 @@ $previewCode
         }
         finally {
             // Delete all the created temp files in the default temp directory.
-            tempDirectory.deleteRecursively()
+            tempDirectory.toFile().deleteRecursively()
         }
     }
 
     private fun runPreviewFormCommand(
         command: String,
         args: Array<String>,
-        workDirectory: File,
+        workDirectory: Path,
         waitTime: Long,
         previewForm: PreviewForm
     ): String? {
@@ -127,7 +128,7 @@ $previewCode
      *
      * @return If successful
      */
-    private fun runInkscape(tempBasename: String, tempDirectory: File, waitTime: Long, previewForm: PreviewForm): Boolean {
+    private fun runInkscape(tempBasename: String, tempDirectory: Path, waitTime: Long, previewForm: PreviewForm): Boolean {
         // If 1.0 or higher
         if (SystemEnvironment.inkscapeMajorVersion >= 1 || !SystemEnvironment.isAvailable("inkscape")) {
             runPreviewFormCommand(

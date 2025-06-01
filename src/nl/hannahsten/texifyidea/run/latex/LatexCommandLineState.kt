@@ -41,6 +41,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
+import kotlin.io.path.Path
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -122,7 +123,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (SystemInfo.isWindows && command.sumOf { it.length } > 10_000) {
             throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
         }
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory)
+        val commandLine = GeneralCommandLine(command).withWorkingDirectory(Path(workingDirectory))
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withEnvironment(envVariables)
         val handler = runWithModalProgressBlocking(environment.project, "Creating command line process...") {

@@ -4,7 +4,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import org.intellij.lang.annotations.Language
-import java.io.File
+import java.nio.file.Path
 import java.text.Normalizer
 import java.util.*
 import kotlin.math.max
@@ -227,16 +227,16 @@ fun String.removeHtmlTags() = this.replace(PatternMagic.htmlTag.toRegex(), "")
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun String.runCommand(workingDirectory: File? = null) =
+fun String.runCommand(workingDirectory: Path? = null) =
     runCommand(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 /**
  * See [String.runCommand] but implemented in a non-blocking way.
  */
-suspend fun String.runCommandNonBlocking(workingDirectory: File? = null) =
+suspend fun String.runCommandNonBlocking(workingDirectory: Path? = null) =
     runCommandNonBlocking(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
-fun String.runCommandWithExitCode(workingDirectory: File? = null) =
+fun String.runCommandWithExitCode(workingDirectory: Path? = null) =
     runCommandWithExitCode(*(this.split("\\s".toRegex())).toTypedArray(), workingDirectory = workingDirectory)
 
 /**
