@@ -42,19 +42,22 @@ object CommandMagic {
         SUBPARAGRAPH to 5
     )
 
-    /** Section commands sorted from large to small. */
+    /**
+     * Section commands sorted from large to small.
+     */
     val sectioningCommands = labeledLevels.entries.sortedBy { it.value }.map { it.key }
+
+    /**
+     * Map of `\section`-like commands to their level.
+     */
+    val sectionNameToLevel: Map<String, Int> =
+        labeledLevels.mapKeys { it.key.commandWithSlash }
 
     /**
      * Commands that define a label via an optional parameter
      */
     @JvmField
     val labelAsParameter = hashSetOf(LSTINPUTLISTING.cmd)
-
-    /**
-     * All commands that mark some kind of section.
-     */
-    val sectionMarkers: Set<String> = labeledLevels.keys.map { it.cmd }.toSet()
 
     /**
      * The colours that each section separator has.
@@ -413,12 +416,12 @@ object CommandMagic {
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.
      */
-    val ignoredIfs : Set<String> = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot", "\\ifcsvstrcmp")
+    val ignoredIfs: Set<String> = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot", "\\ifcsvstrcmp")
 
     /**
      * List of all TeX style primitives.
      */
-    val stylePrimitives : List<String> = listOf(
+    val stylePrimitives: List<String> = listOf(
         RM.cmd, SF.cmd, TT.cmd, IT.cmd, SL.cmd, SC.cmd, BF.cmd
     )
 

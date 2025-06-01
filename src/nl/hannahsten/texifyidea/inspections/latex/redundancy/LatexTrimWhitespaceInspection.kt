@@ -39,7 +39,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
 
         val commands = file.commandsInFile()
         for (command in commands) {
-            if (command.name !in CommandMagic.sectionMarkers) {
+            if (command.name !in CommandMagic.sectionNameToLevel) {
                 continue
             }
 

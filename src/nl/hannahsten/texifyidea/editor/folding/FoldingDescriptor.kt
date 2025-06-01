@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 
-
 /**
  * A helper function to create a [FoldingDescriptor] with the given parameters.
  */

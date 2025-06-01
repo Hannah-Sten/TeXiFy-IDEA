@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.psi
 
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiNamedElement
 
 /**
@@ -15,8 +14,6 @@ interface LatexCommandWithParams : LatexComposite, PsiNamedElement {
      * **Note that the backslash `\` is included in the name.**
      */
     override fun getName(): String?
-
-
 
     val parameterList: List<LatexParameter>
 

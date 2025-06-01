@@ -10,7 +10,6 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
-import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexVisitor

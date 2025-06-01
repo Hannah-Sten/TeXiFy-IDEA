@@ -27,7 +27,6 @@ import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
  */
 class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
-
     /**
      * A map of section commands (including `\`) to their levels.
      */
@@ -238,7 +237,6 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             descriptors.add(descriptor)
         }
 
-
         private fun visitPossibleFootnoteCommand(element: LatexCommands, name: String) {
             if (name in CommandMagic.foldableFootnotes) {
                 element.traverseRequiredParams {
@@ -257,7 +255,6 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 }
             }
         }
-
 
         override fun visitMagicComment(o: LatexMagicComment) {
             val element = o
