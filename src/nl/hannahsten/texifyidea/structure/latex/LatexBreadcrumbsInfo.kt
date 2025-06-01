@@ -12,7 +12,9 @@ import nl.hannahsten.texifyidea.util.parser.name
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
- * @author Li Ernest Hannah Schellekens
+ *
+ *
+ * @author Li Ernest, Hannah Schellekens
  */
 class LatexBreadcrumbsInfo : BreadcrumbsProvider {
 

@@ -116,7 +116,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         )
     }
 
-    data class FoldingEntry(
+    private data class FoldingEntry(
         val command: PsiElement,
         val level: Int,
         val name: String
