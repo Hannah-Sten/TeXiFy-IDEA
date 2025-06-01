@@ -4,6 +4,10 @@
 
 ### Added
 
+* Improve Sumatra installation detection, by @Ezrnest
+* Move Sumatra custom path from run configuration to global settings, by @Ezrnest
+* Add option to disallow the pdf viewer to focus, by @Ezrnest
+* Add system default as option for the pdf viewer, for Mac/Linux
 * Add warning to Detexify tool window
 * Improve performance on startup
 * Add support for file references for the tikzfig command
