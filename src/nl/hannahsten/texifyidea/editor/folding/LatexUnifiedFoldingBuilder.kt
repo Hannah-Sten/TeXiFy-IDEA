@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -52,7 +53,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
          */
         val visitor = LatexFoldingVisitor()
         root.accept(visitor)
-        visitor.endAll(root.textOffset + root.textLength)
+        visitor.endAll(root.endOffset)
         return visitor.descriptors.toTypedArray()
     }
 
@@ -151,13 +152,18 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
          */
         val sectionStack = ArrayDeque<FoldingEntry>()
 
+        /**
+         * The count of ignored folding entries as the base
+         */
+        var baseCount : Int = 0
+
         private fun addSectionCommand(s: FoldingEntry, endLevel: Int) {
-            if (sectionStack.isEmpty()) {
-                // If the stack is empty and the section level is 0, we can add it directly
+            if (sectionStack.size == baseCount) {
+                // If the stack is (effectively) empty, we can add it directly
                 sectionStack.addLast(s)
                 return
             }
-            // If the stack is empty or the current command is at a deeper level than the last one, push it onto the stack
+            // If the current command is at a deeper level than the last one, push it onto the stack
             if (endLevel > sectionStack.last().level) {
                 sectionStack.addLast(s)
                 return
@@ -170,7 +176,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             // If the current command is at the same level as the last one, pop the last one and create a folding descriptor
             val prev = command.parentOfType(LatexNoMathContent::class)?.previousSiblingIgnoreWhitespace()
             val endOffset = prev?.endOffset ?: (command.startOffset - 1)
-            while (sectionStack.isNotEmpty()) {
+            while (sectionStack.size > baseCount) {
                 val (lastCommand, lastLevel) = sectionStack.last()
                 if (lastLevel < level) {
                     break // The last command is at a lower level, stop popping
@@ -183,7 +189,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
         private fun endRegionCommand(command: PsiElement) {
             val endOffset = command.endOffset
-            while (sectionStack.isNotEmpty()) {
+            while (sectionStack.size > baseCount) {
                 // ignore other section commands and find the last region command, whose level must be Int.MIN_VALUE
                 val s = sectionStack.removeLast()
                 if (s.level != Int.MIN_VALUE) {
@@ -199,7 +205,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
         fun endAll(lastOffset: Int) {
             // End all sections that are still open
-            while (sectionStack.isNotEmpty()) {
+            while (sectionStack.size > baseCount) {
                 val s = sectionStack.removeLast()
                 if (s.level == Int.MIN_VALUE) {
                     // skip unclosed region commands
@@ -289,13 +295,25 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         override fun visitEnvironment(o: LatexEnvironment) {
-            val start = o.beginCommand.endOffset()
-            val end = o.endCommand?.textOffset ?: return
-            if (start < end) {
-                val descriptor = foldingDescriptorEnvironment(o, TextRange(start, end))
+            val envStart = o.beginCommand.endOffset()
+            val envEnd = o.endCommand?.textOffset ?: return
+            if (envStart < envEnd) {
+                val descriptor = foldingDescriptorEnvironment(o, TextRange(envStart, envEnd))
                 descriptors.add(descriptor)
             }
-            o.acceptChildren(this)
+            // We enter a new level with the environment, and we should not end previous commands
+            // While this is only for the `document` command now, we reserve it here for possible future change
+            val newLevel = o.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName
+            if (newLevel) {
+                val originalBaseCount = baseCount
+                baseCount = sectionStack.size
+                o.acceptChildren(this)
+                val lastOffset = o.environmentContent?.noMathContentList?.lastOrNull()?.endOffset ?: envEnd
+                endAll(lastOffset)
+                baseCount = originalBaseCount
+            }else{
+                o.acceptChildren(this)
+            }
         }
     }
 }
