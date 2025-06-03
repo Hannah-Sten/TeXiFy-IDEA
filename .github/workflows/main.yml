@@ -33,6 +33,7 @@ jobs:
         with:
           post-pr-comment: false
           pr-mode: false
+          # Disable K2 mode: https://youtrack.jetbrains.com/issue/QD-11672/False-positives-in-linter-qodana-jvm-communitylatest
           args: >
             --baseline,qodana.sarif.json,
             --source-directory,src,
