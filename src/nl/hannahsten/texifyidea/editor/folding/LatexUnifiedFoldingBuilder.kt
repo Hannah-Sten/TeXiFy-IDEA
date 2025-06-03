@@ -32,6 +32,17 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
      */
     private val sectionLevels: Map<String, Int> = CommandMagic.sectioningCommands.mapIndexed { index, command -> "\\${command.command}" to index }.toMap()
 
+    /**
+     * Implements custom folding regions.
+     * See https://blog.jetbrains.com/idea/2012/03/custom-code-folding-regions-in-intellij-idea-111/
+     *
+     * Syntax:
+     * %!<editor-fold desc="MyDescription">
+     * %!</editor-fold>
+     *
+     * %!region MyDescription
+     * %!endregion
+     */
     private val startRegionRegex = """%!\s*((<editor-fold(\s+desc="(?<description>[^"]*)")?>)|(region(\s+(?<description2>.+))?))""".toRegex()
     private val endRegionRegex = """%!\s*(</editor-fold>|endregion)""".toRegex()
 
@@ -220,6 +231,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
              */
             // fold section commands
             val level = sectionLevels[name]
+            // If the command is likely in a command definition or in the preamble, skip it
             if (level != null && element.firstChild != null &&
                 PsiTreeUtil.getParentOfType(element, LatexParameter::class.java) == null
             ) {
