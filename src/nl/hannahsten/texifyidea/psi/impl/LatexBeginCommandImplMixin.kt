@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.psi.impl
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.util.IncorrectOperationException
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 
@@ -16,8 +17,4 @@ abstract class LatexBeginCommandImplMixin(node: ASTNode) : LatexBeginCommand, AS
         return "\\begin"
     }
 
-    override fun setName(name: String): PsiElement? {
-        // not supported
-        return this
-    }
 }
