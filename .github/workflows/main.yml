@@ -35,7 +35,8 @@ jobs:
           pr-mode: false
           args: >
             --baseline,qodana.sarif.json,
-            --source-directory,src
+            --source-directory,src,
+            --property,idea.kotlin.plugin.use.k2=false
           cache-default-branch-only: true
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}

@@ -1,6 +1,6 @@
 version: "1.0"
 # https://youtrack.jetbrains.com/issue/QD-11672/False-positives-in-linter-qodana-jvm-communitylatest
-linter: jetbrains/qodana-jvm-community:2024.3
+linter: jetbrains/qodana-jvm-community:2025.1
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
