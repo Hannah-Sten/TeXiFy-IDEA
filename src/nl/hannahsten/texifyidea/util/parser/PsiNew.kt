@@ -5,6 +5,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 
 /*
  * This file contains utility functions paralleling [Psi] but with improved performance.
@@ -212,4 +213,15 @@ inline fun PsiElement.traverseContextualSiblingsNext(action: (PsiElement) -> Uni
  */
 inline fun PsiElement.traverseContextualSiblingsPrev(action: (PsiElement) -> Unit) {
     return traverseContextualSiblingsTemplate(action) { it.prevSibling }
+}
+
+/**
+ * Gets the name of the command from the [PsiElement] if it is a command or is a content containing a command.
+ */
+fun PsiElement.asCommandName() : String?{
+    return when (this) {
+        is LatexCommandWithParams -> this.name
+        is LatexNoMathContent -> this.commands?.name
+        else -> null
+    }
 }

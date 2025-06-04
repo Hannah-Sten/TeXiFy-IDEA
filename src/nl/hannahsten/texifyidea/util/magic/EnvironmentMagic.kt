@@ -6,9 +6,12 @@ import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 
 object EnvironmentMagic {
 
-    val listingEnvironments = hashSetOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }
+    val listingEnvironments: Set<String> = listOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }.toSet()
 
-    private val tableEnvironmentsWithoutCustomEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, TABULARY, ARRAY, LONGTABLE, TABU, MATRIX, MATRIX_STAR, BMATRIX, BMATRIX_STAR, PMATRIX, PMATRIX_STAR, VMATRIX, VMATRIX_STAR, VMATRIX_CAPITAL, VMATRIX_CAPITAL_STAR, WIDETABULAR, BLOCKARRAY, BLOCK, TBLR, LONGTBLR, TALLTBLR).map { it.env }
+    private val tableEnvironmentsWithoutCustomEnvironments: Set<String> =
+        hashSetOf(TABULAR, TABULAR_STAR, TABULARX, TABULARY, ARRAY, LONGTABLE, TABU, MATRIX, MATRIX_STAR, BMATRIX, BMATRIX_STAR, PMATRIX,
+            PMATRIX_STAR, VMATRIX, VMATRIX_STAR, VMATRIX_CAPITAL, VMATRIX_CAPITAL_STAR, WIDETABULAR, BLOCKARRAY, BLOCK, TBLR, LONGTBLR, TALLTBLR).map { it.env }
+            .toSet()
 
     /**
      * Get all table environments in the project, including any user defined aliases.

@@ -4,6 +4,7 @@ import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import com.intellij.psi.codeStyle.CodeStyleSettings
 
 /**
  * @author Sten Wessel
@@ -11,14 +12,16 @@ import com.intellij.psi.PsiFile
 class LatexFormattingModelBuilder : FormattingModelBuilder {
 
     override fun createModel(context: FormattingContext): FormattingModel {
+        val codeStyleSettings = context.codeStyleSettings
         return FormattingModelProvider.createFormattingModelForPsiFile(
             context.containingFile,
             LatexBlock(
                 context.node,
                 Wrap.createWrap(WrapType.NONE, false),
                 Alignment.createAlignment(),
-                createSpacingBuilder(context.codeStyleSettings),
-                LatexWrappingStrategy()
+                createSpacingBuilder(codeStyleSettings),
+                codeStyleSettings
+
             ),
             context.codeStyleSettings
         )

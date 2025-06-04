@@ -5,6 +5,7 @@ import com.intellij.formatting.Spacing
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -22,16 +23,19 @@ const val LINE_LENGTH = 80
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
     // Only add spaces after &, unless escaped or inside url.
-    if (left.node?.text?.endsWith("&") == false) return null
-    if (left.node?.text?.endsWith("\\&") == true) return null
-    if (left.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
+    val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class) ?: return null
+    if (contentElement.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() != TABULAR.environmentName) return null
 
-    if (
-        parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
-            parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-        )
-    ) return null
+    val leftText = left.node?.text ?: return null
+    if (!leftText.endsWith("&")) return null
+    if (leftText.endsWith("\\&")) return null
+    if (left.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
+//    if (
+//        parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+//            ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
+//            parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+//        )
+//    ) return null
 
     return createSpacing(
         minSpaces = 1,
@@ -50,16 +54,13 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
 
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-    val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
-            project
-        )
-    ) return null
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() != TABULAR.environmentName) return null
+//    val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
 
     val tableLineSeparator = "\\\\"
     if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
 
-    val content = contentElement?.text ?: return null
+    val content = contentElement.text ?: return null
     val contentLines = content.split(tableLineSeparator)
         .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
         .toMutableList()

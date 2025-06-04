@@ -326,14 +326,18 @@ fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == Bibt
  *
  * This method does not take nested environments into account. Meaning that only the first parent environment counts.
  */
-fun PsiElement.inDirectEnvironment(environmentName: String): Boolean = inDirectEnvironment(listOf(environmentName))
+fun PsiElement.inDirectEnvironment(environmentName: String): Boolean {
+    val environment = parentOfType(LatexEnvironment::class) ?: return false
+    val nameText = environment.name() ?: return false
+    return nameText.text == environmentName
+}
 
 /**
  * Checks if the element is one of certain direct environments.
  *
  * This method does not take nested environments into account. Meaning that only the first parent environment counts.
  */
-fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
+fun PsiElement.inDirectEnvironment(validNames: Set<String>): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     val nameText = environment.name() ?: return false
     return nameText.text in validNames
