@@ -154,7 +154,6 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
         val regionStack = ArrayDeque<FoldingEntry>()
 
-
         /**
          * We have to keep track of the section commands that are interrupted by a region end, so that we can recover them later
          * if there are only whitespaces between the new section command and the custom region end.
@@ -167,7 +166,6 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
          */
         var prevLevelSize: Int = 0
 
-
         fun endSectionCommand(newSection: PsiElement, endLevel: Int) {
             if (sectionStack.size == prevLevelSize || endLevel > sectionStack.last().level) {
                 // If the stack is (effectively) empty or the current command is at a deeper level than the last one, we do not pop
@@ -176,7 +174,6 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             val prev = newSection.prevContextualSiblingIgnoreWhitespace()
             val endOffset = prev?.endOffset ?: newSection.startOffset
             val lastRegionStart = regionStack.lastOrNull()?.start ?: -1
-//            val prevFoldingEnd = descriptors.lastOrNull()?.range?.endOffset ?: 0
             while (sectionStack.size > prevLevelSize) {
                 val (lastCommand, lastLevel) = sectionStack.last()
                 if (lastLevel < endLevel) {
@@ -318,8 +315,8 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     // we have to end the sections before
                     endSectionCommand(o, level) // pop the last section command
                 }
+                // add it as a region
                 regionStack.addLast(FoldingEntry(o, o.startOffset, Int.MIN_VALUE, name))
-                // it is a region
                 return
             }
 

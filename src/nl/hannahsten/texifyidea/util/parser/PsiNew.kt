@@ -41,7 +41,7 @@ fun PsiElement.inMathContext(): Boolean {
     // TODO: performance
     // 1st improved version, test if any parent element is in a math environment
     return anyParent { it is LatexMathEnvMarker }
-            || anyParent { it.inDirectEnvironmentContext(Environment.Context.MATH) } // can be improved
+        || anyParent { it.inDirectEnvironmentContext(Environment.Context.MATH) } // can be improved
 }
 
 /**
