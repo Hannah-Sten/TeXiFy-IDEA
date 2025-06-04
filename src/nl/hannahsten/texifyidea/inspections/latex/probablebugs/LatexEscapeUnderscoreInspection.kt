@@ -37,5 +37,5 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
     }
 
     private val commandsDisallowingUnderscore =
-        CommandMagic.sectionMarkers + CommandMagic.textStyles + setOf("""\caption""")
+        CommandMagic.sectionNameToLevel.keys + CommandMagic.textStyles + setOf("""\caption""")
 }

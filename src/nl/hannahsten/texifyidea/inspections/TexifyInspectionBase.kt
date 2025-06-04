@@ -134,7 +134,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         if (file.isSuppressed()) {
             return null
         }
-
+        // TODO: performance, used 4 GB memory (IDE total: 12 GB)
         return inspectFile(file, manager, isOnTheFly)
             .filter { checkContext(it.psiElement) }
             .toTypedArray()

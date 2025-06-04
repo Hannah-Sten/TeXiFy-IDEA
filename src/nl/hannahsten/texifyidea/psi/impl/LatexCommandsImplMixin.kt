@@ -10,7 +10,6 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
-import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexVisitor
@@ -23,7 +22,7 @@ import nl.hannahsten.texifyidea.util.parser.*
 /**
  * This class is a mixin for LatexCommandsImpl.
  */
-abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands, LatexCommandWithParams {
+abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands {
 
     @JvmField
     var name: String? = null
@@ -61,6 +60,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     }
 
     override fun getName(): String? {
+        // TODO: performance
         val stub = this.stub
         return if (stub != null) stub.name else this.commandToken.text
     }

@@ -33,7 +33,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         return file.commandsInFile()
             .asSequence()
-            .filter { it.name in CommandMagic.sectionMarkers }
+            .filter { it.name in CommandMagic.sectionNameToLevel }
             .filter { it.parameterList.mapNotNull { param -> param.optionalParam }.isEmpty() }
             .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
             .map { psiElement ->

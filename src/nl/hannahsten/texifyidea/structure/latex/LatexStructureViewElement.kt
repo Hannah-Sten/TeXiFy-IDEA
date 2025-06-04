@@ -100,7 +100,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val newElement = LatexStructureViewCommandElement.newCommand(command) ?: continue
 
             when (command.name) {
-                in CommandMagic.sectionMarkers -> {
+                in CommandMagic.sectionNameToLevel -> {
                     addSections(command, sections, treeElements, numbering)
                 }
                 in labelingCommands + CommandMagic.commandDefinitionsAndRedefinitions + setOf(LatexGenericRegularCommand.BIBITEM.cmd) -> {
@@ -275,5 +275,5 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun order(commands: LatexCommands) = order(commands.name)
 
-    private fun order(commandName: String?) = CommandMagic.sectionMarkers.indexOf(commandName)
+    private fun order(commandName: String?) = CommandMagic.sectionNameToLevel[commandName] ?: -1
 }

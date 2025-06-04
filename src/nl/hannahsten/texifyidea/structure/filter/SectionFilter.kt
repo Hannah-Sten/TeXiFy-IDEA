@@ -16,7 +16,7 @@ class SectionFilter : Filter {
         return if (treeElement !is LatexStructureViewCommandElement) {
             true
         }
-        else !CommandMagic.sectionMarkers.contains(treeElement.commandName)
+        else !CommandMagic.sectionNameToLevel.contains(treeElement.commandName)
     }
 
     override fun isReverted() = true

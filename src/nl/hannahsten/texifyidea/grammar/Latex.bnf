@@ -14,21 +14,22 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
+    implements="nl.hannahsten.texifyidea.psi.LatexComposite"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.LatexElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
-    implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
+    implements("environment")=["com.intellij.psi.PsiLanguageInjectionHost" "nl.hannahsten.texifyidea.psi.LatexComposite"]
 
     implements("begin_command") = "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"
 
     extends("magic_comment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub>"
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
-    implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
+    implements("parameter_text")=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexComposite"]
 
-    implements("parameter")="com.intellij.psi.PsiLanguageInjectionHost"
+    implements("parameter")=["com.intellij.psi.PsiLanguageInjectionHost" "nl.hannahsten.texifyidea.psi.LatexComposite"]
 
     // Used for displaying something else than the token name in the psi tree
     tokens=[
@@ -98,12 +99,12 @@ left_right_content ::= raw_text | magic_comment | comment | environment | pseudo
 // Allow unmatched left and right
 left_right ::= LEFT (OPEN_PAREN | OPEN_ANGLE_BRACKET | OPEN_BRACE | OPEN_BRACKET | PIPE)? left_right_content* RIGHT (CLOSE_PAREN | CLOSE_ANGLE_BRACKET | CLOSE_BRACE | CLOSE_BRACKET | PIPE)?
 
-begin_command ::= BEGIN_TOKEN STAR? parameter* {
+begin_command ::= BEGIN_TOKEN parameter* {
     pin=1
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexBeginCommandImplMixin"
 }
 
-end_command ::= END_TOKEN STAR? parameter* { pin=1 }
+end_command ::= END_TOKEN parameter* { pin=1 }
 
 parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterImplMixin"
@@ -177,14 +178,24 @@ magic_comment ::= MAGIC_COMMENT_TOKEN {
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub"
 }
 
-math_environment ::= inline_math | display_math
+math_environment ::= inline_math | display_math {
+    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
+}
 
-inline_math ::= INLINE_MATH_START math_content? INLINE_MATH_END { pin=1 }
+inline_math ::= INLINE_MATH_START math_content? INLINE_MATH_END {
+    pin=1
+    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
+}
 
-display_math ::= DISPLAY_MATH_START math_content? DISPLAY_MATH_END { pin=1 }
+display_math ::= DISPLAY_MATH_START math_content? DISPLAY_MATH_END {
+    pin=1
+    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
+}
 
 // Since the content in a math environment is of the same type as not in a math environment, just reuse the psi
 // element (having a math_content element allows for easily finding all contents in a math environment for example)
-math_content ::= no_math_content+
+math_content ::= no_math_content+ {
+    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
+}
 
 raw_text ::= RAW_TEXT_TOKEN+
