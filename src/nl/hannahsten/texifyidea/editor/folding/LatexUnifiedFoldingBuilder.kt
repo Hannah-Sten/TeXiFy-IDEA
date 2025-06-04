@@ -15,8 +15,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
-import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.prevContextualSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
 
 /**
@@ -130,6 +129,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     private data class FoldingEntry(
         val command: PsiElement,
+        val start: Int,
         val level: Int,
         val name: String
     )
@@ -152,65 +152,103 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
          */
         val sectionStack = ArrayDeque<FoldingEntry>()
 
+        val regionStack = ArrayDeque<FoldingEntry>()
+
+
         /**
-         * The count of ignored folding entries as the base
+         * We have to keep track of the section commands that are interrupted by a region end, so that we can recover them later
+         * if there are only whitespaces between the new section command and the custom region end.
          */
-        var baseCount : Int = 0
+        val interruptedSections = mutableListOf<FoldingEntry>()
+        var interruptingEnd: PsiElement? = null
 
-        private fun addSectionCommand(s: FoldingEntry, endLevel: Int) {
-            if (sectionStack.size == baseCount) {
-                // If the stack is (effectively) empty, we can add it directly
-                sectionStack.addLast(s)
+        /**
+         * The size of the section stack that should not be popped.
+         */
+        var prevLevelSize: Int = 0
+
+
+        fun endSectionCommand(newSection: PsiElement, endLevel: Int) {
+            if (sectionStack.size == prevLevelSize || endLevel > sectionStack.last().level) {
+                // If the stack is (effectively) empty or the current command is at a deeper level than the last one, we do not pop
                 return
             }
-            // If the current command is at a deeper level than the last one, push it onto the stack
-            if (endLevel > sectionStack.last().level) {
-                sectionStack.addLast(s)
-                return
-            }
-            endSectionCommand(s.command, endLevel)
-            sectionStack.addLast(s) // Add the current command back to the stack
-        }
-
-        private fun endSectionCommand(command: PsiElement, level: Int, isEndCommand: Boolean = false) {
-            // If the current command is at the same level as the last one, pop the last one and create a folding descriptor
-            val prev = command.parentOfType(LatexNoMathContent::class)?.previousSiblingIgnoreWhitespace()
-            val endOffset = prev?.endOffset ?: (command.startOffset - 1)
-            while (sectionStack.size > baseCount) {
+            val prev = newSection.prevContextualSiblingIgnoreWhitespace()
+            val endOffset = prev?.endOffset ?: newSection.startOffset
+            val lastRegionStart = regionStack.lastOrNull()?.start ?: -1
+//            val prevFoldingEnd = descriptors.lastOrNull()?.range?.endOffset ?: 0
+            while (sectionStack.size > prevLevelSize) {
                 val (lastCommand, lastLevel) = sectionStack.last()
-                if (lastLevel < level) {
+                if (lastLevel < endLevel) {
                     break // The last command is at a lower level, stop popping
                 }
                 sectionStack.removeLast()
                 val foldingRange = TextRange(lastCommand.startOffset, endOffset)
-                descriptors.add(foldingDescriptorSection(lastCommand, foldingRange))
+                if (foldingRange.startOffset >= lastRegionStart) {
+                    descriptors.add(foldingDescriptorSection(lastCommand, foldingRange))
+                }
+            }
+        }
+
+        private fun encounterSectionCommand(s: FoldingEntry) {
+            endInterruptedSectionCommand(s.command, s.level)
+            interruptedSections.clear()
+            interruptingEnd = null
+            // clear the all the interrupted sections as they should be truly ended by a new section command or truly interrupted by some additional content
+
+            endSectionCommand(s.command, s.level)
+            sectionStack.addLast(s) // Add the current command back to the stack
+        }
+
+        private fun endInterruptedSectionCommand(command: PsiElement, endLevel: Int) {
+            /*
+            The sections, if not interrupted, should be ended here
+             */
+            if (interruptedSections.isEmpty()) return
+            var endOffset = command.prevContextualSiblingIgnoreWhitespace()?.endOffset
+            if (endOffset == null || descriptors.isEmpty() || endOffset > descriptors.last().range.endOffset) {
+                return
+            }
+            // now we jump to the front of the interruptions
+            endOffset = interruptingEnd?.prevContextualSiblingIgnoreWhitespace()?.endOffset ?: endOffset
+
+            for (s in interruptedSections) {
+                if (s.level >= endLevel) {
+                    // these sections are not interrupted by the current command
+                    val foldingRange = TextRange(s.command.startOffset, endOffset)
+                    val descriptor = foldingDescriptorSection(s.command, foldingRange)
+                    descriptors.add(descriptor)
+                }
             }
         }
 
         private fun endRegionCommand(command: PsiElement) {
-            val endOffset = command.endOffset
-            while (sectionStack.size > baseCount) {
-                // ignore other section commands and find the last region command, whose level must be Int.MIN_VALUE
-                val s = sectionStack.removeLast()
-                if (s.level != Int.MIN_VALUE) {
-                    continue
+            // As the end region is found, we pop the last section command from the stack
+            // and create a folding descriptor for it
+            if (regionStack.isEmpty()) return
+            val lastRegionEntry = regionStack.removeLast()
+            val foldingRange = TextRange(lastRegionEntry.start, command.endOffset)
+            val descriptor = foldingDescriptorRegion(lastRegionEntry.command, foldingRange, lastRegionEntry.name)
+            descriptors.add(descriptor)
+
+            // Additionally, we keep track of the last command that interrupted the section commands
+            if (interruptingEnd == null) {
+                interruptingEnd = command
+            }
+            while (sectionStack.size > prevLevelSize) {
+                val s = sectionStack.last()
+                if (s.start < foldingRange.startOffset) {
+                    // it starts before the folding,
+                    break
                 }
-                val lastCommand = s.command
-                val foldingRange = TextRange(lastCommand.startOffset, endOffset)
-                val descriptor = foldingDescriptorRegion(lastCommand, foldingRange, s.name)
-                descriptors.add(descriptor)
-                break
+                interruptedSections.addLast(sectionStack.removeLast())
             }
         }
 
         fun endAll(lastOffset: Int) {
             // End all sections that are still open
-            while (sectionStack.size > baseCount) {
+            while (sectionStack.size > prevLevelSize) {
                 val s = sectionStack.removeLast()
-                if (s.level == Int.MIN_VALUE) {
-                    // skip unclosed region commands
-                    continue
-                }
                 val foldingRange = TextRange(s.command.textOffset, lastOffset)
                 val descriptor = foldingDescriptorSection(s.command, foldingRange)
                 descriptors.add(descriptor)
@@ -231,24 +269,19 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         private fun visitPossibleSectionCommand(element: LatexCommands, name: String) {
-            /*
-            If the command is a section command, we add it to the stack.
-            If the command is not a section command, we end all sections that are still open.
-             */
             // fold section commands
             val level = sectionLevels[name]
             // If the command is likely in a command definition or in the preamble, skip it
             if (level != null && element.firstChild != null &&
                 PsiTreeUtil.getParentOfType(element, LatexParameter::class.java) == null
             ) {
-                addSectionCommand(FoldingEntry(element, level, name), endLevel = level)
+                encounterSectionCommand(FoldingEntry(element, element.startOffset, level, name))
             }
         }
 
         private fun visitPossibleSymbol(element: LatexCommands, name: String) {
             /*
             If the command is a math command, we add it to the stack.
-            If the command is not a math command, we end all sections that are still open.
              */
             val display = commandToFoldedSymbol[name] ?: return
             val descriptor = foldingDescriptorSymbol(element.commandToken, display)
@@ -280,15 +313,17 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 val groups = match.groups
                 val name = groups["description"]?.value ?: groups["description2"]?.value?.trim() ?: ""
                 // Add a `\` to the name to match the section command format
-                val endLevel = sectionLevels["\\$name"] ?: Int.MAX_VALUE // custom region commands do not terminate sections
-                val s = FoldingEntry(o, Int.MIN_VALUE, name)
-                addSectionCommand(s, endLevel)
+                val level = sectionLevels["\\$name"]
+                if (level != null) {
+                    // we have to end the sections before
+                    endSectionCommand(o, level) // pop the last section command
+                }
+                regionStack.addLast(FoldingEntry(o, o.startOffset, Int.MIN_VALUE, name))
+                // it is a region
                 return
             }
 
             endRegionRegex.find(text)?.let { match ->
-                // If the end region is found, we pop the last section command from the stack
-                // and create a folding descriptor for it
                 endRegionCommand(o)
                 return
             }
@@ -305,13 +340,14 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             // While this is only for the `document` command now, we reserve it here for possible future change
             val newLevel = o.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName
             if (newLevel) {
-                val originalBaseCount = baseCount
-                baseCount = sectionStack.size
+                val originalBaseCount = prevLevelSize
+                prevLevelSize = sectionStack.size
                 o.acceptChildren(this)
                 val lastOffset = o.environmentContent?.noMathContentList?.lastOrNull()?.endOffset ?: envEnd
                 endAll(lastOffset)
-                baseCount = originalBaseCount
-            }else{
+                prevLevelSize = originalBaseCount
+            }
+            else {
                 o.acceptChildren(this)
             }
         }
