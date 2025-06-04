@@ -4,6 +4,7 @@
 
 ### Added
 
+* Performance improvements for folding, breadcrumbs and more, by @Ezrnest
 * Improve Sumatra installation detection, by @Ezrnest
 * Move Sumatra custom path from run configuration to global settings, by @Ezrnest
 * Add option to disallow the pdf viewer to focus, by @Ezrnest
