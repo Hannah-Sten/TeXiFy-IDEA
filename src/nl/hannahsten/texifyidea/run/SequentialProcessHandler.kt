@@ -24,7 +24,7 @@ class SequentialProcessHandler(private val processes: List<ProcessHandler>) : Pr
         processes.dropLast(1).withIndex().forEach { (i, p) ->
             p.addProcessListener(object : ProcessAdapter() {
                 override fun processTerminated(event: ProcessEvent) {
-                    if (killed) {
+                    if (killed || event.exitCode > 0) {
                         this@SequentialProcessHandler.notifyProcessTerminated(event.exitCode)
                     }
                     else {
