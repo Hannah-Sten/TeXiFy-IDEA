@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.settings
 
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 
 data class TexifySettingsState(
     var automaticSecondInlineMathSymbol: Boolean = true,
@@ -22,8 +22,12 @@ data class TexifySettingsState(
     var htmlPasteTranslator: TexifySettings.HtmlPasteTranslator = TexifySettings.HtmlPasteTranslator.BUILTIN,
     var autoCompileOption: TexifySettings.AutoCompile? = null,
     var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
+    var pathToSumatra: String? = null,
+
+    var hasApprovedDetexify: Boolean = false,
+
     // Kept for backwards compatibility
     var autoCompile: Boolean = false,
     var autoCompileOnSaveOnly: Boolean = false,
-    var pdfViewer: InternalPdfViewer? = null
+    var pdfViewer: PdfViewer? = null
 )

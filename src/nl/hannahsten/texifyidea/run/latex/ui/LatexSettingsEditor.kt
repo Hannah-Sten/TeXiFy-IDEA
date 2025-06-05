@@ -7,6 +7,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.SettingsEditor
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
@@ -28,15 +29,14 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
-import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewers
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
+import java.awt.Cursor
 import java.awt.event.ItemEvent
-import javax.swing.InputVerifier
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -44,7 +44,7 @@ import javax.swing.JPanel
 /**
  * @author Sten Wessel
  */
-class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexRunConfiguration>() {
+class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRunConfiguration>() {
 
     private lateinit var panel: JPanel
     private lateinit var compiler: LabeledComponent<ComboBox<LatexCompiler>>
@@ -66,13 +66,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var externalToolsPanel: RunConfigurationPanel
 
-    /** Whether to enable the sumatraPath text field. */
-    private lateinit var enableSumatraPath: JBCheckBox
-
-    /** Allow users to specify a custom path to SumatraPDF.  */
-    private lateinit var sumatraPath: TextFieldWithBrowseButton
-
-    private lateinit var pdfViewer: LabeledComponent<ComboBox<out PdfViewer>>
+    private lateinit var pdfViewer: LabeledComponent<ComboBox<PdfViewer?>>
 
     /** Whether to require focus after compilation. */
     private lateinit var requireFocus: JBCheckBox
@@ -92,14 +86,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compilerPath.text = runConfiguration.compilerPath ?: ""
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
 
-        if (::sumatraPath.isInitialized) {
-            // Reset the custom SumatraPDF path
-            sumatraPath.text = runConfiguration.sumatraPath ?: ""
-            enableSumatraPath.isSelected = runConfiguration.sumatraPath != null
-        }
-
         pdfViewer.component.selectedItem = runConfiguration.pdfViewer
         requireFocus.isSelected = runConfiguration.requireFocus
+        requireFocus.isVisible = runConfiguration.pdfViewer?.let {
+            it.isForwardSearchSupported && it.isFocusSupported
+        } ?: false
 
         // Reset the pdf viewer command
         viewerCommand.text = runConfiguration.viewerCommand ?: ""
@@ -201,14 +192,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply custom compiler path if applicable
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
 
-        if (::sumatraPath.isInitialized) {
-            // Apply custom SumatraPDF path if applicable
-            runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
-
-            runConfiguration.enableSumatraPath = enableSumatraPath.isSelected
-        }
-
-        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: InternalPdfViewer.firstAvailable
+        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
         runConfiguration.requireFocus = requireFocus.isSelected
 
         // Apply custom pdf viewer command
@@ -228,10 +212,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply main file.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
         val filePath = txtFile.text
-        // Might result in requiring a content root (for relative paths), so we have to run in the background
-        runInBackgroundBlocking(project, "Resolving main file...") {
-            runConfiguration.setMainFile(filePath)
-        }
+
+        runConfiguration.setMainFile(filePath)
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
         if (!outputPathTextField.text.endsWith("/bin")) {
@@ -291,8 +273,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         addCompilerPathField(panel)
 
-        addSumatraPathField(panel)
-
         addPdfViewerCommandField(panel)
 
         // Optional custom compiler arguments
@@ -300,7 +280,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val argumentsEditor = EditorTextField("", project, PlainTextFileType.INSTANCE)
         argumentsLabel.labelFor = argumentsEditor
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler
-        project?.let { project ->
+        project.let { project ->
             val options = LatexCommandLineOptionsCache.getOptionsOrFillCache(selectedCompiler.executableName, project)
             LatexArgumentsCompletionProvider(options).apply(argumentsEditor)
         }
@@ -347,7 +327,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 FileChooserDescriptorFactory.createSingleFileDescriptor()
                     .withTitle("Choose a File to Compile")
                     .withExtensionFilter("tex")
-                    .withRoots(*ProjectRootManager.getInstance(project!!).contentRootsFromAllModules.toSet().toTypedArray())
+                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
@@ -367,13 +347,13 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // LaTeX distribution
         @Suppress("DialogTitleCapitalization")
-        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project!!) }.toTypedArray()), "LaTeX Distribution")
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray()), "LaTeX Distribution")
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
 
         // Extension panel
-        externalToolsPanel = RunConfigurationPanel(project!!, "External LaTeX programs: ")
+        externalToolsPanel = RunConfigurationPanel(project, "External LaTeX programs: ")
         panel.add(externalToolsPanel)
     }
 
@@ -386,7 +366,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                     FileChooserDescriptor(false, true, false, false, false, false)
                         .withTitle("Auxiliary Files Directory")
                         .withRoots(
-                            *ProjectRootManager.getInstance(project!!)
+                            *ProjectRootManager.getInstance(project)
                                 .contentRootsFromAllModules
                         )
                 )
@@ -401,7 +381,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 FileChooserDescriptor(false, true, false, false, false, false)
                     .withTitle("Output Files Directory")
                     .withRoots(
-                        *ProjectRootManager.getInstance(project!!)
+                        *ProjectRootManager.getInstance(project)
                             .contentRootsFromAllModules
                     )
             )
@@ -441,83 +421,37 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(compilerPath)
     }
 
-    private fun updatePdfViewerComboBox() {
-        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
-            ExternalPdfViewers.getExternalPdfViewers() +
-            listOf(InternalPdfViewer.NONE)
-
-        pdfViewer.component.removeAllItems()
-        for (i in viewers.indices) {
-            @Suppress("UNCHECKED_CAST")
-            (pdfViewer.component as ComboBox<PdfViewer>).addItem(viewers[i])
-        }
-        pdfViewer.updateUI()
-    }
-
-    /**
-     * Optional custom path for SumatraPDF.
-     */
-    private fun addSumatraPathField(panel: JPanel) {
-        class PathInputVerifier : InputVerifier() {
-
-            override fun verify(input: JComponent?): Boolean {
-                updatePdfViewerComboBox()
-                return true
-            }
-        }
-
-        if (SystemInfo.isWindows) {
-            enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
-            panel.add(enableSumatraPath)
-
-            sumatraPath = TextFieldWithBrowseButton().apply {
-                @Suppress("DialogTitleCapitalization")
-                addBrowseFolderListener(
-                    TextBrowseFolderListener(
-                        FileChooserDescriptor(false, true, false, false, false, false)
-                            .withTitle("SumatraPDF.exe Location")
-                    )
-                )
-
-                isEnabled = false
-
-                addPropertyChangeListener("enabled") { e ->
-                    if (!(e.newValue as Boolean)) {
-                        this.setText(null)
-                    }
-                }
-            }
-
-            sumatraPath.textField.inputVerifier = PathInputVerifier()
-
-            enableSumatraPath.addItemListener { e ->
-                if (e.stateChange != ItemEvent.SELECTED) {
-                    // Removes the custom Sumatra path from SumatraAvailabilityChecker when unchecked
-                    SumatraAvailabilityChecker.isSumatraPathAvailable(null)
-                    updatePdfViewerComboBox()
-                }
-                sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED
-            }
-
-            panel.add(sumatraPath)
-        }
-    }
-
     /**
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        val viewers = InternalPdfViewer.availableSubset.filter { it != InternalPdfViewer.NONE } +
-            ExternalPdfViewers.getExternalPdfViewers() +
-            listOf(InternalPdfViewer.NONE)
-
-        val viewerField = ComboBox(viewers.toTypedArray())
+        val viewerField = ComboBox(PdfViewer.availableViewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
+        pdfViewer.component.addActionListener {
+            requireFocus.isVisible = (pdfViewer.component.selectedItem as? PdfViewer)?.let {
+                it.isForwardSearchSupported && it.isFocusSupported
+            } ?: false
+        }
         panel.add(pdfViewer)
 
         requireFocus = JBCheckBox("Allow PDF viewer to focus after compilation")
         requireFocus.isSelected = true
         panel.add(requireFocus)
+
+        if (SystemInfo.isWindows && !SumatraViewer.isAvailable()) {
+            val label = JLabel(
+                "<html>Failed to detect SumatraPDF. If you have SumatraPDF installed, you can add it manually in " +
+                    "<a href=''>TeXiFy Settings</a>.</html>"
+            ).apply {
+                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+            }
+            label.addMouseListener(object : MouseAdapter() {
+                override fun mouseClicked(e: MouseEvent) {
+                    ShowSettingsUtil.getInstance().showSettingsDialog(project, "TexifyConfigurable")
+                }
+            })
+            panel.add(label)
+        }
 
         enableViewerCommand = JBCheckBox("Select custom PDF viewer command, using {pdf} for the pdf file if not the last argument")
         panel.add(enableViewerCommand)

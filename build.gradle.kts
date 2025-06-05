@@ -8,8 +8,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = project.findProperty(key).toString()
 
-// Include the Gradle plugins which help building everything.
-// Supersedes the use of "buildscript" block and "apply plugin:"
+// NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
     id("org.jetbrains.intellij.platform") version "2.5.0"
     kotlin("jvm") version ("2.1.20")

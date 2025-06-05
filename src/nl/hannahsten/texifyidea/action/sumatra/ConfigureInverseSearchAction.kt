@@ -4,11 +4,8 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationNamesInfo
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.ui.DialogBuilder
-import nl.hannahsten.texifyidea.run.sumatra.SumatraAvailabilityChecker
-import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -38,26 +35,7 @@ open class ConfigureInverseSearchAction : AnAction() {
             addOkAction()
             addCancelAction()
             setOkOperation {
-                // First kill Sumatra to avoid having two instances open of which only one has the correct setting
-                Runtime.getRuntime().exec(arrayOf("taskkill", "/IM", "SumatraPDF.exe"))
-
-                val path = PathManager.getBinPath()
-                var name = ApplicationNamesInfo.getInstance().scriptName
-                val sumatraWorkingDir = SumatraAvailabilityChecker.sumatraDirectory
-
-                // If we can find a 64-bits Java, then we can start (the equivalent of) idea64.exe since that will use the 64-bits Java
-                // see issue 104 and https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/809
-                // If we find a 32-bits Java or nothing at all, we will keep (the equivalent of) idea.exe which is the default
-                if (System.getProperty("sun.arch.data.model") == "64") {
-                    // We will assume that since the user is using a 64-bit IDEA that name64 exists, this is at least true for idea64.exe and pycharm64.exe on Windows
-                    name += "64"
-                    // We also remove an extra "" because it opens an empty IDEA instance when present
-                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, discardOutput = true)
-                }
-                else {
-                    runCommandWithExitCode("cmd.exe", "/C", "start", "SumatraPDF", "-inverse-search", "\"$path\\$name.exe\" \"\" --line %l \"%f\"", workingDirectory = sumatraWorkingDir, discardOutput = true)
-                }
-
+                SumatraViewer.configureInverseSearch(e.project)
                 dialogWrapper.close(0)
             }
 
@@ -66,7 +44,7 @@ open class ConfigureInverseSearchAction : AnAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = SumatraAvailabilityChecker.isSumatraAvailable
+        e.presentation.isEnabledAndVisible = SumatraViewer.isAvailable()
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
