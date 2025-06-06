@@ -113,7 +113,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         val commands = file.commandsInFile()
         commandLoop@ for (command in commands) {
             // If we are actually defining the command, then it doesn't need any dependency
-            if (command.parent.firstParentOfType(LatexCommands::class).isCommandDefinition()) {
+            if (command.parent?.firstParentOfType(LatexCommands::class).isCommandDefinition()) {
                 continue
             }
 

@@ -30,8 +30,10 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
         file.childrenOfType<LatexNormalText>().forEach { textElement ->
             val text = textElement.text
             names.forEach { name ->
-                val correctOccurrences = "\\\\gls[^{]+\\{($name)}".toRegex().findAll(text).mapNotNull { it.groups.firstOrNull()?.range }
-                val allOccurrences = name.toRegex().findAll(text).map { it.range }
+                // Ensure the regex is valid, assuming that regular words don't contain e.g. braces
+                val nameLetters = name.replace("[^a-zA-Z]+".toRegex(), "")
+                val correctOccurrences = "\\\\gls[^{]+\\{($nameLetters)}".toRegex().findAll(text).mapNotNull { it.groups.firstOrNull()?.range }
+                val allOccurrences = nameLetters.toRegex().findAll(text).map { it.range }
                 allOccurrences.filter { !correctOccurrences.contains(it) }.forEach { range ->
                     descriptors.add(
                         manager.createProblemDescriptor(

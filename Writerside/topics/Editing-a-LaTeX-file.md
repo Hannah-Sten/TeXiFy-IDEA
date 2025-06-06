@@ -229,6 +229,7 @@ The syntax `% !TeX parser = off` is also supported.
 ### Custom folding regions
 
 You can use either `%! region My description` and `%! endregion` or NetBeans-style `%! <editor-fold desc="My Description">` and `%! <editor-fold>` magic comments to specify custom folding regions.
+They cannot interleave with structural elements like environments or math, but as long as they are balanced they will override the default section folding regions.
 For more information, see [https://blog.jetbrains.com/idea/2012/03/custom-code-folding-regions-in-intellij-idea-111/](https://blog.jetbrains.com/idea/2012/03/custom-code-folding-regions-in-intellij-idea-111/) and [https://www.jetbrains.com/help/idea/code-folding-settings.html](https://www.jetbrains.com/help/idea/code-folding-settings.html)
 
 ### Fake sections

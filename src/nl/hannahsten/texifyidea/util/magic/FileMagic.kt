@@ -12,21 +12,25 @@ object FileMagic {
      */
     val includeExtensions = listOf("sty", "tex", "cls", "bib")
 
-    val automaticExtensions = mapOf(
-        INCLUDE.cmd to LatexFileType.defaultExtension,
-        BIBLIOGRAPHY.cmd to BibtexFileType.defaultExtension
-    )
+    val automaticExtensions by lazy {
+        mapOf(
+            INCLUDE.cmd to LatexFileType.defaultExtension,
+            BIBLIOGRAPHY.cmd to BibtexFileType.defaultExtension
+        )
+    }
 
     /**
      * All possible file types.
      */
-    val fileTypes = setOf(
-        LatexFileType,
-        StyleFileType,
-        ClassFileType,
-        BibtexFileType,
-        TikzFileType
-    )
+    val fileTypes by lazy {
+        setOf(
+            LatexFileType,
+            StyleFileType,
+            ClassFileType,
+            BibtexFileType,
+            TikzFileType
+        )
+    }
 
     /**
      * All file extensions that have to be deleted when clearing auxiliary files.

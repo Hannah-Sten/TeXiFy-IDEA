@@ -62,6 +62,9 @@ We assume that git, IntelliJ, java and LaTeX are installed. If not, follow the n
 #### To run tests
 * Click the Gradle button on the right, the gradle task is located in <ui-path>Tasks | verification | check</ui-path>. Right-click and run. Note that check includes test so it will run the tests as well as ktlint.
 
+#### To run the formatter
+* Run the `ktlintCheck` gradle task. You can also try `ktlintFormat` to format automatically.
+* When you create a pull request, also Qodana may provide comments.
 
 ## Adding an inspection
 

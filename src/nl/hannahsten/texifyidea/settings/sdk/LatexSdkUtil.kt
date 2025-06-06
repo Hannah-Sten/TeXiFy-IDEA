@@ -9,6 +9,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.latex.CustomLatexCompiler
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -36,7 +37,7 @@ object LatexSdkUtil {
     }
 
     private val isWslTexliveAvailable: Boolean by lazy {
-        SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version")?.contains("pdfTeX") == true
+        SystemInfo.isWindows && runCommand(*SystemEnvironment.wslCommand, "pdflatex --version")?.contains("pdfTeX") == true
     }
 
     val isTlmgrInstalled: Boolean by lazy {

@@ -11,10 +11,6 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.platform.util.progress.reportProgress
 import com.intellij.psi.PsiFile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 
 /**
@@ -89,7 +85,7 @@ fun TextRange.toIntRange() = startOffset until endOffset
 fun Pattern.matches(sequence: CharSequence?) = if (sequence != null) matcher(sequence).matches() else false
 
 /**
- * Use [runInBackground] instead
+ * Use [runInBackgroundNonBlocking] instead, this is also not a blocking call.
  */
 @Deprecated("Use runInBackground, and convert all runReadAction to smartReadAction")
 fun runInBackgroundBlocking(project: Project?, description: String, function: (indicator: ProgressIndicator) -> Unit) {
@@ -100,28 +96,35 @@ fun runInBackgroundBlocking(project: Project?, description: String, function: (i
     })
 }
 
+const val PROGRESS_SIZE = 1000
+
 /**
- * Use [runInBackground] if you have a meaningful coroutine scope.
+ * Runs the given function in a background thread, with a fake progress indicator, using [TexifyCoroutine.coroutineScope].
+ *
+ * See [coroutine-read-actions-api](https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#coroutine-read-actions-api).
+ *
+ * We should use suspend functions like
+ * [com.intellij.openapi.application.readAction], [com.intellij.openapi.application.smartReadAction]
  */
 fun runInBackgroundNonBlocking(project: Project, description: String, function: suspend (ProgressReporter) -> Unit) {
     // We don't need to block until it finished
-    CoroutineScope(Dispatchers.IO).launch {
-        runInBackground(project, description, function)
-    }
-}
-
-suspend fun runInBackground(project: Project, description: String, function: suspend (ProgressReporter) -> Unit) = withContext(Dispatchers.IO) {
-    // We don't need to suspend and wait for the result
-    launch {
+    TexifyCoroutine.runInBackground {
         withBackgroundProgress(project, description) {
-            // Work size only allows integers, but we don't know the size here yet, so we start at 100.0%
-            reportProgress(size = 1000) { function(it) }
+            reportProgress(size = PROGRESS_SIZE) { function(it) }
         }
     }
 }
 
+/*
+ *
+ *
+ * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
+ * Use smartReadAction instead.
+ */
+
+// https://plugins.jetbrains.com/docs/intellij/background-processes.html
 fun runInBackgroundWithoutProgress(function: () -> Unit) {
-    ApplicationManager.getApplication().invokeLater {
+    ApplicationManager.getApplication().executeOnPooledThread {
         function()
     }
 }

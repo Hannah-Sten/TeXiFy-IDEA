@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.completion
 
 import arrow.atomic.AtomicBoolean
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
@@ -64,14 +63,14 @@ object LatexExternalCommandsIndexCache {
     private fun getIndexedCommandsNoCache(project: Project, indicator: ProgressIndicator): MutableList<Set<LatexCommand>> {
         indicator.text = "Getting commands from index..."
         val commands = mutableListOf<String>()
-        runReadAction {
+        DumbService.getInstance(project).tryRunReadActionInSmartMode({
             FileBasedIndex.getInstance().processAllKeys(
                 LatexExternalCommandIndex.Cache.id,
                 { cmdWithSlash -> commands.add(cmdWithSlash) },
                 GlobalSearchScope.everythingScope(project),
                 null
             )
-        }
+        }, indicator.text)
 
         indicator.text = "Processing indexed commands..."
         val commandsFromIndex = mutableListOf<Set<LatexCommand>>()

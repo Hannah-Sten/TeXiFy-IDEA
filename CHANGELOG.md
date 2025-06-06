@@ -6,7 +6,110 @@ This beta release contains a completely new LaTeX run configuration. However, cu
 
 ### Added
 
+* Performance improvements for folding, breadcrumbs and more, by @Ezrnest
+* Improve Sumatra installation detection, by @Ezrnest
+* Move Sumatra custom path from run configuration to global settings, by @Ezrnest
+* Add option to disallow the pdf viewer to focus, by @Ezrnest
+* Add system default as option for the pdf viewer, for Mac/Linux
+* Add warning to Detexify tool window
+* Improve performance on startup
+* Add support for file references for the tikzfig command
+* Add run configuration option to configure pdf viewer focus after compilation, by @Ezrnest
+* Update wsl command to use wsl --exec
+* Support user defined commands when checking for text arguments for Grazie
+
 ### Fixed
+
+* Fix an issue with the file set cache when opening multiple projects
+* Fix auto compilation not rerunning correctly, by @Ezrnest
+* Fix SumatraPDF forward search not using the correct file, by @Ezrnest
+* Fix extra whitespace when inserting commands in math mode, by @Ezrnest
+* Fix exceptions #4035, #4044, #4058, #4072
+* Create run configuration process in background
+
+## [0.10.3] - 2025-05-16
+
+Welcome to TeXiFy IDEA 0.10.3! This release has again a lot of performance improvements, and fixes a critical issue if you have many source roots in your LaTeX module.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve performance of file set cache refresh
+* Always create output directory if it does not exist
+* Remove action to delete all generated files
+* Add support for reference resolving and autocompletion for the acronym package
+* Improve performance of the file structure popup
+* Add filters to filter out some elements by default in the file structure popup
+* Add setting to enable spellcheck in 'code' scope
+
+### Fixed
+
+* Workaround for disappearing stub indexes causing inspection false positives
+* Make sure not to start a new autocompile run if a previous one is still running
+* Fix validation when renaming a bibtex identifier
+* Fix a possible UI freeze when computing obsolete pdf viewer settings
+* Do not run grammar checks in graphicspath argument
+* Fix the command line becoming too long when there are hundreds of source roots in the module
+* Fix graphic insertion wizard not opening after pasting an image from the clipboard
+* Fix exceptions #3967, #3994, #3995
+* Make sure the external package inclusion cache refills are not attempted unnecessarily
+* Fix concurrency issues when reading output of system commands
+
+## [0.10.2] - 2025-04-01
+
+Welcome to TeXiFy IDEA 0.10.2! This release has a lot of performance improvements, and fixes some minor bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve code to find environment definitions in packages
+* Add more \gls-like commands
+* Remove labels when using jlatexmath preview, as these are unsupported by jlatexmath
+* Improve performance checking for external direct file inclusions to index
+* Improve performance of the alias manager
+* Add WSL support to the bibtex run configuration, using a new setting to choose the LaTeX distribution
+* Default to 0.15.0 behaviour if inputs field is not found in Tectonic.toml
+
+### Changed
+
+* Only the source root of the module containing the main file is used for -include-directory, instead of source roots of all modules
+
+### Fixed
+
+* Fix exceptions #3938, #3939, #3940, #3955
+* Fix a UI freeze which could occur with autocompile on save on project open
+* Fix unicode inspection for \Ohm, by @slideclimb
+* Fix a false negative of the non-matching environment name inspection for empty parameters
+* Fix a possible UI freeze if pdflatex doesn't exit while TeXiFy is checking for files to index
+* Fix StackOverflowError when color definitions reference each other
+* Fix #3906 invalid element exception
+* Fix spellcheck not working in comments
+
+## [0.10.1] - 2025-02-08
+
+Welcome to TeXiFy IDEA 0.10.1! This release fixes a performance issue with the "Package not installed" inspection, adds the option to use macros in environment variables in the run configuration, and fixes a few exceptions.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Add option to run configuration to expand macros in environment variables, by @briha
+* Add environment variables option to the external tool run configuration
+* Let user defined folding regions override section folding regions by default
+
+### Fixed
+
+* Fix a performance problem caused by cache misses in "Package not installed" inspection
+* Fix missing glossary reference inspection when using a glossary definition command in a \newcommand
+* Improve log parsing of 'undefined control sequence' error
+* Fix a parsing issue when a verbatim command is followed by a space
+* Make language injection id check case insensitive
+* Fix exceptions #3843, #3853, #3852, #3846, #3873, #3885 and #3866
 
 ## [0.10.0] - 2025-01-27
 
@@ -493,7 +596,10 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.3...HEAD
+[0.10.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.2...v0.10.3
+[0.10.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.1...v0.10.2
+[0.10.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.9...v0.10.0
 [0.9.9]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.8...v0.9.9
 [0.9.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.9.7...v0.9.8

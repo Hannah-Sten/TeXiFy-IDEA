@@ -8,15 +8,14 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = project.findProperty(key).toString()
 
-// Include the Gradle plugins which help building everything.
-// Supersedes the use of "buildscript" block and "apply plugin:"
+// NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.2.1"
-    kotlin("jvm") version ("2.0.20")
-    kotlin("plugin.serialization") version ("2.0.20")
+    id("org.jetbrains.intellij.platform") version "2.5.0"
+    kotlin("jvm") version ("2.1.20")
+    kotlin("plugin.serialization") version ("2.1.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.51.0"
+    id("com.github.ben-manes.versions") version "0.52.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
@@ -25,13 +24,13 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.9.0"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "11.1.1"
+    id("org.owasp.dependencycheck") version "12.1.0"
 
     id("org.jetbrains.changelog") version "2.2.1"
 
@@ -90,7 +89,6 @@ configurations {
 
 dependencies {
     intellijPlatform {
-        instrumentationTools()
         zipSigner()
         pluginVerifier()
         testFramework(TestFrameworkType.Platform)
@@ -114,7 +112,7 @@ dependencies {
         plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.0")
         plugin("com.jetbrains.hackathon.indices.viewer:1.29")
         // Does not work in tests: https://youtrack.jetbrains.com/issue/GRZ-5023
-//        plugin("com.intellij.grazie.pro:0.3.347")
+//        plugin("com.intellij.grazie.pro:0.3.371")
     }
 
     // Local dependencies
@@ -125,9 +123,9 @@ dependencies {
 //    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java-core:5.1.0")
-    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.1.0")
-    implementation("org.slf4j:slf4j-simple:2.0.16")
+    implementation("com.github.hypfvieh:dbus-java-core:5.1.1")
+    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.1.1")
+    implementation("org.slf4j:slf4j-simple:2.0.17")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
@@ -138,20 +136,20 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.18.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.18.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.3")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.3")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.18.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.0.3")
-    implementation("io.ktor:ktor-client-cio:3.0.3")
-    implementation("io.ktor:ktor-client-auth:3.0.3")
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
-    implementation("io.ktor:ktor-server-core:3.0.3")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.0.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("io.ktor:ktor-client-core:3.1.2")
+    implementation("io.ktor:ktor-client-cio:3.1.2")
+    implementation("io.ktor:ktor-client-auth:3.1.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.2")
+    implementation("io.ktor:ktor-server-core:3.1.2")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.1.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-rc-2")
@@ -161,25 +159,25 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.18")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:2.0.0")
-    implementation("io.arrow-kt:arrow-fx-coroutines:2.0.0")
-    implementation("io.arrow-kt:arrow-resilience:2.0.0")
+    implementation("io.arrow-kt:arrow-core:2.0.1")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.0.1")
+    implementation("io.arrow-kt:arrow-resilience:2.0.1")
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.4")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.12.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.11.4")
+    testImplementation("org.junit.platform:junit-platform-runner:1.12.1")
 
-    testImplementation("io.mockk:mockk:1.13.14")
+    testImplementation("io.mockk:mockk:1.13.17")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -248,6 +246,8 @@ tasks.runIde {
     systemProperty("ide.plugins.snapshot.on.unload.fail", "false")
     // Some warning asked for this to be set explicitly
     systemProperty("idea.log.path", file("build/idea-sandbox/system/log").absolutePath)
+
+    systemProperty("texify.delete.generated.files", "true")
 }
 
 tasks.test {

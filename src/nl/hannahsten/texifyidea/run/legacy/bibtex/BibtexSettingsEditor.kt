@@ -12,6 +12,8 @@ import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import java.awt.event.ItemEvent
 import javax.swing.JCheckBox
 import javax.swing.JComponent
@@ -34,6 +36,8 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
      * Is automatically set based on the LaTeX run config when created. */
     private lateinit var bibWorkingDir: LabeledComponent<TextFieldWithBrowseButton>
 
+    private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionType>>
+
     override fun createEditor(): JComponent {
         createUIComponents()
         return panel
@@ -47,6 +51,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         enableCompilerPath.isSelected = runConfig.compilerPath != null
         mainFile.component.text = runConfig.mainFile?.path ?: ""
         bibWorkingDir.component.text = runConfig.bibWorkingDir?.path ?: ""
+        latexDistribution.component.selectedItem = runConfig.latexDistribution
     }
 
     override fun applyEditorTo(runConfig: BibtexRunConfiguration) {
@@ -56,6 +61,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         runConfig.environmentVariables = environmentVariables.envData
         runConfig.mainFile = if (mainFile.component.text.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(mainFile.component.text) else null
         runConfig.bibWorkingDir = if (bibWorkingDir.component.text.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(bibWorkingDir.component.text) else null
+        runConfig.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.PROJECT_SDK
     }
 
     private fun createUIComponents() {
@@ -133,6 +139,11 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             )
             bibWorkingDir = LabeledComponent.create(workingDirField, "Working directory for bibtex")
             add(bibWorkingDir)
+
+            // LaTeX distribution, use project SDK as backwards compatible default
+            @Suppress("DialogTitleCapitalization")
+            latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray() + arrayOf(LatexDistributionType.PROJECT_SDK)), "LaTeX Distribution")
+            add(latexDistribution)
         }
     }
 }

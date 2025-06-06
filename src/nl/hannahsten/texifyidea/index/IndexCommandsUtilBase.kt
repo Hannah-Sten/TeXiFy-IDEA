@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
@@ -16,9 +18,15 @@ abstract class IndexCommandsUtilBase(
     /**
      * Get all the commands that are in a given set of names (without slash).
      */
-    fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
-        // Using cache creates a lot of test errors
-        return getItems(project, scope, useCache = false).filter { it.name in names }
+    fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<LatexCommands> {
+        return getItems(project, scope, useCache).filter { runReadAction { it.name in names } }
+    }
+
+    /**
+     * See [getCommandsByNames]
+     */
+    suspend fun getCommandsByNamesNonBlocking(names: Set<String>, project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<LatexCommands> {
+        return getItemsNonBlocking(project, scope, useCache).filter { smartReadAction(project) { it.name in names } }
     }
 
     /**

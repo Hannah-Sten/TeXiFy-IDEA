@@ -8,6 +8,9 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.TexifySettings
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * State of autocompilation.
@@ -17,26 +20,26 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 object AutoCompileState {
 
     /** Whether an autocompile is in progress. */
-    private var isCompiling = false
+    private val isCompiling = AtomicBoolean(false)
 
-    /** Whether the document has changed since the last triggered autocompile. */
-    private var hasChanged = false
+    /**
+     * Whether there is a (pending) request to trigger autocompile,
+     * not necessarily meaning that the document has changed.
+     */
+    private var recentRequest = false
 
     /** Needed to get the selected run config. */
     private var project: Project? = null
 
     /**
-     * Tell the state the document has been changed by the user.
+     * Request an auto compilation of the document.
      */
     @Synchronized
-    fun documentChanged(project: Project) {
+    fun requestAutoCompilation(project: Project) {
         this.project = project
-
+        recentRequest = true
         // Remember that the document changed, so a compilation should be scheduled later
-        if (isCompiling) {
-            hasChanged = true
-        }
-        else {
+        if (!isCompiling.get()) {
             scheduleCompilation()
         }
     }
@@ -45,43 +48,46 @@ object AutoCompileState {
      * Tell the state a compilation has just finished.
      */
     @Synchronized
-    fun scheduleCompilationIfNecessary() {
-        // Only compile again if needed
-        if (hasChanged) {
+    fun compilationFinished() {
+        isCompiling.set(false)
+        // Process any pending requests to compile
+        if (recentRequest) {
             scheduleCompilation()
-        }
-        else {
-            isCompiling = false
         }
     }
 
     private fun scheduleCompilation() {
-        if (project == null) {
+        val proj = this.project
+        if (proj == null) {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
-
+            return
+        }
+        if (!TexifySettings.getInstance().isAutoCompileEnabled()) {
             return
         }
 
-        isCompiling = true
-        hasChanged = false
-
         // Get run configuration selected in the combobox and run that one
-        if (project!!.isDisposed) return
-        val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration
+        if (proj.isDisposed) return
+        val runConfigSettings = RunManager.getInstance(proj).selectedConfiguration
 
-        if (runConfigSettings?.configuration !is LatexRunConfiguration) {
+        val runConfig = runConfigSettings?.configuration
+        if (runConfig !is LatexRunConfiguration) {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have a valid LaTeX run configuration selected.", NotificationType.WARNING).notify(null)
             return
         }
 
-        // Changing focus would interrupt the user during typing
-        // todo avoid changing focus
-//        (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
+        // Ensure we only trigger one compilation at a time
+        if (isCompiling.getAndSet(true)) return
 
-        ExecutionManager.getInstance(project!!).restartRunProfile(
-            project!!,
+        recentRequest = false
+        // Remember that it is auto compiling so we won't interrupt the user during typing
+        runConfig.isAutoCompiling = true
+
+        // If the run config is already running, this may trigger a dialog asking the user whether to stop and rerun
+        ExecutionManager.getInstance(proj).restartRunProfile(
+            proj,
             DefaultRunExecutor.getRunExecutorInstance(),
-            ExecutionTargetManager.getInstance(project!!).activeTarget,
+            ExecutionTargetManager.getInstance(proj).activeTarget,
             runConfigSettings,
             null
         )

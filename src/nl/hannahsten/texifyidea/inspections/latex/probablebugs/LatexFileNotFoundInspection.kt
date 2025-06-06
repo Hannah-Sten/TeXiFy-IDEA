@@ -47,7 +47,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         // Loop through commands of file
         for (command in commands) {
             // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent.parentsOfType(LatexCommands::class).any { it.name in CommandMagic.commandDefinitionsAndRedefinitions }) {
+            if (command.parent?.parentsOfType(LatexCommands::class)?.any { it.name in CommandMagic.commandDefinitionsAndRedefinitions } == true) {
                 continue
             }
 
@@ -111,7 +111,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             val cmd = descriptor.psiElement
             val element = elementPointer.element ?: return
             val file = cmd.containingFile ?: return
-            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
+            val root = file.findRootFile(useIndexCache = false).containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             // By default, all inclusion paths are relative to the main file

@@ -4,6 +4,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
 import io.mockk.every
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
@@ -11,8 +12,10 @@ import nl.hannahsten.texifyidea.run.compiler.latex.LualatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
+import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.selectedRunConfig
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 
 /**
  * Execute the given action as write command.
@@ -53,6 +56,8 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
         every { project.selectedRunConfig()?.let { it.options.compiler } } returns PdflatexCompiler
         mockkObject(TexliveSdk.Cache)
         every { TexliveSdk.Cache.version } returns 2017
+        mockkConstructor(MiktexWindowsSdk::class)
+        every { anyConstructed<MiktexWindowsSdk>().getVersion(null) } returns DefaultArtifactVersion("2.9.7300")
     }
 }
 

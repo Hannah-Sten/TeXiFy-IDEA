@@ -201,7 +201,6 @@ Pythontex is a LaTeX package which can, among other things, run Python code whic
 \usepackage{pythontex}
 \begin{document}
 
-    %! language = python
     \begin{pyconsole}
 def primes_sieve2(limit):
     a = [True] * limit                          # Initialize the primality list
@@ -217,6 +216,16 @@ list(primes_sieve2(60))
     \end{pyconsole}
 
 \end{document}
+```
+
+If you want pythontex to use a Python version from a virtual environment, edit the External Tool run configuration.
+In the environment variables, put `PATH=/path/to/venv/bin:PATH`, and make sure you have pygments installed.
+You can check if the correct executable is found with 
+```
+\begin{pyconsole}
+import sys
+sys.executable
+\end{pyconsole}
 ```
 
 ## Sage

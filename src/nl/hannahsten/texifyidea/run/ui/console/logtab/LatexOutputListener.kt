@@ -42,6 +42,8 @@ class LatexOutputListener(
                 !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine) &&
                 // Assume the undefined control sequence always continues on the next line
                 !firstLine.trim().endsWith("Undefined control sequence.") &&
+                // And if 'Undefined control sequence' was broken up over line length, we can still check if the second line starts with the line number
+                !"^l\\.(\\d+)".toRegex().containsMatchIn(secondLine) &&
                 // Case of the first line pointing out something interesting on the second line
                 !(firstLine.endsWith(":") && secondLine.startsWith("    "))
         }

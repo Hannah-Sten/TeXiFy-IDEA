@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
+import com.intellij.codeInsight.intention.FileModifier
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -8,6 +9,7 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
+import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyLineOptionsInspection
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -206,20 +208,43 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             if (!applied) {
-                val psiHelper = LatexPsiHelper(project)
-                val openReplacement = psiHelper.createFromText("\\left$open").firstChild
-                val closeReplacement = psiHelper.createFromText("\\right${Util.brackets[open]}").firstChild
-
                 // Get the elements from the psi pointers before replacing elements, because the pointers are not accurate
                 // anymore after changing the psi structure.
                 val openElement = openElement.element ?: return
                 val closeElement = closeElement.element ?: return
-
-                openElement.replace(openReplacement)
-                closeElement.replace(closeReplacement)
+                replacePsi(project, openElement, closeElement, open)
 
                 applied = true
             }
+        }
+
+        /**
+         * See documentation [ActionIsNotPreviewFriendly](https://www.jetbrains.com/help/inspectopedia/ActionIsNotPreviewFriendly.html), overriding this method implements fix 2:
+         * > You may override getFileModifierForPreview() method and create a copy of the quick-fix rebinding it to the non-physical file copy which is supplied as a parameter. Use PsiTreeUtil.findSameElementInCopy() to find the corresponding PSI elements inside the supplied non-physical copy.
+         */
+        override fun getFileModifierForPreview(target: PsiFile): FileModifier? {
+            val openPsiElement = PsiTreeUtil.findSameElementInCopy(openElement.element, target) ?: return null
+            val closePsiElement = PsiTreeUtil.findSameElementInCopy(closeElement.element, target) ?: return null
+
+            return object : LocalQuickFix {
+                override fun getFamilyName() = this@InsertLeftRightFix.familyName
+
+                override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+                    // Warnings about potential memory leaks because of PsiElements (which can be fixed with SmartElementPointers)
+                    // can be ignored here because this quick fix is operating on a copy of the psi file to generate a preview.
+                    @Suppress("StatefulEp")
+                    replacePsi(project, openPsiElement, closePsiElement, open)
+                }
+            }
+        }
+
+        private fun replacePsi(project: Project, openPsiElement: PsiElement, closePsiElement: PsiElement, open: String) {
+            val psiHelper = LatexPsiHelper(project)
+            val openReplacement = psiHelper.createFromText("\\left$open").firstChild
+            val closeReplacement = psiHelper.createFromText("\\right${Util.brackets[open]}").firstChild
+
+            openPsiElement.replace(openReplacement)
+            closePsiElement.replace(closeReplacement)
         }
     }
 }

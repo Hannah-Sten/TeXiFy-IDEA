@@ -55,13 +55,16 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
         if (!LatexSdkUtil.isTlmgrAvailable(file.project)) return descriptors
 
-        if (TexLivePackages.packageList.isEmpty() && TexliveSdk.Cache.isAvailable) {
+        // Only list installed packages if the cache is not yet filled
+        if (TexLivePackages.packageList == null && TexliveSdk.Cache.isAvailable) {
+            // Mark cache as initialized, to avoid repetitive attemps at cache filling if the command fails
+            TexLivePackages.packageList = mutableListOf()
             val result = "tlmgr list --only-installed".runCommand() ?: return emptyList()
             TexLivePackages.packageList = Regex("i\\s(.*):").findAll(result)
                 .map { it.groupValues.last() }.toMutableList()
         }
 
-        val installedPackages = TexLivePackages.packageList
+        val installedPackages = TexLivePackages.packageList ?: return descriptors
         val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
             LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project,
             file.project
@@ -100,7 +103,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                 }
                 else {
                     // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
-                    TexLivePackages.packageList.add(`package`)
+                    installedPackages.add(`package`)
                 }
             }
         }
@@ -153,7 +156,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     }
 
                     override fun onSuccess() {
-                        TexLivePackages.packageList.add(packageName)
+                        TexLivePackages.packageList?.add(packageName)
                         // Rerun inspections
                         filePointer.containingFile?.rerunInspections()
                     }

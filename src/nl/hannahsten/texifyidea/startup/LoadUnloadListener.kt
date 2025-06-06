@@ -5,6 +5,7 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor
 import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.completion.LatexExternalCommandsIndexCache
 import nl.hannahsten.texifyidea.run.pdfviewer.evince.EvinceInverseSearchListener
+import nl.hannahsten.texifyidea.run.pdfviewer.EvinceInverseSearchListener
 
 class LoadUnloadListener : DynamicPluginListener {
 

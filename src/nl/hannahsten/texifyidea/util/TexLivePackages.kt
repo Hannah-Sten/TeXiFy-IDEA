@@ -8,8 +8,9 @@ object TexLivePackages {
 
     /**
      * List of installed packages.
+     * Null if not yet initialized, an empty list means no packages are found.
      */
-    var packageList: MutableList<String> = mutableListOf()
+    var packageList: MutableList<String>? = null
 
     /**
      * Given a package name used in \usepackage or \RequirePackage, find the

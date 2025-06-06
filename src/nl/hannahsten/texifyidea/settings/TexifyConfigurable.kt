@@ -1,10 +1,16 @@
 package nl.hannahsten.texifyidea.settings
 
+import com.intellij.execution.configurations.RuntimeConfigurationError
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.ui.TextBrowseFolderListener
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
@@ -28,12 +34,14 @@ class TexifyConfigurable : SearchableConfigurable {
     private var includeBackslashInSelection: JBCheckBox? = null
     private var showPackagesInStructureView: JBCheckBox? = null
     private var enableExternalIndex: JBCheckBox? = null
+    private var enableSpellcheckEverywhere: JBCheckBox? = null
     private var enableTextidote: JBCheckBox? = null
     private var textidoteOptions: RawCommandLineEditor? = null
     private var latexIndentOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
     private var htmlPasteTranslator: ComboBox<String>? = null
     private var autoCompileOption: ComboBox<String>? = null
+    private var sumatraPath: TextFieldWithBrowseButton? = null
 
     /**
      * Map UI variables to underlying setting variables
@@ -48,6 +56,7 @@ class TexifyConfigurable : SearchableConfigurable {
         Pair(::includeBackslashInSelection, settings::includeBackslashInSelection),
         Pair(::showPackagesInStructureView, settings::showPackagesInStructureView),
         Pair(::enableExternalIndex, settings::enableExternalIndex),
+        Pair(::enableSpellcheckEverywhere, settings::enableSpellcheckEverywhere),
         Pair(::enableTextidote, settings::enableTextidote),
     )
 
@@ -70,9 +79,11 @@ class TexifyConfigurable : SearchableConfigurable {
                     includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                     enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
+                    enableSpellcheckEverywhere = addCheckbox("Enable spellcheck inspection in all scopes")
                     enableTextidote = addCheckbox("Enable the Textidote linter")
                     textidoteOptions = addCommandLineEditor("Textidote", TexifySettingsState().textidoteOptions)
                     latexIndentOptions = addCommandLineEditor("Latexindent", TexifySettingsState().latexIndentOptions)
+                    addSumatraPathField(this)
                     automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
                     htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
                     autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
@@ -129,13 +140,48 @@ class TexifyConfigurable : SearchableConfigurable {
         return checkBox
     }
 
+    private fun addSumatraPathField(panel: JPanel) {
+        if (!SystemInfo.isWindows) {
+            return
+        }
+        val subPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+
+        val enableSumatraPath = JBLabel("Path to SumatraPDF (optional):")
+        subPanel.add(enableSumatraPath)
+
+        val sumatraPath = TextFieldWithBrowseButton()
+        this.sumatraPath = sumatraPath
+
+        /*
+        Choose SumatraPDF executable file.
+         */
+        sumatraPath.addBrowseFolderListener(
+            TextBrowseFolderListener(
+                FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor().withTitle("SumatraPDF Location")
+                    .withDescription("Select the location of the SumatraPDF executable file.")
+                    .withFileFilter { it.name == "SumatraPDF.exe" || it.name == "SumatraPDF" } // Allow both .exe and no extension on Windows
+            )
+        )
+        sumatraPath.isEnabled = true
+        subPanel.add(sumatraPath)
+        // set the path field to stretch to the right
+        sumatraPath.preferredSize = Dimension(400, sumatraPath.preferredSize.height)
+        panel.add(subPanel)
+    }
+
+    private fun getUISumatraPath(): String? {
+        val res = sumatraPath?.text?.takeIf { it.isNotBlank() }
+        return res
+    }
+
     override fun isModified(): Boolean {
         return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
             textidoteOptions?.text != settings.textidoteOptions ||
             latexIndentOptions?.text != settings.latexIndentOptions ||
             automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
             htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal ||
-            autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal
+            autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal ||
+            getUISumatraPath() != settings.pathToSumatra
     }
 
     override fun apply() {
@@ -147,6 +193,13 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.entries.toTypedArray()[automaticQuoteReplacement?.selectedIndex ?: 0]
         settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
         settings.autoCompileOption = TexifySettings.AutoCompile.entries.toTypedArray()[autoCompileOption?.selectedIndex ?: 0]
+        val path = getUISumatraPath()
+        if(path != null) {
+            if(!SumatraViewer.trySumatraPath(path)) {
+                throw RuntimeConfigurationError("Path to SumatraPDF is not valid: $path")
+            }
+        }
+        settings.pathToSumatra = path
     }
 
     override fun reset() {
@@ -158,5 +211,6 @@ class TexifyConfigurable : SearchableConfigurable {
         automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
         htmlPasteTranslator?.selectedIndex = settings.htmlPasteTranslator.ordinal
         autoCompileOption?.selectedIndex = settings.autoCompileOption.ordinal
+        sumatraPath?.text = settings.pathToSumatra ?: ""
     }
 }

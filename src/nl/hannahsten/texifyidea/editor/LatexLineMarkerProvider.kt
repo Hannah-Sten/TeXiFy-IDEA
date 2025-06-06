@@ -22,7 +22,7 @@ class LatexLineMarkerProvider : LineMarkerProvider {
 
         val colourManager = EditorColorsManager.getInstance()
         val commandToken = element.commandToken.text
-        return if (commandToken in CommandMagic.sectionMarkers) {
+        return if (commandToken in CommandMagic.sectionNameToLevel) {
             LineMarkersPass.createMethodSeparatorLineMarker(element.commandToken, colourManager).apply {
                 separatorColor = CommandMagic.sectionSeparatorColors[commandToken]
             }

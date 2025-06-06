@@ -3,12 +3,10 @@ package nl.hannahsten.texifyidea.util.files
 import arrow.atomic.AtomicBoolean
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
-import kotlinx.coroutines.sync.Mutex
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
@@ -20,11 +18,6 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Hannah Schellekens
  */
 class ReferencedFileSetCache {
-
-    companion object {
-
-        private val mutex = Mutex()
-    }
 
     object Cache {
 
@@ -40,12 +33,14 @@ class ReferencedFileSetCache {
          * For the same reason we do not use a CachedValue, because the CachedValuesManager is project-specific.
          *
          * We use SmartPsiElementPointer to avoid storing files which have become invalid, e.g. after installing a plugin which doesn't require a restart.
+         *
+         * We need to keep track per project, because a cache fill can only be done for a given project, so we want to avoid dropping caches for other projects.
          */
-        internal var fileSetCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>()
+        internal var fileSetCache = mutableMapOf<Project, MutableMap<String, Set<SmartPsiElementPointer<PsiFile>>>>()
 
-        internal var rootFilesCache = ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>()
+        internal var rootFilesCache = ConcurrentHashMap<Project, MutableMap<String, Set<SmartPsiElementPointer<PsiFile>>>>()
 
-        internal var isCacheFillInProgress = AtomicBoolean(false)
+        internal var isCacheFillInProgress = mutableMapOf<Project, AtomicBoolean>()
 
         /**
          * The number of includes in the include index at the time the cache was last filled.
@@ -62,30 +57,21 @@ class ReferencedFileSetCache {
      * When the cache is outdated, this will first update the cache.
      */
     @Synchronized
-    fun fileSetFor(file: PsiFile): Set<PsiFile> {
-        return getSetFromCache(file, Cache.fileSetCache)
+    fun fileSetFor(file: PsiFile, useIndexCache: Boolean = true): Set<PsiFile> {
+        return getSetFromCache(file, Cache.fileSetCache.getOrPut(file.project) { mutableMapOf() }, useIndexCache)
     }
 
     @Synchronized
-    fun rootFilesFor(file: PsiFile): Set<PsiFile> {
-        return getSetFromCache(file, Cache.rootFilesCache)
-    }
-
-    /**
-     * Clears the cache for base file `file`.
-     * Note: this will not trigger a cache refill
-     */
-    fun dropCaches(file: VirtualFile) {
-        Cache.fileSetCache.remove(file.path)
-        Cache.rootFilesCache.remove(file.path)
+    fun rootFilesFor(file: PsiFile, useIndexCache: Boolean = true): Set<PsiFile> {
+        return getSetFromCache(file, Cache.rootFilesCache.getOrPut(file.project) { mutableMapOf() }, useIndexCache)
     }
 
     /**
      * Note: this will not trigger a cache refill
      */
-    fun dropAllCaches() {
-        Cache.fileSetCache.clear()
-        Cache.rootFilesCache.clear()
+    fun dropAllCaches(project: Project) {
+        Cache.fileSetCache[project]?.clear()
+        Cache.rootFilesCache[project]?.clear()
     }
 
     /**
@@ -116,21 +102,23 @@ class ReferencedFileSetCache {
         }
 
         for (fileset in filesets.values) {
+            val validFiles = fileset.mapNotNull {
+                smartReadAction(requestedFile.project) {
+                    if (it.isValid) it.createSmartPointer() else null
+                }
+            }.toSet()
             for (file in fileset) {
-                newFileSetCache[file.virtualFile.path] = fileset.mapNotNull {
-                    smartReadAction(requestedFile.project) {
-                        if (it.isValid) it.createSmartPointer() else null
-                    }
-                }.toSet()
+                newFileSetCache[file.virtualFile.path] = validFiles
             }
 
             val rootFiles = requestedFile.findRootFilesWithoutCache(fileset)
+            val validRootFiles = rootFiles.mapNotNull {
+                smartReadAction(requestedFile.project) {
+                    if (it.isValid) it.createSmartPointer() else null
+                }
+            }.toSet()
             for (file in fileset) {
-                newRootFilesCache[file.virtualFile.path] = rootFiles.mapNotNull {
-                    smartReadAction(requestedFile.project) {
-                        if (it.isValid) it.createSmartPointer() else null
-                    }
-                }.toSet()
+                newRootFilesCache[file.virtualFile.path] = validRootFiles
             }
         }
 
@@ -140,36 +128,37 @@ class ReferencedFileSetCache {
     /**
      * In a thread-safe way, get the value from the cache and if needed refresh the cache first.
      */
-    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<String, Set<SmartPsiElementPointer<PsiFile>>>): Set<PsiFile> {
+    private fun getSetFromCache(file: PsiFile, cache: MutableMap<String, Set<SmartPsiElementPointer<PsiFile>>>, useIndexCache: Boolean = true): Set<PsiFile> {
         if (file.virtualFile == null) {
             return setOf(file)
         }
 
         // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
         // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
-        val includes = LatexIncludesIndex.Util.getItems(file.project)
+        val includes = LatexIncludesIndex.Util.getItems(file.project, useCache = useIndexCache)
 
         // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
-        if (includes.size != Cache.numberOfIncludes[file.project] && !Cache.isCacheFillInProgress.getAndSet(true)) {
+        if (includes.size != Cache.numberOfIncludes[file.project] && !Cache.isCacheFillInProgress.getOrPut(file.project) { AtomicBoolean(false) }.getAndSet(true)) {
             Cache.numberOfIncludes[file.project] = includes.size
 
             runInBackgroundNonBlocking(file.project, "Updating file set cache...") { reporter ->
                 try {
                     // Only drop caches after we have new data (since that task may be cancelled)
                     val (newFileSetCache, newRootFilesCache) = getNewCachesFor(file, reporter)
-                    dropAllCaches()
-                    Cache.fileSetCache.putAll(ConcurrentHashMap(newFileSetCache.toMutableMap()))
-                    Cache.rootFilesCache.putAll(ConcurrentHashMap(newRootFilesCache.toMutableMap()))
+                    dropAllCaches(file.project)
+                    Cache.fileSetCache.getOrPut(file.project) { mutableMapOf() }.putAll(newFileSetCache.toMutableMap())
+                    Cache.rootFilesCache.getOrPut(file.project) { mutableMapOf() }.putAll(newRootFilesCache.toMutableMap())
                     // Many inspections use the file set, so a rerun could give different results
-                    file.rerunInspections()
+                    smartReadAction(file.project) { file.rerunInspections() }
                 }
                 finally {
-                    Cache.isCacheFillInProgress.set(false)
+                    Cache.isCacheFillInProgress[file.project]?.set(false)
                 }
             }
         }
 
         // Make sure to check if file is still valid after retrieving from cache (it may have been deleted)
-        return cache[file.virtualFile.path]?.mapNotNull { it.element }?.filter { it.isValid }?.toSet() ?: setOf(file)
+        val fileset = cache[file.virtualFile.path]?.mapNotNull { it.element }?.filter { it.isValid }?.toSet()
+        return if (fileset.isNullOrEmpty()) setOf(file) else fileset
     }
 }

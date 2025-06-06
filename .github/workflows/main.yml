@@ -16,7 +16,7 @@ jobs:
   qodana:
     name: Qodana
     # Note: updating to ubuntu-latest may slow the build and produce a "The runner has received a shutdown signal."
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
@@ -33,9 +33,11 @@ jobs:
         with:
           post-pr-comment: false
           pr-mode: false
+          # Disable K2 mode: https://youtrack.jetbrains.com/issue/QD-11672/False-positives-in-linter-qodana-jvm-communitylatest
           args: >
             --baseline,qodana.sarif.json,
-            --source-directory,src
+            --source-directory,src,
+            --property,idea.kotlin.plugin.use.k2=false
           cache-default-branch-only: true
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}

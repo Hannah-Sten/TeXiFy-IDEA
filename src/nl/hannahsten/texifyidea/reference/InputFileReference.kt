@@ -7,6 +7,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.findDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -15,6 +16,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -100,9 +102,11 @@ class InputFileReference(
      *              (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve
      *              (if requested by the user).
      */
-    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, isBuildingFileset: Boolean = false, checkImportPath: Boolean = true, checkAddToLuatexPath: Boolean = true): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set,
         // because this function is used to find the file set so that would cause an infinite loop
+
+        if (!element.isValid) return null
 
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = mutableListOf<String>()
@@ -113,7 +117,7 @@ class InputFileReference(
             // If the current file is a root file, then we assume paths have to be relative to this file. In particular, when using subfiles then parts that are relative to one of the other root files should not be valid
             .let { if (element.containingFile in it) listOf(element.containingFile) else it }
             .mapNotNull { it.virtualFile }
-        val rootDirectories = rootFiles.mapNotNull { it.parent }
+        val rootDirectories = rootFiles.mapNotNull { it.parent }.toMutableList()
 
         // Check environment variables
         searchPaths += getTexinputsPaths(element.project, rootFiles, expandPaths = true, latexmkSearchDirectory = element.containingFile?.virtualFile?.parent)
@@ -153,6 +157,11 @@ class InputFileReference(
         var processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
         // Leading and trailing whitespaces seem to be ignored, at least it holds for \include-like commands
         processedKey = processedKey.trim()
+
+        // This command has a hardcoded path, this is difficult to detect automatically
+        if (element.name == LatexGenericRegularCommand.TIKZFIG.commandWithSlash || element.name == LatexGenericRegularCommand.CTIKZFIG.commandWithSlash) {
+            rootDirectories.addAll(rootDirectories.mapNotNull { it.findDirectory("figures") })
+        }
 
         var targetFile: VirtualFile? = null
 
@@ -200,7 +209,7 @@ class InputFileReference(
                 .firstNotNullOfOrNull { findFileByPath(it) }
         }
 
-        if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
+        if (targetFile == null && checkImportPath) targetFile = searchFileByImportPaths(element)?.virtualFile
 
         // \externaldocument uses the .aux file in the output directory, we are only interested in the source file, but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
         // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are
@@ -209,8 +218,9 @@ class InputFileReference(
         }
 
         // addtoluatexpath package
-        if (targetFile == null) {
-            for (path in addToLuatexPathSearchDirectories(element.project)) {
+        if (targetFile == null && checkAddToLuatexPath) {
+            // Reused cached values (provided shortly after project open) for performance reasons
+            for (path in LatexIndexableSetContributor.Cache.externalDirectFileInclusions.getOrDefault(element.project, emptySet())) {
                 targetFile = path.findFile(processedKey, extensions, supportsAnyExtension)
                 if (targetFile != null) break
             }

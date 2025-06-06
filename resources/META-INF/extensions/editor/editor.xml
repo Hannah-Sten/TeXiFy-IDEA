@@ -1,14 +1,9 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
-    <extensions defaultExtensionNs="com.intellij">
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexMathSymbolFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEnvironmentFoldingBuilder"/>
+        <extensions defaultExtensionNs="com.intellij">
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexUnifiedFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexImportFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexFootnoteFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCommentFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexEscapedSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexSymbolFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.folding.LatexCustomFoldingBuilder"/>
         <lang.foldingBuilder language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.folding.BibtexEntryFoldingBuilder"/>
         <codeFoldingOptionsProvider instance="nl.hannahsten.texifyidea.editor.folding.LatexCodeFoldingOptionsProvider" />
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.editor.folding.LatexCodeFoldingSettings" />
@@ -34,9 +29,9 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.typedhandlers.LatexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileTypedHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspaceHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
-        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.typedhandlers.InlineMathBackspaceHandler" />
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>

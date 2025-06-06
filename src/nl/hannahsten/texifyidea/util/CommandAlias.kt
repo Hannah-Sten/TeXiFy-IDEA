@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -19,13 +17,11 @@ fun updateAndGetIncludeCommands(project: Project): Set<String> {
 fun updateIncludeCommandsAliasesAsync(project: Project) {
     if (!isUpdatingIncludeAliases.getAndSet(true)) {
         // Don't run with progress indicator, because this takes a short time (a few tenths) and runs in practice on every letter typed
-        ApplicationManager.getApplication().invokeLater {
+        runInBackgroundWithoutProgress {
             try {
                 // Because every command has different parameters and behaviour (e.g. allowed file types), we keep track of them separately
                 for (command in defaultIncludeCommands) {
-                    runReadAction {
-                        CommandManager.updateAliases(setOf(command), project)
-                    }
+                    CommandManager.updateAliases(setOf(command), project)
                 }
             }
             finally {

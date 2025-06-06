@@ -7,6 +7,8 @@ import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.run.pdfviewer.Evince
 import nl.hannahsten.texifyidea.run.pdfviewer.evince.EvinceInverseSearchListener
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep
+import nl.hannahsten.texifyidea.run.pdfviewer.EvinceInverseSearchListener
+import nl.hannahsten.texifyidea.run.pdfviewer.EvinceViewer
 import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 

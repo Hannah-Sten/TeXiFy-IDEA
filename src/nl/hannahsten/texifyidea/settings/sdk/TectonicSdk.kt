@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
 
 /**
@@ -17,6 +18,13 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
     object Cache {
         // Map readable file name (e.g. article.sty) to actual file path on disk
         var fileLocationCache: Map<String, String>? = null
+
+        val version by lazy {
+            val versionString = TectonicSdk().getVersionString("/usr/bin")
+            // For some reason, the current output I have is tectonic 0.15.0Tectonic 0.15.0
+            val versionMatch = Regex("""(\d+\.\d+\.\d+)""").find(versionString ?: "")?.groupValues?.get(1) ?: "0.0.0"
+            DefaultArtifactVersion(versionMatch)
+        }
     }
 
     /**

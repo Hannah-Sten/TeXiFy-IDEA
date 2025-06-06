@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -18,6 +17,7 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.PROGRESS_SIZE
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.isDefinition
@@ -37,8 +37,13 @@ import java.io.File
  */
 // Internal because only ReferencedFileSetCache should call this
 internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: ProgressReporter?): Map<PsiFile, Set<PsiFile>> {
-    // Find all root files.
     val project = this
+
+    // Save time by retrieving this only once
+    val isImportPackageUsed = isImportPackageUsed(project)
+    val usesLuatexPaths = getLuatexPaths(project).isNotEmpty()
+
+    // Find all root files.
     val scope = GlobalSearchScope.projectScope(project)
     val roots = LatexIncludesIndex.Util.getItemsNonBlocking(project, scope)
         .map { smartReadAction(this) { it.containingFile } }
@@ -49,9 +54,9 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     return roots
         .associateWith { root ->
             // Map root to all directly referenced files.
-            reporter?.sizedStep((1000 / roots.size).toInt()) {
-                root.referencedFiles(root.virtualFile) + root
-            } ?: (root.referencedFiles(root.virtualFile) + root)
+            reporter?.sizedStep((PROGRESS_SIZE / roots.size)) {
+                root.referencedFiles(root.virtualFile, isImportPackageUsed, usesLuatexPaths) + root
+            } ?: (root.referencedFiles(root.virtualFile, isImportPackageUsed, usesLuatexPaths) + root)
         }
 }
 
@@ -66,12 +71,23 @@ suspend fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
     val tomlFiles = smartReadAction(project) { findTectonicTomlFiles(project) }
     val filesets = tomlFiles.mapNotNull { tomlFile ->
         val data = TomlMapper().readValue(File(tomlFile.path), Map::class.java)
-        val outputList = data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null
-        val inputs = (outputList.firstOrNull() as? Map<*, *>)?.getOrDefault("inputs", null) as? List<*> ?: return@mapNotNull null
+        val output = (data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null).firstOrNull() as? Map<*, *>
+        // The Inputs field was added after 0.15.0, at the moment of writing unreleased so we cannot check the version
+        val inputs = if (output?.keys?.contains("inputs") == true) {
+            val inputListMaybe = output.getOrDefault("inputs", listOf("_preamble.tex", "index.tex", "_postamble.tex"))
+            if (inputListMaybe is String) listOf(inputListMaybe) else inputListMaybe as? List<*> ?: return@mapNotNull null
+        }
+        else {
+            // See https://tectonic-typesetting.github.io/book/latest/ref/tectonic-toml.html#contents
+            val preamble = output?.getOrDefault("preamble", "_preamble.tex") as? String ?: return@mapNotNull null
+            val index = output.getOrDefault("index", "index.tex") as? String ?: return@mapNotNull null
+            val postamble = output.getOrDefault("postamble", "_postamble.tex") as? String ?: return@mapNotNull null
+            listOf(preamble, index, postamble)
+        }
         // Inputs can be either a map "inline" -> String or file name
         // Actually it can also be just a single file name, but then we don't need all this gymnastics
         inputs.filterIsInstance<String>().mapNotNull {
-            smartReadAction(project) { tomlFile.parent.findFile("src/$it")?.psiFile(project) }
+            smartReadAction(project) { tomlFile.parent?.findFile("src/$it")?.psiFile(project) }
         }.toSet()
     }
 
@@ -99,7 +115,7 @@ fun VirtualFile.findTectonicTomlFile(): VirtualFile? {
             break
         }
 
-        parent?.findFile("Tectonic.toml")?.let { return it }
+        parent.findFile("Tectonic.toml")?.let { return it }
     }
     return null
 }
@@ -111,8 +127,8 @@ fun VirtualFile.findTectonicTomlFile(): VirtualFile? {
  *
  * @return All the files that are cross referenced between each other.
  */
-fun PsiFile.referencedFileSet(): Set<PsiFile> {
-    return ReferencedFileSetService.getInstance().referencedFileSetOf(this)
+fun PsiFile.referencedFileSet(useIndexCache: Boolean = true): Set<PsiFile> {
+    return ReferencedFileSetService.getInstance().referencedFileSetOf(this, useIndexCache)
 }
 
 /**
@@ -123,7 +139,7 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet
 /**
  * @see [LatexCommandsIndex.Util.getItemsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.Util.getItemsInFileSet(this)
+fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
 
 /**
  * @see [LatexCommandsIndex.Util.getItemsAndFilesInFileSet]
@@ -148,26 +164,32 @@ fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
 /**
  * The addtoluatexpath package supports adding to \input@path in different ways
  */
-fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
-    val direct = runReadAction { LatexCommandsIndex.Util.getCommandsByNames(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project)) }
-        .mapNotNull { command -> runReadAction { command.requiredParameter(0) } }
-        .flatMap { it.split(",") }
-    val viaUsepackage = runReadAction { LatexIncludesIndex.Util.getCommandsByNames(CommandMagic.packageInclusionCommands, project, GlobalSearchScope.projectScope(project)) }
-        .filter { runReadAction { it.requiredParameter(0) } == LatexPackage.ADDTOLUATEXPATH.name }
-        .flatMap { runReadAction { it.getOptionalParameterMap().keys } }
-        .flatMap { it.text.split(",") }
+suspend fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
+    val luatexPaths = getLuatexPaths(project)
 
-    val luatexPathDirectories = (direct + viaUsepackage).flatMap {
+    val luatexPathDirectories = luatexPaths.flatMap {
         val basePath = LocalFileSystem.getInstance().findFileByPath(it.trimEnd('/', '*')) ?: return@flatMap emptyList()
         if (it.endsWith("/**")) {
             basePath.allChildDirectories()
         }
         else if (it.endsWith("/*")) {
-            basePath.children.filter { it.isDirectory }
+            basePath.children.filter { child -> child.isDirectory }
         }
         else {
             listOf(basePath)
         }
     }
     return luatexPathDirectories
+}
+
+suspend fun getLuatexPaths(project: Project): List<String> {
+    val direct = LatexCommandsIndex.Util.getCommandsByNamesNonBlocking(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project))
+        .mapNotNull { command -> smartReadAction(project) { command.requiredParameter(0) } }
+        .flatMap { it.split(",") }
+    val viaUsepackage = LatexIncludesIndex.Util.getCommandsByNamesNonBlocking(CommandMagic.packageInclusionCommands, project, GlobalSearchScope.projectScope(project))
+        .filter { smartReadAction(project) { it.requiredParameter(0) } == LatexPackage.ADDTOLUATEXPATH.name }
+        .flatMap { smartReadAction(project) { it.getOptionalParameterMap().keys } }
+        .flatMap { it.text.split(",") }
+
+    return direct + viaUsepackage
 }

@@ -11,26 +11,32 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection.EscapeUnicodeFix
-import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexUnicodeInspection.InsertUnicodePackageFix
 import nl.hannahsten.texifyidea.lang.Diacritic
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.selectedRunConfig
+import nl.hannahsten.texifyidea.util.parser.findDependencies
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
@@ -198,10 +204,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                 return
             }
 
-            // Fill in replacement
-            // To improve this, this should be done by replacing psi elements using LatexPsiHelper
-            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
-            document?.replaceString(range.startOffset, range.endOffset, replacement)
+            runWriteCommandAction(project) {
+                replacement.findDependencies().forEach { pkg ->
+                    document?.psiFile(project)?.insertUsepackage(pkg)
+                }
+
+                val command = replacement.firstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
+                element.parent?.node?.replaceChild(element.node, command.node)
+            }
         }
 
         /**
@@ -211,15 +221,11 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             val replacement = getReplacementFromProblemDescriptor(previewDescriptor) ?: return IntentionPreviewInfo.EMPTY
             val element = previewDescriptor.psiElement
-            // We don't directly work on the document, as in a preview that is not available
-            val origText = element.text
-            val range = previewDescriptor.textRangeInElement
-            val modifiedText = origText.replaceRange(range.startOffset, range.endOffset, replacement)
 
-            return IntentionPreviewInfo.CustomDiff(LatexFileType, element.containingFile.name, origText, modifiedText)
+            return IntentionPreviewInfo.CustomDiff(LatexFileType, element.containingFile.name, element.text, replacement.text)
         }
 
-        private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): String? {
+        private fun getReplacementFromProblemDescriptor(descriptor: ProblemDescriptor): PsiElement? {
             val element = descriptor.psiElement
 
             val c = try {
@@ -230,7 +236,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             }
 
             // Try to find in lookup for special command
-            val replacement: String?
+            val replacementText: String?
             val command: LatexCommand? = if (inMathMode) {
                 LatexMathCommand.findByDisplay(c)?.firstOrNull() ?: LatexRegularCommand.findByDisplay(c)?.firstOrNull()
             }
@@ -239,13 +245,12 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             }
 
             // Replace with found command or with standard substitution
-            replacement = if (command != null) {
-                "\\" + command.command
+            replacementText = command?.let { "\\" + it.command }
+                ?: findReplacement(c)
+
+            return replacementText?.let {
+                LatexPsiHelper(element.project).createFromText(element.text.replaceRange(descriptor.textRangeInElement.toIntRange(), it))
             }
-            else {
-                findReplacement(c)
-            }
-            return replacement
         }
 
         private fun findReplacement(c: String): String? {

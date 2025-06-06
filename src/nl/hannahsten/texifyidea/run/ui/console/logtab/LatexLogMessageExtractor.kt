@@ -54,7 +54,8 @@ object LatexLogMessageExtractor {
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach { handler ->
-            if (handler.regex.any { it.containsMatchIn(text) }) {
+            // In cases of a broken up line, it could be we will only match on the lines joined together
+            if (handler.regex.any { it.containsMatchIn(textToMatch) }) {
                 return handler.findMessage(text, newText, currentFile)
             }
         }

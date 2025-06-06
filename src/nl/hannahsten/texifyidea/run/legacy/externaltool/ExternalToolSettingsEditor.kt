@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.legacy.externaltool
 
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
@@ -20,6 +21,7 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
     private lateinit var program: LabeledComponent<ComboBox<ExternalTool>>
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
     private lateinit var workingDirectory: LabeledComponent<TextFieldWithBrowseButton>
+    private lateinit var environmentVariables: EnvironmentVariablesComponent
 
     override fun createEditor(): JComponent {
         createUIComponents()
@@ -31,6 +33,7 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
         program.component.selectedItem = runConfig.program
         mainFile.component.text = runConfig.mainFile?.path ?: ""
         workingDirectory.component.text = runConfig.workingDirectory?.path ?: ""
+        environmentVariables.envData = runConfig.environmentVariables
     }
 
     // Save user selected settings to the given run config
@@ -38,6 +41,7 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
         runConfig.program = program.component.selectedItem as ExternalTool
         runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
         runConfig.workingDirectory = LocalFileSystem.getInstance().findFileByPath(workingDirectory.component.text)
+        runConfig.environmentVariables = environmentVariables.envData
     }
 
     private fun createUIComponents() {
@@ -74,6 +78,9 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
             }
             workingDirectory = LabeledComponent.create(workDirField, "Working directory for the external tool")
             add(workingDirectory)
+
+            environmentVariables = EnvironmentVariablesComponent()
+            add(environmentVariables)
         }
     }
 }

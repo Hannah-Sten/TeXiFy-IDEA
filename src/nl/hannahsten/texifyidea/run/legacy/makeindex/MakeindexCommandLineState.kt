@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.util.appendExtension
+import kotlin.io.path.Path
 
 /**
  * Run makeindex.
@@ -42,7 +43,8 @@ class MakeindexCommandLineState(
                 add(indexFilename)
             }
         }
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)
+        val workingDirectory = workingDirectory?.path ?: throw ExecutionException("Working directory is not given.")
+        val commandLine = GeneralCommandLine(command).withWorkingDirectory(Path(workingDirectory))
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 

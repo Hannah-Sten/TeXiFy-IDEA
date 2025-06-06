@@ -84,6 +84,12 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testGraphicsPath() {
+        // graphicspath argument should be ignored, but it's not direct parameter text since it's in a group
+        myFixture.configureByText(LatexFileType, """\graphicspath{{a apple}} is a sentence.""")
+        myFixture.checkHighlighting()
+    }
+
     fun testUnpairedSymbol() {
         myFixture.configureByText(
             LatexFileType,
@@ -182,6 +188,21 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     fun testCommandsInSentence() {
         GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.CONSECUTIVE_SPACES")) }
         myFixture.configureByText(LatexFileType, """The principles of a generic \ac{PID} controller.""")
+        myFixture.checkHighlighting()
+    }
+
+    fun testCustomCommand() {
+        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.DT_JJ_NO_NOUN", "LanguageTool.EN.DT_JJ_NO_NOUN [1]", "LanguageTool.EN.DT_JJ_NO_NOUN [2]", "LanguageTool.EN.MISSING_NOUN [1]", "LanguageTool.EN.MISSING_NOUN")) }
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \documentclass[11pt]{article}
+                \newcommand{\TIdVar}{\texttt{ThingIdVars}}
+                \begin{document}
+                    I need to get this for the \TIdVar{} to fix something.
+                \end{document} 
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 

@@ -23,6 +23,7 @@ See [Create custom inspections | IntelliJ IDEA Documentation](https://www.jetbr
 ## Spellchecking
 
 IntelliJ has a default spellchecking inspection, see [Spellchecking | IntelliJ IDEA Documentation](https://www.jetbrains.com/help/idea/spellchecking.html#configure-the-typo-inspection).
+To enable spellcheck everywhere in LaTeX code, see [TeXiFy settings](TeXiFy-settings.md#enable-spellcheck-in-all-scopes).
 
 ## Grammar checking
 

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.alias
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -53,7 +54,6 @@ abstract class AliasManager {
      * Register a new item, which creates a new alias set.
      */
     fun register(alias: String) {
-        require(!isRegistered(alias)) { "alias '$alias' has already been registered" }
         synchronized(aliases) {
             aliases[alias] = mutableSetOf(alias)
         }
@@ -122,7 +122,6 @@ abstract class AliasManager {
      * If needed (based on the number of indexed \newcommand-like commands) check for new aliases of the given alias set. This alias can be any alias of its alias set.
      * If the alias set is not yet registered, it will be registered as a new alias set.
      */
-    @Synchronized
     fun updateAliases(aliasSet: Collection<String>, project: Project) {
         // Register if needed
         if (aliasSet.isEmpty()) return
@@ -136,21 +135,20 @@ abstract class AliasManager {
 
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = LatexDefinitionIndex.Util.getItems(project).toSet()
+        val indexedCommandDefinitions = runReadAction { LatexDefinitionIndex.Util.getItems(project).toSet() }
 
         // Check if something has changed (the number of indexed command might be the same while the content is different), and if so, update the aliases.
         // Also do this the first time something is registered, because then we have to update aliases as well
         val hasChanged = this.indexedCommandDefinitions != indexedCommandDefinitions
+        // If a refresh is already in progress, no need to start another one, but no need to block this thread either
         if (hasChanged || wasRegistered) {
             // Update everything, since it is difficult to know beforehand what aliases could be added or not
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
             // requested alias set (otherwise only the first alias set requesting an update will get it)
             // We have to deepcopy the set of alias sets before iterating over it, because we want to modify aliases
-            synchronized(aliases) {
-                val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
-                for (copiedAliasSet in deepCopy) {
-                    findAllAliases(copiedAliasSet, indexedCommandDefinitions)
-                }
+            val deepCopy = aliases.values.toSet().map { it.toSet() }
+            for (copiedAliasSet in deepCopy) {
+                findAllAliases(copiedAliasSet, indexedCommandDefinitions)
             }
 
             this.indexedCommandDefinitions = indexedCommandDefinitions.toSet()

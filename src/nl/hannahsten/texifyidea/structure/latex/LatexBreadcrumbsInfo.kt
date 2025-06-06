@@ -2,27 +2,34 @@ package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
-import nl.hannahsten.texifyidea.editor.folding.LatexSectionFoldingBuilder
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.util.parser.traverseContextualSiblingsPrev
 import nl.hannahsten.texifyidea.util.parser.name
-import nl.hannahsten.texifyidea.util.parser.parents
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
- * @author Hannah Schellekens
+ *
+ *
+ * @author Li Ernest, Hannah Schellekens
  */
-open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
+class LatexBreadcrumbsInfo : BreadcrumbsProvider {
 
     override fun getLanguages() = arrayOf(LatexLanguage)
 
     override fun getElementInfo(element: PsiElement) = when (element) {
         is LatexEnvironment -> element.name()?.text
-        is LatexCommands -> if (element.name in CommandMagic.sectioningCommands.map { it.cmd }) element.requiredParameter(0) ?: element.name else element.name
+        is LatexCommands ->
+            if (element.name in CommandMagic.sectionNameToLevel) {
+                element.requiredParameter(0) ?: element.name
+            }
+            else {
+                element.name
+            }
+
         else -> ""
     } ?: ""
 
@@ -32,18 +39,47 @@ open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
         else -> false
     }
 
+    /**
+     * Find the previous sibling command that is a section marker.
+     * If it exists, return it, otherwise return null.
+     */
+    private fun findParentSibling(element: PsiElement, originLevel: Int): PsiElement? {
+        /*
+        Notice that the element is surrounded by `no_math_content`, so we should go an extra level up
+        The direct sibling
+         */
+
+        element.traverseContextualSiblingsPrev {
+            if (it is LatexCommands) {
+                val prevLevel = CommandMagic.sectionNameToLevel[it.name]
+                if (prevLevel != null && prevLevel < originLevel) {
+                    return it
+                }
+            }
+        }
+        return null
+    }
+
     override fun getParent(element: PsiElement): PsiElement? {
-        val document = element.containingFile.document() ?: return super.getParent(element)
-        // Add sections
-        val parent = LatexSectionFoldingBuilder().buildFoldRegions(element.containingFile, document, quick = true)
-            // Only top-level elements in the section should have the section as parents, other elements should keep their direct parent (e.g. an environment)
-            .filter { it.range.contains(element.textRange ?: return@filter false) }
-            .filter { !it.range.contains(element.parent.textRange ?: return@filter false) }
-            // Avoid creating a loop
-            .filter { it.element.psi != element }
-            .filter { it.element.psi?.parents()?.contains(element) != true }
-            .minByOrNull { it.range.endOffset - it.range.startOffset }
-            ?.element?.psi
-        return parent ?: super.getParent(element)
+        /*
+        if it has a previous sibling command that is a section marker that is of lower level, then the parent is the command
+        If the parent is a LatexEnvironment or LatexCommands, return it
+        Otherwise, goto the parent
+         */
+
+        val level = (element as? LatexCommands)?.let { cmd ->
+            CommandMagic.sectionNameToLevel[cmd.name]
+        } ?: Int.MAX_VALUE
+
+        var current: PsiElement = element
+        while (true) {
+            val res = findParentSibling(current, level)
+            res?.let { return it }
+            val parent = current.parent ?: return null
+            if (parent is LatexEnvironment || parent is LatexCommands || parent !is LatexComposite) {
+                return parent
+            }
+            current = parent
+        }
     }
 }

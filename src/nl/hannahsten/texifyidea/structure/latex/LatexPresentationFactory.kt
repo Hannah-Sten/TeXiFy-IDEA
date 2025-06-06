@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.NEWCOMMA
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.RENEWCOMMAND
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsAndUpdateLater
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 
@@ -19,7 +19,8 @@ object LatexPresentationFactory {
 
     @JvmStatic
     fun getPresentation(commands: LatexCommands): ItemPresentation {
-        val labelingCommands = commands.project.getLabelDefinitionCommands()
+        // Any delay here will be a delay before the contents of the structure popup are shown
+        val labelingCommands = commands.project.getLabelDefinitionCommandsAndUpdateLater()
         if (labelingCommands.contains(commands.name)) {
             return LatexLabelPresentation(commands)
         }

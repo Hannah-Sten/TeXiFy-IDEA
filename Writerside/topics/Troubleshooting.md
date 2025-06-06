@@ -9,7 +9,12 @@ If you run into troubles while using TeXiFy, you can try the following things.
 * Ask for help at [gitter](https://matrix.to/#/#TeXiFy-IDEA_Support:gitter.im)
 * [Open a discussion](https://github.com/Hannah-Sten/TeXiFy-IDEA/discussions)
 
-## Debugging performance issues
+## Collecting debug log files
+
+To enable debug logging, go to <ui-path>Help | Diagnostic Tools | Debug Log Settings</ui-path> and add `#nl.hannahsten.texifyidea.util.Log`.
+Then reproduce the issue, go to <ui-path>Help | Show Log in Explorer/Finder</ui-path> and upload the `idea.log` file on GitHub.
+
+## Reporting performance issues
 
 If you are experiencing UI freezes, IntelliJ will generate a thread dump, please upload this file as well.
 
@@ -26,6 +31,19 @@ For any performance issue: if you do not have a favourite profiler yet, you can 
 * Take a Snapshot to view and save results. Note that you may have to click a few more levels open to see the actual methods.
 * Now you can zip the nps file and upload it here on GitHub.
 
+## Using TeXiFy with JetBrains Gateway
+
+If you use Gateway, make sure to install TeXiFy _only_ on the host, not on the client.
+If you install the plugin in both, the IntelliJ UI may not work as expected.
+
+## I don't see any syntax highlighting
+
+If you have the TeXiFy plugin installed but still don't see any syntax highlighting, you may accidentally have reassigned the `.tex` file type to plain text.
+To undo this, go to <ui-path>Editor | File Types | LaTeX source file</ui-path> and make sure the `*.tex` pattern is there.
+Also check that the Text file type does not have this pattern.
+If the problem only occurs for one specific file, right-click the file and select 'Revert File Type Override'.
+For more information, see [IntelliJ IDEA Help](https://www.jetbrains.com/help/idea/creating-and-registering-file-types.html).
+ 
 ## Main file is not detected correctly
 
 If TeXiFy does not detect which file is your main/root LaTeX file, you may experience problems like package imports being placed in the wrong file, or imports not being resolved correctly.

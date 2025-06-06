@@ -27,6 +27,7 @@ open class LatexPackage @JvmOverloads constructor(
         // Predefined packages.
         val DEFAULT = LatexPackage("")
 
+        val ACRONYM = LatexPackage("acronym")
         val ADDTOLUATEXPATH = LatexPackage("addtoluatexpath")
         val ALGORITHM2E = LatexPackage("algorithm2e")
         val ALGORITHMICX = LatexPackage("algorithmicx")
@@ -91,6 +92,7 @@ open class LatexPackage @JvmOverloads constructor(
         val TCOLORBOX = LatexPackage("tcolorbox")
         val TEXTCOMP = LatexPackage("textcomp")
         val TIKZ = LatexPackage("tikz")
+        val TIKZIT = LatexPackage("tikzit") // not in ctan
         val TODONOTES = LatexPackage("todonotes")
         val ULEM = LatexPackage("ulem")
         val UPGREEK = LatexPackage("upgreek")

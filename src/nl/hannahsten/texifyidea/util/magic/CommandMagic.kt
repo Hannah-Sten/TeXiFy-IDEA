@@ -3,9 +3,8 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.ui.Gray
-import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
@@ -14,10 +13,9 @@ import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexTodoCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic.stylePrimitives
 
 object CommandMagic {
 
@@ -44,27 +42,22 @@ object CommandMagic {
         SUBPARAGRAPH to 5
     )
 
-    /** Section commands sorted from large to small. */
+    /**
+     * Section commands sorted from large to small.
+     */
     val sectioningCommands = labeledLevels.entries.sortedBy { it.value }.map { it.key }
+
+    /**
+     * Map of `\section`-like commands to their level.
+     */
+    val sectionNameToLevel: Map<String, Int> =
+        labeledLevels.mapKeys { it.key.commandWithSlash }
 
     /**
      * Commands that define a label via an optional parameter
      */
     @JvmField
     val labelAsParameter = hashSetOf(LSTINPUTLISTING.cmd)
-
-    /**
-     * All commands that mark some kind of section.
-     */
-    val sectionMarkers = listOf(
-        PART,
-        CHAPTER,
-        SECTION,
-        SUBSECTION,
-        SUBSUBSECTION,
-        PARAGRAPH,
-        SUBPARAGRAPH
-    ).map { it.cmd }
 
     /**
      * The colours that each section separator has.
@@ -191,15 +184,15 @@ object CommandMagic {
 
     /**
      * All commands that define a glossary entry of the glossaries package (e.g. \newacronym).
-     * When adding a command, define how to get the glossary name in [nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.extractGlossaryName].
+     * When adding a command, define how to get the glossary name in [LatexGlossariesCommand.extractGlossaryName].
      */
     val glossaryEntry =
-        hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION).map { it.cmd }.toSet()
+        hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION, NEWACRO, ACRO, ACRODEF).map { it.cmd }.toSet()
 
     /**
      * All commands that reference a glossary entry from the glossaries package (e.g. \gls).
      */
-    val glossaryReference = hashSetOf(GLS, GLSUPPER, GLSPLURAL, GLSPLURALUPPER).map { it.cmd }.toSet()
+    val glossaryReference = LatexGlossariesCommand.entries.filter { cmd -> cmd.arguments.any { it.name == "label" || it.name == "acronym" } }.map { it.cmd }.toSet()
 
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
@@ -376,6 +369,8 @@ object CommandMagic {
         INCLUDEGRAPHICS.cmd to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
         USEPACKAGE.cmd to listOf(".sty"),
         EXTERNALDOCUMENT.cmd to listOf(".tex"),
+        TIKZFIG.cmd to listOf("tikz"),
+        CTIKZFIG.cmd to listOf("tikz"),
     )
 
     /**
@@ -416,24 +411,24 @@ object CommandMagic {
     /**
      * Commands that include bib files.
      */
-    val bibliographyIncludeCommands = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }
+    val bibliographyIncludeCommands: Set<String> = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }.toSet()
 
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.
      */
-    val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot", "\\ifcsvstrcmp")
+    val ignoredIfs: Set<String> = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot", "\\ifcsvstrcmp")
 
     /**
      * List of all TeX style primitives.
      */
-    val stylePrimitives = listOf(
+    val stylePrimitives: List<String> = listOf(
         RM.cmd, SF.cmd, TT.cmd, IT.cmd, SL.cmd, SC.cmd, BF.cmd
     )
 
     /**
      * The LaTeX counterparts of all [stylePrimitives] commands.
      */
-    val stylePrimitiveReplacements = mapOf(
+    val stylePrimitiveReplacements: Map<String, String> = mapOf(
         RM.cmd to "\\textrm", SF.cmd to "\\textsf", TT.cmd to "\\texttt", IT.cmd to "\\textit",
         SL.cmd to "\\textsl", SC.cmd to "\\textsc", BF.cmd to "\\textbf"
     )
@@ -481,9 +476,9 @@ object CommandMagic {
     )
 
     /**
-     *
+     * The names of the footnote commands that should be folded
      */
-    val foldableFootnotes = listOf(
+    val foldableFootnotes = setOf(
         FOOTNOTE.cmd, FOOTCITE.cmd
     )
 

@@ -43,6 +43,7 @@ enum class DefaultEnvironment(
     FLUSHLEFT(environmentName = "flushleft"),
     FLUSHRIGHT(environmentName = "flushright"),
     FOOTNOTESIZE(environmentName = "footnotesize"),
+    FRAME(environmentName = "frame", arguments = arrayOf(OptionalArgument("options"), RequiredArgument("title"))), // dependency=BEAMER class
     HUGE(environmentName = "huge"),
     CAPITAL_HUGE(environmentName = "Huge"),
     ITEMIZE(environmentName = "itemize", initialContents = "\\item "),
@@ -152,6 +153,10 @@ enum class DefaultEnvironment(
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
     MINTED(environmentName = "minted", dependency = LatexPackage.MINTED),
     PYCODE(environmentName = "pycode", dependency = LatexPackage.PYTHONTEX),
+    PYSUB(environmentName = "pysub", dependency = LatexPackage.PYTHONTEX),
+    PYVERBATIM(environmentName = "pyverbatim", dependency = LatexPackage.PYTHONTEX),
+    PYBLOCK(environmentName = "pyblock", dependency = LatexPackage.PYTHONTEX),
+    PYCONSOLE(environmentName = "pyconsole", dependency = LatexPackage.PYTHONTEX),
     TALLTBLR(environmentName = "talltblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
     TBLR(environmentName = "tblr", dependency = LatexPackage.TABULARRAY, arguments = arrayOf(OptionalArgument("outer"), RequiredArgument("inner"))),
     TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),

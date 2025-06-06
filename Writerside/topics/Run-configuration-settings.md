@@ -125,6 +125,16 @@ For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and 
 Similarly, you can also set `TEXMFHOME` to some other path than the default `~/texmf`, so that sty and cls files will be searched in the `tex/latex` subdirectory or any child directory of it.
 For more information about paths resolving, see [https://www.tug.org/texinfohtml/kpathsea.html#Path-searching](https://www.tug.org/texinfohtml/kpathsea.html#Path-searching)
 
+### Expand macros in environment variables
+_Since b0.10.1_
+
+When ticked, macros such as `$ContentRoot$` (the path to the content root of the current run configuration's main file) are expanded.
+An example use for this would be to add a directory containing the document class to be used to `TEXINPUTS`, e.g., `TEXINPUTS=$ContentRoot$/MyDir`.
+Doing so might be especially helpful in the context of setting up a 'run configuration template,' which is a run configuration that is used by default for any time a LaTeX file is run (and thus compiled) for the first time. For more details on run configuration templates, see [https://www.jetbrains.com/help/idea/run-debug-configuration.html#templates](https://www.jetbrains.com/help/idea/run-debug-configuration.html#templates).
+
+An overview of all built-in macros can be found at [https://www.jetbrains.com/help/idea/built-in-macros.html](https://www.jetbrains.com/help/idea/built-in-macros.html). 
+Whenever the documentation mentions 'the current file,' in the context of a TeXiFy run configuration, this always refers to the main `.tex` file being compiled.
+
 ## LaTeX code to run before compiling the main file
 _Since b0.9.5_
 
@@ -153,10 +163,6 @@ For example, if your LaTeX file contains
 then you can put `\newcommand{\waarde}{false}` in this field in your run configuration to set the value of the boolean to `false`.
 This works for at least pdflatex, lualatex, xelatex and latexmk.
 
-## Custom SumatraPDF path
-
-See [(Windows) Choose a custom path to SumatraPDF](PDF-viewers.md#portable-sumatrapdf).
-
 ## Choose pdf viewer
 _Since b0.7.2_
 
@@ -164,7 +170,23 @@ This lists all supported pdf viewers that are installed on your system, which yo
 Selecting a supported viewer as default means that you get forward and inverse search, and that the selected pdf viewer is the viewer that will open when compilation is done.
 
 The supported pdf viewers are the [internal PDF viewer](PDF-viewers.md#pdf-viewer-intellij-plugin) on all platforms, [Sumatra](PDF-viewers.md#sumatrapdf) for Windows, and [Evince](PDF-viewers.md#evince), [Okular](PDF-viewers.md#okular), and [Zathura](PDF-viewers.md#zathura) for linux, or no pdf viewer at all.
+For Mac/Linux, you can also select `System default`, which will just run `open`/`xdg-open`, without forward search.
 You can use any other pdf viewer by selecting the option Custom PDF Viewer.
+
+## Allow PDF viewer to focus after compilation
+
+In general, TeXiFy will try to forward search to the pdf viewer after compilation.
+Depending on the pdf viewer, this may transfer focus away from the IDE.
+If you do not want this, you can deselect this option.
+
+At the moment, the behaviour is:
+
+* _Evince_: will forward search and focus when this option is selected, will not forward search otherwise
+* _Okular_: will always forward search and never focus
+* _Skim_: will always forward search, will focus depending on the option
+* _Zathura_: will always forward search and focus
+* _SumatraPDF_: will always forward search, will focus depending on the option
+* _PDF Viewer Plugin_: will always forward search and never focus
 
 ## Custom pdf viewer
 
@@ -250,6 +272,14 @@ Custom output directories are supported.
 * Reboot (logging out and in may not be enough)
 * You have to login to GitHub to use the Docker image: get a github token from [https://github.com/settings/tokens,](https://github.com/settings/tokens,) save it somewhere secure and run `echo my_token | docker login https://docker.pkg.github.com -u myusername --password-stdin`
   See [https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages) for more info.
+
+#### Advanced Docker setups
+
+TeXiFy provides a very limited interface to Docker: you can select images and configure the path to your docker executable, but most is hardcoded.
+For more advanced Docker configuration, we recommend to use the [Docker plugin](https://www.jetbrains.com/help/idea/docker.html).
+As a starting point, you can have a look at the command that TeXiFy runs if you select Docker in the run configuration, it will be at the top of the console output window.
+You can create a Docker run configuration to run a TeX Live or MiKTeX docker container.
+Then you can use any Docker flags or other features like podman support.
 
 ### Dockerized TeX Live
 

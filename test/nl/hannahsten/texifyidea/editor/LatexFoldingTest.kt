@@ -45,6 +45,10 @@ class LatexFoldingTest : BasePlatformTestCase() {
         myFixture.testFolding("$testDataPath/sections.tex")
     }
 
+    fun testSectionEndingFolding() {
+        myFixture.testFolding("$testDataPath/sections-ending.tex")
+    }
+
     fun testCustomFoldingRegions() {
         myFixture.testFolding("$testDataPath/custom-regions.tex")
     }

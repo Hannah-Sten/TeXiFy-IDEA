@@ -13,6 +13,10 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogTabComponent
+import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogTabComponent
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import org.jdom.Element
 import java.util.*
 
@@ -33,6 +37,7 @@ class BibtexRunConfiguration(
         private const val COMPILER_ARGUMENTS = "compiler-arguments"
         private const val MAIN_FILE = "main-file"
         private const val AUX_DIR = "aux-dir"
+        private const val LATEX_DISTRIBUTION = "latex-distribution"
     }
 
     var compiler: SupportedBibliographyCompiler? = null
@@ -46,6 +51,7 @@ class BibtexRunConfiguration(
 
     var mainFile: VirtualFile? = null
     var bibWorkingDir: VirtualFile? = null
+    internal var latexDistribution = LatexDistributionType.PROJECT_SDK
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = BibtexSettingsEditor(project)
 
@@ -109,6 +115,15 @@ class BibtexRunConfiguration(
         else {
             null
         }
+
+        val distributionText = parent.getChildText(LATEX_DISTRIBUTION)
+        if (distributionText == null) {
+            // Make sure migration doesn't break the run configuration: keep the old behaviour
+            this.latexDistribution = LatexDistributionType.PROJECT_SDK
+        }
+        else {
+            this.latexDistribution = LatexDistributionType.valueOfIgnoreCase(distributionText)
+        }
     }
 
     override fun writeExternal(element: Element) {
@@ -123,6 +138,7 @@ class BibtexRunConfiguration(
         this.environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
         parent.addContent(Element(AUX_DIR).apply { text = bibWorkingDir?.path ?: "" })
+        parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
     }
 
     override fun isGeneratedName() = name == suggestedName()
@@ -131,5 +147,19 @@ class BibtexRunConfiguration(
 
     fun setSuggestedName() {
         name = suggestedName()
+    }
+
+    // Similar to LatexRunConfiguration
+    fun setDefaultDistribution(distributionType: LatexDistributionType) {
+        latexDistribution = distributionType
+    }
+
+    fun getLatexDistributionType(): LatexDistributionType {
+        return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
+            latexDistribution
+        }
+        else {
+            LatexSdkUtil.getLatexDistributionType(project) ?: LatexDistributionType.TEXLIVE
+        }
     }
 }

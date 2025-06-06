@@ -1,8 +1,9 @@
 package nl.hannahsten.texifyidea.structure.filter
 
+import com.intellij.ide.util.FileStructureFilter
 import com.intellij.ide.util.treeView.smartTree.ActionPresentation
-import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
+import com.intellij.openapi.actionSystem.Shortcut
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
 import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
@@ -10,7 +11,7 @@ import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 /**
  * @author Hannah Schellekens
  */
-class IncludesFilter : Filter {
+class IncludesFilter : FileStructureFilter {
 
     override fun isVisible(treeElement: TreeElement): Boolean {
         return if (treeElement !is LatexStructureViewCommandElement) {
@@ -24,6 +25,10 @@ class IncludesFilter : Filter {
     override fun getPresentation() = LatexIncludesFilterPresentation
 
     override fun getName() = "latex.texify.filter.includes"
+
+    override fun getCheckBoxText() = "Include commands"
+
+    override fun getShortcut() = emptyArray<Shortcut>()
 
     /**
      * @author Hannah Schellekens

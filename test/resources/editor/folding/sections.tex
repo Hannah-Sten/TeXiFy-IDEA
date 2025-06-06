@@ -3,7 +3,26 @@
 <fold text='\section{One}...'>\section{One}
 Text.
 <fold text='\subsection{Two}...'>\subsection{Two}
-Text.</fold></fold>
+Subsection and previous section should be folded when a new section occurs</fold></fold>
 <fold text='\section{Three}...'>\section{Three}
-Text.</fold>
+<fold text='section-content'>%! region section-content
+Region inside section that can be folded.
+%! endregion</fold>
+A Magic comment "region section" is effectively another section, so the section folds here.</fold>
+<fold text='section'>%! region section
+Region text.
+%! endregion</fold>
+\section{Four}
+The section should not end here because it is interrupted by a custom fold start.
+<fold text='custom-fold'>%! region custom-fold
+Some more text in section Four.
+\section{Five}
+This section should not be folded as it is interrupted by a custom fold end.
+%! endregion custom-fold</fold>
+Perhaps some more text in section Five.
+
+<fold text='references'>%! region references
+\newpage
+\printbibliography
+%! endregion</fold>
 </fold>\end{document}

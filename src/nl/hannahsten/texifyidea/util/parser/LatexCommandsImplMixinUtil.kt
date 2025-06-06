@@ -17,9 +17,6 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.shrink
 import java.util.regex.Pattern
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 /**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
@@ -50,18 +47,21 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
         // Find text range of parameters, relative to command startoffset
         val requiredParameter = requiredParameters()[i]
+        val textOffset = this.textOffset
         val subParamRanges = if (requiredArgument.commaSeparatesArguments) {
             extractSubParameterRanges(requiredParameter).map {
-                it.shiftRight(requiredParameter.textOffset - this.textOffset)
+                it.shiftRight(requiredParameter.textOffset - textOffset)
             }
         }
         else if (requiredParameter.firstChildOfType(LatexParameterText::class)?.children?.size == 1 && requiredParameter.firstChildOfType(LatexCommands::class) != null) {
             // Special case if there is a single command instead of text, we ignore it. Example: \subfix from the subfiles package, can be ignored for our purposes
             val newRequiredParameter = requiredParameter.firstChildOfType(LatexCommands::class)?.requiredParameters()?.firstOrNull() ?: requiredParameter
-            listOf(newRequiredParameter.textRange.shrink(1).shiftLeft(this.textOffset))
+            if (newRequiredParameter.textRange.startOffset - textOffset < 0) continue
+            listOf(newRequiredParameter.textRange.shrink(1).shiftLeft(textOffset))
         }
         else {
-            listOf(requiredParameter.textRange.shrink(1).shiftLeft(this.textOffset))
+            if (requiredParameter.textRange.startOffset - textOffset < 0) continue
+            listOf(requiredParameter.textRange.shrink(1).shiftLeft(textOffset))
         }
 
         for (subParamRange in subParamRanges) {
@@ -166,10 +166,13 @@ fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): Lin
 }
 
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String> {
-    return parameters.mapNotNull { it.requiredParam }
-        .map { param ->
-            param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
+    return parameters.mapNotNull {
+        val param = it.requiredParam ?: return@mapNotNull null
+        val text = param.text
+        text.trim { c ->
+            c == '{' || c == '}' || c.isWhitespace()
         }
+    }
 }
 
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =

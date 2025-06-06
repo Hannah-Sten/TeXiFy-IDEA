@@ -119,7 +119,7 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
             element.hasParent(LatexEndCommand::class) -> true
             element.hasParent(LatexDisplayMath::class) -> true
             element.hasParent(LatexCommands::class) -> {
-                CommandMagic.sectionMarkers.contains(element.parentOfType(LatexCommands::class)?.commandToken?.text)
+                CommandMagic.sectionNameToLevel.contains(element.parentOfType(LatexCommands::class)?.commandToken?.text)
             }
             else -> false
         }

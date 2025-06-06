@@ -180,7 +180,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
                 .formatAsFileName()
-            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
+            val root = file.findRootFile(useIndexCache = false).containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             val filePath =

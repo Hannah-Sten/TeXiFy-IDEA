@@ -101,12 +101,10 @@ fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
 }
 
 /**
- * Get the first of the selected editors as a [TextEditor].
- * Returns `null` when there are no selected *text* editors.
+ * Gets the currently focused text editor.
  */
 fun Project.currentTextEditor(): TextEditor? {
-    val editors = FileEditorManager.getInstance(this).selectedEditors
-    return editors.firstOrNull { it is TextEditor } as TextEditor?
+    return FileEditorManager.getInstance(this).focusedEditor as? TextEditor?
 }
 
 /**
@@ -142,10 +140,10 @@ fun Project.isLatexProject(): Boolean {
 fun Project.isTestProject() = ApplicationManager.getApplication().isUnitTestMode
 
 /**
- * Finds all section marker commands (as defined in [CommandMagic.sectionMarkers]) in the project.
+ * Finds all section marker commands (as defined in [CommandMagic.sectionNameToLevel]) in the project.
  *
  * @return A list containing all the section marker [LatexCommands].
  */
 fun Project.findSectionMarkers() = LatexCommandsIndex.Util.getItems(this).filter {
-    it.commandToken.text in CommandMagic.sectionMarkers
+    it.commandToken.text in CommandMagic.sectionNameToLevel
 }

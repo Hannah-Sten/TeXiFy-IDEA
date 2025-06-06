@@ -62,12 +62,12 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
             val oldNode = descriptor.psiElement.node
             val newText = oldNode.text.replaceFirst("../", "")
             val newNode = LatexPsiHelper(project).createFromText(newText).firstChild.node ?: return
-            descriptor.psiElement.parent.node.replaceChild(oldNode, newNode)
+            descriptor.psiElement.parent?.node?.replaceChild(oldNode, newNode)
 
             // todo Fix BIBINPUTS
 //            project
 //                .getLatexRunConfigurations()
-//                .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile().virtualFile }
+//                .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile(useIndexCache = false).virtualFile }
 //                .flatMap { it.bibRunConfigs }
 //                .map { it.configuration }
 //                .filterIsInstance<BibtexRunConfiguration>()

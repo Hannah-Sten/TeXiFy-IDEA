@@ -33,9 +33,11 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
             LatexGenericRegularCommand.BEGIN.command -> {
                 insertBegin(context)
             }
+
             in TypographyMagic.pseudoCodeBeginEndOpposites -> {
                 insertPseudocodeEnd(command.command, context)
             }
+
             else -> {
                 LatexCommandArgumentInsertHandler(arguments).handleInsert(context, item)
             }
@@ -94,18 +96,20 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
             .startTemplate(context.editor, parameterTemplate)
     }
 
-    /**
-     * Remove whitespaces and everything after that that was inserted by the lookup text.
-     */
-    private fun removeWhiteSpaces(context: InsertionContext) {
-        val editor = context.editor
-        val document = editor.document
-        val offset = editor.caretModel.offset
-        // context.startOffset is the offset of the start of the just inserted text.
-        val insertedText = document.text.substring(context.startOffset, offset)
-        val indexFirstSpace = insertedText.indexOfFirst { it == ' ' }
-        if (indexFirstSpace == -1) return
-        document.deleteString(context.startOffset + indexFirstSpace, offset)
+    companion object {
+        /**
+         * Remove whitespaces and everything after that that was inserted by the lookup text.
+         */
+        internal fun removeWhiteSpaces(context: InsertionContext) {
+            val editor = context.editor
+            val document = editor.document
+            val offset = editor.caretModel.offset
+            // context.startOffset is the offset of the start of the just inserted text.
+            val insertedText = document.text.substring(context.startOffset, offset)
+            val indexFirstSpace = insertedText.indexOfFirst { it == ' ' }
+            if (indexFirstSpace == -1) return
+            document.deleteString(context.startOffset + indexFirstSpace, offset)
+        }
     }
 
     /**

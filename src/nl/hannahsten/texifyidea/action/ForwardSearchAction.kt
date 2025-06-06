@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.action
 
 import com.intellij.execution.RunManager
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -30,8 +32,21 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (file.fileType !is LatexFileType) return
+        val viewer = this.viewer ?: return
+        if (!viewer.isAvailable() || !viewer.isForwardSearchSupported) return
 
-        forwardSearch(file, project, textEditor = textEditor)
+        val document = textEditor.editor.document
+        val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
+        try {
+            viewer.forwardSearch(null, file.path, line, project, focusAllowed = true)
+        }
+        catch (e: TeXception) {
+            // Show a notification if the forward search fails, but only catch TeXception and let other unexpected exceptions bubble up.
+            Notification(
+                "LaTeX", "Forward search error", "${e.message}",
+                NotificationType.WARNING
+            ).notify(project)
+        }
     }
 
     override fun update(e: AnActionEvent) {

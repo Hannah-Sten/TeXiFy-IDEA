@@ -25,7 +25,7 @@ suspend fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFil
 
     if (magicComment.contains(DefaultMagicKeys.ROOT)) {
         val path = magicComment.value(DefaultMagicKeys.ROOT) ?: ""
-        this.findFile(path, supportsAnyExtension = true)?.let { roots.add(it) }
+        smartReadAction(project) { this.findFile(path, supportsAnyExtension = true) }?.let { roots.add(it) }
     }
 
     if (smartReadAction(project) { this.isRoot() }) {
@@ -45,8 +45,8 @@ suspend fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFil
  * Note: LaTeX Files can have more than one * root file, so using [findRootFiles] and explicitly handling the cases of
  * multiple root files is preferred over using [findRootFile].
  */
-fun PsiFile.findRootFile(): PsiFile {
-    val allRoots = findRootFiles()
+fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
+    val allRoots = findRootFiles(useIndexCache)
     // If there are multiple root files, prefer the current one
     return if (this in allRoots) this else allRoots.firstOrNull() ?: this
 }
@@ -54,7 +54,7 @@ fun PsiFile.findRootFile(): PsiFile {
 /**
  * Gets the set of files that are the root files of `this` file.
  */
-fun PsiFile.findRootFiles(): Set<PsiFile> = ReferencedFileSetService.getInstance().rootFilesOf(this)
+fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> = ReferencedFileSetService.getInstance().rootFilesOf(this, useIndexCache)
 
 /**
  * Checks whether the psi file is a tex document root or not.

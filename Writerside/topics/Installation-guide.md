@@ -30,7 +30,7 @@ In this section we will show you how to install everything that is necessary to 
   ![Install](install.png)
 * Install the [PDF Viewer](https://plugins.jetbrains.com/plugin/14494-pdf-viewer) plugin as well, it provides a built-in pdf viewer but does not have full functionality yet. Alternatively, you can install the [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html) pdf viewer.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
-* Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
+* If you don't have an open project, click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
   select LaTeX in the left column and click next. Specify a name for your
   project, and a location. A project can contain multiple LaTeX files and documents, so
   for example if you make a new document for each new homework you get,
@@ -134,7 +134,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   ![Install](install.png)
 * Also install the PDF Viewer plugin to view the pdf within IntelliJ.
 * If you had to install LaTeX, log out and log back in.
-* Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
+* If you don't have an open project, click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
   select LaTeX in the left column and click next. Specify a name for your
   project, and a location. A project can contain multiple LaTeX files and documents, so
   for example if you make a new document for each new homework you get,
@@ -184,7 +184,7 @@ If you have an existing document, you can also use [texliveonfly](https://tex.st
   ![Install](install.png)
 * Install the PDF Viewer plugin as well to view the pdf inside IntelliJ.
 * If you had to install LaTeX, log out and log back in. Otherwise restarting IntelliJ is sufficient.
-* Click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
+* If you don't have an open project, click on Create New Project (in the welcome menu) or <ui-path>File | New | Project</ui-path>,
   select LaTeX in the left column and click next. Specify a name for your
   project, and a location. A project can contain multiple LaTeX files, so
   for example if you make a new document for each new homework you get,

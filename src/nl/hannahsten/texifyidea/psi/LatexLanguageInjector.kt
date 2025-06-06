@@ -9,13 +9,11 @@ import com.intellij.psi.PsiLanguageInjectionHost
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
-import nl.hannahsten.texifyidea.util.camelCase
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.remove
-import java.util.*
 
 /**
  * Inject language based on magic comments.
@@ -78,10 +76,9 @@ class LatexLanguageInjector : LanguageInjector {
     private fun findLanguage(id: String?): Language? {
         return if (id.isNullOrBlank()) null
         else {
-            Language.findLanguageByID(id)
-                ?: Language.findLanguageByID(id.lowercase(Locale.getDefault()))
-                ?: Language.findLanguageByID(id.uppercase(Locale.getDefault()))
-                ?: Language.findLanguageByID(id.camelCase())
+            Language.findLanguageByID(id)?.let { return it }
+            // As a fallback, try a case insensitive check
+            return Language.getRegisteredLanguages().firstOrNull { it.id.lowercase() == id.lowercase() }
         }
     }
 }
