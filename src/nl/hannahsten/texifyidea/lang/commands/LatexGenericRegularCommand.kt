@@ -29,7 +29,8 @@ enum class LatexGenericRegularCommand(
     override val dependency: LatexPackage = LatexPackage.DEFAULT,
     override val display: String? = null,
     override val isMathMode: Boolean = false,
-    val collapse: Boolean = false
+    val collapse: Boolean = false,
+    override val commandWithSlash: String = "\\$command",
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),

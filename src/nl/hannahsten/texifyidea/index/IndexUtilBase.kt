@@ -35,23 +35,14 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     private val indexKey: StubIndexKey<String, T>
 ) {
-
+    // TODO performance improvement
     /** Cache the index items to avoid unnecessary get actions from the index, which take a long time (50-100ms) even for a small index, which can be problematic if index is accessed many times per second. */
     var cache: MutableMap<Project, MutableMap<GlobalSearchScope, Collection<SmartPsiElementPointer<T>>>> = mutableMapOf()
 
     // Somehow, we need to avoid spamming cache fills because this makes constructing the file set cache very slow
     var lastCacheFillTime = 0L
 
-    /**
-     * Get all the items in the index in the given file set.
-     * Consider using [nl.hannahsten.texifyidea.util.files.commandsInFileSet] where applicable.
-     *
-     * @param baseFile
-     *          The file from which to look.
-     */
-    fun getItemsInFileSet(baseFile: PsiFile, useIndexCache: Boolean = true): Collection<T> {
-        // Setup search set.
-        val project = baseFile.project
+    private fun buildSearchFiles(baseFile: PsiFile, useIndexCache: Boolean): GlobalSearchScope {
         val searchFiles = baseFile.referencedFileSet(useIndexCache).asSequence()
             .map { it.virtualFile }
             .toMutableSet()
@@ -67,8 +58,28 @@ abstract class IndexUtilBase<T : PsiElement>(
         }
 
         // Search index.
-        val scope = GlobalSearchScope.filesScope(project, searchFiles.filterNotNull())
+        return GlobalSearchScope.filesScope(baseFile.project, searchFiles.filterNotNull())
+    }
+
+    /**
+     * Get all the items in the index in the given file set.
+     * Consider using [nl.hannahsten.texifyidea.util.files.commandsInFileSet] where applicable.
+     *
+     * @param baseFile
+     *          The file from which to look.
+     */
+    fun getItemsInFileSet(baseFile: PsiFile, useIndexCache: Boolean = true): Collection<T> {
+        // Setup search set.
+        val project = baseFile.project
+        val scope = buildSearchFiles(baseFile, useIndexCache)
         return getItems(project, scope, useIndexCache)
+    }
+
+    fun getFirstItemByNameInFileSet(baseFile: PsiFile, name: String, useIndexCache: Boolean = true): T? {
+        // TODO: it is only a temporary solution
+        val project = baseFile.project
+        val scope = buildSearchFiles(baseFile, useIndexCache)
+        return getItemsByName(name, project, scope).firstOrNull { it.isValid }
     }
 
     /**
