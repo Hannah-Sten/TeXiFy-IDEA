@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
@@ -8,8 +8,9 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.algorithm.DFS
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.util.PROGRESS_SIZE
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
-import nl.hannahsten.texifyidea.util.runInBackgroundBlocking
+import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -24,6 +25,8 @@ object LatexExternalPackageInclusionCache {
     // Make sure not to atttempt to re-fill the cache if the result was empty
     private var cacheHasBeenFilled = AtomicBoolean(false)
 
+    val isCacheFillInProgress = AtomicBoolean(false)
+
     /**
      * Map every LaTeX package style file to all the style files it includes, directly or indirectly.
      */
@@ -37,21 +40,23 @@ object LatexExternalPackageInclusionCache {
         val directChildren = mutableMapOf<LatexPackage, MutableSet<LatexPackage>>()
 
         // Get direct children from the index
-        // ???
-        runInEdt {
-            runInBackgroundBlocking(project, "Retrieving LaTeX package inclusions...") { indicator ->
-                DumbService.getInstance(project).tryRunReadActionInSmartMode({ FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }, indicator.text)?.forEach { indexKey ->
-                    DumbService.getInstance(project).tryRunReadActionInSmartMode({
-                        FileBasedIndex.getInstance().processValues(
-                            LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
-                                indicator.checkCanceled()
-                                val key = LatexPackage(file.name.removeFileExtension())
-                                directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
-                                true
-                            },
-                            GlobalSearchScope.everythingScope(project)
-                        )
-                    }, indicator.text)
+        if (!isCacheFillInProgress.getAndSet(true)) {
+            runInBackgroundNonBlocking(project, "Retrieving LaTeX package inclusions...") { reporter ->
+                val keys = smartReadAction(project) { FileBasedIndex.getInstance().getAllKeys(LatexExternalPackageInclusionIndex.Cache.id, project) }
+                val total = keys.size
+                keys.forEach { indexKey ->
+                    reporter.sizedStep((PROGRESS_SIZE / total)) {
+                        smartReadAction(project) {
+                            FileBasedIndex.getInstance().processValues(
+                                LatexExternalPackageInclusionIndex.Cache.id, indexKey, null, { file, _ ->
+                                    val key = LatexPackage(file.name.removeFileExtension())
+                                    directChildren[key] = directChildren.getOrDefault(key, mutableSetOf()).also { it.add(LatexPackage((indexKey))) }
+                                    true
+                                },
+                                GlobalSearchScope.everythingScope(project)
+                            )
+                        }
+                    }
                 }
 
                 // Do some DFS for indirect inclusions
@@ -59,6 +64,7 @@ object LatexExternalPackageInclusionCache {
                     cache[latexPackage] = DFS(latexPackage) { parent -> directChildren[parent] ?: emptySet() }.execute()
                 }
                 cacheHasBeenFilled.set(true)
+                isCacheFillInProgress.set(false)
             }
         }
 
