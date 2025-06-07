@@ -19,6 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.util.PathUtil
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler.OutputFormat
+import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationOutputPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
@@ -116,6 +117,21 @@ class LatexRunConfiguration(
             }
 
             this.compileSteps.add(step)
+        }
+
+        // When these options are set to their default setting, they are not serialized. So when reading the run configuration we have to restore these to their default.
+        if (options.workingDirectory.isDefault()) {
+            options.mainFile.resolve()?.let { mainFile ->
+                options.workingDirectory = LatexRunConfigurationPathOption.createDefaultWorkingDirectory(mainFile)
+            }
+        }
+
+        if (options.outputPath.isDefault()) {
+            options.outputPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("out", this.project)
+        }
+
+        if (options.auxilPath.isDefault()) {
+            options.auxilPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("aux", this.project)
         }
     }
 

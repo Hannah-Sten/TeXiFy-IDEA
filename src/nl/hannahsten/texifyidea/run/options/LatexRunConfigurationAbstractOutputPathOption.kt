@@ -45,7 +45,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
     }
 
     override fun isDefault(): Boolean {
-        throw NotImplementedError("Use isDefault(variant: String) for now")
+        return pathWithMacro == null && resolvedPath == null
     }
 
     fun isDefault(variant: String): Boolean {
