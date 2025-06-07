@@ -46,7 +46,7 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
 
     // Find all root files.
     val scope = GlobalSearchScope.projectScope(project)
-    val roots = LatexIncludesIndex.Util.getItemsNonBlocking(project, scope)
+    val roots = LatexIncludesIndex.Util.getItemsNonBlocking(project, scope, useCache = false)
         .map { smartReadAction(this) { it.containingFile } }
         .distinct()
         .filter { smartReadAction(this) { it.isRoot() } }

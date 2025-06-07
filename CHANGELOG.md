@@ -4,6 +4,7 @@
 
 ### Added
 
+* Improve memory usage, by @Ezrnest
 * Performance improvements for folding, breadcrumbs and more, by @Ezrnest
 * Improve Sumatra installation detection, by @Ezrnest
 * Move Sumatra custom path from run configuration to global settings, by @Ezrnest
@@ -18,6 +19,7 @@
 
 ### Fixed
 
+* Fix a few bugs related to the root files cache
 * Fix an issue with the file set cache when opening multiple projects
 * Fix auto compilation not rerunning correctly, by @Ezrnest
 * Fix SumatraPDF forward search not using the correct file, by @Ezrnest

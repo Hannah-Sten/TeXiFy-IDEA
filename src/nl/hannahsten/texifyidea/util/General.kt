@@ -101,6 +101,9 @@ const val PROGRESS_SIZE = 1000
 /**
  * Runs the given function in a background thread, with a fake progress indicator, using [TexifyCoroutine.coroutineScope].
  *
+ * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
+ * Use smartReadAction instead.
+ *
  * See [coroutine-read-actions-api](https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#coroutine-read-actions-api).
  *
  * We should use suspend functions like
@@ -114,13 +117,6 @@ fun runInBackgroundNonBlocking(project: Project, description: String, function: 
         }
     }
 }
-
-/*
- *
- *
- * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
- * Use smartReadAction instead.
- */
 
 // https://plugins.jetbrains.com/docs/intellij/background-processes.html
 fun runInBackgroundWithoutProgress(function: () -> Unit) {
