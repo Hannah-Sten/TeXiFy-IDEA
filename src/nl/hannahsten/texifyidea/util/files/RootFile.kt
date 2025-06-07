@@ -16,10 +16,11 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 
 /**
- * Uses the fileset cache to find all root files in the fileset.
+ * Find any root files based on information from the current file, e.g. magic comments.
+ *
  * Note that each root file induces a fileset, so a file could be in multiple filesets.
  */
-suspend fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
+suspend fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
     val magicComment = smartReadAction(project) { magicComment() }
     val roots = mutableSetOf<PsiFile>()
 
@@ -32,9 +33,7 @@ suspend fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFil
         roots.add(this)
     }
 
-    roots.addAll(fileset.filter { smartReadAction(project) { it.isRoot() } })
-
-    return if (roots.isEmpty()) setOf(this) else roots
+    return roots
 }
 
 /**
@@ -52,7 +51,7 @@ fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
 }
 
 /**
- * Gets the set of files that are the root files of `this` file.
+ * Gets the set of files that are the root files of `this` file, using [ReferencedFileSetCache.getSetFromCache].
  */
 fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> = ReferencedFileSetService.getInstance().rootFilesOf(this, useIndexCache)
 

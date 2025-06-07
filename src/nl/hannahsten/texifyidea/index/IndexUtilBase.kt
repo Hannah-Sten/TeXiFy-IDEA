@@ -13,6 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.findRootFiles
@@ -37,6 +38,9 @@ abstract class IndexUtilBase<T : PsiElement>(
 
     /** Cache the index items to avoid unnecessary get actions from the index, which take a long time (50-100ms) even for a small index, which can be problematic if index is accessed many times per second. */
     var cache: MutableMap<Project, MutableMap<GlobalSearchScope, Collection<SmartPsiElementPointer<T>>>> = mutableMapOf()
+
+    // Somehow, we need to avoid spamming cache fills because this makes constructing the file set cache very slow
+    var lastCacheFillTime = 0L
 
     /**
      * Get all the items in the index in the given file set.
@@ -114,6 +118,8 @@ abstract class IndexUtilBase<T : PsiElement>(
     /**
      * Get all the items in the index.
      *
+     * If [useCache] is false, then the cache will be refreshed.
+     *
      * @param project
      *          The project instance.
      * @param scope
@@ -124,13 +130,34 @@ abstract class IndexUtilBase<T : PsiElement>(
         // Cached values may have become invalid over time, so do a double check to be sure (#2976)
         val cachedValues = cache[project]?.get(scope)?.let { runReadAction { it.mapNotNull { pointer -> pointer.element }.filter(PsiElement::isValid) } }
         if (useCache && cachedValues != null && !project.isTestProject()) {
+            // Always trigger a cache refresh anyway, so that at least it won't be outdated for very long
+            // If not refreshed often enough, inspections may work on index caches that are still empty (after project start)
+            if (System.currentTimeMillis() - lastCacheFillTime > 100) {
+                lastCacheFillTime = System.currentTimeMillis()
+                TexifyCoroutine.runInBackground {
+                    // Same code as below but using smartReadAction(project) instead of runReadAction
+                    val result = smartReadAction(project) { getKeys(project) }.flatMap { smartReadAction(project) { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
+                    cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { smartReadAction(project) { if (!it.isValid) null else it.createSmartPointer() } }
+                }
+            }
+
             return cachedValues
         }
+
         val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
         cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { runReadAction { if (!it.isValid) null else it.createSmartPointer() } }
+
         // Because the stub index may not always be reliable (#4006), include cached values
         val cached = cachedValues ?: emptyList()
         return (result + cached).toSet()
+    }
+
+    /**
+     * Get the number of indexed items without using any cache at all.
+     */
+    fun getNumberOfIndexedItems(project: Project): Int {
+        val scope = GlobalSearchScope.projectScope(project)
+        return runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }.size
     }
 
     // Same as getItems but runReadAction is replaced by smartReadAction(project)
