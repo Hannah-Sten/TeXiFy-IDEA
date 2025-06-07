@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PROGRESS_SIZE
@@ -140,6 +141,10 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet
  * @see [LatexCommandsIndex.Util.getItemsInFileSet]
  */
 fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
+
+fun PsiFile.findCommandInFileSet(command: LatexCommand, useIndexCache: Boolean = true): LatexCommands? {
+    return LatexCommandsIndex.Util.getFirstItemByNameInFileSet(this, command.commandWithSlash, useIndexCache)
+}
 
 /**
  * @see [LatexCommandsIndex.Util.getItemsAndFilesInFileSet]

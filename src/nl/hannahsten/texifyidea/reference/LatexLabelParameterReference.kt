@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
-import com.intellij.util.containers.toArray
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.findCommandInFileSet
 import nl.hannahsten.texifyidea.util.labels.extractLabelElement
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
@@ -32,10 +32,11 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val allCommands = myElement.containingFile.originalFile.commandsInFileSet()
+        val externalDocumentCommand = myElement.containingFile.originalFile.findCommandInFileSet(LatexGenericRegularCommand.EXTERNALDOCUMENT)
         // Find the label definition
+        val myElementName = myElement.name
         return myElement.containingFile.findLatexLabelingElementsInFileSet()
-            .filter { it.extractLabelName(referencingFileSetCommands = allCommands) == myElement.name }
+            .filter { it.extractLabelName(externalDocumentCommand) == myElementName }
             .toSet()
             .mapNotNull {
                 // Find the normal text in the label command.
@@ -44,8 +45,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
                 // but only the label text itself will have the correct name for that.
                 PsiElementResolveResult(it.extractLabelElement() ?: return@mapNotNull null)
             }
-            .toList()
-            .toArray(emptyArray())
+            .toTypedArray()
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {
