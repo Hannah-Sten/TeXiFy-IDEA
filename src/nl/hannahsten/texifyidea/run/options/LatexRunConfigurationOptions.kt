@@ -6,10 +6,14 @@ import com.intellij.execution.configurations.LocatableRunConfigurationOptions
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.XMap
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeFormat
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import java.time.format.DateTimeFormatter
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
@@ -59,10 +63,16 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
     fun getLatexDistribution(project: Project) = LatexSdkUtil.getLatexDistributionType(latexDistribution, project)
 
-    /** Whether the run configuration has already been run or not, since it has been created
-     * todo change to lastRunTime and make sure it's updated */
-    @get:OptionTag("hasBeenRun")
-    var hasBeenRun by property(false)
+    /**
+     * Keep track of when this configuration was last run. Set to null when it has never been run.
+     */
+    @get:OptionTag("lastRun", converter = LocalDateTimeConverter::class)
+    var lastRun by property<LocalDateTime?>(null) { it == null }
+
+    private class LocalDateTimeConverter() : com.intellij.util.xmlb.Converter<LocalDateTime?>() {
+        override fun fromString(value: String): LocalDateTime = LocalDateTime.parse(value, LocalDateTime.Formats.ISO)
+        override fun toString(value: LocalDateTime?): String? = value?.format(LocalDateTime.Formats.ISO)
+    }
 
     @get:OptionTag("mainFile", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
     var mainFile by property(LatexRunConfigurationPathOption()) { it.isDefault() }

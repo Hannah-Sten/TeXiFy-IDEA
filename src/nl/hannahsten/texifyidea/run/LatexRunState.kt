@@ -11,6 +11,10 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
@@ -28,7 +32,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
         val console = LatexExecutionConsole(runConfig)
 
         // todo make this a hidden step/handler as well?
-        if (!runConfig.options.hasBeenRun) {
+        if (runConfig.options.lastRun == null) {
             firstRunSetup(runConfig)
         }
 
@@ -45,6 +49,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
 
         overallProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {
+                runConfig.options.lastRun = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                 console.start()
             }
 
