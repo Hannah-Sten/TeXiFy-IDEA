@@ -62,7 +62,7 @@ class ReferencedFileSetCache {
      */
     @Synchronized
     fun fileSetFor(file: PsiFile, useIndexCache: Boolean = true): Set<PsiFile> {
-        return getSetFromCache(file, Cache.fileSetCache.getOrPut(file.project) { mutableMapOf() }, useIndexCache)
+        return getSetFromCache(file, fileSetCache.getOrPut(file.project) { mutableMapOf() }, useIndexCache)
     }
 
     @Synchronized
@@ -74,7 +74,7 @@ class ReferencedFileSetCache {
      * Note: this will not trigger a cache refill
      */
     fun dropAllCaches(project: Project) {
-        Cache.fileSetCache[project]?.clear()
+        fileSetCache[project]?.clear()
         Cache.rootFilesCache[project]?.clear()
     }
 
@@ -160,7 +160,7 @@ class ReferencedFileSetCache {
                     // Only drop caches after we have new data (since that task may be cancelled)
                     val (newFileSetCache, newRootFilesCache) = getNewCachesFor(project, reporter)
                     dropAllCaches(project)
-                    Cache.fileSetCache.getOrPut(project) { mutableMapOf() }.putAll(newFileSetCache.toMutableMap())
+                    fileSetCache.getOrPut(project) { mutableMapOf() }.putAll(newFileSetCache.toMutableMap())
                     Cache.rootFilesCache.getOrPut(project) { mutableMapOf() }.putAll(newRootFilesCache.toMutableMap())
                     // Many inspections use the file set, so a rerun could give different results
                     smartReadAction(project) { file.rerunInspections() }
