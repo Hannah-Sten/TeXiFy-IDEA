@@ -128,8 +128,7 @@ fun PsiElement.contextualSurrounder(): PsiElement? {
     // Find the contextual element of the current element in the PSI tree.
     // The current element is surrounded by `no_math_content`, so we should go an extra level up
     return when (this) {
-        is PsiWhiteSpace
-        -> this
+        is PsiWhiteSpace -> this
         else -> parent as? LatexNoMathContent
     }
 }
@@ -214,6 +213,18 @@ inline fun PsiElement.traverseContextualSiblingsNext(action: (PsiElement) -> Uni
 inline fun PsiElement.traverseContextualSiblingsPrev(action: (PsiElement) -> Unit) {
     return traverseContextualSiblingsTemplate(action) { it.prevSibling }
 }
+
+inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean): PsiElement? {
+    traverseContextualSiblingsPrev { sibling ->
+        if (predicate(sibling)) {
+            return sibling
+        }
+    }
+    return null
+}
+
+fun PsiElement.prevContextualSiblingIgnoreWhitespace(): PsiElement? =
+    prevContextualSibling { it !is PsiWhiteSpace }
 
 /**
  * Gets the name of the command from the [PsiElement] if it is a command or is a content containing a command.

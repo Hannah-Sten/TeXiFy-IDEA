@@ -70,10 +70,6 @@ fun PsiElement.extractLabelElement(): PsiElement? {
  *
  * @param externalDocumentCommand the command that is used to include labels from other filesets, such as `\externaldocument`.
  *
- * @param referencingFileSetCommands a map of `LatexCommand.name` to `LatexCommand`.
- * All the commands in the fileset containing the element referencing [this], which can make a different for what the label name should be, as using the xr package labels from other filesets can be included with a prefix.
- *
- *
  */
 fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null): String {
     when (this) {
@@ -91,15 +87,6 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
             externalDocumentCommand?.parameterList?.firstNotNullOfOrNull { it.optionalParam }
                 ?.text?.trim('[', ']')
                 ?.let { prefix = it }
-            // The original code here:
-//            if (referencingFileSetCommands != null) {
-//                referencingFileSetCommands
-//                    // Don't think there can be multiple, at least I wouldn't know what prefix it would use
-//                    .firstOrNull { it.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash }
-//                    ?.parameterList?.firstNotNullOfOrNull { it.optionalParam }
-//                    ?.text?.trim('[', ']')
-//                    ?.let { prefix = it }
-//            }
             // Skip optional parameters for now (also below and in
             return prefix + this.requiredParameter(position)
         }

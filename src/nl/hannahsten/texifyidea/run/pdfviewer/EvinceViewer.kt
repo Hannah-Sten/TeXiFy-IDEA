@@ -1,10 +1,9 @@
-package nl.hannahsten.texifyidea.run.linuxpdfviewer.evince
+package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.freedesktop.dbus.errors.NoReply
 import org.freedesktop.dbus.errors.ServiceUnknown
@@ -20,7 +19,7 @@ import org.gnome.evince.Window
  *
  * @author Thomas Schouten
  */
-object EvinceConversation : ViewerConversation() {
+object EvinceViewer : SystemPdfViewer("Evince", "evince") {
 
     /**
      * Object path of the Evince daemon. Together with the object name, this allows us to find the
@@ -46,6 +45,11 @@ object EvinceConversation : ViewerConversation() {
      */
     private var processOwner: String? = null
 
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
+        // Opening the file when not already open will lose focus, so we don't want to do that. However, we have to, otherwise manual forward search will not work
+        openFile(pdfPath, project)
+    }
+
     /**
      * Open a file in Evince, starting it if it is not running yet. This also finds the process owner of the pdf, so we can execute forward search later.
      */
@@ -54,22 +58,25 @@ object EvinceConversation : ViewerConversation() {
         findProcessOwner(pdfFilePath, project)
     }
 
+    // This is not really correct since Evince will always focus on forward search, but we still want to show the option to users so that they can use it to disable forward search if they don't want to lose focus after compilation.
+    override val isFocusSupported = true
+
     /**
      * Execute forward search, highlighting a certain line in Evince.
      * If a pdf file is given, it will execute FindDocument and open the pdf file again to find the latest process owner. If the pdf file is already open, this will do nothing.
      *
-     * @param pdfPath Full path to a pdf file.
+     * @param outputPath Full path to a pdf file.
      * @param sourceFilePath Full path to the LaTeX source file.
      * @param line Line number in the source file to highlight in the pdf.
      */
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
         // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Evince
         if (!focusAllowed) {
             return
         }
 
-        if (pdfPath != null) {
-            findProcessOwner(pdfPath, project)
+        if (outputPath != null) {
+            findProcessOwner(outputPath, project)
         }
 
         if (processOwner != null) {
@@ -95,11 +102,11 @@ object EvinceConversation : ViewerConversation() {
         }
         else {
             // If the user used the forward search menu action
-            if (pdfPath == null) {
+            if (outputPath == null) {
                 Notification("LaTeX", "Could not execute forward search", "Please make sure you have compiled the document first, and that your path does not contain spaces.", NotificationType.ERROR).notify(project)
             }
             else {
-                throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $pdfPath")
+                throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $outputPath")
             }
         }
     }

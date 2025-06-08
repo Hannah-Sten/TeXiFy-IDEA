@@ -13,9 +13,7 @@ fun CodeInsightTestFixture.configureByFilesWithMockCache(vararg filenames: Strin
     val mockService = mockk<ReferencedFileSetService>()
     every { mockService.referencedFileSetOf(any()) } returns files.toSet()
     every { mockService.rootFilesOf(any()) } returns setOf(files.first())
-    every { mockService.dropCaches(any()) } answers { callOriginal() }
-    every { mockService.dropCaches(any()) } answers { callOriginal() }
-    every { mockService.dropAllCaches() } answers { callOriginal() }
+    every { mockService.dropAllCaches(any()) } answers { callOriginal() }
     every { mockService.markCacheOutOfDate() } answers { callOriginal() }
     mockkObject(ReferencedFileSetService.Companion)
     every { ReferencedFileSetService.getInstance() } returns mockService

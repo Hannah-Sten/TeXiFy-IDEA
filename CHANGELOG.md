@@ -4,6 +4,13 @@
 
 ### Added
 
+* Improve memory usage, by @Ezrnest
+* Performance improvements for folding, breadcrumbs and more, by @Ezrnest
+* Improve Sumatra installation detection, by @Ezrnest
+* Move Sumatra custom path from run configuration to global settings, by @Ezrnest
+* Add option to disallow the pdf viewer to focus, by @Ezrnest
+* Add system default as option for the pdf viewer, for Mac/Linux
+* Add warning to Detexify tool window
 * Improve performance on startup
 * Add support for file references for the tikzfig command
 * Add run configuration option to configure pdf viewer focus after compilation, by @Ezrnest
@@ -12,10 +19,12 @@
 
 ### Fixed
 
+* Fix a few bugs related to the root files cache
+* Fix an issue with the file set cache when opening multiple projects
 * Fix auto compilation not rerunning correctly, by @Ezrnest
 * Fix SumatraPDF forward search not using the correct file, by @Ezrnest
 * Fix extra whitespace when inserting commands in math mode, by @Ezrnest
-* Fix exceptions #4035, #4044, #4058
+* Fix exceptions #4035, #4044, #4058, #4072
 * Create run configuration process in background
 
 ## [0.10.3] - 2025-05-16

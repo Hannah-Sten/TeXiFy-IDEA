@@ -7,6 +7,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
@@ -29,13 +30,13 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
-        val customPackages = LatexDefinitionIndex.Util.getCommandsByName("\\ProvidesPackage", file.project, file.project.projectSearchScope)
+        val customPackages = LatexDefinitionIndex.Util.getCommandsByName(LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash, file.project, file.project.projectSearchScope)
             .map { it.requiredParameter(0) }
             .map { it?.lowercase(Locale.getDefault()) }
         val packages = ctanPackages + customPackages
 
         val commands = file.childrenOfType(LatexCommands::class)
-            .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
+            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.commandWithSlash || it.name == LatexGenericRegularCommand.REQUIREPACKAGE.commandWithSlash }
 
         for (command in commands) {
             @Suppress("ktlint:standard:property-naming")

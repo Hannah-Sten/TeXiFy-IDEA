@@ -64,7 +64,6 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
         }
         else if (element.project.getLabelReferenceCommands().contains(command)) {
             // Create autocompletion entries for each element we could possibly resolve to
-//            val allCommands = file.commandsInFileSet()
             val externalDocumentCommand = file.findCommandInFileSet(LatexGenericRegularCommand.EXTERNALDOCUMENT)
             return file.findLatexLabelingElementsInFileSet()
                 .toSet()
@@ -87,7 +86,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                             true
                         )
                         .withIcon(TexifyIcons.DOT_LABEL)
-                }.toList().toTypedArray()
+                }.toTypedArray()
         }
         // if command isn't ref or cite-styled return empty array
         return arrayOf()
