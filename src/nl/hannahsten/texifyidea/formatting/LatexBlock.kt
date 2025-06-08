@@ -33,7 +33,6 @@ class LatexBlock(
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {
-        // TODO improve
         val blocks = mutableListOf<LatexBlock>()
         var child = myNode.firstChildNode
 
@@ -145,7 +144,6 @@ class LatexBlock(
     }
 
     override fun getIndent(): Indent? {
-        // TODO improve
         val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
         val shouldIndentDocumentEnvironment = latexSettings.INDENT_DOCUMENT_ENVIRONMENT
         val shouldIndentEnvironments = latexSettings.INDENT_ENVIRONMENTS
