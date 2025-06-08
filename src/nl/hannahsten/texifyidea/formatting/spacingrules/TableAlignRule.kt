@@ -13,29 +13,34 @@ import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import kotlin.math.min
 
 /** At this length, we put table cells on their own line. */
 const val LINE_LENGTH = 80
 
+
+/**
+ * Returns the table environment content if the parent is in a table environment.
+ */
+fun checkTableEnvironment(parent: ASTBlock, child : ASTBlock): LatexEnvironmentContent? {
+    // Check if parent is in environment content of a table environment
+    val contentElement = parent.node?.psi?.parentOfType(LatexEnvironmentContent::class) ?: return null
+    if (contentElement.parentOfType(LatexEnvironment::class)?.getEnvironmentName() != TABULAR.environmentName) return null
+    // Ignore raw texts
+    if (child.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
+    return contentElement
+
+}
+
 /**
  * Align spaces to the right of &
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
-    // Only add spaces after &, unless escaped or inside url.
-    val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class) ?: return null
-    if (contentElement.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() != TABULAR.environmentName) return null
-
+    checkTableEnvironment(parent, left) ?: return null
     val leftText = left.node?.text ?: return null
     if (!leftText.endsWith("&")) return null
     if (leftText.endsWith("\\&")) return null
-    if (left.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
-//    if (
-//        parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-//            ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
-//            parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-//        )
-//    ) return null
 
     return createSpacing(
         minSpaces = 1,
@@ -50,15 +55,11 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
  * Align spaces to the left of & or \\
  */
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
-    if (right.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
-
-    // Check if parent is in environment content of a table environment
-    val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() != TABULAR.environmentName) return null
-//    val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
+    val contentElement = checkTableEnvironment(parent, right) ?: return null
 
     val tableLineSeparator = "\\\\"
-    if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
+    val rightNodeText = right.node?.text ?: return null
+    if (!rightNodeText.startsWith("&") && rightNodeText != tableLineSeparator) return null
 
     val content = contentElement.text ?: return null
     val contentLines = content.split(tableLineSeparator)
