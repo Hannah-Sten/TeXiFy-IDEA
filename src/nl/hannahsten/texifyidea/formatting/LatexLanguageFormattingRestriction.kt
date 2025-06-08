@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.formatting
 
 import com.intellij.lang.LanguageFormattingRestriction
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
