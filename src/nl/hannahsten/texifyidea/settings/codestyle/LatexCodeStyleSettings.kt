@@ -68,6 +68,5 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
             LatexGenericRegularCommand.PARAGRAPH.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_PARAGRAPH,
             LatexGenericRegularCommand.SUBPARAGRAPH.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBPARAGRAPH
         )
-
     }
 }

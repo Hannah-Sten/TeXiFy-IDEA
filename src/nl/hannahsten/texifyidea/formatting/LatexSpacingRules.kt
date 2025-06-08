@@ -13,10 +13,8 @@ import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.asCommandName
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import java.util.*
 
 fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
     Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
@@ -99,17 +97,20 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         // Unfortunately we have to do this manually because Alignment only aligns characters if they are the first
         // non-whitespace in a line of code
         custom {
-            customRule { parent, _, right -> leftTableSpaceAlign(latexCommonSettings, parent, right)
+            customRule { parent, _, right ->
+                leftTableSpaceAlign(latexCommonSettings, parent, right)
             }
-            customRule { parent, left, _ -> rightTableSpaceAlign(latexCommonSettings, parent, left)
+            customRule { parent, left, _ ->
+                rightTableSpaceAlign(latexCommonSettings, parent, left)
             }
         }
     }
 }
 
-
-fun sectionSpacing(latexSettings : LatexCodeStyleSettings,
-                   right : ASTBlock): Spacing? {
+fun sectionSpacing(
+    latexSettings: LatexCodeStyleSettings,
+    right: ASTBlock
+): Spacing? {
     // Because getting the full text from a node is relatively expensive, we first use a condition which is necessary (but not sufficient) as an early exit.
     // get the corresonding command name
     val psi = right.node?.psi ?: return null
@@ -127,10 +128,9 @@ fun sectionSpacing(latexSettings : LatexCodeStyleSettings,
     )
 }
 
-fun newLineBeforeState(latexCommonSettings : CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock) : Spacing?{
-
+fun newLineBeforeState(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     val parentPsi = parent.node?.psi ?: return null
-    if(! parentPsi.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments)){
+    if(!parentPsi.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments)) {
         return null
     }
     val rightPsi = right.node?.psi ?: return null

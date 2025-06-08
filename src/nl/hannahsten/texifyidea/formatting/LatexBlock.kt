@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.application.options.CodeStyle
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiWhiteSpace
@@ -13,10 +12,8 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 import java.lang.Integer.max
 
 /**
@@ -60,7 +57,7 @@ class LatexBlock(
         if (child == null && (sectionIndent > 0 || fakeSectionIndent > 0)) {
             val block = LatexBlock(
                 myNode,
-                LatexWrappingStrategy.getNormalWrap(settings,myNode),
+                LatexWrappingStrategy.getNormalWrap(settings, myNode),
                 null,
                 spacingBuilder,
                 settings,
@@ -91,7 +88,7 @@ class LatexBlock(
                 val block = LatexBlock(
                     child,
                     // Only allow wrapping if the previous element is a white space.
-                    if (isPreviousWhiteSpace) LatexWrappingStrategy.getNormalWrap(settings,myNode) else LatexWrappingStrategy.getNoneWrap(),
+                    if (isPreviousWhiteSpace) LatexWrappingStrategy.getNormalWrap(settings, myNode) else LatexWrappingStrategy.getNoneWrap(),
                     null,
                     spacingBuilder,
                     settings,

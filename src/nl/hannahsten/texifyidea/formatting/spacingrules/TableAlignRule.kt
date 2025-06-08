@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.formatting.spacingrules
 
 import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
@@ -11,26 +10,24 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.parentOfType
 import kotlin.math.min
 
 /** At this length, we put table cells on their own line. */
 const val LINE_LENGTH = 80
 
-
 /**
  * Returns the table environment content if the parent is in a table environment.
  */
-fun checkTableEnvironment(parent: ASTBlock, child : ASTBlock): LatexEnvironmentContent? {
+fun checkTableEnvironment(parent: ASTBlock, child: ASTBlock): LatexEnvironmentContent? {
     // Check if parent is in environment content of a table environment
-    val contentElement = parent.node?.psi?.parentOfType(LatexEnvironmentContent::class) ?: return null
-    if (contentElement.parentOfType(LatexEnvironment::class)?.getEnvironmentName() != TABULAR.environmentName) return null
+    // node - no_math_content - environment_content - environment: We have to go two levels up
+    val contentElement = parent.node?.psi?.firstParentOfType<LatexEnvironmentContent>(2) ?: return null
+    val envNode = contentElement.parent as? LatexEnvironment ?: return null
+    if (envNode.getEnvironmentName() != TABULAR.environmentName) return null
     // Ignore raw texts
     if (child.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
     return contentElement
-
 }
 
 /**
