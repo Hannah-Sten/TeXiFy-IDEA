@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -15,6 +16,7 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.asCommandName
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
     Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
@@ -112,11 +114,13 @@ fun sectionSpacing(
     right: ASTBlock
 ): Spacing? {
     // Because getting the full text from a node is relatively expensive, we first use a condition which is necessary (but not sufficient) as an early exit.
-    // get the corresonding command name
-    val psi = right.node?.psi ?: return null
-    val commandName = psi.asCommandName() ?: return null
+    // psi should be a no_math_content containing the sectioning command.
+    val psi = right.node?.psi as? LatexNoMathContent ?: return null
+    val commandPSI = psi.commands ?: return null
+    val commandName = commandPSI.name ?: return null
     val spacingVar = LatexCodeStyleSettings.blankLinesOptions[commandName] ?: return null
-    if (psi.parentOfType(LatexCommands::class)?.name in CommandMagic.definitions) {
+    if (psi.parentOfType(LatexCommands::class)?.name in CommandMagic.definitions || commandPSI.requiredParameters().isEmpty()) {
+        // if it is contained in a definition or has no parameters, we should not treat it as a sectioning command
         return null
     }
     return createSpacing(
