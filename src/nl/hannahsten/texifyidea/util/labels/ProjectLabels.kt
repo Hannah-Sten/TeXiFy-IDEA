@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 
 /**
  * Finds all defined labels within the project, including bibtex entries.
@@ -31,7 +30,7 @@ fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
  * All commands that represent a reference to a label, including user defined commands.
  */
 fun Project.getLabelReferenceCommands(): Set<String> {
-    CommandManager.updateAliases(CommandMagic.labelReferenceWithoutCustomCommands, this)
+    CommandManager.updateAliasesInBackground(CommandMagic.labelReferenceWithoutCustomCommands, this)
     return CommandManager.getAliases(CommandMagic.labelReferenceWithoutCustomCommands.first())
 }
 
@@ -48,7 +47,7 @@ fun getLabelDefinitionCommandsNoUpdate() = CommandManager.getAliases(CommandMagi
  */
 fun Project.getLabelDefinitionCommands(): Set<String> {
     // Check if updates are needed
-    CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this)
+    CommandManager.updateAliasesInBackground(CommandMagic.labelDefinitionsWithoutCustomCommands, this)
     return CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 }
 
@@ -57,6 +56,6 @@ fun Project.getLabelDefinitionCommands(): Set<String> {
  */
 fun Project.getLabelDefinitionCommandsAndUpdateLater(): Set<String> {
     // Check if updates are needed
-    runInBackgroundWithoutProgress { CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this) }
+    CommandManager.updateAliasesInBackground(CommandMagic.labelDefinitionsWithoutCustomCommands, this)
     return CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 }

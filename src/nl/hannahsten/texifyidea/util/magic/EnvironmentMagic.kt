@@ -19,7 +19,7 @@ object EnvironmentMagic {
      * Get all table environments in the project, including any user defined aliases.
      */
     fun getAllTableEnvironments(project: Project): Set<String> {
-        EnvironmentManager.updateAliases(tableEnvironmentsWithoutCustomEnvironments, project)
+        EnvironmentManager.updateAliasesInBackground(tableEnvironmentsWithoutCustomEnvironments, project)
         return EnvironmentManager.getAliases(tableEnvironmentsWithoutCustomEnvironments.first())
     }
 

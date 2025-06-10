@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import java.util.concurrent.atomic.AtomicBoolean
 
-// Due to the update method being called many times, we need to limit the number of updates requested
+// Due to the update method being called many times, we need to limit the number of updates requested todo move this into CommandManager
 var isUpdatingIncludeAliases = AtomicBoolean(false)
 
 fun updateAndGetIncludeCommands(project: Project): Set<String> {
@@ -17,7 +17,7 @@ fun updateAndGetIncludeCommands(project: Project): Set<String> {
 fun updateIncludeCommandsAliasesAsync(project: Project) {
     if (!isUpdatingIncludeAliases.getAndSet(true)) {
         // Don't run with progress indicator, because this takes a short time (a few tenths) and runs in practice on every letter typed
-        runInBackgroundWithoutProgress {
+        TexifyCoroutine.runInBackground {
             try {
                 // Because every command has different parameters and behaviour (e.g. allowed file types), we keep track of them separately
                 for (command in defaultIncludeCommands) {

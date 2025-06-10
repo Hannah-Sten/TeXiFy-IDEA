@@ -19,7 +19,8 @@ import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.defaultCommand
+import nl.hannahsten.texifyidea.util.indexOf
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
@@ -365,7 +366,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 val command = psiElement.parentOfType(LatexCommands::class) ?: return@withPattern false
                 if (command.commandToken.text in commandNamesWithSlash) return@withPattern true
 
-                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
+                CommandManager.updateAliasesInBackground(commandNamesWithSlash, psiElement.project)
                 CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
             }
             .withLanguage(LatexLanguage),

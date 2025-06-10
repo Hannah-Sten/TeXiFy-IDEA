@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.alias
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
@@ -138,10 +139,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         registerAlias("\\" + commandNoSlash, "\\" + aliasNoSlash, isRedefinition)
     }
 
-    override fun findAllAliases(
-        aliasSet: Set<String>,
-        indexedDefinitions: Collection<LatexCommands>
-    ) {
+    override suspend fun findAllAliases(project: Project, aliasSet: Set<String>, indexedDefinitions: Collection<LatexCommands>) {
         val firstAlias = aliasSet.first()
 
         // Get definitions which define one of the commands in the given command names set
@@ -149,9 +147,9 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         indexedDefinitions.filter {
             // Assume the parameter definition has the command being defined in the first required parameter,
             // and the command definition itself in the second
-            runReadAction { it.requiredParameter(1)?.containsAny(aliasSet) == true }
+            smartReadAction(project) { it.requiredParameter(1)?.containsAny(aliasSet) == true }
         }
-            .mapNotNull { runReadAction { it.requiredParameter(0) } }
+            .mapNotNull { smartReadAction(project) { it.requiredParameter(0) } }
             .forEach { registerAlias(firstAlias, it) }
 
         // Extract label parameter positions
@@ -159,9 +157,9 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
         if (aliasSet.intersect(CommandMagic.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
             indexedDefinitions.forEach { commandDefinition ->
-                runReadAction {
-                    val definedCommand = commandDefinition.requiredParameter(0) ?: return@runReadAction
-                    if (definedCommand.isBlank()) return@runReadAction
+                smartReadAction(project) {
+                    val definedCommand = commandDefinition.requiredParameter(0) ?: return@smartReadAction
+                    if (definedCommand.isBlank()) return@smartReadAction
 
                     val isFirstParameterOptional = commandDefinition.parameterList.filter { it.optionalParam != null }.size > 1
 
@@ -186,8 +184,8 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
                         // For the moment we only consider required parameters and ignore the optional one
                         ?.map { if (isFirstParameterOptional) it - 1 else it }
                         ?.filter { it >= 0 }
-                        ?.toList() ?: return@runReadAction
-                    if (positions.isEmpty()) return@runReadAction
+                        ?.toList() ?: return@smartReadAction
+                    if (positions.isEmpty()) return@smartReadAction
 
                     // Check if there is a command which increases a counter before the \label
                     // If so, the \label just labels the counter increasing command, and not whatever will appear before usages of the custom labeling command

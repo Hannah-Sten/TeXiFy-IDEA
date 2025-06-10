@@ -59,7 +59,7 @@ fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> = sequenc
  * All environments with labels, including user defined
  */
 fun findLabeledEnvironments(file: PsiFile): Sequence<PsiElement> {
-    EnvironmentManager.updateAliases(EnvironmentMagic.labelAsParameter, file.project)
+    EnvironmentManager.updateAliasesInBackground(EnvironmentMagic.labelAsParameter, file.project)
     val allEnvironments = EnvironmentManager.getAliases(EnvironmentMagic.labelAsParameter.first())
     return LatexEnvironmentsIndex.Util.getItemsInFileSet(file).filter { it.getEnvironmentName() in allEnvironments }.asSequence()
 }

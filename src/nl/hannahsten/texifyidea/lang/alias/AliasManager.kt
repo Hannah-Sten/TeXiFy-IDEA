@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.lang.alias
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -90,18 +91,16 @@ abstract class AliasManager {
      */
     @Synchronized
     fun registerAlias(item: String, alias: String, isRedefinition: Boolean = false) {
-        synchronized(aliases) {
-            val aliasSet = aliases[item] ?: mutableSetOf()
+        val aliasSet = aliases[item] ?: mutableSetOf()
 
-            // If the alias is already assigned and we are redefining it: unassign it.
-            if (isRedefinition && isRegistered(alias)) {
-                val previousAliases = aliases[alias]
-                previousAliases?.remove(alias)
-                aliases.remove(alias)
-            }
-            aliasSet.add(alias)
-            aliases[alias] = aliasSet
+        // If the alias is already assigned and we are redefining it: unassign it.
+        if (isRedefinition && isRegistered(alias)) {
+            val previousAliases = aliases[alias]
+            previousAliases?.remove(alias)
+            aliases.remove(alias)
         }
+        aliasSet.add(alias)
+        aliases[alias] = aliasSet
     }
 
     /**
@@ -118,11 +117,16 @@ abstract class AliasManager {
         }
     }
 
+    /** See [updateAliases] */
+    fun updateAliasesInBackground(aliasSet: Collection<String>, project: Project) {
+        TexifyCoroutine.runInBackground { updateAliases(aliasSet, project) }
+    }
+
     /**
      * If needed (based on the number of indexed \newcommand-like commands) check for new aliases of the given alias set. This alias can be any alias of its alias set.
      * If the alias set is not yet registered, it will be registered as a new alias set.
      */
-    fun updateAliases(aliasSet: Collection<String>, project: Project) {
+    suspend fun updateAliases(aliasSet: Collection<String>, project: Project) {
         // Register if needed
         if (aliasSet.isEmpty()) return
         val firstAlias = aliasSet.first()
@@ -133,9 +137,11 @@ abstract class AliasManager {
             aliasSet.forEach { registerAlias(firstAlias, it) }
         }
 
+        // todo: avoid running unnecessary updates in parallel
+
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = runReadAction { LatexDefinitionIndex.Util.getItems(project).toSet() }
+        val indexedCommandDefinitions = smartReadAction(project) { LatexDefinitionIndex.Util.getItems(project).toSet() }
 
         // Check if something has changed (the number of indexed command might be the same while the content is different), and if so, update the aliases.
         // Also do this the first time something is registered, because then we have to update aliases as well
@@ -148,7 +154,7 @@ abstract class AliasManager {
             // We have to deepcopy the set of alias sets before iterating over it, because we want to modify aliases
             val deepCopy = aliases.values.toSet().map { it.toSet() }
             for (copiedAliasSet in deepCopy) {
-                findAllAliases(copiedAliasSet, indexedCommandDefinitions)
+                findAllAliases(project, copiedAliasSet, indexedCommandDefinitions)
             }
 
             this.indexedCommandDefinitions = indexedCommandDefinitions.toSet()
@@ -158,7 +164,8 @@ abstract class AliasManager {
     /**
      * Find all aliases that are defined in the [indexedDefinitions] and register them.
      */
-    abstract fun findAllAliases(
+    abstract suspend fun findAllAliases(
+        project: Project,
         aliasSet: Set<String>,
         indexedDefinitions: Collection<LatexCommands>
     )
