@@ -5,6 +5,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 
 /*
  * This file contains utility functions paralleling [Psi] but with improved performance.
@@ -15,6 +16,40 @@ import nl.hannahsten.texifyidea.psi.*
  *
  * Typically, PSI related extensions are called from a read action, so we must avoid wrapping these methods in a read action.
  */
+
+inline fun PsiElement.firstParent(maxDepth: Int = Int.MAX_VALUE, predicate: (PsiElement) -> Boolean): PsiElement? {
+    var current: PsiElement? = this
+    var depth = -1
+    while (current != null && depth < maxDepth) {
+        if (predicate(current)) {
+            return current
+        }
+        current = current.parent?.let { if (it.isValid) it else null }
+        depth++
+    }
+    return null
+}
+
+/**
+ * Find the first node of the given type in the parent chain (including this) up to the [maxDepth].
+ *
+ * Usually, you should set [maxDepth] to a reasonable value (1 or 2) to avoid traversing too much into the PSI tree.
+ *
+ * @param T The type of the element to find.
+ * @param maxDepth The maximum depth to search for the element.
+ * @see [firstParentOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int = Int.MAX_VALUE): T? {
+    var current: PsiElement = this
+    for (depth in 0..maxDepth) {
+        if (current is T) {
+            return current
+        }
+        current = current.parent ?: return null
+        if (!current.isValid) return null
+    }
+    return null
+}
 
 /**
  * Determines whether any parent of this PsiElement matches the given predicate.
@@ -224,3 +259,14 @@ inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean):
 
 fun PsiElement.prevContextualSiblingIgnoreWhitespace(): PsiElement? =
     prevContextualSibling { it !is PsiWhiteSpace }
+
+/**
+ * Gets the name of the command from the [PsiElement] if it is a command or is a content containing a command.
+ */
+fun PsiElement.asCommandName(): String? {
+    return when (this) {
+        is LatexCommandWithParams -> this.getName()
+        is LatexNoMathContent -> this.commands?.name
+        else -> null
+    }
+}

@@ -2,15 +2,14 @@ package nl.hannahsten.texifyidea.formatting.spacingrules
 
 import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import kotlin.math.min
 
@@ -18,20 +17,27 @@ import kotlin.math.min
 const val LINE_LENGTH = 80
 
 /**
+ * Returns the table environment content if the parent is in a table environment.
+ */
+fun checkTableEnvironment(parent: ASTBlock, child: ASTBlock): LatexEnvironmentContent? {
+    // Check if parent is in environment content of a table environment
+    // node - no_math_content - environment_content - environment: We have to go two levels up
+    val contentElement = parent.node?.psi?.firstParentOfType<LatexEnvironmentContent>(2) ?: return null
+    val envNode = contentElement.parent as? LatexEnvironment ?: return null
+    if (envNode.getEnvironmentName() != TABULAR.environmentName) return null
+    // Ignore raw texts
+    if (child.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
+    return contentElement
+}
+
+/**
  * Align spaces to the right of &
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
-    // Only add spaces after &, unless escaped or inside url.
-    if (left.node?.text?.endsWith("&") == false) return null
-    if (left.node?.text?.endsWith("\\&") == true) return null
-    if (left.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
-
-    if (
-        parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-            ?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
-            parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-        )
-    ) return null
+    checkTableEnvironment(parent, left) ?: return null
+    val leftText = left.node?.text ?: return null
+    if (!leftText.endsWith("&")) return null
+    if (leftText.endsWith("\\&")) return null
 
     return createSpacing(
         minSpaces = 1,
@@ -46,20 +52,13 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
  * Align spaces to the left of & or \\
  */
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
-    if (right.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
-
-    // Check if parent is in environment content of a table environment
-    val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-    val project = parent.node?.psi?.project ?: ProjectManager.getInstance().defaultProject
-    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() !in EnvironmentMagic.getAllTableEnvironments(
-            project
-        )
-    ) return null
+    val contentElement = checkTableEnvironment(parent, right) ?: return null
 
     val tableLineSeparator = "\\\\"
-    if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
+    val rightNodeText = right.node?.text ?: return null
+    if (!rightNodeText.startsWith("&") && rightNodeText != tableLineSeparator) return null
 
-    val content = contentElement?.text ?: return null
+    val content = contentElement.text ?: return null
     val contentLines = content.split(tableLineSeparator)
         .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
         .toMutableList()

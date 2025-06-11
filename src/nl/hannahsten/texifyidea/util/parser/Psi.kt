@@ -108,18 +108,6 @@ fun <T : PsiElement> PsiElement.firstParentOfType(clazz: KClass<T>): T? {
     return null
 }
 
-// Kotlin version of the above
-inline fun <reified T : PsiElement> PsiElement.firstParentOfType(): T? {
-    var current: PsiElement? = this
-    while (current != null) {
-        if (current is T) {
-            return current
-        }
-        current = current.parent?.let { if (it.isValid) it else null }
-    }
-    return null
-}
-
 /**
  * Finds the last child of a certain type.
  */
@@ -326,14 +314,18 @@ fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == Bibt
  *
  * This method does not take nested environments into account. Meaning that only the first parent environment counts.
  */
-fun PsiElement.inDirectEnvironment(environmentName: String): Boolean = inDirectEnvironment(listOf(environmentName))
+fun PsiElement.inDirectEnvironment(environmentName: String): Boolean {
+    val environment = parentOfType(LatexEnvironment::class) ?: return false
+    val nameText = environment.name() ?: return false
+    return nameText.text == environmentName
+}
 
 /**
  * Checks if the element is one of certain direct environments.
  *
  * This method does not take nested environments into account. Meaning that only the first parent environment counts.
  */
-fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
+fun PsiElement.inDirectEnvironment(validNames: Set<String>): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     val nameText = environment.name() ?: return false
     return nameText.text in validNames
