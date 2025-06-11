@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -31,8 +32,11 @@ abstract class LatexSdk(name: String) : SdkType(name) {
     override fun setupSdkPaths(sdk: Sdk) {
         val modificator = sdk.sdkModificator
         modificator.versionString = getVersionString(sdk)
-        runWriteAction {
-            modificator.commitChanges() // save
+        // Maybe fixes #4079
+        ApplicationManager.getApplication().invokeLater {
+            runWriteAction {
+                modificator.commitChanges() // save
+            }
         }
     }
 
