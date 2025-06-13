@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.util.text.StringUtil
@@ -71,6 +72,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
+        // Read access is granted
         when (mode) {
             LatexMode.NORMAL -> {
                 // This can be really slow (one minute), so we don't wait until the cache is filled
