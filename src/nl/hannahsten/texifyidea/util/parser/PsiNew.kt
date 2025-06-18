@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util.parser
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
@@ -51,16 +52,22 @@ inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int =
     return null
 }
 
+inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit){
+    var parent: PsiElement? = this.parent
+    while (parent != null) {
+        action(parent)
+        parent = parent.parent
+    }
+}
+
 /**
  * Determines whether any parent of this PsiElement matches the given predicate.
  */
 inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
-    var parent: PsiElement? = this.parent
-    while (parent != null) {
-        if (predicate(parent)) {
+    traverseParents {
+        if (predicate(it)) {
             return true
         }
-        parent = parent.parent
     }
     return false
 }
@@ -73,10 +80,13 @@ inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
-    // TODO: performance
-    // 1st improved version, test if any parent element is in a math environment
-    return anyParent { it is LatexMathEnvMarker }
-        || anyParent { it.inDirectEnvironmentContext(Environment.Context.MATH) } // can be improved
+    traverseParents {
+        if(it is LatexMathEnvMarker) return true
+        if(it is LatexEnvironment){
+            return DefaultEnvironment.fromPsi(it)?.context == Environment.Context.MATH
+        }
+    }
+    return false
 }
 
 /**

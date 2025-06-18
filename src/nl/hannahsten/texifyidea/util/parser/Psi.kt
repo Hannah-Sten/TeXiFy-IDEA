@@ -137,16 +137,6 @@ fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil
  */
 fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfType(clazz) != null
 
-/**
- * Checks if the psi element is in a direct math context or not.
- */
-fun PsiElement.inDirectMathContext(): Boolean =
-    hasParent(LatexMathContent::class)
-        || hasParent(LatexDisplayMath::class)
-        || hasParent(LatexMathEnvironment::class)
-        || hasParent(LatexInlineMath::class)
-        || inDirectEnvironmentContext(Environment.Context.MATH)
-// TODO: performance
 
 /**
  * Returns the outer math environment.
