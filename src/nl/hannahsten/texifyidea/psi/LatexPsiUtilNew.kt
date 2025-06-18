@@ -19,21 +19,21 @@ This file contains utility functions for the LaTex-related PSI elements.
 fun LatexEnvironment.getEnvironmentName(): String {
     val stub = this.stub
     if (stub != null) return stub.environmentName
-    return this.beginCommand.envIdentifier?.text ?: ""
+    return this.beginCommand.envIdentifier?.name ?: ""
 }
 
 /**
  * Get the environment name of the end command.
  */
 fun LatexEndCommand.environmentName(): String? {
-    return envIdentifier?.text
+    return envIdentifier?.name
 }
 
 /**
  * Get the environment name of the begin command.
  */
 fun LatexBeginCommand.environmentName(): String? {
-    return envIdentifier?.text
+    return envIdentifier?.name
 }
 
 /**
