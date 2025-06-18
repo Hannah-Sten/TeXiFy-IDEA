@@ -36,10 +36,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             CommandMagic.bibliographyReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
                 arrayOf(BibtexIdReference(this))
             }
-            // If the command is an \end command (references to \begin)
-            this.firstParentOfType(LatexEndCommand::class) != null -> {
-                arrayOf(LatexEnvironmentReference(this))
-            }
             // If the command is a glossary reference
             CommandMagic.glossaryReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
                 arrayOf(LatexGlossaryReference(this))

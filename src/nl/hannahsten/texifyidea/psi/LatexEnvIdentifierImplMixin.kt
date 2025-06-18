@@ -5,7 +5,10 @@ import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiReference
 import com.intellij.util.IncorrectOperationException
+import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, ASTWrapperPsiElement(node)  {
 
@@ -27,6 +30,13 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
 
     override fun getName(): String? {
         return text
+    }
+
+    override fun getReference(): PsiReference? {
+        if(this.firstParentOfType<LatexEndCommand>(3) !=null){
+            return LatexEnvironmentReference(this)
+        }
+        return null
     }
 
 

@@ -109,8 +109,8 @@ env_identifier ::= (NORMAL_TEXT_WORD STAR?)? {
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexEnvIdentifierImplMixin"
 }
 
-end_command ::= END_TOKEN OPEN_BRACE env_identifier CLOSE_BRACE  {
-    pin=2
+end_command ::= END_TOKEN (OPEN_BRACE env_identifier CLOSE_BRACE)?  {
+    pin=1
 }
 
 parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
