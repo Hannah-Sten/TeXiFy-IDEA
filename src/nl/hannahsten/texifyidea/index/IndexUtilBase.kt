@@ -47,7 +47,7 @@ abstract class IndexUtilBase<T : PsiElement>(
     var lastCacheFillTime = 0L
 
     private fun buildSearchFiles(baseFile: PsiFile, useIndexCache: Boolean): GlobalSearchScope {
-        val searchFiles = baseFile.referencedFileSet(useIndexCache).asSequence()
+        val searchFiles = baseFile.referencedFileSet(useIndexCache)
             .map { it.virtualFile }
             .toMutableSet()
         searchFiles.add(baseFile.virtualFile)
@@ -143,7 +143,7 @@ abstract class IndexUtilBase<T : PsiElement>(
     @Deprecated("Use getItemsNonBlocking")
     fun getItems(project: Project, scope: GlobalSearchScope, useCache: Boolean = true): Collection<T> {
         // Cached values may have become invalid over time, so do a double check to be sure (#2976)
-        val cachedValues = cache[project]?.get(scope)?.let { runReadAction { it.mapNotNull { pointer -> pointer.element }.filter(PsiElement::isValid) } }
+        val cachedValues = cache[project]?.get(scope)?.mapNotNull { pointer -> pointer.element }?.filter(PsiElement::isValid)
         if (useCache && cachedValues != null && !project.isTestProject()) {
             // Always trigger a cache refresh anyway, so that at least it won't be outdated for very long
             // If not refreshed often enough, inspections may work on index caches that are still empty (after project start)
@@ -151,16 +151,19 @@ abstract class IndexUtilBase<T : PsiElement>(
                 lastCacheFillTime = System.currentTimeMillis()
                 TexifyCoroutine.runInBackground {
                     // Same code as below but using smartReadAction(project) instead of runReadAction
-                    val result = smartReadAction(project) { getKeys(project) }.flatMap { smartReadAction(project) { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
-                    cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { smartReadAction(project) { if (!it.isValid) null else it.createSmartPointer() } }
+                    val result = getKeys(project).flatMap {  getItemsByName(it, project, scope).filter(PsiElement::isValid) }
+                    cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull {  if (!it.isValid) null else it.createSmartPointer() }
                 }
             }
 
             return cachedValues
         }
 
-        val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
-        cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { runReadAction { if (!it.isValid) null else it.createSmartPointer() } }
+
+
+//        val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
+        val result = getKeys(project).flatMap { getItemsByName(it, project, scope).filter(PsiElement::isValid) }
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull {  if (!it.isValid) null else it.createSmartPointer() }
 
         // Because the stub index may not always be reliable (#4006), include cached values
         val cached = cachedValues ?: emptyList()
@@ -172,7 +175,8 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     fun getNumberOfIndexedItems(project: Project): Int {
         val scope = GlobalSearchScope.projectScope(project)
-        return runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }.size
+//        return runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }.size
+        return getKeys(project).flatMap { getItemsByName(it, project, scope).filter(PsiElement::isValid) }.size
     }
 
     // Same as getItems but runReadAction is replaced by smartReadAction(project)
@@ -202,6 +206,9 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     private fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
         try {
+            StubIndex.getInstance().processElements(indexKey, name, project, scope, elementClass){
+                true
+            }
             return StubIndex.getElements(indexKey, name, project, scope, elementClass)
         }
         catch (e: Exception) {
