@@ -4,8 +4,11 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
+import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
+import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, ASTWrapperPsiElement(node) {
@@ -18,16 +21,22 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
         if(!VALID_IDENTIFIERS_REGEX.matches(name)) {
             throw IncorrectOperationException("Invalid identifier: $name.")
         }
-        val newElement = LatexPsiHelper(this.project).createFromText(name).firstChild
-        val oldNode = this.node
-        val newNode = newElement.node
-        this.parent.node.replaceChild(oldNode, newNode)
+        // file - content - no_math_content - normal_text - normal_text_word
+        val rootFile = LatexPsiHelper(this.project).createFromText(name)
+        val newNormalText = (rootFile as LatexFile).firstChild.firstChild.firstChild as LatexNormalText
+        val newNormalTextWord = newNormalText.firstChild
+        require(normalTextWord.elementType == LatexTypes.NORMAL_TEXT_WORD) {
+            "Expected NORMAL_TEXT_WORD, but got ${normalTextWord.elementType}."
+        }
+        val oldNode = normalTextWord!!.node
+        val newNode = newNormalTextWord.node
+        this.node.replaceChild(oldNode, newNode)
 
-        return newNode.psi
+        return this
     }
 
     override fun getName(): String? {
-        return text
+        return this.normalTextWord?.text
     }
 
     override fun getReference(): PsiReference? {

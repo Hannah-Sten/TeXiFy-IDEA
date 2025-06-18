@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.refactoring
 import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.RefactoringActionHandler
+import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.refactoring.introducecommand.LatexExtractCommandHandler
 
@@ -15,6 +16,7 @@ class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
         // Label parameters are LatexParameterText
         return when (element) {
             is LatexParameterText -> true
+            is LatexEnvIdentifier -> true
             else -> false
         }
     }
