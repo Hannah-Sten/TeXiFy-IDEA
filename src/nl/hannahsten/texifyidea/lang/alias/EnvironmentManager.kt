@@ -42,7 +42,7 @@ object EnvironmentManager : AliasManager() {
                 // The label may be in an optional parameter of an environment, but it may also be in other places like a \lstset, so for now we do a text-based search
                 val text = it.requiredParameter(1) ?: return@forEach
                 val index = "label\\s*=\\s*\\{?\\s*#(\\d)".toRegex().find(text)?.groupValues?.getOrNull(1)?.toInt() ?: return@forEach
-                labelAliasesInfo[definedEnvironment] = LabelingEnvironmentInformation(nonEmptyListOf(index-1))
+                labelAliasesInfo[definedEnvironment] = LabelingEnvironmentInformation(nonEmptyListOf(index - 1))
             }
         }
     }

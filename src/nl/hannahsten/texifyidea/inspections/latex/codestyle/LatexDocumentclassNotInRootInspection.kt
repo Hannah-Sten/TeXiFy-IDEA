@@ -4,13 +4,11 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.traverse
 import org.jetbrains.annotations.Nls
 
@@ -28,13 +26,13 @@ class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
         get() = "DocumentclassNotInRoot"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        var documentClass : LatexCommands? = null
+        var documentClass: LatexCommands? = null
         // file - content - no_math_content - commands
         file.traverse(depth = 3) {
             if(it is LatexCommands && it.name == "\\documentclass") {
                 documentClass = it
                 false // Stop traversing once we found the document class
-            }else{
+            } else {
                 true
             }
         }

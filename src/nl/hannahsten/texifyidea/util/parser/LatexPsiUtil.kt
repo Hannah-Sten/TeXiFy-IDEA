@@ -20,8 +20,6 @@ fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
     return environment.context == context
 }
 
-
-
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
  */
@@ -34,7 +32,7 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  *
  * @return A list of all required parameters.
  */
-fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam>{
+fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> {
     return this.parameterList.mapNotNull { it.requiredParam }
 }
 
@@ -50,8 +48,6 @@ fun LatexBeginCommand.isEntryPoint(): Boolean {
     // Currently: only allowing `\begin{document}`.
     return this.environmentName() == "document"
 }
-
-
 
 /**
  * Finds the [LatexBeginCommand] that matches the end command.

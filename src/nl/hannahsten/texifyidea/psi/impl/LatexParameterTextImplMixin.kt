@@ -7,7 +7,6 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
-import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.isFigureLabel

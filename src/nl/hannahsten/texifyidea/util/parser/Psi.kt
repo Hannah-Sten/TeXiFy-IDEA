@@ -137,7 +137,6 @@ fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil
  */
 fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfType(clazz) != null
 
-
 /**
  * Returns the outer math environment.
  */

@@ -25,17 +25,16 @@ fun LatexEnvironment.getEnvironmentName(): String {
 /**
  * Get the environment name of the end command.
  */
-fun LatexEndCommand.environmentName(): String?{
+fun LatexEndCommand.environmentName(): String? {
     return envIdentifier?.text
 }
 
 /**
  * Get the environment name of the begin command.
  */
-fun LatexBeginCommand.environmentName(): String?{
+fun LatexBeginCommand.environmentName(): String? {
     return envIdentifier?.text
 }
-
 
 /**
  * Find the label of the environment. The method finds labels inside the environment content as well as labels
@@ -83,4 +82,3 @@ fun LatexEnvironment.getLabel(): String? {
         null
     }
 }
-

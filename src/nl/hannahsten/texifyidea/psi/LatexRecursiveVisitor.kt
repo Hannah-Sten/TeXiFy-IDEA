@@ -5,9 +5,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveVisitor
 import com.intellij.psi.PsiWhiteSpace
 
-
-
-
 /**
  * A visitor that ignores all text elements.
  */
@@ -27,7 +24,7 @@ abstract class LatexRecursiveVisitor : LatexVisitor(), PsiRecursiveVisitor {
     }
 }
 
-abstract class LatexRecursiveDepthLimitedVisitor(private var depth : Int) : LatexRecursiveVisitor() {
+abstract class LatexRecursiveDepthLimitedVisitor(private var depth: Int) : LatexRecursiveVisitor() {
 
     override fun visitElement(element: PsiElement) {
         if (depth <= 0) return
@@ -38,12 +35,10 @@ abstract class LatexRecursiveDepthLimitedVisitor(private var depth : Int) : Late
     }
 }
 
-
-
-
 class LatexCompositeTraverser(
     private val action: (PsiElement) -> Boolean,
-    depth : Int = Int.MAX_VALUE) : LatexRecursiveDepthLimitedVisitor(depth) {
+    depth: Int = Int.MAX_VALUE
+) : LatexRecursiveDepthLimitedVisitor(depth) {
 
     var traversalStopped = false
         private set
@@ -67,4 +62,3 @@ class LatexCompositeTraverser(
         super.visitElement(element)
     }
 }
-

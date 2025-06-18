@@ -6,13 +6,10 @@ import com.intellij.formatting.ChildAttributes
 import com.intellij.formatting.Indent
 import com.intellij.lang.ASTNode
 import nl.hannahsten.texifyidea.formatting.LatexBlock
-import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
 /**
  * Configure the indent after pressing enter.

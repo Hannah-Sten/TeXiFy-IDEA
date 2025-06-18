@@ -52,7 +52,7 @@ inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int =
     return null
 }
 
-inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit){
+inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit) {
     var parent: PsiElement? = this.parent
     while (parent != null) {
         action(parent)
@@ -82,7 +82,7 @@ inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
 fun PsiElement.inMathContext(): Boolean {
     traverseParents {
         if(it is LatexMathEnvMarker) return true
-        if(it is LatexEnvironment){
+        if(it is LatexEnvironment) {
             // TODO: make it possible to check if the environment QUITs math mode
             if(DefaultEnvironment.fromPsi(it)?.context == Environment.Context.MATH) return true
         }
@@ -96,13 +96,12 @@ fun PsiElement.inMathContext(): Boolean {
  * @param depth The maximum depth to traverse the PSI tree. Default is [Int.MAX_VALUE], which means no limit.
  * @param action The action to apply to each [LatexComposite] element found in the PSI tree.
  */
-fun PsiElement.traverse(depth : Int = Int.MAX_VALUE, action: (PsiElement) -> Boolean): Boolean {
+fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Boolean): Boolean {
     // Traverse the PSI tree and apply the action to each command element
-    val visitor = LatexCompositeTraverser(action,depth)
+    val visitor = LatexCompositeTraverser(action, depth)
     this.accept(visitor)
     return visitor.traversalStopped
 }
-
 
 /**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.

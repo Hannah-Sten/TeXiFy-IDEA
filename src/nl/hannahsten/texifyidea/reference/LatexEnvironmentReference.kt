@@ -1,14 +1,10 @@
 package nl.hannahsten.texifyidea.reference
 
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.ElementManipulators
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
-import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 /**
@@ -35,6 +31,4 @@ class LatexEnvironmentReference(element: LatexEnvIdentifier) : PsiReferenceBase<
         myElement.setName(newElementName)
         return myElement
     }
-
-
 }
