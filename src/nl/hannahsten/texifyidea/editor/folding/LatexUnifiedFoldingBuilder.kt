@@ -137,7 +137,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * We use this visitor to traverse all section commands and magic comments that define regions.
      */
-    private inner class LatexFoldingVisitor : LatexRecursiveIgnoreTextVisitor() {
+    private inner class LatexFoldingVisitor : LatexRecursiveVisitor() {
         /*
         Rules:
 

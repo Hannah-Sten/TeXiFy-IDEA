@@ -41,7 +41,7 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
 
 
     companion object{
-        val VALID_IDENTIFIERS_REGEX = Regex("[a-zA-Z]+")
+        val VALID_IDENTIFIERS_REGEX = Regex("[a-zA-Z]+\\*?")
 
     }
 }

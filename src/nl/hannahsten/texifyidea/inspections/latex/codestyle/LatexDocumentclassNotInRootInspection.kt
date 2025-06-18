@@ -4,12 +4,14 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.traverse
 import org.jetbrains.annotations.Nls
 
 class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
@@ -26,9 +28,21 @@ class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
         get() = "DocumentclassNotInRoot"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val documentClass = file.commandsInFile().find { it.name == "\\documentclass" } ?: return emptyList()
+        var documentClass : LatexCommands? = null
+        // file - content - no_math_content - commands
+        file.traverse(depth = 3) {
+            if(it is LatexCommands && it.name == "\\documentclass") {
+                documentClass = it
+                false // Stop traversing once we found the document class
+            }else{
+                true
+            }
+        }
+        if(documentClass == null) return emptyList()
 
-        val hasDocumentEnvironment = file.childrenOfType<LatexEnvironment>().any { it.getEnvironmentName() == "document" }
+        val hasDocumentEnvironment = file.traverse(depth = 3) {
+            !(it is LatexEnvironment && it.getEnvironmentName() == "document") // Stop traversing once we found the document environment
+        }
 
         if (!hasDocumentEnvironment) {
             return listOf(
