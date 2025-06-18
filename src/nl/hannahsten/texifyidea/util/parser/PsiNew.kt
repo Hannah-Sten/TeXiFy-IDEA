@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.parser
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
@@ -7,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
+import kotlin.reflect.KClass
 
 /*
  * This file contains utility functions paralleling [Psi] but with improved performance.
@@ -90,32 +92,6 @@ fun PsiElement.inMathContext(): Boolean {
     return false
 }
 
-/**
- * Traverse the PSI tree and apply the action to each command element.
- *
- * @param depth The maximum depth to traverse the PSI tree. Default is [Int.MAX_VALUE], which means no limit.
- * @param action The action to apply to each [LatexComposite] element found in the PSI tree.
- */
-fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Boolean): Boolean {
-    // Traverse the PSI tree and apply the action to each command element
-    val visitor = LatexCompositeTraverser(action, depth)
-    this.accept(visitor)
-    return visitor.traversalStopped
-}
-
-/**
- * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
- *
- * **This method would be slow as it traverses the entire subtree of the PsiElement.**
- */
-fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiElement> {
-    // Collect all children of the PsiElement that match the predicate
-    return PsiTreeUtil.collectElements(this) { element -> predicate(element) }.asList()
-}
-
-inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection<T> {
-    return PsiTreeUtil.findChildrenOfType(this, T::class.java)
-}
 
 /**
  * Iterate through all direct children of the PsiElement and apply the action to each child
@@ -275,4 +251,40 @@ fun PsiElement.asCommandName(): String? {
         is LatexNoMathContent -> this.commands?.name
         else -> null
     }
+}
+
+
+/**
+ * Traverse the PSI tree and apply the action to each command element.
+ *
+ * @param depth The maximum depth to traverse the PSI tree. Default is [Int.MAX_VALUE], which means no limit.
+ * @param action The action to apply to each [LatexComposite] element found in the PSI tree.
+ */
+fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Boolean): Boolean {
+    // Traverse the PSI tree and apply the action to each command element
+    val visitor = LatexCompositeTraverser(action, depth)
+    this.accept(visitor)
+    return visitor.traversalStopped
+}
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
+ *
+ * **This method would be slow as it traverses the entire subtree of the PsiElement.**
+ */
+fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiElement> {
+    // Collect all children of the PsiElement that match the predicate
+    return PsiTreeUtil.collectElements(this) { element -> predicate(element) }.asList()
+}
+
+inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection<T> {
+    return PsiTreeUtil.findChildrenOfType(this, T::class.java)
+}
+
+
+/**
+ * Finds the first child of a certain type.
+ */
+inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(): T? {
+    return PsiTreeUtil.findChildOfType(this, T::class.java)
 }
