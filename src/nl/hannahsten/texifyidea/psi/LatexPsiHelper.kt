@@ -111,11 +111,10 @@ class LatexPsiHelper(private val project: Project) {
                     command.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == STAR }
                         ?: command.commandToken
                 )
-            }
-            else {
+            }else if(command is LatexBeginCommand){
                 // Otherwise assume that the command belongs to an environment and insert the optional parameter after
                 // the first parameter (which is the environment name)
-                command.addAfter(createLatexOptionalParam(), command.parameterList[0])
+                command.addAfter(createLatexOptionalParam(), command.envIdentifier!!.nextSibling)
             }
         }
 

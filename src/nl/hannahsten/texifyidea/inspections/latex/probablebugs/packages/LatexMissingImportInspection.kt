@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -70,11 +71,10 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
         outerLoop@ for (env in environments) {
             // Don't consider environments that have been defined.
-            if (env.name()?.text in defined) {
+            val name = env.getEnvironmentName()
+            if (name in defined) {
                 continue
             }
-
-            val name = env.name()?.text ?: continue
             val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.dependency
 

@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 
@@ -23,9 +24,7 @@ object LatexEnterHandler {
     fun getChildAttributes(newChildIndex: Int, node: ASTNode, subBlocks: MutableList<Block>): ChildAttributes {
         val shouldIndentDocumentEnvironment = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
         val shouldIndentEnvironments = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_ENVIRONMENTS
-        val isDocumentEnvironment = node.elementType === LatexTypes.ENVIRONMENT && (node.psi as? LatexEnvironment)
-            ?.firstChildOfType(LatexBeginCommand::class)
-            ?.firstChildOfType(LatexParameterText::class)?.text == "document"
+        val isDocumentEnvironment = node.elementType === LatexTypes.ENVIRONMENT && (node.psi as? LatexEnvironment)?.getEnvironmentName() == "document"
         val shouldIndentEnvironment = when {
             node.elementType !== LatexTypes.ENVIRONMENT -> false
             isDocumentEnvironment -> shouldIndentDocumentEnvironment

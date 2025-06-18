@@ -23,7 +23,6 @@
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
     implements("environment")=["com.intellij.psi.PsiLanguageInjectionHost" "nl.hannahsten.texifyidea.psi.LatexComposite"]
 
-    implements("begin_command") = "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"
 
     extends("magic_comment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub>"
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
@@ -99,12 +98,20 @@ left_right_content ::= raw_text | magic_comment | comment | environment | pseudo
 // Allow unmatched left and right
 left_right ::= LEFT (OPEN_PAREN | OPEN_ANGLE_BRACKET | OPEN_BRACE | OPEN_BRACKET | PIPE)? left_right_content* RIGHT (CLOSE_PAREN | CLOSE_ANGLE_BRACKET | CLOSE_BRACE | CLOSE_BRACKET | PIPE)?
 
-begin_command ::= BEGIN_TOKEN parameter* {
-    pin=1
+begin_command ::= BEGIN_TOKEN OPEN_BRACE env_identifier CLOSE_BRACE parameter*{
+    pin=2
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexBeginCommandImplMixin"
+    implements=["nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }
 
-end_command ::= END_TOKEN parameter* { pin=1 }
+env_identifier ::= (NORMAL_TEXT_WORD STAR?)? {
+    implements=["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexComposite"]
+    mixin="nl.hannahsten.texifyidea.psi.impl.LatexEnvIdentifierImplMixin"
+}
+
+end_command ::= END_TOKEN OPEN_BRACE env_identifier CLOSE_BRACE  {
+    pin=2
+}
 
 parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterImplMixin"

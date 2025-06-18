@@ -12,11 +12,11 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.parser.name
 import java.util.*
 
 /**
@@ -37,7 +37,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
 
         val environments = file.childrenOfType(LatexEnvironment::class)
         for (env in environments) {
-            val name = env.name()?.text ?: continue
+            val name = env.getEnvironmentName()
             if (name != "eqnarray" && name != "eqnarray*") {
                 continue
             }

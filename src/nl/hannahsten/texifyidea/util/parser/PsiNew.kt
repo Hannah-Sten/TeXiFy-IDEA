@@ -121,6 +121,10 @@ fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiEleme
     return PsiTreeUtil.collectElements(this) { element -> predicate(element) }.asList()
 }
 
+inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection<T> {
+    return PsiTreeUtil.findChildrenOfType(this, T::class.java)
+}
+
 /**
  * Iterate through all direct children of the PsiElement and apply the action to each child
  *

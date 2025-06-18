@@ -1,11 +1,14 @@
 package nl.hannahsten.texifyidea.lang.alias
 
 import com.intellij.openapi.application.runReadAction
+import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtree
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import java.io.Serializable
@@ -167,7 +170,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
 
                     val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
                         ?.requiredParamContentList
-                        ?.flatMap { it.childrenOfType(LatexCommands::class) }
+                        ?.flatMap { it.collectSubtreeTyped<LatexCommands>() }
                         ?.asSequence()
 
                     // Positions of label parameters in the custom commands (starting from 0)

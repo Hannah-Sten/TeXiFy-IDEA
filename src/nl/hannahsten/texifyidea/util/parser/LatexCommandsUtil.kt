@@ -197,10 +197,9 @@ fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiF
  *
  * @return A list of all required parameters.
  */
-fun LatexCommands.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
-    .filter { it.requiredParam != null }
-    .mapNotNull(LatexParameter::getRequiredParam)
-    .toList()
+fun LatexCommands.requiredParameters(): List<LatexRequiredParam>{
+    return parameterList.mapNotNull { it.requiredParam }
+}
 
 /**
  * Returns the forced first required parameter of a command as a command.

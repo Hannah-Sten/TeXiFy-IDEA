@@ -306,8 +306,7 @@ fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == Bibt
  */
 fun PsiElement.inDirectEnvironment(environmentName: String): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
-    val nameText = environment.name() ?: return false
-    return nameText.text == environmentName
+    return environment.getEnvironmentName() == environmentName
 }
 
 /**
@@ -317,8 +316,7 @@ fun PsiElement.inDirectEnvironment(environmentName: String): Boolean {
  */
 fun PsiElement.inDirectEnvironment(validNames: Set<String>): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
-    val nameText = environment.name() ?: return false
-    return nameText.text in validNames
+    return environment.getEnvironmentName() in validNames
 }
 
 /**

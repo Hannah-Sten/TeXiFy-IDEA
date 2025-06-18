@@ -149,9 +149,7 @@ class LatexBlock(
         val shouldIndentEnvironments = latexSettings.INDENT_ENVIRONMENTS
         val isDocumentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT &&
             (myNode.psi as LatexEnvironmentContent)
-                .firstParentOfType(LatexEnvironment::class)
-                ?.firstChildOfType(LatexBeginCommand::class)
-                ?.firstChildOfType(LatexParameterText::class)?.text == "document"
+                .firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() == "document"
         val shouldIndentEnvironment = when {
             myNode.elementType !== LatexTypes.ENVIRONMENT_CONTENT -> false
             isDocumentEnvironment -> shouldIndentDocumentEnvironment
