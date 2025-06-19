@@ -8,7 +8,6 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, ASTWrapperPsiElement(node) {

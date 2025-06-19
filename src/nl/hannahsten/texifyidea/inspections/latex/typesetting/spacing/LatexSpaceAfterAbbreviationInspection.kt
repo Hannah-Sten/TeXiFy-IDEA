@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * @author Hannah Schellekens
@@ -33,7 +34,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val texts = file.childrenOfType(LatexNormalText::class)
+        val texts = file.collectSubtreeTyped<LatexNormalText>()
         for (text in texts) {
             if (text.inMathContext()) {
                 continue

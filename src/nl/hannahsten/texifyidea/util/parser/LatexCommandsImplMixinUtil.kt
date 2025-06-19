@@ -53,9 +53,9 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
                 it.shiftRight(requiredParameter.textOffset - textOffset)
             }
         }
-        else if (requiredParameter.firstChildOfType(LatexParameterText::class)?.children?.size == 1 && requiredParameter.firstChildOfType(LatexCommands::class) != null) {
+        else if (requiredParameter.findFirstChildOfType(LatexParameterText::class)?.children?.size == 1 && requiredParameter.findFirstChildOfType(LatexCommands::class) != null) {
             // Special case if there is a single command instead of text, we ignore it. Example: \subfix from the subfiles package, can be ignored for our purposes
-            val newRequiredParameter = requiredParameter.firstChildOfType(LatexCommands::class)?.requiredParameters()?.firstOrNull() ?: requiredParameter
+            val newRequiredParameter = requiredParameter.findFirstChildOfType(LatexCommands::class)?.requiredParameters()?.firstOrNull() ?: requiredParameter
             if (newRequiredParameter.textRange.startOffset - textOffset < 0) continue
             listOf(newRequiredParameter.textRange.shrink(1).shiftLeft(textOffset))
         }
@@ -72,7 +72,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
     // We reference it because we include the preamble of that file, so it is in the file set (partially)
     if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
-        val range = this.firstChildOfType(LatexParameter::class)?.textRangeInParent
+        val range = this.findFirstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
             inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), supportsAnyExtension = true))
         }

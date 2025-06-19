@@ -33,7 +33,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.findDependencies
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
@@ -208,7 +208,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                     document?.psiFile(project)?.insertUsepackage(pkg)
                 }
 
-                val command = replacement.firstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
+                val command = replacement.findFirstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
                 element.parent?.node?.replaceChild(element.node, command.node)
             }
         }

@@ -154,7 +154,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             fun findLabel(cmd: LatexCommands): LatexCommands? {
                 val nextSibling = cmd.firstParentOfType(LatexNoMathContent::class)
                     ?.nextSiblingIgnoreWhitespace()
-                    ?.firstChildOfType(LatexCommands::class) ?: return null
+                    ?.findFirstChildOfType(LatexCommands::class) ?: return null
                 return if (nextSibling.name == LatexGenericRegularCommand.LABEL.commandWithSlash) nextSibling else null
             }
         }

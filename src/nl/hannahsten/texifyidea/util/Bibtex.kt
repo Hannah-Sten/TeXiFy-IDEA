@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import java.util.*
 
 /**
@@ -49,7 +49,7 @@ fun BibtexEntry.isPreamble() = tokenName().lowercase(Locale.getDefault()) == "pr
 /**
  * Get the key of the BibTeX tag.
  */
-fun BibtexTag.key(): BibtexKey? = firstChildOfType(BibtexKey::class)
+fun BibtexTag.key(): BibtexKey? = findFirstChildOfType(BibtexKey::class)
 
 /**
  * Get the key of the BibTeX tag in string form.
@@ -59,7 +59,7 @@ fun BibtexTag.keyName(): String? = key()?.text
 /**
  * Get the content of the BibTeX tag.
  */
-fun BibtexTag.content(): BibtexContent? = firstChildOfType(BibtexContent::class)
+fun BibtexTag.content(): BibtexContent? = findFirstChildOfType(BibtexContent::class)
 
 /**
  * Get the name/identifier of the bibtex id.

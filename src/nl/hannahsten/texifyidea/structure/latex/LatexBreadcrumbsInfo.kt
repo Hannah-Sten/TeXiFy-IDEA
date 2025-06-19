@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.traverseContextualSiblingsPrev
+import nl.hannahsten.texifyidea.psi.traverseContextualSiblingsPrev
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**

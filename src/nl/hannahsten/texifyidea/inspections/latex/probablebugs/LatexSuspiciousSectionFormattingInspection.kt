@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
@@ -37,7 +37,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             .filter { it.parameterList.mapNotNull { param -> param.optionalParam }.isEmpty() }
             .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
             .map { psiElement ->
-                val requiredParam = psiElement.firstChildOfType(LatexRequiredParam::class)
+                val requiredParam = psiElement.findFirstChildOfType(LatexRequiredParam::class)
                 // Plus 1 for the opening brace.
                 val startOffset = requiredParam?.startOffsetIn(psiElement)?.plus(1) ?: 0
                 // Minus 2 for the braces surrounding the parameter.
@@ -70,7 +70,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             command.addAfter(optionalArgument, command.commandToken)
             // Create a new command and completely replace the old command so all the psi methods will recompute instead
             // of using old values from their cache.
-            val newCommand = LatexPsiHelper(project).createFromText(command.text).firstChildOfType(LatexCommands::class)
+            val newCommand = LatexPsiHelper(project).createFromText(command.text).findFirstChildOfType(LatexCommands::class)
                 ?: return
             command.replace(newCommand)
         }

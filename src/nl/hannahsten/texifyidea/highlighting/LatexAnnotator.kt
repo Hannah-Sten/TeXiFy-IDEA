@@ -101,7 +101,7 @@ open class LatexAnnotator : Annotator {
             .create()
 
         annotateMathCommands(
-            inlineMathElement.childrenOfType(LatexCommands::class), annotationHolder,
+            inlineMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
             LatexSyntaxHighlighter.COMMAND_MATH_INLINE
         )
     }
@@ -123,7 +123,7 @@ open class LatexAnnotator : Annotator {
             .create()
 
         annotateMathCommands(
-            displayMathElement.childrenOfType(LatexCommands::class), annotationHolder,
+            displayMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
             LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
         )
     }
@@ -266,8 +266,8 @@ open class LatexAnnotator : Annotator {
      * Annotates the contents of the given parameter with the given style.
      */
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
-        val firstContentChild = parameter.firstChildOfType(LatexContent::class)
-        val firstParamChild = parameter.firstChildOfType(LatexRequiredParamContent::class)
+        val firstContentChild = parameter.findFirstChildOfType(LatexContent::class)
+        val firstParamChild = parameter.findFirstChildOfType(LatexRequiredParamContent::class)
 
         if (firstContentChild != null) {
             this.newSilentAnnotation(HighlightSeverity.INFORMATION)

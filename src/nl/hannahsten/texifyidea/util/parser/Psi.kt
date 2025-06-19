@@ -35,7 +35,7 @@ fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(tex
  *
  * @see [PsiTreeUtil.getChildrenOfType]
  */
-@Deprecated("Poor performance, consider add more filtering. ", replaceWith = ReplaceWith("collectSubtree { it -> it is T }"))
+@Deprecated("Poor performance, consider add more filtering. ", replaceWith = ReplaceWith("collectSubtreeTyped<T>()"))
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
     // TODO: Performance, as it traverses the whole tree and also run read action.
     return runReadAction {
@@ -72,26 +72,7 @@ fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolea
     return null
 }
 
-/**
- * Finds the first child of a certain type.
- */
-@Suppress("UNCHECKED_CAST")
-fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    // we should not runReadAction
-    val children = runReadAction { this.children }
-    for (child in children) {
-        if (clazz.java.isAssignableFrom(child.javaClass)) {
-            return child as? T
-        }
 
-        val first = child.firstChildOfType(clazz)
-        if (first != null) {
-            return first
-        }
-    }
-
-    return null
-}
 
 /**
  * Finds the first parent of a certain type.

@@ -93,7 +93,7 @@ fun LatexCommands.nextCommand(): LatexCommands? {
     val content = parentOfType(LatexNoMathContent::class) ?: return null
     val next = content.nextSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
-    return next.firstChildOfType(LatexCommands::class)
+    return next.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -105,7 +105,7 @@ fun PsiElement.previousCommand(): LatexCommands? {
     val content = parentOfType(LatexNoMathContent::class) ?: return null
     val previous = content.previousSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
-    return previous.firstChildOfType(LatexCommands::class)
+    return previous.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -220,7 +220,7 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
 
     // This is just a bit of guesswork about the parser structure.
     // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
-    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class)
+    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.findFirstChildOfType(LatexCommands::class)
 }
 
 /**

@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 
@@ -150,12 +150,12 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
                 else -> "{$content}"
             }
             LatexPsiHelper(project).createFromText("\\$newVerbatim$arg")
-                .firstChildOfType(LatexCommands::class)
+                .findFirstChildOfType(LatexCommands::class)
         }
         else {
             val environmentContent = if (commandArgCharacter) content?.drop(1)?.dropLast(1) else content
             LatexPsiHelper(project).createFromText("\\begin{$newVerbatim}\n$environmentContent\n\\end{$newVerbatim}")
-                .firstChildOfType(LatexEnvironment::class)
+                .findFirstChildOfType(LatexEnvironment::class)
         }
 
     /**

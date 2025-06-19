@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.findFirstChild
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 /**
  * As the IntelliJ SDK docs say, to replace or insert text it is easiest to create a dummy file,
@@ -26,7 +26,7 @@ class LatexPsiHelper(private val project: Project) {
             "\\begin{figure}\n" +
                 "        Placeholder\n" +
                 "    \\end{figure}"
-        ).firstChildOfType(LatexEnvironment::class)!!
+        ).findFirstChildOfType(LatexEnvironment::class)!!
         environment.environmentContent!!.firstChild.delete()
         return environment.environmentContent!!
     }
@@ -47,8 +47,8 @@ class LatexPsiHelper(private val project: Project) {
 
     private fun createKeyValuePairs(parameter: String): LatexOptionalKeyValPair {
         val commandText = "\\begin{lstlisting}[$parameter]"
-        val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
-        val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
+        val environment = createFromText(commandText).findFirstChildOfType(LatexEnvironment::class)!!
+        val optionalParam = environment.beginCommand.findFirstChildOfType(LatexOptionalParam::class)!!
         return optionalParam.optionalKeyValPairList[0]
     }
 
@@ -86,12 +86,12 @@ class LatexPsiHelper(private val project: Project) {
     fun createRequiredParameter(content: String, hasBraces: Boolean = false): LatexRequiredParam {
         // The command does not matter, we just need one to get it parsed as an argument
         val commandText = if (hasBraces) "\\label$content" else "\\label{$content}"
-        return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
+        return createFromText(commandText).findFirstChildOfType(LatexRequiredParam::class)!!
     }
 
     fun createOptionalParameter(content: String): LatexOptionalParam? {
         val commandText = "\\section[$content]{$content}"
-        return createFromText(commandText).firstChildOfType(LatexOptionalParam::class)
+        return createFromText(commandText).findFirstChildOfType(LatexOptionalParam::class)
     }
 
     /**
@@ -156,7 +156,7 @@ class LatexPsiHelper(private val project: Project) {
                     Log.debug("Close bracket is not a child of the optional parameter for ${command.text}, name=$name, value=$value")
                     return null
                 }
-                val comma = createFromText(",").firstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
+                val comma = createFromText(",").findFirstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
                 optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
                 closeBracket?.prevSibling as? LatexOptionalKeyValPair
@@ -173,5 +173,5 @@ class LatexPsiHelper(private val project: Project) {
      */
     fun createSpacing(space: String = " "): PsiWhiteSpace? = LatexPsiHelper(project)
         .createFromText(space)
-        .firstChildOfType(PsiWhiteSpace::class)
+        .findFirstChildOfType(PsiWhiteSpace::class)
 }

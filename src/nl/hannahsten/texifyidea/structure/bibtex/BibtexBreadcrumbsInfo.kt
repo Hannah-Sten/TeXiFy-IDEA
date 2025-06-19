@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.psi.BibtexTag
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.substringEnd
 import nl.hannahsten.texifyidea.util.tokenType
 import java.util.*
@@ -24,8 +24,8 @@ open class BibtexBreadcrumbsInfo : BreadcrumbsProvider {
             val token = element.tokenType()
             val identifier = when (token.lowercase(Locale.getDefault())) {
                 "@preamble" -> ""
-                "@string" -> element.firstChildOfType(BibtexKey::class)?.text
-                else -> element.firstChildOfType(BibtexId::class)?.text?.substringEnd(1)
+                "@string" -> element.findFirstChildOfType(BibtexKey::class)?.text
+                else -> element.findFirstChildOfType(BibtexId::class)?.text?.substringEnd(1)
             } ?: ""
 
             if (identifier.isEmpty()) {

@@ -63,18 +63,15 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
-        val environments = file.childrenOfType(LatexEnvironment::class)
         val defined = file.definitionsAndRedefinitionsInFileSet().asSequence()
             .filter { it.isEnvironmentDefinition() }
             .mapNotNull { it.requiredParameter(0) }
             .toSet()
+        val environments = file.collectSubtreeTyped<LatexEnvironment> { it.getEnvironmentName() !in defined }
 
         outerLoop@ for (env in environments) {
             // Don't consider environments that have been defined.
             val name = env.getEnvironmentName()
-            if (name in defined) {
-                continue
-            }
             val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.dependency
 

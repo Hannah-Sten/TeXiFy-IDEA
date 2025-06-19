@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
 import java.util.*
 import kotlin.math.max
@@ -85,9 +85,9 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
 
         open fun getArguments(command: LatexCommands): Triple<PsiElement, Int?, PsiElement>? {
             val parent = command.parent
-            val definedCommand = parent.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class) ?: return null
+            val definedCommand = parent.nextSiblingIgnoreWhitespace()?.findFirstChildOfType(LatexCommands::class) ?: return null
             // Either the definition is wrapped in braces, in which case it will be parsed as a parameter of the command being defined, or it is a sibling of the command
-            val value = definedCommand.firstChildOfType(LatexParameter::class)
+            val value = definedCommand.findFirstChildOfType(LatexParameter::class)
                 ?: definedCommand.nextSiblingIgnoreWhitespace()
                 ?: definedCommand.parent.nextSiblingIgnoreWhitespace()
                 ?: return null

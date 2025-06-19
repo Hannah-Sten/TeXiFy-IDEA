@@ -10,6 +10,8 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexTypes
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTrans
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 
 /**
  * Adds folding regions for BibTeX entries.
@@ -32,20 +34,18 @@ class BibtexEntryFoldingBuilder : FoldingBuilderEx(), DumbAware {
     }
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
-        val descriptors = ArrayList<FoldingDescriptor>()
-        val entries = root.childrenOfType(BibtexEntry::class)
+        // bibtexFile - entry
+        val descriptors = mutableListOf<FoldingDescriptor>()
+        root.forEachDirectChild {
+            if(it is BibtexEntry) {
+                val start = it.textOffset
+                val end = it.textRange.endOffset
 
-        for (entry in entries) {
-            val start = entry.textOffset
-            val end = entry.endtry.textOffset + 1 // 1 for the last bracket
-
-            if (end <= start) {
-                continue
+                if (end > start) {
+                    descriptors.add(FoldingDescriptor(it, TextRange(start, end)))
+                }
             }
-
-            descriptors.add(FoldingDescriptor(entry, TextRange(start, end)))
         }
-
         return descriptors.toTypedArray()
     }
 }

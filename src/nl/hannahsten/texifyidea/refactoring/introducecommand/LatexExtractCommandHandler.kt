@@ -250,7 +250,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 // if this text is in a math context, offer the math environ
                 val mathParent = expr.firstParentOfType(LatexInlineMath::class)
                 if (mathParent != null) {
-                    val mathChild = mathParent.firstChildOfType(LatexMathContent::class)
+                    val mathChild = mathParent.findFirstChildOfType(LatexMathContent::class)
                     if (mathChild != null)
                         out.add(mathChild.asExtractable())
                     out.add(mathParent.asExtractable())

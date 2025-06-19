@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.magic.CommandMagic.foldableFootnotes
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 /**
  * Adds folding regions for LaTeX environments.
@@ -35,7 +35,7 @@ class LatexFootnoteFoldingBuilder : FoldingBuilderEx(), DumbAware {
         val descriptors = ArrayList<FoldingDescriptor>()
         val parameters =
             root.childrenOfType(LatexCommands::class).filter { foldableFootnotes.contains(it.name) }.mapNotNull {
-                it.firstChildOfType(LatexRequiredParam::class)
+                it.findFirstChildOfType(LatexRequiredParam::class)
             }
 
         for (environment in parameters) {
