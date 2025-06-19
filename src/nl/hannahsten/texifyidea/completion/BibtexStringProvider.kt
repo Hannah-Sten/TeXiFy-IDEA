@@ -10,10 +10,7 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.psi.BibtexComment
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexTag
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTo
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTrans
-import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.lastChildOfType
 import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace

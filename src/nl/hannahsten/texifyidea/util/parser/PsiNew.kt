@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import kotlin.reflect.KClass
-import kotlin.reflect.safeCast
 
 /*
  * This file contains utility functions paralleling [Psi] but with improved performance.
@@ -91,7 +90,6 @@ fun PsiElement.inMathContext(): Boolean {
     return false
 }
 
-
 /**
  * Iterate through all direct children of the PsiElement and apply the action to each child
  *
@@ -122,7 +120,6 @@ inline fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) ->
         }
     }
 }
-
 
 /**
  * Traverse the PSI tree and apply the action to each element (including this element).
@@ -157,7 +154,6 @@ inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection
     return PsiTreeUtil.findChildrenOfType(this, T::class.java)
 }
 
-
 /*
 Collecting the subtree with a depth limit
  */
@@ -183,9 +179,8 @@ fun <R : Any, C : MutableCollection<R>> PsiElement.collectSubtreeTo(collection: 
  */
 fun PsiElement.collectSubtree(depth: Int, predicate: (PsiElement) -> Boolean): List<PsiElement> {
     // Collect all children of the PsiElement that match the predicate
-    return collectSubtreeTo(mutableListOf(), depth){ it.takeIf(predicate) }
+    return collectSubtreeTo(mutableListOf(), depth) { it.takeIf(predicate) }
 }
-
 
 /**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] that are of type [T] and match the given predicate up to a certain [depth],
@@ -195,8 +190,8 @@ fun PsiElement.collectSubtree(depth: Int, predicate: (PsiElement) -> Boolean): L
  */
 inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(depth: Int = Int.MAX_VALUE, noinline predicate: (T) -> Boolean): List<T> {
     // Collect all children of the PsiElement that match the predicate
-    return collectSubtreeTo(mutableListOf(), depth){
-        if( it is T && predicate(it)) {
+    return collectSubtreeTo(mutableListOf(), depth) {
+        if(it is T && predicate(it)) {
             it
         } else {
             null
@@ -204,18 +199,12 @@ inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(depth: Int = 
     }
 }
 
-
-
-
 /**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] transformed by the given [transform] into a list, filtering out `null` values.
  */
 fun <R : Any> PsiElement.collectSubtreeTrans(depth: Int = Int.MAX_VALUE, transform: (PsiElement) -> R?): List<R> {
-    return collectSubtreeTo(mutableListOf(), depth,transform)
+    return collectSubtreeTo(mutableListOf(), depth, transform)
 }
-
-
-
 
 /**
  * Finds the first child in the subtree of a certain type.

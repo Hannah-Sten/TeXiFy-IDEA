@@ -10,9 +10,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.parser.collectSubtree
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.io.File
 import kotlin.math.max
@@ -31,12 +29,11 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
         "Package name does not have the correct directory"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-
         val dir = file.containingDirectory ?: return emptyList()
         val rootDir = file.findRootFile(useIndexCache = false).containingDirectory ?: return emptyList()
         val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
 
-        val commands = file.collectSubtreeTyped<LatexCommands> {  it.name == "\\ProvidesPackage" }
+        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\ProvidesPackage" }
 
         val descriptors = mutableListOf<ProblemDescriptor>()
 

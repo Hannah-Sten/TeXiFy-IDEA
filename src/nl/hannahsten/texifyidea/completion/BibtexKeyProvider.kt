@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.util.and
 import nl.hannahsten.texifyidea.util.keyNames
 import nl.hannahsten.texifyidea.util.parser.parentOfType
@@ -72,9 +71,9 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         val presentFieldSet: MutableSet<String> = allFields.map { it.fieldName }
             .toMutableSet()
         file.traverse {
-            if(it is BibtexEntry){
+            if(it is BibtexEntry) {
                 val name = it.text
-                if(name !in presentFieldSet){
+                if(name !in presentFieldSet) {
                     presentFieldSet.add(name)
                     result.add(SimpleBibtexEntryField(name, "User defined string."))
                 }

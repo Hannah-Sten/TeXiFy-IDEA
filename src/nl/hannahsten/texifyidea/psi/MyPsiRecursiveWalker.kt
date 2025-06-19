@@ -25,8 +25,6 @@ abstract class LatexRecursiveVisitor : LatexVisitor(), PsiRecursiveVisitor {
     }
 }
 
-
-
 /**
  * Defines a recursive walker for PSI elements, allowing for custom traversal behavior.
  *
@@ -52,7 +50,7 @@ abstract class LatexRecursiveVisitor : LatexVisitor(), PsiRecursiveVisitor {
  * root end
  * ```
  */
-abstract class MyPsiRecursiveWalker(private var depth : Int) : PsiRecursiveElementVisitor() {
+abstract class MyPsiRecursiveWalker(private var depth: Int) : PsiRecursiveElementVisitor() {
 
     var isWalkingStopped = false
         protected set
@@ -65,7 +63,7 @@ abstract class MyPsiRecursiveWalker(private var depth : Int) : PsiRecursiveEleme
         goDown = true
         elementStart(element)
         if (isWalkingStopped) return
-        if(depth > 0 && goDown){
+        if(depth > 0 && goDown) {
             depth--
             element.acceptChildren(this)
             depth++
@@ -99,11 +97,10 @@ abstract class LatexPsiRecursiveWalker(depth: Int) : MyPsiRecursiveWalker(depth)
     }
 }
 
-
-//class LatexCompositeTraverser(
+// class LatexCompositeTraverser(
 //    private val action: (PsiElement) -> Boolean,
 //    depth: Int = Int.MAX_VALUE
-//) : LatexPsiRecursiveWalker(depth) {
+// ) : LatexPsiRecursiveWalker(depth) {
 //
 //    override fun elementStart(e: PsiElement) {
 //        super.elementStart(e)
@@ -111,4 +108,4 @@ abstract class LatexPsiRecursiveWalker(depth: Int) : MyPsiRecursiveWalker(depth)
 //            traversalStopped = true
 //        }
 //    }
-//}
+// }

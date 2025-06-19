@@ -72,8 +72,6 @@ fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolea
     return null
 }
 
-
-
 /**
  * Finds the first parent of a certain type.
  */
