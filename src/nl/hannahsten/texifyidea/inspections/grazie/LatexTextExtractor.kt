@@ -62,7 +62,8 @@ class LatexTextExtractor : TextExtractor() {
         val rootText = root.text
 
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
-        val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>() + root.childrenOfType<PsiWhiteSpace>() + root.childrenOfType<LatexCommands>())
+        val relatedElements = root.collectSubtree { it is LatexNormalText || it is LatexParameterText || it is PsiWhiteSpace || it is LatexCommands }
+        val ranges = relatedElements
             .asSequence()
             .filter { !it.inMathContext() && it.isNotInSquareBrackets() }
             // Ordering is relevant for whitespace

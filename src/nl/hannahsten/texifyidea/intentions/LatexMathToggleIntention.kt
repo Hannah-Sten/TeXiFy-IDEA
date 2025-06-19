@@ -52,7 +52,7 @@ open class LatexMathToggleIntention : TexifyIntentionBase("Convert to other math
             }
             else -> {
                 element = element.findOuterMathEnvironment() ?: return
-                element.childrenOfType<LatexBeginCommand>().first().environmentName()
+                element.findFirstChildTyped<LatexBeginCommand>()?.environmentName()
             }
         } ?: return
 

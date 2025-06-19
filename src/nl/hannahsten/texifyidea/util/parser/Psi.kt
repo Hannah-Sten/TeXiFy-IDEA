@@ -51,6 +51,7 @@ fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> 
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
+@Deprecated("Poor performance, consider add more filtering. ", replaceWith = ReplaceWith("collectSubtreeTyped<T>()"))
 inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
 
 /**

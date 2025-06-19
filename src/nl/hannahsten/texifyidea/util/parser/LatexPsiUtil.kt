@@ -140,10 +140,18 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
 }
 
 fun PsiElement.findDependencies(): Set<LatexPackage> {
-    val commandsDependencies = this.childrenOfType<LatexCommands>()
-        .mapNotNull { LatexCommand.lookup(it)?.firstOrNull()?.dependency }
-    val environmentDependencies = this.childrenOfType<LatexEnvironment>()
-        .mapNotNull { Environment.lookup(it.getEnvironmentName())?.dependency }
-
-    return (commandsDependencies + environmentDependencies).filter { it.isDefault.not() }.toSet()
+    return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE){ e ->
+        val dependency = when (e) {
+            is LatexCommands -> {
+                // If the command is a known command, add its dependency.
+                LatexCommand.lookup(e)?.firstOrNull()?.dependency
+            }
+            is LatexEnvironment -> {
+                // If the environment is a known environment, add its dependency.
+                Environment.lookup(e.getEnvironmentName())?.dependency
+            }
+            else -> null
+        }
+        dependency?.takeIf { it.isDefault.not() }
+    }
 }

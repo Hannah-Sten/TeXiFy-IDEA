@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.endOffset
 
 open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementPointer<LatexEnvironment>? = null) :
@@ -60,7 +61,7 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
             // in a float environment the label must be inserted after a caption
             val labelCommand = helper.addToContent(
                 environment, helper.createLabelCommand(createdLabel.labelText),
-                environment.environmentContent?.childrenOfType<LatexCommands>()
+                environment.environmentContent?.collectSubtreeTyped<LatexCommands>()
                     ?.findLast { c -> c.name == CAPTION.commandWithSlash }
             )
 

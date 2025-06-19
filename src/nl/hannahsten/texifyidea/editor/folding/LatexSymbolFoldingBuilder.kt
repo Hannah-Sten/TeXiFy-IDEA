@@ -11,6 +11,8 @@ import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
+import nl.hannahsten.texifyidea.util.parser.traverse
 import nl.hannahsten.texifyidea.util.shiftRight
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -20,6 +22,8 @@ import nl.hannahsten.texifyidea.util.toTextRange
  */
 class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
+    val dashRegex = "-{2,}".toRegex()
+
     override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldSymbols
 
     override fun getPlaceholderText(node: ASTNode): String? = null
@@ -27,18 +31,24 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val group = FoldingGroup.newGroup("SymbolFoldingGroup")
         val file = root.containingFile
+        val tokenFilter = TokenSet.create(NORMAL_TEXT_WORD)
 
         // Fold all hyphens in the document
-        return file.childrenOfType<LatexNormalText>().flatMap { it.node.getChildren(TokenSet.create(NORMAL_TEXT_WORD)).toSet() }
-            .filter { "--" in it.text }
-            .flatMap { node ->
-                val text = node.text
-                "-{2,}".toRegex().findAll(text).map {
-                    val range = it.range.shiftRight(node.startOffset).toTextRange()
-                    FoldingDescriptor(node, range, group, getPlaceholderText(it.value))
+        val descriptors = mutableListOf<FoldingDescriptor>()
+
+        file.traverse {
+            if (it is LatexNormalText) {
+                for(child in it.node.getChildren(tokenFilter)){
+                    val text = child.text
+                    dashRegex.findAll(text).forEach { matchResult ->
+                        val range = matchResult.range.shiftRight(child.startOffset).toTextRange()
+                        descriptors.add(FoldingDescriptor(child, range, group, getPlaceholderText(matchResult.value)))
+                    }
                 }
             }
-            .toTypedArray()
+            true
+        }
+        return descriptors.toTypedArray()
     }
 
     private fun getPlaceholderText(string: String): String {

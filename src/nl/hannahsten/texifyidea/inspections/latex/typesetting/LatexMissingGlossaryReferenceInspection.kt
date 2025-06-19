@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
@@ -27,7 +28,7 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
         val descriptors = mutableListOf<ProblemDescriptor>()
         val names = LatexGlossaryEntryIndex.Util.getItemsInFileSet(file).mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
         // Unfortunately the lowest level we have is a block of text, so we have to do a text-based search
-        file.childrenOfType<LatexNormalText>().forEach { textElement ->
+        file.collectSubtreeTyped<LatexNormalText>().forEach { textElement ->
             val text = textElement.text
             names.forEach { name ->
                 // Ensure the regex is valid, assuming that regular words don't contain e.g. braces

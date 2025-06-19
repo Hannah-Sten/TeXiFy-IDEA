@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import nl.hannahsten.texifyidea.testutils.toSystemNewLine
 import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 class LibraryStateConverterTest : BasePlatformTestCase() {
 
@@ -43,7 +44,7 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
     fun testToString() {
         myFixture.configureByText(BibtexFileType, bibString)
 
-        val entries: List<BibtexEntry> = myFixture.file.childrenOfType<BibtexEntry>().toList()
+        val entries: List<BibtexEntry> = myFixture.file.collectSubtreeTyped<BibtexEntry>().toList()
 
         val result = LibraryStateConverter().toString(
             mapOf(
@@ -62,7 +63,7 @@ class LibraryStateConverterTest : BasePlatformTestCase() {
     fun testFromString() {
         myFixture.configureByText(BibtexFileType, bibString)
 
-        val entries: List<BibtexEntry> = myFixture.file.childrenOfType<BibtexEntry>().toList()
+        val entries: List<BibtexEntry> = myFixture.file.collectSubtreeTyped<BibtexEntry>().toList()
 
         val result = LibraryStateConverter().fromString(xmlString)
 

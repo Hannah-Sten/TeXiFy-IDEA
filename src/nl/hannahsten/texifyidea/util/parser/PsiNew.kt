@@ -143,13 +143,18 @@ fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Bool
 /**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
  *
- * **This method would be slow as it traverses the entire subtree of the PsiElement.**
+ * Note: **This method would be slow as it traverses the entire subtree of the PsiElement.**
  */
 fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiElement> {
     // Collect all children of the PsiElement that match the predicate
     return PsiTreeUtil.collectElements(this) { element -> predicate(element) }.asList()
 }
 
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] that are of type [T].
+ *
+ * Note: **This method would be slow as it traverses the entire subtree of the PsiElement.**
+ */
 inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection<T> {
     return PsiTreeUtil.findChildrenOfType(this, T::class.java)
 }
