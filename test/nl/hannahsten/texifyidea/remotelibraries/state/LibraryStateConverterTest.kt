@@ -5,7 +5,6 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 import nl.hannahsten.texifyidea.testutils.toSystemNewLine
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 class LibraryStateConverterTest : BasePlatformTestCase() {

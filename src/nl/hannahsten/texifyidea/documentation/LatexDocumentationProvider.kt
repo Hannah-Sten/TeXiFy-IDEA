@@ -99,11 +99,11 @@ class LatexDocumentationProvider : DocumentationProvider {
         if (lookup == null) {
             // Apparently the lookup item is not yet initialised, so let's do that first
             // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
-            when(element){
+            when(element) {
                 is LatexCommands -> {
                     lookup = LatexCommand.lookup(element)?.firstOrNull()
                 }
-                is LatexEnvIdentifier ->{
+                is LatexEnvIdentifier -> {
                     lookup = element.name?.let { envName ->
                         Environment[envName] ?: Environment.lookupInIndex(envName, element.project).firstOrNull()
                     }
@@ -134,7 +134,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         }
 
         // If we return a blank string, the popup will just say "Fetching documentation..."
-        return if (docString.isNullOrBlank()) "<br>" else docString
+        return docString.ifBlank { "<br>" }
     }
 
     // originalElement: element under the mouse cursor

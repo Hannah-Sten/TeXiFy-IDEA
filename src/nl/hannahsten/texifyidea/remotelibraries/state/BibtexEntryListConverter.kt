@@ -8,7 +8,6 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.util.xmlb.Converter
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**

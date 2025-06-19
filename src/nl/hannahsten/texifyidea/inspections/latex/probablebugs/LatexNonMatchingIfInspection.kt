@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.matches
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.previousCommand
 import java.util.*

@@ -140,7 +140,7 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
 }
 
 fun PsiElement.findDependencies(): Set<LatexPackage> {
-    return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE){ e ->
+    return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
         val dependency = when (e) {
             is LatexCommands -> {
                 // If the command is a known command, add its dependency.

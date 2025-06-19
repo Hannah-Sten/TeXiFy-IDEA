@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.toTextRange
 

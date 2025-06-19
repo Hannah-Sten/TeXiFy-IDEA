@@ -21,8 +21,6 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTrans
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.runCommand

@@ -10,8 +10,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
 import nl.hannahsten.texifyidea.util.shiftRight
 import nl.hannahsten.texifyidea.util.toTextRange
@@ -38,7 +36,7 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
         file.traverse {
             if (it is LatexNormalText) {
-                for(child in it.node.getChildren(tokenFilter)){
+                for(child in it.node.getChildren(tokenFilter)) {
                     val text = child.text
                     dashRegex.findAll(text).forEach { matchResult ->
                         val range = matchResult.range.shiftRight(child.startOffset).toTextRange()
