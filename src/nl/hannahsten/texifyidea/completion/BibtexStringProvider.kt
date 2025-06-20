@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.psi.BibtexComment
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexTag
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTrans
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeOf
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.lastChildOfType
 import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
@@ -25,11 +25,11 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val psiFile = parameters.originalFile
-        val strings = psiFile.collectSubtreeTrans {
+        val strings = psiFile.collectSubtreeOf {
             if(it is BibtexEntry && it.tokenType() == "@string") {
-                val tag = it.findFirstChildTyped<BibtexTag>() ?: return@collectSubtreeTrans null
+                val tag = it.findFirstChildTyped<BibtexTag>() ?: return@collectSubtreeOf null
                 val key = tag.key
-                val content = tag.content ?: return@collectSubtreeTrans null
+                val content = tag.content ?: return@collectSubtreeOf null
                 Triple(key.text, content.text, it)
             }
             else {

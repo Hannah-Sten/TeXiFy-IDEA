@@ -12,7 +12,7 @@ import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.magic.CommandMagic.foldableFootnotes
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeOf
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 /**
@@ -33,10 +33,9 @@ class LatexFootnoteFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-        val parameters =
-            root.childrenOfType(LatexCommands::class).filter { foldableFootnotes.contains(it.name) }.mapNotNull {
-                it.findFirstChildOfType(LatexRequiredParam::class)
-            }
+        val parameters = root.collectSubtreeOf {
+            if(it is LatexCommands && it.name in foldableFootnotes) it.findFirstChildOfType(LatexRequiredParam::class) else null
+        }
 
         for (environment in parameters) {
             if (environment.endOffset - 1 > environment.startOffset + 1)

@@ -141,6 +141,28 @@ fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Bool
 }
 
 /**
+ * Traverse the whole subtree of this [PsiElement] and apply the action to each element (including this element).
+ */
+inline fun PsiElement.traverseAll(crossinline action: (PsiElement) -> Unit) {
+    traverse {
+        action(it)
+        true
+    }
+}
+
+/**
+ * Traverse the whole subtree of this [PsiElement] and apply the action to each element of type [T] (including this element if it is of type [T]).
+ */
+inline fun <reified T : PsiElement> PsiElement.traverseAllTyped(crossinline action: (T) -> Unit) {
+    traverse {
+        if (it is T) {
+            action(it)
+        }
+        true
+    }
+}
+
+/**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
  *
  * Note: **This method would be slow as it traverses the entire subtree of the PsiElement.**
@@ -207,7 +229,7 @@ inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(depth: Int = 
 /**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] transformed by the given [transform] into a list, filtering out `null` values.
  */
-fun <R : Any> PsiElement.collectSubtreeTrans(depth: Int = Int.MAX_VALUE, transform: (PsiElement) -> R?): List<R> {
+fun <R : Any> PsiElement.collectSubtreeOf(depth: Int = Int.MAX_VALUE, transform: (PsiElement) -> R?): List<R> {
     return collectSubtreeTo(mutableListOf(), depth, transform)
 }
 

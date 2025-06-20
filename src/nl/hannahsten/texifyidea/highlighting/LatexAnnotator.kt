@@ -276,19 +276,14 @@ open class LatexAnnotator : Annotator {
                 .create()
         }
         else if (firstParamChild != null) {
-            parameter.childrenOfType(LeafPsiElement::class)
-                .filter {
-                    it.elementType == LatexTypes.NORMAL_TEXT_WORD
-                }
-                .map {
-                    it as PsiElement
-                }
-                .forEach {
+            parameter.traverseAll {
+                if(it is LeafPsiElement && it.elementType == LatexTypes.NORMAL_TEXT_WORD) {
                     this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                        .range(it)
+                        .range(it as PsiElement) // resolve overloading
                         .textAttributes(style)
                         .create()
                 }
+            }
         }
     }
 }
