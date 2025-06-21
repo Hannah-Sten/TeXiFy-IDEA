@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  */
 class LatexEnvironmentsIndex : StringStubIndexExtension<LatexEnvironment>() {
 
-    object Util : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.ENVIRONMENTS_KEY)
+    object Util : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, LatexStubIndexKeys.ENVIRONMENTS_KEY)
 
     override fun getKey() = Util.key()
 

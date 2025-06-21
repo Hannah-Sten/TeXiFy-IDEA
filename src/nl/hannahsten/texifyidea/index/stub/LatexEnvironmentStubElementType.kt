@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.index.IndexKeys
+import nl.hannahsten.texifyidea.index.LatexStubIndexKeys
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getLabel
@@ -36,11 +36,11 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     }
 
     override fun indexStub(stub: LatexEnvironmentStub, sink: IndexSink) {
-        sink.occurrence(IndexKeys.ENVIRONMENTS_KEY, stub.environmentName)
+        sink.occurrence(LatexStubIndexKeys.ENVIRONMENTS_KEY, stub.environmentName)
 
         // only record environments with a label in the optional parameters
         if (stub.label.isNotEmpty() && EnvironmentMagic.labelAsParameter.contains(stub.environmentName)) {
-            sink.occurrence(IndexKeys.LABELED_ENVIRONMENTS_KEY, stub.environmentName)
+            sink.occurrence(LatexStubIndexKeys.LABELED_ENVIRONMENTS_KEY, stub.environmentName)
         }
     }
 }

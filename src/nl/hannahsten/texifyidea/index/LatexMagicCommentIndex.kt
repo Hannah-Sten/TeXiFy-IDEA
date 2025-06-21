@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.psi.LatexMagicComment
 
 class LatexMagicCommentIndex : StringStubIndexExtension<LatexMagicComment>() {
 
-    object Util : IndexUtilBase<LatexMagicComment>(LatexMagicComment::class.java, IndexKeys.MAGIC_COMMENTS_KEY)
+    object Util : IndexUtilBase<LatexMagicComment>(LatexMagicComment::class.java, LatexStubIndexKeys.MAGIC_COMMENTS_KEY)
 
     override fun getKey(): StubIndexKey<String, LatexMagicComment> = Util.key()
 

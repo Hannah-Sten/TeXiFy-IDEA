@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 class LatexIncludesIndex : StringStubIndexExtension<LatexCommands>() {
 
-    object Util : IndexCommandsUtilBase(IndexKeys.INCLUDES_KEY)
+    object Util : IndexCommandsUtilBase(LatexStubIndexKeys.INCLUDES_KEY)
 
     override fun getKey() = Util.key()
 

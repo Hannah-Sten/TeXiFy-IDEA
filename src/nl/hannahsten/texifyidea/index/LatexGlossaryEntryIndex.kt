@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 class LatexGlossaryEntryIndex : StringStubIndexExtension<LatexCommands>() {
 
-    object Util : IndexUtilBase<LatexCommands>(LatexCommands::class.java, IndexKeys.GLOSSARY_ENTRIES_KEY)
+    object Util : IndexUtilBase<LatexCommands>(LatexCommands::class.java, LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY)
 
     override fun getKey() = Util.key()
 

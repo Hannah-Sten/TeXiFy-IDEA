@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  */
 class LatexParameterLabeledEnvironmentsIndex : StringStubIndexExtension<LatexEnvironment>() {
 
-    object Util : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.LABELED_ENVIRONMENTS_KEY)
+    object Util : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, LatexStubIndexKeys.LABELED_ENVIRONMENTS_KEY)
 
     override fun getKey() = Util.key()
 
