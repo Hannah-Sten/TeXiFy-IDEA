@@ -91,7 +91,7 @@ class LatexCommandsStubElementType(debugName: String) :
         }
     }
 
-    override fun indexStub(latexCommandsStub: LatexCommandsStub, indexSink: IndexSink) {
+    override fun indexStub(latexCommandsStub: LatexCommandsStub, sink: IndexSink) {
         // We do not want all the commands from all package source files in this index, because
         // then we end up with 200k keys for texlive full, but we need to iterate over all keys
         // every time we need to get e.g. all commands in a file, so that would be too slow.
@@ -106,19 +106,20 @@ class LatexCommandsStubElementType(debugName: String) :
         }
 
         val token = latexCommandsStub.commandToken
-        indexSinkOccurrence(indexSink, LatexCommandsIndex.Util, token)
+        sink.occurrence(IndexKeys.COMMANDS_KEY,token)
         if (token in defaultIncludeCommands) {
-            indexSinkOccurrence(indexSink, LatexIncludesIndex.Util, token)
+            sink.occurrence(IndexKeys.INCLUDES_KEY, token)
         }
         if (token in CommandMagic.definitions) {
-            indexSinkOccurrence(indexSink, LatexDefinitionIndex.Util, token)
+            sink.occurrence(IndexKeys.DEFINITIONS_KEY,token)
         }
-        if (token in CommandMagic.labelAsParameter && "label" in latexCommandsStub.optionalParams) {
-            val label = latexCommandsStub.optionalParams["label"]!!
-            indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex.Util, label)
+        if (token in CommandMagic.labelAsParameter) {
+            latexCommandsStub.optionalParams["label"]?.let { label ->
+                sink.occurrence(IndexKeys.LABELED_COMMANDS_KEY,label)
+            }
         }
         if (token in CommandMagic.glossaryEntry && latexCommandsStub.requiredParams.isNotEmpty()) {
-            indexSinkOccurrence(indexSink, LatexGlossaryEntryIndex.Util, latexCommandsStub.requiredParams[0])
+            sink.occurrence(IndexKeys.GLOSSARY_ENTRIES_KEY, latexCommandsStub.requiredParams[0])
         }
     }
 

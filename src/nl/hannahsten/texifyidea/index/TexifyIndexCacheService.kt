@@ -15,12 +15,13 @@ import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 
+/**
+ *
+ */
 @Service(Service.Level.PROJECT)
 class TexifyIndexCacheService(
     val project : Project,
     val myScope: CoroutineScope) {
-
-    private val updateChannel = Channel<Unit>(Channel.CONFLATED)
 
 
     private fun buildSearchFiles(baseFile: PsiFile, useIndexCache: Boolean): GlobalSearchScope {
@@ -71,6 +72,8 @@ class TexifyIndexCacheService(
 //        val scope = buildSearchFiles(baseFile, useIndexCache)
 //        return getItems(project, scope, useIndexCache)
 //    }
+
+
     companion object{
 
         fun getInstance(project: Project): TexifyIndexCacheService {
