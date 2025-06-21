@@ -22,7 +22,22 @@ object StubIndexKt {
         scope: GlobalSearchScope,
         crossinline action: (Psi) -> Boolean
     ): Boolean {
-        return StubIndex.getInstance().processElements(indexKey, key, project, scope, Psi::class.java) { element ->
+        return traverseElements(indexKey, key, project, scope, Psi::class.java, action)
+    }
+
+    /**
+     * Traverse all elements in the given [indexKey] for the specified [key] and apply the action to each element.
+     */
+    @RequiresReadLock
+    inline fun <Key : Any, Psi : PsiElement> traverseElements(
+        indexKey: StubIndexKey<Key, Psi>,
+        key: Key,
+        project: Project,
+        scope: GlobalSearchScope,
+        clazz: Class<Psi>,
+        crossinline action: (Psi) -> Boolean
+    ): Boolean {
+        return StubIndex.getInstance().processElements(indexKey, key, project, LatexFileFilterScope(scope), clazz) { element ->
             action(element)
         }
     }
@@ -31,9 +46,20 @@ object StubIndexKt {
      * Traverse all keys in the given [indexKey] and apply the action to each key.
      */
     @RequiresReadLock
-    inline fun <Key : Any, reified Psi : PsiElement> traverseKeys(
+    inline fun <Key : Any, Psi : PsiElement> traverseKeys(
         indexKey: StubIndexKey<Key, Psi>,
         project: Project, scope: GlobalSearchScope, crossinline action: (Key) -> Boolean
+    ): Boolean {
+        return StubIndex.getInstance().processAllKeys(indexKey, { key ->
+            action(key)
+        }, scope)
+    }
+
+    inline fun <Key : Any, Psi : PsiElement> traverseKeys(
+        indexKey: StubIndexKey<Key, Psi>,
+        project: Project, scope: GlobalSearchScope,
+        clazz: Class<Psi>,
+        crossinline action: (Key) -> Boolean
     ): Boolean {
         return StubIndex.getInstance().processAllKeys(indexKey, { key ->
             action(key)
@@ -47,10 +73,21 @@ object StubIndexKt {
         scope: GlobalSearchScope,
         crossinline action: (Psi) -> Boolean
     ): Boolean {
+        return traverseAllElements(indexKey, project, scope, Psi::class.java, action)
+    }
+
+    inline fun <Key : Any, Psi : PsiElement> traverseAllElements(
+        indexKey: StubIndexKey<Key, Psi>,
+        project: Project,
+        scope: GlobalSearchScope,
+        clazz: Class<Psi>,
+        crossinline action: (Psi) -> Boolean
+    ): Boolean {
         return traverseKeys(indexKey, project, scope) { key ->
-            traverseElements(indexKey, key, project, scope, action)
+            traverseElements(indexKey, key, project, scope, clazz, action)
         }
     }
+
 }
 
 

@@ -106,12 +106,13 @@ class LatexCommandsStubElementType(debugName: String) :
         }
 
         val token = latexCommandsStub.commandToken
-        sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
+        NewCommandsIndex.sinkIndex(sink,LatexStubIndexKeys.COMMANDS,token)
         if (token in defaultIncludeCommands) {
-            sink.occurrence(LatexStubIndexKeys.COMMANDS, LatexCommandsIndexNew.KEY_INCLUDE_COMMAND)
+            NewIncludesIndex.sinkIndex(sink,LatexStubIndexKeys.INCLUDES,token)
         }
         if (token in CommandMagic.definitions) {
-            sink.occurrence(LatexStubIndexKeys.COMMANDS, LatexCommandsIndexNew.KEY_DEFINITION)
+            //TODO
+//            NewLatexCommandsStubIndex.sinkIndex(sink,LatexStubIndexKeys.DEFINITIONS_KEY,token)
         }
         if (token in CommandMagic.labelAsParameter) {
             latexCommandsStub.optionalParams["label"]?.let { label ->
