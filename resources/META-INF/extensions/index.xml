@@ -7,7 +7,7 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
+<!--        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>-->
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
