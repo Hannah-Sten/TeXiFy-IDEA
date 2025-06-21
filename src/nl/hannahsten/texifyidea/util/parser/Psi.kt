@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.util.parser
 
-import com.intellij.openapi.application.runReadAction
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiComment
@@ -26,52 +25,6 @@ import kotlin.reflect.KClass
 fun PsiElement.endOffset(): Int = textOffset + textLength
 
 fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(textOffset)
-
-/**
- *
- * Do not use this method due to performance issues.
- *
- * Think of better ways to get the children of a certain type, or at least filter the children before collecting them.
- *
- * @see [PsiTreeUtil.getChildrenOfType]
- */
-@Deprecated("Poor performance, consider add more filtering. ", replaceWith = ReplaceWith("collectSubtreeTyped<T>()"))
-fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
-    // TODO: Performance, as it traverses the whole tree and also run read action.
-    return runReadAction {
-        if (!this.isValid || project.isDisposed) {
-            emptyList()
-        }
-        else {
-            PsiTreeUtil.findChildrenOfType(this, clazz.java)
-        }
-    }
-}
-
-/**
- * @see [PsiTreeUtil.getChildrenOfType]
- */
-@Deprecated("Poor performance, consider add more filtering. ", replaceWith = ReplaceWith("collectSubtreeTyped<T>()"))
-inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
-
-/**
- * Finds the first element that matches a given predicate.
- */
-@Suppress("UNCHECKED_CAST")
-fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
-    for (child in children) {
-        if (predicate(this)) {
-            return this as? T
-        }
-
-        val first = child.findFirstChild<T>(predicate)
-        if (first != null) {
-            return first
-        }
-    }
-
-    return null
-}
 
 /**
  * Finds the first parent of a certain type.

@@ -17,7 +17,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
@@ -42,7 +41,7 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.traverseAllTyped<LatexNormalText>{ text ->
+        file.traverseAllTyped<LatexNormalText> { text ->
             ProgressManager.checkCanceled()
 
             for (match in PatternMagic.ellipsis.findAll(text.text)) {
@@ -61,7 +60,6 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
                     )
                 )
             }
-
         }
 
         return descriptors

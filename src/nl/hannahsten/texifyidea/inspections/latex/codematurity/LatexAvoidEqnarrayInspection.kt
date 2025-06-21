@@ -13,11 +13,9 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeOf
 import nl.hannahsten.texifyidea.util.parser.traverseAllTyped
 import java.util.*
 

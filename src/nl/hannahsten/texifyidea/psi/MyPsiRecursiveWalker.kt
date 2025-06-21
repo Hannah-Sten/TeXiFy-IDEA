@@ -96,16 +96,3 @@ abstract class LatexPsiRecursiveWalker(depth: Int) : MyPsiRecursiveWalker(depth)
         }
     }
 }
-
-// class LatexCompositeTraverser(
-//    private val action: (PsiElement) -> Boolean,
-//    depth: Int = Int.MAX_VALUE
-// ) : LatexPsiRecursiveWalker(depth) {
-//
-//    override fun elementStart(e: PsiElement) {
-//        super.elementStart(e)
-//        if(!action(e)){
-//            traversalStopped = true
-//        }
-//    }
-// }

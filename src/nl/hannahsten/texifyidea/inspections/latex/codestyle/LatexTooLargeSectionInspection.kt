@@ -68,8 +68,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             }
 
             // If no command was found, find the end of the document.
-            return command.containingFile.childrenOfType(LatexEndCommand::class)
-                .lastOrNull { it.environmentName() == "document" }
+            return command.containingFile.traverseTyped<LatexEndCommand>().lastOrNull {
+                it.environmentName() == "document"
+            }
         }
     }
 

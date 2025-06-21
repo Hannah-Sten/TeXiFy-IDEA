@@ -10,9 +10,8 @@ import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.findFirstChild
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 
 /**
  * As the IntelliJ SDK docs say, to replace or insert text it is easiest to create a dummy file,
@@ -33,7 +32,7 @@ class LatexPsiHelper(private val project: Project) {
 
     private fun createLatexOptionalParam(): LatexParameter {
         return createFromText("\\usepackage[]{package}")
-            .findFirstChild { c -> c is LatexParameter && c.optionalParam != null }!!
+            .findFirstChildTyped<LatexParameter> { c -> c.optionalParam != null }!!
     }
 
     /**
@@ -108,8 +107,7 @@ class LatexPsiHelper(private val project: Project) {
                 // star, insert the parameter after the start)
                 command.addAfter(
                     createLatexOptionalParam(),
-                    command.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == STAR }
-                        ?: command.commandToken
+                    command.findFirstChildTyped<LeafPsiElement> { it.elementType == STAR } ?: command.commandToken
                 )
             } else if(command is LatexBeginCommand) {
                 // Otherwise assume that the command belongs to an environment and insert the optional parameter after
@@ -140,14 +138,14 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val pair = createKeyValuePairs(parameterText)
-        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == CLOSE_BRACKET }
+        val closeBracket = optionalParam.findFirstChildTyped<LeafPsiElement> { it.elementType == CLOSE_BRACKET }
         return if (optionalParam.optionalKeyValPairList.isNotEmpty()) {
             val existing = optionalParam.optionalKeyValPairList.find { kv -> kv.optionalKeyValKey.text == name }
             if (existing != null && pair.keyValValue != null) {
                 existing.keyValValue?.delete()
                 existing.addAfter(
                     pair.keyValValue!!,
-                    existing.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == EQUALS }
+                    existing.findFirstChildTyped<LeafPsiElement> { it.elementType == EQUALS }
                 )
                 existing
             }

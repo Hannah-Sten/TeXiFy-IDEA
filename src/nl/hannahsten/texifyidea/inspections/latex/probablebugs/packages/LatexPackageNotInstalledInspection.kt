@@ -25,8 +25,8 @@ import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
 import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
@@ -74,7 +74,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             .mapNotNull { it?.lowercase(Locale.getDefault()) }
         val packages = installedPackages + customPackages
 
-        val commands = file.childrenOfType(LatexCommands::class)
+        val commands = file.traverseTyped<LatexCommands>()
             .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd || it.name == LatexGenericRegularCommand.REQUIREPACKAGE.cmd }
 
         for (command in commands) {

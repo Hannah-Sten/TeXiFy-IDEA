@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.environmentName
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.*
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.util.*
 
 /**

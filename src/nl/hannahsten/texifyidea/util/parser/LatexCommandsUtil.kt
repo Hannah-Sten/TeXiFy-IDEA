@@ -80,7 +80,7 @@ fun LatexCommands.definedCommandName() = definitionCommand()?.name
 /**
  * Checks whether the command has a star or not.
  */
-fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
+fun LatexCommands.hasStar() = collectSubtreeTyped<LeafPsiElement>().any {
     it.elementType == LatexTypes.STAR
 }
 
@@ -238,5 +238,7 @@ fun LatexCommands.hasLabel(): Boolean {
 
 /**
  * Get all [LatexCommands] that are children (direct or indirect) of the given element.
+ *
+ * Note: This method is slow, as it collects all commands in the subtree of the element.
  */
-fun PsiElement.allCommands() = childrenOfType(LatexCommands::class).toList()
+fun PsiElement.allCommands() = collectSubtreeTyped<LatexCommands>()

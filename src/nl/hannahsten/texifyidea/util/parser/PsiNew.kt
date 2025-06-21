@@ -96,8 +96,10 @@ fun PsiElement.inMathContext(): Boolean {
  * @param action The action to apply to each child element. If the action returns false, the iteration stops.
  */
 inline fun PsiElement.forEachDirectChild(action: (PsiElement) -> Unit) {
-    for(child in this.children) {
+    var child = this.firstChild
+    while (child != null) {
         action(child)
+        child = child.nextSibling
     }
 }
 
@@ -119,6 +121,33 @@ inline fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) ->
             }
         }
     }
+}
+
+/**
+ * Traverse the PSI tree and yield each element (including this element).
+ *
+ * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
+ *
+ * @param depth The maximum depth to traverse the PSI tree.
+ * Default is [Int.MAX_VALUE], which means no limit. `depth = 0` means only the current element is traversed.
+ */
+fun PsiElement.traverse(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequence {
+    if (depth < 0) return@sequence
+    val node = this@traverse
+    yield(node)
+    if (depth == 0) return@sequence
+    forEachDirectChild { c ->
+        yieldAll(c.traverse(depth - 1))
+    }
+}
+
+/**
+ * Traverse the PSI tree and yield each element of type [T] (including this element if it is of type [T]).
+ *
+ * @see traverse
+ */
+inline fun <reified T : PsiElement> PsiElement.traverseTyped(depth: Int = Int.MAX_VALUE): Sequence<T> {
+    return traverse(depth).filterIsInstance<T>()
 }
 
 /**
@@ -247,4 +276,20 @@ inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(): T? {
  */
 fun <T : PsiElement> PsiElement.findFirstChildOfType(clazz: KClass<T>): T? {
     return PsiTreeUtil.findChildOfType(this, clazz.java)
+}
+
+/**
+ * Finds the first child in the subtree of a certain type that matches the given predicate.
+ */
+inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(depth: Int = Int.MAX_VALUE, crossinline predicate: (T) -> Boolean): T? {
+    var result: T? = null
+    traverse(depth) {
+        if(it is T && predicate(it)) {
+            result = it
+            false
+        } else {
+            true
+        }
+    }
+    return result
 }
