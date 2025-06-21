@@ -133,8 +133,7 @@ inline fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) ->
  */
 fun PsiElement.traverse(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequence {
     if (depth < 0) return@sequence
-    val node = this@traverse
-    yield(node)
+    yield(this@traverse)
     if (depth == 0) return@sequence
     forEachDirectChild { c ->
         yieldAll(c.traverse(depth - 1))

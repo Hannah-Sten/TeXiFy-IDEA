@@ -99,7 +99,7 @@ left_right_content ::= raw_text | magic_comment | comment | environment | pseudo
 left_right ::= LEFT (OPEN_PAREN | OPEN_ANGLE_BRACKET | OPEN_BRACE | OPEN_BRACKET | PIPE)? left_right_content* RIGHT (CLOSE_PAREN | CLOSE_ANGLE_BRACKET | CLOSE_BRACE | CLOSE_BRACKET | PIPE)?
 
 begin_command ::= BEGIN_TOKEN OPEN_BRACE env_identifier CLOSE_BRACE parameter*{
-    pin=2
+    pin=1
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexBeginCommandImplMixin"
     implements=["nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 }
