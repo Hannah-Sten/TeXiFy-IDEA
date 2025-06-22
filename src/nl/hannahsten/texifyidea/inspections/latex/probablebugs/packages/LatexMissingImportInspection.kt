@@ -67,22 +67,21 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             .filter { it.isEnvironmentDefinition() }
             .mapNotNull { it.requiredParameter(0) }
             .toSet()
-        val environments = file.collectSubtreeTyped<LatexEnvironment> { it.getEnvironmentName() !in defined }
 
-        outerLoop@ for (env in environments) {
-            // Don't consider environments that have been defined.
+        file.traverseAllTyped<LatexEnvironment> { env ->
             val name = env.getEnvironmentName()
-            val environment = DefaultEnvironment[name] ?: continue
+            // Don't consider environments that have been defined.
+            if(name in defined) return@traverseAllTyped
+
+            val environment = DefaultEnvironment[name] ?: return@traverseAllTyped
             val pack = environment.dependency
-
             if (pack == DEFAULT || includedPackages.contains(pack)) {
-                continue
+                return@traverseAllTyped
             }
-
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
                 if (packageInclusion == pack && includedPackages.contains(packageInclusion.key)) {
-                    continue@outerLoop
+                    return@traverseAllTyped
                 }
             }
 

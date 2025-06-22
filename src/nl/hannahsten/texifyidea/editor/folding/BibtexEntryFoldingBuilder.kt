@@ -37,7 +37,7 @@ class BibtexEntryFoldingBuilder : FoldingBuilderEx(), DumbAware {
         root.forEachDirectChild {
             if(it is BibtexEntry) {
                 val start = it.textOffset
-                val end = it.textRange.endOffset
+                val end = it.endtry.textOffset + 1 // 1 for the last bracket
 
                 if (end > start) {
                     descriptors.add(FoldingDescriptor(it, TextRange(start, end)))
