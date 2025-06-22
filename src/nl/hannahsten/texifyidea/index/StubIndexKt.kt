@@ -11,8 +11,11 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
  * Provide utility functions for working with [StubIndex] in a more convenient and Kotlin-friendly way.
  */
 object StubIndexKt {
+
     /**
      * Traverse all elements in the given [indexKey] for the specified [key] and apply the action to each element.
+     *
+     * @param action Returns `true` to continue traversing, or `false` to stop.
      */
     @RequiresReadLock
     inline fun <Key : Any, reified Psi : PsiElement> traverseElements(
@@ -76,6 +79,7 @@ object StubIndexKt {
         return traverseAllElements(indexKey, project, scope, Psi::class.java, action)
     }
 
+    @RequiresReadLock
     inline fun <Key : Any, Psi : PsiElement> traverseAllElements(
         indexKey: StubIndexKey<Key, Psi>,
         project: Project,
@@ -88,8 +92,62 @@ object StubIndexKt {
         }
     }
 
+    @RequiresReadLock
+    inline fun <Key : Any, reified Psi : PsiElement> forEachElement(
+        indexKey: StubIndexKey<Key, Psi>,
+        key: Key,
+        project: Project,
+        scope: GlobalSearchScope,
+        crossinline action: (Psi) -> Unit
+    ) {
+        traverseElements(indexKey, key, project, scope) { element ->
+            action(element)
+            true
+        }
+    }
+
+    /**
+     * Traverse all elements in the given [indexKey] for the specified [key] and apply the action to each element.
+     */
+    @RequiresReadLock
+    inline fun <Key : Any, Psi : PsiElement> forEachElement(
+        indexKey: StubIndexKey<Key, Psi>,
+        key: Key,
+        project: Project,
+        scope: GlobalSearchScope,
+        clazz: Class<Psi>,
+        crossinline action: (Psi) -> Unit
+    ) {
+        traverseElements(indexKey, key, project, scope, clazz) { element ->
+            action(element)
+            true
+        }
+    }
+
+    @RequiresReadLock
+    inline fun <Key : Any, reified Psi : PsiElement> forEachAllElements(
+        indexKey: StubIndexKey<Key, Psi>,
+        project: Project,
+        scope: GlobalSearchScope,
+        crossinline action: (Psi) -> Unit
+    ) {
+        traverseAllElements(indexKey, project, scope) { element ->
+            action(element)
+            true
+        }
+    }
+
+    @RequiresReadLock
+    inline fun <Key : Any, Psi : PsiElement> forEachAllElements(
+        indexKey: StubIndexKey<Key, Psi>,
+        project: Project,
+        scope: GlobalSearchScope,
+        clazz: Class<Psi>,
+        crossinline action: (Psi) -> Unit
+    ) {
+        traverseAllElements(indexKey, project, scope, clazz) { element ->
+            action(element)
+            true
+        }
+    }
 }
-
-
-
-

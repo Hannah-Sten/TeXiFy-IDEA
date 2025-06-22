@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.*
@@ -58,7 +58,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
         // First find all graphicspaths commands in the file of the given command
         val graphicsPaths = graphicsPathsInFile(command.containingFile).toMutableList()
 
-        val allIncludeCommands = LatexIncludesIndex.Util.getItems(command.project)
+        val allIncludeCommands = NewIncludesIndex.getAll(command.project)
         // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
         var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) } }
 

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -9,11 +10,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
 import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -37,7 +38,7 @@ import java.io.File
  * @return Map all root files which include any other file, to the file set containing that root file.
  */
 // Internal because only ReferencedFileSetCache should call this
-internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: ProgressReporter?): Map<PsiFile, Set<PsiFile>> {
+internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: ProgressReporter): Map<PsiFile, Set<PsiFile>> {
     val project = this
 
     // Save time by retrieving this only once
@@ -45,19 +46,20 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     val usesLuatexPaths = getLuatexPaths(project).isNotEmpty()
 
     // Find all root files.
-    val scope = GlobalSearchScope.projectScope(project)
-    val roots = LatexIncludesIndex.Util.getItems(project, scope, useCache = false)
+    val roots = readAction { NewIncludesIndex.getAll(project) }
         .map { it.containingFile }
         .distinct()
-        .filter {  it.isRoot() }
+        .filter { it.isRoot() }
         .toSet()
 
     return roots
         .associateWith { root ->
             // Map root to all directly referenced files.
-            reporter?.sizedStep((PROGRESS_SIZE / roots.size)) {
-                root.referencedFiles(root.virtualFile, isImportPackageUsed, usesLuatexPaths) + root
-            } ?: (root.referencedFiles(root.virtualFile, isImportPackageUsed, usesLuatexPaths) + root)
+            reporter.sizedStep((PROGRESS_SIZE / roots.size)) {
+                readAction {
+                    root.referencedFiles(root.virtualFile, isImportPackageUsed, usesLuatexPaths) + root
+                }
+            }
         }
 }
 
@@ -174,7 +176,8 @@ fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
 /**
  * The addtoluatexpath package supports adding to \input@path in different ways
  */
-suspend fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
+@RequiresReadLock
+fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile> {
     val luatexPaths = getLuatexPaths(project)
 
     val luatexPathDirectories = luatexPaths.flatMap {
@@ -192,13 +195,17 @@ suspend fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile
     return luatexPathDirectories
 }
 
-suspend fun getLuatexPaths(project: Project): List<String> {
-    val direct = LatexCommandsIndex.Util.getCommandsByNamesNonBlocking(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project))
-        .mapNotNull { command -> smartReadAction(project) { command.requiredParameter(0) } }
+@RequiresReadLock
+fun getLuatexPaths(project: Project): List<String> {
+//    val direct = LatexCommandsIndex.Util.getCommandsByNamesNonBlocking(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project))
+//        .mapNotNull { command -> smartReadAction(project) { command.requiredParameter(0) } }
+//        .flatMap { it.split(",") }
+    val direct = NewIncludesIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project)
+        .mapNotNull { it.requiredParameter(0) }
         .flatMap { it.split(",") }
-    val viaUsepackage = LatexIncludesIndex.Util.getCommandsByNamesNonBlocking(CommandMagic.packageInclusionCommands, project, GlobalSearchScope.projectScope(project))
-        .filter { smartReadAction(project) { it.requiredParameter(0) } == LatexPackage.ADDTOLUATEXPATH.name }
-        .flatMap { smartReadAction(project) { it.getOptionalParameterMap().keys } }
+    val viaUsepackage = NewIncludesIndex.getByNames(CommandMagic.packageInclusionCommands, project)
+        .filter { it.requiredParameter(0) == LatexPackage.ADDTOLUATEXPATH.name }
+        .flatMap { it.getOptionalParameterMap().keys }
         .flatMap { it.text.split(",") }
 
     return direct + viaUsepackage

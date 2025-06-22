@@ -103,6 +103,12 @@ inline fun PsiElement.forEachDirectChild(action: (PsiElement) -> Unit) {
     }
 }
 
+inline fun <reified Psi : PsiElement> PsiElement.forEachDirectChildTyped(action: (Psi) -> Unit) {
+    forEachDirectChild {
+        if(it is Psi) action(it)
+    }
+}
+
 inline fun PsiElement.forEachDirectChildReversed(action: (PsiElement) -> Unit) {
     var child = this.lastChild
     while (child != null) {
@@ -215,9 +221,11 @@ fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Bool
 
 /**
  * Traverse the whole subtree of this [PsiElement] and apply the action to each element (including this element).
+ *
+ * @see [forEachDirectChild]
  */
-inline fun PsiElement.traverseAll(crossinline action: (PsiElement) -> Unit) {
-    traverse {
+inline fun PsiElement.forEachChild(depth: Int = Int.MAX_VALUE, crossinline action: (PsiElement) -> Unit) {
+    traverse(depth) {
         action(it)
         true
     }
@@ -225,13 +233,14 @@ inline fun PsiElement.traverseAll(crossinline action: (PsiElement) -> Unit) {
 
 /**
  * Traverse the whole subtree of this [PsiElement] and apply the action to each element of type [T] (including this element if it is of type [T]).
+ *
+ * @see [forEachDirectChild]
  */
-inline fun <reified T : PsiElement> PsiElement.traverseAllTyped(crossinline action: (T) -> Unit) {
-    traverse {
+inline fun <reified T : PsiElement> PsiElement.forEachChildTyped(depth: Int = Int.MAX_VALUE, crossinline action: (T) -> Unit) {
+    forEachChild(depth) {
         if (it is T) {
             action(it)
         }
-        true
     }
 }
 

@@ -5,7 +5,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.util.files.findIncludedFile
@@ -26,16 +26,11 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val allIncludeCommands = LatexIncludesIndex.Util.getItems(file.project, useCache = false)
-
         // Maps every file to all the files it includes.
-        val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
-
-        // Find all related files.
-        for (command in allIncludeCommands) {
+        val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = hashMapOf()
+        NewIncludesIndex.forEachAll(file.project) { command ->
             // Find included files
             val declaredIn = command.containingFile
-
             // Do not use ImportPackage#searchFileByImportPaths, because if we would do that for every command, that would be way too expensive.
             for (referenced in declaredIn.findIncludedFile(command)) {
                 inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)

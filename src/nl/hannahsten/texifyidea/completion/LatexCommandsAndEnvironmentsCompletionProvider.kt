@@ -4,7 +4,6 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.util.text.StringUtil
@@ -19,7 +18,7 @@ import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -111,7 +110,8 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // completion would be flooded with duplicate commands from packages that nobody uses.
             // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
             // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
-            val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.Util.getItems(project), project).plus(LatexPackage.DEFAULT)
+            val includeCommands = NewIncludesIndex.getAll(project)
+            val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
             LatexExternalCommandsIndexCache.fillCacheAsync(project, packagesInProject)
             return false
         }

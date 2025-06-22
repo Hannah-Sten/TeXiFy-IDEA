@@ -276,7 +276,7 @@ open class LatexAnnotator : Annotator {
                 .create()
         }
         else if (firstParamChild != null) {
-            parameter.traverseAll {
+            parameter.forEachChild {
                 if(it is LeafPsiElement && it.elementType == LatexTypes.NORMAL_TEXT_WORD) {
                     this.newSilentAnnotation(HighlightSeverity.INFORMATION)
                         .range(it as PsiElement) // resolve overloading

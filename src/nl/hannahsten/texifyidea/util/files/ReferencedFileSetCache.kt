@@ -8,7 +8,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache.Cache.fileSetCache
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import java.util.concurrent.ConcurrentHashMap
@@ -89,7 +89,7 @@ class ReferencedFileSetCache {
      * Since we have to calculate the fileset to fill the root file or fileset cache, we make sure to only do that
      * once and then fill both caches with all the information we have.
      */
-    private suspend fun getNewCachesFor(project: Project, reporter: ProgressReporter?): Pair<Map<String, Set<SmartPsiElementPointer<PsiFile>>>, Map<String, Set<SmartPsiElementPointer<PsiFile>>>> {
+    private suspend fun getNewCachesFor(project: Project, reporter: ProgressReporter): Pair<Map<String, Set<SmartPsiElementPointer<PsiFile>>>, Map<String, Set<SmartPsiElementPointer<PsiFile>>>> {
         val newFileSetCache = mutableMapOf<String, Set<SmartPsiElementPointer<PsiFile>>>()
         val newRootFilesCache = mutableMapOf<String, Set<SmartPsiElementPointer<PsiFile>>>()
 
@@ -149,7 +149,7 @@ class ReferencedFileSetCache {
         // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
         // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
         // Don't use cache here, otherwise we would just be comparing cache with cache
-        val numberOfIncludes = LatexIncludesIndex.Util.getNumberOfIndexedItems(project)
+        val numberOfIncludes = NewIncludesIndex.getAll(project).size
 
         // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
         if (numberOfIncludes != Cache.numberOfIncludes[project] && !Cache.isCacheFillInProgress.getOrPut(project) { AtomicBoolean(false) }.getAndSet(true)) {

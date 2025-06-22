@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index.file
 
 import arrow.atomic.AtomicBoolean
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -9,9 +10,8 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.IndexableSetContributor
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
@@ -90,8 +90,12 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         runInBackgroundNonBlocking(project, "Searching for inclusions by absolute path...") { reporter ->
             try {
                 // Bibliography and direct input commands
+
                 val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
-                val includeCommands = LatexIncludesIndex.Util.getCommandsByNamesNonBlocking(commandNames, project, GlobalSearchScope.projectScope(project), useCache = false)
+                val includeCommands = readAction {
+                    NewIncludesIndex.getByNames(commandNames, project)
+                }
+
                 val workSize = includeCommands.size
                 val externalFiles = includeCommands
                     // We can't add single files, so take the parent
@@ -110,7 +114,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                     .toMutableList()
 
                 // addtoluatexpath package
-                val luatexPathDirectories = addToLuatexPathSearchDirectories(project)
+                val luatexPathDirectories = readAction { addToLuatexPathSearchDirectories(project) }
                 externalFiles.addAll(luatexPathDirectories)
 
                 Cache.externalDirectFileInclusions[project] = externalFiles.toSet()

@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditor
@@ -12,15 +10,15 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.*
+import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
@@ -32,20 +30,13 @@ import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
 /**
- * Get the file search scope for this psi file.
- */
-val PsiFile.fileSearchScope: GlobalSearchScope
-    get() = runReadAction { GlobalSearchScope.fileScope(this) }
-
-/**
  * Looks for all file inclusions in a given file, excluding installed LaTeX packages.
  *
  * @return A list containing all included files.
  */
 fun PsiFile.findInclusions(): List<PsiFile> {
-    return LatexIncludesIndex.Util.getItems(this)
+    return NewIncludesIndex.getAll(this)
         .flatMap { it.getIncludedFiles(false) }
-        .toList()
 }
 
 /**
@@ -107,20 +98,20 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
-// Suppress for Qodana only
-@Suppress("RedundantSuspendModifier", "RedundantSuppression")
-internal suspend fun PsiFile.referencedFiles(rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean): Set<PsiFile> {
+@RequiresReadLock
+internal fun PsiFile.referencedFiles(rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean): Set<PsiFile> {
     // Using a single set avoids infinite loops
     val result = mutableSetOf<PsiFile>()
     referencedFiles(result, rootFile, isImportPackageUsed, usesLuatexPaths)
     return result
 }
 
-@Suppress("RedundantSuspendModifier", "RedundantSuppression")
-internal suspend fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean) {
-    LatexIncludesIndex.Util.getItemsNonBlocking(project, fileSearchScope).forEach command@{ command ->
-        smartReadAction(project) { if (!command.isValid) arrayOf() else command.references }.filterIsInstance<InputFileReference>()
-            .mapNotNull { smartReadAction(project) { it.resolve(false, rootFile, true, checkImportPath = isImportPackageUsed, checkAddToLuatexPath = usesLuatexPaths) } }
+@RequiresReadLock
+internal fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean) {
+    NewIncludesIndex.getAll(project).forEach { command ->
+        if (!command.isValid) return@forEach
+        command.references.filterIsInstance<InputFileReference>()
+            .mapNotNull { it.resolve(false, rootFile, true, checkImportPath = isImportPackageUsed, checkAddToLuatexPath = usesLuatexPaths) }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach

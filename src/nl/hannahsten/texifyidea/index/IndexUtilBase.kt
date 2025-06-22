@@ -1,11 +1,9 @@
 package nl.hannahsten.texifyidea.index
 
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
-import com.intellij.patterns.ElementPattern
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
@@ -13,9 +11,6 @@ import com.intellij.psi.createSmartPointer
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.yield
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
@@ -151,19 +146,17 @@ abstract class IndexUtilBase<T : PsiElement>(
                 lastCacheFillTime = System.currentTimeMillis()
                 TexifyCoroutine.runInBackground {
                     // Same code as below but using smartReadAction(project) instead of runReadAction
-                    val result = getKeys(project).flatMap {  getItemsByName(it, project, scope).filter(PsiElement::isValid) }
-                    cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull {  if (!it.isValid) null else it.createSmartPointer() }
+                    val result = getKeys(project).flatMap { getItemsByName(it, project, scope).filter(PsiElement::isValid) }
+                    cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { if (!it.isValid) null else it.createSmartPointer() }
                 }
             }
 
             return cachedValues
         }
 
-
-
 //        val result = runReadAction { getKeys(project) }.flatMap { runReadAction { getItemsByName(it, project, scope).filter(PsiElement::isValid) } }
         val result = getKeys(project).flatMap { getItemsByName(it, project, scope).filter(PsiElement::isValid) }
-        cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull {  if (!it.isValid) null else it.createSmartPointer() }
+        cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { if (!it.isValid) null else it.createSmartPointer() }
 
         // Because the stub index may not always be reliable (#4006), include cached values
         val cached = cachedValues ?: emptyList()
@@ -206,7 +199,7 @@ abstract class IndexUtilBase<T : PsiElement>(
      */
     private fun getItemsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<T> {
         try {
-            StubIndex.getInstance().processElements(indexKey, name, project, scope, elementClass){
+            StubIndex.getInstance().processElements(indexKey, name, project, scope, elementClass) {
                 true
             }
             return StubIndex.getElements(indexKey, name, project, scope, elementClass)

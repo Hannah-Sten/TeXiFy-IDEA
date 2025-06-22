@@ -4,8 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -42,17 +41,16 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
 }
 
 fun isImportPackageUsed(project: Project): Boolean {
-    val allRelativeImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
+    val allRelativeImportCommands = NewIncludesIndex.getByNames(
         CommandMagic.relativeImportCommands,
         project,
-        GlobalSearchScope.projectScope(project)
     )
-    val allAbsoluteImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
+    if (allRelativeImportCommands.isNotEmpty()) return true
+    val allAbsoluteImportCommands = NewIncludesIndex.getByNames(
         CommandMagic.absoluteImportCommands,
         project,
-        GlobalSearchScope.projectScope(project)
     )
-    return allAbsoluteImportCommands.isNotEmpty() || allRelativeImportCommands.isNotEmpty()
+    return allAbsoluteImportCommands.isNotEmpty()
 }
 
 /**
@@ -89,10 +87,9 @@ fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
 
 fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf("")): List<VirtualFile> {
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableSet()
-    val allIncludeCommands = LatexIncludesIndex.Util.getItems(command.project)
+    val allIncludeCommands = NewIncludesIndex.getAll(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
-    var includingCommands = allIncludeCommands.filter {
-            includeCommand ->
+    var includingCommands = allIncludeCommands.filter { includeCommand ->
         includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) }
     }.filter { includeCommand ->
         // Only consider commands that can include LaTeX files
