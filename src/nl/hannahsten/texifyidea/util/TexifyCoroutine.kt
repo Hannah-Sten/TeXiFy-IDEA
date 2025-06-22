@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.components.Service
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -24,6 +25,14 @@ class TexifyCoroutine(val coroutineScope: CoroutineScope) {
         fun runInBackground(action: suspend CoroutineScope.() -> Unit) {
             getInstance().coroutineScope.launch {
                 action()
+            }
+        }
+
+        fun runInBackgroundReadAction(action : () -> Unit) {
+            getInstance().coroutineScope.launch {
+                readAction {
+                    action()
+                }
             }
         }
     }

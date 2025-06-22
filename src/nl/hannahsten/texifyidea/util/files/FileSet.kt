@@ -42,15 +42,19 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     val project = this
 
     // Save time by retrieving this only once
-    val isImportPackageUsed = isImportPackageUsed(project)
-    val usesLuatexPaths = getLuatexPaths(project).isNotEmpty()
+    val (isImportPackageUsed,usesLuatexPaths,roots) = readAction {
+        val isImportPackageUsed = isImportPackageUsed(project)
+        val usesLuatexPaths = getLuatexPaths(project).isNotEmpty()
 
-    // Find all root files.
-    val roots = readAction { NewIncludesIndex.getAll(project) }
-        .map { it.containingFile }
-        .distinct()
-        .filter { it.isRoot() }
-        .toSet()
+        // Find all root files.
+        val roots = NewIncludesIndex.getAll(project)
+            .map { it.containingFile }
+            .distinct()
+            .filter { it.isRoot() }
+            .toSet()
+        Triple(isImportPackageUsed, usesLuatexPaths, roots)
+    }
+
 
     return roots
         .associateWith { root ->

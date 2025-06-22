@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbService
@@ -146,8 +147,10 @@ abstract class IndexUtilBase<T : PsiElement>(
                 lastCacheFillTime = System.currentTimeMillis()
                 TexifyCoroutine.runInBackground {
                     // Same code as below but using smartReadAction(project) instead of runReadAction
-                    val result = getKeys(project).flatMap { getItemsByName(it, project, scope).filter(PsiElement::isValid) }
-                    cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { if (!it.isValid) null else it.createSmartPointer() }
+                    readAction {
+                        val result = getKeys(project).flatMap { getItemsByName(it, project, scope).filter(PsiElement::isValid) }
+                        cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { if (!it.isValid) null else it.createSmartPointer() }
+                    }
                 }
             }
 

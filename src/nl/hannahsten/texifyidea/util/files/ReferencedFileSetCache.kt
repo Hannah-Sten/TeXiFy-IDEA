@@ -158,6 +158,7 @@ class ReferencedFileSetCache {
             runInBackgroundNonBlocking(project, "Updating file set cache...") { reporter ->
                 try {
                     // Only drop caches after we have new data (since that task may be cancelled)
+
                     val (newFileSetCache, newRootFilesCache) = getNewCachesFor(project, reporter)
                     dropAllCaches(project)
                     fileSetCache.getOrPut(project) { mutableMapOf() }.putAll(newFileSetCache.toMutableMap())
