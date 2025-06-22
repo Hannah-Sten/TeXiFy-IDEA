@@ -14,6 +14,7 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -42,7 +43,7 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     val project = this
 
     // Save time by retrieving this only once
-    val (isImportPackageUsed,usesLuatexPaths,roots) = readAction {
+    val (isImportPackageUsed, usesLuatexPaths, roots) = readAction {
         val isImportPackageUsed = isImportPackageUsed(project)
         val usesLuatexPaths = getLuatexPaths(project).isNotEmpty()
 
@@ -54,7 +55,6 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
             .toSet()
         Triple(isImportPackageUsed, usesLuatexPaths, roots)
     }
-
 
     return roots
         .associateWith { root ->
@@ -147,8 +147,9 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet
  * @see [LatexCommandsIndex.Util.getItemsInFileSet]
  */
 fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> {
-    val res = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
     // TODO: Avoid calling this method as it is very slow.
+//    val res = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
+    val res = NewCommandsIndex.getAllInFileSet(this)
     // You can create breakpoints in the code to see the size of the returned collection.
     return res
 }

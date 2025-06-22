@@ -9,10 +9,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -33,12 +32,12 @@ import java.util.*
 class LatexStructureViewElement(private val element: PsiElement) : StructureViewTreeElement, SortableTreeElement {
 
     // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
-    val docClass by lazy {
-        LatexCommandsIndex.Util.getItems(element.project, GlobalSearchScope.fileScope(element as PsiFile)).asSequence()
-            .filter { cmd -> cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash && cmd.getRequiredParameters().isNotEmpty() }
-            .mapNotNull { cmd -> cmd.getRequiredParameters().firstOrNull() }
-            .firstOrNull() ?: "article"
-    }
+    val docClass: String
+        get() {
+            return NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, element.containingFile).firstNotNullOfOrNull {
+                it.getRequiredParameters().firstOrNull()
+            } ?: "article"
+        }
 
     override fun getValue() = element
 

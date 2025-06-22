@@ -37,8 +37,8 @@ abstract class CollectAllStubIndexBase<Psi : PsiElement>(
     }
 
     fun sinkIndex(sink: IndexSink, indexKey: StubIndexKey<String, Psi>, commandToken: String) {
-        sink.occurrence(indexKey, commandToken)
         sink.occurrence(indexKey, keyForAll)
+        sink.occurrence(indexKey, commandToken)
     }
 
     @RequiresReadLock
@@ -51,6 +51,13 @@ abstract class CollectAllStubIndexBase<Psi : PsiElement>(
     }
 
     @RequiresReadLock
+    fun getByName(name: String, file: PsiFile): Collection<Psi> {
+        val project = file.project
+        if (project.isDisposed) return emptyList()
+        return getByName(name, project, GlobalSearchScope.fileScope(file))
+    }
+
+    @RequiresReadLock
     fun getByNames(
         names: Collection<String>,
         project: Project,
@@ -59,6 +66,15 @@ abstract class CollectAllStubIndexBase<Psi : PsiElement>(
         return names.flatMap { name ->
             getByName(name, project, scope)
         }
+    }
+
+    @RequiresReadLock
+    fun getByNames(
+        names: Collection<String>, file: PsiFile,
+    ): List<Psi> {
+        val project = file.project
+        if (project.isDisposed) return emptyList()
+        return getByNames(names, project, GlobalSearchScope.fileScope(file))
     }
 
     @RequiresReadLock
@@ -147,6 +163,8 @@ abstract class NewLatexCommandsStubIndex : CollectAllStubIndexBase<LatexCommands
          */
         const val KEY_ALL_COMMANDS: String = "_ALL_"
     }
+
+    abstract override fun getKey(): StubIndexKey<String, LatexCommands>
 
     override fun getVersion(): Int {
         return LatexParserDefinition.Cache.FILE.stubVersion

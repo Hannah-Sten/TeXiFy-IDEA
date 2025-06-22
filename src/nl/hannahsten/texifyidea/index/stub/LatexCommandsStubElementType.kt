@@ -34,12 +34,7 @@ class LatexCommandsStubElementType(debugName: String) :
             }
 
             override fun setName(newName: String): PsiElement {
-                this.name = newName
                 return this
-            }
-
-            init {
-                this.name = latexCommandsStub.name!!
             }
         }
     }

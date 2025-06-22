@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
@@ -86,16 +87,13 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
  * Expand custom commands in a given text once, using its definition in the [LatexCommandsIndex].
  */
 fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): String? {
+    if(file == null) return null
     var text = inputText
     // Get all the commands that are used in the input text.
     val commandsInText = LatexPsiHelper(project).createFromText(inputText).traverseTyped<LatexCommands>()
-
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
-        val commandExpansion = LatexCommandsIndex.Util.getCommandsByNames(
-            file ?: return null,
-            *CommandMagic.commandDefinitionsAndRedefinitions.toTypedArray()
-        )
+        val commandExpansion = NewCommandsIndex.getByNames(CommandMagic.commandDefinitionsAndRedefinitions, file)
             .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
             ?.getRequiredArgumentValueByName("def")
         text = text.replace(command.text, commandExpansion ?: command.text)

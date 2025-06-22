@@ -30,10 +30,14 @@ object PackageMagic {
         MAKEIDX, MULTIND, INDEX, SPLITIDX, SPLITINDEX, IMAKEIDX, HVINDEX, IDXLAYOUT, REPEATINDEX, INDEXTOOLS, NOMENCL
     )
 
+    val indexNames = index.map { it.name }.toSet()
+
     /**
      * Packages which provide a glossary.
      */
     val glossary = hashSetOf(LatexPackage.GLOSSARIES, LatexPackage.GLOSSARIESEXTRA)
+
+    val glossaryNames = glossary.map { it.name }.toSet()
 
     /**
      * Known conflicting packages.

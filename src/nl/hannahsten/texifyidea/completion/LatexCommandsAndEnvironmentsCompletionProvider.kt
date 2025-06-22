@@ -111,7 +111,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
             // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
             val includeCommands = NewIncludesIndex.getAll(project)
-            val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
+            val packagesInProject = if (!isTexliveAvailable) emptySet() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
             LatexExternalCommandsIndexCache.fillCacheAsync(project, packagesInProject)
             return false
         }

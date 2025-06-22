@@ -7,11 +7,11 @@ import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
+import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
 import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache.Cache.fileSetCache
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Caches the values for [findReferencedFileSetWithoutCache] calls.
@@ -37,14 +37,14 @@ class ReferencedFileSetCache {
          *
          * We need to keep track per project, because a cache fill can only be done for a given project, so we want to avoid dropping caches for other projects.
          */
-        internal var fileSetCache = mutableMapOf<Project, MutableMap<String, Set<SmartPsiElementPointer<PsiFile>>>>()
+        internal var fileSetCache = concurrentMapOf<Project, MutableMap<String, Set<SmartPsiElementPointer<PsiFile>>>>()
 
         /**
          * Similar to [fileSetCache], maps file paths to root files of the file set.
          */
-        internal var rootFilesCache = ConcurrentHashMap<Project, MutableMap<String, Set<SmartPsiElementPointer<PsiFile>>>>()
+        internal var rootFilesCache = concurrentMapOf<Project, MutableMap<String, Set<SmartPsiElementPointer<PsiFile>>>>()
 
-        internal var isCacheFillInProgress = mutableMapOf<Project, AtomicBoolean>()
+        internal var isCacheFillInProgress = concurrentMapOf<Project, AtomicBoolean>()
 
         /**
          * The number of includes in the include index at the time the cache was last filled.
@@ -53,7 +53,7 @@ class ReferencedFileSetCache {
          *
          * Note that this class is global, so multiple projects can be open.
          */
-        internal var numberOfIncludes = mutableMapOf<Project, Int>()
+        internal var numberOfIncludes = concurrentMapOf<Project, Int>()
     }
 
     /**

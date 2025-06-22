@@ -37,6 +37,9 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Incorrect nesting"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+//        file.traverseCommands()
+//            .filter { (it as LatexCommands).name}
+
         return LatexCommandsIndex.Util.getCommandsByNames(file, *sectioningCommands())
             .sortedBy { it.textOffset }
             .zipWithNext()

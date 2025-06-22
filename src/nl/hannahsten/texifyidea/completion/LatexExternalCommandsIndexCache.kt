@@ -36,7 +36,7 @@ object LatexExternalCommandsIndexCache {
     /**
      * Initiate a cache fill but do not wait for it to be filled.
      */
-    fun fillCacheAsync(project: Project, packagesInProject: List<LatexPackage>) {
+    fun fillCacheAsync(project: Project, packagesInProject: Set<LatexPackage>) {
         if (DumbService.isDumb(project) || isCacheFillInProgress.compareAndSet(expected = true, new = true)) {
             return
         }
@@ -85,7 +85,7 @@ object LatexExternalCommandsIndexCache {
 
     private fun createLookupElements(
         commandsFromIndex: MutableList<Set<LatexCommand>>,
-        packagesInProject: List<LatexPackage>,
+        packagesInProject: Set<LatexPackage>,
         indicator: ProgressIndicator
     ): MutableSet<LookupElementBuilder> {
         indicator.text = "Adding commands to autocompletion..."

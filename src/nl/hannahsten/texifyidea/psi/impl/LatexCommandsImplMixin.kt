@@ -23,16 +23,12 @@ import nl.hannahsten.texifyidea.util.parser.*
  * This class is a mixin for LatexCommandsImpl.
  */
 abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands {
-
-    @JvmField
-    var name: String? = null
-
     constructor(stub: LatexCommandsStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
     constructor(node: ASTNode) : super(node)
     constructor(stub: LatexCommandsStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
     override fun toString(): String {
-        return "LatexCommandsImpl(COMMANDS)[STUB]{" + getName() + "}"
+        return "LatexCommandsImpl(COMMANDS)[STUB]{$name}"
     }
 
     override fun getTextOffset(): Int {
@@ -59,14 +55,17 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         return this
     }
 
+
+    /**
+     * Get the name of the command, for example `\alpha`.
+     */
     override fun getName(): String? {
-        // TODO: performance
         val stub = this.stub
         return if (stub != null) stub.name else this.commandToken.text
     }
 
     override fun setName(newName: String): PsiElement {
-        var newText = this.text.replace(getName() ?: return this, newName)
+        var newText = this.text.replace(name ?: return this, newName)
         if (!newText.startsWith("\\"))
             newText = "\\" + newText
         val newElement = LatexPsiHelper(this.project).createFromText(newText).firstChild

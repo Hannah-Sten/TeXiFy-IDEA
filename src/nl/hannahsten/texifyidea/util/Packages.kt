@@ -314,7 +314,7 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @param onlyDirectInclusions If true, only packages included directly are returned.
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
-fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexPackage> {
+fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
     val commands = this.commandsInFileSet()
     return includedPackages(commands, project, onlyDirectInclusions)
 }
@@ -322,8 +322,8 @@ fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexP
 /**
  * See [includedPackages].
  */
-fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
+fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
     val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
-        .map { LatexPackage(it) }
-    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
+        .map { LatexPackage(it) }.toSet()
+    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toSet()
 }

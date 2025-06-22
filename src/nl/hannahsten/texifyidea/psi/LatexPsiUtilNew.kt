@@ -8,9 +8,11 @@ import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /*
 This file contains utility functions for the LaTex-related PSI elements.
@@ -210,4 +212,12 @@ fun PsiElement.asCommandName(): String? {
         is LatexNoMathContent -> this.commands?.name
         else -> null
     }
+}
+
+inline fun PsiElement.forEachCommand(crossinline action: (LatexCommands) -> Unit) {
+    return forEachChildTyped<LatexCommands> { action(it) }
+}
+
+fun PsiElement.traverseCommands(depth: Int = Int.MIN_VALUE): Sequence<LatexCommands> {
+    return traverseTyped(depth)
 }

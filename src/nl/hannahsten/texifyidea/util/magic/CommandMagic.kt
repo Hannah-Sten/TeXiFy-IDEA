@@ -237,7 +237,7 @@ object CommandMagic {
     /**
      * All commands that define regular commands, and that require that the command is not already defined.
      */
-    val regularStrictCommandDefinitions = hashSetOf(
+    val regularStrictCommandDefinitions: Set<String> = hashSetOf(
         NEWCOMMAND.cmd,
         NEWCOMMAND_STAR.cmd,
         NEWIF.cmd,
@@ -248,7 +248,7 @@ object CommandMagic {
     /**
      * Commands that define other command but don't complain if it is already defined.
      */
-    val flexibleCommandDefinitions = setOf(
+    val flexibleCommandDefinitions: Set<String> = setOf(
         PROVIDECOMMAND, // Does nothing if command exists
         PROVIDECOMMAND_STAR,
         PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
@@ -257,22 +257,22 @@ object CommandMagic {
         LET,
         PROVIDECOMMANDX,
         DECLAREROBUSTCOMMANDX,
-    ).map { it.cmd }
+    ).map { it.cmd }.toSet()
 
     /**
      * All commands that define or redefine other commands, whether it exists or not.
      */
-    val commandRedefinitions = setOf(
+    val commandRedefinitions: Set<String> = setOf(
         RENEWCOMMAND,
         RENEWCOMMAND_STAR,
         CATCODE, // Not really redefining commands, but characters
         RENEWCOMMANDX,
-    ).map { it.cmd } + flexibleCommandDefinitions
+    ).map { it.cmd }.toSet() + flexibleCommandDefinitions
 
     /**
      * All commands that define or redefine regular commands.
      */
-    val regularCommandDefinitionsAndRedefinitions = regularStrictCommandDefinitions + commandRedefinitions
+    val regularCommandDefinitionsAndRedefinitions: Set<String> = regularStrictCommandDefinitions + commandRedefinitions
 
     /**
      * All commands that define commands that should be used exclusively
@@ -288,12 +288,12 @@ object CommandMagic {
     /**
      * All commands that can define regular commands.
      */
-    val commandDefinitions = regularStrictCommandDefinitions + mathCommandDefinitions + flexibleCommandDefinitions
+    val commandDefinitions: Set<String> = regularStrictCommandDefinitions + mathCommandDefinitions + flexibleCommandDefinitions
 
     /**
      * All commands that (re)define new commands.
      */
-    val commandDefinitionsAndRedefinitions = regularCommandDefinitionsAndRedefinitions + mathCommandDefinitions
+    val commandDefinitionsAndRedefinitions: Set<String> = regularCommandDefinitionsAndRedefinitions + mathCommandDefinitions
 
     /**
      * All commands that define new documentclasses.
@@ -355,7 +355,7 @@ object CommandMagic {
         "\\DeclareDocumentEnvironment"
     )
 
-    val graphicPathsCommands = listOf(GRAPHICSPATH, SVGPATH)
+    val graphicPathsCommands = setOf(GRAPHICSPATH, SVGPATH)
 
     /**
      * Commands that should not have the given file extensions.
@@ -421,7 +421,7 @@ object CommandMagic {
     /**
      * List of all TeX style primitives.
      */
-    val stylePrimitives: List<String> = listOf(
+    val stylePrimitives: Set<String> = setOf(
         RM.cmd, SF.cmd, TT.cmd, IT.cmd, SL.cmd, SC.cmd, BF.cmd
     )
 

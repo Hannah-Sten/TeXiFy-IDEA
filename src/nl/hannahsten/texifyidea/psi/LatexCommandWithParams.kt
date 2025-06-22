@@ -13,7 +13,7 @@ interface LatexCommandWithParams : LatexComposite {
      *
      * **Note that the backslash `\` is included in the name.**
      */
-    fun getName(): String?
+    fun getName() : String?
 
     val parameterList: List<LatexParameter>
 

@@ -15,8 +15,8 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.serviceContainer.AlreadyDisposedException
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
@@ -143,6 +143,6 @@ fun Project.isTestProject() = name.contains("_temp_") || basePath?.contains("uni
  *
  * @return A list containing all the section marker [LatexCommands].
  */
-fun Project.findSectionMarkers() = LatexCommandsIndex.Util.getItems(this).filter {
-    it.commandToken.text in CommandMagic.sectionNameToLevel
+fun Project.findSectionMarkers(): Collection<LatexCommands> {
+    return NewCommandsIndex.getByNames(CommandMagic.sectionNameToLevel.keys, this)
 }
