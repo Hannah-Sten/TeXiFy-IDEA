@@ -103,6 +103,14 @@ inline fun PsiElement.forEachDirectChild(action: (PsiElement) -> Unit) {
     }
 }
 
+inline fun PsiElement.forEachDirectChildReversed(action: (PsiElement) -> Unit) {
+    var child = this.lastChild
+    while (child != null) {
+        action(child)
+        child = child.prevSibling
+    }
+}
+
 /**
  * Apply the given action to each [LatexRequiredParam] in the command.
  *
@@ -126,6 +134,16 @@ inline fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) ->
 /**
  * Traverse the PSI tree and yield each element (including this element).
  *
+ * Consider a tree like
+ * ```
+ * A
+ *  - B
+ *    - B1
+ *    - B2
+ *  - C
+ * ```
+ * The traversal will be a sequence of `A, B, B1, B2, C`.
+ *
  * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
  *
  * @param depth The maximum depth to traverse the PSI tree.
@@ -136,6 +154,33 @@ fun PsiElement.traverse(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequ
     yield(this@traverse)
     if (depth == 0) return@sequence
     forEachDirectChild { c ->
+        yieldAll(c.traverse(depth - 1))
+    }
+}
+
+/**
+ * Traverse the PSI tree and yield each element (including this element) in the reversed order.
+ *
+ * Consider a tree like
+ * ```
+ * A
+ *  - B
+ *    - B1
+ *    - B2
+ *  - C
+ * ```
+ * The traversal will be a sequence of `A, C, B, B2, B1`.
+ *
+ * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
+ *
+ * @param depth The maximum depth to traverse the PSI tree.
+ * Default is [Int.MAX_VALUE], which means no limit. `depth = 0` means only the current element is traversed.
+ */
+fun PsiElement.traverseReversed(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequence {
+    if (depth < 0) return@sequence
+    yield(this@traverseReversed)
+    if (depth == 0) return@sequence
+    forEachDirectChildReversed { c ->
         yieldAll(c.traverse(depth - 1))
     }
 }
