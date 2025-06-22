@@ -4,10 +4,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeOf
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.io.File
 
 /**
@@ -96,15 +97,14 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
     private fun LatexCommands.getGraphicsPaths(): List<String> {
         if (!CommandMagic.graphicPathsCommands.map { it.cmd }.contains(name)) return emptyList()
         val first = parameterList.firstNotNullOfOrNull { it.requiredParam } ?: return emptyList()
-        return first.collectSubtreeOf {
+        return first.collectSubtreeTyped<LatexNormalText>().mapNotNull {
             val text = it.text
-            if(text.startsWith('/')) {
-                text
-            }
+            if (text.startsWith('/')) text
             else {
                 // Relative paths (not starting with /) have to be appended to the directory of the file of the given command.
-                val path = it.containingFile?.containingDirectory?.virtualFile?.path ?: return@collectSubtreeOf null
-                path + File.separator + text
+                it.containingFile?.containingDirectory?.virtualFile?.path?.let { path ->
+                    path + File.separator + text
+                }
             }
         }
     }
