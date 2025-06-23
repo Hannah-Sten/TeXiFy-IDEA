@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -45,7 +46,7 @@ interface LatexCommand : Described, Dependend {
         /**
          * Create a [LatexCommand] for the given command name, or merge with existing one.
          */
-        fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
+        suspend fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
             // Don't try to access index when in dumb mode
             if (DumbService.isDumb(project)) return emptySet()
             val cmdWithSlash = "\\$cmdWithoutSlash"
@@ -55,7 +56,7 @@ interface LatexCommand : Described, Dependend {
 
             // Look up in index
             val filesAndValues = mutableListOf<Pair<VirtualFile, String>>()
-            runReadAction {
+            smartReadAction(project) {
                 FileBasedIndex.getInstance().processValues(
                     LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
                         filesAndValues.add(Pair(file, value))
