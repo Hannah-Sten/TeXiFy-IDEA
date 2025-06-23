@@ -26,8 +26,6 @@ import java.io.IOException
  */
 object EvinceInverseSearchListener {
 
-    private val currentCoroutineScope: CoroutineScope
-        get() = TexifyCoroutine.getInstance().coroutineScope
 
     private var sessionConnection: DBusConnection? = null
 
@@ -72,7 +70,7 @@ object EvinceInverseSearchListener {
 
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
-        currentCoroutineScope.launch {
+        TexifyCoroutine.runInBackground {
             // Delay execution and hope everything is ready (#3995)
             delay(1000)
             try {
@@ -122,6 +120,5 @@ object EvinceInverseSearchListener {
         syncSourceHandler?.close()
         // Properly close the connection
         sessionConnection?.close()
-        currentCoroutineScope.cancel(kotlinx.coroutines.CancellationException(("Unloading the plugin")))
     }
 }
