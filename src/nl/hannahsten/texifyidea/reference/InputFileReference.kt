@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
@@ -133,7 +132,7 @@ class InputFileReference(
             val command = LatexCommand.lookup(element.name)?.firstOrNull()
             if (command?.dependency == LatexPackage.GRAPHICX) {
                 // We cannot use the file set at this point, so we take the first command in the project and hope for the best
-                NewCommandsIndex.getByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, element.project, )
+                NewCommandsIndex.getByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, element.project,)
                     .firstOrNull()
                     ?.requiredParameter(0)
                     ?.split(",")

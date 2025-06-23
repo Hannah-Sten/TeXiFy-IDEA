@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.findExternalDocumentCommand
 import nl.hannahsten.texifyidea.util.labels.extractLabelElement

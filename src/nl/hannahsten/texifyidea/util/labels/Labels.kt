@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.findCommandInFileSet
 import nl.hannahsten.texifyidea.util.files.findExternalDocumentCommand
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic

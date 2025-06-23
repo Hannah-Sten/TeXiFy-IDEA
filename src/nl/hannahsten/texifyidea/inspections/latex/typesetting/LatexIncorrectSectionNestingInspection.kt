@@ -9,12 +9,10 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.forEachCommand
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.lineIndentation
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.replaceString
 
 /**
@@ -47,7 +45,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             .zipWithNext()
             .filter { (first, second) ->
                 first.isValid && second.isValid &&
-                        commandToForbiddenPredecessors[second.commandName()]?.contains(first.commandName()) == true
+                    commandToForbiddenPredecessors[second.commandName()]?.contains(first.commandName()) == true
             }
             .map {
                 manager.createProblemDescriptor(
@@ -61,7 +59,6 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             }
             .toList()
     }
-
 
     private fun LatexCommands.commandName(): String = this.commandToken.text
 

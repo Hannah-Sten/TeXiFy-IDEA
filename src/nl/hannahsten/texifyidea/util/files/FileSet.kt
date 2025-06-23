@@ -16,7 +16,6 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PROGRESS_SIZE
@@ -153,12 +152,12 @@ fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCo
     return res
 }
 
-fun PsiFile.findExternalDocumentCommand() : LatexCommands?{
+fun PsiFile.findExternalDocumentCommand(): LatexCommands? {
     return NewCommandsIndex.getNyNameInFileSet(
-        LatexGenericRegularCommand.EXTERNALDOCUMENT.command, containingFile.originalFile)
+        LatexGenericRegularCommand.EXTERNALDOCUMENT.command, containingFile.originalFile
+    )
         .firstOrNull()
 }
-
 
 /**
  * Get all the definitions in the file set.

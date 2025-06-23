@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
-import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet

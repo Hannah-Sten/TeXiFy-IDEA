@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 /**
  *
  */
-abstract class MyStringStubIndexBase<Stub: StubElement<Psi>,Psi : PsiElement>(
+abstract class MyStringStubIndexBase<Stub : StubElement<Psi>, Psi : PsiElement>(
     val clazz: Class<Psi>,
 ) : StringStubIndexExtension<Psi>() {
 
@@ -121,7 +121,7 @@ abstract class MyStringStubIndexBase<Stub: StubElement<Psi>,Psi : PsiElement>(
     }
 }
 
-abstract class SpecialKeyStubIndexBase<Stub: StubElement<Psi>, Psi : PsiElement>(clazz: Class<Psi>) : MyStringStubIndexBase<Stub,Psi>(clazz) {
+abstract class SpecialKeyStubIndexBase<Stub : StubElement<Psi>, Psi : PsiElement>(clazz: Class<Psi>) : MyStringStubIndexBase<Stub, Psi>(clazz) {
     protected abstract val specialKeys: Set<String>
     protected abstract val keyForAll: String
     protected abstract val specialKeyMap: Map<String, List<String>>
@@ -225,7 +225,7 @@ fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
     return GlobalSearchScope.filesScope(baseFile.project, searchFiles)
 }
 
-abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommandsStub,LatexCommands>(LatexCommands::class.java) {
+abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
 
     abstract override fun getKey(): StubIndexKey<String, LatexCommands>
 

@@ -101,5 +101,5 @@ fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Colle
         .collect(Collectors.toSet())
     searchFiles.add(originalFile.virtualFile)
     val scope = GlobalSearchScope.filesScope(project, searchFiles)
-    return NewSpecialCommandsIndex.getAll(project,scope)
+    return NewSpecialCommandsIndex.getAll(project, scope)
 }
