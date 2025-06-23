@@ -39,12 +39,12 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
     val project = this
 
     // Save time by retrieving this only once
-    val (isImportPackageUsed, usesLuatexPaths, roots) = readAction {
+    val (isImportPackageUsed, usesLuatexPaths, roots) = smartReadAction(project) {
         val isImportPackageUsed = isImportPackageUsed(project)
         val usesLuatexPaths = getLuatexPaths(project).isNotEmpty()
 
         // Find all root files.
-        val roots = NewSpecialCommandsIndex.getAllIncludes(project)
+        val roots = NewSpecialCommandsIndex.getAllFileInputs(project)
             .map { it.containingFile }
             .distinct()
             .filter { it.isRoot() }

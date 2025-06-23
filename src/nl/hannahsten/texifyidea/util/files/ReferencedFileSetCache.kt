@@ -149,7 +149,7 @@ class ReferencedFileSetCache {
         // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
         // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
         // Don't use cache here, otherwise we would just be comparing cache with cache
-        val numberOfIncludes = NewSpecialCommandsIndex.getAllIncludes(project).size
+        val numberOfIncludes = NewSpecialCommandsIndex.getAllFileInputs(project).size
 
         // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
         if (numberOfIncludes != Cache.numberOfIncludes[project] && !Cache.isCacheFillInProgress.getOrPut(project) { AtomicBoolean(false) }.getAndSet(true)) {
@@ -158,13 +158,14 @@ class ReferencedFileSetCache {
             runInBackgroundNonBlocking(project, "Updating file set cache...") { reporter ->
                 try {
                     // Only drop caches after we have new data (since that task may be cancelled)
-
-                    val (newFileSetCache, newRootFilesCache) = getNewCachesFor(project, reporter)
-                    dropAllCaches(project)
-                    fileSetCache.getOrPut(project) { mutableMapOf() }.putAll(newFileSetCache.toMutableMap())
-                    Cache.rootFilesCache.getOrPut(project) { mutableMapOf() }.putAll(newRootFilesCache.toMutableMap())
-                    // Many inspections use the file set, so a rerun could give different results
-                    smartReadAction(project) { file.rerunInspections() }
+                    // TODO
+//
+//                    val (newFileSetCache, newRootFilesCache) = getNewCachesFor(project, reporter)
+//                    dropAllCaches(project)
+//                    fileSetCache.getOrPut(project) { mutableMapOf() }.putAll(newFileSetCache.toMutableMap())
+//                    Cache.rootFilesCache.getOrPut(project) { mutableMapOf() }.putAll(newRootFilesCache.toMutableMap())
+//                    // Many inspections use the file set, so a rerun could give different results
+//                    smartReadAction(project) { file.rerunInspections() }
                 }
                 finally {
                     Cache.isCacheFillInProgress[project]?.set(false)

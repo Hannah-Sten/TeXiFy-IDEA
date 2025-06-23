@@ -92,7 +92,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                 // Bibliography and direct input commands
 
                 val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
-                val includeCommands = readAction {
+                val includeCommands = smartReadAction(project) {
                     NewCommandsIndex.getByNames(commandNames, project)
                 }
 
@@ -114,7 +114,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                     .toMutableList()
 
                 // addtoluatexpath package
-                val luatexPathDirectories = readAction { addToLuatexPathSearchDirectories(project) }
+                val luatexPathDirectories = smartReadAction(project) { addToLuatexPathSearchDirectories(project) }
                 externalFiles.addAll(luatexPathDirectories)
 
                 Cache.externalDirectFileInclusions[project] = externalFiles.toSet()

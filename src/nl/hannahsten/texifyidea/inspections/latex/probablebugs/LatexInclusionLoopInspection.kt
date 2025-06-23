@@ -28,7 +28,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
         // Maps every file to all the files it includes.
         val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = hashMapOf()
-        NewSpecialCommandsIndex.getAllIncludes(file).forEach { command ->
+        NewSpecialCommandsIndex.getAllFileInputs(file).forEach { command ->
             // Find included files
             val declaredIn = command.containingFile
             // Do not use ImportPackage#searchFileByImportPaths, because if we would do that for every command, that would be way too expensive.

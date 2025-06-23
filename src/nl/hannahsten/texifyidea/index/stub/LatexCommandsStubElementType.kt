@@ -100,9 +100,10 @@ class LatexCommandsStubElementType(debugName: String) :
 
         val token = stub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
-        NewSpecialCommandsIndex.sinkIndex(sink, token)
 
+        NewSpecialCommandsIndex.sinkIndex(sink, token)
         NewDefinitionIndex.sinkIndex(stub, sink)
+
         if (token in CommandMagic.labelAsParameter) {
             stub.optionalParams["label"]?.let { label ->
                 sink.occurrence(LatexStubIndexKeys.LABELED_COMMANDS_KEY, label)

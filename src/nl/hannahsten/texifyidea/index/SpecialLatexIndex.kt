@@ -10,10 +10,11 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 object SpecialKeys {
-    const val INCLUDES = "includes"
+    const val FILE_INPUTS = "file_inputs"
     const val COMMAND_DEFINITIONS = "command_def"
     const val ENV_DEFINITIONS = "env_def"
     const val ALL_DEFINITIONS = "all_def"
+    const val PACKAGE_INCLUDES = "package_includes"
 }
 
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCommands::class.java) {
@@ -22,7 +23,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     override fun getVersion(): Int {
-        return 100
+        return 101
     }
 
     override fun buildSearchFiles(baseFile: PsiFile): GlobalSearchScope {
@@ -34,10 +35,11 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     val mappingPairs = listOf(
-        CommandMagic.defaultIncludeCommands to SpecialKeys.INCLUDES,
+        CommandMagic.defaultIncludeCommands to SpecialKeys.FILE_INPUTS,
         CommandMagic.commandDefinitionsAndRedefinitions to SpecialKeys.COMMAND_DEFINITIONS,
         CommandMagic.environmentDefinitions to SpecialKeys.ENV_DEFINITIONS,
-        CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS
+        CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS,
+        CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
     )
 
     override val specialKeys: Set<String> = mappingPairs.map { it.second }.toSet()
@@ -50,13 +52,18 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         }
     }
 
-    fun getAllIncludes(project: Project): Collection<LatexCommands> {
-        return getByName(SpecialKeys.INCLUDES, project)
+    fun getAllFileInputs(project: Project): Collection<LatexCommands> {
+        return getByName(SpecialKeys.FILE_INPUTS, project)
     }
 
-    fun getAllIncludes(file: PsiFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.INCLUDES, file.project, GlobalSearchScope.fileScope(file))
+    fun getAllFileInputs(file: PsiFile): Collection<LatexCommands> {
+        return getByName(SpecialKeys.FILE_INPUTS, file.project, GlobalSearchScope.fileScope(file))
     }
+
+    fun getAllPackageIncludes(project: Project): Collection<LatexCommands> {
+        return getByName(SpecialKeys.PACKAGE_INCLUDES, project)
+    }
+
 
     fun getAllCommandDef(project: Project): Collection<LatexCommands> {
         return getByName(SpecialKeys.COMMAND_DEFINITIONS, project)

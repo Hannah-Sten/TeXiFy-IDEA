@@ -88,7 +88,7 @@ fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
 
 fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf("")): List<VirtualFile> {
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableSet()
-    val allIncludeCommands = NewSpecialCommandsIndex.getAllIncludes(command.project)
+    val allIncludeCommands = NewSpecialCommandsIndex.getAllFileInputs(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
     var includingCommands = allIncludeCommands.filter { includeCommand ->
         includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) }

@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.util.labels
 
+import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
@@ -59,6 +62,10 @@ fun Project.getLabelDefinitionCommands(): Set<String> {
  */
 fun Project.getLabelDefinitionCommandsAndUpdateLater(): Set<String> {
     // Check if updates are needed
-    runInBackgroundWithoutProgress { CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this) }
+    runInBackgroundWithoutProgress {
+        smartReadAction(this) {
+            CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this)
+        }
+    }
     return CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 }

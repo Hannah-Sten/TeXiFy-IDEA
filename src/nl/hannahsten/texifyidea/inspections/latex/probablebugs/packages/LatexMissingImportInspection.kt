@@ -99,7 +99,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     }
 
     private fun analyseCommands(
-        file: PsiFile, includedPackages: Collection<LatexPackage>,
+        file: PsiFile, includedPackages: Set<LatexPackage>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
@@ -136,7 +136,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             }
 
             // If none of the dependencies are included
-            if (includedPackages.toSet().intersect(dependencies).isEmpty()) {
+            if (includedPackages.intersect(dependencies).isEmpty()) {
                 // We know dependencies is not empty
                 val range = TextRange(0, latexCommands.minByOrNull { it.command.length }!!.command.length + 1)
                 val dependencyNames = dependencies.joinToString { it.name }.replaceAfterLast(", ", "or ${dependencies.last().name}")

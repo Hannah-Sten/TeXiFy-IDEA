@@ -147,7 +147,7 @@ abstract class IndexUtilBase<T : PsiElement>(
                 lastCacheFillTime = System.currentTimeMillis()
                 TexifyCoroutine.runInBackground {
                     // Same code as below but using smartReadAction(project) instead of runReadAction
-                    readAction {
+                    smartReadAction(project) {
                         val result = getKeys(project).flatMap { getItemsByName(it, project, scope).filter(PsiElement::isValid) }
                         cache.getOrPut(project) { mutableMapOf() }[scope] = result.mapNotNull { if (!it.isValid) null else it.createSmartPointer() }
                     }

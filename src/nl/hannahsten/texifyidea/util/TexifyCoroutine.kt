@@ -28,12 +28,5 @@ class TexifyCoroutine(val coroutineScope: CoroutineScope) {
             }
         }
 
-        fun runInBackgroundReadAction(action: () -> Unit) {
-            getInstance().coroutineScope.launch {
-                readAction {
-                    action()
-                }
-            }
-        }
     }
 }

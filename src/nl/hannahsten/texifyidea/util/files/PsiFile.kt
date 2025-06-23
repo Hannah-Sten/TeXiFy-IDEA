@@ -98,7 +98,7 @@ internal fun PsiFile.referencedFiles(rootFile: VirtualFile, isImportPackageUsed:
 
 @RequiresReadLock
 internal fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean) {
-    NewSpecialCommandsIndex.getAllIncludes(project).forEach { command ->
+    NewSpecialCommandsIndex.getAllFileInputs(project).forEach { command ->
         if (!command.isValid) return@forEach
         command.references.filterIsInstance<InputFileReference>()
             .mapNotNull { it.resolve(false, rootFile, true, checkImportPath = isImportPackageUsed, checkAddToLuatexPath = usesLuatexPaths) }

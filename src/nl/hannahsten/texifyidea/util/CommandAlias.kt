@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -21,8 +23,11 @@ fun updateIncludeCommandsAliasesAsync(project: Project) {
         runInBackgroundWithoutProgress {
             try {
                 // Because every command has different parameters and behaviour (e.g. allowed file types), we keep track of them separately
+
                 for (command in CommandMagic.defaultIncludeCommands) {
-                    CommandManager.updateAliases(setOf(command), project)
+                    smartReadAction(project) {
+                        CommandManager.updateAliases(setOf(command), project)
+                    }
                 }
             }
             finally {

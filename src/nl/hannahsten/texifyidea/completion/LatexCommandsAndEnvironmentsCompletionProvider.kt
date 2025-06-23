@@ -72,7 +72,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
 
             val usesTexlive = isTexliveAvailable
             val packagesInProject = if (!usesTexlive) emptyList()
-            else includedPackages(NewSpecialCommandsIndex.getAllIncludes(project), project).plus(
+            else includedPackages(NewSpecialCommandsIndex.getAllFileInputs(project), project).plus(
                 LatexPackage.DEFAULT
             )
 
@@ -172,7 +172,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // completion would be flooded with duplicate commands from packages that nobody uses.
             // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
             // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
-            val includeCommands = NewSpecialCommandsIndex.getAllIncludes(project)
+            val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project)
             val packagesInProject = if (!isTexliveAvailable) emptySet() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
             LatexExternalCommandsIndexCache.fillCacheAsync(project, packagesInProject)
             return false
