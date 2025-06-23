@@ -83,7 +83,7 @@ object CommandMagic {
      */
     val labelReferenceWithoutCustomCommands = LatexRegularCommand.ALL
         .filter { cmd -> cmd.arguments.any { it.type == Argument.Type.LABEL } }
-        .map { it.cmd }.toSet()
+        .associateBy { it.cmd }
 
     /**
      * All commands that represent a reference to a bibliography entry/item.
@@ -197,7 +197,7 @@ object CommandMagic {
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
      */
-    val reference = labelReferenceWithoutCustomCommands + bibliographyReference
+    val reference = labelReferenceWithoutCustomCommands.keys + bibliographyReference
 
     /**
      * Commands from the import package which require an absolute path as first parameter.

@@ -13,7 +13,6 @@ class LoadUnloadListener : DynamicPluginListener {
 //        ControlTracker.unload()
 //        ShiftTracker.unload()
         runBlocking { EvinceInverseSearchListener.unload() }
-        LatexExternalCommandsIndexCache.unload()
         super.beforePluginUnload(pluginDescriptor, isUpdate)
     }
 }

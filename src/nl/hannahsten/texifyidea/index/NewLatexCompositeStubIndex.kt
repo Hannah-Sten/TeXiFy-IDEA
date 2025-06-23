@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.IndexSink
+import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -32,9 +34,9 @@ fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
     return GlobalSearchScope.filesScope(baseFile.project, searchFiles)
 }
 
-abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommands>(LatexCommands::class.java) {
+abstract class NewLatexCompositeStubIndex<Psi : PsiElement>(clazz: Class<Psi>) : MyStringStubIndexBase<Psi>(clazz) {
 
-    abstract override fun getKey(): StubIndexKey<String, LatexCommands>
+    abstract override fun getKey(): StubIndexKey<String, Psi>
 
     override fun wrapSearchScope(scope: GlobalSearchScope): GlobalSearchScope {
         return LatexFileFilterScope(scope)
@@ -45,7 +47,7 @@ abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommands>(
     }
 }
 
-abstract class NewLatexCommandsTransformedStubIndex : NewLatexCommandsStubIndex(), MyTransformedStubIndex<LatexCommandsStub, LatexCommands> {
-
-    abstract override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink)
+abstract class NewLatexCompositeTransformedStubIndex<Stub : StubElement<Psi>, Psi : PsiElement>(
+    clazz: Class<Psi>
+) : NewLatexCompositeStubIndex<Psi>(clazz), MyTransformedStubIndex<Stub, Psi> {
 }

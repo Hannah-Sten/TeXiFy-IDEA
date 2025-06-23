@@ -193,10 +193,6 @@ fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommand
     } ?: this.allCommands()
 }
 
-/**
- * @see [LatexEnvironmentsIndex.Util.getItems]
- */
-fun PsiFile.environmentsInFile(): Collection<LatexEnvironment> = LatexEnvironmentsIndex.Util.getItems(this)
 
 /**
  * Get the editor of the file if it is currently opened. Note that the returned editor does not have to be a text editor,

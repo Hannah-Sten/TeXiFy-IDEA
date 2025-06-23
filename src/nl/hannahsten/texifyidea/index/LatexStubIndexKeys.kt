@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 
@@ -16,11 +17,11 @@ object LatexStubIndexKeys {
     val COMMANDS_SPECIAL =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.commandsspecial")
 
-    val DEFINITIONS_KEY =
-        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.definitions")
-
-    val DEFINITIONS_NEW =
+    val DEFINITIONS =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.definitionsnew")
+
+    val LABELED_ELEMENT =
+        StubIndexKey.createIndexKey<String, LatexComposite>("nl.hannahsten.texifyidea.labeledelement")
 
     val ENVIRONMENTS_KEY =
         StubIndexKey.createIndexKey<String, LatexEnvironment>("nl.hannahsten.texifyidea.environments")

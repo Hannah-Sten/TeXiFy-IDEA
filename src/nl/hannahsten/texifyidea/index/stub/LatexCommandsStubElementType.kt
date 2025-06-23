@@ -86,23 +86,18 @@ class LatexCommandsStubElementType(debugName: String) :
 
     override fun indexStub(stub: LatexCommandsStub, sink: IndexSink) {
         // We do not want all the commands from all package source files in this index, because
-        // then we end up with 200k keys for texlive full, but we need to iterate over all keys
-        // every time we need to get e.g. all commands in a file, so that would be too slow.
-        // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
-        // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
-        // Unfortunately, this seems to make indexing five times slower
-//        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
-//
-//        // If any of the sdk source roots is part of the currently indexed path, don't index the file
-//        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
-//            return
-//        }
+//        // then we end up with 200k keys for texlive full, but we need to iterate over all keys
+//        // every time we need to get e.g. all commands in a file, so that would be too slow.
+//        // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
+//        // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
+//        // Unfortunately, this seems to make indexing five times slower
 
         val token = stub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
 
         NewSpecialCommandsIndex.sinkIndex(sink, token)
         NewDefinitionIndex.sinkIndex(stub, sink)
+
 
         if (token in CommandMagic.labelAsParameter) {
             stub.optionalParams["label"]?.let { label ->
