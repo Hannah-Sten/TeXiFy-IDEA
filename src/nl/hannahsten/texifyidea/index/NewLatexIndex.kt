@@ -15,9 +15,12 @@ class NewCommandsIndexEx : NewLatexCommandsStubIndex() {
 
 val NewCommandsIndex = NewCommandsIndexEx()
 
+/**
+ * Definitions of both commands and theorems
+ */
 class NewDefinitionIndexEx : NewLatexCommandsTransformedStubIndex() {
     override fun getVersion(): Int {
-        return 1001
+        return 1002
     }
 
     private fun getDefinitionName(stub: LatexCommandsStub): String? {
@@ -33,7 +36,7 @@ class NewDefinitionIndexEx : NewLatexCommandsTransformedStubIndex() {
 
     override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
         val command = stub.commandToken
-        if (command !in CommandMagic.commandDefinitionsAndRedefinitions) return
+        if (command !in CommandMagic.definitions) return
         getDefinitionName(stub)?.let {
             sink.occurrence(key, it)
         }

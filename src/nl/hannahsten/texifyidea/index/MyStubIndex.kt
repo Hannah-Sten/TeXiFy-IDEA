@@ -67,14 +67,15 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     @RequiresReadLock
     fun getAllKeys(scope: GlobalSearchScope): Set<String> {
         val res = hashSetOf<String>()
-        processAllKeys(scope, Processors.cancelableCollectProcessor(res))
+        processAllKeys(scope, processor = Processors.cancelableCollectProcessor(res))
         return res
     }
 
     @RequiresReadLock
-    fun processAllKeys(scope: GlobalSearchScope, processor: Processor<in String>): Boolean {
-        return StubIndex.getInstance().processAllKeys(key, processor, scope)
+    fun processAllKeys(scope: GlobalSearchScope, idFilter: IdFilter? = null, processor: Processor<in String>): Boolean {
+        return StubIndex.getInstance().processAllKeys(key, processor, scope, idFilter)
     }
+
 
     @RequiresReadLock
     override fun getAllKeys(project: Project): Set<String> {
@@ -83,7 +84,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
 
     @RequiresReadLock
     override fun processAllKeys(project: Project, processor: Processor<in String>): Boolean {
-        return processAllKeys(GlobalSearchScope.projectScope(project), processor)
+        return processAllKeys(GlobalSearchScope.projectScope(project), processor = processor)
     }
 
     @RequiresReadLock

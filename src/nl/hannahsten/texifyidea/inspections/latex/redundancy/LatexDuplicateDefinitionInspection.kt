@@ -7,6 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
 import nl.hannahsten.texifyidea.util.isInConditionalBranch
@@ -39,8 +40,9 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
         }
 
         // Go monkeys.
-        file.definitions()
-            .forEach {
+        file.traverseCommands().filter {
+            it.name in CommandMagic.definitions
+        }.forEach {
                 if (isInConditionalBranch(it)) return@forEach
                 val definedCmd = it.definedCommandName() ?: return@forEach
                 if (defined.count(definedCmd) > 1) {

@@ -10,14 +10,19 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 object SpecialKeys {
-    const val INCLUDES = "_INCLUDES_"
-    const val COMMAND_DEFINITIONS = "_COMMAND_DEF_"
-    const val ENV_DEFINITIONS = "_ENV_DEF_"
+    const val INCLUDES = "includes"
+    const val COMMAND_DEFINITIONS = "command_def"
+    const val ENV_DEFINITIONS = "env_def"
+    const val ALL_DEFINITIONS = "all_def"
 }
 
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> {
         return LatexStubIndexKeys.COMMANDS_SPECIAL
+    }
+
+    override fun getVersion(): Int {
+        return 100
     }
 
     override fun buildSearchFiles(baseFile: PsiFile): GlobalSearchScope {
@@ -31,7 +36,8 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     val mappingPairs = listOf(
         CommandMagic.defaultIncludeCommands to SpecialKeys.INCLUDES,
         CommandMagic.commandDefinitionsAndRedefinitions to SpecialKeys.COMMAND_DEFINITIONS,
-        CommandMagic.environmentDefinitions to SpecialKeys.ENV_DEFINITIONS
+        CommandMagic.environmentDefinitions to SpecialKeys.ENV_DEFINITIONS,
+        CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS
     )
 
     override val specialKeys: Set<String> = mappingPairs.map { it.second }.toSet()
@@ -89,6 +95,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         // TODO
         return getAllEnvDef(originalFile.project)
     }
+
 }
 
 val NewSpecialCommandsIndex = NewSpecialCommandsIndexEx()

@@ -22,6 +22,7 @@ object LatexStubIndexKeys {
     val DEFINITIONS_NEW =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.definitionsnew")
 
+
     val ENVIRONMENTS_KEY =
         StubIndexKey.createIndexKey<String, LatexEnvironment>("nl.hannahsten.texifyidea.environments")
     val MAGIC_COMMENTS_KEY =

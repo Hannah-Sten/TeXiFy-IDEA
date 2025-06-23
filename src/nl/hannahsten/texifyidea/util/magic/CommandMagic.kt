@@ -340,7 +340,7 @@ object CommandMagic {
     /**
      * All commands that define stuff like classes, environments, and definitions.
      */
-    val definitions: Set<String> = commandDefinitionsAndRedefinitions + classDefinitions + packageDefinitions + environmentDefinitions
+    val definitions: Set<String> = commandDefinitionsAndRedefinitions + classDefinitions + packageDefinitions + environmentDefinitions + environmentRedefinitions
 
     /**
      * Commands for which TeXiFy-IDEA has essential custom behaviour and which should not be redefined.

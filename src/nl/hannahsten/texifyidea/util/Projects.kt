@@ -47,7 +47,7 @@ val Project.sourceSetSearchScope: GlobalSearchScope
  * Looks for all defined document classes in the project.
  */
 fun Project.findAvailableDocumentClasses(): Set<String> {
-    val defines = LatexDefinitionIndex.Util.getCommandsByName("ProvidesClass", this, sourceSetSearchScope)
+    val defines = NewCommandsIndex.getByName("ProvidesClass", this, sourceSetSearchScope)
     return defines.asSequence()
         .map { it.getRequiredParameters() }
         .filter { it.isNotEmpty() }

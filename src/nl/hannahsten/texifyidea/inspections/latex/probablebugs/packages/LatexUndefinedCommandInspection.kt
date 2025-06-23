@@ -40,6 +40,7 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val includedPackages = file.includedPackages().toSet().plus(LatexPackage.DEFAULT)
+
         val commandsInFile = file.commandsInFile()
         val commandNamesInFile = commandsInFile.map { it.name }
         // The number of indexed commands can be quite large (50k+) so we filter the large set based on the small one (in this file).

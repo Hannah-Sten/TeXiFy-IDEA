@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
@@ -224,17 +225,9 @@ fun PsiFile.openedTextEditor(): Editor? = openedEditor()?.let {
  * Get all the definitions in the file.
  */
 fun PsiFile.definitions(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.Util.getItems(this)
-        .filter { it.isDefinition() }
+    return NewSpecialCommandsIndex.getByName(SpecialKeys.ALL_DEFINITIONS,this)
 }
 
-/**
- * Get all the definitions and redefinitions in the file.
- */
-@Suppress("unused")
-fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.Util.getItems(this)
-}
 
 /**
  * Get all bibtex run configurations that are probably used to compile this file.
