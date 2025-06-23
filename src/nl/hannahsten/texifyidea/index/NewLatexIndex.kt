@@ -30,9 +30,10 @@ class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommands
         if (stub.requiredParams.isNotEmpty()) {
             return stub.requiredParams[0]
         }
+        // find the next command after it, which can be a bit slow, but I don't know a better way
         val children = stub.parentStub!!.childrenStubs
-        val siblingIndex = children.indexOfFirst { it === stub }
-        if (siblingIndex == -1) return null
+        val siblingIndex = children.indexOfFirst { it === stub } + 1
+        if (siblingIndex < 0 || siblingIndex >= children.size) return null
         val sibling = children[siblingIndex] as? LatexCommandsStub ?: return null
         return sibling.commandToken
     }

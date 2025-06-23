@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import java.util.concurrent.ConcurrentHashMap
-
+// TODO: Very slow
 /**
  * Manage aliases for commands and environments.
  */

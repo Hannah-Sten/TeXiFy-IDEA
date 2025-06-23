@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
-    // TODO improve it
+    // TODO: improve it, very slow
     val useIndexCache = true
     val searchFiles = baseFile.referencedFileSet(useIndexCache)
         .mapNotNullTo(mutableSetOf()) { it.virtualFile }
