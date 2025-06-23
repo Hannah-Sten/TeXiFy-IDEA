@@ -23,11 +23,11 @@ class GotoDefinitionSymbolContributor : ChooseByNameContributorEx {
 
     override fun processElementsWithName(name: String, processor: Processor<in NavigationItem>, parameters: FindSymbolParameters) {
         NewDefinitionIndex.processByName(name, parameters.project, parameters.searchScope, parameters.idFilter) { def ->
-            createNavigationItem(def,name)?.let { processor.process(it) } ?: true
+            createNavigationItem(def, name)?.let { processor.process(it) } ?: true
         }
     }
 
-    fun createNavigationItem(item: LatexCommands, name : String): NavigationItem? {
+    fun createNavigationItem(item: LatexCommands, name: String): NavigationItem? {
         val defCommand = item.name ?: return null
         if (defCommand in CommandMagic.commandDefinitionsAndRedefinitions) {
             return GoToSymbolProvider.BaseNavigationItem(item, name, TexifyIcons.DOT_COMMAND)

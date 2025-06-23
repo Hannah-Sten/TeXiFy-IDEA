@@ -14,7 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -27,7 +27,6 @@ import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
-import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
 
@@ -65,11 +64,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         }
 
         val installedPackages = TexLivePackages.packageList ?: return descriptors
-        val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
-            LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project,
-            file.project
-                .projectSearchScope
-        )
+        val customPackages = NewCommandsIndex.getByName(LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project)
             .map { it.requiredParameter(0) }
             .mapNotNull { it?.lowercase(Locale.getDefault()) }
         val packages = installedPackages + customPackages

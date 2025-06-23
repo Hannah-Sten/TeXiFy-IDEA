@@ -4,7 +4,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
-import nl.hannahsten.texifyidea.util.projectSearchScope
 import java.util.*
 
 class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
@@ -30,7 +29,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
-        val customPackages = LatexDefinitionIndex.Util.getCommandsByName(LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash, file.project, file.project.projectSearchScope)
+        val customPackages = NewCommandsIndex.getByName(LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash, file.project)
             .map { it.requiredParameter(0) }
             .map { it?.lowercase(Locale.getDefault()) }
         val packages = ctanPackages + customPackages

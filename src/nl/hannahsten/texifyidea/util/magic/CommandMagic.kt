@@ -493,4 +493,6 @@ object CommandMagic {
      * Commands that should be contributed to the to do toolwindow.
      */
     val todoCommands = setOf(LatexTodoCommand.TODO.cmd, LatexTodoCommand.MISSINGFIGURE.cmd)
+
+    val allTextCommands = LatexRegularCommand.ALL.filter { command -> command.arguments.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } }.map { it.commandWithSlash }.toSet()
 }

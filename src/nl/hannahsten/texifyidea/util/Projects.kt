@@ -15,7 +15,6 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.serviceContainer.AlreadyDisposedException
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands

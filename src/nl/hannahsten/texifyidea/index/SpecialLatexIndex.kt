@@ -66,6 +66,10 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.ENV_DEFINITIONS, project)
     }
 
+    fun getAllEnvDef(file: PsiFile): Collection<LatexCommands> {
+        return getByName(SpecialKeys.ENV_DEFINITIONS, file)
+    }
+
     fun processCommandDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
         processByName(SpecialKeys.COMMAND_DEFINITIONS, scope.project!!, scope, filter, processor)
     }
@@ -95,7 +99,6 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         // TODO
         return getAllEnvDef(originalFile.project)
     }
-
 }
 
 val NewSpecialCommandsIndex = NewSpecialCommandsIndexEx()

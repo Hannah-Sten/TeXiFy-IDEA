@@ -1,15 +1,13 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
-import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.parser.definitionCommand
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.parentsOfType
-import nl.hannahsten.texifyidea.util.projectSearchScope
 
 /**
  * Command reference. When resolved, points to the command definition.
@@ -33,23 +31,21 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
         ) {
             return emptyArray()
         }
-        else {
-            return LatexDefinitionIndex.Util.getCommandsByNames(definitionsAndRedefinitions, element.project, element.project.projectSearchScope)
-                .filter { it.getRequiredParameters().firstOrNull() == element.name }
-                .mapNotNull { newcommand ->
-                    // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
-                    // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
-                    val definedCommand = newcommand.definitionCommand()
+        val name = element.name ?: return emptyArray()
+        return NewDefinitionIndex.getByName(name, element.project).mapNotNull { newcommand ->
+            // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
+            // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
+            val definedCommand = newcommand.definitionCommand()
+            // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
+            // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
 
-                    if (definedCommand == null) {
-                        null
-                    }
-                    else {
-                        PsiElementResolveResult(definedCommand as PsiElement)
-                    }
-                }
-                .toArray(emptyArray())
-        }
+            if (definedCommand == null) {
+                null
+            }
+            else {
+                PsiElementResolveResult(definedCommand)
+            }
+        }.toTypedArray()
     }
 
     override fun resolve(): PsiElement? {
@@ -59,6 +55,8 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
 
     // Check if this reference resolves to the given element
     override fun isReferenceTo(element: PsiElement): Boolean {
+        if(element !is LatexCommands) return false
+        if(this.element.name != element.name) return false
         return multiResolve(false).any { it.element == element }
     }
 

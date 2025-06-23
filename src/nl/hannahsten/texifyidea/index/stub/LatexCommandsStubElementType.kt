@@ -98,7 +98,6 @@ class LatexCommandsStubElementType(debugName: String) :
 //            return
 //        }
 
-
         val token = stub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
         NewSpecialCommandsIndex.sinkIndex(sink, token)

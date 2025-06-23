@@ -76,7 +76,6 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         return StubIndex.getInstance().processAllKeys(key, processor, scope, idFilter)
     }
 
-
     @RequiresReadLock
     override fun getAllKeys(project: Project): Set<String> {
         return getAllKeys(GlobalSearchScope.projectScope(project))

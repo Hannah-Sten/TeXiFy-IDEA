@@ -10,7 +10,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -204,7 +204,7 @@ open class LatexAnnotator : Annotator {
 
         // Make user-defined commands highlighting customizable
         if (Cache.allUserDefinedCommands.isEmpty()) {
-            Cache.allUserDefinedCommands = LatexDefinitionIndex.Util.getItems(command.project)
+            Cache.allUserDefinedCommands = NewSpecialCommandsIndex.getAllCommandDef(command.project)
                 .filter { it.isCommandDefinition() }
                 .mapNotNull { it.definedCommandName() }
         }

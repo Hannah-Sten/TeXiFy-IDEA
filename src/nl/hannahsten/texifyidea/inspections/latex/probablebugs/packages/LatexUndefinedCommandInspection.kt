@@ -8,17 +8,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.util.parser.definedCommandName
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 
 /**
@@ -53,8 +51,7 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
                 containingPackages
             }
         val magicCommands = LatexRegularCommand.ALL.associate { Pair(it.cmd, setOf(it.dependency)) }
-        val userDefinedCommands = file.definitionsInFileSet().filter { it.name in CommandMagic.commandDefinitions }
-            .map { it.definedCommandName() }
+        val userDefinedCommands = NewDefinitionIndex.getAllKeys(file.project) // TODO filter only project file, not all files
             .associateWith { setOf(LatexPackage.DEFAULT) }
 
         // Join all the maps, map command name (with backslash) to all packages it is defined in

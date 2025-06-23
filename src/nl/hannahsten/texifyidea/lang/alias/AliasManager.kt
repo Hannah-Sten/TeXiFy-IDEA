@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.lang.alias
 
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import java.util.concurrent.ConcurrentHashMap
 
@@ -135,7 +135,7 @@ abstract class AliasManager {
 
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = runReadAction { LatexDefinitionIndex.Util.getItems(project).toSet() }
+        val indexedCommandDefinitions = NewSpecialCommandsIndex.getAllCommandDef(project)
 
         // Check if something has changed (the number of indexed command might be the same while the content is different), and if so, update the aliases.
         // Also do this the first time something is registered, because then we have to update aliases as well

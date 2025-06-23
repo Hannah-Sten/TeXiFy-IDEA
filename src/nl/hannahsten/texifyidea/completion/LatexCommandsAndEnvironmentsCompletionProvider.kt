@@ -11,16 +11,18 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addEnvironments
-import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addIndexedEnvironments
-import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.Dependend
+import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.SimpleEnvironment
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
@@ -31,6 +33,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
+import kotlin.collections.contains
 
 /**
  * Provide autocompletion for commands and environments.
@@ -62,6 +65,64 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                     .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
                     .withIcon(TexifyIcons.DOT_COMMAND)
             }
+        }
+
+        fun addIndexedEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
+            val project = parameters.editor.project ?: return
+
+            val usesTexlive = isTexliveAvailable
+            val packagesInProject = if (!usesTexlive) emptyList()
+            else includedPackages(NewSpecialCommandsIndex.getAllIncludes(project), project).plus(
+                LatexPackage.DEFAULT
+            )
+
+            result.addAllElements(
+                FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.Cache.id, project)
+                    .flatMap { envText ->
+                        Environment.lookupInIndex(envText, project)
+                            .filter { if (usesTexlive) it.dependency in packagesInProject else true }
+                            .map { env ->
+                                createEnvironmentLookupElement(env)
+                            }
+                    }
+            )
+        }
+
+        private fun createEnvironmentLookupElement(env: Environment): LookupElementBuilder {
+            return LookupElementBuilder.create(env, env.environmentName)
+                .withPresentableText(env.environmentName)
+                .bold()
+                .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
+                .withIcon(TexifyIcons.DOT_ENVIRONMENT)
+        }
+
+        fun addEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
+            // Find all environments.
+            val environments = mutableListOf<Environment>()
+            environments.addAll(DefaultEnvironment.entries)
+            // TODO:  fileset
+            NewSpecialCommandsIndex.getAllEnvDef(parameters.originalFile)
+                .asSequence()
+                .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
+                .mapNotNull { cmd -> cmd.requiredParameter(0) }
+                .map { environmentName -> SimpleEnvironment(environmentName) }
+                .forEach { e: SimpleEnvironment -> environments.add(e) }
+
+            // Create autocomplete elements.
+            result.addAllElements(
+                environments.map { env: Environment ->
+                    createEnvironmentLookupElement(env)
+                }
+            )
+            result.addLookupAdvertisement(getKindWords())
+        }
+
+        fun packageName(dependend: Dependend): String {
+            val name = dependend.dependency.name
+            return if ("" == name) {
+                ""
+            }
+            else " ($name)"
         }
     }
 

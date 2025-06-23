@@ -12,7 +12,6 @@ import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -21,7 +20,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PROGRESS_SIZE
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.isDefinition
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.io.File
 
@@ -160,18 +158,10 @@ fun PsiFile.findExternalDocumentCommand(): LatexCommands? {
 }
 
 /**
- * Get all the definitions in the file set.
- */
-fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.Util.getItemsInFileSet(this)
-        .filter { it.isDefinition() }
-}
-
-/**
  * Get all the definitions and redefinitions in the file set.
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.Util.getItemsInFileSet(this)
+    return NewSpecialCommandsIndex.getAllCommandDef(this.project)
 }
 
 /**
