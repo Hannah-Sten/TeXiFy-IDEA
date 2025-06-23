@@ -12,7 +12,6 @@ import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
@@ -154,14 +153,12 @@ fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCo
     return res
 }
 
-fun PsiFile.findCommandInFileSet(command: LatexCommand, useIndexCache: Boolean = true): LatexCommands? {
-    return LatexCommandsIndex.Util.getFirstItemByNameInFileSet(this, command.commandWithSlash, useIndexCache)
+fun PsiFile.findExternalDocumentCommand() : LatexCommands?{
+    return NewCommandsIndex.getNyNameInFileSet(
+        LatexGenericRegularCommand.EXTERNALDOCUMENT.command, containingFile.originalFile)
+        .firstOrNull()
 }
 
-/**
- * @see [LatexCommandsIndex.Util.getItemsAndFilesInFileSet]
- */
-fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexCommands>>> = LatexCommandsIndex.Util.getItemsAndFilesInFileSet(this)
 
 /**
  * Get all the definitions in the file set.

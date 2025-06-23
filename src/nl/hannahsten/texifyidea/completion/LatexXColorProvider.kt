@@ -4,16 +4,13 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.psi.PsiFile
 import com.intellij.util.ProcessingContext
 import com.intellij.util.ui.ColorIcon
 import nl.hannahsten.texifyidea.gutter.LatexElementColorProvider
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.util.Kindness
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.getCommandsInFiles
-import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
-import nl.hannahsten.texifyidea.util.parser.isColorDefinition
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
+import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import java.awt.Color
 
 object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
@@ -34,13 +31,8 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
 
     private fun addCustomColors(parameters: CompletionParameters, result: CompletionResultSet) {
         val file = parameters.originalFile
-        val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
-        val cmds = getCommandsInFiles(files, file)
-        for (cmd in cmds) {
-            if (!cmd.isColorDefinition()) {
-                continue
-            }
-
+        val colorDefinitions = NewCommandsIndex.getByNames(ColorMagic.colorDefinitions, file.project)
+        for (cmd in colorDefinitions) {
             val colorName = cmd.getRequiredArgumentValueByName("name") ?: continue
             val color = LatexElementColorProvider().findColor(colorName, file)
             val lookupElement = if (color != null) {

@@ -4,8 +4,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
@@ -61,7 +61,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 }
 
 /**
- * Expand custom commands in a given text once, using its definition in the [LatexCommandsIndex].
+ * Expand custom commands in a given text once, using its definition in the index.
  */
 fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): String? {
     if(file == null) return null
@@ -101,5 +101,5 @@ fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Colle
         .collect(Collectors.toSet())
     searchFiles.add(originalFile.virtualFile)
     val scope = GlobalSearchScope.filesScope(project, searchFiles)
-    return LatexCommandsIndex.Util.getItems(project, scope)
+    return NewSpecialCommandsIndex.getAll(project,scope)
 }

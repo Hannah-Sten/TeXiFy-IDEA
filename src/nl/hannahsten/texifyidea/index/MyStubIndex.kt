@@ -6,12 +6,14 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StringStubIndexExtension
+import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.grammar.LatexParserDefinition
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFiles
@@ -20,7 +22,7 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 /**
  *
  */
-abstract class MyStringStubIndexBase<Psi : PsiElement>(
+abstract class MyStringStubIndexBase<Stub: StubElement<Psi>,Psi : PsiElement>(
     val clazz: Class<Psi>,
 ) : StringStubIndexExtension<Psi>() {
 
@@ -119,7 +121,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     }
 }
 
-abstract class SpecialKeyStubIndexBase<Psi : PsiElement>(clazz: Class<Psi>) : MyStringStubIndexBase<Psi>(clazz) {
+abstract class SpecialKeyStubIndexBase<Stub: StubElement<Psi>, Psi : PsiElement>(clazz: Class<Psi>) : MyStringStubIndexBase<Stub,Psi>(clazz) {
     protected abstract val specialKeys: Set<String>
     protected abstract val keyForAll: String
     protected abstract val specialKeyMap: Map<String, List<String>>
@@ -223,7 +225,7 @@ fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
     return GlobalSearchScope.filesScope(baseFile.project, searchFiles)
 }
 
-abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommands>(LatexCommands::class.java) {
+abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommandsStub,LatexCommands>(LatexCommands::class.java) {
 
     abstract override fun getKey(): StubIndexKey<String, LatexCommands>
 
@@ -239,10 +241,10 @@ abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommands>(
         return buildLatexSearchFiles(baseFile)
     }
 
-    fun getInFileSet(file: PsiFile, commandToken: String): Collection<LatexCommands> {
+    fun getNyNameInFileSet(name: String, file: PsiFile): Collection<LatexCommands> {
         // Setup search set.
         val project = file.project
         val scope = buildSearchFiles(file)
-        return StubIndex.getElements(key, commandToken, project, wrapSearchScope(scope), clazz)
+        return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
     }
 }

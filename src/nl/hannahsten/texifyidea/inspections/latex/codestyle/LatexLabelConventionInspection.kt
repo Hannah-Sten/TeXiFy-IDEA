@@ -129,6 +129,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
      * @author Hannah Schellekens
      */
     private class LabelPreFix : LocalQuickFix {
+        // TODO: Provide better implementation
 
         override fun getFamilyName() = "Fix label name"
 
@@ -187,29 +188,30 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun findReferences(
             file: PsiFile,
             labelName: String
-        ): MutableSet<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
-            val result = mutableSetOf<Pair<PsiFile, MutableList<LatexRequiredParam>>>()
+        ): Set<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
+            // TODO: Better implementation
+//            val result = mutableSetOf<Pair<PsiFile, MutableList<LatexRequiredParam>>>()
+//
+//            val commandsAndFiles = file.commandsAndFilesInFileSet()
+//
+//            // Loop over every file
+//            for (pair in commandsAndFiles) {
+//                // Only look at commands which refer to something
+//                val commands =
+//                    pair.second.filter { CommandMagic.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
+//                val requiredParams = mutableListOf<LatexRequiredParam>()
+//
+//                // Find all the parameters with the given labelName
+//                for (ref in commands) {
+//                    val parameters = ref.requiredParameters()
+//                        .filter { p -> p.findFirstChildOfType(LatexParameterText::class)?.text == labelName }
+//                    requiredParams.addAll(parameters)
+//                }
+//
+//                result.add(Pair(pair.first, requiredParams))
+//            }
 
-            val commandsAndFiles = file.commandsAndFilesInFileSet()
-
-            // Loop over every file
-            for (pair in commandsAndFiles) {
-                // Only look at commands which refer to something
-                val commands =
-                    pair.second.filter { CommandMagic.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
-                val requiredParams = mutableListOf<LatexRequiredParam>()
-
-                // Find all the parameters with the given labelName
-                for (ref in commands) {
-                    val parameters = ref.requiredParameters()
-                        .filter { p -> p.findFirstChildOfType(LatexParameterText::class)?.text == labelName }
-                    requiredParams.addAll(parameters)
-                }
-
-                result.add(Pair(pair.first, requiredParams))
-            }
-
-            return result
+            return emptySet()
         }
 
         /**

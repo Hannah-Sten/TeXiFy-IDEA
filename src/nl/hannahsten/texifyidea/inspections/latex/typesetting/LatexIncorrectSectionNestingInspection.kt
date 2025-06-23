@@ -6,13 +6,15 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.forEachCommand
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.lineIndentation
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.replaceString
 
 /**
@@ -37,15 +39,15 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Incorrect nesting"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-//        file.traverseCommands()
-//            .filter { (it as LatexCommands).name}
-
-        return LatexCommandsIndex.Util.getCommandsByNames(file, *sectioningCommands())
+        return file.traverseCommands()
+            .filter {
+                it.name in commandToForbiddenPredecessors
+            }
             .sortedBy { it.textOffset }
             .zipWithNext()
             .filter { (first, second) ->
                 first.isValid && second.isValid &&
-                    commandToForbiddenPredecessors[second.commandName()]?.contains(first.commandName()) == true
+                        commandToForbiddenPredecessors[second.commandName()]?.contains(first.commandName()) == true
             }
             .map {
                 manager.createProblemDescriptor(
@@ -57,9 +59,9 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
                     false
                 )
             }
+            .toList()
     }
 
-    private fun sectioningCommands() = commandToForbiddenPredecessors.keys.toTypedArray()
 
     private fun LatexCommands.commandName(): String = this.commandToken.text
 

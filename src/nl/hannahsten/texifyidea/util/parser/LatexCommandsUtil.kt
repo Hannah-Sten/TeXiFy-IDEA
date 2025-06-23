@@ -29,13 +29,6 @@ import kotlin.math.min
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
 
-/**
- * Checks whether the given LaTeX commands is a color definition or not.
- *
- * @return `true` if the command defines a color, `false` when the command command
- *          is `null` or otherwise.
- */
-fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in ColorMagic.colorDefinitions.map { it.command }
 
 fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in ColorMagic.colorCommands
 

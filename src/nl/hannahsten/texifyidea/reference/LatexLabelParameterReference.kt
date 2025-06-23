@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.files.findCommandInFileSet
+import nl.hannahsten.texifyidea.util.files.findExternalDocumentCommand
 import nl.hannahsten.texifyidea.util.labels.extractLabelElement
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
@@ -32,7 +33,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val externalDocumentCommand = myElement.containingFile.originalFile.findCommandInFileSet(LatexGenericRegularCommand.EXTERNALDOCUMENT)
+        val externalDocumentCommand = myElement.containingFile.findExternalDocumentCommand()
         // Find the label definition
         val myElementName = myElement.name
         return myElement.containingFile.findLatexLabelingElementsInFileSet()

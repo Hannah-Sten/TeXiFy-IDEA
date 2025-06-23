@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.concurrent.atomic.AtomicBoolean
 
 // Due to the update method being called many times, we need to limit the number of updates requested
@@ -11,7 +12,7 @@ var isUpdatingIncludeAliases = AtomicBoolean(false)
 fun updateAndGetIncludeCommands(project: Project): Set<String> {
     // For performance reasons, do not wait until the update (which requires index access) is done
     updateIncludeCommandsAliasesAsync(project)
-    return defaultIncludeCommands.map { CommandManager.getAliases(it) }.flatten().toSet()
+    return CommandMagic.defaultIncludeCommands.map { CommandManager.getAliases(it) }.flatten().toSet()
 }
 
 fun updateIncludeCommandsAliasesAsync(project: Project) {
@@ -20,7 +21,7 @@ fun updateIncludeCommandsAliasesAsync(project: Project) {
         runInBackgroundWithoutProgress {
             try {
                 // Because every command has different parameters and behaviour (e.g. allowed file types), we keep track of them separately
-                for (command in defaultIncludeCommands) {
+                for (command in CommandMagic.defaultIncludeCommands) {
                     CommandManager.updateAliases(setOf(command), project)
                 }
             }
@@ -40,5 +41,5 @@ fun getOriginalCommandFromAlias(commandName: String, project: Project): LatexCom
         // If we can't find anything, trigger an update so that maybe we have the information next time
         updateIncludeCommandsAliasesAsync(project)
     }
-    return LatexCommand.lookup(aliasSet.firstOrNull { it in defaultIncludeCommands })?.first()
+    return LatexCommand.lookup(aliasSet.firstOrNull { it in CommandMagic.defaultIncludeCommands })?.first()
 }

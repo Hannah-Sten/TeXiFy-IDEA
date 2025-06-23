@@ -6,6 +6,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import com.intellij.util.indexing.IdFilter
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -18,7 +19,7 @@ class NewCommandsIndexEx : NewLatexCommandsStubIndex() {
 
 val NewCommandsIndex = NewCommandsIndexEx()
 
-class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCommands::class.java) {
+class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> {
         return LatexStubIndexKeys.COMMANDS_SPECIAL
     }

@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findCommandInFileSet
+import nl.hannahsten.texifyidea.util.files.findExternalDocumentCommand
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
@@ -31,7 +32,7 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexL
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
 fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
-    val externalDocumentCommand = this.findCommandInFileSet(LatexGenericRegularCommand.EXTERNALDOCUMENT)
+    val externalDocumentCommand = this.findExternalDocumentCommand()
     return findLatexLabelingElementsInFileSet().map { it.extractLabelName(externalDocumentCommand) }
 }
 

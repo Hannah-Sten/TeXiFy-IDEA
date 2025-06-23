@@ -98,7 +98,6 @@ class LatexCommandsStubElementType(debugName: String) :
         if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
             return
         }
-
         val token = latexCommandsStub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
         NewSpecialCommandsIndex.sinkIndex(sink, token)
