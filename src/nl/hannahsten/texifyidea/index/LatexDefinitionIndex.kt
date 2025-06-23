@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 open class LatexDefinitionIndex : StringStubIndexExtension<LatexCommands>() {
 
-    object Util : IndexCommandsUtilBase(LatexStubIndexKeys.DEFINITIONS_KEY)
+    object Util : IndexCommandsUtilBase(LatexStubIndexKeys.DEFINITIONS_NEW)
 
     override fun getKey() = Util.key()
 

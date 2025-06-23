@@ -7,7 +7,6 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import com.intellij.util.indexing.FileBasedIndex
@@ -81,10 +80,12 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                 // Filling the cache can take two seconds, for now we wait on it
                 addCustomCommands(parameters, result)
             }
+
             LatexMode.MATH -> {
                 addMathCommands(result)
                 addCustomCommands(parameters, result, LatexMode.MATH)
             }
+
             LatexMode.ENVIRONMENT_NAME -> {
                 addEnvironments(result, parameters)
                 addIndexedEnvironments(result, parameters)
@@ -175,17 +176,8 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         mode: LatexMode? = null
     ) {
         val file = parameters.originalFile
-        val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
-        val root = file.findRootFile()
-        val documentClass = root.documentClassFileInProject()
-        if (documentClass != null) {
-            files.add(documentClass)
-        }
-        val cmds = getCommandsInFiles(files, file)
+        val cmds = NewSpecialCommandsIndex.getAllCommandDefRelated(file).asSequence() + NewSpecialCommandsIndex.getAllEnvDefRelated(file)
         for (cmd in cmds) {
-            if (!cmd.isDefinition() && !cmd.isEnvironmentDefinition()) {
-                continue
-            }
             if (mode !== LatexMode.MATH && cmd.name in CommandMagic.mathCommandDefinitions) {
                 continue
             }

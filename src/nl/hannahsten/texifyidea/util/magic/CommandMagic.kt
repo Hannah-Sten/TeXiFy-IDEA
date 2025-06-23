@@ -362,6 +362,8 @@ object CommandMagic {
 
     val graphicPathsCommands = setOf(GRAPHICSPATH, SVGPATH)
 
+    val graphicPathsCommandNames = graphicPathsCommands.mapTo(mutableSetOf()) { it.name }
+
     /**
      * Commands that should not have the given file extensions.
      */

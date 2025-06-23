@@ -42,8 +42,8 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         // Map each bibliography file to all the commands which include it
         val groupedIncludes = mutableMapOf<Pair<String, String>, MutableList<LatexCommands>>()
 
-        val commands = NewCommandsIndex.getNyNameInFileSet("\\bibliography", file).asSequence() +
-            NewCommandsIndex.getNyNameInFileSet("\\addbibresource", file)
+        val commands = NewCommandsIndex.getByNameInFileSet("\\bibliography", file).asSequence() +
+            NewCommandsIndex.getByNameInFileSet("\\addbibresource", file)
         commands.forEach { command ->
             for ((filePath, fileName) in command.getIncludedFiles(false).map { it.virtualFile.path to it.name }) {
                 groupedIncludes.getOrPut(filePath to fileName) { mutableListOf() }.add(command)

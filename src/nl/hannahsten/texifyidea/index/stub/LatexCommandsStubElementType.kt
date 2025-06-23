@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.index.stub
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.*
-import com.intellij.testFramework.LightVirtualFile
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
@@ -85,32 +84,35 @@ class LatexCommandsStubElementType(debugName: String) :
         }
     }
 
-    override fun indexStub(latexCommandsStub: LatexCommandsStub, sink: IndexSink) {
+    override fun indexStub(stub: LatexCommandsStub, sink: IndexSink) {
         // We do not want all the commands from all package source files in this index, because
         // then we end up with 200k keys for texlive full, but we need to iterate over all keys
         // every time we need to get e.g. all commands in a file, so that would be too slow.
         // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
         // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
         // Unfortunately, this seems to make indexing five times slower
-        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
+//        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
+//
+//        // If any of the sdk source roots is part of the currently indexed path, don't index the file
+//        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
+//            return
+//        }
 
-        // If any of the sdk source roots is part of the currently indexed path, don't index the file
-        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
-            return
-        }
-        val token = latexCommandsStub.commandToken
+
+        val token = stub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
         NewSpecialCommandsIndex.sinkIndex(sink, token)
-        if(token in CommandMagic.commandDefinitionsAndRedefinitions) {
-            sink.occurrence(LatexStubIndexKeys.DEFINITIONS_KEY, token)
+        NewDefinitionIndex.sinkIndex(stub, sink)
+        if (token in CommandMagic.commandDefinitionsAndRedefinitions) {
+            sink.occurrence(LatexStubIndexKeys.DEFINITIONS_NEW, token)
         }
         if (token in CommandMagic.labelAsParameter) {
-            latexCommandsStub.optionalParams["label"]?.let { label ->
+            stub.optionalParams["label"]?.let { label ->
                 sink.occurrence(LatexStubIndexKeys.LABELED_COMMANDS_KEY, label)
             }
         }
-        if (token in CommandMagic.glossaryEntry && latexCommandsStub.requiredParams.isNotEmpty()) {
-            sink.occurrence(LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY, latexCommandsStub.requiredParams[0])
+        if (token in CommandMagic.glossaryEntry && stub.requiredParams.isNotEmpty()) {
+            sink.occurrence(LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY, stub.requiredParams[0])
         }
     }
 

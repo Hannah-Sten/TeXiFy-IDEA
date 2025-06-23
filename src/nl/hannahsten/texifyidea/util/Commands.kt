@@ -3,9 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
@@ -19,7 +17,6 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
-import java.util.stream.Collectors
 
 /**
  * Inserts a custom c custom command definition.
@@ -93,13 +90,3 @@ fun LatexCommands.defaultCommand(): LatexCommand? {
 
 fun LatexCommands.isFigureLabel(): Boolean =
     name in project.getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)
-
-fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Collection<LatexCommands> {
-    val project = originalFile.project
-    val searchFiles = files.stream()
-        .map { obj: PsiFile -> obj.virtualFile }
-        .collect(Collectors.toSet())
-    searchFiles.add(originalFile.virtualFile)
-    val scope = GlobalSearchScope.filesScope(project, searchFiles)
-    return NewSpecialCommandsIndex.getAll(project, scope)
-}

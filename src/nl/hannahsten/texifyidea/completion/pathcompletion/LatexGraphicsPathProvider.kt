@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
@@ -33,7 +34,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     fun getGraphicsPathsInFileSet(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = file.commandsInFileSet().filter { command -> CommandMagic.graphicPathsCommands.map { it.cmd }.contains(command.name) }
+        val graphicsPathCommands = NewCommandsIndex.getByNamesInFileSet(CommandMagic.graphicPathsCommandNames, file)
 
         // Is a graphicspath defined?
         if (graphicsPathCommands.isNotEmpty()) {

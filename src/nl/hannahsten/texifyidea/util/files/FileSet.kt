@@ -147,13 +147,13 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet
 fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> {
     // TODO: Avoid calling this method as it is very slow.
 //    val res = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
-    val res = NewSpecialCommandsIndex.getAllInFileSet(this)
+//    val res = NewSpecialCommandsIndex.getAllInFileSet(this)
     // You can create breakpoints in the code to see the size of the returned collection.
-    return res
+    return emptyList()
 }
 
 fun PsiFile.findExternalDocumentCommand(): LatexCommands? {
-    return NewCommandsIndex.getNyNameInFileSet(
+    return NewCommandsIndex.getByNameInFileSet(
         LatexGenericRegularCommand.EXTERNALDOCUMENT.command, containingFile.originalFile
     )
         .firstOrNull()

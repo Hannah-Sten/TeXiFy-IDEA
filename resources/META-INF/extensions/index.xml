@@ -14,6 +14,7 @@
 
         <stubIndex implementation="nl.hannahsten.texifyidea.index.NewCommandsIndexEx"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.NewSpecialCommandsIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewDefinitionIndexEx"/>
 
 
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex" />
