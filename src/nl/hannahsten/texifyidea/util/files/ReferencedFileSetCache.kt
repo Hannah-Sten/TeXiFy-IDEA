@@ -9,7 +9,7 @@ import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache.Cache.fileSetCache
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 
@@ -149,7 +149,7 @@ class ReferencedFileSetCache {
         // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
         // Note that LatexIncludesIndex.Util.getItems(file.project) may be a slow operation and should not be run on EDT
         // Don't use cache here, otherwise we would just be comparing cache with cache
-        val numberOfIncludes = NewIncludesIndex.getAll(project).size
+        val numberOfIncludes = NewSpecialCommandsIndex.getAllIncludes(project).size
 
         // The cache should be complete once filled, any files not in there are assumed to not be part of a file set that has a valid root file
         if (numberOfIncludes != Cache.numberOfIncludes[project] && !Cache.isCacheFillInProgress.getOrPut(project) { AtomicBoolean(false) }.getAndSet(true)) {

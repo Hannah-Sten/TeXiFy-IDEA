@@ -4,7 +4,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -41,12 +42,12 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
 }
 
 fun isImportPackageUsed(project: Project): Boolean {
-    val allRelativeImportCommands = NewIncludesIndex.getByNames(
+    val allRelativeImportCommands = NewCommandsIndex.getByNames(
         CommandMagic.relativeImportCommands,
         project,
     )
     if (allRelativeImportCommands.isNotEmpty()) return true
-    val allAbsoluteImportCommands = NewIncludesIndex.getByNames(
+    val allAbsoluteImportCommands = NewCommandsIndex.getByNames(
         CommandMagic.absoluteImportCommands,
         project,
     )
@@ -87,7 +88,7 @@ fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
 
 fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf("")): List<VirtualFile> {
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableSet()
-    val allIncludeCommands = NewIncludesIndex.getAll(command.project)
+    val allIncludeCommands = NewSpecialCommandsIndex.getAllIncludes(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
     var includingCommands = allIncludeCommands.filter { includeCommand ->
         includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) }

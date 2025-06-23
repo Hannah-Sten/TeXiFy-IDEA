@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
@@ -93,7 +93,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
 
                 val commandNames = CommandMagic.includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
                 val includeCommands = readAction {
-                    NewIncludesIndex.getByNames(commandNames, project)
+                    NewCommandsIndex.getByNames(commandNames, project)
                 }
 
                 val workSize = includeCommands.size

@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -42,8 +42,8 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         // Map each bibliography file to all the commands which include it
         val groupedIncludes = mutableMapOf<Pair<String, String>, MutableList<LatexCommands>>()
 
-        val commands = NewIncludesIndex.getInFileSet(file, "\\bibliography").asSequence() +
-            NewIncludesIndex.getInFileSet(file, "\\addbibresource")
+        val commands = NewCommandsIndex.getInFileSet(file, "\\bibliography").asSequence() +
+            NewCommandsIndex.getInFileSet(file, "\\addbibresource")
         commands.forEach { command ->
             for ((filePath, fileName) in command.getIncludedFiles(false).map { it.virtualFile.path to it.name }) {
                 groupedIncludes.getOrPut(filePath to fileName) { mutableListOf() }.add(command)

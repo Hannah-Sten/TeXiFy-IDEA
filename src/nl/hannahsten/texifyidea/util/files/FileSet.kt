@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -48,7 +48,7 @@ internal suspend fun Project.findReferencedFileSetWithoutCache(reporter: Progres
         val usesLuatexPaths = getLuatexPaths(project).isNotEmpty()
 
         // Find all root files.
-        val roots = NewIncludesIndex.getAll(project)
+        val roots = NewSpecialCommandsIndex.getAllIncludes(project)
             .map { it.containingFile }
             .distinct()
             .filter { it.isRoot() }
@@ -205,10 +205,10 @@ fun getLuatexPaths(project: Project): List<String> {
 //    val direct = LatexCommandsIndex.Util.getCommandsByNamesNonBlocking(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project))
 //        .mapNotNull { command -> smartReadAction(project) { command.requiredParameter(0) } }
 //        .flatMap { it.split(",") }
-    val direct = NewIncludesIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project)
+    val direct = NewCommandsIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project)
         .mapNotNull { it.requiredParameter(0) }
         .flatMap { it.split(",") }
-    val viaUsepackage = NewIncludesIndex.getByNames(CommandMagic.packageInclusionCommands, project)
+    val viaUsepackage = NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, project)
         .filter { it.requiredParameter(0) == LatexPackage.ADDTOLUATEXPATH.name }
         .flatMap { it.getOptionalParameterMap().keys }
         .flatMap { it.text.split(",") }

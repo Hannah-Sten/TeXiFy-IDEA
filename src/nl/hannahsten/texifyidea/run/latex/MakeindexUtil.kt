@@ -6,7 +6,6 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
@@ -67,7 +66,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
 //        .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
 //        .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
 //        .flatMap { it.getOptionalParameterMap().toStringMap().keys }
-    return NewIncludesIndex.getByNames(CommandMagic.packageInclusionCommands, mainPsiFile).asSequence()
+    return NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, mainPsiFile).asSequence()
         .filter { command -> command.getRequiredParameters().any { it in PackageMagic.indexNames || it in PackageMagic.glossaryNames } }
         .flatMap { it.getOptionalParameterMap().toStringMap().keys }
         .toList()

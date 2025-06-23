@@ -13,6 +13,9 @@ object LatexStubIndexKeys {
     val COMMANDS =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.commands")
 
+    val COMMANDS_SPECIAL =
+        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.commandsspecial")
+
     val INCLUDES =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.includes")
 

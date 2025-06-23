@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.util.defaultIncludeCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import java.io.IOException
@@ -101,15 +100,8 @@ class LatexCommandsStubElementType(debugName: String) :
         }
 
         val token = latexCommandsStub.commandToken
-        NewCommandsIndex.sinkIndex(sink, LatexStubIndexKeys.COMMANDS, token)
-        if (token in defaultIncludeCommands) {
-            NewIncludesIndex.sinkIndex(sink, LatexStubIndexKeys.INCLUDES, token)
-        }
-        if (token in CommandMagic.definitions) {
-            // TODO
-            sink.occurrence(LatexStubIndexKeys.DEFINITIONS_KEY, token)
-//            NewLatexCommandsStubIndex.sinkIndex(sink,LatexStubIndexKeys.DEFINITIONS_KEY,token)
-        }
+        sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
+        NewSpecialCommandsIndex.sinkIndex(sink, token)
         if (token in CommandMagic.labelAsParameter) {
             latexCommandsStub.optionalParams["label"]?.let { label ->
                 sink.occurrence(LatexStubIndexKeys.LABELED_COMMANDS_KEY, label)

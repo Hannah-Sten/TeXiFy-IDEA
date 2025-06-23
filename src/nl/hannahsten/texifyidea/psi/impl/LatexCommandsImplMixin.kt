@@ -55,7 +55,6 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         return this
     }
 
-
     /**
      * Get the name of the command, for example `\alpha`.
      */

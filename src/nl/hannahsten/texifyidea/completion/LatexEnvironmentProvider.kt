@@ -6,7 +6,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -25,7 +25,7 @@ object LatexEnvironmentProvider {
         val project = parameters.editor.project ?: return
 
         val usesTexlive = LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable
-        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(NewIncludesIndex.getAll(project), project).plus(
+        val packagesInProject = if (!usesTexlive) emptyList() else includedPackages(NewSpecialCommandsIndex.getAllIncludes(project), project).plus(
             LatexPackage.DEFAULT
         )
 

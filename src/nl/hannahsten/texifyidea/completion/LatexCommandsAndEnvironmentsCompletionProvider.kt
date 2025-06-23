@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -110,7 +110,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // completion would be flooded with duplicate commands from packages that nobody uses.
             // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
             // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
-            val includeCommands = NewIncludesIndex.getAll(project)
+            val includeCommands = NewSpecialCommandsIndex.getAllIncludes(project)
             val packagesInProject = if (!isTexliveAvailable) emptySet() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
             LatexExternalCommandsIndexCache.fillCacheAsync(project, packagesInProject)
             return false

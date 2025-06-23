@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
@@ -28,16 +28,6 @@ import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.parser.*
-
-/**
- * Looks for all file inclusions in a given file, excluding installed LaTeX packages.
- *
- * @return A list containing all included files.
- */
-fun PsiFile.findInclusions(): List<PsiFile> {
-    return NewIncludesIndex.getAll(this)
-        .flatMap { it.getIncludedFiles(false) }
-}
 
 /**
  * Checks if the file has LaTeX syntax.
@@ -108,7 +98,7 @@ internal fun PsiFile.referencedFiles(rootFile: VirtualFile, isImportPackageUsed:
 
 @RequiresReadLock
 internal fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean) {
-    NewIncludesIndex.getAll(project).forEach { command ->
+    NewSpecialCommandsIndex.getAllIncludes(project).forEach { command ->
         if (!command.isValid) return@forEach
         command.references.filterIsInstance<InputFileReference>()
             .mapNotNull { it.resolve(false, rootFile, true, checkImportPath = isImportPackageUsed, checkAddToLuatexPath = usesLuatexPaths) }

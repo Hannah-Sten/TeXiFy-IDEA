@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.NewIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -36,7 +36,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val root = file.findRootFile(useIndexCache = false)
 
-        val isInclude = NewIncludesIndex.getInFileSet(file, "\\include").any {
+        val isInclude = NewCommandsIndex.getInFileSet(file, "\\include").any {
             it.requiredParameter(0)?.let { f -> root.findFile(f, supportsAnyExtension = true) } == file
         }
 

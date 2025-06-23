@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -18,12 +19,11 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.forEachCommand
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
-import nl.hannahsten.texifyidea.util.findCommandDefinitions
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.parser.*
@@ -104,35 +104,34 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ) {
         // This loops over all commands, so we don't want to do this again for every command in the file for performance
-        val commandDefinitionsInProject = file.project.findCommandDefinitions().map { it.definedCommandName() }
+        val commandDefinitionsInProject = NewSpecialCommandsIndex.getAllCommandDef(file.project).map { it.definedCommandName() }
 
-        val commands = file.commandsInFile()
-        commandLoop@ for (command in commands) {
+        file.forEachCommand commandLoop@{ command ->
             // If we are actually defining the command, then it doesn't need any dependency
             if (command.parent?.firstParentOfType(LatexCommands::class).isCommandDefinition()) {
-                continue
+                return@commandLoop
             }
 
             // If defined within the project, also fine
             if (commandDefinitionsInProject.contains(command.name)) {
-                continue
+                return@commandLoop
             }
 
             val name = command.commandToken.text.substring(1)
-            val latexCommands = LatexCommand.lookup(name) ?: continue
+            val latexCommands = LatexCommand.lookup(name) ?: return@commandLoop
 
             // In case there are multiple commands with this name, we don't know which one the user wants.
             // So we don't know which of the dependencies the user needs: we assume that if at least one of them is present it will be the right one.
             val dependencies = latexCommands.map { it.dependency }.toSet()
 
             if (dependencies.isEmpty() || dependencies.any { it.isDefault }) {
-                continue
+                return@commandLoop
             }
 
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
                 if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key)) {
-                    continue@commandLoop
+                    return@commandLoop
                 }
             }
 

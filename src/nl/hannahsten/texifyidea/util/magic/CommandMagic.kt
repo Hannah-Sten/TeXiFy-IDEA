@@ -285,6 +285,11 @@ object CommandMagic {
         DECLARE_PAIRED_DELIMITER_XPP.cmd
     )
 
+    val defaultIncludeCommands = LatexRegularCommand.values()
+        .filter { command -> command.arguments.any { it is RequiredFileArgument } }
+        .map { "\\" + it.command }
+        .toSet()
+
     /**
      * All commands that can define regular commands.
      */
@@ -308,7 +313,7 @@ object CommandMagic {
     /**
      * All commands that define new environments.
      */
-    val environmentDefinitions = hashSetOf(
+    val environmentDefinitions: Set<String> = hashSetOf(
         NEWENVIRONMENT,
         NEWTHEOREM,
         NEWDOCUMENTENVIRONMENT,
@@ -320,7 +325,7 @@ object CommandMagic {
         PROVIDETCOLORBOX,
         NEWENVIRONMENTX,
         LSTNEWENVIRONMENT,
-    ).map { it.cmd }
+    ).map { it.cmd }.toSet()
 
     /**
      * All commands that define or redefine other environments, whether it exists or not.

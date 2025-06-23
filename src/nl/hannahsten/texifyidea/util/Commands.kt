@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -21,28 +20,6 @@ import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import java.util.stream.Collectors
-
-/**
- * Finds all defined commands within the project.
- *
- * @return The found commands.
- */
-fun Project.findCommandDefinitions(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.Util.getItems(this).filter {
-        it.isCommandDefinition()
-    }
-}
-
-/**
- * Get all commands that include other files, including backslashes. Use [updateAndGetIncludeCommands] to include custom commands, if possible.
- */
-val defaultIncludeCommands: Set<String>
-    by lazy {
-        LatexRegularCommand.values()
-            .filter { command -> command.arguments.any { it is RequiredFileArgument } }
-            .map { "\\" + it.command }
-            .toSet()
-    }
 
 /**
  * Inserts a custom c custom command definition.

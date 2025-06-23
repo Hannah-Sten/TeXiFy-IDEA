@@ -3,9 +3,9 @@ package nl.hannahsten.texifyidea.util.labels
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
@@ -16,7 +16,9 @@ import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
  * @return The found label commands.
  */
 fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
-    val commands = LatexCommandsIndex.Util.getItems(this).findLatexCommandsLabels(this)
+    val labelDefinitions = getLabelDefinitionCommands()
+    val commands = NewCommandsIndex.getByNames(labelDefinitions, this)
+//    val commands = LatexCommandsIndex.Util.getItems(this).findLatexCommandsLabels(this)
     val bibtexIds = BibtexEntryIndex().getIndexedEntries(this)
     val environments = LatexParameterLabeledEnvironmentsIndex.Util.getItems(this)
     val parameterLabeledCommands = LatexParameterLabeledCommandsIndex.Util.getItems(this)
