@@ -40,7 +40,7 @@ object StubIndexKt {
         clazz: Class<Psi>,
         crossinline action: (Psi) -> Boolean
     ): Boolean {
-        return StubIndex.getInstance().processElements(indexKey, key, project, LatexFileFilterScope(scope), clazz) { element ->
+        return StubIndex.getInstance().processElements(indexKey, key, project, scope, clazz) { element ->
             action(element)
         }
     }

@@ -112,6 +112,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         name: String,
         project: Project,
         scope: GlobalSearchScope = GlobalSearchScope.projectScope(project),
+        filter: IdFilter? = null,
         action: (Psi) -> Unit
     ) {
         StubIndexKt.forEachElement(key, name, project, wrapSearchScope(scope), action)
@@ -125,8 +126,8 @@ abstract class SpecialKeyStubIndexBase<Psi : PsiElement>(clazz: Class<Psi>) : My
 
     fun sinkIndex(sink: IndexSink, commandToken: String) {
         val indexKey = key
-        sink.occurrence(indexKey, keyForAll)
         sink.occurrence(indexKey, commandToken)
+        sink.occurrence(indexKey, keyForAll)
         specialKeyMap[commandToken]?.let { keys ->
             keys.forEach {
                 sink.occurrence(indexKey, it)
@@ -200,6 +201,28 @@ abstract class SpecialKeyStubIndexBase<Psi : PsiElement>(clazz: Class<Psi>) : My
     }
 }
 
+fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
+    // TODO improve it
+    val useIndexCache = true
+    val searchFiles = baseFile.referencedFileSet(useIndexCache)
+        .mapNotNullTo(mutableSetOf()) { it.virtualFile }
+    searchFiles.add(baseFile.virtualFile)
+
+    // Add document classes
+    // There can be multiple, e.g., in the case of subfiles, in which case we probably want all items in the super-fileset
+    val roots = baseFile.findRootFiles()
+    for (root in roots) {
+        val docClass = root.documentClassFileInProject() ?: continue
+        searchFiles.add(docClass.virtualFile)
+        docClass.referencedFileSet(useIndexCache).forEach {
+            searchFiles.add(it.virtualFile)
+        }
+    }
+
+    // Search index.
+    return GlobalSearchScope.filesScope(baseFile.project, searchFiles)
+}
+
 abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommands>(LatexCommands::class.java) {
 
     abstract override fun getKey(): StubIndexKey<String, LatexCommands>
@@ -213,25 +236,7 @@ abstract class NewLatexCommandsStubIndex : MyStringStubIndexBase<LatexCommands>(
     }
 
     override fun buildSearchFiles(baseFile: PsiFile): GlobalSearchScope {
-        // TODO improve it
-        val useIndexCache = true
-        val searchFiles = baseFile.referencedFileSet(useIndexCache)
-            .mapNotNullTo(mutableSetOf()) { it.virtualFile }
-        searchFiles.add(baseFile.virtualFile)
-
-        // Add document classes
-        // There can be multiple, e.g., in the case of subfiles, in which case we probably want all items in the super-fileset
-        val roots = baseFile.findRootFiles()
-        for (root in roots) {
-            val docClass = root.documentClassFileInProject() ?: continue
-            searchFiles.add(docClass.virtualFile)
-            docClass.referencedFileSet(useIndexCache).forEach {
-                searchFiles.add(it.virtualFile)
-            }
-        }
-
-        // Search index.
-        return GlobalSearchScope.filesScope(baseFile.project, searchFiles)
+        return buildLatexSearchFiles(baseFile)
     }
 
     fun getInFileSet(file: PsiFile, commandToken: String): Collection<LatexCommands> {

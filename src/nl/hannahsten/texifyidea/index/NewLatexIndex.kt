@@ -4,6 +4,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndexKey
+import com.intellij.util.Processor
+import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -19,6 +21,14 @@ val NewCommandsIndex = NewCommandsIndexEx()
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> {
         return LatexStubIndexKeys.COMMANDS_SPECIAL
+    }
+
+    override fun buildSearchFiles(baseFile: PsiFile): GlobalSearchScope {
+        return buildLatexSearchFiles(baseFile)
+    }
+
+    override fun wrapSearchScope(scope: GlobalSearchScope): GlobalSearchScope {
+        return LatexFileFilterScope(scope)
     }
 
     val mappingPairs = listOf(
@@ -58,6 +68,14 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     fun getAllCommandDef(project: Project): Collection<LatexCommands> {
         return getByName(SpecialKeys.COMMAND_DEFINITIONS, project)
     }
+
+    fun processCommandDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
+        processByName(SpecialKeys.COMMAND_DEFINITIONS, scope.project!!, scope, filter, processor)
+    }
+
+    fun processEnvDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
+        processByName(SpecialKeys.ENV_DEFINITIONS, scope.project!!, scope, filter, processor)
+    }
 }
 
 val NewSpecialCommandsIndex = NewSpecialCommandsIndexEx()
@@ -68,12 +86,4 @@ open class NewDefinitionIndexEx : NewLatexCommandsStubIndex() {
     }
 }
 
-object NewDefinitionIndex : NewDefinitionIndexEx()
-
-open class NewIncludesIndexEx : NewLatexCommandsStubIndex() {
-    override fun getKey(): StubIndexKey<String, LatexCommands> {
-        return LatexStubIndexKeys.INCLUDES
-    }
-}
-
-object NewIncludesIndex : NewIncludesIndexEx()
+val NewDefinitionIndex = NewDefinitionIndexEx()
