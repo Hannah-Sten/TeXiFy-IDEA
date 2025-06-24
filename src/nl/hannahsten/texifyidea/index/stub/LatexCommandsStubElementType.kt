@@ -98,7 +98,6 @@ class LatexCommandsStubElementType(debugName: String) :
         NewSpecialCommandsIndex.sinkIndex(sink, token) // all commands classified
         NewDefinitionIndex.sinkIndex(stub, sink) // record definitions
         NewLabelsIndex.sinkIndexCommand(stub, sink) // labels
-        NewLabelRefIndex.sinkIndex(stub, sink) // references to labels
 
         if (token in CommandMagic.glossaryEntry && stub.requiredParams.isNotEmpty()) {
             sink.occurrence(LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY, stub.requiredParams[0])

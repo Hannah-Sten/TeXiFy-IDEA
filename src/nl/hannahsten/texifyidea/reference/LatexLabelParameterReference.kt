@@ -1,13 +1,9 @@
 package nl.hannahsten.texifyidea.reference
 
-import com.intellij.openapi.project.DumbService
 import com.intellij.psi.*
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.files.findExternalDocumentCommand
 import nl.hannahsten.texifyidea.util.labels.extractLabelElement
-import nl.hannahsten.texifyidea.util.labels.extractLabelName
-import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 
 /**
  * The difference with [LatexLabelReference] is that this reference works on parameter text, i.e. the actual label parameters.

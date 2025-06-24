@@ -3,13 +3,8 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.*
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexComposite
-import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.isInsideDefinition
 import nl.hannahsten.texifyidea.util.parser.definitionCommand
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.parentsOfType
 
 /**
  * Command reference. When resolved, points to the command definition.

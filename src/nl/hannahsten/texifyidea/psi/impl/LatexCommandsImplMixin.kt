@@ -61,7 +61,6 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         return this
     }
 
-
     /**
      * Gets the references for this command.
      */

@@ -11,9 +11,9 @@ import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 
-class LatexEnvironmentDefinitionReference(element : LatexEnvIdentifier): PsiReferenceBase<LatexEnvIdentifier>(element),PsiPolyVariantReference {
+class LatexEnvironmentDefinitionReference(element: LatexEnvIdentifier) : PsiReferenceBase<LatexEnvIdentifier>(element), PsiPolyVariantReference {
 
-    init{
+    init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
@@ -23,12 +23,10 @@ class LatexEnvironmentDefinitionReference(element : LatexEnvIdentifier): PsiRefe
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val name = element.name ?: return ResolveResult.EMPTY_ARRAY
-        return NewDefinitionIndex.getByName(name,element.project).mapNotNull {
-            val firstParam = it.parameterList.firstOrNull()?: return@mapNotNull null
+        return NewDefinitionIndex.getByName(name, element.project).mapNotNull {
+            val firstParam = it.parameterList.firstOrNull() ?: return@mapNotNull null
             val paramText = firstParam.findFirstChildTyped<LatexParameterText>() ?: return@mapNotNull null
             PsiElementResolveResult(paramText)
         }.toTypedArray()
     }
-
-
 }

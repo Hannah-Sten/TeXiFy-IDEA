@@ -5,8 +5,7 @@ import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
-
-fun LatexCommands.isInsideDefinition(): Boolean{
+fun LatexCommands.isInsideDefinition(): Boolean {
     // command - parameter - required_parameter - required_param_content - this
     // we leave some space
     val parentParameter = firstParentOfType<LatexParameter>(5) ?: return false
@@ -16,4 +15,3 @@ fun LatexCommands.isInsideDefinition(): Boolean{
     // TODO: deal with \let\Cmd\Something
     return defCommand.parameterList.firstOrNull() === parentParameter
 }
-
