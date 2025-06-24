@@ -10,9 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
-/**
- * The index of labeled elements, which includes both commands and environments.
- */
+
 class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<LatexComposite>, LatexComposite>(LatexComposite::class.java) {
     override fun getVersion(): Int {
         return 101
@@ -38,11 +36,8 @@ class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<Latex
         val command = stub.commandToken
         if (command in CommandMagic.labels) {
             if (stub.requiredParams.isNotEmpty()) {
+                // It is possible that the command has no required parameters, e.g. `\label`, which is often used in class files.
                 sink.occurrence(key, stub.requiredParams[0])
-            }else{
-                1
-                // If the command is labeled but has no required parameters, we still want to index it.
-                // This is useful for commands like `\label{}` which are used without parameters.
             }
         }
         else if (command in CommandMagic.labelAsParameter) {
@@ -61,21 +56,7 @@ class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<Latex
     }
 }
 
+/**
+ * The index of labeled elements, which includes both commands and environments.
+ */
 val NewLabelsIndex = NewLabelsIndexEx()
-
-class NewLabelRefIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
-    override fun getKey(): StubIndexKey<String, LatexCommands> {
-        return LatexStubIndexKeys.LABEL_REFERENCE
-    }
-
-    override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
-        val command = stub.commandToken
-        CommandMagic.labelReference[command]?.let { (_, idx) ->
-            stub.requiredParams.getOrNull(idx)?.let {
-                sink.occurrence(key, it)
-            }
-        }
-    }
-}
-
-val NewLabelRefIndex = NewLabelRefIndexEx()

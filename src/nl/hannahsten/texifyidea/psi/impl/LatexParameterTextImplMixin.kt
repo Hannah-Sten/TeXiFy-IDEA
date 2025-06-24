@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.psi.impl
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
@@ -27,30 +28,52 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
     override fun getReferences(): Array<PsiReference> {
         // If the command is a label reference
         // NOTE When adding options here, also update getNameIdentifier below
-        return when {
-            this.project.getLabelReferenceCommands().contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf(LatexLabelParameterReference(this))
-            }
-            // If the command is a bibliography reference
-            CommandMagic.bibliographyReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf(BibtexIdReference(this))
-            }
-            // If the command is a glossary reference
-            CommandMagic.glossaryReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf(LatexGlossaryReference(this))
-            }
-
-            else -> {
-                emptyArray<PsiReference>()
-            }
-        }
+//        val project = this.project
+//        if(DumbService.isDumb(project)) {
+//            // we cannot resolve references, so return empty array
+//            return PsiReference.EMPTY_ARRAY
+//        }
+//        val command = this.firstParentOfType<LatexCommands>() ?: return PsiReference.EMPTY_ARRAY
+//        val name = command.name ?: return PsiReference.EMPTY_ARRAY
+//        if (name in CommandMagic.reference) {
+//            // TODO: allow custom reference
+//            return arrayOf(LatexLabelParameterReference(this))
+//        }
+//        if (name in CommandMagic.bibliographyReference) {
+//            // If the command is a label definition, we return a reference to the label parameter
+//            return arrayOf(BibtexIdReference(this))
+//        }
+//        if (name in CommandMagic.glossaryReference) {
+//            // If the command is a glossary reference, we return a reference to the glossary label
+//            return arrayOf(LatexGlossaryReference(this))
+//        }
+//        return PsiReference.EMPTY_ARRAY
+        return super.getReferences()
     }
 
     /**
      * If [getReferences] returns one reference return that one, null otherwise.
      */
     override fun getReference(): PsiReference? {
-        return references.firstOrNull()
+        val project = this.project
+        if(DumbService.isDumb(project)) {
+            // we cannot resolve references, so return empty array
+            return null
+        }
+        val command = this.firstParentOfType<LatexCommands>() ?: return null
+        val name = command.name ?: return null
+        if (name in CommandMagic.reference) {
+            return LatexLabelParameterReference(this)
+        }
+        if (name in CommandMagic.bibliographyReference) {
+            // If the command is a label definition, we return a reference to the label parameter
+            return BibtexIdReference(this)
+        }
+        if (name in CommandMagic.glossaryReference) {
+            // If the command is a glossary reference, we return a reference to the glossary label
+            return LatexGlossaryReference(this)
+        }
+        return null
     }
 
     override fun getNameIdentifier(): PsiElement? {

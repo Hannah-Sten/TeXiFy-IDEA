@@ -26,10 +26,6 @@ object LatexStubIndexKeys {
     val LABELED_ELEMENT =
         StubIndexKey.createIndexKey<String, LatexComposite>("nl.hannahsten.texifyidea.labeledelement")
 
-    val LABEL_REFERENCE =
-        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.labelreference")
-
-
 
     val MAGIC_COMMENTS_KEY =
         StubIndexKey.createIndexKey<String, LatexMagicComment>("nl.hannahsten.texifyidea.magiccomment")
