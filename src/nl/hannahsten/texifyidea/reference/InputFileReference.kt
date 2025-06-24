@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -134,7 +133,7 @@ class InputFileReference(
                 // We cannot use the file set at this point, so we take the first command in the project and hope for the best
                 NewCommandsIndex.getByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, element.project,)
                     .firstOrNull()
-                    ?.requiredParameter(0)
+                    ?.requiredParameterText(0)
                     ?.split(",")
                     // Graphicx requires the dot to be included
                     ?.map { it.trim(' ', '.') } ?: extensions

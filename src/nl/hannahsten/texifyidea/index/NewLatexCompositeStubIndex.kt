@@ -3,11 +3,8 @@ package nl.hannahsten.texifyidea.index
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubIndexKey
-import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
-import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFiles
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
@@ -49,5 +46,4 @@ abstract class NewLatexCompositeStubIndex<Psi : PsiElement>(clazz: Class<Psi>) :
 
 abstract class NewLatexCompositeTransformedStubIndex<Stub : StubElement<Psi>, Psi : PsiElement>(
     clazz: Class<Psi>
-) : NewLatexCompositeStubIndex<Psi>(clazz), MyTransformedStubIndex<Stub, Psi> {
-}
+) : NewLatexCompositeStubIndex<Psi>(clazz), MyTransformedStubIndex<Stub, Psi>

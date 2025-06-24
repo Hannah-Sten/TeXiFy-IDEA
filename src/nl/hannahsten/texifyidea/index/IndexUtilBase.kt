@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.index
 
-import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbService

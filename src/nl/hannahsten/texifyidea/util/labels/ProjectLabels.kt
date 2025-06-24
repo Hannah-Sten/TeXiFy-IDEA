@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.util.labels
 
-import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.smartReadAction
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex

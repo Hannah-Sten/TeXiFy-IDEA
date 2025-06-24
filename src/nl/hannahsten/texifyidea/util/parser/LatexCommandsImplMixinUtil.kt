@@ -71,7 +71,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
     // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
     // We reference it because we include the preamble of that file, so it is in the file set (partially)
-    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
+    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in requiredParametersText() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.findFirstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
             inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), supportsAnyExtension = true))
@@ -165,15 +165,6 @@ fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): Lin
     return parameterMap
 }
 
-fun getRequiredParameters(parameters: List<LatexParameter>): List<String> {
-    return parameters.mapNotNull {
-        val param = it.requiredParam ?: return@mapNotNull null
-        val text = param.text
-        text.trim { c ->
-            c == '{' || c == '}' || c.isWhitespace()
-        }
-    }
-}
 
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
     extractSubParameterRanges(firstParam)

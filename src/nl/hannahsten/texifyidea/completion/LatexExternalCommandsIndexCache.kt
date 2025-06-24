@@ -3,22 +3,14 @@ package nl.hannahsten.texifyidea.completion
 import arrow.atomic.AtomicBoolean
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.application.smartReadAction
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.forEachWithProgress
-import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.platform.util.progress.withProgressText
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import nl.hannahsten.texifyidea.completion.LatexCommandsAndEnvironmentsCompletionProvider.Companion.createCommandLookupElements
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -30,7 +22,7 @@ import nl.hannahsten.texifyidea.util.TexifyCoroutine
  * This cache will not be updated while the IDE is running.
  */
 object LatexExternalCommandsIndexCache {
-    private val scope : CoroutineScope
+    private val scope: CoroutineScope
         get() = TexifyCoroutine.getInstance().coroutineScope
 
     private val isCacheFillInProgress = AtomicBoolean(false)
@@ -48,7 +40,7 @@ object LatexExternalCommandsIndexCache {
         isCacheFillInProgress.getAndSet(true)
 
         TexifyCoroutine.runInBackground {
-            withBackgroundProgress(project,"Retrieving LaTeX commands..."){
+            withBackgroundProgress(project, "Retrieving LaTeX commands...") {
                 try {
                     val commandsFromIndex = getIndexedCommandsNoCache(project)
                     completionElements = createLookupElements(commandsFromIndex, packagesInProject)
@@ -64,8 +56,8 @@ object LatexExternalCommandsIndexCache {
      * This may be a very expensive operation, up to one minute for texlive-full
      */
     private suspend fun getIndexedCommandsNoCache(project: Project): MutableList<Set<LatexCommand>> {
-        val commands = withProgressText("Getting commands from index..."){
-            smartReadAction(project){
+        val commands = withProgressText("Getting commands from index...") {
+            smartReadAction(project) {
                 val commands = mutableListOf<String>()
                 FileBasedIndex.getInstance().processAllKeys(
                     LatexExternalCommandIndex.Cache.id,
@@ -77,14 +69,13 @@ object LatexExternalCommandsIndexCache {
             }
         }
 
-        return withProgressText("Processing indexed commands..."){
+        return withProgressText("Processing indexed commands...") {
             val commandsFromIndex = mutableListOf<Set<LatexCommand>>()
             commands.forEachWithProgress { cmdWithSlash ->
                 commandsFromIndex.add(LatexCommand.lookupInIndex(cmdWithSlash.substring(1), project))
             }
             commandsFromIndex
         }
-
     }
 
     private suspend fun createLookupElements(
@@ -92,7 +83,7 @@ object LatexExternalCommandsIndexCache {
         packagesInProject: Set<LatexPackage>,
     ): MutableSet<LookupElementBuilder> {
         // Process each set of command aliases (commands with the same name, but possibly with different arguments) separately.
-        return withProgressText("Adding commands to autocompletion..."){
+        return withProgressText("Adding commands to autocompletion...") {
             val lookupElementBuilders = mutableSetOf<LookupElementBuilder>()
             commandsFromIndex.forEachWithProgress { commandAliases ->
                 commandAliases.filter { command -> if (LatexCommandsAndEnvironmentsCompletionProvider.isTexliveAvailable) command.dependency in packagesInProject else true }

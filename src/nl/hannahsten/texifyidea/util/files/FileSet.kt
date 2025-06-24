@@ -20,7 +20,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PROGRESS_SIZE
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.io.File
 
 /**
@@ -192,10 +191,10 @@ fun getLuatexPaths(project: Project): List<String> {
 //        .mapNotNull { command -> smartReadAction(project) { command.requiredParameter(0) } }
 //        .flatMap { it.split(",") }
     val direct = NewCommandsIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project)
-        .mapNotNull { it.requiredParameter(0) }
+        .mapNotNull { it.requiredParameterText(0) }
         .flatMap { it.split(",") }
     val viaUsepackage = NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, project)
-        .filter { it.requiredParameter(0) == LatexPackage.ADDTOLUATEXPATH.name }
+        .filter { it.requiredParameterText(0) == LatexPackage.ADDTOLUATEXPATH.name }
         .flatMap { it.getOptionalParameterMap().keys }
         .flatMap { it.text.split(",") }
 

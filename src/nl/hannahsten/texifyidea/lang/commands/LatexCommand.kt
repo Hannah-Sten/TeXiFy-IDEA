@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project

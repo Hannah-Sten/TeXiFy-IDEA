@@ -20,7 +20,22 @@ interface LatexCommandWithParams : LatexComposite {
     /**
      * Generates a list of all names of all required parameters in the command.
      */
-    fun getRequiredParameters(): List<String>
+    fun requiredParametersText(): List<String>{
+        return parameterList.mapNotNull {
+            val param = it.requiredParam ?: return@mapNotNull null
+            val text = param.text
+            text.trim { c ->
+                c == '{' || c == '}' || c.isWhitespace()
+            }
+        }
+    }
+
+    /**
+     * Gets the required parameters of this command at the specified index, or null if the index is out of bounds.
+     */
+    fun requiredParameterText(idx : Int) : String?{
+        return requiredParametersText().getOrNull(idx)
+    }
 
     fun getOptionalParameterMap(): Map<LatexOptionalKeyValKey, LatexKeyValValue?>
 }

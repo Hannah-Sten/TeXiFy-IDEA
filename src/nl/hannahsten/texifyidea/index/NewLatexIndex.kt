@@ -53,7 +53,6 @@ class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommands
 
 val NewDefinitionIndex = NewDefinitionIndexEx()
 
-
 class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<LatexComposite>, LatexComposite>(LatexComposite::class.java) {
     override fun getVersion(): Int {
         return 101
@@ -66,15 +65,25 @@ class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<Latex
     override fun sinkIndex(stub: StubElement<LatexComposite>, sink: IndexSink) {
         when (stub) {
             is LatexCommandsStub -> {
-                val command = stub.commandToken
-                if (command in CommandMagic.labelReferenceWithoutCustomCommands) {
-                    sink.occurrence(key, stub.requiredParams[0])
-                }
+                sinkIndexCommand(stub, sink)
             }
-
             is LatexEnvironmentStub -> {
-
+                sinkIndexEnv(stub,sink)
             }
         }
     }
+
+    fun sinkIndexCommand(stub: LatexCommandsStub, sink: IndexSink) {
+        val command = stub.commandToken
+        if (command in CommandMagic.labelReferenceWithoutCustomCommands) {
+            sink.occurrence(key, stub.requiredParams[0])
+        }
+    }
+
+    fun sinkIndexEnv(stub : LatexEnvironmentStub, sink: IndexSink) {
+        val name = stub.environmentName
+        stub.label
+    }
 }
+
+val NewLabelsIndex = NewLabelsIndexEx()

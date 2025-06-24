@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
@@ -37,7 +36,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
         val root = file.findRootFile(useIndexCache = false)
 
         val isInclude = NewCommandsIndex.getByNameInFileSet("\\include", file).any {
-            it.requiredParameter(0)?.let { f -> root.findFile(f, supportsAnyExtension = true) } == file
+            it.requiredParameterText(0)?.let { f -> root.findFile(f, supportsAnyExtension = true) } == file
         }
 
         if (!isInclude) {
@@ -72,7 +71,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
 
-            val fileName = command.requiredParameter(0) ?: return
+            val fileName = command.requiredParameterText(0) ?: return
 
             document.replaceString(command.textRange, "\\input{$fileName}")
         }

@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens
@@ -32,7 +31,7 @@ open class LatexUnpackUsepackageIntention : TexifyIntentionBase("Split into mult
             return false
         }
 
-        val required = command.requiredParameter(0)
+        val required = command.requiredParameterText(0)
         return required != null && required.contains(",")
     }
 

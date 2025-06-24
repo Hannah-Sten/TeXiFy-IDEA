@@ -104,7 +104,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             NewSpecialCommandsIndex.getAllEnvDef(parameters.originalFile)
                 .asSequence()
                 .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
-                .mapNotNull { cmd -> cmd.requiredParameter(0) }
+                .mapNotNull { cmd -> cmd.requiredParameterText(0) }
                 .map { environmentName -> SimpleEnvironment(environmentName) }
                 .forEach { e: SimpleEnvironment -> environments.add(e) }
 
@@ -325,7 +325,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             }
 
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
-                val paramSpecification = commands.getRequiredParameters().getOrNull(1)?.removeAll("null", " ") ?: ""
+                val paramSpecification = commands.requiredParametersText().getOrNull(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
                     if (PackageMagic.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"

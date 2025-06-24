@@ -67,7 +67,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
 //        .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
 //        .flatMap { it.getOptionalParameterMap().toStringMap().keys }
     return NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, mainPsiFile).asSequence()
-        .filter { command -> command.getRequiredParameters().any { it in PackageMagic.indexNames || it in PackageMagic.glossaryNames } }
+        .filter { command -> command.requiredParametersText().any { it in PackageMagic.indexNames || it in PackageMagic.glossaryNames } }
         .flatMap { it.getOptionalParameterMap().toStringMap().keys }
         .toList()
 }

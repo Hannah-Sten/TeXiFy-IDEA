@@ -20,7 +20,6 @@ import nl.hannahsten.texifyidea.util.isFigureLabel
 import nl.hannahsten.texifyidea.util.labels.findLabelingCommandsInFile
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -87,9 +86,9 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
 }
 
 private val LatexCommands.labelName: String?
-    get() = requiredParameter(0)
+    get() = requiredParameterText(0)
 
 private val LatexCommands.referencedLabelNames: List<String>
-    get() = requiredParameter(0)?.split(",") ?: emptyList()
+    get() = requiredParameterText(0)?.split(",") ?: emptyList()
 
 fun dummy() = Unit

@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
 import arrow.atomic.AtomicBoolean
-import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -17,7 +16,6 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.addToLuatexPathSearchDirectories
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
@@ -101,7 +99,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
                     // We can't add single files, so take the parent
                     .mapNotNull {
                         reporter.sizedStep((PROGRESS_SIZE / workSize)) {
-                            val path = smartReadAction(project) { if (!it.isValid) null else it.requiredParameter(0) } ?: return@sizedStep null
+                            val path = smartReadAction(project) { if (!it.isValid) null else it.requiredParameterText(0) } ?: return@sizedStep null
                             val file = if (File(path).isAbsolute) {
                                 LocalFileSystem.getInstance().findFileByPath(path)
                             }

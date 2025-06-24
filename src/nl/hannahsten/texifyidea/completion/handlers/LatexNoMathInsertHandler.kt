@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 import nl.hannahsten.texifyidea.util.parser.isEnvironmentDefinition
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -131,7 +130,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
             val editor = context.editor
             val envDefinitions = file.definitionsAndRedefinitionsInFileSet().asSequence()
                 .filter { it.isEnvironmentDefinition() }
-                .mapNotNull { it.requiredParameter(0) }
+                .mapNotNull { it.requiredParameterText(0) }
                 .toSet()
 
             // Include packages.

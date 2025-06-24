@@ -115,7 +115,7 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
                 .indexOfFirst { arg -> arg.name == argument }
         }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else getRequiredParameters().getOrNull(min(requiredArgIndices.first(), getRequiredParameters().size - 1))
+    else requiredParametersText().getOrNull(min(requiredArgIndices.first(), requiredParametersText().size - 1))
 }
 
 /**
@@ -146,23 +146,6 @@ fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
 fun LatexCommands.isKnown(): Boolean {
     val name = name?.substring(1) ?: ""
     return LatexRegularCommand[name] != null || LatexMathCommand[name] != null
-}
-
-/**
- * Get the text contents of the `index+1`th required parameter of the command.
- *
- * @throws IllegalArgumentException When the index is negative.
- */
-@Throws(IllegalArgumentException::class)
-fun LatexCommands.requiredParameter(index: Int): String? {
-    require(index >= 0) { "Index must not be negative" }
-
-    val parameters = getRequiredParameters()
-    if (parameters.isEmpty() || index >= parameters.size) {
-        return null
-    }
-
-    return parameters[index]
 }
 
 /**

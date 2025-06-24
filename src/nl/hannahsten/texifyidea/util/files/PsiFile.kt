@@ -16,7 +16,6 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
-import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -60,7 +59,7 @@ fun PsiFile.documentClass(): String? {
     return commandsInFile().asSequence()
         .filter { it.name == "\\documentclass" }
         .firstOrNull()
-        ?.requiredParameter(0)
+        ?.requiredParameterText(0)
 }
 
 /**
@@ -192,7 +191,6 @@ fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommand
         this.allCommands().filter { it.name == commandName }
     } ?: this.allCommands()
 }
-
 
 /**
  * Get the editor of the file if it is currently opened. Note that the returned editor does not have to be a text editor,

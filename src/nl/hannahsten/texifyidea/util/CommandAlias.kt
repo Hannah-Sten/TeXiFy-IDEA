@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.alias.CommandManager

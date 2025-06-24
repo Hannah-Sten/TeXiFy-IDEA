@@ -17,7 +17,6 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.inMathContext
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens
@@ -35,7 +34,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
 
         file.commandsInFile("\\text").asSequence()
             .filter { it.inMathContext() }
-            .filter { it.requiredParameter(0)?.trim() in affectedCommands }
+            .filter { it.requiredParameterText(0)?.trim() in affectedCommands }
             .forEach { affectedTextCommand ->
                 descriptors.add(
                     manager.createProblemDescriptor(
@@ -72,7 +71,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
         }
 
         private fun extractFunction(textCommandElement: LatexCommands): String? {
-            return textCommandElement.requiredParameter(0)?.trim()?.let { "\\$it" }
+            return textCommandElement.requiredParameterText(0)?.trim()?.let { "\\$it" }
         }
     }
 

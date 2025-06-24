@@ -65,7 +65,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     ) {
         val defined = file.definitionsAndRedefinitionsInFileSet().asSequence()
             .filter { it.isEnvironmentDefinition() }
-            .mapNotNull { it.requiredParameter(0) }
+            .mapNotNull { it.requiredParameterText(0) }
             .toSet()
 
         file.forEachChildTyped<LatexEnvironment> { env ->

@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -49,7 +48,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
         // Duplicates!
         file.commandsInFile().asSequence()
-            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd && it.requiredParameter(0) in duplicates }
+            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd && it.requiredParameterText(0) in duplicates }
             .forEach {
                 val parameter = it.findFirstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
                 descriptors.add(

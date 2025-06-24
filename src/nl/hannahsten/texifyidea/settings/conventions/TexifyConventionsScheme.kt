@@ -56,6 +56,9 @@ data class TexifyConventionsScheme(
     val isProjectScheme: Boolean
         get() = name == PROJECT_SCHEME_NAME
 
+    val conventionMap : Map<String, LabelConvention>
+        = labelConventions.associateBy { it.name }
+
     companion object {
 
         const val DEFAULT_SCHEME_NAME = "Default"

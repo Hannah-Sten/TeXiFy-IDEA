@@ -5,10 +5,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
@@ -25,7 +22,6 @@ import java.io.IOException
  * @author Thomas Schouten
  */
 object EvinceInverseSearchListener {
-
 
     private var sessionConnection: DBusConnection? = null
 

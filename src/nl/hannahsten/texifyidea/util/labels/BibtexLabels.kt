@@ -6,7 +6,6 @@ import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Finds all the defined bibtex labels in the fileset of the file.
@@ -17,7 +16,7 @@ fun PsiFile.findBibtexLabelsInFileSetAsSequence(): Sequence<String> = findBibtex
     .mapNotNull {
         when (it) {
             is BibtexEntry -> it.name
-            is LatexCommands -> it.requiredParameter(0)
+            is LatexCommands -> it.requiredParameterText(0)
             else -> null
         }
     }

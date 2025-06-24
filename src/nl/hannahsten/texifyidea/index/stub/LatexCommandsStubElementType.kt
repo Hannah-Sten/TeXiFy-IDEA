@@ -39,7 +39,7 @@ class LatexCommandsStubElementType(debugName: String) :
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
-        val requiredParameters = latexCommands.getRequiredParameters()
+        val requiredParameters = latexCommands.requiredParametersText()
         val optionalParameters: Map<String, String> =
             latexCommands.getOptionalParameterMap().toStringMap()
         return LatexCommandsStubImpl(
@@ -97,7 +97,6 @@ class LatexCommandsStubElementType(debugName: String) :
 
         NewSpecialCommandsIndex.sinkIndex(sink, token)
         NewDefinitionIndex.sinkIndex(stub, sink)
-
 
         if (token in CommandMagic.labelAsParameter) {
             stub.optionalParams["label"]?.let { label ->

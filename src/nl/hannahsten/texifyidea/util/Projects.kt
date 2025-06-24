@@ -48,7 +48,7 @@ val Project.sourceSetSearchScope: GlobalSearchScope
 fun Project.findAvailableDocumentClasses(): Set<String> {
     val defines = NewCommandsIndex.getByName("ProvidesClass", this, sourceSetSearchScope)
     return defines.asSequence()
-        .map { it.getRequiredParameters() }
+        .map { it.requiredParametersText() }
         .filter { it.isNotEmpty() }
         .mapNotNull { it.firstOrNull() }
         .toSet()

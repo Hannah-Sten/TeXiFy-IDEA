@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import java.util.*
 
@@ -30,7 +29,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
         val descriptors = descriptorList()
         val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
         val customPackages = NewCommandsIndex.getByName(LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash, file.project)
-            .map { it.requiredParameter(0) }
+            .map { it.requiredParameterText(0) }
             .map { it?.lowercase(Locale.getDefault()) }
         val packages = ctanPackages + customPackages
 
@@ -39,7 +38,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
 
         for (command in commands) {
             @Suppress("ktlint:standard:property-naming")
-            val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault())
+            val `package` = command.requiredParametersText().firstOrNull()?.lowercase(Locale.getDefault())
             if (!packages.contains(`package`)) {
                 descriptors.add(
                     manager.createProblemDescriptor(

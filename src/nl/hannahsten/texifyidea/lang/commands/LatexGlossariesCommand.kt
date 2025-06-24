@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 /**
@@ -174,7 +173,7 @@ enum class LatexGlossariesCommand(
             if (!CommandMagic.glossaryEntry.contains(command.name) &&
                 !CommandMagic.glossaryReference.contains(command.name)
             ) return null
-            return command.getRequiredParameters()[0]
+            return command.requiredParametersText()[0]
         }
 
         /**
@@ -190,14 +189,14 @@ enum class LatexGlossariesCommand(
          */
         fun extractGlossaryName(command: LatexCommands): String? {
             if (setOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY).map { it.cmd }.contains(command.name)) {
-                val keyValueList = command.requiredParameter(1) ?: return null
+                val keyValueList = command.requiredParameterText(1) ?: return null
                 return "name=\\{([^}]+)}".toRegex().find(keyValueList)?.groupValues?.get(1)
             }
             else if (setOf(NEWACRONYM, NEWABBREVIATION).map { it.cmd }.contains(command.name)) {
-                return command.requiredParameter(1)
+                return command.requiredParameterText(1)
             }
             else if (setOf(NEWACRO, ACRO, ACRODEF).map { it.cmd }.contains(command.name)) {
-                return command.requiredParameter(0)
+                return command.requiredParameterText(0)
             }
             else {
                 return null

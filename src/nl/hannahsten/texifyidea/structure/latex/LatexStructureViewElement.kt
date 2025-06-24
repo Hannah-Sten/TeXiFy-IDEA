@@ -35,7 +35,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     val docClass: String
         get() {
             return NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, element.containingFile).firstNotNullOfOrNull {
-                it.getRequiredParameters().firstOrNull()
+                it.requiredParametersText().firstOrNull()
             } ?: "article"
         }
 
@@ -144,7 +144,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         treeElements: ArrayList<LatexStructureViewCommandElement>,
         numbering: SectionNumbering
     ) {
-        if (command.getRequiredParameters().isEmpty()) {
+        if (command.requiredParametersText().isEmpty()) {
             return
         }
 
@@ -238,7 +238,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun updateNumbering(cmd: LatexCommands, numbering: SectionNumbering) {
         val token = cmd.commandToken.text
-        val required = cmd.getRequiredParameters()
+        val required = cmd.requiredParametersText()
         if (required.size < 2) {
             return
         }

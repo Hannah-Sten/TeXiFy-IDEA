@@ -82,7 +82,6 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
      * For example, use LatexCommands.getFileArgumentsReferences() for InputFileReferences.
      */
     override fun getReferences(): Array<PsiReference> {
-
         val requiredParameters = getRequiredParameters(this)
         val firstParam = requiredParameters.getOrNull(0)
 
@@ -124,8 +123,13 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
 
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
 
-    override fun getRequiredParameters() : List<String> {
+    override fun requiredParametersText(): List<String> {
         this.stub?.let { return it.requiredParams }
-        return getRequiredParameters(this.parameterList)
+        return super.requiredParametersText()
+    }
+
+    override fun requiredParameterText(idx: Int): String? {
+        this.stub?.let { return it.requiredParams.getOrNull(idx) }
+        return super.requiredParameterText(idx)
     }
 }

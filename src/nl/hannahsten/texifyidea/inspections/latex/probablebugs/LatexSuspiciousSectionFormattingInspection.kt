@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
@@ -35,7 +34,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             .asSequence()
             .filter { it.name in CommandMagic.sectionNameToLevel }
             .filter { it.parameterList.mapNotNull { param -> param.optionalParam }.isEmpty() }
-            .filter { it.requiredParameter(0)?.containsAny(formatting) == true }
+            .filter { it.requiredParameterText(0)?.containsAny(formatting) == true }
             .map { psiElement ->
                 val requiredParam = psiElement.findFirstChildOfType(LatexRequiredParam::class)
                 // Plus 1 for the opening brace.
@@ -62,7 +61,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val requiredParamText = command.requiredParameter(0)
+            val requiredParamText = command.requiredParameterText(0)
             val optionalParamText = requiredParamText?.replace(Regex(formatting.joinToString("", prefix = "[", postfix = "]")), " ")
                 ?: return
             val optionalArgument = LatexPsiHelper(project).createOptionalParameter(optionalParamText) ?: return

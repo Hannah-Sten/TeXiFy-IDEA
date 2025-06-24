@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.lang.alias
 
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands

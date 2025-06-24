@@ -34,7 +34,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
         else if (cmd.name == LatexGenericRegularCommand.USEPACKAGE.cmd) {
             last = cmd
         }
-        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameter(0) == "document") {
+        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameterText(0) == "document") {
             last = cmd
             break
         }

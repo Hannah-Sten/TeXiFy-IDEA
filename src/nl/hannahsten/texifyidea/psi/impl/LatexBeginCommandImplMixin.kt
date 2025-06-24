@@ -12,6 +12,4 @@ abstract class LatexBeginCommandImplMixin(node: ASTNode) : LatexBeginCommand, AS
     }
 
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
-
-    override fun getRequiredParameters() = nl.hannahsten.texifyidea.util.parser.getRequiredParameters(this.parameterList)
 }

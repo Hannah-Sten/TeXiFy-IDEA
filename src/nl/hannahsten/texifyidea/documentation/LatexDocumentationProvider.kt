@@ -63,7 +63,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         // Special case for package inclusion commands
         if (isPackageInclusionCommand(element)) {
-            val pkg = element.getRequiredParameters().getOrNull(0) ?: return@either null
+            val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
             return runTexdoc(LatexPackage(pkg))
         }
 

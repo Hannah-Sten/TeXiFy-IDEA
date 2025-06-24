@@ -5,7 +5,6 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.Processor
 import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens
@@ -22,7 +21,7 @@ class GotoSectionDefinitionSymbolContributor : TexifyGotoSymbolBase<LatexCommand
     }
 
     override fun extractName(item: LatexCommands): String? {
-        return item.requiredParameter(0)
+        return item.requiredParameterText(0)
     }
 
     override fun createNavigationItem(item: LatexCommands): NavigationItem? {

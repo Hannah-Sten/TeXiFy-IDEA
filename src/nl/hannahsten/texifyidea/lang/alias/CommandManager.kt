@@ -6,7 +6,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import java.io.Serializable
 import java.util.*
@@ -149,9 +148,9 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         indexedDefinitions.filter {
             // Assume the parameter definition has the command being defined in the first required parameter,
             // and the command definition itself in the second
-            runReadAction { it.requiredParameter(1)?.containsAny(aliasSet) == true }
+            runReadAction { it.requiredParameterText(1)?.containsAny(aliasSet) == true }
         }
-            .mapNotNull { runReadAction { it.requiredParameter(0) } }
+            .mapNotNull { runReadAction { it.requiredParameterText(0) } }
             .forEach { registerAlias(firstAlias, it) }
 
         // Extract label parameter positions
@@ -160,7 +159,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         if (aliasSet.intersect(CommandMagic.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
             indexedDefinitions.forEach { commandDefinition ->
                 runReadAction {
-                    val definedCommand = commandDefinition.requiredParameter(0) ?: return@runReadAction
+                    val definedCommand = commandDefinition.requiredParameterText(0) ?: return@runReadAction
                     if (definedCommand.isBlank()) return@runReadAction
 
                     val isFirstParameterOptional = commandDefinition.parameterList.filter { it.optionalParam != null }.size > 1
@@ -173,7 +172,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
                     // Positions of label parameters in the custom commands (starting from 0)
                     val positions = parameterCommands
                         ?.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
-                        ?.mapNotNull { it.requiredParameter(0) }
+                        ?.mapNotNull { it.requiredParameterText(0) }
                         ?.mapNotNull {
                             if (it.indexOf('#') != -1) {
                                 it.getOrNull(it.indexOf('#') + 1)
@@ -196,7 +195,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
                             .any { it.name in CommandMagic.increasesCounter }
 
                     val prefix = parameterCommands.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
-                        .mapNotNull { it.requiredParameter(0) }
+                        .mapNotNull { it.requiredParameterText(0) }
                         .map {
                             if (it.indexOf('#') != -1) {
                                 val prefix = it.substring(0, it.indexOf('#'))

@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
@@ -88,7 +87,7 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
                 ?.text?.trim('[', ']')
                 ?.let { prefix = it }
             // Skip optional parameters for now (also below and in
-            return prefix + this.requiredParameter(position)
+            return prefix + this.requiredParameterText(position)
         }
 
         is LatexEnvironment -> {
