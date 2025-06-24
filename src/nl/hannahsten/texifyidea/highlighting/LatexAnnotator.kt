@@ -217,7 +217,7 @@ open class LatexAnnotator : Annotator {
 
         // Label references.
         val style = when (command.name) {
-            in CommandMagic.labelReferenceWithoutCustomCommands -> {
+            in CommandMagic.labelReference -> {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.

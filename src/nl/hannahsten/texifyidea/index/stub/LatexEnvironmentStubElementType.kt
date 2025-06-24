@@ -36,7 +36,6 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     }
 
     override fun indexStub(stub: LatexEnvironmentStub, sink: IndexSink) {
-        sink.occurrence(LatexStubIndexKeys.ENVIRONMENTS_KEY, stub.environmentName)
         NewLabelsIndex.sinkIndexEnv(stub, sink)
     }
 }

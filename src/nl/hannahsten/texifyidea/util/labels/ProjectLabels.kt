@@ -10,8 +10,8 @@ import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
  * All commands that represent a reference to a label, including user defined commands.
  */
 fun Project.getLabelReferenceCommands(): Set<String> {
-    CommandManager.updateAliases(CommandMagic.labelReferenceWithoutCustomCommands.keys, this)
-    return CommandManager.getAliases(CommandMagic.labelReferenceWithoutCustomCommands.keys.first())
+    CommandManager.updateAliases(CommandMagic.labelReference.keys, this)
+    return CommandManager.getAliases(CommandMagic.labelReference.keys.first())
 }
 
 /**

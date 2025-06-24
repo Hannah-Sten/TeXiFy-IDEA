@@ -3,18 +3,14 @@ package nl.hannahsten.texifyidea.util.labels
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
-import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findExternalDocumentCommand
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /**
  * Finds all the defined labels in the fileset of the file.
@@ -51,15 +47,6 @@ fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
 //    LatexParameterLabeledCommandsIndex.Util.getItemsInFileSet(this).asSequence(),
 //    findLabeledEnvironments(this),
 // ).flatten()
-
-/**
- * All environments with labels, including user defined
- */
-fun findLabeledEnvironments(file: PsiFile): Sequence<PsiElement> {
-    EnvironmentManager.updateAliases(EnvironmentMagic.labelAsParameter, file.project)
-    val allEnvironments = EnvironmentManager.getAliases(EnvironmentMagic.labelAsParameter.first())
-    return LatexEnvironmentsIndex.Util.getItemsInFileSet(file).filter { it.getEnvironmentName() in allEnvironments }.asSequence()
-}
 
 /**
  * Make a sequence of all commands in the file set that specify a label. This does not include commands which define a label via an

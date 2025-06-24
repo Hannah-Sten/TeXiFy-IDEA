@@ -27,6 +27,7 @@ class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<Latex
             is LatexCommandsStub -> {
                 sinkIndexCommand(stub, sink)
             }
+
             is LatexEnvironmentStub -> {
                 sinkIndexEnv(stub, sink)
             }
@@ -36,7 +37,18 @@ class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<Latex
     fun sinkIndexCommand(stub: LatexCommandsStub, sink: IndexSink) {
         val command = stub.commandToken
         if (command in CommandMagic.labels) {
-            sink.occurrence(key, stub.requiredParams[0])
+            if (stub.requiredParams.isNotEmpty()) {
+                sink.occurrence(key, stub.requiredParams[0])
+            }else{
+                1
+                // If the command is labeled but has no required parameters, we still want to index it.
+                // This is useful for commands like `\label{}` which are used without parameters.
+            }
+        }
+        else if (command in CommandMagic.labelAsParameter) {
+            stub.optionalParams["label"]?.let { label ->
+                sink.occurrence(key, label)
+            }
         }
     }
 
@@ -57,6 +69,13 @@ class NewLabelRefIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommandsSt
     }
 
     override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
-        TODO("Not yet implemented")
+        val command = stub.commandToken
+        CommandMagic.labelReference[command]?.let { (_, idx) ->
+            stub.requiredParams.getOrNull(idx)?.let {
+                sink.occurrence(key, it)
+            }
+        }
     }
 }
+
+val NewLabelRefIndex = NewLabelRefIndexEx()

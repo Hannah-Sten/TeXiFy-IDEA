@@ -95,14 +95,11 @@ class LatexCommandsStubElementType(debugName: String) :
         val token = stub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
 
-        NewSpecialCommandsIndex.sinkIndex(sink, token)
-        NewDefinitionIndex.sinkIndex(stub, sink)
+        NewSpecialCommandsIndex.sinkIndex(sink, token) // all commands classified
+        NewDefinitionIndex.sinkIndex(stub, sink) // record definitions
+        NewLabelsIndex.sinkIndexCommand(stub, sink) // labels
+        NewLabelRefIndex.sinkIndex(stub, sink) // references to labels
 
-        if (token in CommandMagic.labelAsParameter) {
-            stub.optionalParams["label"]?.let { label ->
-                sink.occurrence(LatexStubIndexKeys.LABELED_COMMANDS_KEY, label)
-            }
-        }
         if (token in CommandMagic.glossaryEntry && stub.requiredParams.isNotEmpty()) {
             sink.occurrence(LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY, stub.requiredParams[0])
         }

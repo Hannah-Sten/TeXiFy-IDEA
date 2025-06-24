@@ -59,7 +59,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
         val name = this.firstParentOfType(LatexCommands::class)?.name
         val environmentName = this.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
-        if (!CommandMagic.labelReferenceWithoutCustomCommands.contains(name) &&
+        if (!CommandMagic.labelReference.contains(name) &&
             !CommandMagic.labels.contains(name) &&
             !CommandMagic.bibliographyReference.contains(name) &&
             !CommandMagic.labelAsParameter.contains(name) &&

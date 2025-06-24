@@ -79,11 +79,13 @@ object CommandMagic {
         hashSetOf(CAPTION.cmd, CAPTIONOF.cmd, CHAPTER.cmd, SECTION.cmd, SUBSECTION.cmd, ITEM.cmd, LSTINPUTLISTING.cmd)
 
     /**
-     * All commands that represent a reference to a label, excluding user defined commands.
+     * All commands that represent a reference to some label.
      */
-    val labelReferenceWithoutCustomCommands = LatexRegularCommand.ALL
+    val labelReference = LatexRegularCommand.ALL
         .filter { cmd -> cmd.arguments.any { it.type == Argument.Type.LABEL } }
-        .associateBy { it.cmd }
+        .associate {
+            it.commandWithSlash to (it to it.arguments.indexOfFirst { it.type == Argument.Type.LABEL })
+        }
 
     /**
      * All commands that represent a reference to a bibliography entry/item.
@@ -197,7 +199,7 @@ object CommandMagic {
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
      */
-    val reference = labelReferenceWithoutCustomCommands.keys + bibliographyReference
+    val reference = labelReference.keys + bibliographyReference
 
     /**
      * Commands from the import package which require an absolute path as first parameter.
