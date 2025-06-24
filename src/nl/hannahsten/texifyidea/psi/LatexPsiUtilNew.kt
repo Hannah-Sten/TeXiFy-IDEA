@@ -63,7 +63,7 @@ fun LatexEnvironment.getLabel(): String? {
     val content = this.environmentContent ?: return null
     // environment_content - no_math_content - commands
     val labelCommand = content.traverseCommands(2).firstOrNull {
-        it.name in CommandMagic.labelDefinitionsWithoutCustomCommands
+        it.name in CommandMagic.labels
     } ?: return null
     // In fact, it is a simple \label command
     return labelCommand.requiredParameterText(0)

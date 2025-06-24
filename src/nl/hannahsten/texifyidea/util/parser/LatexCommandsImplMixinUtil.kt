@@ -165,7 +165,6 @@ fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): Lin
     return parameterMap
 }
 
-
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
     extractSubParameterRanges(firstParam)
         .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }

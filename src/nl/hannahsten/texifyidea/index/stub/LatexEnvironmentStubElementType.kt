@@ -4,12 +4,10 @@ import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.LatexStubIndexKeys
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
-import nl.hannahsten.texifyidea.index.NewLatexCompositeStubIndex
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getLabel
 import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.io.IOException
 
 open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage) {
@@ -40,9 +38,5 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     override fun indexStub(stub: LatexEnvironmentStub, sink: IndexSink) {
         sink.occurrence(LatexStubIndexKeys.ENVIRONMENTS_KEY, stub.environmentName)
         NewLabelsIndex.sinkIndexEnv(stub, sink)
-        // only record environments with a label in the optional parameters
-//        if (stub.label.isNotEmpty() && EnvironmentMagic.labelAsParameter.contains(stub.environmentName)) {
-//            sink.occurrence(LatexStubIndexKeys.LABELED_ENVIRONMENTS_KEY, stub.environmentName)
-//        }
     }
 }

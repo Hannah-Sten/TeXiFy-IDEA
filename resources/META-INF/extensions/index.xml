@@ -4,7 +4,6 @@
         <stubElementTypeHolder externalIdPrefix="texify.bibtex." class="nl.hannahsten.texifyidea.psi.BibtexStubElementTypes"/>
 
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex"/>
 
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>
@@ -14,6 +13,8 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.NewCommandsIndexEx"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.NewSpecialCommandsIndexEx"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.NewDefinitionIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewLabelsIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewLabelRefIndexEx"/>
 
 
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex" />

@@ -60,7 +60,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         val name = this.firstParentOfType(LatexCommands::class)?.name
         val environmentName = this.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
         if (!CommandMagic.labelReferenceWithoutCustomCommands.contains(name) &&
-            !CommandMagic.labelDefinitionsWithoutCustomCommands.contains(name) &&
+            !CommandMagic.labels.contains(name) &&
             !CommandMagic.bibliographyReference.contains(name) &&
             !CommandMagic.labelAsParameter.contains(name) &&
             !CommandMagic.glossaryEntry.contains(name) &&

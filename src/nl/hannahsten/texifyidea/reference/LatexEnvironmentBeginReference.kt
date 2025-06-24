@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
  *
  * @author Thomas
  */
-class LatexEnvironmentReference(element: LatexEnvIdentifier) : PsiReferenceBase<LatexEnvIdentifier>(element) {
+class LatexEnvironmentBeginReference(element: LatexEnvIdentifier) : PsiReferenceBase<LatexEnvIdentifier>(element) {
 
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)

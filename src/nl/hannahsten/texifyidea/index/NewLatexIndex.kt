@@ -1,12 +1,9 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.IndexSink
-import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
-import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 class NewCommandsIndexEx : NewLatexCompositeStubIndex<LatexCommands>(LatexCommands::class.java) {
@@ -52,38 +49,3 @@ class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommands
 }
 
 val NewDefinitionIndex = NewDefinitionIndexEx()
-
-class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<LatexComposite>, LatexComposite>(LatexComposite::class.java) {
-    override fun getVersion(): Int {
-        return 101
-    }
-
-    override fun getKey(): StubIndexKey<String, LatexComposite> {
-        return LatexStubIndexKeys.LABELED_ELEMENT
-    }
-
-    override fun sinkIndex(stub: StubElement<LatexComposite>, sink: IndexSink) {
-        when (stub) {
-            is LatexCommandsStub -> {
-                sinkIndexCommand(stub, sink)
-            }
-            is LatexEnvironmentStub -> {
-                sinkIndexEnv(stub,sink)
-            }
-        }
-    }
-
-    fun sinkIndexCommand(stub: LatexCommandsStub, sink: IndexSink) {
-        val command = stub.commandToken
-        if (command in CommandMagic.labelReferenceWithoutCustomCommands) {
-            sink.occurrence(key, stub.requiredParams[0])
-        }
-    }
-
-    fun sinkIndexEnv(stub : LatexEnvironmentStub, sink: IndexSink) {
-        val name = stub.environmentName
-        stub.label
-    }
-}
-
-val NewLabelsIndex = NewLabelsIndexEx()

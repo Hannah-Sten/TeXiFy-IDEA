@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.parser.*
 /**
  * This class is a mixin for LatexCommandsImpl.
  */
-abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub?>, PsiNameIdentifierOwner, LatexCommands {
+abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub>, PsiNameIdentifierOwner, LatexCommands {
     constructor(stub: LatexCommandsStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
     constructor(node: ASTNode) : super(node)
     constructor(stub: LatexCommandsStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)

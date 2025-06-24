@@ -75,7 +75,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
      * parameter position mappings between general alias sets is too much overhead for now.
      */
     val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> =
-        CommandMagic.labelDefinitionsWithoutCustomCommands.associateWith {
+        CommandMagic.labels.associateWith {
             LabelingCommandInformation(
                 listOf(0),
                 true
@@ -156,7 +156,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         // Extract label parameter positions
         // Assumes the predefined label definitions all have the label parameter in the same position
         // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
-        if (aliasSet.intersect(CommandMagic.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
+        if (aliasSet.intersect(CommandMagic.labels).isNotEmpty()) {
             indexedDefinitions.forEach { commandDefinition ->
                 runReadAction {
                     val definedCommand = commandDefinition.requiredParameterText(0) ?: return@runReadAction
@@ -171,7 +171,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
 
                     // Positions of label parameters in the custom commands (starting from 0)
                     val positions = parameterCommands
-                        ?.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                        ?.filter { it.name in CommandMagic.labels }
                         ?.mapNotNull { it.requiredParameterText(0) }
                         ?.mapNotNull {
                             if (it.indexOf('#') != -1) {
@@ -191,10 +191,10 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
                     // Check if there is a command which increases a counter before the \label
                     // If so, the \label just labels the counter increasing command, and not whatever will appear before usages of the custom labeling command
                     val definitionContainsIncreaseCounterCommand =
-                        parameterCommands.takeWhile { it.name !in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                        parameterCommands.takeWhile { it.name !in CommandMagic.labels }
                             .any { it.name in CommandMagic.increasesCounter }
 
-                    val prefix = parameterCommands.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                    val prefix = parameterCommands.filter { it.name in CommandMagic.labels }
                         .mapNotNull { it.requiredParameterText(0) }
                         .map {
                             if (it.indexOf('#') != -1) {

@@ -20,7 +20,7 @@ interface LatexCommandWithParams : LatexComposite {
     /**
      * Generates a list of all names of all required parameters in the command.
      */
-    fun requiredParametersText(): List<String>{
+    fun requiredParametersText(): List<String> {
         return parameterList.mapNotNull {
             val param = it.requiredParam ?: return@mapNotNull null
             val text = param.text
@@ -33,7 +33,7 @@ interface LatexCommandWithParams : LatexComposite {
     /**
      * Gets the required parameters of this command at the specified index, or null if the index is out of bounds.
      */
-    fun requiredParameterText(idx : Int) : String?{
+    fun requiredParameterText(idx: Int): String? {
         return requiredParametersText().getOrNull(idx)
     }
 

@@ -4,8 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
-import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
+import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -36,24 +35,22 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
 }
 
 /**
- * All labels in this file.
- */
-fun PsiFile.findLatexLabelingElementsInFile(): Sequence<PsiElement> = sequenceOf(
-    findLabelingCommandsInFile(),
-    LatexParameterLabeledEnvironmentsIndex.Util.getItems(this).asSequence(),
-    LatexParameterLabeledCommandsIndex.Util.getItems(this).asSequence()
-).flatten()
-
-/**
  * All labels in the fileset.
  * May contain duplicates.
  */
-fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> = sequenceOf(
-    findLabelingCommandsInFileSet(),
-    LatexParameterLabeledEnvironmentsIndex.Util.getItemsInFileSet(this).asSequence(),
-    LatexParameterLabeledCommandsIndex.Util.getItemsInFileSet(this).asSequence(),
-    findLabeledEnvironments(this),
-).flatten()
+fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
+    // TODO: Better implementation
+    val project = this.project
+    return NewLabelsIndex.getAllLabels(this.project).asSequence().flatMap {
+        NewLabelsIndex.getByName(it, project)
+    }
+}
+// = sequenceOf(
+//    findLabelingCommandsInFileSet(),
+//    LatexParameterLabeledEnvironmentsIndex.Util.getItemsInFileSet(this).asSequence(),
+//    LatexParameterLabeledCommandsIndex.Util.getItemsInFileSet(this).asSequence(),
+//    findLabeledEnvironments(this),
+// ).flatten()
 
 /**
  * All environments with labels, including user defined

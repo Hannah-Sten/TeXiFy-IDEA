@@ -213,7 +213,7 @@ object CommandMagic {
      * All commands that define labels and that are present by default.
      * To include user defined commands, use [nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands] (may be significantly slower).
      */
-    val labelDefinitionsWithoutCustomCommands = setOf(LABEL.cmd)
+    val labels = setOf(LABEL.cmd)
 
     /**
      * All commands that define bibliography items.
