@@ -11,10 +11,12 @@ import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.isFigureLabel
+import nl.hannahsten.texifyidea.util.isInsideDefinition
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.remove
@@ -55,7 +57,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
      */
     override fun getReference(): PsiReference? {
         val project = this.project
-        if(DumbService.isDumb(project)) {
+        if (DumbService.isDumb(project)) {
             // we cannot resolve references, so return empty array
             return null
         }
@@ -79,23 +81,50 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         // Because we do not want to trigger the NonAsciiCharactersInspection when the LatexParameterText is not an identifier
         // (think non-ASCII characters in a \section command), we return null here when the this is not an identifier
         // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
+
         val name = this.firstParentOfType(LatexCommands::class)?.name
-        val environmentName = this.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
-        if (!CommandMagic.labelReference.contains(name) &&
-            !CommandMagic.labels.contains(name) &&
-            !CommandMagic.bibliographyReference.contains(name) &&
-            !CommandMagic.labelAsParameter.contains(name) &&
-            !CommandMagic.glossaryEntry.contains(name) &&
-            !EnvironmentMagic.labelAsParameter.contains(environmentName) &&
-            this.firstParentOfType(LatexEndCommand::class) == null &&
-            this.firstParentOfType(LatexBeginCommand::class) == null
+
+        // reference
+        if (name in CommandMagic.labels || name in CommandMagic.reference || name in CommandMagic.labelAsParameter ||
+            name in CommandMagic.bibliographyReference || name in CommandMagic.glossaryEntry
         ) {
-            return null
+            return this
         }
-        return this
+        // definition
+        if(name in CommandMagic.definitions){
+            return this
+        }
+        // environment labels
+        val environmentName = this.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
+        if (EnvironmentMagic.labelAsParameter.contains(environmentName)
+        ) {
+            return this
+        }
+        // begin/end
+        if (this.firstParentOfType(LatexEndCommand::class) != null ||
+            this.firstParentOfType(LatexBeginCommand::class) != null
+        ) {
+            return this
+        }
+
+        return null
+    }
+
+    private fun setPlainTextName(name: String) {
+        val newElement = LatexPsiHelper(this.project).createFromText(name)
+        val normalText = newElement.findFirstChildTyped<LatexNormalText>()?.node
+        require(normalText != null) { "Expected NORMAL_TEXT, but got null." }
+        this.node.replaceAllChildrenToChildrenOf(normalText)
+        return
     }
 
     override fun setName(name: String): PsiElement {
+        if (isInsideDefinition()) {
+            setPlainTextName(name)
+            return this
+        }
+
+
         /**
          * Build a new PSI this where [old] is replaced with [new] and replace the old PSI this
          */
