@@ -8,7 +8,6 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentBeginReference
-import nl.hannahsten.texifyidea.reference.LatexEnvironmentDefinitionReference
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, ASTWrapperPsiElement(node) {
@@ -44,9 +43,9 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
         if(this.firstParentOfType<LatexEndCommand>(3) != null) {
             return LatexEnvironmentBeginReference(this)
         }
-        if (this.firstParentOfType<LatexBeginCommand>(3) != null) {
-            return LatexEnvironmentDefinitionReference(this)
-        }
+//        if (this.firstParentOfType<LatexBeginCommand>(3) != null) {
+//            return LatexEnvironmentDefinitionReference(this)
+//        }
         return null
     }
 

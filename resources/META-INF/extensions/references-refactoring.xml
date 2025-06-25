@@ -7,5 +7,10 @@
         <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
         <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
         <lang.namesValidator language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexNamesValidator" />
+
+
+        <renamePsiElementProcessor implementation="nl.hannahsten.texifyidea.refactoring.LatexFileRenameProcessor"/>
+        <renamePsiElementProcessor implementation="nl.hannahsten.texifyidea.refactoring.LatexEnvironmentRenameProcessor"/>
+        <renameHandler implementation="nl.hannahsten.texifyidea.refactoring.LatexMemberInplaceRenameHandler"/>
     </extensions>
 </idea-plugin>

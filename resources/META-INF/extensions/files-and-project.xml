@@ -18,6 +18,6 @@
                             serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
         <indexPatternBuilder implementation="nl.hannahsten.texifyidea.index.LatexIndexPatternBuilder"/>
 
-        <renamePsiElementProcessor implementation="nl.hannahsten.texifyidea.LatexRenameProcessor"/>
+
     </extensions>
 </idea-plugin>
