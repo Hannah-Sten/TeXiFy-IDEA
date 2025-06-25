@@ -11,6 +11,6 @@
 
         <renamePsiElementProcessor implementation="nl.hannahsten.texifyidea.refactoring.LatexFileRenameProcessor"/>
         <renamePsiElementProcessor implementation="nl.hannahsten.texifyidea.refactoring.LatexEnvironmentRenameProcessor"/>
-        <renameHandler implementation="nl.hannahsten.texifyidea.refactoring.LatexMemberInplaceRenameHandler"/>
+        <renameHandler implementation="nl.hannahsten.texifyidea.refactoring.LatexEnvironmentRenameHandler"/>
     </extensions>
 </idea-plugin>

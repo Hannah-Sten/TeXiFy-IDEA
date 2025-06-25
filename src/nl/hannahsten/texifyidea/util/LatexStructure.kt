@@ -18,4 +18,3 @@ fun LatexComposite.isInsideDefinition(): Boolean {
 
     return defCommand.parameterList.firstOrNull() === parentParameter
 }
-

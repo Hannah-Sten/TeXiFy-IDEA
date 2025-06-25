@@ -30,14 +30,7 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
             // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
             // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
             val definedCommand = newcommand.definitionCommand()
-            // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
-            // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
-            if (definedCommand == null) {
-                null
-            }
-            else {
-                PsiElementResolveResult(definedCommand)
-            }
+            definedCommand?.let { PsiElementResolveResult(definedCommand) }
         }.toTypedArray()
     }
 

@@ -10,10 +10,8 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
  */
 class LatexEnvironmentRenameProcessor : RenamePsiElementProcessor() {
     override fun canProcessElement(element: PsiElement): Boolean {
-
         return element is LatexBeginCommand
     }
-
 
     override fun substituteElementToRename(element: PsiElement, editor: Editor?): PsiElement? {
         // If the element is a LatexEnvIdentifier, we want to rename the environment itself, not the definition.
@@ -24,5 +22,4 @@ class LatexEnvironmentRenameProcessor : RenamePsiElementProcessor() {
             null
         }
     }
-
 }

@@ -91,7 +91,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             return this
         }
         // definition
-        if(name in CommandMagic.definitions){
+        if(name in CommandMagic.definitions) {
             return this
         }
         // environment labels
@@ -123,7 +123,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             setPlainTextName(name)
             return this
         }
-
 
         /**
          * Build a new PSI this where [old] is replaced with [new] and replace the old PSI this

@@ -5,7 +5,6 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.ElementManipulators
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub
