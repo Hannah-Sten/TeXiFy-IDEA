@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
-
 /**
  * Rename only the environment identifier of a begin or end command, but not in the definition.
  */

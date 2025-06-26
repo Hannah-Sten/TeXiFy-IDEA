@@ -197,6 +197,7 @@ interface LatexCommand : Described, Dependend {
             else {
                 // Attempt to avoid an error about slow operations on EDT
                 runBlocking {
+                    TODO()
                     lookupInIndex(cmdWithoutSlash, command.project)
                 }
             }
