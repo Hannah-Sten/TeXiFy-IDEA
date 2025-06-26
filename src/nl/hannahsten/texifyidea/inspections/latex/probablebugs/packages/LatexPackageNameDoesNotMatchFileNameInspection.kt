@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
@@ -26,7 +27,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\ProvidesPackage" }
+        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash }
 
         for (command in commands) {
             val providesName = command.getRequiredParameters().firstOrNull()?.split("/")?.last()
