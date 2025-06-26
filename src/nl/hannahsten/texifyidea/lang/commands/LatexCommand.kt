@@ -1,13 +1,12 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
-import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.indexing.FileBasedIndex
-import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
@@ -15,7 +14,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.length
-import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
 
@@ -23,6 +21,72 @@ import kotlin.reflect.KClass
  * @author Hannah Schellekens, Sten Wessel
  */
 interface LatexCommand : Described, Dependend {
+
+    /**
+     * Uniquely identifies the command, when two commands are the same, but from different packages, the identifier
+     * should be different.
+     */
+    val identifier: String
+        get() = commandWithSlash
+
+    override val description: String
+        get() = identifier
+
+    /**
+     * Get the name of the command without the first backslash.
+     */
+    val command: String
+
+    val commandWithSlash: String
+        get() = "\\$command"
+
+    /**
+     * Get the display value of the command.
+     */
+    val display: String?
+
+    /**
+     * Get all the command arguments.
+     */
+    val arguments: Array<out Argument>
+
+    /**
+     * Whether this command must be used in math mode (`true`).
+     */
+    val isMathMode: Boolean
+
+    /**
+     * Concatenates all arguments to each other.
+     *
+     * @return e.g. `{ARG1}{ARG2}[ARG3]`
+     */
+    @Suppress("KDocUnresolvedReference")
+    fun getArgumentsDisplay(): String {
+        val sb = StringBuilder()
+        for (arg in arguments) {
+            sb.append(arg.toString())
+        }
+
+        return sb.toString()
+    }
+
+    /**
+     * Checks whether `{}` must be automatically inserted in the auto complete.
+     *
+     * @return `true` to insert automatically, `false` not to insert.
+     */
+    fun autoInsertRequired() = arguments.filterIsInstance<RequiredArgument>().isNotEmpty()
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Argument> getArgumentsOf(clazz: KClass<T>): List<T> {
+        return arguments.asSequence()
+            .filter { clazz.java.isAssignableFrom(it.javaClass) }
+            .mapNotNull { it as? T }
+            .toList()
+    }
+
+    fun <T : Argument> getArgumentsOf(clazz: Class<T>) = getArgumentsOf(clazz.kotlin)
+
 
     companion object {
 
@@ -35,64 +99,62 @@ interface LatexCommand : Described, Dependend {
          */
         fun lookup(commandName: String?): NonEmptySet<LatexCommand>? {
             var result = commandName ?: return null
-            if (result.startsWith("\\")) {
-                result = result.substring(1)
+            if (!result.startsWith("\\")) {
+                result = "\\" + result
             }
-
-            return LatexMathCommand[result] ?: LatexRegularCommand[result]
+            LatexMathCommand.getWithSlash(result)?.let { return it }
+            LatexRegularCommand.getWithSlash(result)?.let { return it }
+            return null
         }
 
         /**
          * Create a [LatexCommand] for the given command name, or merge with existing one.
          */
-        suspend fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
+        @RequiresReadLock
+        fun lookupInIndex(cmdWithSlash: String, project: Project): Set<LatexCommand> {
             // Don't try to access index when in dumb mode
             if (DumbService.isDumb(project)) return emptySet()
-            val cmdWithSlash = "\\$cmdWithoutSlash"
 
             // Make sure to look up the hardcoded commands, to have something in case nothing is found in the index
             val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
 
             // Look up in index
             val filesAndValues = mutableListOf<Pair<VirtualFile, String>>()
-            smartReadAction(project) {
-                FileBasedIndex.getInstance().processValues(
-                    LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
-                        filesAndValues.add(Pair(file, value))
-                        true
-                    },
-                    GlobalSearchScope.everythingScope(project)
-                )
-            }
-
+            FileBasedIndex.getInstance().processValues(
+                LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
+                    filesAndValues.add(Pair(file, value))
+                    true
+                },
+                GlobalSearchScope.everythingScope(project)
+            )
             for ((file, value) in filesAndValues) {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
-                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
-                val cmd = if (defaultcmds.isNotEmpty()) {
-                    val defaultCommand = defaultcmds.first()
-                    object : LatexCommand {
-                        override val command = cmdWithoutSlash
-                        override val display = defaultCommand.display
-                        override val arguments = defaultCommand.arguments
-                        override val description = format(value)
-                        override val dependency = dependency
-                        override val isMathMode = defaultCommand.isMathMode
-                    }
+                val predefinedCmd = cmds.firstOrNull { it.dependency == dependency }
+                val cmd = if (predefinedCmd != null) {
+                    LatexCommandImpl(
+                        cmdWithSlash,
+                        dependency = dependency,
+                        description = format(value),
+                        display = predefinedCmd.display,
+                        arguments = predefinedCmd.arguments,
+                        isMathMode = predefinedCmd.isMathMode
+                    )
                 }
                 else {
-                    object : LatexCommand {
-                        override val command = cmdWithoutSlash
-                        override val display: String? = null
-                        override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
-                        override val description = format(value)
-                        override val dependency = dependency
-                        override val isMathMode = false
-                    }
+                    LatexCommandImpl(
+                        cmdWithSlash,
+                        dependency = dependency,
+                        description = format(value),
+                        display = null,
+                        arguments = extractArgumentsFromDocs(value, cmdWithSlash),
+                        isMathMode = false
+                    )
                 }
                 cmds.add(cmd)
             }
+
 
             // Now we might have duplicates, some of which might differ only in description.
             // Of those, we just want to take any command which doesn't have an empty description if it exists
@@ -187,87 +249,52 @@ interface LatexCommand : Described, Dependend {
          * @param command The command PSI element to look up. Takes into account whether it is placed in math mode.
          * @return The found command, or `null` when the command does not exist.
          */
-        fun lookup(command: LatexCommands): Set<LatexCommand>? {
-            val cmdWithSlash = command.commandToken.text
-            val cmdWithoutSlash = cmdWithSlash.substring(1)
-
-            return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
-                LatexMathCommand[cmdWithoutSlash]
-            }
-            else {
-                // Attempt to avoid an error about slow operations on EDT
-                runBlocking {
-                    TODO()
-                    lookupInIndex(cmdWithoutSlash, command.project)
-                }
-            }
+        @RequiresReadLock
+        fun lookupInAll(command: LatexCommands): Set<LatexCommand>? {
+            // TODO: Move to other places
+            val cmdWithSlash = command.name ?: return null
+            lookup(cmdWithSlash)?.let { return it }
+            return lookupInIndex(cmdWithSlash, command.project)
+////            if (command.inMathContext()) {
+////                LatexMathCommand.getWithSlash(cmdWithSlash)?.let { return it }
+////            }
+//            LatexRegularCommand.getWithSlash(cmdWithSlash)?.let { return it }
+//
+//            return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
+//                LatexMathCommand[cmdWithoutSlash]
+//            }
+//            else {
+//                // Attempt to avoid an error about slow operations on EDT
+//                lookupInIndex(cmdWithoutSlash, command.project)
+//            }
         }
     }
+}
 
-    /**
-     * Uniquely identifies the command, when two commands are the same, but from different packages, the identifier
-     * should be different.
-     */
-    val identifier: String
-        get() = commandWithSlash
+data class LatexCommandImpl(
+    override val commandWithSlash: String,
+    override val dependency: LatexPackage,
+    override val display: String? = null,
+    override val description: String = "",
+    override val arguments: Array<out Argument> = emptyArray(),
+    override val isMathMode: Boolean = false
+) : LatexCommand {
+    override val command: String = commandWithSlash.substring(1)
+//    override val commandWithSlash: String = "\\$command" // store it for performance reasons
 
-    override val description: String
-        get() = identifier
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-    /**
-     * Get the name of the command without the first backslash.
-     */
-    val command: String
+        other as LatexCommandImpl
 
-    val commandWithSlash: String
-        get() = "\\$command"
-
-    /**
-     * Get the display value of the command.
-     */
-    val display: String?
-
-    /**
-     * Get all the command arguments.
-     */
-    val arguments: Array<out Argument>
-
-    /**
-     * Whether this command must be used in math mode (`true`).
-     */
-    val isMathMode: Boolean
-
-    /**
-     * Concatenates all arguments to each other.
-     *
-     * @return e.g. `{ARG1}{ARG2}[ARG3]`
-     */
-    @Suppress("KDocUnresolvedReference")
-    fun getArgumentsDisplay(): String {
-        val sb = StringBuilder()
-        for (arg in arguments) {
-            sb.append(arg.toString())
-        }
-
-        return sb.toString()
+        return identifier == other.identifier
     }
 
-    /**
-     * Checks whether `{}` must be automatically inserted in the auto complete.
-     *
-     * @return `true` to insert automatically, `false` not to insert.
-     */
-    fun autoInsertRequired() = arguments.filterIsInstance<RequiredArgument>().isNotEmpty()
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Argument> getArgumentsOf(clazz: KClass<T>): List<T> {
-        return arguments.asSequence()
-            .filter { clazz.java.isAssignableFrom(it.javaClass) }
-            .mapNotNull { it as? T }
-            .toList()
+    override fun hashCode(): Int {
+        return identifier.hashCode()
     }
 
-    fun <T : Argument> getArgumentsOf(clazz: Class<T>) = getArgumentsOf(clazz.kotlin)
 }
 
 internal fun String.asRequired(type: Argument.Type = Argument.Type.NORMAL) = RequiredArgument(this, type)

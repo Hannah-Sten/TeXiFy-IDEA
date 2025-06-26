@@ -37,7 +37,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val fullCommand = command.name ?: return
 
         // Fetch the corresponding LatexRegularCommand object.
-        val commandHuh = LatexCommand.lookup(fullCommand.substring(1))?.first() ?: getOriginalCommandFromAlias(command.name ?: return, command.project) ?: return
+        val commandHuh = LatexCommand.lookup(fullCommand)?.first() ?: getOriginalCommandFromAlias(command.name ?: return, command.project) ?: return
 
         val arguments = commandHuh.getArgumentsOf(RequiredFileArgument::class.java)
         if (arguments.isEmpty()) {

@@ -43,7 +43,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             return false
         }
 
-        val command = LatexCommand.lookup(element)
+        val command = LatexCommand.lookupInAll(element)
         if (command.isNullOrEmpty()) return false
         return command.first().commandWithSlash in CommandMagic.packageInclusionCommands
     }
@@ -57,7 +57,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             return@either null
         }
 
-        val command = LatexCommand.lookup(element)
+        val command = LatexCommand.lookupInAll(element)
 
         if (command.isNullOrEmpty()) return@either null
 
@@ -101,7 +101,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
             when(element) {
                 is LatexCommands -> {
-                    lookup = LatexCommand.lookup(element)?.firstOrNull()
+                    lookup = LatexCommand.lookupInAll(element)?.firstOrNull()
                 }
                 is LatexEnvIdentifier -> {
                     lookup = element.name?.let { envName ->

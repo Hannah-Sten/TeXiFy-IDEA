@@ -56,6 +56,7 @@ object LatexExternalCommandsIndexCache {
      * This may be a very expensive operation, up to one minute for texlive-full
      */
     private suspend fun getIndexedCommandsNoCache(project: Project): MutableList<Set<LatexCommand>> {
+        // TODO: Traverse once
         val commands = withProgressText("Getting commands from index...") {
             smartReadAction(project) {
                 val commands = mutableListOf<String>()
@@ -72,7 +73,9 @@ object LatexExternalCommandsIndexCache {
         return withProgressText("Processing indexed commands...") {
             val commandsFromIndex = mutableListOf<Set<LatexCommand>>()
             commands.forEachWithProgress { cmdWithSlash ->
-                commandsFromIndex.add(LatexCommand.lookupInIndex(cmdWithSlash.substring(1), project))
+                smartReadAction(project) {
+                    commandsFromIndex.add(LatexCommand.lookupInIndex(cmdWithSlash, project))
+                }
             }
             commandsFromIndex
         }
