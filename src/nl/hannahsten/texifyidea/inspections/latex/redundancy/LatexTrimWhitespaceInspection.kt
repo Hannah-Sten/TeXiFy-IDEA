@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.trimRange
@@ -43,7 +43,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val sectionName = command.firstChildOfType(LatexRequiredParam::class)?.text?.trimRange(1, 1) ?: continue
+            val sectionName = command.findFirstChildOfType(LatexRequiredParam::class)?.text?.trimRange(1, 1) ?: continue
             if (!PatternMagic.excessWhitespace.matcher(sectionName).matches()) {
                 continue
             }
@@ -74,7 +74,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
-            val param = command.firstChildOfType(LatexRequiredParam::class) ?: return
+            val param = command.findFirstChildOfType(LatexRequiredParam::class) ?: return
 
             val start = param.textOffset + 1
             val end = param.endOffset() - 1

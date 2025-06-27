@@ -4,9 +4,11 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
@@ -15,7 +17,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
-import nl.hannahsten.texifyidea.util.parser.prevContextualSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.psi.prevContextualSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
 
 /**
@@ -137,7 +139,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * We use this visitor to traverse all section commands and magic comments that define regions.
      */
-    private inner class LatexFoldingVisitor : LatexRecursiveIgnoreTextVisitor() {
+    private inner class LatexFoldingVisitor : LatexRecursiveVisitor() {
         /*
         Rules:
 
@@ -291,15 +293,13 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     val textRange = it.textRange
                     // If the footnote has a required parameter, we fold it
                     if (textRange.length <= 2) {
-                        return@traverseRequiredParams true // Skip empty parameters like {}
+                        return@traverseRequiredParams // Skip empty parameters like {}
                     }
                     val descriptor = foldingDescriptorFootnote(
                         element,
                         TextRange(textRange.startOffset + 1, textRange.endOffset - 1)
                     )
                     descriptors.add(descriptor)
-
-                    true
                 }
             }
         }
@@ -347,6 +347,19 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             else {
                 o.acceptChildren(this)
             }
+        }
+
+        override fun visitNormalText(o: LatexNormalText) {
+            return
+        }
+
+        override fun visitWhiteSpace(space: PsiWhiteSpace) {
+            return
+        }
+
+        override fun visitElement(element: PsiElement) {
+            ProgressIndicatorProvider.checkCanceled()
+            element.acceptChildren(this)
         }
     }
 }

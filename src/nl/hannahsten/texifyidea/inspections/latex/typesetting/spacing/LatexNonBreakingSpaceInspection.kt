@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.lastChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
@@ -129,7 +129,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             var replacement = "~"
 
             // First check if there already is a tilde in the normal text before.
-            val texts = whitespace.prevSibling.childrenOfType(LatexNormalText::class)
+            val texts = whitespace.prevSibling.collectSubtreeTyped<LatexNormalText>()
             if (!texts.isEmpty()) {
                 val text = texts.reversed().iterator().next()
 

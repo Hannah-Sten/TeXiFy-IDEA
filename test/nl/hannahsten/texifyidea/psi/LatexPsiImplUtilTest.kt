@@ -32,7 +32,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .getRequiredParameters()
         // then
         assertEquals("library1,library2", requiredParameters[0])
@@ -45,7 +45,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
+        val element = psiFile.children.first().findFirstChildOfType(LatexCommands::class)!!
         val optionalParameters = element.getOptionalParameterMap().toStringMap()
 
         // then
@@ -61,7 +61,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
+        val element = psiFile.children.first().findFirstChildOfType(LatexCommands::class)!!
         val optionalParameters = element.getOptionalParameterMap().toStringMap().keys.toList()
 
         // then
@@ -77,7 +77,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
+        val element = psiFile.children.first().findFirstChildOfType(LatexCommands::class)!!
         val optionalParameters = element.getOptionalParameterMap().toStringMap()
 
         // then
@@ -89,7 +89,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         myFixture.configureByText(LatexFileType, "\\url{$url} \\href{$url}{TeXiFy}")
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val urlElement = psiFile.firstChildOfType(LatexCommands::class)!!
+        val urlElement = psiFile.findFirstChildOfType(LatexCommands::class)!!
         val hrefElement = psiFile.lastChildOfType(LatexCommands::class)!!
 
         UsefulTestCase.assertContainsElements(
@@ -110,7 +110,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         myFixture.configureByText(LatexFileType, """\begin{lstlisting}[language=Python, label={lst:listing}]\end{lstlisting}""")
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val element = psiFile.children.first().firstChildOfType(LatexBeginCommand::class)!!
+        val element = psiFile.children.first().findFirstChildOfType(LatexBeginCommand::class)!!
         val optionalParameters = element.getOptionalParameterMap().toStringMap()
 
         assertEquals("Python", optionalParameters["language"])
@@ -122,7 +122,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         myFixture.configureByText(LatexFileType, """\begin{lstlisting}[label={lst:listing}, language=Python]\end{lstlisting}""")
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val element = psiFile.children.first().firstChildOfType(LatexEnvironment::class)!!
+        val element = psiFile.children.first().findFirstChildOfType(LatexEnvironment::class)!!
 
         assertEquals("lst:listing", element.getLabel())
     }
@@ -132,7 +132,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         myFixture.configureByText(LatexFileType, """\begin{lstlisting}[language=Python, label={lst:listing}]\end{lstlisting}""")
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val element = psiFile.children.first().firstChildOfType(LatexEnvironment::class)!!
+        val element = psiFile.children.first().findFirstChildOfType(LatexEnvironment::class)!!
 
         assertEquals("lst:listing", element.getLabel())
     }
@@ -149,7 +149,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         )
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
-        val element = psiFile.firstChildOfType(LatexCommands::class)!!
+        val element = psiFile.findFirstChildOfType(LatexCommands::class)!!
         assertTrue("2" in element.getOptionalParameterMap().toStringMap())
         assertTrue("n" in element.getOptionalParameterMap().toStringMap())
     }

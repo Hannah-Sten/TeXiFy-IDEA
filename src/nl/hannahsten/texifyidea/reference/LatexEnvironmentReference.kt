@@ -3,10 +3,8 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.ElementManipulators
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
-import nl.hannahsten.texifyidea.psi.LatexBeginCommand
+import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 /**
@@ -14,7 +12,7 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
  *
  * @author Thomas
  */
-class LatexEnvironmentReference(element: LatexParameterText) : PsiReferenceBase<LatexParameterText>(element) {
+class LatexEnvironmentReference(element: LatexEnvIdentifier) : PsiReferenceBase<LatexEnvIdentifier>(element) {
 
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
@@ -26,9 +24,7 @@ class LatexEnvironmentReference(element: LatexParameterText) : PsiReferenceBase<
 
     override fun resolve(): PsiElement? {
         // Navigate from the current text in \end, to the text in \begin
-        return element.firstParentOfType(LatexEnvironment::class)
-            ?.firstChildOfType(LatexBeginCommand::class)
-            ?.firstChildOfType(LatexParameterText::class)
+        return element.firstParentOfType(LatexEnvironment::class)?.beginCommand?.envIdentifier
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {

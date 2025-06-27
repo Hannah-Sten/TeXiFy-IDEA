@@ -12,15 +12,15 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.ui.PopupChooserCellRenderer
 import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.name
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 
 class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verbatim command or environment") {
@@ -69,7 +69,7 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
      */
     private fun PsiElement.getName(): String? =
         firstParentOfType(LatexCommands::class)?.name?.removePrefix("\\")
-            ?: firstParentOfType(LatexEnvironment::class)?.name()?.name
+            ?: firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
 
     /**
      * Replace the psi element of the old verbatim with a psi element with the new verbatim.
@@ -150,12 +150,12 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
                 else -> "{$content}"
             }
             LatexPsiHelper(project).createFromText("\\$newVerbatim$arg")
-                .firstChildOfType(LatexCommands::class)
+                .findFirstChildOfType(LatexCommands::class)
         }
         else {
             val environmentContent = if (commandArgCharacter) content?.drop(1)?.dropLast(1) else content
             LatexPsiHelper(project).createFromText("\\begin{$newVerbatim}\n$environmentContent\n\\end{$newVerbatim}")
-                .firstChildOfType(LatexEnvironment::class)
+                .findFirstChildOfType(LatexEnvironment::class)
         }
 
     /**

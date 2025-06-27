@@ -158,28 +158,32 @@ open class WordCountAction : AnAction() {
     private fun countWords(baseFile: PsiFile): Pair<Int, Int> {
         val fileSet = baseFile.referencedFileSet()
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
-        val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
-        val parameterText = fileSet.flatMap { it.childrenOfType(LatexParameterText::class) }
-            .filter {
-                val commandText = it.command?.text ?: return@filter false
-                return@filter commandText !in IGNORE_COMMANDS
-            }
+        val allNormalText = mutableListOf<LatexNormalText>()
+        val parameterText = mutableListOf<LatexParameterText>()
+        val bibliographies = mutableListOf<LatexEnvironment>()
 
-        val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
-            .filter {
-                val children = it.childrenOfType(LatexBeginCommand::class)
-                if (children.isEmpty()) {
-                    return@filter false
+        for (f in fileSet) {
+            f.traverse { e ->
+                when (e) {
+                    is LatexNormalText -> {
+                        allNormalText.add(e)
+                    }
+                    is LatexParameterText -> {
+                        if (e.command?.text !in IGNORE_COMMANDS) {
+                            parameterText.add(e)
+                        }
+                    }
+                    is LatexEnvironment -> {
+                        if(e.getEnvironmentName() == "thebibliography") {
+                            bibliographies.add(e)
+                        }
+                    }
                 }
-
-                val parameters = children.first().parameterList
-                if (parameters.isEmpty()) {
-                    return@filter false
-                }
-
-                return@filter parameters[0].text == "{thebibliography}"
+                true
             }
-        val bibliography = bibliographies.flatMap { it.childrenOfType(LatexNormalText::class) }
+        }
+
+        val bibliography = bibliographies.flatMap { it.collectSubtreeTyped<LatexNormalText>() }
 
         val (wordsNormal, charsNormal) = countWords(allNormalText)
         val (wordsParameter, charsParameter) = countWords(parameterText)

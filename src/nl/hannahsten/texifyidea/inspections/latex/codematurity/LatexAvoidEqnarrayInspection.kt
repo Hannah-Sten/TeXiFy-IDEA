@@ -12,11 +12,11 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.util.parser.traverseAllTyped
 import java.util.*
 
 /**
@@ -35,15 +35,10 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val environments = file.childrenOfType(LatexEnvironment::class)
-        for (env in environments) {
-            val name = env.name()?.text ?: continue
-            if (name != "eqnarray" && name != "eqnarray*") {
-                continue
-            }
-
-            val star = name.substring("eqnarray".length)
-            if (env.endCommand != null) {
+        file.traverseAllTyped<LatexEnvironment> { env ->
+            val name = env.getEnvironmentName()
+            if(name == "eqnarray" || name == "eqnarray*") {
+                val star = name.substring("eqnarray".length)
                 descriptors.add(
                     manager.createProblemDescriptor(
                         env,
@@ -56,7 +51,6 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
                 )
             }
         }
-
         return descriptors
     }
 

@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
 import com.intellij.psi.util.endOffset
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * Enables folding of multiple comments on successive lines.
@@ -30,8 +30,8 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
-        val comments = root.childrenOfType(PsiComment::class)
-        val whitespaces = root.childrenOfType(PsiWhiteSpace::class)
+        val comments = root.collectSubtreeTyped<PsiComment>()
+        val whitespaces = root.collectSubtreeTyped<PsiWhiteSpace>()
 
         val whitespaceLocations = ArrayList(whitespaces.map { TextRange(it.startOffset, it.endOffset) })
 

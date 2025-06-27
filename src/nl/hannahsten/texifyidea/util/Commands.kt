@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import java.util.stream.Collectors
 
 /**
@@ -87,7 +88,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): String? {
     var text = inputText
     // Get all the commands that are used in the input text.
-    val commandsInText = LatexPsiHelper(project).createFromText(inputText).childrenOfType(LatexCommands::class)
+    val commandsInText = LatexPsiHelper(project).createFromText(inputText).traverseTyped<LatexCommands>()
 
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text

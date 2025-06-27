@@ -17,8 +17,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.parser.isComment
-import nl.hannahsten.texifyidea.util.parser.name
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
@@ -187,7 +187,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         /**
          * The name of the environment to suppress, or `null` when there is no environment name available.
          */
-        private val environmentName: String? = parentEnvironment.name()?.text
+        private val environmentName: String? = parentEnvironment.getEnvironmentName()
 
         override val suppressionScope = MagicCommentScope.ENVIRONMENT
 

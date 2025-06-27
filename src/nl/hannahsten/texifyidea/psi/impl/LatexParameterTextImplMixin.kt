@@ -7,7 +7,6 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
-import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.isFigureLabel
@@ -35,10 +34,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             // If the command is a bibliography reference
             CommandMagic.bibliographyReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
                 arrayOf(BibtexIdReference(this))
-            }
-            // If the command is an \end command (references to \begin)
-            this.firstParentOfType(LatexEndCommand::class) != null -> {
-                arrayOf(LatexEnvironmentReference(this))
             }
             // If the command is a glossary reference
             CommandMagic.glossaryReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {

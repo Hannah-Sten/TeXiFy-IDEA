@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.psi.LatexOptionalKeyValPair
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.testutils.updateConvention
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
 
@@ -217,7 +217,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """.trimIndent()
         )
         // Sometimes, errors in psi structure only show when initiating a WalkingState
-        myFixture.file.children.first().childrenOfType(LatexOptionalKeyValPair::class)
+        myFixture.file.children.first().collectSubtreeTyped<LatexOptionalKeyValPair>()
     }
 
     fun `test fix all missing label problems in this file`() = testQuickFixAll(

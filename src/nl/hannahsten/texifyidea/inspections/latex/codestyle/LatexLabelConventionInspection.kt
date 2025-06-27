@@ -54,7 +54,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                     else {
                         val parent = label.parentOfType(LatexNoMathContent::class) ?: return null
                         val sibling = parent.previousSiblingIgnoreWhitespace() ?: return null
-                        sibling.firstChildOfType(LatexCommands::class)
+                        sibling.findFirstChildOfType(LatexCommands::class)
                     }
                 }
                 is LatexEnvironment -> {
@@ -202,7 +202,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 // Find all the parameters with the given labelName
                 for (ref in commands) {
                     val parameters = ref.requiredParameters()
-                        .filter { p -> p.firstChildOfType(LatexParameterText::class)?.text == labelName }
+                        .filter { p -> p.findFirstChildOfType(LatexParameterText::class)?.text == labelName }
                     requiredParams.addAll(parameters)
                 }
 

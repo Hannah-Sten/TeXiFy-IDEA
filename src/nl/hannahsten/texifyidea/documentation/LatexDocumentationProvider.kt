@@ -99,13 +99,15 @@ class LatexDocumentationProvider : DocumentationProvider {
         if (lookup == null) {
             // Apparently the lookup item is not yet initialised, so let's do that first
             // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
-            if (element is LatexCommands) {
-                lookup = LatexCommand.lookup(element)?.firstOrNull()
-            }
-            // If the cursor is on the parameter text inside a begin/end command, we show docs for the environment
-            else if (element is LatexParameterText && (element.parentOfType(LatexBeginCommand::class) != null || element.parentOfType(LatexEndCommand::class) != null)) {
-                val envName = element.text
-                lookup = Environment[envName] ?: Environment.lookupInIndex(envName, element.project).firstOrNull()
+            when(element) {
+                is LatexCommands -> {
+                    lookup = LatexCommand.lookup(element)?.firstOrNull()
+                }
+                is LatexEnvIdentifier -> {
+                    lookup = element.name?.let { envName ->
+                        Environment[envName] ?: Environment.lookupInIndex(envName, element.project).firstOrNull()
+                    }
+                }
             }
         }
         var docString = if (lookup != null) lookup?.description else ""
@@ -132,7 +134,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         }
 
         // If we return a blank string, the popup will just say "Fetching documentation..."
-        return if (docString.isNullOrBlank()) "<br>" else docString
+        return docString.ifBlank { "<br>" }
     }
 
     // originalElement: element under the mouse cursor

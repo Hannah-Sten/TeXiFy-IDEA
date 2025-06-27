@@ -174,7 +174,7 @@ fun PsiElement.backwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?)
  */
 fun PsiFile.magicComment(): MagicComment<String, String> {
     // Find first real element (so the one under LatexContent), which, if it is a magic comment, will be under a LatexNoMathContent
-    return forwardMagicCommentLookup { firstChildOfType(LatexNoMathContent::class)?.firstChildIgnoringWhitespaceOrNull() }
+    return forwardMagicCommentLookup { findFirstChildOfType(LatexNoMathContent::class)?.firstChildIgnoringWhitespaceOrNull() }
 }
 
 /**

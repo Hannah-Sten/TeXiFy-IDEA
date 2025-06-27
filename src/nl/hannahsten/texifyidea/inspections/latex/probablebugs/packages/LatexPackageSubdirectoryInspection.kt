@@ -10,8 +10,8 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.io.File
 import kotlin.math.max
 
@@ -29,17 +29,19 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
         "Package name does not have the correct directory"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = descriptorList()
-        val commands = file.childrenOfType(LatexCommands::class)
-            .filter { it.name == "\\ProvidesPackage" }
+        val dir = file.containingDirectory ?: return emptyList()
+        val rootDir = file.findRootFile(useIndexCache = false).containingDirectory ?: return emptyList()
+        val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
+
+        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\ProvidesPackage" }
+
+        val descriptors = mutableListOf<ProblemDescriptor>()
 
         for (command in commands) {
             val parameter = command.getRequiredParameters().firstOrNull() ?: continue
             val lastSlashIndex = parameter.indexOfLast { it == '/' }
             val providedDir = parameter.removeRange(max(0, lastSlashIndex), parameter.length)
-            val rootDir = file.findRootFile(useIndexCache = false).containingDirectory ?: continue
-            val dir = file.containingDirectory ?: continue
-            val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
+
             if (subDir != providedDir) {
                 descriptors.add(
                     manager.createProblemDescriptor(

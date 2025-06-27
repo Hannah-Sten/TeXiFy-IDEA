@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.SENTENCE_END_PREFIX
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
 import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
@@ -38,7 +38,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
         val document = file.document() ?: return descriptors
 
         // Target all regular text for this inspection.
-        val texts = file.childrenOfType(LatexNormalText::class)
+        val texts = file.collectSubtreeTyped<LatexNormalText>()
         for (text in texts) {
             // Do not trigger the inspection in math mode.
             if (text.inMathContext()) {

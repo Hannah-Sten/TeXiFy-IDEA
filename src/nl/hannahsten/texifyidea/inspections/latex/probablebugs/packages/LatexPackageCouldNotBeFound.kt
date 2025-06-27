@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.projectSearchScope
 import java.util.*
 
@@ -35,7 +35,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
             .map { it?.lowercase(Locale.getDefault()) }
         val packages = ctanPackages + customPackages
 
-        val commands = file.childrenOfType(LatexCommands::class)
+        val commands = file.traverseTyped<LatexCommands>()
             .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.commandWithSlash || it.name == LatexGenericRegularCommand.REQUIREPACKAGE.commandWithSlash }
 
         for (command in commands) {

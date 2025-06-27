@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.matches
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.previousCommand
 import java.util.*
 
@@ -44,7 +44,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         // Find matches.
         val stack = ArrayDeque<PsiElement>()
         val commands = file.commandsInFile()
-        val ifs = file.childrenOfType<LeafPsiElement>().filter { it.elementType == LatexTypes.END_IF || it.elementType == LatexTypes.START_IF }
+        val ifs = file.collectSubtreeTyped<LeafPsiElement> { it.elementType == LatexTypes.END_IF || it.elementType == LatexTypes.START_IF }
         val all = (commands + ifs).sortedBy { it.textOffset }
         for (command in all) {
             val name = if (command is LatexCommands) command.name else command.text

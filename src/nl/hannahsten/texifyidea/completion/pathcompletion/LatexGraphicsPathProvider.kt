@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.io.File
 
 /**
@@ -96,13 +96,17 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     private fun LatexCommands.getGraphicsPaths(): List<String> {
         if (!CommandMagic.graphicPathsCommands.map { it.cmd }.contains(name)) return emptyList()
-        return parameterList.firstNotNullOfOrNull { it.requiredParam }
-            // Each graphics path is in a group.
-            ?.childrenOfType(LatexNormalText::class)
-            ?.map { it.text }
-            // Relative paths (not starting with /) have to be appended to the directory of the file of the given command.
-            ?.mapNotNull { if (it.startsWith('/')) it else (containingFile.containingDirectory?.virtualFile?.path ?: return@mapNotNull null) + File.separator + it }
-            ?: emptyList()
+        val first = parameterList.firstNotNullOfOrNull { it.requiredParam } ?: return emptyList()
+        return first.collectSubtreeTyped<LatexNormalText>().mapNotNull {
+            val text = it.text
+            if (text.startsWith('/')) text
+            else {
+                // Relative paths (not starting with /) have to be appended to the directory of the file of the given command.
+                it.containingFile?.containingDirectory?.virtualFile?.path?.let { path ->
+                    path + File.separator + text
+                }
+            }
+        }
     }
 
     override fun searchFolders(): Boolean = true
