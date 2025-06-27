@@ -108,8 +108,7 @@ object LabelExtraction {
     /**
      * Extracts the label names from a [LatexRequiredParam] element.
      */
-    fun extractLabelNames(parameter : LatexRequiredParam) : List<String> {
-        return parameter.collectSubtreeOf { if(it is LatexParameterText) it.text else null}
+    fun extractLabelNames(parameter: LatexRequiredParam): List<String> {
+        return parameter.collectSubtreeOf { if(it is LatexParameterText) it.text else null }
     }
-
 }

@@ -52,7 +52,6 @@ object LatexRegularCommand {
 
     fun getWithSlash(command: String) = lookupWithSlash[command]
 
-
     @JvmStatic
     fun findByDisplay(display: String) = lookupDisplay[display]
 }

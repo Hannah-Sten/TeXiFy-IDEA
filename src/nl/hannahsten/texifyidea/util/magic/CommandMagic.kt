@@ -422,6 +422,8 @@ object CommandMagic {
      */
     val bibliographyIncludeCommands: Set<String> = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }.toSet()
 
+    val texAndBibliographyIncludeCommands: Set<String> = includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
+
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.
      */

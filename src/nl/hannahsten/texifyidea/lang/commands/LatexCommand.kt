@@ -87,7 +87,6 @@ interface LatexCommand : Described, Dependend {
 
     fun <T : Argument> getArgumentsOf(clazz: Class<T>) = getArgumentsOf(clazz.kotlin)
 
-
     companion object {
 
         /**
@@ -154,7 +153,6 @@ interface LatexCommand : Described, Dependend {
                 }
                 cmds.add(cmd)
             }
-
 
             // Now we might have duplicates, some of which might differ only in description.
             // Of those, we just want to take any command which doesn't have an empty description if it exists
@@ -255,9 +253,9 @@ interface LatexCommand : Described, Dependend {
             val cmdWithSlash = command.name ?: return null
             lookup(cmdWithSlash)?.let { return it }
             return lookupInIndex(cmdWithSlash, command.project)
-////            if (command.inMathContext()) {
-////                LatexMathCommand.getWithSlash(cmdWithSlash)?.let { return it }
-////            }
+// //            if (command.inMathContext()) {
+// //                LatexMathCommand.getWithSlash(cmdWithSlash)?.let { return it }
+// //            }
 //            LatexRegularCommand.getWithSlash(cmdWithSlash)?.let { return it }
 //
 //            return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
@@ -294,7 +292,6 @@ data class LatexCommandImpl(
     override fun hashCode(): Int {
         return identifier.hashCode()
     }
-
 }
 
 internal fun String.asRequired(type: Argument.Type = Argument.Type.NORMAL) = RequiredArgument(this, type)

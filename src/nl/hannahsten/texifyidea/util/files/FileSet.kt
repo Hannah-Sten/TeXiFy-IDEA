@@ -142,7 +142,7 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet
  * @see [LatexCommandsIndex.Util.getItemsInFileSet]
  */
 fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> {
-    // TODO: Avoid calling this method as it is very slow.
+    // TODO: Replace all the usage of this function
 //    val res = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
 //    val res = NewSpecialCommandsIndex.getAllInFileSet(this)
     // You can create breakpoints in the code to see the size of the returned collection.

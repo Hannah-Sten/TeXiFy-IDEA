@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
-import arrow.core.getOrNone
 import arrow.core.nonEmptySetOf
 
 /**
@@ -22,12 +21,12 @@ object LatexMathCommand {
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
         GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK
 
-    private val lookup : Map<String, NonEmptySet<LatexCommand>> = buildMap {
+    private val lookup: Map<String, NonEmptySet<LatexCommand>> = buildMap {
         ALL.forEach { cmd ->
             merge(cmd.command, nonEmptySetOf(cmd), NonEmptySet<LatexCommand>::plus)
         }
     }
-    private val lookupDisplay : Map<String, NonEmptySet<LatexCommand>> = buildMap {
+    private val lookupDisplay: Map<String, NonEmptySet<LatexCommand>> = buildMap {
         ALL.forEach { cmd ->
             cmd.display?.let { display ->
                 merge(display, nonEmptySetOf(cmd), NonEmptySet<LatexCommand>::plus)
@@ -35,9 +34,7 @@ object LatexMathCommand {
         }
     }
 
-
     private val lookupWithSlash: Map<String, NonEmptySet<LatexCommand>> = lookup.mapKeys { "\\${it.key}" }
-
 
     @JvmStatic
     fun values() = ALL
