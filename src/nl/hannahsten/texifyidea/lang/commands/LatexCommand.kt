@@ -235,7 +235,7 @@ interface LatexCommand : Described, Dependend {
 
             // Maybe the command appears somewhere in the docs with all the arguments after it
             // Check for each command in the docs,
-            """\$commandWithSlash""".toRegex().findAll(docs).forEach { match ->
+            Regex.fromLiteral(commandWithSlash).findAll(docs).forEach { match ->
                 // whether the arguments follow it.
                 getArgumentsFromStartOfString(docs, match.range.last + 1).let { if (it.isNotEmpty()) return it }
             }
