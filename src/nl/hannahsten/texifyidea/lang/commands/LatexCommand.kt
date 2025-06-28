@@ -8,11 +8,13 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.everythingScope
 import nl.hannahsten.texifyidea.util.length
 import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
@@ -118,15 +120,8 @@ interface LatexCommand : Described, Dependend {
             val cmds = lookup(cmdWithSlash)?.toMutableSet() ?: mutableSetOf()
 
             // Look up in index
-            val filesAndValues = mutableListOf<Pair<VirtualFile, String>>()
-            FileBasedIndex.getInstance().processValues(
-                LatexExternalCommandIndex.Cache.id, cmdWithSlash, null, { file, value ->
-                    filesAndValues.add(Pair(file, value))
-                    true
-                },
-                GlobalSearchScope.everythingScope(project)
-            )
-            for ((file, value) in filesAndValues) {
+            val filesAndValues = LatexExternalCommandIndex.getByKey(cmdWithSlash, project.everythingScope)
+            for ((value,file) in filesAndValues) {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command

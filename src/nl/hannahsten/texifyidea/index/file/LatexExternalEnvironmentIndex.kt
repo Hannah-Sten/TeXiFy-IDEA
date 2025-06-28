@@ -6,7 +6,7 @@ import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
 
 /**
- * Similar to [LatexExternalCommandIndex] but for environments.
+ * Similar to [LatexExternalCommandIndexEx] but for environments.
  *
  * @author Thomas
  */

@@ -31,6 +31,13 @@ val Project.projectSearchScope: GlobalSearchScope
     get() = GlobalSearchScope.projectScope(this)
 
 /**
+ * Get a project [GlobalSearchScope] for this project.
+ */
+val Project.everythingScope: GlobalSearchScope
+    get() = GlobalSearchScope.everythingScope(this)
+
+
+/**
  * Get a [GlobalSearchScope] for the source folders in this project.
  */
 val Project.sourceSetSearchScope: GlobalSearchScope

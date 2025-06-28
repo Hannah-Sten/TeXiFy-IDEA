@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StubIndexKey
+import com.intellij.util.indexing.ID
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -32,4 +33,17 @@ object LatexStubIndexKeys {
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.parameterlabeledcommands")
     val GLOSSARY_ENTRIES_KEY =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.glossaryentries")
+}
+
+object LatexFileBasedIndexKeys {
+    val EXTERNAL_COMMANDS = ID.create<String, String>("nl.hannahsten.texifyidea.external.commands")
+
+//    val EXTERNAL_ENVIRONMENTS =
+//        ID.create<String, String>("nl.hannahsten.texifyidea.external.environments")
+//
+//    val EXTERNAL_LABELS =
+//        ID.create<String, String>("nl.hannahsten.texifyidea.external.labels")
+//
+//    val EXTERNAL_REFERENCES =
+//        ID.create<String, String>("nl.hannahsten.texifyidea.external.references")
 }

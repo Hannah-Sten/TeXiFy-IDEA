@@ -17,6 +17,12 @@ object SpecialKeys {
     const val PACKAGE_INCLUDES = "package_includes"
 }
 
+/**
+ * This is a temporary solution to replace the old "traversing all commands" index.
+ * It will record commands used in this project and classify them into groups.
+ *
+ * It should be gradually removed to use more efficient methods.
+ */
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> {
         return LatexStubIndexKeys.COMMANDS_SPECIAL
@@ -97,12 +103,10 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
 
      */
     fun getAllCommandDefRelated(originalFile: PsiFile): Collection<LatexCommands> {
-        // TODO
         return getAllCommandDef(originalFile.project)
     }
 
     fun getAllEnvDefRelated(originalFile: PsiFile): Collection<LatexCommands> {
-        // TODO
         return getAllEnvDef(originalFile.project)
     }
 }

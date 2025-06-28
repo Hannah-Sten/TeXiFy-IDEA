@@ -18,7 +18,7 @@ import kotlin.io.path.isWritable
 import kotlin.io.path.listDirectoryEntries
 
 /**
- * Specify the paths that have to be indexed for the [LatexExternalCommandIndex].
+ * Specify the paths that have to be indexed for the [LatexExternalCommandIndexEx].
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
 
@@ -165,8 +165,4 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
     override fun getAdditionalRootsToIndex(): Set<VirtualFile> {
         return emptySet()
     }
-
-//    override fun getAdditionalRootsToIndex()
-//        return emptySet<VirtualFile>()
-//    }
 }

@@ -13,12 +13,14 @@ import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.CoroutineScope
 import nl.hannahsten.texifyidea.completion.LatexCommandsAndEnvironmentsCompletionProvider.Companion.createCommandLookupElements
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
+import nl.hannahsten.texifyidea.util.everythingScope
 
 /**
- * Cache for [LatexExternalCommandIndex], as index access is very expensive.
+ * Cache for [LatexExternalCommandIndexEx], as index access is very expensive.
  * This cache will not be updated while the IDE is running.
  */
 object LatexExternalCommandsIndexCache {
@@ -59,14 +61,7 @@ object LatexExternalCommandsIndexCache {
         // TODO: Traverse once
         val commands = withProgressText("Getting commands from index...") {
             smartReadAction(project) {
-                val commands = mutableListOf<String>()
-                FileBasedIndex.getInstance().processAllKeys(
-                    LatexExternalCommandIndex.Cache.id,
-                    { cmdWithSlash -> commands.add(cmdWithSlash) },
-                    GlobalSearchScope.everythingScope(project),
-                    null
-                )
-                commands
+                LatexExternalCommandIndex.getAllKeys(project)
             }
         }
 

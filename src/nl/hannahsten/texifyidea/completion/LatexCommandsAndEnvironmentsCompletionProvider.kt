@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Dependend
@@ -187,13 +188,13 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
      * If the index was not yet ready, add all of them.
      */
     private fun addNormalCommands(result: CompletionResultSet, project: Project, isIndexReady: Boolean) {
-        val indexedKeys = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.Cache.id, project)
+        val indexedKeys = LatexExternalCommandIndex.getAllKeys(project)
 
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
                 /** True if there is a package for which we already have the [cmd] command indexed.  */
                 fun alreadyIndexed() =
-                    FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.Cache.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project))
+                    LatexExternalCommandIndex.getContainingFiles(cmd.commandWithSlash,project)
                         .map { LatexPackage.create(it) }.contains(cmd.dependency)
 
                 // Avoid adding duplicates
@@ -325,7 +326,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             }
 
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
-                val paramSpecification = commands.requiredParametersText().getOrNull(1)?.removeAll("null", " ") ?: ""
+                val paramSpecification = commands.requiredParameterText(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
                     if (PackageMagic.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"
