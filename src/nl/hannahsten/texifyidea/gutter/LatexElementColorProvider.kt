@@ -6,7 +6,7 @@ import com.intellij.openapi.editor.ElementColorProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexColorDefinitionCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -69,7 +69,7 @@ class LatexElementColorProvider : ElementColorProvider {
             if (command.usesColor()) {
                 val colorArgument = when (command?.name?.substring(1)) {
                     // Show the defined color.
-                    in ColorMagic.colorDefinitions.map { it.command } -> {
+                    in ColorMagic.colorDefinitions -> {
                         command?.getRequiredArgumentValueByName("name")
                     }
                     // Show the used color.
@@ -94,10 +94,9 @@ class LatexElementColorProvider : ElementColorProvider {
         @Suppress("UseJBColor") // Should show actual color also in dark mode
         if (defaultHex != null) return Color(defaultHex)
 
-        val colorDefiningCommands = LatexCommandsIndex.Util.getCommandsByNames(
+        val colorDefiningCommands = NewCommandsIndex.getByNames(
+            ColorMagic.colorDefinitions,
             file,
-            *ColorMagic.colorDefinitions.map { "\\${it.command}" }
-                .toTypedArray()
         )
         // If this color is a single color (not a mix, and thus does not contain a !)
         // and we did not find it in the default colors (above), it should be in the

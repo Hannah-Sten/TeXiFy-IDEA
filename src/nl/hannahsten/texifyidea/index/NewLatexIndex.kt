@@ -1,0 +1,51 @@
+package nl.hannahsten.texifyidea.index
+
+import com.intellij.psi.stubs.IndexSink
+import com.intellij.psi.stubs.StubIndexKey
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+
+class NewCommandsIndexEx : NewLatexCompositeStubIndex<LatexCommands>(LatexCommands::class.java) {
+
+    override fun getKey(): StubIndexKey<String, LatexCommands> {
+        return LatexStubIndexKeys.COMMANDS
+    }
+}
+
+val NewCommandsIndex = NewCommandsIndexEx()
+
+/**
+ * Definitions of both commands and theorems
+ */
+class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
+    override fun getVersion(): Int {
+        return 1002
+    }
+
+    private fun getDefinitionName(stub: LatexCommandsStub): String? {
+        if (stub.requiredParams.isNotEmpty()) {
+            return stub.requiredParams[0]
+        }
+        // find the next command after it, which can be a bit slow, but I don't know a better way
+        val children = stub.parentStub!!.childrenStubs
+        val siblingIndex = children.indexOfFirst { it === stub } + 1
+        if (siblingIndex < 0 || siblingIndex >= children.size) return null
+        val sibling = children[siblingIndex] as? LatexCommandsStub ?: return null
+        return sibling.commandToken
+    }
+
+    override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
+        val command = stub.commandToken
+        if (command !in CommandMagic.definitions) return
+        getDefinitionName(stub)?.let {
+            sink.occurrence(key, it)
+        }
+    }
+
+    override fun getKey(): StubIndexKey<String, LatexCommands> {
+        return LatexStubIndexKeys.DEFINITIONS
+    }
+}
+
+val NewDefinitionIndex = NewDefinitionIndexEx()

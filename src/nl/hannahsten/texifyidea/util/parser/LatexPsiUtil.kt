@@ -144,7 +144,7 @@ fun PsiElement.findDependencies(): Set<LatexPackage> {
         val dependency = when (e) {
             is LatexCommands -> {
                 // If the command is a known command, add its dependency.
-                LatexCommand.lookup(e)?.firstOrNull()?.dependency
+                LatexCommand.lookupInAll(e)?.firstOrNull()?.dependency
             }
             is LatexEnvironment -> {
                 // If the environment is a known environment, add its dependency.

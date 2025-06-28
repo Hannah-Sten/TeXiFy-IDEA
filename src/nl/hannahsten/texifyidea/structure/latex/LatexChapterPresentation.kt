@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.structure.EditableHintPresentation
  */
 class LatexChapterPresentation(chapterCommand: LatexCommands) : EditableHintPresentation {
 
-    private val chapterName = chapterCommand.getRequiredParameters().getOrElse(0) { "No chapter name" }
+    private val chapterName = chapterCommand.requiredParametersText().getOrElse(0) { "No chapter name" }
     private var hint = ""
 
     override fun getPresentableText() = chapterName

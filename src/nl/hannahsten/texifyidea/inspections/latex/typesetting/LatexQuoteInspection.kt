@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.quotePattern
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.inMathContext
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -77,8 +76,8 @@ class LatexQuoteInspection : TexifyInspectionBase() {
 
         for (quoteMaker in quoteMakers) {
             for (command in commands) {
-                val opener = command.requiredParameter(quoteMaker.openParam)
-                val closer = command.requiredParameter(quoteMaker.closeParam)
+                val opener = command.requiredParameterText(quoteMaker.openParam)
+                val closer = command.requiredParameterText(quoteMaker.closeParam)
 
                 if (!opener.isNullOrEmpty() && !closer.isNullOrEmpty()) {
                     validQuotes.add(opener to closer)

@@ -2,14 +2,11 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
-import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
-import nl.hannahsten.texifyidea.index.indexSinkOccurrence
+import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getLabel
 import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.io.IOException
 
 open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage) {
@@ -33,16 +30,11 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     @Throws(IOException::class)
     override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>): LatexEnvironmentStub {
         val envName = dataStream.readName()?.string ?: ""
-        val label = dataStream.readName()?.string ?: ""
+        val label = dataStream.readName()?.string // can be null if no label is present
         return LatexEnvironmentStubImpl(parentStub, this, envName, label)
     }
 
     override fun indexStub(stub: LatexEnvironmentStub, sink: IndexSink) {
-        indexSinkOccurrence(sink, LatexEnvironmentsIndex.Util, stub.environmentName)
-
-        // only record environments with a label in the optional parameters
-        if (stub.label.isNotEmpty() && EnvironmentMagic.labelAsParameter.contains(stub.environmentName)) {
-            indexSinkOccurrence(sink, LatexParameterLabeledEnvironmentsIndex.Util, stub.label)
-        }
+        NewLabelsIndex.sinkIndexEnv(stub, sink)
     }
 }

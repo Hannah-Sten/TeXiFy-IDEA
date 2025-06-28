@@ -2,7 +2,8 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.*
@@ -33,7 +34,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      */
     fun getGraphicsPathsInFileSet(file: PsiFile): List<String> {
         val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = file.commandsInFileSet().filter { command -> CommandMagic.graphicPathsCommands.map { it.cmd }.contains(command.name) }
+        val graphicsPathCommands = NewCommandsIndex.getByNamesInFileSet(CommandMagic.graphicPathsCommandNames, file)
 
         // Is a graphicspath defined?
         if (graphicsPathCommands.isNotEmpty()) {
@@ -58,9 +59,9 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
         // First find all graphicspaths commands in the file of the given command
         val graphicsPaths = graphicsPathsInFile(command.containingFile).toMutableList()
 
-        val allIncludeCommands = LatexIncludesIndex.Util.getItems(command.project)
+        val allIncludeCommands = NewSpecialCommandsIndex.getAllFileInputs(command.project)
         // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
-        var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) } }
+        var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParametersText().any { it.contains(command.containingFile.name.removeFileExtension()) } }
 
         // Avoid endless loop (in case of a file inclusion loop)
         val maxDepth = allIncludeCommands.size
@@ -78,7 +79,7 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
                 // Find files/commands to search next
                 val file = includingCommand.containingFile
                 if (file !in handledFiles) {
-                    val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(file.name) } }
+                    val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParametersText().any { it.contains(file.name) } }
                     newIncludingCommands.addAll(commandsIncludingThisFile)
                     handledFiles.add(file)
                 }

@@ -14,11 +14,9 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
-import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 import nl.hannahsten.texifyidea.util.formatAsLabel
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
-import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -57,9 +55,11 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                         sibling.findFirstChildOfType(LatexCommands::class)
                     }
                 }
+
                 is LatexEnvironment -> {
                     label
                 }
+
                 else -> null
             }
         }
@@ -78,12 +78,14 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                         LabelConventionType.COMMAND
                     )?.prefix
                 }
+
                 is LatexEnvironment -> {
                     conventionSettings.getLabelConvention(
                         labeledCommand.getEnvironmentName(),
                         LabelConventionType.ENVIRONMENT
                     )?.prefix
                 }
+
                 else -> null
             }
         }
@@ -99,6 +101,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = mutableListOf<ProblemDescriptor>()
+        // TODO implement in better ways
         checkLabels(file, manager, isOntheFly, descriptors)
         return descriptors
     }
@@ -107,28 +110,32 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     ) {
-        file.findLatexLabelingElementsInFile().forEach { label ->
-            val labeledCommand = Util.getLabeledCommand(label) ?: return@forEach
-            val expectedPrefix = Util.getLabelPrefix(labeledCommand)
-            val labelName = label.extractLabelName()
-            if (!expectedPrefix.isNullOrBlank() && !labelName.startsWith("$expectedPrefix:")) {
-                descriptors.add(
-                    manager.createProblemDescriptor(
-                        label,
-                        "Unconventional label prefix",
-                        LabelPreFix(),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly
+        file.traverseCommands()
+            .filter {
+                it.name in CommandMagic.labels
+            }.forEach { label ->
+                val labeledCommand = Util.getLabeledCommand(label) ?: return@forEach
+                val expectedPrefix = Util.getLabelPrefix(labeledCommand)
+                val labelName = label.extractLabelName()
+                if (!expectedPrefix.isNullOrBlank() && !labelName.startsWith("$expectedPrefix:")) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            label,
+                            "Unconventional label prefix",
+                            LabelPreFix(),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly
+                        )
                     )
-                )
+                }
             }
-        }
     }
 
     /**
      * @author Hannah Schellekens
      */
     private class LabelPreFix : LocalQuickFix {
+        // TODO: Provide better implementation
 
         override fun getFamilyName() = "Fix label name"
 
@@ -187,29 +194,30 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun findReferences(
             file: PsiFile,
             labelName: String
-        ): MutableSet<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
-            val result = mutableSetOf<Pair<PsiFile, MutableList<LatexRequiredParam>>>()
+        ): Set<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
+            // TODO: Better implementation
+//            val result = mutableSetOf<Pair<PsiFile, MutableList<LatexRequiredParam>>>()
+//
+//            val commandsAndFiles = file.commandsAndFilesInFileSet()
+//
+//            // Loop over every file
+//            for (pair in commandsAndFiles) {
+//                // Only look at commands which refer to something
+//                val commands =
+//                    pair.second.filter { CommandMagic.labelReference.contains(it.name) }.reversed()
+//                val requiredParams = mutableListOf<LatexRequiredParam>()
+//
+//                // Find all the parameters with the given labelName
+//                for (ref in commands) {
+//                    val parameters = ref.requiredParameters()
+//                        .filter { p -> p.findFirstChildOfType(LatexParameterText::class)?.text == labelName }
+//                    requiredParams.addAll(parameters)
+//                }
+//
+//                result.add(Pair(pair.first, requiredParams))
+//            }
 
-            val commandsAndFiles = file.commandsAndFilesInFileSet()
-
-            // Loop over every file
-            for (pair in commandsAndFiles) {
-                // Only look at commands which refer to something
-                val commands =
-                    pair.second.filter { CommandMagic.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
-                val requiredParams = mutableListOf<LatexRequiredParam>()
-
-                // Find all the parameters with the given labelName
-                for (ref in commands) {
-                    val parameters = ref.requiredParameters()
-                        .filter { p -> p.findFirstChildOfType(LatexParameterText::class)?.text == labelName }
-                    requiredParams.addAll(parameters)
-                }
-
-                result.add(Pair(pair.first, requiredParams))
-            }
-
-            return result
+            return emptySet()
         }
 
         /**

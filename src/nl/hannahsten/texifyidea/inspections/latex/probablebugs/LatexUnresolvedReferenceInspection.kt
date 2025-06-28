@@ -47,7 +47,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val required = command.getRequiredParameters()
+            val required = command.requiredParametersText()
             if (required.isEmpty()) {
                 continue
             }

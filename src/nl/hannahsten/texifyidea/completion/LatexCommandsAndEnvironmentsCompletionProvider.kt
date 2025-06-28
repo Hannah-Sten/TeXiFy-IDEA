@@ -7,21 +7,23 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addEnvironments
-import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addIndexedEnvironments
-import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
+import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.Dependend
+import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.SimpleEnvironment
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
@@ -32,6 +34,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
+import kotlin.collections.contains
 
 /**
  * Provide autocompletion for commands and environments.
@@ -64,6 +67,64 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                     .withIcon(TexifyIcons.DOT_COMMAND)
             }
         }
+
+        fun addIndexedEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
+            val project = parameters.editor.project ?: return
+
+            val usesTexlive = isTexliveAvailable
+            val packagesInProject = if (!usesTexlive) emptyList()
+            else includedPackages(NewSpecialCommandsIndex.getAllFileInputs(project), project).plus(
+                LatexPackage.DEFAULT
+            )
+
+            result.addAllElements(
+                FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.Cache.id, project)
+                    .flatMap { envText ->
+                        Environment.lookupInIndex(envText, project)
+                            .filter { if (usesTexlive) it.dependency in packagesInProject else true }
+                            .map { env ->
+                                createEnvironmentLookupElement(env)
+                            }
+                    }
+            )
+        }
+
+        private fun createEnvironmentLookupElement(env: Environment): LookupElementBuilder {
+            return LookupElementBuilder.create(env, env.environmentName)
+                .withPresentableText(env.environmentName)
+                .bold()
+                .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
+                .withIcon(TexifyIcons.DOT_ENVIRONMENT)
+        }
+
+        fun addEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
+            // Find all environments.
+            val environments = mutableListOf<Environment>()
+            environments.addAll(DefaultEnvironment.entries)
+            // TODO:  fileset
+            NewSpecialCommandsIndex.getAllEnvDef(parameters.originalFile)
+                .asSequence()
+                .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
+                .mapNotNull { cmd -> cmd.requiredParameterText(0) }
+                .map { environmentName -> SimpleEnvironment(environmentName) }
+                .forEach { e: SimpleEnvironment -> environments.add(e) }
+
+            // Create autocomplete elements.
+            result.addAllElements(
+                environments.map { env: Environment ->
+                    createEnvironmentLookupElement(env)
+                }
+            )
+            result.addLookupAdvertisement(getKindWords())
+        }
+
+        fun packageName(dependend: Dependend): String {
+            val name = dependend.dependency.name
+            return if ("" == name) {
+                ""
+            }
+            else " ($name)"
+        }
     }
 
     override fun addCompletions(
@@ -71,6 +132,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
+        // Read access is granted
         when (mode) {
             LatexMode.NORMAL -> {
                 // This can be really slow (one minute), so we don't wait until the cache is filled
@@ -80,10 +142,12 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                 // Filling the cache can take two seconds, for now we wait on it
                 addCustomCommands(parameters, result)
             }
+
             LatexMode.MATH -> {
                 addMathCommands(result)
                 addCustomCommands(parameters, result, LatexMode.MATH)
             }
+
             LatexMode.ENVIRONMENT_NAME -> {
                 addEnvironments(result, parameters)
                 addIndexedEnvironments(result, parameters)
@@ -109,7 +173,8 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // completion would be flooded with duplicate commands from packages that nobody uses.
             // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
             // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
-            val packagesInProject = if (!isTexliveAvailable) emptyList() else includedPackages(LatexIncludesIndex.Util.getItems(project), project).plus(LatexPackage.DEFAULT)
+            val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project)
+            val packagesInProject = if (!isTexliveAvailable) emptySet() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
             LatexExternalCommandsIndexCache.fillCacheAsync(project, packagesInProject)
             return false
         }
@@ -123,13 +188,13 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
      * If the index was not yet ready, add all of them.
      */
     private fun addNormalCommands(result: CompletionResultSet, project: Project, isIndexReady: Boolean) {
-        val indexedKeys = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.Cache.id, project)
+        val indexedKeys = LatexExternalCommandIndex.getAllKeys(project)
 
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
                 /** True if there is a package for which we already have the [cmd] command indexed.  */
                 fun alreadyIndexed() =
-                    FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.Cache.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project))
+                    LatexExternalCommandIndex.getContainingFiles(cmd.commandWithSlash,project)
                         .map { LatexPackage.create(it) }.contains(cmd.dependency)
 
                 // Avoid adding duplicates
@@ -173,17 +238,8 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         mode: LatexMode? = null
     ) {
         val file = parameters.originalFile
-        val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
-        val root = file.findRootFile()
-        val documentClass = root.documentClassFileInProject()
-        if (documentClass != null) {
-            files.add(documentClass)
-        }
-        val cmds = getCommandsInFiles(files, file)
+        val cmds = NewSpecialCommandsIndex.getAllCommandDefRelated(file).asSequence() + NewSpecialCommandsIndex.getAllEnvDefRelated(file)
         for (cmd in cmds) {
-            if (!cmd.isDefinition() && !cmd.isEnvironmentDefinition()) {
-                continue
-            }
             if (mode !== LatexMode.MATH && cmd.name in CommandMagic.mathCommandDefinitions) {
                 continue
             }
@@ -270,7 +326,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             }
 
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
-                val paramSpecification = commands.getRequiredParameters().getOrNull(1)?.removeAll("null", " ") ?: ""
+                val paramSpecification = commands.requiredParameterText(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
                     if (PackageMagic.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"

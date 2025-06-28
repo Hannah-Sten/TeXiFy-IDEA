@@ -14,7 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -25,9 +25,7 @@ import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
 import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
-import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
 
@@ -65,12 +63,8 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         }
 
         val installedPackages = TexLivePackages.packageList ?: return descriptors
-        val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
-            LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project,
-            file.project
-                .projectSearchScope
-        )
-            .map { it.requiredParameter(0) }
+        val customPackages = NewCommandsIndex.getByName(LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project)
+            .map { it.requiredParameterText(0) }
             .mapNotNull { it?.lowercase(Locale.getDefault()) }
         val packages = installedPackages + customPackages
 
@@ -79,7 +73,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
         for (command in commands) {
             @Suppress("ktlint:standard:property-naming")
-            val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
+            val `package` = command.requiredParametersText().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
             if (`package` !in packages) {
                 // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
                 if (

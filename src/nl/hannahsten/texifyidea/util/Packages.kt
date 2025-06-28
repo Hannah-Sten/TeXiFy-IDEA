@@ -7,6 +7,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -111,7 +112,7 @@ object PackageUtils {
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
                 // Do not insert below the subfiles package, it should stay last
-                if (cmd.getRequiredParameters().contains("subfiles")) {
+                if (cmd.requiredParametersText().contains("subfiles")) {
                     break
                 }
                 else {
@@ -272,7 +273,7 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
             val packages = setOf(
-                cmd.getRequiredParameters(),
+                cmd.requiredParametersText(),
                 cmd.getOptionalParameterMap().toStringMap().keys.toList()
             )
 
@@ -314,16 +315,16 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @param onlyDirectInclusions If true, only packages included directly are returned.
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
-fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexPackage> {
-    val commands = this.commandsInFileSet()
-    return includedPackages(commands, project, onlyDirectInclusions)
+fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
+    val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project)
+    return includedPackages(includeCommands, project, onlyDirectInclusions)
 }
 
 /**
  * See [includedPackages].
  */
-fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
+fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
     val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
-        .map { LatexPackage(it) }
-    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
+        .map { LatexPackage(it) }.toSet()
+    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toSet()
 }

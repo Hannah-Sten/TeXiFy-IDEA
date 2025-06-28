@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
 import nl.hannahsten.texifyidea.util.labels.findLatexCommandsLabels
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens
@@ -32,7 +31,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
         // Contains all the \bibitem commands in the file set.
         val bibitems = file.commandsInFileSet(useIndexCache = false).asSequence().findLatexCommandsLabels(file.project)
             .filter { it.name == "\\bibitem" }
-            .mapNotNull { it.requiredParameter(0) }
+            .mapNotNull { it.requiredParameterText(0) }
             .toSet()
 
         // All the ids that have been defined in the bibtex file. And next a list of all names.

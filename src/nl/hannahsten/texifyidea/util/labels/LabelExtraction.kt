@@ -7,9 +7,9 @@ import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeOf
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
@@ -88,7 +88,7 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
                 ?.text?.trim('[', ']')
                 ?.let { prefix = it }
             // Skip optional parameters for now (also below and in
-            return prefix + this.requiredParameter(position)
+            return prefix + this.requiredParameterText(position)
         }
 
         is LatexEnvironment -> {
@@ -101,4 +101,14 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
         }
     }
     return text
+}
+
+object LabelExtraction {
+
+    /**
+     * Extracts the label names from a [LatexRequiredParam] element.
+     */
+    fun extractLabelNames(parameter: LatexRequiredParam): List<String> {
+        return parameter.collectSubtreeOf { if(it is LatexParameterText) it.text else null }
+    }
 }

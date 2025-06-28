@@ -15,8 +15,7 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.serviceContainer.AlreadyDisposedException
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
@@ -30,6 +29,13 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 val Project.projectSearchScope: GlobalSearchScope
     get() = GlobalSearchScope.projectScope(this)
+
+/**
+ * Get a project [GlobalSearchScope] for this project.
+ */
+val Project.everythingScope: GlobalSearchScope
+    get() = GlobalSearchScope.everythingScope(this)
+
 
 /**
  * Get a [GlobalSearchScope] for the source folders in this project.
@@ -47,9 +53,9 @@ val Project.sourceSetSearchScope: GlobalSearchScope
  * Looks for all defined document classes in the project.
  */
 fun Project.findAvailableDocumentClasses(): Set<String> {
-    val defines = LatexDefinitionIndex.Util.getCommandsByName("ProvidesClass", this, sourceSetSearchScope)
+    val defines = NewCommandsIndex.getByName("ProvidesClass", this, sourceSetSearchScope)
     return defines.asSequence()
-        .map { it.getRequiredParameters() }
+        .map { it.requiredParametersText() }
         .filter { it.isNotEmpty() }
         .mapNotNull { it.firstOrNull() }
         .toSet()
@@ -143,6 +149,6 @@ fun Project.isTestProject() = name.contains("_temp_") || basePath?.contains("uni
  *
  * @return A list containing all the section marker [LatexCommands].
  */
-fun Project.findSectionMarkers() = LatexCommandsIndex.Util.getItems(this).filter {
-    it.commandToken.text in CommandMagic.sectionNameToLevel
+fun Project.findSectionMarkers(): Collection<LatexCommands> {
+    return NewCommandsIndex.getByNames(CommandMagic.sectionNameToLevel.keys, this)
 }

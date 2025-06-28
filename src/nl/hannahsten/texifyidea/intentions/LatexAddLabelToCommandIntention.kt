@@ -53,7 +53,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
 
         // For sections we can infer a reasonable label name from the required parameter
         if (CommandMagic.sectionNameToLevel.contains(command.name)) {
-            val required = command.getRequiredParameters()
+            val required = command.requiredParametersText()
             // Section commands should all have a required parameter
             val labelString: String = required.getOrNull(0) ?: return
             val createdLabel = getUniqueLabelName(

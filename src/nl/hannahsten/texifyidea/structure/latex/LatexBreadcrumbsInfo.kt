@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.psi.traverseContextualSiblingsPrev
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  *
@@ -24,7 +23,7 @@ class LatexBreadcrumbsInfo : BreadcrumbsProvider {
         is LatexEnvironment -> element.getEnvironmentName()
         is LatexCommands ->
             if (element.name in CommandMagic.sectionNameToLevel) {
-                element.requiredParameter(0) ?: element.name
+                element.requiredParameterText(0) ?: element.name
             }
             else {
                 element.name
