@@ -157,7 +157,7 @@ class LatexPsiHelper(private val project: Project) {
                 val comma = createFromText(",").findFirstChildOfType(LatexNormalText::class)?.firstChild ?: return pair
                 optionalParam.addBefore(comma, closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
-                closeBracket?.prevSibling as? LatexOptionalKeyValPair
+                closeBracket.prevSibling as? LatexOptionalKeyValPair
             }
         }
         else {
