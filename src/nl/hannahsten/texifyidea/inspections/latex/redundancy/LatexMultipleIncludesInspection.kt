@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
@@ -51,7 +51,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         file.commandsInFile().asSequence()
             .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd && it.requiredParameter(0) in duplicates }
             .forEach {
-                val parameter = it.firstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
+                val parameter = it.findFirstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
                 descriptors.add(
                     manager.createProblemDescriptor(
                         it,

@@ -1,18 +1,19 @@
 package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
+import kotlin.reflect.KClass
 
 /*
  * This file contains utility functions paralleling [Psi] but with improved performance.
  *
  * ## Read Access
  *
- * The methods in this file are assumed read access to the PSI tree.
+ * The methods in this file are assumed to have read access to the PSI tree.
  *
  * Typically, PSI related extensions are called from a read action, so we must avoid wrapping these methods in a read action.
  */
@@ -51,16 +52,22 @@ inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int =
     return null
 }
 
+inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit) {
+    var parent: PsiElement? = this.parent
+    while (parent != null) {
+        action(parent)
+        parent = parent.parent
+    }
+}
+
 /**
  * Determines whether any parent of this PsiElement matches the given predicate.
  */
 inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
-    var parent: PsiElement? = this.parent
-    while (parent != null) {
-        if (predicate(parent)) {
+    traverseParents {
+        if (predicate(it)) {
             return true
         }
-        parent = parent.parent
     }
     return false
 }
@@ -73,42 +80,14 @@ inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
-    // TODO: performance
-    // 1st improved version, test if any parent element is in a math environment
-    return anyParent { it is LatexMathEnvMarker }
-        || anyParent { it.inDirectEnvironmentContext(Environment.Context.MATH) } // can be improved
-}
-
-/**
- * Traverse the PSI tree and apply the action to each command element.
- *
- * @param action The action to apply to each [LatexCommands] element found in the PSI tree.
- */
-fun PsiElement.traverseCommands(action: (LatexCommands) -> Unit) {
-    // Traverse the PSI tree and apply the action to each command element
-    this.accept(LatexCommandTraverser(action))
-}
-
-/**
- * Traverse the PSI tree and apply the action to each command element.
- *
- * @param action The action to apply to each [LatexCommands] element found in the PSI tree.
- */
-fun PsiElement.traverse(action: (LatexCommands) -> Boolean): Boolean {
-    // Traverse the PSI tree and apply the action to each command element
-    val visitor = LatexCommandTraverserStoppable(action)
-    this.accept(visitor)
-    return visitor.traversalStopped
-}
-
-/**
- * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
- *
- * **This method would be slow as it traverses the entire subtree of the PsiElement.**
- */
-fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiElement> {
-    // Collect all children of the PsiElement that match the predicate
-    return PsiTreeUtil.collectElements(this) { element -> predicate(element) }.asList()
+    traverseParents {
+        if (it is LatexMathEnvMarker) return true
+        if (it is LatexEnvironment) {
+            // TODO: make it possible to check if the environment QUITs math mode
+            if (DefaultEnvironment.fromPsi(it)?.context == Environment.Context.MATH) return true
+        }
+    }
+    return false
 }
 
 /**
@@ -116,11 +95,20 @@ fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiEleme
  *
  * @param action The action to apply to each child element. If the action returns false, the iteration stops.
  */
-inline fun PsiElement.forEachDirectChild(action: (PsiElement) -> Boolean): Boolean {
-    for (child in this.children) {
-        if (!action(child)) return false
+inline fun PsiElement.forEachDirectChild(action: (PsiElement) -> Unit) {
+    var child = this.firstChild
+    while (child != null) {
+        action(child)
+        child = child.nextSibling
     }
-    return true
+}
+
+inline fun PsiElement.forEachDirectChildReversed(action: (PsiElement) -> Unit) {
+    var child = this.lastChild
+    while (child != null) {
+        action(child)
+        child = child.prevSibling
+    }
 }
 
 /**
@@ -128,7 +116,7 @@ inline fun PsiElement.forEachDirectChild(action: (PsiElement) -> Boolean): Boole
  *
  * @param action The action to apply to each [LatexRequiredParam] element found in the command. If the action returns false, the traversal stops.
  */
-fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) -> Boolean) {
+inline fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) -> Unit) {
     /*
     Recall the bnf:
     commands ::= COMMAND_TOKEN parameter*
@@ -137,136 +125,215 @@ fun LatexCommandWithParams.traverseRequiredParams(action: (PsiElement) -> Boolea
     forEachDirectChild { param ->
         param.forEachDirectChild {
             if (it is LatexRequiredParam) {
-                val res = action(it)
-                if (!res) return@forEachDirectChild false
+                action(it)
             }
+        }
+    }
+}
+
+/**
+ * Traverse the PSI tree and yield each element (including this element).
+ *
+ * Consider a tree like
+ * ```
+ * A
+ *  - B
+ *    - B1
+ *    - B2
+ *  - C
+ * ```
+ * The traversal will be a sequence of `A, B, B1, B2, C`.
+ *
+ * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
+ *
+ * @param depth The maximum depth to traverse the PSI tree.
+ * Default is [Int.MAX_VALUE], which means no limit. `depth = 0` means only the current element is traversed.
+ */
+fun PsiElement.traverse(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequence {
+    if (depth < 0) return@sequence
+    yield(this@traverse)
+    if (depth == 0) return@sequence
+    forEachDirectChild { c ->
+        yieldAll(c.traverse(depth - 1))
+    }
+}
+
+/**
+ * Traverse the PSI tree and yield each element (including this element) in the reversed order.
+ *
+ * Consider a tree like
+ * ```
+ * A
+ *  - B
+ *    - B1
+ *    - B2
+ *  - C
+ * ```
+ * The traversal will be a sequence of `A, C, B, B2, B1`.
+ *
+ * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
+ *
+ * @param depth The maximum depth to traverse the PSI tree.
+ * Default is [Int.MAX_VALUE], which means no limit. `depth = 0` means only the current element is traversed.
+ */
+fun PsiElement.traverseReversed(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequence {
+    if (depth < 0) return@sequence
+    yield(this@traverseReversed)
+    if (depth == 0) return@sequence
+    forEachDirectChildReversed { c ->
+        yieldAll(c.traverse(depth - 1))
+    }
+}
+
+/**
+ * Traverse the PSI tree and yield each element of type [T] (including this element if it is of type [T]).
+ *
+ * @see traverse
+ */
+inline fun <reified T : PsiElement> PsiElement.traverseTyped(depth: Int = Int.MAX_VALUE): Sequence<T> {
+    return traverse(depth).filterIsInstance<T>()
+}
+
+/**
+ * Traverse the PSI tree and apply the action to each element (including this element).
+ *
+ * @param depth The maximum depth to traverse the PSI tree. Default is [Int.MAX_VALUE], which means no limit. `depth = 0` means only the current element is traversed.
+ * @param action The action to apply to each element found in the PSI tree.
+ */
+fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Boolean): Boolean {
+    // Traverse the PSI tree and apply the action to each command element
+    val visitor = object : MyPsiRecursiveWalker(depth) {
+        override fun elementStart(e: PsiElement) {
+            if (!action(e)) {
+                stopWalking()
+            }
+        }
+    }
+    this.accept(visitor)
+    return visitor.isWalkingStopped
+}
+
+/**
+ * Traverse the whole subtree of this [PsiElement] and apply the action to each element (including this element).
+ */
+inline fun PsiElement.traverseAll(crossinline action: (PsiElement) -> Unit) {
+    traverse {
+        action(it)
+        true
+    }
+}
+
+/**
+ * Traverse the whole subtree of this [PsiElement] and apply the action to each element of type [T] (including this element if it is of type [T]).
+ */
+inline fun <reified T : PsiElement> PsiElement.traverseAllTyped(crossinline action: (T) -> Unit) {
+    traverse {
+        if (it is T) {
+            action(it)
+        }
+        true
+    }
+}
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
+ *
+ * Note: **This method would be slow as it traverses the entire subtree of the PsiElement.**
+ */
+fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiElement> {
+    // Collect all children of the PsiElement that match the predicate
+    return PsiTreeUtil.collectElements(this) { element -> predicate(element) }.asList()
+}
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] that are of type [T].
+ *
+ * Note: **This method would be slow as it traverses the entire subtree of the PsiElement.**
+ */
+inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection<T> {
+    return PsiTreeUtil.findChildrenOfType(this, T::class.java)
+}
+
+/*
+Collecting the subtree with a depth limit
+ */
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] transformed by the given [transform] function into the provided [collection], filtering out `null` values.
+ */
+fun <R : Any, C : MutableCollection<R>> PsiElement.collectSubtreeTo(collection: C, depth: Int, transform: (PsiElement) -> R?): C {
+    // Collect all children of the PsiElement that match the class
+    traverse(depth) { element ->
+        transform(element)?.let { collection.add(it) }
+        true // continue traversing
+    }
+
+    return collection
+}
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate up to a certain [depth].
+ *
+ * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
+ *
+ */
+fun PsiElement.collectSubtree(depth: Int, predicate: (PsiElement) -> Boolean): List<PsiElement> {
+    // Collect all children of the PsiElement that match the predicate
+    return collectSubtreeTo(mutableListOf(), depth) { it.takeIf(predicate) }
+}
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] that are of type [T] and match the given predicate up to a certain [depth],
+ *
+ * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
+ *
+ */
+inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(depth: Int = Int.MAX_VALUE, noinline predicate: (T) -> Boolean): List<T> {
+    // Collect all children of the PsiElement that match the predicate
+    return collectSubtreeTo(mutableListOf(), depth) {
+        if(it is T && predicate(it)) {
+            it
+        } else {
+            null
+        }
+    }
+}
+
+/**
+ * Collects all [PsiElement]s in the subtree of this [PsiElement] transformed by the given [transform] into a list, filtering out `null` values.
+ */
+fun <R : Any> PsiElement.collectSubtreeOf(depth: Int = Int.MAX_VALUE, transform: (PsiElement) -> R?): List<R> {
+    return collectSubtreeTo(mutableListOf(), depth, transform)
+}
+
+/**
+ * Finds the first child in the subtree of a certain type.
+ *
+ * @see findFirstChildOfType
+ */
+inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(): T? {
+    return PsiTreeUtil.findChildOfType(this, T::class.java)
+}
+
+/**
+ * Finds the first child in the subtree of a certain type.
+ */
+fun <T : PsiElement> PsiElement.findFirstChildOfType(clazz: KClass<T>): T? {
+    return PsiTreeUtil.findChildOfType(this, clazz.java)
+}
+
+/**
+ * Finds the first child in the subtree of a certain type that matches the given predicate.
+ */
+inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(depth: Int = Int.MAX_VALUE, crossinline predicate: (T) -> Boolean): T? {
+    var result: T? = null
+    traverse(depth) {
+        if(it is T && predicate(it)) {
+            result = it
+            false
+        } else {
             true
         }
     }
-}
-
-/**
- * Gets the contextual surrounder of the current [PsiElement].
- *
- * See the example below for the structure of the PSI tree, the contextual surrounder is the `no_math_content` elements or `PsiWhiteSpace`
- * ```
- * - root
- *   - no_math_content
- *     - element
- *   - PsiWhiteSpace
- *   - no_math_content
- *     - element
- * ```
- */
-fun PsiElement.contextualSurrounder(): PsiElement? {
-    // Find the contextual element of the current element in the PSI tree.
-    // The current element is surrounded by `no_math_content`, so we should go an extra level up
-    return when (this) {
-        is PsiWhiteSpace -> this
-        else -> parent as? LatexNoMathContent
-    }
-}
-
-/**
- * This is a template function for traversing the contextual siblings of the current [PsiElement].
- * Use [traverseContextualSiblingsNext] or [traverseContextualSiblingsPrev] instead.
- */
-inline fun PsiElement.traverseContextualSiblingsTemplate(action: (PsiElement) -> Unit, siblingFunc: (PsiElement) -> PsiElement?) {
-    val parent = contextualSurrounder() ?: return
-
-    var siblingContent = siblingFunc(parent)
-    while (siblingContent != null) {
-        if (siblingContent is LatexNoMathContent) {
-            val sibling = siblingContent.firstChild ?: continue
-            action(sibling)
-        }
-        siblingContent = siblingFunc(siblingContent)
-    }
-}
-
-/**
- * Gets the contextual siblings of the current [LatexComposite] element.
- *
- * See the example below for the structure of the PSI tree:
- *
- *     some root
- *       - no_math_content
- *         - previous sibling
- *       - no_math_content
- *         - the current element
- *       - no_math_content
- *         - next sibling
- *
- *
- *
- *  @see [traverseContextualSiblingsNext]
- *  @see [traverseContextualSiblingsPrev]
- */
-fun <T : Any> PsiElement.contextualSiblings(): List<LatexComposite> {
-    // Find the contextual siblings of the current element in the PSI tree.
-    // The current element is surrounded by `no_math_content`, so we should go an extra level up
-    val parent = contextualSurrounder() ?: return emptyList()
-    val grandParent = parent.parent ?: return emptyList()
-    val result = mutableListOf<LatexComposite>()
-    grandParent.forEachDirectChild { siblingParent ->
-        if (siblingParent is LatexNoMathContent) {
-            siblingParent.firstChild?.let { child ->
-                if (child is LatexComposite && child != this) {
-                    result.add(child)
-                }
-            }
-        }
-        true // continue iterating
-    }
     return result
-}
-
-/**
- * Traverse the contextual siblings of the current [LatexComposite] element that are after it in the PSI tree in order.
- *
- * You can return non-locally from the [action] to stop the traversal.
- *
- * For the structure of the PSI tree, see the example in [contextualSiblings].
- *
- * @see [contextualSiblings]
- */
-inline fun PsiElement.traverseContextualSiblingsNext(action: (PsiElement) -> Unit) {
-    return traverseContextualSiblingsTemplate(action) { it.nextSibling }
-}
-
-/**
- * Traverse the contextual siblings of the current [LatexComposite] element that are before it in the PSI tree in order.
- *
- * You can return non-locally in from the [action] to stop the traversal.
- *
- * For the structure of the PSI tree, see the example in [contextualSiblings].
- *
- * @see [contextualSiblings]
- *
- */
-inline fun PsiElement.traverseContextualSiblingsPrev(action: (PsiElement) -> Unit) {
-    return traverseContextualSiblingsTemplate(action) { it.prevSibling }
-}
-
-inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean): PsiElement? {
-    traverseContextualSiblingsPrev { sibling ->
-        if (predicate(sibling)) {
-            return sibling
-        }
-    }
-    return null
-}
-
-fun PsiElement.prevContextualSiblingIgnoreWhitespace(): PsiElement? =
-    prevContextualSibling { it !is PsiWhiteSpace }
-
-/**
- * Gets the name of the command from the [PsiElement] if it is a command or is a content containing a command.
- */
-fun PsiElement.asCommandName(): String? {
-    return when (this) {
-        is LatexCommandWithParams -> this.getName()
-        is LatexNoMathContent -> this.commands?.name
-        else -> null
-    }
 }

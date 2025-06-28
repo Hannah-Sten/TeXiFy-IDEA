@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -62,30 +63,25 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
         isOntheFly: Boolean
     ) {
-        val environments = file.childrenOfType(LatexEnvironment::class)
         val defined = file.definitionsAndRedefinitionsInFileSet().asSequence()
             .filter { it.isEnvironmentDefinition() }
             .mapNotNull { it.requiredParameter(0) }
             .toSet()
 
-        outerLoop@ for (env in environments) {
+        file.traverseAllTyped<LatexEnvironment> { env ->
+            val name = env.getEnvironmentName()
             // Don't consider environments that have been defined.
-            if (env.name()?.text in defined) {
-                continue
-            }
+            if(name in defined) return@traverseAllTyped
 
-            val name = env.name()?.text ?: continue
-            val environment = DefaultEnvironment[name] ?: continue
+            val environment = DefaultEnvironment[name] ?: return@traverseAllTyped
             val pack = environment.dependency
-
             if (pack == DEFAULT || includedPackages.contains(pack)) {
-                continue
+                return@traverseAllTyped
             }
-
             // Packages included in other packages
             for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
                 if (packageInclusion == pack && includedPackages.contains(packageInclusion.key)) {
-                    continue@outerLoop
+                    return@traverseAllTyped
                 }
             }
 

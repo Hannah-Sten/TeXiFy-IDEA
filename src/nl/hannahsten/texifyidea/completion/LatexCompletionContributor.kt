@@ -336,7 +336,7 @@ open class LatexCompletionContributor : CompletionContributor() {
     private fun registerDefaultEnvironmentCompletion() = extend(
         CompletionType.BASIC,
         PlatformPatterns.psiElement()
-            .inside(LatexRequiredParam::class.java)
+            .inside(LatexEnvIdentifier::class.java)
             .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
             .withLanguage(LatexLanguage),
         LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.ENVIRONMENT_NAME)

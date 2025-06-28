@@ -7,7 +7,8 @@ import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiFile
 import com.intellij.util.PlatformIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /**
  * Contains all the entries. Class exist to prevent auto-collapsing.
@@ -18,7 +19,7 @@ open class BibtexStructureViewEntriesElement(val file: PsiFile) : StructureViewT
 
     private val entriesPresentation: ItemPresentation = object : ItemPresentation {
 
-        override fun getLocationString() = file.childrenOfType(BibtexEntry::class).size.toString()
+        override fun getLocationString() = file.traverseTyped<BibtexEntry>(3).count().toString()
 
         override fun getPresentableText() = "entries"
 
@@ -38,7 +39,7 @@ open class BibtexStructureViewEntriesElement(val file: PsiFile) : StructureViewT
     override fun getPresentation() = entriesPresentation
 
     override fun getChildren(): Array<TreeElement> {
-        val entries = file.childrenOfType(BibtexEntry::class)
+        val entries = file.collectSubtreeTyped<BibtexEntry>()
         return entries
             .map { BibtexStructureViewEntryElement(it) }
             .toTypedArray()

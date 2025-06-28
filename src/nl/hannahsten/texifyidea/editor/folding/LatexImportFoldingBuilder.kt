@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.allCommands
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
@@ -83,6 +83,6 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
             return next.nextCommand()
         }
 
-        return next.firstChildOfType(LatexCommands::class)
+        return next.findFirstChildOfType(LatexCommands::class)
     }
 }

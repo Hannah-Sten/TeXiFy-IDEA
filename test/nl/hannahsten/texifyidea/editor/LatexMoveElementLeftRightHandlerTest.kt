@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 class LatexMoveElementLeftRightHandlerTest : BasePlatformTestCase() {
 
@@ -30,7 +30,7 @@ class LatexMoveElementLeftRightHandlerTest : BasePlatformTestCase() {
 
     private fun commandWithSubElements(command: String, vararg expectedSubElements: String) {
         val subElements = LatexMoveElementLeftRightHandler()
-            .getMovableSubElements(command.toPsi().firstChildOfType(LatexCommands::class) as PsiElement)
+            .getMovableSubElements(command.toPsi().findFirstChildOfType(LatexCommands::class) as PsiElement)
             .map { it.text }
         assertEquals(expectedSubElements.toList(), subElements)
     }

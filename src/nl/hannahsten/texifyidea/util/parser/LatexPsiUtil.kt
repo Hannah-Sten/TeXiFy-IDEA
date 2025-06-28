@@ -12,25 +12,13 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
 /**
- * Looks up the name of the environment in the required parameter.
- */
-fun LatexEnvironment.name(): LatexParameterText? {
-    return firstChildOfType(LatexParameterText::class)
-}
-
-/**
  * Checks if the environment contains the given context.
  */
 fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
-    val name = name()?.text ?: return false
+    val name = getEnvironmentName()
     val environment = Environment[name] ?: return false
     return environment.context == context
 }
-
-/**
- * Get the environment name of the begin command.
- */
-fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
 
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
@@ -38,14 +26,15 @@ fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(thi
 fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEndCommand::class)
 
 /**
- * Looks up all the required parameters from this begin command.
+ * Gets the required parameters of the `\begin` command, not including the environment name.
+ *
+ * For example, for `\begin{env}{1}{2}`, this will return a list of `{1}, {2}`.
  *
  * @return A list of all required parameters.
  */
-fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
-    .filter { it.requiredParam != null }
-    .mapNotNull(LatexParameter::getRequiredParam)
-    .toList()
+fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> {
+    return this.parameterList.mapNotNull { it.requiredParam }
+}
 
 /**
  * Checks if the given latex command marks a valid entry point for latex compilation.
@@ -57,22 +46,8 @@ fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> = parameter
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
     // Currently: only allowing `\begin{document}`.
-    val requiredParameters = requiredParameters()
-    return requiredParameters.firstOrNull()?.text == "{document}"
+    return this.environmentName() == "document"
 }
-
-/**
- * Get the environment name of the end command.
- */
-fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
-
-/**
- * Get the environment name of a begin/end command.
- *
- * @param element
- *              Either a [LatexBeginCommand] or a [LatexEndCommand]
- */
-private fun beginOrEndEnvironmentName(element: PsiElement): String? = element.firstChildOfType(LatexParameterText::class)?.text
 
 /**
  * Finds the [LatexBeginCommand] that matches the end command.
@@ -165,10 +140,18 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
 }
 
 fun PsiElement.findDependencies(): Set<LatexPackage> {
-    val commandsDependencies = this.childrenOfType<LatexCommands>()
-        .mapNotNull { LatexCommand.lookup(it)?.firstOrNull()?.dependency }
-    val environmentDependencies = this.childrenOfType<LatexEnvironment>()
-        .mapNotNull { Environment.lookup(it.getEnvironmentName())?.dependency }
-
-    return (commandsDependencies + environmentDependencies).filter { it.isDefault.not() }.toSet()
+    return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
+        val dependency = when (e) {
+            is LatexCommands -> {
+                // If the command is a known command, add its dependency.
+                LatexCommand.lookup(e)?.firstOrNull()?.dependency
+            }
+            is LatexEnvironment -> {
+                // If the environment is a known environment, add its dependency.
+                Environment.lookup(e.getEnvironmentName())?.dependency
+            }
+            else -> null
+        }
+        dependency?.takeIf { it.isDefault.not() }
+    }
 }

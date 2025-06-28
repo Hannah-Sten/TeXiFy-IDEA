@@ -80,7 +80,7 @@ fun LatexCommands.definedCommandName() = definitionCommand()?.name
 /**
  * Checks whether the command has a star or not.
  */
-fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
+fun LatexCommands.hasStar() = collectSubtreeTyped<LeafPsiElement>().any {
     it.elementType == LatexTypes.STAR
 }
 
@@ -93,7 +93,7 @@ fun LatexCommands.nextCommand(): LatexCommands? {
     val content = parentOfType(LatexNoMathContent::class) ?: return null
     val next = content.nextSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
-    return next.firstChildOfType(LatexCommands::class)
+    return next.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -105,7 +105,7 @@ fun PsiElement.previousCommand(): LatexCommands? {
     val content = parentOfType(LatexNoMathContent::class) ?: return null
     val previous = content.previousSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
-    return previous.firstChildOfType(LatexCommands::class)
+    return previous.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -197,10 +197,9 @@ fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiF
  *
  * @return A list of all required parameters.
  */
-fun LatexCommands.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
-    .filter { it.requiredParam != null }
-    .mapNotNull(LatexParameter::getRequiredParam)
-    .toList()
+fun LatexCommands.requiredParameters(): List<LatexRequiredParam> {
+    return parameterList.mapNotNull { it.requiredParam }
+}
 
 /**
  * Returns the forced first required parameter of a command as a command.
@@ -221,7 +220,7 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
 
     // This is just a bit of guesswork about the parser structure.
     // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
-    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class)
+    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -239,5 +238,7 @@ fun LatexCommands.hasLabel(): Boolean {
 
 /**
  * Get all [LatexCommands] that are children (direct or indirect) of the given element.
+ *
+ * Note: This method is slow, as it collects all commands in the subtree of the element.
  */
-fun PsiElement.allCommands() = childrenOfType(LatexCommands::class).toList()
+fun PsiElement.allCommands() = collectSubtreeTyped<LatexCommands>()

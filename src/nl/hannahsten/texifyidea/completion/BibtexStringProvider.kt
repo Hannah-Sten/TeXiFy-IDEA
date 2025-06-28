@@ -10,8 +10,8 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.psi.BibtexComment
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexTag
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeOf
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.lastChildOfType
 import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.tokenType
@@ -25,15 +25,17 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val psiFile = parameters.originalFile
-        val strings: List<Triple<String, String, BibtexEntry>> = psiFile.childrenOfType(BibtexEntry::class).asSequence()
-            .filter { it.tokenType() == "@string" }
-            .mapNotNull {
-                val tag = it.firstChildOfType(BibtexTag::class) ?: return@mapNotNull null
+        val strings = psiFile.collectSubtreeOf {
+            if(it is BibtexEntry && it.tokenType() == "@string") {
+                val tag = it.findFirstChildTyped<BibtexTag>() ?: return@collectSubtreeOf null
                 val key = tag.key
-                val content = tag.content ?: return@mapNotNull null
+                val content = tag.content ?: return@collectSubtreeOf null
                 Triple(key.text, content.text, it)
             }
-            .toList()
+            else {
+                null
+            }
+        }
 
         result.addAllElements(
             strings.map {

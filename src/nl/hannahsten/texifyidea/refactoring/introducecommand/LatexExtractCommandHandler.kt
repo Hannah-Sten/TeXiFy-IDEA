@@ -9,7 +9,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parents
@@ -147,9 +146,7 @@ private class ExpressionReplacer(
                 ?: throw IllegalStateException("Unexpectedly could not find an expression")
 
             val actualToken =
-                vampireCommandDefinition
-                    .childrenOfType(PsiNamedElement::class)
-                    .filterIsInstance<LatexCommands>()
+                vampireCommandDefinition.traverseTyped<LatexCommands>()
                     .firstOrNull { it.text == "\\mycommand" }
                     ?: throw IllegalStateException("Psi Tree was not in the expected state")
 
@@ -250,7 +247,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 // if this text is in a math context, offer the math environ
                 val mathParent = expr.firstParentOfType(LatexInlineMath::class)
                 if (mathParent != null) {
-                    val mathChild = mathParent.firstChildOfType(LatexMathContent::class)
+                    val mathChild = mathParent.findFirstChildOfType(LatexMathContent::class)
                     if (mathChild != null)
                         out.add(mathChild.asExtractable())
                     out.add(mathParent.asExtractable())

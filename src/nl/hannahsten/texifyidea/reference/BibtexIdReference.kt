@@ -5,7 +5,7 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 
 /**
@@ -28,7 +28,7 @@ class BibtexIdReference(element: LatexParameterText) : PsiReferenceBase<LatexPar
             .filter { it.extractLabelName() == myElement.name }
             .mapNotNull {
                 // Resolve to the id, similarly as why we resolve to the label text for latex labels
-                val id = it.firstChildOfType(BibtexId::class) ?: return@mapNotNull null
+                val id = it.findFirstChildOfType(BibtexId::class) ?: return@mapNotNull null
                 PsiElementResolveResult(id)
             }
             .toList()

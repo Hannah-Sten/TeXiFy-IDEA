@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
@@ -44,7 +44,7 @@ open class LatexUnpackUsepackageIntention : TexifyIntentionBase("Split into mult
         // Find packages.
         val selected = file.findElementAt(editor.caretModel.offset) ?: return
         val command = selected.parentOfType(LatexCommands::class) ?: return
-        val required = command.firstChildOfType(LatexRequiredParam::class) ?: return
+        val required = command.findFirstChildOfType(LatexRequiredParam::class) ?: return
         val requiredText = required.text.trimRange(1, 1)
         val packages = PatternMagic.parameterSplit.split(requiredText)
 

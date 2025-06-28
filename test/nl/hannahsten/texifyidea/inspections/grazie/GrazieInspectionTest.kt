@@ -13,7 +13,7 @@ import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import com.intellij.util.messages.Topic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 class GrazieInspectionTest : BasePlatformTestCase() {
 
@@ -217,7 +217,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
      * Text as sent to Grazie.
      */
     private fun getSubmittedText(file: PsiFile): String {
-        return LatexTextExtractor().buildTextContent(file.firstChildOfType(LatexContent::class)!!).toString()
+        return LatexTextExtractor().buildTextContent(file.findFirstChildOfType(LatexContent::class)!!).toString()
     }
 
     fun testNewlinesShouldBeKept() {

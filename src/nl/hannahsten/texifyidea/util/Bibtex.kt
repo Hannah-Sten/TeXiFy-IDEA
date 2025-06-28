@@ -2,8 +2,9 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.application.runReadAction
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import java.util.*
 
 /**
@@ -19,12 +20,12 @@ fun BibtexEntry.tokenName(): String = tokenType().substring(1)
 /**
  * Get all the tags in the entry.
  */
-fun BibtexEntry.tags(): Collection<BibtexTag> = childrenOfType(BibtexTag::class)
+fun BibtexEntry.tags(): Sequence<BibtexTag> = traverseTyped<BibtexTag>()
 
 /**
  * Get all the key objects in the entry.
  */
-fun BibtexEntry.keys(): Collection<BibtexKey> = childrenOfType(BibtexKey::class)
+fun BibtexEntry.keys(): Sequence<BibtexKey> = traverseTyped<BibtexKey>()
 
 /**
  * Get the first key in the entry, or `null` when there are no keys in the entry.
@@ -34,7 +35,7 @@ fun BibtexEntry.firstKey() = keys().firstOrNull()
 /**
  * Get all the names of all entry's keys.
  */
-fun BibtexEntry.keyNames(): Collection<String> = keys().map { it.text }
+fun BibtexEntry.keyNames(): Set<String> = keys().mapTo(mutableSetOf()) { it.text }
 
 /**
  * Checks if the entry is a @string.
@@ -49,7 +50,7 @@ fun BibtexEntry.isPreamble() = tokenName().lowercase(Locale.getDefault()) == "pr
 /**
  * Get the key of the BibTeX tag.
  */
-fun BibtexTag.key(): BibtexKey? = firstChildOfType(BibtexKey::class)
+fun BibtexTag.key(): BibtexKey? = findFirstChildOfType(BibtexKey::class)
 
 /**
  * Get the key of the BibTeX tag in string form.
@@ -59,7 +60,7 @@ fun BibtexTag.keyName(): String? = key()?.text
 /**
  * Get the content of the BibTeX tag.
  */
-fun BibtexTag.content(): BibtexContent? = firstChildOfType(BibtexContent::class)
+fun BibtexTag.content(): BibtexContent? = findFirstChildOfType(BibtexContent::class)
 
 /**
  * Get the name/identifier of the bibtex id.
@@ -75,7 +76,7 @@ fun BibtexContent.evaluate(): String {
     var result = ""
 
     runReadAction {
-        for (string in childrenOfType(BibtexString::class)) {
+        for (string in collectSubtreeTyped<BibtexString>()) {
             val braced = string.bracedString
             val quoted = string.quotedString
             val bracedVerbatim = string.bracedVerbatim
@@ -123,18 +124,14 @@ fun BibtexDefinedString.evaluate(): String {
     }
 
     // Look up all string entries.
-    for (entry in file.childrenOfType(BibtexEntry::class)) {
+    for (entry in file.traverseTyped<BibtexEntry>()) {
         val token = entry.tokenName().lowercase(Locale.getDefault())
         if (token != "string") {
             continue
         }
 
         val tags = entry.tags()
-        if (tags.isEmpty()) {
-            continue
-        }
-
-        val tag = tags.first()
+        val tag = tags.firstOrNull() ?: continue
         val key = tag.keyName() ?: continue
         if (key != stringName) {
             continue

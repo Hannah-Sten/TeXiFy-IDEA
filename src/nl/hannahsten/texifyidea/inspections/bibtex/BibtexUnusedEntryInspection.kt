@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.SafeDeleteFix
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexId
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 class BibtexUnusedEntryInspection : TexifyInspectionBase() {
 
@@ -21,19 +21,17 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
     override val inspectionId: String = "UnusedEntry"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> =
-        file.childrenOfType(BibtexId::class)
-            .asSequence()
-            .filter { ReferencesSearch.search(it).toList().isEmpty() }
-            .map {
-                manager.createProblemDescriptor(
-                    it,
-                    "Bibtex entry is not used",
-                    RemoveBibtexEntryFix(it.createSmartPointer()),
-                    ProblemHighlightType.LIKE_UNUSED_SYMBOL,
-                    isOntheFly
-                )
-            }
-            .toList()
+        file.collectSubtreeTyped<BibtexId> {
+            ReferencesSearch.search(it).none()
+        }.map {
+            manager.createProblemDescriptor(
+                it,
+                "Bibtex entry is not used",
+                RemoveBibtexEntryFix(it.createSmartPointer()),
+                ProblemHighlightType.LIKE_UNUSED_SYMBOL,
+                isOntheFly
+            )
+        }
 
     class RemoveBibtexEntryFix(private val id: SmartPsiElementPointer<BibtexId>) : SafeDeleteFix(id.element as PsiElement) {
 

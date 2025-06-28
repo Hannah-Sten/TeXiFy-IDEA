@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
@@ -182,7 +182,7 @@ enum class LatexGlossariesCommand(
          */
         fun extractGlossaryLabelElement(command: LatexCommands): PsiElement? {
             if (!CommandMagic.glossaryEntry.contains(command.name)) return null
-            return command.requiredParameters()[0].firstChildOfType(LatexParameterText::class)
+            return command.requiredParameters()[0].findFirstChildOfType(LatexParameterText::class)
         }
 
         /**

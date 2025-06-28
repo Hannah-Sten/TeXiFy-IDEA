@@ -138,7 +138,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      * Check if [LatexNoMathContent] is a non breaking space.
      */
     private fun LatexNoMathContent.isNonBreakingSpace(): Boolean {
-        val normalText = firstChildOfType(LatexNormalText::class) ?: return false
+        val normalText = findFirstChildOfType(LatexNormalText::class) ?: return false
         return normalText.text == "~"
     }
 

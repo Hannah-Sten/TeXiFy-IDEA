@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.parser.toStringMap
@@ -26,7 +26,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
     }
 
     return when (this) {
-        is BibtexEntry -> firstChildOfType(BibtexId::class)
+        is BibtexEntry -> findFirstChildOfType(BibtexId::class)
         is LatexCommands -> {
             if (CommandMagic.labelAsParameter.contains(name)) {
                 return getLabelParameterText(this)
@@ -38,7 +38,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
 
                 // Skip optional parameters for now
                 this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)
-                    ?.firstChildOfType(LatexParameterText::class)
+                    ?.findFirstChildOfType(LatexParameterText::class)
             }
         }
         is LatexEnvironment -> {
@@ -49,7 +49,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
                 // Check for user defined environments
                 val labelPositions = EnvironmentManager.labelAliasesInfo.getOrDefault(getEnvironmentName(), null)
                 if (labelPositions != null) {
-                    this.beginCommand.parameterList.getOrNull(labelPositions.positions.first())?.firstChildOfType(LatexParameterText::class)
+                    this.beginCommand.parameterList.getOrNull(labelPositions.positions.first())?.findFirstChildOfType(LatexParameterText::class)
                 }
                 else {
                     null
@@ -95,7 +95,7 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
             return this.getLabel()
                 // Check if it is a user defined alias of a labeled environment
                 ?: EnvironmentManager.labelAliasesInfo.getOrDefault(getEnvironmentName(), null)?.let {
-                    this.beginCommand.parameterList.getOrNull(it.positions.first())?.firstChildOfType(LatexParameterText::class)?.text
+                    this.beginCommand.parameterList.getOrNull(it.positions.first())?.findFirstChildOfType(LatexParameterText::class)?.text
                 }
                 ?: ""
         }

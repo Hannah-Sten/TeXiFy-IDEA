@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import java.util.*
 
 /**
@@ -183,7 +183,7 @@ enum class DefaultEnvironment(
          */
         @JvmStatic
         fun fromPsi(latexEnvironment: LatexEnvironment): DefaultEnvironment? {
-            val text: String = latexEnvironment.name()?.text ?: return null
+            val text: String = latexEnvironment.getEnvironmentName()
             return get(text.lowercase(Locale.getDefault()))
         }
 

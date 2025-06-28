@@ -6,10 +6,10 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import org.jetbrains.annotations.Nls
 
 class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
@@ -26,9 +26,15 @@ class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
         get() = "DocumentclassNotInRoot"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val documentClass = file.commandsInFile().find { it.name == "\\documentclass" } ?: return emptyList()
+        // file - content - no_math_content - commands
+        val documentClass = file.traverseTyped<LatexCommands>(depth = 3)
+            .firstOrNull {
+                it.name == "\\documentclass"
+            } ?: return emptyList()
 
-        val hasDocumentEnvironment = file.childrenOfType<LatexEnvironment>().any { it.getEnvironmentName() == "document" }
+        val hasDocumentEnvironment = file.traverseTyped<LatexEnvironment>(depth = 3).any {
+            it.getEnvironmentName() == "document"
+        }
 
         if (!hasDocumentEnvironment) {
             return listOf(

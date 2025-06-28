@@ -119,8 +119,8 @@ fun runInBackgroundNonBlocking(project: Project, description: String, function: 
 }
 
 // https://plugins.jetbrains.com/docs/intellij/background-processes.html
-fun runInBackgroundWithoutProgress(function: () -> Unit) {
-    ApplicationManager.getApplication().executeOnPooledThread {
+fun runInBackgroundWithoutProgress(function: suspend () -> Unit) {
+    TexifyCoroutine.runInBackground {
         function()
     }
 }

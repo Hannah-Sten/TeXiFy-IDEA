@@ -6,7 +6,7 @@ import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import nl.hannahsten.texifyidea.util.parser.getTagContent
 import org.intellij.lang.annotations.Language
@@ -29,7 +29,7 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
     private val entryElement by lazy {
         PsiDocumentManager.getInstance(myFixture.project)
             .getPsiFile(myFixture.editor.document)!!
-            .firstChildOfType(BibtexEntry::class)!!
+            .findFirstChildOfType(BibtexEntry::class)!!
     }
 
     override fun setUp() {

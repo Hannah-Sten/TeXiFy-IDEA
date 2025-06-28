@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.psi.environmentName
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
@@ -67,8 +68,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             }
 
             // If no command was found, find the end of the document.
-            return command.containingFile.childrenOfType(LatexEndCommand::class)
-                .lastOrNull { it.environmentName() == "document" }
+            return command.containingFile.traverseReversed().filterIsInstance<LatexEndCommand>().firstOrNull {
+                it.environmentName() == "document"
+            }
         }
     }
 
@@ -153,7 +155,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             fun findLabel(cmd: LatexCommands): LatexCommands? {
                 val nextSibling = cmd.firstParentOfType(LatexNoMathContent::class)
                     ?.nextSiblingIgnoreWhitespace()
-                    ?.firstChildOfType(LatexCommands::class) ?: return null
+                    ?.findFirstChildOfType(LatexCommands::class) ?: return null
                 return if (nextSibling.name == LatexGenericRegularCommand.LABEL.commandWithSlash) nextSibling else null
             }
         }

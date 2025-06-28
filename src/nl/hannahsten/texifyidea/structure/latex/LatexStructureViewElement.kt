@@ -5,7 +5,6 @@ import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
-import com.intellij.openapi.application.runReadAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNameIdentifierOwner
@@ -25,7 +24,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
-import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 import java.util.*
 
@@ -103,22 +101,21 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                 in CommandMagic.sectionNameToLevel -> {
                     addSections(command, sections, treeElements, numbering)
                 }
+
                 in labelingCommands + CommandMagic.commandDefinitionsAndRedefinitions + setOf(LatexGenericRegularCommand.BIBITEM.cmd) -> {
                     addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
+
                 in includeCommands -> {
-                    runInBackgroundWithoutProgress {
-                        val includedFiles = runReadAction { command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView) }
-                        for (psiFile in includedFiles) {
-                            if (BibtexFileType == psiFile.fileType) {
-                                newElement.addChild(BibtexStructureViewElement(psiFile))
-                            }
-                            else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
-                                newElement.addChild(LatexStructureViewElement(psiFile))
-                            }
+                    val includedFiles = command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView)
+                    for (psiFile in includedFiles) {
+                        if (BibtexFileType == psiFile.fileType) {
+                            newElement.addChild(BibtexStructureViewElement(psiFile))
+                        }
+                        else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
+                            newElement.addChild(LatexStructureViewElement(psiFile))
                         }
                     }
-
                     addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
             }

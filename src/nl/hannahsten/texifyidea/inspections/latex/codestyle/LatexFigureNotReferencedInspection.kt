@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.isFigureLabel
 import nl.hannahsten.texifyidea.util.labels.findLabelingCommandsInFile
@@ -59,7 +59,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     }
 
     private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor? =
-        label.firstChildOfType(LatexParameterText::class)?.let {
+        label.findFirstChildOfType(LatexParameterText::class)?.let {
             manager.createProblemDescriptor(
                 it,
                 "Figure is not referenced",

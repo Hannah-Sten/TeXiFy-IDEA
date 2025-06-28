@@ -28,7 +28,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.childrenOfType(LatexNoMathContent::class).asSequence()
+        file.traverseTyped<LatexNoMathContent>()
             .filter { it.isDisplayMath() }
             .map { Pair(it, it.nextSiblingIgnoreWhitespace()) }
             .filter { (_, next) -> next != null && next is LatexNoMathContent && next.isDisplayMath() }
