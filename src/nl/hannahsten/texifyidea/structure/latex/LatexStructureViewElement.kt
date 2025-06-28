@@ -134,9 +134,11 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val includeCommandsElements = commands.filter { it.name in includeCommands }
         if (includeCommandsElements.size != Cache.includedFiles.size) {
             runInBackgroundWithoutProgress {
-                val newIncludes = includeCommandsElements.associate { smartReadAction(element.project) {
-                    Pair(it.createSmartPointer(), it.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView).map { it.createSmartPointer() })
-                } }
+                val newIncludes = includeCommandsElements.associate {
+                    smartReadAction(element.project) {
+                        Pair(it.createSmartPointer(), it.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView).map { it.createSmartPointer() })
+                    }
+                }
                 // Clear cache to avoid it becoming outdated too much
                 Cache.includedFiles.clear()
                 Cache.includedFiles.putAll(newIncludes)
