@@ -194,11 +194,12 @@ suspend fun addToLuatexPathSearchDirectories(project: Project): List<VirtualFile
 
 suspend fun getLuatexPaths(project: Project): List<String> {
     val direct = LatexCommandsIndex.Util.getCommandsByNamesNonBlocking(setOf(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd), project, GlobalSearchScope.projectScope(project))
-        .mapNotNull { command -> smartReadAction(project) { command.requiredParameter(0) } }
+        .mapNotNull { command -> smartReadAction(project) { if (command.isValid) command.requiredParameter(0) else null } }
         .flatMap { it.split(",") }
     val viaUsepackage = LatexIncludesIndex.Util.getCommandsByNamesNonBlocking(CommandMagic.packageInclusionCommands, project, GlobalSearchScope.projectScope(project))
-        .filter { smartReadAction(project) { it.requiredParameter(0) } == LatexPackage.ADDTOLUATEXPATH.name }
-        .flatMap { smartReadAction(project) { it.getOptionalParameterMap().keys } }
+        .filter { smartReadAction(project) { if (it.isValid) it.requiredParameter(0) else null } == LatexPackage.ADDTOLUATEXPATH.name }
+        .mapNotNull { smartReadAction(project) { if (it.isValid) it.getOptionalParameterMap().keys else null } }
+        .flatten()
         .flatMap { it.text.split(",") }
 
     return direct + viaUsepackage
