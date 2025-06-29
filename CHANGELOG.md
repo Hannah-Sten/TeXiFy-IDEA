@@ -19,6 +19,7 @@
 
 ### Fixed
 
+* Fix a bug where the documentation popup would not update correctly
 * Fix a few bugs related to the root files cache
 * Fix an issue with the file set cache when opening multiple projects
 * Fix auto compilation not rerunning correctly, by @Ezrnest

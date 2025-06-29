@@ -11,7 +11,10 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.containsAny
@@ -96,25 +99,26 @@ class LatexDocumentationProvider : DocumentationProvider {
      */
     private fun generateDocForLatexCommandsAndEnvironments(element: PsiElement, originalElement: PsiElement?): String? {
         // Indexed documentation
-        if (lookup == null) {
-            // Apparently the lookup item is not yet initialised, so let's do that first
-            // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
-            when(element) {
-                is LatexCommands -> {
-                    lookup = LatexCommand.lookup(element)?.firstOrNull()
-                }
-                is LatexEnvIdentifier -> {
-                    lookup = element.name?.let { envName ->
-                        Environment[envName] ?: Environment.lookupInIndex(envName, element.project).firstOrNull()
-                    }
+        // Apparently the lookup item is not yet initialised, so let's do that first
+        // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
+        // In that case we shouldn't reassign lookup because then we would show documentation for the wrong item next time
+        val lookupItem = lookup ?: when(element) {
+            is LatexCommands -> {
+                LatexCommand.lookup(element)?.firstOrNull()
+            }
+            is LatexEnvIdentifier -> {
+                element.name?.let { envName ->
+                    Environment[envName] ?: Environment.lookupInIndex(envName, element.project).firstOrNull()
                 }
             }
+            else -> null
         }
-        var docString = if (lookup != null) lookup?.description else ""
+
+        var docString = lookupItem?.description ?: ""
 
         // Link to package docs
         originalElement ?: return null
-        val urlsMaybe = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as? Dependend)?.dependency) else getUrlForElement(
+        val urlsMaybe = if (lookupItem is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookupItem as? Dependend)?.dependency) else getUrlForElement(
             element
         )
         val urlsText = urlsMaybe.fold(
@@ -123,7 +127,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         )
 
         // Add a line break if necessary
-        if (docString?.isNotBlank() == true && urlsText?.isNotBlank() == true) {
+        if (docString.isNotBlank() && urlsText?.isNotBlank() == true) {
             docString += "<br>"
         }
 

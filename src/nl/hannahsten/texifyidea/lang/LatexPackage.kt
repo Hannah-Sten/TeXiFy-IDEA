@@ -34,6 +34,7 @@ open class LatexPackage @JvmOverloads constructor(
         val ALGPSEUDOCODE = LatexPackage("algpseudocode")
         val AMSFONTS = LatexPackage("amsfonts")
         val AMSMATH = LatexPackage("amsmath")
+        val AMSTHM = LatexPackage("amsthm")
         val AMSSYMB = LatexPackage("amssymb")
         val BIBLATEX = LatexPackage("biblatex")
         val BLINDTEXT = LatexPackage("blindtext")
