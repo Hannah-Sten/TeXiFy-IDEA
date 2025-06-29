@@ -3,8 +3,10 @@ package nl.hannahsten.texifyidea.settings.sdk
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.runCommand
+import nl.hannahsten.texifyidea.util.runCommandNonBlocking
 
 /**
  * TeX Live, as installed natively by the OS's package manager.
@@ -23,6 +25,8 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         val texmfDistPath: String by lazy {
             "kpsewhich article.sty".runCommand()?.substringBefore("texmf-dist") + "texmf-dist"
         }
+
+        var defaultStyleFilesPath: String? = null
     }
 
     override fun suggestHomePath(): String {
@@ -62,8 +66,17 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
     }
 
     override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        val articlePath = runCommand("$homePath/kpsewhich", "article.sty") ?: return null
-        if (articlePath.isBlank()) return null
+        // We cannot call system commands in a blocking way because it may cause freezes (#4102)
+        if (Cache.defaultStyleFilesPath == null) {
+            TexifyCoroutine.runInBackground {
+                // Make sure to not leave it null to avoid unnecessary cache refreshes
+                Cache.defaultStyleFilesPath = runCommandNonBlocking("$homePath/kpsewhich", "article.sty").output ?: ""
+            }
+        }
+
+        val articlePath = Cache.defaultStyleFilesPath
+        if (articlePath.isNullOrBlank()) return null
+
         // Assume article.sty is in tex/latex/base/article.sty
         return LocalFileSystem.getInstance().findFileByPath(articlePath)?.parent?.parent
     }
