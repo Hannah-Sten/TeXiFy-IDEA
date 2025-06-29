@@ -12,6 +12,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -69,7 +70,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             // If no command was found, find the end of the document.
             return command.containingFile.traverseReversed().filterIsInstance<LatexEndCommand>().firstOrNull {
-                it.environmentName() == "document"
+                it.environmentName() == DefaultEnvironment.DOCUMENT.environmentName
             }
         }
     }

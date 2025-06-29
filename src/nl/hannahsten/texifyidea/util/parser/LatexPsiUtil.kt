@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -46,7 +47,7 @@ fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> {
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
     // Currently: only allowing `\begin{document}`.
-    return this.environmentName() == "document"
+    return this.environmentName() == DefaultEnvironment.DOCUMENT.environmentName
 }
 
 /**

@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
@@ -18,7 +19,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
-import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import java.util.stream.Collectors
 
 /**
@@ -59,7 +59,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
         else if (cmd.name == LatexGenericRegularCommand.USEPACKAGE.cmd) {
             last = cmd
         }
-        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameter(0) == "document") {
+        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameter(0) == DefaultEnvironment.DOCUMENT.environmentName) {
             last = cmd
             break
         }
