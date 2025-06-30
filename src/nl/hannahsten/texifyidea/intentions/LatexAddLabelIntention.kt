@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.intentions
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.Project
@@ -99,12 +101,18 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
     ) {
         val helper = LatexPsiHelper(project)
         val parameter = helper.setOptionalParameter(command, "label", "{${label.labelText}}")
+
+        if (parameter == null) {
+            Notification("LaTeX", "Could not add label", "Something went wrong while trying to add the label ${label.labelText} to command ${command.getName()}. Please try again", NotificationType.WARNING).notify(project)
+            return
+        }
+
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
 
         // setOptionalParameter should create an appropriate optionalArgument node with label={text} in it
         val parameterText =
-            parameter?.keyValValue?.keyValContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
-                ?: throw AssertionError("parameter created by setOptionalParameter for $command with text ${label.labelText} does not have the right structure: ${parameter?.text}")
+            parameter.keyValValue?.keyValContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
+                ?: throw AssertionError("parameter created by setOptionalParameter for $command with text ${label.labelText} does not have the right structure: ${parameter.text}")
         // Move the caret onto the label
         editor.caretModel.moveToOffset(parameterText.textOffset + label.prefix.length + 1)
         val renamer = LabelInplaceRenamer(parameterText, editor, label.prefixText, label.base, moveCaretTo)

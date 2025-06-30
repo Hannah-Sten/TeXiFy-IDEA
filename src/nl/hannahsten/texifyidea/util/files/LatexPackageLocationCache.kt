@@ -46,7 +46,10 @@ object LatexPackageLocationCache {
             val searchPaths = texPaths + File.pathSeparator + (runCommandNonBlocking(executableName, "-show-path=bib").standardOutput ?: ".")
 
             cache = runCommandNonBlocking(executableName, "-expand-path", searchPaths, timeout = 10).standardOutput?.split(File.pathSeparator)
-                ?.flatMap { LocalFileSystem.getInstance().findFileByPath(it)?.children?.toList() ?: emptyList() }
+                ?.flatMap {
+                    val file = LocalFileSystem.getInstance().findFileByPath(it)
+                    (if (file?.isValid == true) file.children?.toList() else null) ?: emptyList()
+                }
                 ?.filter { !it.isDirectory }
                 ?.toSet()
                 ?.associate { it.name to it.path }

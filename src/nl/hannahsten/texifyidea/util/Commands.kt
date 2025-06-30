@@ -3,7 +3,9 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
@@ -34,7 +36,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
         else if (cmd.name == LatexGenericRegularCommand.USEPACKAGE.cmd) {
             last = cmd
         }
-        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameterText(0) == "document") {
+        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameterText(0) == DefaultEnvironment.DOCUMENT.environmentName) {
             last = cmd
             break
         }

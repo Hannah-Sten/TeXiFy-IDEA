@@ -10,6 +10,8 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -32,9 +34,9 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
 
         // Only proof environments
         val displayMaths = file.traverseTyped<LatexEnvironment>()
-            .filter { it.getEnvironmentName() == "proof" }
+            .filter { it.getEnvironmentName() == DefaultEnvironment.PROOF.environmentName }
             // With no \qedhere command already present
-            .filterNot { it.traverseTyped<LatexCommands>().any { cmd -> cmd.name == "\\qedhere" } }
+            .filterNot { it.traverseTyped<LatexCommands>().any { cmd -> cmd.name == LatexGenericRegularCommand.QEDHERE.commandWithSlash } }
             // Ending in a displaymath environment
             .mapNotNull { it.environmentContent?.lastChild?.firstChild?.firstChild as? LatexDisplayMath }
 

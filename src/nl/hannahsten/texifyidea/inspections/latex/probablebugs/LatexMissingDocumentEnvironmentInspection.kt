@@ -10,6 +10,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.environmentName
@@ -45,7 +46,7 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
 
         for (referencedFile in file.referencedFileSet()) {
             val hasBeginCommand = referencedFile.traverseTyped<LatexBeginCommand>()
-                .any { it.environmentName() == "document" }
+                .any { it.environmentName() == DefaultEnvironment.DOCUMENT.environmentName }
             if (hasBeginCommand) {
                 return descriptors
             }

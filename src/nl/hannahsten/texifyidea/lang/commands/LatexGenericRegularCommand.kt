@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSTHM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
@@ -249,6 +250,7 @@ enum class LatexGenericRegularCommand(
     PRINTNOIDXGLOSSARIES("printnoidxglossaries", dependency = GLOSSARIES),
     PROVIDESCLASS("ProvidesClass"),
     PROVIDESPACKAGE("ProvidesPackage"),
+    QEDHERE("qedhere", dependency = AMSTHM),
     R("r", display = "˚ (accent)"),
     RBRACK("rbrack", display = "]"),
     RPAREN("rparen", display = ")", dependency = MATHTOOLS),

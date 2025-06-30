@@ -152,6 +152,7 @@ enum class DefaultEnvironment(
     LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
     MINTED(environmentName = "minted", dependency = LatexPackage.MINTED),
+    PROOF(environmentName = "proof", dependency = LatexPackage.AMSTHM),
     PYCODE(environmentName = "pycode", dependency = LatexPackage.PYTHONTEX),
     PYSUB(environmentName = "pysub", dependency = LatexPackage.PYTHONTEX),
     PYVERBATIM(environmentName = "pyverbatim", dependency = LatexPackage.PYTHONTEX),

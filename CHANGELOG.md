@@ -19,12 +19,14 @@
 
 ### Fixed
 
+* Avoid a possible UI freeze when finding files to index for native TeX Live installations
+* Fix a bug where the documentation popup would not update correctly
 * Fix a few bugs related to the root files cache
 * Fix an issue with the file set cache when opening multiple projects
 * Fix auto compilation not rerunning correctly, by @Ezrnest
 * Fix SumatraPDF forward search not using the correct file, by @Ezrnest
 * Fix extra whitespace when inserting commands in math mode, by @Ezrnest
-* Fix exceptions #4035, #4044, #4058, #4072
+* Fix exceptions #4035, #4044, #4058, #4072, #4074, #4079, #4085, #4086, #4092, #4098 
 * Create run configuration process in background
 
 ## [0.10.3] - 2025-05-16
