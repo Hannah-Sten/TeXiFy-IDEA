@@ -49,4 +49,4 @@ class LatexExternalCommandIndexEx : FileBasedIndexExtension<String, String>() {
     override fun traceKeyHashToVirtualFileMapping() = true
 }
 
-object LatexExternalCommandIndex : FileBasedIndexRetriever<String,String>(LatexFileBasedIndexKeys.EXTERNAL_COMMANDS)
+object LatexExternalCommandIndex : FileBasedIndexRetriever<String, String>(LatexFileBasedIndexKeys.EXTERNAL_COMMANDS)

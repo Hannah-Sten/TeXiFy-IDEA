@@ -9,6 +9,7 @@ import com.intellij.util.Processor
 import com.intellij.util.Processors
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.indexing.IdFilter
+import nl.hannahsten.texifyidea.util.contentSearchScope
 
 /**
  *
@@ -31,7 +32,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     fun getByName(
         name: String,
         project: Project,
-        scope: GlobalSearchScope = GlobalSearchScope.projectScope(project)
+        scope: GlobalSearchScope = project.contentSearchScope
     ): Collection<Psi> {
         return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
     }
@@ -47,7 +48,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     fun getByNames(
         names: Collection<String>,
         project: Project,
-        scope: GlobalSearchScope = GlobalSearchScope.projectScope(project)
+        scope: GlobalSearchScope = project.contentSearchScope
     ): List<Psi> {
         val wrappedScope = wrapSearchScope(scope)
         return names.flatMap { name ->
@@ -78,16 +79,16 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
 
     @RequiresReadLock
     override fun getAllKeys(project: Project): Set<String> {
-        return getAllKeys(GlobalSearchScope.projectScope(project))
+        return getAllKeys(project.contentSearchScope)
     }
 
     @RequiresReadLock
     override fun processAllKeys(project: Project, processor: Processor<in String>): Boolean {
-        return processAllKeys(GlobalSearchScope.projectScope(project), processor = processor)
+        return processAllKeys(project.contentSearchScope, processor = processor)
     }
 
     @RequiresReadLock
-    fun processByName(name: String, project: Project, scope: GlobalSearchScope = GlobalSearchScope.projectScope(project), idFilter: IdFilter?, processor: Processor<in Psi>): Boolean {
+    fun processByName(name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope, idFilter: IdFilter?, processor: Processor<in Psi>): Boolean {
         return StubIndex.getInstance().processElements(key, name, project, wrapSearchScope(scope), idFilter, clazz, processor)
     }
 
@@ -95,7 +96,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     fun traverseByName(
         name: String,
         project: Project,
-        scope: GlobalSearchScope = GlobalSearchScope.projectScope(project),
+        scope: GlobalSearchScope = project.contentSearchScope,
         action: (Psi) -> Boolean
     ): Boolean {
         return StubIndexKt.traverseElements(key, name, project, wrapSearchScope(scope), action)
@@ -105,7 +106,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     fun forEachByName(
         name: String,
         project: Project,
-        scope: GlobalSearchScope = GlobalSearchScope.projectScope(project),
+        scope: GlobalSearchScope = project.contentSearchScope,
         filter: IdFilter? = null,
         action: (Psi) -> Unit
     ) {

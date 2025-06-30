@@ -46,7 +46,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
      * Get the name of the command, for example `\alpha`.
      */
     override fun getName(): String? {
-        val stub = this.stub
+        val stub = this.greenStub
         return if (stub != null) stub.name else this.commandToken.text
     }
 
@@ -108,12 +108,12 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
 
     override fun requiredParametersText(): List<String> {
-        this.stub?.let { return it.requiredParams }
+        this.greenStub?.let { return it.requiredParams }
         return super.requiredParametersText()
     }
 
     override fun requiredParameterText(idx: Int): String? {
-        this.stub?.let { return it.requiredParams.getOrNull(idx) }
+        this.greenStub?.let { return it.requiredParams.getOrNull(idx) }
         return super.requiredParameterText(idx)
     }
 }

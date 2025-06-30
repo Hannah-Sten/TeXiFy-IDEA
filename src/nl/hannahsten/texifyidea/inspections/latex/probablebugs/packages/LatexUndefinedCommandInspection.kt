@@ -6,11 +6,8 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
-import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -47,7 +44,7 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
             .filter { it in commandNamesInFile }
             .associateWith { command ->
                 val containingPackages =
-                    LatexExternalCommandIndex.getContainingFiles(command,file.project).map { LatexPackage.create(it) }.toSet()
+                    LatexExternalCommandIndex.getContainingFiles(command, file.project).map { LatexPackage.create(it) }.toSet()
                 containingPackages
             }
         val magicCommands = LatexRegularCommand.ALL.associate { Pair(it.cmd, setOf(it.dependency)) }

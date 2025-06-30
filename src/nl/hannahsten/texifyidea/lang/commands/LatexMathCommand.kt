@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
 import arrow.core.nonEmptySetOf
+import nl.hannahsten.texifyidea.lang.LatexPackage
 
 /**
  * @author Hannah Schellekens, Sten Wessel, Florian Kraft
@@ -21,6 +22,8 @@ object LatexMathCommand {
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
         GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK
 
+    val defaultCommands: Set<LatexCommand> = ALL.filter { it.dependency == LatexPackage.DEFAULT }.toSet()
+
     private val lookup: Map<String, NonEmptySet<LatexCommand>> = buildMap {
         ALL.forEach { cmd ->
             merge(cmd.command, nonEmptySetOf(cmd), NonEmptySet<LatexCommand>::plus)
@@ -35,6 +38,10 @@ object LatexMathCommand {
     }
 
     private val lookupWithSlash: Map<String, NonEmptySet<LatexCommand>> = lookup.mapKeys { "\\${it.key}" }
+
+    val lookupFromPackage: Map<String, Set<LatexCommand>> = ALL
+        .groupBy { it.dependency.name }
+        .mapValues { it.value.toSet() }
 
     @JvmStatic
     fun values() = ALL

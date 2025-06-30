@@ -8,8 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.forEachWithProgress
 import com.intellij.platform.util.progress.withProgressText
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.indexing.FileBasedIndex
 import kotlinx.coroutines.CoroutineScope
 import nl.hannahsten.texifyidea.completion.LatexCommandsAndEnvironmentsCompletionProvider.Companion.createCommandLookupElements
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
@@ -17,7 +15,6 @@ import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
-import nl.hannahsten.texifyidea.util.everythingScope
 
 /**
  * Cache for [LatexExternalCommandIndexEx], as index access is very expensive.

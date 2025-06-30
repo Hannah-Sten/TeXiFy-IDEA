@@ -8,7 +8,6 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.ID
 import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.util.everythingScope
-import nl.hannahsten.texifyidea.util.projectSearchScope
 
 open class FileBasedIndexRetriever<K : Any, V : Any>(
     val id: ID<K, V>
@@ -42,7 +41,6 @@ open class FileBasedIndexRetriever<K : Any, V : Any>(
         return result
     }
 
-
     fun getValuesByKey(key: K, scope: GlobalSearchScope): List<V> {
         return FileBasedIndex.getInstance().getValues(id, key, scope)
     }
@@ -51,14 +49,13 @@ open class FileBasedIndexRetriever<K : Any, V : Any>(
         return FileBasedIndex.getInstance().getValues(id, key, GlobalSearchScope.everythingScope(project))
     }
 
-    fun getByKey(key: K, scope: GlobalSearchScope) : List<Pair<V, VirtualFile>>{
+    fun getByKey(key: K, scope: GlobalSearchScope): List<Pair<V, VirtualFile>> {
         val result = arrayListOf<Pair<V, VirtualFile>>()
-        forEachByKey(key,scope) { virtualFile, value ->
+        forEachByKey(key, scope) { virtualFile, value ->
             result.add(value to virtualFile)
         }
         return result
     }
-
 
     fun getContainingFiles(key: K, scope: GlobalSearchScope): Collection<VirtualFile> {
         return FileBasedIndex.getInstance().getContainingFiles(id, key, scope)
@@ -67,7 +64,6 @@ open class FileBasedIndexRetriever<K : Any, V : Any>(
     fun getContainingFiles(key: K, project: Project): Collection<VirtualFile> {
         return getContainingFiles(key, project.everythingScope)
     }
-
 
     fun processByKey(key: K, scope: GlobalSearchScope, action: (VirtualFile, V) -> Boolean): Boolean {
         return FileBasedIndex.getInstance().processValues(id, key, null, action, scope)
@@ -84,15 +80,7 @@ open class FileBasedIndexRetriever<K : Any, V : Any>(
         }
     }
 
-
-
     fun processFilesByKeys(keys: Set<K>, scope: GlobalSearchScope, action: (VirtualFile) -> Boolean): Boolean {
-        return FileBasedIndex.getInstance().processFilesContainingAnyKey(id,keys,scope,null,null,action)
+        return FileBasedIndex.getInstance().processFilesContainingAnyKey(id, keys, scope, null, null, action)
     }
-
-
-
-
 }
-
-

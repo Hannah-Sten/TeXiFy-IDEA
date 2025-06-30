@@ -1,12 +1,14 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.contentSearchScope
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 object SpecialKeys {
@@ -15,6 +17,7 @@ object SpecialKeys {
     const val ENV_DEFINITIONS = "env_def"
     const val ALL_DEFINITIONS = "all_def"
     const val PACKAGE_INCLUDES = "package_includes"
+    const val MATH_COMMAND_DEFINITION = "math_cmd_def"
 }
 
 /**
@@ -29,7 +32,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     override fun getVersion(): Int {
-        return 101
+        return 102
     }
 
     override fun buildSearchFiles(baseFile: PsiFile): GlobalSearchScope {
@@ -46,6 +49,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         CommandMagic.environmentDefinitions to SpecialKeys.ENV_DEFINITIONS,
         CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
+        CommandMagic.mathCommandDefinitions to SpecialKeys.MATH_COMMAND_DEFINITION
     )
 
     override val specialKeys: Set<String> = mappingPairs.map { it.second }.toSet()
@@ -66,12 +70,24 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.FILE_INPUTS, file.project, GlobalSearchScope.fileScope(file))
     }
 
-    fun getAllPackageIncludes(project: Project): Collection<LatexCommands> {
-        return getByName(SpecialKeys.PACKAGE_INCLUDES, project)
+    fun getAllFileInputs(project: Project, file: VirtualFile): Collection<LatexCommands> {
+        return getByName(SpecialKeys.FILE_INPUTS, project, GlobalSearchScope.fileScope(project, file))
     }
 
-    fun getAllCommandDef(project: Project): Collection<LatexCommands> {
-        return getByName(SpecialKeys.COMMAND_DEFINITIONS, project)
+    fun getAllPackageIncludes(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
+        return getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
+    }
+
+    fun getAllPackageIncludes(file: PsiFile): Collection<LatexCommands> {
+        return getByName(SpecialKeys.PACKAGE_INCLUDES, file)
+    }
+
+    fun getAllCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
+        return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
+    }
+
+    fun getAllMathCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
+        return getByName(SpecialKeys.MATH_COMMAND_DEFINITION, project, scope)
     }
 
     fun getAllEnvDef(project: Project): Collection<LatexCommands> {

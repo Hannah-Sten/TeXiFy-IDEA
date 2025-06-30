@@ -3,12 +3,8 @@ package nl.hannahsten.texifyidea.lang.commands
 import arrow.core.NonEmptySet
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.concurrency.annotations.RequiresReadLock
-import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
-import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -121,7 +117,7 @@ interface LatexCommand : Described, Dependend {
 
             // Look up in index
             val filesAndValues = LatexExternalCommandIndex.getByKey(cmdWithSlash, project.everythingScope)
-            for ((value,file) in filesAndValues) {
+            for ((value, file) in filesAndValues) {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command

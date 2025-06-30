@@ -61,7 +61,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .andNot(PlatformPatterns.psiElement().inside(LatexMathEnvironment::class.java))
             .withPattern { psiElement, _ -> psiElement.inMathContext().not() }
             .withLanguage(LatexLanguage),
-        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.NORMAL)
+        LatexNormalCommandCompletionProvider
     )
 
     /**
@@ -73,19 +73,16 @@ open class LatexCompletionContributor : CompletionContributor() {
             PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
                 .withPattern { psiElement, _ -> psiElement.inMathContext() }
                 .withLanguage(LatexLanguage),
-            LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
+            LatexMathCommandCompletionProvider
         )
-
-        registerMathModeInsideEnvironmentCompletion()
+        extend(
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
+                .inside(LatexMathEnvMarker::class.java)
+                .withLanguage(LatexLanguage),
+            LatexMathCommandCompletionProvider
+        )
     }
-
-    private fun registerMathModeInsideEnvironmentCompletion() = extend(
-        CompletionType.BASIC,
-        PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-            .inside(LatexMathEnvironment::class.java)
-            .withLanguage(LatexLanguage),
-        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
-    )
 
     /**
      * Adds file name support to the autocomplete.

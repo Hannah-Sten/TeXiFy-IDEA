@@ -7,7 +7,6 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -16,7 +15,6 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
-import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Dependend
@@ -58,7 +56,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                 // Add the package name to the lookup text so we can distinguish between the same commands that come from different packages.
                 // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
                 val default = cmd.dependency.isDefault
-                LookupElementBuilder.create(cmd, cmd.command + " ".repeat(index + default.not().int) + cmd.dependency.displayString)
+                LookupElementBuilder.create(cmd, cmd.commandWithSlash + " ".repeat(index + default.not().int) + cmd.dependency.displayString)
                     .withPresentableText(cmd.commandWithSlash)
                     .bold()
                     .withTailText(args.joinToString("") + " " + packageName(cmd), true)
@@ -190,22 +188,25 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
     private fun addNormalCommands(result: CompletionResultSet, project: Project, isIndexReady: Boolean) {
         val indexedKeys = LatexExternalCommandIndex.getAllKeys(project)
 
+//        result.addAllElements(
+//            LatexRegularCommand.values().flatMap { cmd ->
+//                /** True if there is a package for which we already have the [cmd] command indexed.  */
+//                fun alreadyIndexed() =
+//                    LatexExternalCommandIndex.getContainingFiles(cmd.commandWithSlash,project)
+//                        .map { LatexPackage.create(it) }.contains(cmd.dependency)
+//
+//                // Avoid adding duplicates
+//                // Prefer the indexed command (if it really is the same one), as that one has documentation
+//                if (isIndexReady && cmd.commandWithSlash in indexedKeys && alreadyIndexed()) {
+//                    emptyList()
+//                }
+//                else {
+//                    createCommandLookupElements(cmd)
+//                }
+//            }
+//        )
         result.addAllElements(
-            LatexRegularCommand.values().flatMap { cmd ->
-                /** True if there is a package for which we already have the [cmd] command indexed.  */
-                fun alreadyIndexed() =
-                    LatexExternalCommandIndex.getContainingFiles(cmd.commandWithSlash,project)
-                        .map { LatexPackage.create(it) }.contains(cmd.dependency)
-
-                // Avoid adding duplicates
-                // Prefer the indexed command (if it really is the same one), as that one has documentation
-                if (isIndexReady && cmd.commandWithSlash in indexedKeys && alreadyIndexed()) {
-                    emptyList()
-                }
-                else {
-                    createCommandLookupElements(cmd)
-                }
-            }
+            LatexRegularCommand.values().flatMap { createCommandLookupElements(it) }
         )
         result.addLookupAdvertisement(getKindWords())
     }
