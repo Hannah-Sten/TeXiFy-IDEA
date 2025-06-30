@@ -208,6 +208,6 @@ inline fun PsiElement.forEachCommand(crossinline action: (LatexCommands) -> Unit
     return forEachChildTyped<LatexCommands> { action(it) }
 }
 
-fun PsiElement.traverseCommands(depth: Int = Int.MIN_VALUE): Sequence<LatexCommands> {
+fun PsiElement.traverseCommands(depth: Int = Int.MAX_VALUE): Sequence<LatexCommands> {
     return traverseTyped(depth)
 }
