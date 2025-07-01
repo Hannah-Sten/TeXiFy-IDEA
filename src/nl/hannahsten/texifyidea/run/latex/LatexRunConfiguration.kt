@@ -476,7 +476,7 @@ class LatexRunConfiguration(
         }
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile?.element?.includedPackages()?.contains(LatexPackage.CHAPTERBIB) == true
+        val usesChapterbib = psiFile?.element?.includedPackages(useCache = true)?.contains(LatexPackage.CHAPTERBIB) == true
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)

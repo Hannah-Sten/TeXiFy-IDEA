@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.PackageUtils.insertUsepackage
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
@@ -182,7 +183,7 @@ object PackageUtils {
             return true
         }
 
-        if (file.includedPackages().contains(pack)) {
+        if (file.includedPackages(useCache = true).contains(pack)) {
             return true
         }
 
@@ -190,7 +191,7 @@ object PackageUtils {
         if (PackageMagic.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts).isNotEmpty()) {
+                if (conflicts.contains(pack) && file.includedPackages(useCache = true).toSet().intersect(conflicts).isNotEmpty()) {
                     return false
                 }
             }
@@ -314,8 +315,8 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @param onlyDirectInclusions If true, only packages included directly are returned.
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
-fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): List<LatexPackage> {
-    val commands = this.commandsInFileSet()
+fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false, useCache: Boolean = false): List<LatexPackage> {
+    val commands = this.commandsInFileSet(useCache)
     return includedPackages(commands, project, onlyDirectInclusions)
 }
 
