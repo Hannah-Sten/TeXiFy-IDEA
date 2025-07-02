@@ -180,7 +180,7 @@ class InputFileReference(
         if (targetFile == null) {
             // If we are not building the fileset, we can make use of it
             if (!isBuildingFileset) {
-                val includedPackages = element.containingFile.includedPackages()
+                val includedPackages = element.containingFile.includedPackages(useCache = true)
                 if (CommandMagic.graphicPathsCommands.any { includedPackages.contains(it.dependency) }) {
                     // Add the graphics paths to the search paths
                     searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
