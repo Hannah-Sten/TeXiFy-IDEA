@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -119,6 +120,20 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     override fun processAllKeys(project: Project, processor: Processor<in String>): Boolean {
         return processAllKeys(project.contentSearchScope, processor = processor)
     }
+
+    @RequiresReadLock
+    fun forEachKey(
+        project: Project,
+        scope: GlobalSearchScope = project.contentSearchScope,
+        action: (String) -> Unit
+    ) {
+        processAllKeys(scope, idFilter = null){
+            ProgressManager.checkCanceled()
+            action(it)
+            true // Continue processing
+        }
+    }
+
 
     @RequiresReadLock
     fun processByName(name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope, idFilter: IdFilter?, processor: Processor<in Psi>): Boolean {

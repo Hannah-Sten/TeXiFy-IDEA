@@ -44,6 +44,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         registerGraphicPathCompletion()
         registerColorCompletion()
         registerMagicCommentCompletion()
+        registerLabelReferenceCompletion()
         registerBibliographyReferenceCompletion()
         registerPackageNameCompletion()
         registerGlossariesCompletion()
@@ -278,12 +279,18 @@ open class LatexCompletionContributor : CompletionContributor() {
         completionProvider
     )
 
+    private fun registerLabelReferenceCompletion() {
+        extendLatexCommands(LatexLabelReferenceProvider, CommandMagic.labelReference.keys)
+    }
+
     /**
      * Adds support for bibliography references to the autocomplete.
      */
     private fun registerBibliographyReferenceCompletion() {
         extendLatexCommands(LatexBibliographyReferenceProvider, CommandMagic.bibliographyReference)
     }
+
+
 
     /**
      * Adds support for package names to the autocomplete.
@@ -360,10 +367,9 @@ open class LatexCompletionContributor : CompletionContributor() {
             .inside(LatexRequiredParam::class.java)
             .withPattern { psiElement, _ ->
                 val command = psiElement.parentOfType(LatexCommands::class) ?: return@withPattern false
-                if (command.commandToken.text in commandNamesWithSlash) return@withPattern true
-
-                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
-                CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
+                command.name in commandNamesWithSlash
+//                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
+//                CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
             }
             .withLanguage(LatexLanguage),
         provider

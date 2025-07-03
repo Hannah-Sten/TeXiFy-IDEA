@@ -31,7 +31,6 @@ import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.repeat
 
-// TODO: Add
 
 abstract class LatexCommandCompletionProviderBase : CompletionProvider<CompletionParameters>() {
 
@@ -170,25 +169,4 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
     }
 
-//    /**
-//     * Add any commands that were not found in the indexed commands but are hardcoded in LatexRegularCommand.
-//     * If the index was not yet ready, add all of them.
-//     */
-//    private fun addMathCommands(result: CompletionResultSet, file: PsiFile, project: Project) {
-//        // These are bound to be added
-//        val lookupElements = mutableListOf<LookupElementBuilder>()
-//        LatexMathCommand.defaultCommands.forEach { appendCommandLookupElements(it, lookupElements) }
-//        if (!DumbService.isDumb(project)) {
-//            // let us search for the indexed commands
-//            val packages = LatexProjectStructure.getIncludedPackages(file)
-//            packages.forEach { packageName ->
-//                LatexMathCommand.lookupFromPackage[packageName]?.forEach {
-//                    appendCommandLookupElements(it, lookupElements)
-//                }
-//            }
-//
-//        }
-//        result.addAllElements(lookupElements)
-//        result.addLookupAdvertisement(getKindWords())
-//    }
 }

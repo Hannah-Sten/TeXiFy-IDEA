@@ -404,6 +404,7 @@ object CommandMagic {
      * Extensions that should only be scanned for the provided include commands.
      */
     val includeOnlyExtensions: Map<String, Set<String>> = mapOf(
+        INPUT.cmd to hashSetOf("tex"),
         INCLUDE.cmd to hashSetOf("tex"),
         INCLUDEONLY.cmd to hashSetOf("tex"),
         SUBFILE.cmd to hashSetOf("tex"),

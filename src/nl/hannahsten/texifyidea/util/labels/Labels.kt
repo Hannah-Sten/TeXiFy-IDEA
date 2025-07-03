@@ -43,9 +43,9 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
  */
 fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
     // TODO: Better implementation
-    val project = this.project
-    return NewLabelsIndex.getAllLabels(this.project).asSequence().flatMap {
-        NewLabelsIndex.getByName(it, project)
+    val fileset = LatexProjectStructure.buildFilesetScope(this)
+    return NewLabelsIndex.getAllLabels(fileset).asSequence().flatMap {
+        NewLabelsIndex.getByName(it, fileset)
     }
 }
 

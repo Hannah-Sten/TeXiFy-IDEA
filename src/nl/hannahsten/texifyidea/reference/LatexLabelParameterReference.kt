@@ -35,7 +35,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         // extractLabelName(externalDocumentCommand)
-        return NewLabelsIndex.getByName(labelName, element.project).mapNotNull {
+        return NewLabelsIndex.getByNameInFileSet(labelName, element.containingFile).mapNotNull {
             // Find the normal text in the label command.
             // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
             // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)

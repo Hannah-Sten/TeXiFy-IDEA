@@ -59,7 +59,7 @@ object LatexProjectStructure {
                 relPath = relPath.resolveSibling(relPath.fileName.pathString + ".$extension")
             }
         }
-        return root.findFileByRelativePath(relPath.invariantSeparatorsPathString)
+        return root.parent.findFileByRelativePath(relPath.invariantSeparatorsPathString)
     }
 
     fun getIncludedPackages(file: PsiFile): Set<String> {
@@ -74,7 +74,7 @@ object LatexProjectStructure {
     }
 
     fun getReferredFiles(project: Project, file: VirtualFile, root: VirtualFile): Set<VirtualFile> {
-        val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
+         val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
         val result = mutableSetOf<VirtualFile>()
         for (command in fileInputCommands) {
             val commandName = command.name ?: continue
@@ -98,7 +98,7 @@ object LatexProjectStructure {
         val filesets = mutableSetOf<Fileset>()
         val mapping = mutableMapOf<VirtualFile, MutableSet<Fileset>>()
         for (root in roots) {
-            val files = mutableSetOf<VirtualFile>()
+            val files = mutableSetOf<VirtualFile>(root)
             val fileSet = Fileset(files, root)
             val pending = mutableListOf(root)
             while (pending.isNotEmpty()) {
