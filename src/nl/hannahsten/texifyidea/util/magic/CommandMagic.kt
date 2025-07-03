@@ -289,7 +289,7 @@ object CommandMagic {
 
     val defaultIncludeCommands = LatexRegularCommand.values()
         .filter { command -> command.arguments.any { it is RequiredFileArgument } }
-        .map { "\\" + it.command }
+        .map { it.commandWithSlash }
         .toSet()
 
     /**

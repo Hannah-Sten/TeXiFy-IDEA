@@ -6,6 +6,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
+import nl.hannahsten.texifyidea.util.files.findRootFiles
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.nio.file.InvalidPathException
@@ -47,6 +50,33 @@ fun pathOrNull(pathText: String): Path? {
 
 object LatexProjectStructure {
     // TODO: cache the results of these methods, so that we do not have to recompute them every time, which is comparatively expensive
+
+    /**
+     * This is only a reference and will be removed
+     */
+    private fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
+
+        val useIndexCache = true
+        val searchFiles = baseFile.referencedFileSet(useIndexCache)
+            .mapNotNullTo(mutableSetOf()) { it.virtualFile }
+        searchFiles.add(baseFile.virtualFile)
+
+        // Add document classes
+        // There can be multiple, e.g., in the case of subfiles, in which case we probably want all items in the super-fileset
+        val roots = baseFile.findRootFiles()
+        for (root in roots) {
+            val docClass = root.documentClassFileInProject() ?: continue
+            searchFiles.add(docClass.virtualFile)
+            docClass.referencedFileSet(useIndexCache).forEach {
+                searchFiles.add(it.virtualFile)
+            }
+        }
+
+        // Search index.
+//        return GlobalSearchScope.filesScope(baseFile.project, searchFiles)
+        TODO()
+    }
+
     /**
      *
      */

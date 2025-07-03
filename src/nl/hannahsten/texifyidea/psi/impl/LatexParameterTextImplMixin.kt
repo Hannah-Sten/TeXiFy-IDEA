@@ -31,18 +31,20 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         }
         val command = this.firstParentOfType<LatexCommands>() ?: return null
         val name = command.name ?: return null
-        if (name in CommandMagic.reference) {
-            // TODO: allow custom reference
-            return LatexLabelParameterReference(this)
-        }
         if (name in CommandMagic.bibliographyReference) {
-            // If the command is a label definition, we return a reference to the label parameter
+            // First check if the command is a bibliography reference, then we return a reference to the bibtex id
             return BibtexIdReference(this)
         }
         if (name in CommandMagic.glossaryReference) {
             // If the command is a glossary reference, we return a reference to the glossary label
             return LatexGlossaryReference(this)
         }
+        if (name in CommandMagic.reference) {
+            // If the command is a reference, we return a reference to the label parameter
+            // TODO: allow custom reference
+            return LatexLabelParameterReference(this)
+        }
+
         return null
     }
 

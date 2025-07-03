@@ -34,7 +34,8 @@ class LatexGutterTest : BasePlatformTestCase() {
         val testName = getTestName(false)
         myFixture.copyDirectoryToProject("figures", "figures")
         val gutters = myFixture.findAllGutters("$testName.tex")
-        assertEquals(TexifyIcons.FILE, gutters.last().icon)
+        // The last one is \includegraphics{figures/duck}, which is a pdf file.
+        assertEquals(TexifyIcons.PDF_FILE, gutters.last().icon)
     }
 
     fun testShowMethodSeparators() {

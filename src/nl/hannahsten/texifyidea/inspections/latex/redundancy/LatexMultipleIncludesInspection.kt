@@ -5,15 +5,20 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import java.util.*
 import kotlin.collections.HashSet
@@ -37,7 +42,9 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Find all duplicates.
-        val packages = file.includedPackages(onlyDirectInclusions = true).map { it.name }
+        val scope = LatexProjectStructure.buildFilesetScope(file)
+        val inclusionCommands = NewSpecialCommandsIndex.getAllPackageIncludes(file.project,scope)
+        val packages = PackageUtils.getPackagesFromCommands(inclusionCommands, CommandMagic.packageInclusionCommands, mutableListOf())
         // When using the subfiles package, there will be multiple \documentclass{subfiles} commands
         val ignoredPackages = setOf(LatexPackage.SUBFILES.name)
         val covered = HashSet<String>()
@@ -47,8 +54,8 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         }
 
         // Duplicates!
-        file.commandsInFile().asSequence()
-            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd && it.requiredParameterText(0) in duplicates }
+        file.traverseCommands()
+            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd  && it.requiredParameterText(0) in duplicates }
             .forEach {
                 val parameter = it.findFirstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
                 descriptors.add(

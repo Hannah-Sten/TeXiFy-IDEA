@@ -36,7 +36,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     override fun buildFileset(baseFile: PsiFile): GlobalSearchScope {
-        return buildLatexSearchFiles(baseFile)
+        return LatexProjectStructure.buildFilesetScope(baseFile)
     }
 
     override fun wrapSearchScope(scope: GlobalSearchScope): GlobalSearchScope {

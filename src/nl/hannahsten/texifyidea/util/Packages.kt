@@ -7,6 +7,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -316,7 +317,8 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
 fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
-    val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project)
+    val scope = LatexProjectStructure.buildFilesetScope(this)
+    val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project,scope)
     return includedPackages(includeCommands, project, onlyDirectInclusions)
 }
 
