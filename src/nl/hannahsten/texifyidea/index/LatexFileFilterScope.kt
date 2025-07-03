@@ -18,7 +18,7 @@ class LatexFileFilterScope(delegate: GlobalSearchScope) : DelegatingGlobalSearch
         if(projectFileIndex == null) {
             return false
         }
-        // TODO implement the module scope
+        // TODO: it is only a placeholder for now, we may want to filter out files that are not in the source roots
         return true
     }
 }

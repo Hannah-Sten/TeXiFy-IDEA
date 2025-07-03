@@ -115,7 +115,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
     }
 
     private fun findExternalDirectFileInclusions(project: Project): Set<VirtualFile> {
-        // TODO: Perhaps it is the user's responsibility to include those files in the project, so we may just ignore them
+        // TODO: Use the index to find external direct file inclusions, cache and return them
         return emptySet()
 //        if (DumbService.isDumb(project)) return
         // Don't wait for the result, as somehow this may block the UI? #4055 This function seems to be called quite often so let's hope it's okay to miss it the first time
