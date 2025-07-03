@@ -3,7 +3,9 @@ package nl.hannahsten.texifyidea.util.labels
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -96,4 +98,23 @@ fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection
 fun Sequence<PsiElement>.findLatexCommandsLabels(project: Project): Sequence<LatexCommands> {
     val commandNames = project.getLabelDefinitionCommands()
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
+}
+
+object Labels {
+
+    fun isDefinedLabelOrBibtexLabel(label: String, project: Project, scope: GlobalSearchScope): Boolean {
+        return NewLabelsIndex.existsByName(label, project, scope) || NewBibtexEntryIndex.existsByName(label, project, scope)
+    }
+
+    fun getUniqueLabelName(originalLabel: String, file: PsiFile): String {
+        val project = file.project
+        val fileset = LatexProjectStructure.buildFilesetScope(file)
+        var counter = 2
+        var candidate = originalLabel
+        while(isDefinedLabelOrBibtexLabel(candidate, project, fileset)) {
+            candidate = originalLabel + counter
+            counter++
+        }
+        return candidate
+    }
 }

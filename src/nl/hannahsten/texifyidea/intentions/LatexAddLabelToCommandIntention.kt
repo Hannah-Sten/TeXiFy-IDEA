@@ -56,7 +56,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             val required = command.requiredParametersText()
             // Section commands should all have a required parameter
             val labelString: String = required.getOrNull(0) ?: return
-            val createdLabel = getUniqueLabelName(
+            val createdLabel = getUniqueLabelWithPrefix(
                 labelString.formatAsLabel(),
                 prefix, command.containingFile
             )
@@ -73,7 +73,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
         else {
             if (CommandMagic.labelAsParameter.contains(command.name)) {
                 // Create a label parameter and initiate the rename process
-                val createdLabel = getUniqueLabelName(
+                val createdLabel = getUniqueLabelWithPrefix(
                     command.name!!.replace("\\", ""),
                     prefix, command.containingFile
                 )

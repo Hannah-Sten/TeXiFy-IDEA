@@ -2,10 +2,11 @@ package nl.hannahsten.texifyidea.util.labels
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.BibtexEntryIndex
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
 /**
  * Finds all the defined bibtex labels in the fileset of the file.
@@ -25,13 +26,16 @@ fun PsiFile.findBibtexLabelsInFileSetAsSequence(): Sequence<String> = findBibtex
  * Finds all specified bibtex entries
  */
 fun PsiFile.findBibtexItems(): Collection<PsiElement> {
-    val bibtex = BibtexEntryIndex().getIndexedEntriesInFileSet(this)
+    // TODO: very inefficient, as it will search all bibtex entries in the project
+    val fileset = LatexProjectStructure.buildFilesetScope(this)
+    val allBibtex = NewBibtexEntryIndex.getAllKeys(fileset).flatMap {
+        NewBibtexEntryIndex.getByName(it, fileset)
+    }
     val bibitem = findBibitemCommands().toList()
-    return (bibtex + bibitem)
+    return (allBibtex + bibitem)
 }
 
 /**
  * Finds all \\bibitem-commands in the document
  */
-fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = this.commandsInFileSet().asSequence()
-    .filter { it.name == "\\bibitem" }
+fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = NewCommandsIndex.getByNameInFileSet("\\bibitem", this).asSequence()

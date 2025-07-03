@@ -11,15 +11,14 @@ import com.intellij.refactoring.rename.RenameProcessor
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection.Util.extractLabelParameterText
-import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection.Util.extractLabelParameterTextFromOptionalParameters
 import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection.Util.shouldBeBraced
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.formatAsLabel
+import nl.hannahsten.texifyidea.util.labels.Labels
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
-import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -185,7 +184,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         override fun getFamilyName() = "Fix label name"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            var parameterText = descriptor.psiElement
+            val parameterText = descriptor.psiElement
 
             val baseFile = parameterText.containingFile
             val oldLabel = parameterText.extractLabelName()
@@ -198,7 +197,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             else {
                 "$prefix:$labelName"
             }
-            var newLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelStringsInFileSet())
+            var newLabel = Labels.getUniqueLabelName(createdLabelBase, baseFile)
 
             // let us add a braced label if it is not already braced
             if (shouldBeBraced) {
@@ -211,20 +210,6 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             // use the renaming processor to rename the label, which will also update all references
             val processor = RenameProcessor(project, parameterText, newLabel, false, false)
             processor.run()
-        }
-
-        /**
-         * Keeps adding a counter behind the label until there is no other label with that name.
-         */
-        private fun appendCounter(label: String, allLabels: Set<String>): String {
-            var counter = 2
-            var candidate = label
-
-            while (allLabels.contains(candidate)) {
-                candidate = label + (counter++)
-            }
-
-            return candidate
         }
     }
 }

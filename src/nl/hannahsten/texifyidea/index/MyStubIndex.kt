@@ -22,7 +22,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         return scope
     }
 
-    protected open fun buildSearchFiles(
+    protected open fun buildFileset(
         baseFile: PsiFile,
     ): GlobalSearchScope {
         return GlobalSearchScope.fileScope(baseFile)
@@ -35,6 +35,39 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         scope: GlobalSearchScope = project.contentSearchScope
     ): Collection<Psi> {
         return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
+    }
+
+    @RequiresReadLock
+    fun countByName(
+        name: String,
+        project: Project,
+        scope: GlobalSearchScope = project.contentSearchScope
+    ): Int {
+        var count = 0
+        forEachByName(name, project, scope) {
+            count++
+        }
+        return count
+    }
+
+    @RequiresReadLock
+    fun existsByName(
+        name: String,
+        project: Project,
+        scope: GlobalSearchScope = project.contentSearchScope
+    ): Boolean {
+        val tr = traverseByName(name, project, scope) {
+            false // Stop traversing when the first element is found
+        }
+        return !tr // If the traversal returned false, it means no elements were found
+    }
+
+    @RequiresReadLock
+    fun getByName(
+        name: String,
+        scope: GlobalSearchScope
+    ): Collection<Psi> {
+        return getByName(name, scope.project!!, scope)
     }
 
     @RequiresReadLock
@@ -92,6 +125,12 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         return StubIndex.getInstance().processElements(key, name, project, wrapSearchScope(scope), idFilter, clazz, processor)
     }
 
+    /**
+     * Traverses all elements with the given name in the index, and applies the action to each of them,
+     * until the action returns false or all elements have been traversed.
+     *
+     * @return true if all elements were traversed, false if the action returned false for any element.
+     */
     @RequiresReadLock
     fun traverseByName(
         name: String,
@@ -116,13 +155,13 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     fun getByNameInFileSet(name: String, file: PsiFile): Collection<Psi> {
         // Setup search set.
         val project = file.project
-        val scope = buildSearchFiles(file)
+        val scope = buildFileset(file)
         return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
     }
 
     fun getByNamesInFileSet(name: Set<String>, file: PsiFile): Collection<Psi> {
         val project = file.project
-        val scope = buildSearchFiles(file)
+        val scope = buildFileset(file)
         return getByNames(name, project, scope)
     }
 }

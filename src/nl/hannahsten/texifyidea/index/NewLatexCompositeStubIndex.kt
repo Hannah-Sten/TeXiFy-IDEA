@@ -39,7 +39,7 @@ abstract class NewLatexCompositeStubIndex<Psi : PsiElement>(clazz: Class<Psi>) :
         return LatexFileFilterScope(scope)
     }
 
-    override fun buildSearchFiles(baseFile: PsiFile): GlobalSearchScope {
+    override fun buildFileset(baseFile: PsiFile): GlobalSearchScope {
         return buildLatexSearchFiles(baseFile)
     }
 }

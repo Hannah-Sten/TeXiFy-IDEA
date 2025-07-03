@@ -93,19 +93,18 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
     }
 
     private fun setBracedName(name: String): PsiElement {
+        if(this.parent is LatexParameterGroupText) {
+            // already inside a group, so we can just set the name
+            setPlainTextName(name)
+            return this
+        }
         val originalContent = firstParentOfType(LatexKeyValContent::class) ?: return this
-//        return this
         val content = LatexPsiHelper(this.project).createFromText("\\cmd[label=$name]")
             .firstChild // The first child is the command with parameters
             .findFirstChildTyped<LatexKeyValContent>() ?: return this
 //        originalContent.node.replaceAllChildrenToChildrenOf(content.node)
         val newNode = content.firstChild ?: return this
         return originalContent.firstChild.replace(newNode)
-//        return replace(newNode)
-//
-//        val kvPair = LatexPsiHelper(project).setOptionalParameter(command, "label", name) ?: return  this
-//        this.replace()
-//        return kvPair.findFirstChildTyped<LatexParameterText>()!!
     }
 
     override fun setName(name: String): PsiElement {

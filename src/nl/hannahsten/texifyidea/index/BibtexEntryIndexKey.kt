@@ -4,7 +4,7 @@ import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 
 /**
- * See [BibtexEntryIndex]
+ * See [NewBibtexEntryIndex]
  *
  * @author Felix Berlakovich
  */

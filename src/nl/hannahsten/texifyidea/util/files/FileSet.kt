@@ -11,7 +11,6 @@ import com.intellij.openapi.vfs.findFile
 import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.util.concurrency.annotations.RequiresReadLock
-import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -134,12 +133,7 @@ fun PsiFile.referencedFileSet(useIndexCache: Boolean = true): Set<PsiFile> {
 }
 
 /**
- * @see [BibtexEntryIndex.getIndexedEntriesInFileSet]
- */
-fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex().getIndexedEntriesInFileSet(this)
-
-/**
- * @see [LatexCommandsIndex.Util.getItemsInFileSet]
+ * Do not use this function
  */
 fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> {
     // TODO: Replace all the usage of this function

@@ -4,13 +4,10 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.grammar.BibtexLanguage
-import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.remove
 
 abstract class BibtexIdImplMixin(node: ASTNode) : BibtexId, ASTWrapperPsiElement(node) {
 
@@ -33,11 +30,13 @@ abstract class BibtexIdImplMixin(node: ASTNode) : BibtexId, ASTWrapperPsiElement
     }
 
     override fun delete() {
-        val text = this.text ?: return
+        super.delete()
+        // removing the reference is done separately by usage search
+//        val text = this.text ?: return
 
-        val searchScope = GlobalSearchScope.fileScope(this.containingFile)
-        BibtexEntryIndex().getEntryByName(text, this.project, searchScope).forEach {
-            it.remove()
-        }
+//        val searchScope = GlobalSearchScope.fileScope(this.containingFile)
+//        BibtexEntryIndex().getEntryByName(text, this.project, searchScope).forEach {
+//            it.remove()
+//        }
     }
 }
