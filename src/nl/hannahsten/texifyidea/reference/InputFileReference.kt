@@ -107,7 +107,9 @@ class InputFileReference(
         // findRootFile will also call getImportPaths, so that will be executed twice
         val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else containingFile.findRootFiles()
             // If the current file is a root file, then we assume paths have to be relative to this file. In particular, when using subfiles then parts that are relative to one of the other root files should not be valid
-            .let { if (containingFile in it) listOf(containingFile) else it }
+            .let {
+                if (containingFile in it || it.isEmpty()) listOf(containingFile) else it
+            }
             .mapNotNull { it.virtualFile }
         val rootDirectories = rootFiles.mapNotNull { it.parent }.toMutableList()
 
