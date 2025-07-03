@@ -4,6 +4,17 @@
 
 ### Added
 
+### Fixed
+
+## [0.10.4] - 2025-07-01
+
+Welcome to TeXiFy IDEA 0.10.4! This release contains a lot of improvements to the performance and to pdf viewers support, contributed by @Ezrnest.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
 * Improve memory usage, by @Ezrnest
 * Performance improvements for folding, breadcrumbs and more, by @Ezrnest
 * Improve Sumatra installation detection, by @Ezrnest
@@ -598,7 +609,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.3...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...HEAD
+[0.10.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...v0.10.1

@@ -23,7 +23,6 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
-import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.parser.*
@@ -61,25 +60,6 @@ fun PsiFile.documentClass(): String? {
         .firstOrNull()
         ?.requiredParameterText(0)
 }
-
-/**
- * Checks if the given package is included in the file set.
- *
- * @param packageName
- *          The name of the package to check for.
- * @return `true` when there is a package with name `packageName` in the file set, `false` otherwise.
- */
-fun PsiFile.isUsed(packageName: String) = this.includedPackages().map { it.name }.contains(packageName)
-
-/**
- * Checks if the given package is included into the file set.
- *
- * @param `package`
- *          The package to check for.
- * @return `true` when there is a package `package` included in the file set, `false` otherwise.
- */
-@Suppress("unused")
-fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
 
 /**
  * Scans the whole document (recursively) for all referenced/included files, except installed LaTeX packages.
