@@ -94,8 +94,8 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.ENV_DEFINITIONS, project)
     }
 
-    fun getAllEnvDef(file: PsiFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.ENV_DEFINITIONS, file)
+    fun getAllEnvDef(scope : GlobalSearchScope): Collection<LatexCommands> {
+        return getByName(SpecialKeys.ENV_DEFINITIONS, scope)
     }
 
     fun processCommandDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {

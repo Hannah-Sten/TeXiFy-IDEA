@@ -291,7 +291,6 @@ open class LatexCompletionContributor : CompletionContributor() {
     }
 
 
-
     /**
      * Adds support for package names to the autocomplete.
      */
@@ -343,7 +342,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .inside(LatexEnvIdentifier::class.java)
             .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
             .withLanguage(LatexLanguage),
-        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.ENVIRONMENT_NAME)
+        LatexEnvironmentCompletionProvider
     )
 
     /**
