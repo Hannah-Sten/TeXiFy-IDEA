@@ -39,10 +39,6 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return LatexProjectStructure.buildFilesetScope(baseFile)
     }
 
-    override fun wrapSearchScope(scope: GlobalSearchScope): GlobalSearchScope {
-        return LatexFileFilterScope(scope)
-    }
-
     val mappingPairs = listOf(
         CommandMagic.defaultIncludeCommands to SpecialKeys.FILE_INPUTS,
         CommandMagic.commandDefinitionsAndRedefinitions to SpecialKeys.COMMAND_DEFINITIONS,

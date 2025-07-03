@@ -27,8 +27,10 @@ fun getLabelDefinitionCommandsNoUpdate() = CommandManager.getAliases(CommandMagi
  */
 fun Project.getLabelDefinitionCommands(): Set<String> {
     // Check if updates are needed
-    CommandManager.updateAliases(CommandMagic.labels, this)
-    return CommandManager.getAliases(CommandMagic.labels.first())
+    return CommandMagic.labels
+    // TODO: improve the aliases update mechanism with better caching
+//    CommandManager.updateAliases(CommandMagic.labels, this)
+//    return CommandManager.getAliases(CommandMagic.labels.first())
 }
 
 /**

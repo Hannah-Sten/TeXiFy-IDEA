@@ -3,11 +3,15 @@ package nl.hannahsten.texifyidea.index
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.CachedValueProvider.Result
+import com.intellij.psi.util.CachedValuesManager
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFiles
+import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
@@ -93,7 +97,7 @@ object LatexProjectStructure {
 
     fun getIncludedPackages(file: PsiFile): Set<String> {
         val project = file.project
-        return getIncludedPackages(project, buildFilesetScope(project, file))
+        return getIncludedPackages(project, buildFilesetScope(file, project))
     }
 
     fun getIncludedPackages(project: Project, scope: GlobalSearchScope): Set<String> {
@@ -102,8 +106,14 @@ object LatexProjectStructure {
         }.toSet()
     }
 
-    fun getReferredFiles(project: Project, file: VirtualFile, root: VirtualFile): Set<VirtualFile> {
-        val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
+    fun getReferredFiles(
+        project: Project,
+        file: VirtualFile, root: VirtualFile
+    ): Set<VirtualFile> {
+        val psiFile = file.findPsiFile(project) ?: return emptySet()
+        val fileInputCommands = CachedValuesManager.getCachedValue(psiFile) {
+            Result.create(NewSpecialCommandsIndex.getAllFileInputs(project, file), file)
+        }
         val result = mutableSetOf<VirtualFile>()
         for (command in fileInputCommands) {
             val commandName = command.name ?: continue
@@ -143,18 +153,16 @@ object LatexProjectStructure {
         return LatexProjectFilesets(filesets, mapping)
     }
 
-    fun findFileset(project: Project, file: VirtualFile): Set<Fileset> {
+    private fun findFileset(project: Project, file: VirtualFile): Set<Fileset> {
         return buildFilesets(project).getFilesetForFile(file)
     }
 
-    fun buildFilesetScope(project: Project, file: PsiFile): GlobalSearchScope {
-        val virtualFile = file.virtualFile ?: return GlobalSearchScope.fileScope(file)
-        val allFiles = findFileset(project, virtualFile).flatMapTo(mutableSetOf(virtualFile)) { it.files }
-        return GlobalSearchScope.filesWithoutLibrariesScope(project, allFiles)
-    }
-
-    fun buildFilesetScope(file: PsiFile): GlobalSearchScope {
-        val project = file.project
-        return buildFilesetScope(project, file)
+    fun buildFilesetScope(file: PsiFile, project: Project = file.project): GlobalSearchScope {
+        return CachedValuesManager.getManager(project).getCachedValue(file) {
+            val virtualFile = file.virtualFile ?: return@getCachedValue Result.createSingleDependency(GlobalSearchScope.fileScope(file), file)
+            val allFiles = findFileset(project, virtualFile).flatMapTo(mutableSetOf(virtualFile)) { it.files }
+            val result = GlobalSearchScope.filesWithoutLibrariesScope(project, allFiles)
+            Result.create(result, allFiles)
+        }
     }
 }
