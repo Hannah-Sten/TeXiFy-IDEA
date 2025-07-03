@@ -318,7 +318,7 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  */
 fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
     val scope = LatexProjectStructure.buildFilesetScope(this)
-    val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project,scope)
+    val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
     return includedPackages(includeCommands, project, onlyDirectInclusions)
 }
 

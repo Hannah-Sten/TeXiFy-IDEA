@@ -6,7 +6,6 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.get
 import nl.hannahsten.texifyidea.util.insertUsepackage

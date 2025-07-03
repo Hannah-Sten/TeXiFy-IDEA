@@ -5,10 +5,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubIndexKey
-import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
-import nl.hannahsten.texifyidea.util.files.findRootFiles
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
-
 
 abstract class NewLatexCompositeStubIndex<Psi : PsiElement>(clazz: Class<Psi>) : MyStringStubIndexBase<Psi>(clazz) {
 

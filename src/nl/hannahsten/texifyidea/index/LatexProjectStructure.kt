@@ -55,7 +55,6 @@ object LatexProjectStructure {
      * This is only a reference and will be removed
      */
     private fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
-
         val useIndexCache = true
         val searchFiles = baseFile.referencedFileSet(useIndexCache)
             .mapNotNullTo(mutableSetOf()) { it.virtualFile }

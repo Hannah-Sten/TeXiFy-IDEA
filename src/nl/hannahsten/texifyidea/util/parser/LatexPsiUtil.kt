@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
 /**
  * Checks if the environment contains the given context.
@@ -73,7 +72,7 @@ fun LatexNoMathContent.isDisplayMath() = children.firstOrNull() is LatexMathEnvi
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.hasBibliography() : Boolean{
+fun PsiFile.hasBibliography(): Boolean {
     return NewCommandsIndex.getByNameInFileSet("\\bibliography", this).isNotEmpty()
 }
 

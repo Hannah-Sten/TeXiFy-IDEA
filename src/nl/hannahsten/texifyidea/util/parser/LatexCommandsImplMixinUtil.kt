@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.util.parser
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.paths.WebReference
-import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
@@ -109,7 +107,6 @@ fun extractLabelReferences(element: LatexCommands, requiredParameters: List<Late
             }
         }
 }
-
 
 fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
     return splitToRanges(stripGroup(param.text), PatternMagic.parameterSplit)

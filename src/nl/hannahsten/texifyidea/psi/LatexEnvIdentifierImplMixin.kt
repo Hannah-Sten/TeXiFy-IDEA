@@ -8,7 +8,6 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentBeginReference
-import nl.hannahsten.texifyidea.reference.LatexEnvironmentEndReference
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 

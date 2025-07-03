@@ -38,7 +38,6 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
@@ -682,10 +681,10 @@ class LatexRunConfiguration(
 
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
-                ", compilerPath=" + compilerPath +
-                ", mainFile=" + mainFile +
-                ", outputFormat=" + outputFormat +
-                '}'.toString()
+            ", compilerPath=" + compilerPath +
+            ", mainFile=" + mainFile +
+            ", outputFormat=" + outputFormat +
+            '}'.toString()
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects

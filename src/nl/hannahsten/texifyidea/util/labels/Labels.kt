@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
 
@@ -73,7 +73,7 @@ fun PsiFile.findXrPackageExternalDocuments(): List<PsiFile> {
  * @see [findLabelingCommandsInFileSet] but then only for commands in this file.
  */
 fun PsiFile.findLabelingCommandsInFile(): Sequence<LatexCommands> {
-    return this.commandsInFile().asSequence().findLatexCommandsLabels(this.project)
+    return this.traverseCommands().findLatexCommandsLabels(this.project)
 }
 
 /*

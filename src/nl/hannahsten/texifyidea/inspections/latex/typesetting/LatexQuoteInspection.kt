@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.quotePattern
 import nl.hannahsten.texifyidea.util.magic.cmd
