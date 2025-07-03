@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
@@ -52,9 +53,9 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
      * those commands for graphics paths.
      */
     fun getGraphicsPathsWithoutFileSet(command: LatexCommands): List<String> {
-        fun graphicsPathsInFile(file: PsiFile): List<String> = file.commandsInFile()
+        fun graphicsPathsInFile(file: PsiFile): List<String> = file.traverseCommands()
             .filter { it.name == "\\graphicspath" }
-            .flatMap { it.getGraphicsPaths() }
+            .flatMap { it.getGraphicsPaths() }.toList()
 
         // First find all graphicspaths commands in the file of the given command
         val graphicsPaths = graphicsPathsInFile(command.containingFile).toMutableList()

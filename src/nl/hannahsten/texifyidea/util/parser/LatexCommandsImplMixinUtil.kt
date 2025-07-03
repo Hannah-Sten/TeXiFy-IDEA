@@ -110,13 +110,6 @@ fun extractLabelReferences(element: LatexCommands, requiredParameters: List<Late
         }
 }
 
-fun getRequiredParameters(element: LatexCommands): List<LatexRequiredParam> {
-    return ApplicationManager.getApplication().runReadAction(
-        Computable {
-            element.requiredParameters()
-        }
-    )
-}
 
 fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
     return splitToRanges(stripGroup(param.text), PatternMagic.parameterSplit)

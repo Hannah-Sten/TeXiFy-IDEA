@@ -14,13 +14,13 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
@@ -83,7 +83,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Fetch all commands in the active file.
         val numbering = SectionNumbering(DocumentClass.getClassByName(docClass))
-        val commands = element.allCommands()
+        val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
         val includeCommands = updateAndGetIncludeCommands(element.project)
@@ -131,7 +131,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // This can take a long time (a minute for a large file), but it is not crucial for the structure view, so we get the info in the background.
         // This function may be called for every editor action, so cache this as well to reduce cpu usage
         val includeCommandsElements = commands.filter { it.name in includeCommands }
-        if (includeCommandsElements.size != Cache.includedFiles.size) {
+        if (includeCommandsElements.count() != Cache.includedFiles.size) {
             runInBackgroundWithoutProgress {
                 val newIncludes = includeCommandsElements.associate {
                     smartReadAction(element.project) {

@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.reference.LatexCommandDefinitionReference
 import nl.hannahsten.texifyidea.structure.latex.LatexPresentationFactory
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
 /**
@@ -65,33 +66,23 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
      * Gets the references for this command.
      */
     override fun getReferences(): Array<PsiReference> {
-//        val requiredParameters = getRequiredParameters(this)
-//        val firstParam = requiredParameters.getOrNull(0)
+        val result = mutableListOf<PsiReference>()
         // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
-//        val name = name
-//        if(name in CommandMagic.reference) {
 //
-//        }
-//        if (this.project.getLabelReferenceCommands().contains(this.commandToken.text) && firstParam != null) {
-//            // To improve performance, don't continue with other reference types
-//            extractLabelReferences(this, requiredParameters).let { if (it.isNotEmpty()) return it.toTypedArray() }
-//        }
-//
-//        // If it is a reference to a file
-//        this.getFileArgumentsReferences().let { if (it.isNotEmpty()) return it.toTypedArray() }
-//
-//        if (CommandMagic.urls.contains(this.getName()) && firstParam != null) {
-//            this.extractUrlReferences(firstParam).let { if (it.isNotEmpty()) return it }
-//        }
-        // We only deal with the command itself, not its parameters
+        // If it is a reference to a file
+        val firstParam = requiredParameters().getOrNull(0)
+        result.addAll(this.getFileArgumentsReferences())
+        if (CommandMagic.urls.contains(this.getName()) && firstParam != null) {
+            result.addAll(this.extractUrlReferences(firstParam))
+        }
+        result.add(LatexCommandDefinitionReference(this))
+        // We deal with the command itself, not its parameters
         // and the user is interested in the location of the command definition
-        return arrayOf(LatexCommandDefinitionReference(this))
-//        // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
+        return result.toTypedArray()
+        // TODO: I don't understand "Only create a reference if there is something to resolve to, otherwise autocompletion won't work"
 //        if (definitionReference.multiResolve(false).isNotEmpty()) {
 //            return arrayOf(definitionReference)
 //        }
-//
-//        return arrayOf()
     }
 
     /**

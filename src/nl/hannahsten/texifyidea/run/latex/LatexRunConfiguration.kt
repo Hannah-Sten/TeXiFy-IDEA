@@ -21,10 +21,12 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
@@ -42,7 +44,6 @@ import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePa
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
@@ -453,10 +454,11 @@ class LatexRunConfiguration(
      * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
      */
     internal fun generateBibRunConfig() {
+        val psiFile = this.psiFile?.element ?: return // Do not auto-generate a bib run config when there is no psi file
         // Get a pair of Bib compiler and compiler arguments.
         val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
-            val runCommand = psiFile?.element?.allParentMagicComments()
-                ?.value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
+            val runCommand = psiFile.allParentMagicComments()
+                .value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
             val compilerString = if (runCommand.contains(' ')) {
                 runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim()
                     .toString()
@@ -470,29 +472,30 @@ class LatexRunConfiguration(
 
         val defaultCompiler = when {
             compilerFromMagicComment != null -> compilerFromMagicComment!!.first
-            psiFile?.element?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
-            psiFile?.element?.usesBiber() == true -> BibliographyCompiler.BIBER
+            psiFile.hasBibliography() -> BibliographyCompiler.BIBTEX
+            psiFile.usesBiber() -> BibliographyCompiler.BIBER
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile?.element?.includedPackages()?.contains(LatexPackage.CHAPTERBIB) == true
+        val usesChapterbib = psiFile.includedPackages().contains(LatexPackage.CHAPTERBIB)
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
         }
-        else if (psiFile != null) {
-            val allBibliographyCommands = psiFile?.element?.commandsInFileSet()?.filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd } ?: emptyList()
+        else {
+            val allBibliographyCommands =
+                NewCommandsIndex.getByNameInFileSet(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd, psiFile)
 
             // We know that there can only be one bibliography per top-level \include,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
-            psiFile?.element?.allCommands()
-                ?.filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
-                ?.flatMap { command -> command.requiredParametersText() }
-                ?.forEach { filename ->
+            psiFile.traverseCommands()
+                .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
+                .flatMap { command -> command.requiredParametersText() }
+                .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile?.element?.findFile(filename, supportsAnyExtension = true)
+                    val chapterMainFile = psiFile.findFile(filename, supportsAnyExtension = true)
                         ?: return@forEach
 
                     val chapterFiles = chapterMainFile.referencedFileSet()
@@ -679,10 +682,10 @@ class LatexRunConfiguration(
 
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
-            ", compilerPath=" + compilerPath +
-            ", mainFile=" + mainFile +
-            ", outputFormat=" + outputFormat +
-            '}'.toString()
+                ", compilerPath=" + compilerPath +
+                ", mainFile=" + mainFile +
+                ", outputFormat=" + outputFormat +
+                '}'.toString()
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects

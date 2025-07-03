@@ -210,10 +210,3 @@ fun LatexCommands.hasLabel(): Boolean {
     val labelMaybe = this.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }
-
-/**
- * Get all [LatexCommands] that are children (direct or indirect) of the given element.
- *
- * Note: This method is slow, as it collects all commands in the subtree of the element.
- */
-fun PsiElement.allCommands() = collectSubtreeTyped<LatexCommands>()

@@ -213,6 +213,14 @@ inline fun PsiElement.forEachCommand(crossinline action: (LatexCommands) -> Unit
     return forEachChildTyped<LatexCommands> { action(it) }
 }
 
+/**
+ * Traverse all commands in the current [PsiElement] and its children.
+ *
+ * NOTE: This function traverses all commands, so it can be very expensive for large documents.
+ *
+ * @param depth The maximum depth to traverse. Default is `Int.MAX_VALUE`.
+ * @return A sequence of [LatexCommands] found in the element.
+ */
 fun PsiElement.traverseCommands(depth: Int = Int.MAX_VALUE): Sequence<LatexCommands> {
     return traverseTyped(depth)
 }
