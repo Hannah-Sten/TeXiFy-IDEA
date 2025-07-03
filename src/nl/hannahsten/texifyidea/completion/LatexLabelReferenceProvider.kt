@@ -15,7 +15,7 @@ object LatexLabelReferenceProvider : CompletionProvider<CompletionParameters>() 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val file = parameters.originalFile
         val project = file.project
-        val fileset = LatexProjectStructure.buildFilesetScope(file, project)
+        val fileset = LatexProjectStructure.buildFilesetScopeFor(file, project)
 
         NewLabelsIndex.forEachKey(project, fileset) { extractedLabel ->
             if(extractedLabel.isBlank()) return@forEachKey

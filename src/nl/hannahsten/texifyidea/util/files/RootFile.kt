@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -53,7 +55,10 @@ fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
 /**
  * Gets the set of files that are the root files of `this` file, using [ReferencedFileSetCache.getSetFromCache].
  */
-fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> = ReferencedFileSetService.getInstance().rootFilesOf(this, useIndexCache)
+fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> {
+    val project = this.project
+    return LatexProjectStructure.findFilesetsFor(this).mapNotNullTo(mutableSetOf()) { it.root.findPsiFile(project) }
+}
 
 /**
  * Checks whether the psi file is a tex document root or not.

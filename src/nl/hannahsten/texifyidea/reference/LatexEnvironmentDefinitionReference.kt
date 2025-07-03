@@ -27,7 +27,7 @@ class LatexEnvironmentDefinitionReference(
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val name = environment.getEnvironmentName()
-        return NewDefinitionIndex.getByName(name, element.project).mapNotNull {
+        return NewDefinitionIndex.getByNameInFileSet(name, element.containingFile).mapNotNull {
             val firstParam = it.parameterList.firstOrNull() ?: return@mapNotNull null
             val paramText = firstParam.findFirstChildTyped<LatexParameterText>() ?: return@mapNotNull null
             PsiElementResolveResult(paramText)

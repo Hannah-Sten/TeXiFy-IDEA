@@ -8,10 +8,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.CachedValueProvider.Result
 import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiModificationTracker
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFiles
-import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
@@ -38,7 +38,7 @@ data class LatexProjectFilesets(
     val filesets: Set<Fileset>,
     val mapping: Map<VirtualFile, Set<Fileset>>,
 ) {
-    fun getFilesetForFile(file: VirtualFile): Set<Fileset> {
+    fun getFilesetsForFile(file: VirtualFile): Set<Fileset> {
         return mapping[file] ?: emptySet()
     }
 }
@@ -97,7 +97,7 @@ object LatexProjectStructure {
 
     fun getIncludedPackages(file: PsiFile): Set<String> {
         val project = file.project
-        return getIncludedPackages(project, buildFilesetScope(file, project))
+        return getIncludedPackages(project, buildFilesetScopeFor(file, project))
     }
 
     fun getIncludedPackages(project: Project, scope: GlobalSearchScope): Set<String> {
@@ -133,34 +133,44 @@ object LatexProjectStructure {
     }
 
     fun buildFilesets(project: Project): LatexProjectFilesets {
-        val roots = getPossibleRootFiles(project)
-        val filesets = mutableSetOf<Fileset>()
-        val mapping = mutableMapOf<VirtualFile, MutableSet<Fileset>>()
-        for (root in roots) {
-            val files = mutableSetOf<VirtualFile>(root)
-            val fileSet = Fileset(files, root)
-            val pending = mutableListOf(root)
-            while (pending.isNotEmpty()) {
-                val f = pending.removeLast()
-                mapping.computeIfAbsent(f) { mutableSetOf() }.add(fileSet)
-                val referred = getReferredFiles(project, f, root)
-                referred.forEach {
-                    if (files.add(it)) pending.add(it) // new element added
+        return CachedValuesManager.getManager(project).getCachedValue(project) {
+            val roots = getPossibleRootFiles(project)
+            val filesets = mutableSetOf<Fileset>()
+            val mapping = mutableMapOf<VirtualFile, MutableSet<Fileset>>()
+            for (root in roots) {
+                val files = mutableSetOf(root)
+                val fileSet = Fileset(files, root)
+                val pending = mutableListOf(root)
+                while (pending.isNotEmpty()) {
+                    val f = pending.removeLast()
+                    mapping.computeIfAbsent(f) { mutableSetOf() }.add(fileSet)
+                    val referred = getReferredFiles(project, f, root)
+                    referred.forEach {
+                        if (files.add(it)) pending.add(it) // new element added
+                    }
                 }
+                filesets.add(fileSet)
             }
-            filesets.add(fileSet)
+            val projectFilesets = LatexProjectFilesets(filesets, mapping)
+            Result.create(projectFilesets, PsiModificationTracker.MODIFICATION_COUNT) // dependency on the whole project structure
         }
-        return LatexProjectFilesets(filesets, mapping)
     }
 
-    private fun findFileset(project: Project, file: VirtualFile): Set<Fileset> {
-        return buildFilesets(project).getFilesetForFile(file)
+    fun findFilesetsFor(psiFile: PsiFile): Set<Fileset> {
+        val virtualFile = psiFile.virtualFile ?: return emptySet()
+        val project = psiFile.project
+        return CachedValuesManager.getManager(project).getCachedValue(psiFile) {
+            val filesets = buildFilesets(project).getFilesetsForFile(virtualFile)
+            val dependencies = filesets.flatMapTo(mutableSetOf(virtualFile)) { it.files }.toSet()
+            Result.create(filesets, dependencies)
+        }
     }
 
-    fun buildFilesetScope(file: PsiFile, project: Project = file.project): GlobalSearchScope {
+    fun buildFilesetScopeFor(file: PsiFile, project: Project = file.project): GlobalSearchScope {
         return CachedValuesManager.getManager(project).getCachedValue(file) {
             val virtualFile = file.virtualFile ?: return@getCachedValue Result.createSingleDependency(GlobalSearchScope.fileScope(file), file)
-            val allFiles = findFileset(project, virtualFile).flatMapTo(mutableSetOf(virtualFile)) { it.files }
+            val filesets = buildFilesets(project).getFilesetsForFile(virtualFile)
+            val allFiles = filesets.flatMapTo(mutableSetOf(virtualFile)) { it.files }
             val result = GlobalSearchScope.filesWithoutLibrariesScope(project, allFiles)
             Result.create(result, allFiles)
         }

@@ -1,10 +1,8 @@
 package nl.hannahsten.texifyidea.util.labels
 
-import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 
 /**
  * All commands that represent a reference to a label, including user defined commands.
@@ -37,11 +35,13 @@ fun Project.getLabelDefinitionCommands(): Set<String> {
  * See [getLabelDefinitionCommands], but will not wait until the update is finished.
  */
 fun Project.getLabelDefinitionCommandsAndUpdateLater(): Set<String> {
+    return CommandMagic.labels
+    // TODO
     // Check if updates are needed
-    runInBackgroundWithoutProgress {
-        smartReadAction(this) {
-            CommandManager.updateAliases(CommandMagic.labels, this)
-        }
-    }
-    return CommandManager.getAliases(CommandMagic.labels.first())
+//    runInBackgroundWithoutProgress {
+//        smartReadAction(this) {
+//            CommandManager.updateAliases(CommandMagic.labels, this)
+//        }
+//    }
+//    return CommandManager.getAliases(CommandMagic.labels.first())
 }

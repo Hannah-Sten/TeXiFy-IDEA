@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
 fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> {
-    val fileset = LatexProjectStructure.buildFilesetScope(this)
+    val fileset = LatexProjectStructure.buildFilesetScopeFor(this)
     return NewLabelsIndex.getAllLabels(fileset) + findBibtexLabelsInFileSetAsSequence()
 }
 
@@ -31,7 +31,7 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> {
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
 fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
-    val fileset = LatexProjectStructure.buildFilesetScope(this)
+    val fileset = LatexProjectStructure.buildFilesetScopeFor(this)
     return NewLabelsIndex.getAllLabels(fileset).asSequence()
 //    val externalDocumentCommand = this.findExternalDocumentCommand()
 //    return findLatexLabelingElementsInFileSet().map { it.extractLabelName(externalDocumentCommand) }
@@ -43,7 +43,7 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
  */
 fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
     // TODO: Better implementation
-    val fileset = LatexProjectStructure.buildFilesetScope(this)
+    val fileset = LatexProjectStructure.buildFilesetScopeFor(this)
     return NewLabelsIndex.getAllLabels(fileset).asSequence().flatMap {
         NewLabelsIndex.getByName(it, fileset)
     }
@@ -108,7 +108,7 @@ object Labels {
 
     fun getUniqueLabelName(originalLabel: String, file: PsiFile): String {
         val project = file.project
-        val fileset = LatexProjectStructure.buildFilesetScope(file)
+        val fileset = LatexProjectStructure.buildFilesetScopeFor(file)
         var counter = 2
         var candidate = originalLabel
         while(isDefinedLabelOrBibtexLabel(candidate, project, fileset)) {

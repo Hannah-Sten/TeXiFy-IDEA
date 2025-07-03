@@ -102,22 +102,22 @@ class InputFileReference(
 
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = mutableListOf<String>()
-
+        val containingFile = element.containingFile
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else element.containingFile.findRootFiles()
+        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else containingFile.findRootFiles()
             // If the current file is a root file, then we assume paths have to be relative to this file. In particular, when using subfiles then parts that are relative to one of the other root files should not be valid
-            .let { if (element.containingFile in it) listOf(element.containingFile) else it }
+            .let { if (containingFile in it) listOf(containingFile) else it }
             .mapNotNull { it.virtualFile }
         val rootDirectories = rootFiles.mapNotNull { it.parent }.toMutableList()
 
         // Check environment variables
-        searchPaths += getTexinputsPaths(element.project, rootFiles, expandPaths = true, latexmkSearchDirectory = element.containingFile?.virtualFile?.parent)
+        searchPaths += getTexinputsPaths(element.project, rootFiles, expandPaths = true, latexmkSearchDirectory = containingFile?.virtualFile?.parent)
 
         // BIBINPUTS
         // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
         if (!isBuildingFileset && (element.name in CommandMagic.bibliographyIncludeCommands || extensions.contains("bib"))) {
-            val bibRunConfigs = element.containingFile.getBibtexRunConfigurations()
+            val bibRunConfigs = containingFile.getBibtexRunConfigurations()
             if (bibRunConfigs.any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }) {
                 // When using BIBINPUTS, the file will only be sought relative to BIBINPUTS
                 searchPaths.clear()
@@ -177,10 +177,10 @@ class InputFileReference(
         if (targetFile == null) {
             // If we are not building the fileset, we can make use of it
             if (!isBuildingFileset) {
-                val includedPackages = element.containingFile.includedPackages()
+                val includedPackages = containingFile.includedPackages()
                 if (CommandMagic.graphicPathsCommands.any { includedPackages.contains(it.dependency) }) {
                     // Add the graphics paths to the search paths
-                    searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(element.containingFile))
+                    searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(containingFile))
                 }
             }
             for (searchPath in searchPaths) {

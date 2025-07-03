@@ -11,7 +11,7 @@ abstract class NewLatexCompositeStubIndex<Psi : PsiElement>(clazz: Class<Psi>) :
     abstract override fun getKey(): StubIndexKey<String, Psi>
 
     override fun buildFileset(baseFile: PsiFile): GlobalSearchScope {
-        return LatexProjectStructure.buildFilesetScope(baseFile)
+        return LatexProjectStructure.buildFilesetScopeFor(baseFile)
     }
 }
 

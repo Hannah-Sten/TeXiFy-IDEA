@@ -130,7 +130,7 @@ object LatexNormalCommandCompletionProvider : LatexCommandCompletionProviderBase
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
-        val filesetScope = LatexProjectStructure.buildFilesetScope(parameters.originalFile, project)
+        val filesetScope = LatexProjectStructure.buildFilesetScopeFor(parameters.originalFile, project)
         addPredefinedCommands(
             result, parameters.originalFile, project,
             LatexRegularCommand.defaultCommands, LatexRegularCommand.lookupFromPackage
@@ -155,7 +155,7 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
-        val filesetScope = LatexProjectStructure.buildFilesetScope(parameters.originalFile, project)
+        val filesetScope = LatexProjectStructure.buildFilesetScopeFor(parameters.originalFile, project)
         addPredefinedCommands(
             result, parameters.originalFile, project,
             LatexMathCommand.defaultCommands, LatexMathCommand.lookupFromPackage
