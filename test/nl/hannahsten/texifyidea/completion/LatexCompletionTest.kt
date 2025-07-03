@@ -21,11 +21,10 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         // then
-        if(result == null){
+        if(result == null) {
             // single candidate autocompletion
             myFixture.checkResult("\\appendix<caret>")
-        }else{
-
+        } else {
             assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString.startsWith("\\appendix") })
         }
     }
@@ -44,7 +43,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
-        if(result == null){
+        if(result == null) {
             // single candidate autocompletion
             myFixture.checkResult("\\hi<caret>")
         } else {
@@ -124,7 +123,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
     //     assertTrue(result.any { it.lookupString == "testkey" })
     // }
 
-
     fun testLabelCompletion() {
         myFixture.configureByText(
             LatexFileType,
@@ -141,7 +139,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { it.lookupString == "label1" })
         assertTrue(result.any { it.lookupString == "label2" })
     }
-
 
     // TODO: We should implement this functionality in the future in more efficient ways.
 //    fun testCustomLabelAliasCompletion() {

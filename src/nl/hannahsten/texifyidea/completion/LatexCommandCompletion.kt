@@ -31,7 +31,6 @@ import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.repeat
 
-
 abstract class LatexCommandCompletionProviderBase : CompletionProvider<CompletionParameters>() {
 
     /**
@@ -168,5 +167,4 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
         // This lookup advertisement is added only for math commands
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
     }
-
 }

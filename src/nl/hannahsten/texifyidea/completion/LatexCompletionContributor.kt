@@ -13,8 +13,6 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.lang.LatexMode
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
@@ -289,7 +287,6 @@ open class LatexCompletionContributor : CompletionContributor() {
     private fun registerBibliographyReferenceCompletion() {
         extendLatexCommands(LatexBibliographyReferenceProvider, CommandMagic.bibliographyReference)
     }
-
 
     /**
      * Adds support for package names to the autocomplete.

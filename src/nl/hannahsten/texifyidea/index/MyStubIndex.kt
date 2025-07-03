@@ -127,13 +127,12 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         scope: GlobalSearchScope = project.contentSearchScope,
         action: (String) -> Unit
     ) {
-        processAllKeys(scope, idFilter = null){
+        processAllKeys(scope, idFilter = null) {
             ProgressManager.checkCanceled()
             action(it)
             true // Continue processing
         }
     }
-
 
     @RequiresReadLock
     fun processByName(name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope, idFilter: IdFilter?, processor: Processor<in Psi>): Boolean {

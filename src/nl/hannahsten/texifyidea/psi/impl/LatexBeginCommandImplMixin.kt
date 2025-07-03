@@ -18,6 +18,6 @@ abstract class LatexBeginCommandImplMixin(node: ASTNode) : LatexBeginCommand, AS
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
 
     override fun getReference(): PsiReference? {
-        return LatexEnvironmentDefinitionReference(firstParentOfType<LatexEnvironment>() ?: return null)
+        return LatexEnvironmentDefinitionReference(this, firstParentOfType<LatexEnvironment>() ?: return null)
     }
 }

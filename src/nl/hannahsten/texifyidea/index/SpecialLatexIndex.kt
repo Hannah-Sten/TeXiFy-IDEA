@@ -94,7 +94,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.ENV_DEFINITIONS, project)
     }
 
-    fun getAllEnvDef(scope : GlobalSearchScope): Collection<LatexCommands> {
+    fun getAllEnvDef(scope: GlobalSearchScope): Collection<LatexCommands> {
         return getByName(SpecialKeys.ENV_DEFINITIONS, scope)
     }
 

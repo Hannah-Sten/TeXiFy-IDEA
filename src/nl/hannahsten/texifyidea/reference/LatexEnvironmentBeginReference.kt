@@ -32,3 +32,20 @@ class LatexEnvironmentBeginReference(element: LatexEnvIdentifier) : PsiReference
         return myElement
     }
 }
+
+class LatexEnvironmentEndReference(element: LatexEnvIdentifier) : PsiReferenceBase<LatexEnvIdentifier>(element) {
+
+    init {
+        rangeInElement = ElementManipulators.getValueTextRange(element)
+    }
+
+    override fun resolve(): PsiElement? {
+        // Navigate from the current text in \begin, to the text in \end
+        return element.firstParentOfType(LatexEnvironment::class)?.endCommand?.envIdentifier
+    }
+
+    override fun handleElementRename(newElementName: String): PsiElement {
+        myElement.setName(newElementName)
+        return myElement
+    }
+}

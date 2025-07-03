@@ -74,7 +74,7 @@ object LatexProjectStructure {
     }
 
     fun getReferredFiles(project: Project, file: VirtualFile, root: VirtualFile): Set<VirtualFile> {
-         val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
+        val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
         val result = mutableSetOf<VirtualFile>()
         for (command in fileInputCommands) {
             val commandName = command.name ?: continue

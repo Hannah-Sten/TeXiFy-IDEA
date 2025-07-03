@@ -8,6 +8,7 @@ class LatexEnvironmentCompletionTest : BasePlatformTestCase() {
 
     fun testEnvironmentCompletion() {
         myFixture.configureByText(LatexFileType, """\begin{cente<caret>}""")
+        myFixture.complete(CompletionType.BASIC)
         myFixture.checkResult("""\begin{center}""")
     }
 }

@@ -17,19 +17,22 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 object LatexEnvironmentCompletionProvider : CompletionProvider<CompletionParameters>() {
 
-
     private val defaultLookupElements = DefaultEnvironment.entries.map(::createEnvironmentLookupElement)
 
     private fun packageName(dependend: Dependend): String {
         val name = dependend.dependency.name
         return if ("" == name) {
             ""
-        }
-        else " ($name)"
+        } else " ($name)"
     }
 
     private fun createEnvironmentLookupElement(env: Environment): LookupElementBuilder {
-        return LookupElementBuilder.create(env, env.environmentName)
+        // somehow we have to add the \begin{ to the lookup string,
+        // because the \begin{} command is recognized as a whole since we enable it to have references
+        // See: LatexBeginCommandImplMixin,
+        //
+        val lookupString = env.environmentName
+        return LookupElementBuilder.create(env, lookupString)
             .withPresentableText(env.environmentName)
             .bold()
             .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
@@ -50,10 +53,13 @@ object LatexEnvironmentCompletionProvider : CompletionProvider<CompletionParamet
             .toList()
         // Create autocomplete elements.
         result.addAllElements(lookups)
-
     }
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+    override fun addCompletions(
+        parameters: CompletionParameters,
+        context: ProcessingContext,
+        result: CompletionResultSet
+    ) {
         result.addAllElements(defaultLookupElements)
         addStubIndexCompletions(parameters, context, result)
         result.addLookupAdvertisement(getKindWords())

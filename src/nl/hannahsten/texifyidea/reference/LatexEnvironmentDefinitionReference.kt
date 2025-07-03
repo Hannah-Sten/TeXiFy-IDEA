@@ -7,20 +7,18 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.ResolveResult
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
-import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 
-class LatexEnvironmentDefinitionReference(val environment: LatexEnvironment) : PsiReferenceBase<LatexComposite>(environment.beginCommand), PsiPolyVariantReference {
+class LatexEnvironmentDefinitionReference(
+    element: PsiElement,
+    val environment: LatexEnvironment
+) : PsiReferenceBase<PsiElement>(element), PsiPolyVariantReference {
 
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
-    }
-
-    override fun getElement(): LatexComposite {
-        return environment.beginCommand
     }
 
     override fun resolve(): PsiElement? {
