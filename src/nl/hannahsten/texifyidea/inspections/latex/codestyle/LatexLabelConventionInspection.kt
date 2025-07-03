@@ -7,9 +7,12 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.refactoring.rename.RenameProcessor
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection.Util.extractLabelParameterText
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection.Util.extractLabelParameterTextFromOptionalParameters
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLabelConventionInspection.Util.shouldBeBraced
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
@@ -31,36 +34,11 @@ import java.util.*
 open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     object Util {
-        fun getLabeledCommand(label: PsiElement): PsiElement? {
-            return when (label) {
-                is LatexCommands -> {
-                    if (CommandMagic.labelAsParameter.contains(label.name)) {
-                        return label
-                    }
-
-                    if (label.inDirectEnvironmentMatching {
-                            val conventionSettings = TexifyConventionsSettingsManager.getInstance(label.project).getSettings()
-                            conventionSettings.getLabelConvention(
-                                it.getEnvironmentName(),
-                                LabelConventionType.ENVIRONMENT
-                            ) != null &&
-                                !EnvironmentMagic.labelAsParameter.contains(it.getEnvironmentName())
-                        }
-                    ) {
-                        label.parentOfType(LatexEnvironment::class)
-                    }
-                    else {
-                        val parent = label.parentOfType(LatexNoMathContent::class) ?: return null
-                        val sibling = parent.previousSiblingIgnoreWhitespace() ?: return null
-                        sibling.findFirstChildOfType(LatexCommands::class)
-                    }
-                }
-
-                is LatexEnvironment -> {
-                    label
-                }
-
-                else -> null
+        fun shouldBeBraced(labeledCommand: PsiElement): Boolean {
+            return when (labeledCommand) {
+                is LatexCommands -> CommandMagic.labelAsParameter.contains(labeledCommand.name)
+                is LatexEnvironment -> EnvironmentMagic.labelAsParameter.contains(labeledCommand.getEnvironmentName())
+                else -> false
             }
         }
 
@@ -89,6 +67,67 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 else -> null
             }
         }
+
+        /**
+         * Find the label of the environment. The method finds labels inside the environment content as well as labels
+         * specified via an optional parameter
+         * Similar to LabelExtraction#extractLabelElement, but we cannot use the index here
+         *
+         * @return the label name if any, null otherwise
+         */
+        fun LatexEnvironment.getLabelParameterTextEnv(): LatexParameterText? {
+            if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
+                // See if we can find a label option
+                return beginCommand.extractLabelParameterTextFromOptionalParameters()
+            }
+            // Not very clean. We don't really need the conventions here, but determine which environments *can* have a
+            // label. However, if we didn't use the conventions, we would have to duplicate the information in
+            // EnvironmentMagic
+            // Find the nested label command in the environment content
+
+            val content = this.environmentContent ?: return null
+            // environment_content - no_math_content - commands
+            val labelCommand = content.traverseCommands(2).firstOrNull {
+                it.name in CommandMagic.labels
+            } ?: return null
+            // In fact, it is a simple \label command
+            return labelCommand.findFirstChildTyped<LatexParameterText>()
+        }
+
+        internal fun LatexCommandWithParams.extractLabelParameterTextFromOptionalParameters(): LatexParameterText? {
+            forEachOptionalParameter { k, v ->
+                if (k.text == "label" && v != null) {
+                    return v.findFirstChildTyped<LatexParameterText>()
+                }
+            }
+            return null
+        }
+
+        fun LatexCommands.getLabelParameterTextCommand(): LatexParameterText? {
+            val name = this.name ?: return null
+            if (CommandMagic.labelAsParameter.contains(name)) {
+                return extractLabelParameterTextFromOptionalParameters()
+            }
+            if (name in CommandMagic.sectionNameToLevel) {
+                val labelElement = nextContextualSibling { it is LatexCommands && it.name in CommandMagic.labels }
+                return labelElement?.findFirstChildTyped<LatexParameterText>()
+            }
+            return null
+        }
+
+        /**
+         * Extracts the label name from the PsiElement given that the PsiElement represents a label.
+         * This function should be quick to execute, because it may be called for all labels in the project very often.
+         *
+         *
+         */
+        fun LatexComposite.extractLabelParameterText(): LatexParameterText? {
+            return when (this) {
+                is LatexCommands -> getLabelParameterTextCommand()
+                is LatexEnvironment -> getLabelParameterTextEnv()
+                else -> null
+            }
+        }
     }
 
     override val inspectionGroup = InsightGroup.LATEX
@@ -101,53 +140,57 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = mutableListOf<ProblemDescriptor>()
-        // TODO implement in better ways
         checkLabels(file, manager, isOntheFly, descriptors)
         return descriptors
+    }
+
+    private fun filterLabelParameterTextOrNull(e: PsiElement): LatexParameterText? {
+        return null
     }
 
     private fun checkLabels(
         file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     ) {
-        file.traverseCommands()
-            .filter {
-                it.name in CommandMagic.labels
-            }.forEach { label ->
-                val labeledCommand = Util.getLabeledCommand(label) ?: return@forEach
-                val expectedPrefix = Util.getLabelPrefix(labeledCommand)
-                val labelName = label.extractLabelName()
-                if (!expectedPrefix.isNullOrBlank() && !labelName.startsWith("$expectedPrefix:")) {
-                    descriptors.add(
-                        manager.createProblemDescriptor(
-                            label,
-                            "Unconventional label prefix",
-                            LabelPreFix(),
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly
-                        )
+        file.traverseTyped<LatexComposite>().forEach { element ->
+            val labelParameterText = element.extractLabelParameterText() ?: return@forEach
+            val labelName = labelParameterText.text
+            val expectedPrefix = Util.getLabelPrefix(element)
+            if (!expectedPrefix.isNullOrBlank() && !labelName.startsWith("$expectedPrefix:")) {
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        labelParameterText,
+                        "Unconventional label prefix",
+                        LabelPreFix(expectedPrefix, shouldBeBraced(element)),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly
                     )
-                }
+                )
             }
+        }
     }
 
     /**
      * @author Hannah Schellekens
      */
-    private class LabelPreFix : LocalQuickFix {
-        // TODO: Provide better implementation
+    private class LabelPreFix(
+        val expectedPrefix: String,
+        val shouldBeBraced: Boolean
+    ) : LocalQuickFix {
+        override fun startInWriteAction(): Boolean {
+            // make the rename processor work
+            return false
+        }
 
         override fun getFamilyName() = "Fix label name"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val command = descriptor.psiElement
-            val baseFile = command.containingFile
-            val oldLabel = command.extractLabelName()
-            val latexPsiHelper = LatexPsiHelper(project)
-            val labeledCommand = Util.getLabeledCommand(command) ?: return
+            var parameterText = descriptor.psiElement
 
+            val baseFile = parameterText.containingFile
+            val oldLabel = parameterText.extractLabelName()
             // Determine label name.
-            val prefix: String = Util.getLabelPrefix(labeledCommand) ?: return
+            val prefix: String = expectedPrefix
             val labelName = oldLabel.formatAsLabel()
             val createdLabelBase = if (labelName.contains(":")) {
                 PatternMagic.labelPrefix.matcher(labelName).replaceAll("$prefix:")
@@ -155,69 +198,19 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             else {
                 "$prefix:$labelName"
             }
+            var newLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelStringsInFileSet())
 
-            val createdLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelStringsInFileSet())
-
-            // Replace in command label definition
-            if (command is LatexCommands) {
-                if (CommandMagic.labelAsParameter.contains(command.name)) {
-                    latexPsiHelper.setOptionalParameter(command, "label", "{$createdLabel}")
-                }
-                else {
-                    val labelInfo = CommandManager.labelAliasesInfo.getOrDefault(command.name, null) ?: return
-                    if (!labelInfo.labelsPreviousCommand) return
-                    val position = labelInfo.positions.firstOrNull() ?: return
-
-                    val labelParameter = command.requiredParameters().getOrNull(position) ?: return
-                    labelParameter.replace(latexPsiHelper.createRequiredParameter(createdLabel))
-                }
-            }
-
-            // Replace in environment
-            if (command is LatexEnvironment) {
-                latexPsiHelper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
-            }
-
-            // Replace in document.
-            val filesAndReferences = findReferences(baseFile, oldLabel)
-            for (pair in filesAndReferences) {
-                val references = pair.second
-                for (reference in references) {
-                    reference.replace(latexPsiHelper.createRequiredParameter(createdLabel))
-                }
-            }
-        }
-
-        /**
-         * Find all references to label `labelName`.
-         */
-        private fun findReferences(
-            file: PsiFile,
-            labelName: String
-        ): Set<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
-            // TODO: Better implementation
-//            val result = mutableSetOf<Pair<PsiFile, MutableList<LatexRequiredParam>>>()
-//
-//            val commandsAndFiles = file.commandsAndFilesInFileSet()
-//
-//            // Loop over every file
-//            for (pair in commandsAndFiles) {
-//                // Only look at commands which refer to something
-//                val commands =
-//                    pair.second.filter { CommandMagic.labelReference.contains(it.name) }.reversed()
-//                val requiredParams = mutableListOf<LatexRequiredParam>()
-//
-//                // Find all the parameters with the given labelName
-//                for (ref in commands) {
-//                    val parameters = ref.requiredParameters()
-//                        .filter { p -> p.findFirstChildOfType(LatexParameterText::class)?.text == labelName }
-//                    requiredParams.addAll(parameters)
+            // let us add a braced label if it is not already braced
+            if (shouldBeBraced) {
+//                parameterText.firstParentOfType(LatexCommandWithParams::class)?.let { command ->
+//                    LatexPsiHelper(project).setOptionalParameter(command, "label", "{$newLabel}")
+//                    parameterText = command.extractLabelParameterTextFromOptionalParameters()
 //                }
-//
-//                result.add(Pair(pair.first, requiredParams))
-//            }
-
-            return emptySet()
+                newLabel = "{$newLabel}"
+            }
+            // use the renaming processor to rename the label, which will also update all references
+            val processor = RenameProcessor(project, parameterText, newLabel, false, false)
+            processor.run()
         }
 
         /**

@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeOf
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import nl.hannahsten.texifyidea.util.parser.toStringMap
@@ -41,6 +40,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
                     ?.findFirstChildOfType(LatexParameterText::class)
             }
         }
+
         is LatexEnvironment -> {
             if (EnvironmentMagic.labelAsParameter.contains(getEnvironmentName())) {
                 getLabelParameterText(beginCommand)
@@ -56,6 +56,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
                 }
             }
         }
+
         else -> null
     }
 }
@@ -101,14 +102,4 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
         }
     }
     return text
-}
-
-object LabelExtraction {
-
-    /**
-     * Extracts the label names from a [LatexRequiredParam] element.
-     */
-    fun extractLabelNames(parameter: LatexRequiredParam): List<String> {
-        return parameter.collectSubtreeOf { if(it is LatexParameterText) it.text else null }
-    }
 }

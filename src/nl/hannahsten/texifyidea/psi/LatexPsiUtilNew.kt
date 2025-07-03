@@ -211,3 +211,13 @@ inline fun PsiElement.forEachCommand(crossinline action: (LatexCommands) -> Unit
 fun PsiElement.traverseCommands(depth: Int = Int.MAX_VALUE): Sequence<LatexCommands> {
     return traverseTyped(depth)
 }
+
+inline fun LatexCommandWithParams.forEachOptionalParameter(
+    action: (LatexOptionalKeyValKey, LatexKeyValValue?) -> Unit
+) {
+    parameterList.forEach {
+        it.optionalParam?.optionalKeyValPairList?.forEach { kvPair ->
+            action(kvPair.optionalKeyValKey, kvPair.keyValValue)
+        }
+    }
+}

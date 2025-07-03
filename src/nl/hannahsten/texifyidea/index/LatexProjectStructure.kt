@@ -123,4 +123,9 @@ object LatexProjectStructure {
         val allFiles = findFileset(project, virtualFile).flatMapTo(mutableSetOf(virtualFile)) { it.files }
         return GlobalSearchScope.filesWithoutLibrariesScope(project, allFiles)
     }
+
+    fun buildFilesetScope(file: PsiFile): GlobalSearchScope {
+        val project = file.project
+        return buildFilesetScope(project, file)
+    }
 }

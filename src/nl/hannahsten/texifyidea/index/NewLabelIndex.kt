@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.project.Project
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubIndexKey
@@ -51,6 +52,10 @@ class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<Latex
 
     fun getAllLabels(project: Project): Set<String> {
         return getAllKeys(project)
+    }
+
+    fun getAllLabels(filesetScope: GlobalSearchScope): Set<String> {
+        return getAllKeys(filesetScope)
     }
 }
 

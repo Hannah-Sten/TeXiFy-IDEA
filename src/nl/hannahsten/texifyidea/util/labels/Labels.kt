@@ -3,13 +3,13 @@ package nl.hannahsten.texifyidea.util.labels
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.findExternalDocumentCommand
 import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
@@ -17,7 +17,10 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
+fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> {
+    val fileset = LatexProjectStructure.buildFilesetScope(this)
+    return NewLabelsIndex.getAllLabels(fileset) + findBibtexLabelsInFileSetAsSequence()
+}
 
 /**
  * Finds all the defined latex labels in the fileset of the file.
@@ -26,8 +29,10 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexL
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
 fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
-    val externalDocumentCommand = this.findExternalDocumentCommand()
-    return findLatexLabelingElementsInFileSet().map { it.extractLabelName(externalDocumentCommand) }
+    val fileset = LatexProjectStructure.buildFilesetScope(this)
+    return NewLabelsIndex.getAllLabels(fileset).asSequence()
+//    val externalDocumentCommand = this.findExternalDocumentCommand()
+//    return findLatexLabelingElementsInFileSet().map { it.extractLabelName(externalDocumentCommand) }
 }
 
 /**
@@ -41,12 +46,6 @@ fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
         NewLabelsIndex.getByName(it, project)
     }
 }
-// = sequenceOf(
-//    findLabelingCommandsInFileSet(),
-//    LatexParameterLabeledEnvironmentsIndex.Util.getItemsInFileSet(this).asSequence(),
-//    LatexParameterLabeledCommandsIndex.Util.getItemsInFileSet(this).asSequence(),
-//    findLabeledEnvironments(this),
-// ).flatten()
 
 /**
  * Make a sequence of all commands in the file set that specify a label. This does not include commands which define a label via an
