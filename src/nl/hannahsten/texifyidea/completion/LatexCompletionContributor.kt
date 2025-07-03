@@ -157,7 +157,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .withPattern("xcolor color completion pattern") { psiElement, _ ->
                 val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
                 val name = command.commandToken.text
-                name.substring(1) in ColorMagic.takeColorCommands
+                name in ColorMagic.takeColorCommands
             },
         LatexXColorProvider
     )

@@ -10,15 +10,15 @@ object ColorMagic {
      */
     val takeColorCommands = LatexRegularCommand.values()
         .filter { cmd -> cmd.arguments.map { it.name }.contains("color") }
-        .map { it.command }.toSet()
+        .map { it.commandWithSlash }.toSet()
 
     /**
      * All commands that define a new color.
      */
     val colorDefinitions = LatexRegularCommand.values()
         .filter { cmd -> cmd.dependency == LatexPackage.XCOLOR }
-        .filter { cmd -> cmd.arguments.map { it.name }.contains("name") }
-        .map { it.command }.toSet()
+        .filter { cmd -> cmd.arguments.any { it.name == "name" }}
+        .map { it.commandWithSlash }.toSet()
 
     val colorCommands = takeColorCommands + colorDefinitions
 

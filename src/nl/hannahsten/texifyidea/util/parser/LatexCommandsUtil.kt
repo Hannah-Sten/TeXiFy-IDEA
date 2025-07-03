@@ -29,7 +29,7 @@ import kotlin.math.min
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
 
-fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in ColorMagic.colorCommands
+fun LatexCommands?.usesColor() = this != null && this.name in ColorMagic.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.

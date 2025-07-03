@@ -46,7 +46,7 @@ fun pathOrNull(pathText: String): Path? {
 }
 
 object LatexProjectStructure {
-
+    // TODO: cache the results of these methods, so that we do not have to recompute them every time, which is comparatively expensive
     /**
      *
      */

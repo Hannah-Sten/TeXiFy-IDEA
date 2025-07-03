@@ -67,7 +67,7 @@ class LatexElementColorProvider : ElementColorProvider {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
             if (command.usesColor()) {
-                val colorArgument = when (command?.name?.substring(1)) {
+                val colorArgument = when (command?.name) {
                     // Show the defined color.
                     in ColorMagic.colorDefinitions -> {
                         command?.getRequiredArgumentValueByName("name")
