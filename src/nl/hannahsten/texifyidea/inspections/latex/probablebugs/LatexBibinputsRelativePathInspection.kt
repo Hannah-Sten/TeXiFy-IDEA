@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.
@@ -34,7 +33,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
     override val inspectionId = "BibinputsRelativePath"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val commandsWithRelativePath = file.commandsInFile(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd).filter { it.requiredParameter(0)?.startsWith("../") == true }
+        val commandsWithRelativePath = file.commandsInFile(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd).filter { it.requiredParameterText(0)?.startsWith("../") == true }
         if (commandsWithRelativePath.isEmpty()) return emptyList()
 
         // If not using BIBINPUTS, all is fine and it will work.

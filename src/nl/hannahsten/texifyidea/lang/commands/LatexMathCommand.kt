@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import arrow.core.NonEmptySet
-import arrow.core.getOrNone
 import arrow.core.nonEmptySetOf
+import nl.hannahsten.texifyidea.lang.LatexPackage
 
 /**
  * @author Hannah Schellekens, Sten Wessel, Florian Kraft
@@ -22,19 +22,26 @@ object LatexMathCommand {
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
         GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK
 
-    private val lookup = HashMap<String, NonEmptySet<LatexCommand>>()
-    private val lookupDisplay = HashMap<String, NonEmptySet<LatexCommand>>()
-    private val lookupWithSlash: Map<String, NonEmptySet<LatexCommand>>
+    val defaultCommands: Set<LatexCommand> = ALL.filter { it.dependency == LatexPackage.DEFAULT }.toSet()
 
-    init {
+    private val lookup: Map<String, NonEmptySet<LatexCommand>> = buildMap {
         ALL.forEach { cmd ->
-            lookup[cmd.command] = lookup.getOrNone(cmd.command).fold({ nonEmptySetOf(cmd) }, { it + nonEmptySetOf(cmd) })
-            if (cmd.display != null) {
-                lookupDisplay[cmd.display!!] = lookupDisplay.getOrNone(cmd.display!!).fold({ nonEmptySetOf(cmd) }, { it + nonEmptySetOf(cmd) })
+            merge(cmd.command, nonEmptySetOf(cmd), NonEmptySet<LatexCommand>::plus)
+        }
+    }
+    private val lookupDisplay: Map<String, NonEmptySet<LatexCommand>> = buildMap {
+        ALL.forEach { cmd ->
+            cmd.display?.let { display ->
+                merge(display, nonEmptySetOf(cmd), NonEmptySet<LatexCommand>::plus)
             }
         }
-        lookupWithSlash = lookup.mapKeys { (key, _) -> "\\$key" }
     }
+
+    private val lookupWithSlash: Map<String, NonEmptySet<LatexCommand>> = lookup.mapKeys { "\\${it.key}" }
+
+    val lookupFromPackage: Map<String, Set<LatexCommand>> = ALL
+        .groupBy { it.dependency.name }
+        .mapValues { it.value.toSet() }
 
     @JvmStatic
     fun values() = ALL

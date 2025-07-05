@@ -30,7 +30,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
         val suffix = if (params != -1) "{x$params}" else ""
 
         // Get command name.
-        val required = newCommand.getRequiredParameters()
+        val required = newCommand.requiredParametersText()
         val command = if (required.isNotEmpty()) {
             required.first()
         }

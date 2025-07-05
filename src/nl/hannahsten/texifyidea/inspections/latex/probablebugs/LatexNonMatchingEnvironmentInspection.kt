@@ -32,12 +32,12 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.traverseAllTyped<LatexBeginCommand> { begin ->
-            val end = begin.endCommand() ?: return@traverseAllTyped
+        file.forEachChildTyped<LatexBeginCommand> { begin ->
+            val end = begin.endCommand() ?: return@forEachChildTyped
             val beginEnvironment = begin.environmentName() ?: ""
             val endEnvironment = end.environmentName() ?: ""
             if (beginEnvironment == endEnvironment) {
-                return@traverseAllTyped
+                return@forEachChildTyped
             }
 
             // Add descriptor to begin.

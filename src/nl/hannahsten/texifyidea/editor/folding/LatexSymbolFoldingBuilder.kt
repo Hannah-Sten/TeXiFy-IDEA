@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
-import nl.hannahsten.texifyidea.util.parser.traverseAllTyped
+import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.shiftRight
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -31,7 +31,7 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
         val file = root.containingFile
         // Fold all hyphens in the document
         val descriptors = mutableListOf<FoldingDescriptor>()
-        file.traverseAllTyped<LatexNormalText> {
+        file.forEachChildTyped<LatexNormalText> {
             for (child in it.node.getChildren(tokenFilter)) {
                 dashRegex.findAll(child.text).forEach { matchResult ->
                     val range = matchResult.range.shiftRight(child.startOffset).toTextRange()

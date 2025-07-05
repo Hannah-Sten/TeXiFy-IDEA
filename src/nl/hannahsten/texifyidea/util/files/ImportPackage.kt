@@ -4,15 +4,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import kotlin.math.min
 
 /**
@@ -42,17 +41,16 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
 }
 
 fun isImportPackageUsed(project: Project): Boolean {
-    val allRelativeImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
+    val allRelativeImportCommands = NewCommandsIndex.getByNames(
         CommandMagic.relativeImportCommands,
         project,
-        GlobalSearchScope.projectScope(project)
     )
-    val allAbsoluteImportCommands = LatexIncludesIndex.Util.getCommandsByNames(
+    if (allRelativeImportCommands.isNotEmpty()) return true
+    val allAbsoluteImportCommands = NewCommandsIndex.getByNames(
         CommandMagic.absoluteImportCommands,
         project,
-        GlobalSearchScope.projectScope(project)
     )
-    return allAbsoluteImportCommands.isNotEmpty() || allRelativeImportCommands.isNotEmpty()
+    return allAbsoluteImportCommands.isNotEmpty()
 }
 
 /**
@@ -63,7 +61,7 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
 
     val relativeSearchPaths = mutableListOf<String>()
     if (command.name in CommandMagic.relativeImportCommands) {
-        relativeSearchPaths.add(command.getRequiredParameters().firstOrNull() ?: "")
+        relativeSearchPaths.add(command.requiredParametersText().firstOrNull() ?: "")
     }
     else {
         relativeSearchPaths.add("")
@@ -77,7 +75,7 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
  */
 fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
     if (command.name in CommandMagic.absoluteImportCommands) {
-        val absolutePath = command.getRequiredParameters().firstOrNull()
+        val absolutePath = command.requiredParametersText().firstOrNull()
         if (absolutePath != null) {
             // No need to search further, because using an absolute path overrides the rest
             LocalFileSystem.getInstance().findFileByPath(absolutePath)?.let { return it }
@@ -89,11 +87,10 @@ fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
 
 fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf("")): List<VirtualFile> {
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableSet()
-    val allIncludeCommands = LatexIncludesIndex.Util.getItems(command.project)
+    val allIncludeCommands = NewSpecialCommandsIndex.getAllFileInputs(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
-    var includingCommands = allIncludeCommands.filter {
-            includeCommand ->
-        includeCommand.getRequiredParameters().any { it.contains(command.containingFile.name.removeFileExtension()) }
+    var includingCommands = allIncludeCommands.filter { includeCommand ->
+        includeCommand.requiredParametersText().any { it.contains(command.containingFile.name.removeFileExtension()) }
     }.filter { includeCommand ->
         // Only consider commands that can include LaTeX files
         LatexCommand.lookup(includeCommand.name)?.firstOrNull()?.getArgumentsOf(RequiredFileArgument::class.java)?.any { it.supportedExtensions.contains("tex") } == true
@@ -103,7 +100,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
     val handledFiles = mutableListOf<PsiFile>()
 
     // Assume the containingFile might be a root file - if there are no includingCommands we will not search further anyway
-    val defaultParentDir = command.containingFile.containingDirectory?.virtualFile?.findFileByRelativePath(command.requiredParameter(0) ?: "")
+    val defaultParentDir = command.containingFile.containingDirectory?.virtualFile?.findFileByRelativePath(command.requiredParameterText(0) ?: "")
 
     // Avoid endless loop (in case of a file inclusion loop), limited to some reasonable maximum nesting level
     val maxDepth = min(allIncludeCommands.size, 20)
@@ -134,7 +131,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
             // Each of the search paths gets prepended by one of the new relative paths found
             for (oldPath in relativeSearchPaths) {
                 if (includingCommand.name in CommandMagic.relativeImportCommands) {
-                    newSearchPaths.add(includingCommand.getRequiredParameters().firstOrNull() + oldPath)
+                    newSearchPaths.add(includingCommand.requiredParametersText().firstOrNull() + oldPath)
                 }
             }
 
@@ -142,7 +139,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
             val file = includingCommand.containingFile
             if (file !in handledFiles) {
                 handledFiles.add(file)
-                val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.getRequiredParameters().any { it.contains(file.name) } }
+                val commandsIncludingThisFile = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParametersText().any { it.contains(file.name) } }
                 if (commandsIncludingThisFile.isEmpty()) {
                     // Cool, we supposedly have a root file, now try to find the directory containing the file being included by command
                     for (relativePath in newSearchPaths) {

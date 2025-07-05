@@ -104,7 +104,7 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
      */
     private fun findDependency(verbatim: PsiElement): LatexPackage? =
         (verbatim as? LatexCommands)?.let {
-            LatexCommand.lookup(it)?.firstOrNull()?.dependency
+            LatexCommand.lookupInAll(it)?.firstOrNull()?.dependency
         } ?: verbatim.getName()?.let {
             Environment.lookup(it)?.dependency
         }

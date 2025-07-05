@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.util.parser
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.paths.WebReference
-import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
@@ -71,7 +69,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
     // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
     // We reference it because we include the preamble of that file, so it is in the file set (partially)
-    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in getRequiredParameters() && getOptionalParameterMap().isNotEmpty()) {
+    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in requiredParametersText() && getOptionalParameterMap().isNotEmpty()) {
         val range = this.findFirstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
             inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), supportsAnyExtension = true))
@@ -108,14 +106,6 @@ fun extractLabelReferences(element: LatexCommands, requiredParameters: List<Late
                 )
             }
         }
-}
-
-fun getRequiredParameters(element: LatexCommands): List<LatexRequiredParam> {
-    return ApplicationManager.getApplication().runReadAction(
-        Computable {
-            element.requiredParameters()
-        }
-    )
 }
 
 fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
@@ -163,16 +153,6 @@ fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): Lin
             parameterMap[pair.optionalKeyValKey] = pair.keyValValue
         }
     return parameterMap
-}
-
-fun getRequiredParameters(parameters: List<LatexParameter>): List<String> {
-    return parameters.mapNotNull {
-        val param = it.requiredParam ?: return@mapNotNull null
-        val text = param.text
-        text.trim { c ->
-            c == '{' || c == '}' || c.isWhitespace()
-        }
-    }
 }
 
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =

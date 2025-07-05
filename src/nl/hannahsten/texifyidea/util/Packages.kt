@@ -7,13 +7,14 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.PackageUtils.insertUsepackage
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
@@ -112,7 +113,7 @@ object PackageUtils {
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
                 // Do not insert below the subfiles package, it should stay last
-                if (cmd.getRequiredParameters().contains("subfiles")) {
+                if (cmd.requiredParametersText().contains("subfiles")) {
                     break
                 }
                 else {
@@ -183,7 +184,7 @@ object PackageUtils {
             return true
         }
 
-        if (file.includedPackages(useCache = true).contains(pack)) {
+        if (file.includedPackages().contains(pack)) {
             return true
         }
 
@@ -191,7 +192,7 @@ object PackageUtils {
         if (PackageMagic.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages(useCache = true).toSet().intersect(conflicts).isNotEmpty()) {
+                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts).isNotEmpty()) {
                     return false
                 }
             }
@@ -273,7 +274,7 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
             val packages = setOf(
-                cmd.getRequiredParameters(),
+                cmd.requiredParametersText(),
                 cmd.getOptionalParameterMap().toStringMap().keys.toList()
             )
 
@@ -304,7 +305,7 @@ object PackageUtils {
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
+fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
 
 /**
  * Find all included LaTeX packages in the file set of this file.
@@ -315,16 +316,17 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
  * @param onlyDirectInclusions If true, only packages included directly are returned.
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
-fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false, useCache: Boolean = false): List<LatexPackage> {
-    val commands = this.commandsInFileSet(useCache)
-    return includedPackages(commands, project, onlyDirectInclusions)
+fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
+    val scope = LatexProjectStructure.buildFilesetScopeFor(this)
+    val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
+    return includedPackages(includeCommands, project, onlyDirectInclusions)
 }
 
 /**
  * See [includedPackages].
  */
-fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
+fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
     val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
-        .map { LatexPackage(it) }
-    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
+        .map { LatexPackage(it) }.toSet()
+    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toSet()
 }

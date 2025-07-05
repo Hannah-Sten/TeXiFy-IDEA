@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.environmentName
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
@@ -86,8 +87,8 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.commandsInFile()
-            .filter { cmd -> Util.SECTION_NAMES.contains(cmd.name) }
+        val commands = file.traverseCommands()
+            .filter { cmd -> Util.SECTION_NAMES.contains(cmd.name) }.toList()
 
         for (i in commands.indices) {
             if (!isTooLong(commands[i], Util.findNextSection(commands[i]))) {

@@ -29,15 +29,7 @@ import kotlin.math.min
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
 
-/**
- * Checks whether the given LaTeX commands is a color definition or not.
- *
- * @return `true` if the command defines a color, `false` when the command command
- *          is `null` or otherwise.
- */
-fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in ColorMagic.colorDefinitions.map { it.command }
-
-fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in ColorMagic.colorCommands
+fun LatexCommands?.usesColor() = this != null && this.name in ColorMagic.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.
@@ -123,7 +115,7 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
                 .indexOfFirst { arg -> arg.name == argument }
         }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else getRequiredParameters().getOrNull(min(requiredArgIndices.first(), getRequiredParameters().size - 1))
+    else requiredParametersText().getOrNull(min(requiredArgIndices.first(), requiredParametersText().size - 1))
 }
 
 /**
@@ -154,23 +146,6 @@ fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
 fun LatexCommands.isKnown(): Boolean {
     val name = name?.substring(1) ?: ""
     return LatexRegularCommand[name] != null || LatexMathCommand[name] != null
-}
-
-/**
- * Get the text contents of the `index+1`th required parameter of the command.
- *
- * @throws IllegalArgumentException When the index is negative.
- */
-@Throws(IllegalArgumentException::class)
-fun LatexCommands.requiredParameter(index: Int): String? {
-    require(index >= 0) { "Index must not be negative" }
-
-    val parameters = getRequiredParameters()
-    if (parameters.isEmpty() || index >= parameters.size) {
-        return null
-    }
-
-    return parameters[index]
 }
 
 /**
@@ -235,10 +210,3 @@ fun LatexCommands.hasLabel(): Boolean {
     val labelMaybe = this.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }
-
-/**
- * Get all [LatexCommands] that are children (direct or indirect) of the given element.
- *
- * Note: This method is slow, as it collects all commands in the subtree of the element.
- */
-fun PsiElement.allCommands() = collectSubtreeTyped<LatexCommands>()

@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.util.defaultIncludeCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 import java.nio.file.Path
@@ -211,7 +211,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //    }
 
     fun updateIncludeCommandsBlocking(project: Project) {
-        for (command in defaultIncludeCommands) {
+        for (command in CommandMagic.defaultIncludeCommands) {
             CommandManager.updateAliases(setOf(command), project)
         }
     }

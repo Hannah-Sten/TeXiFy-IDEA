@@ -3,9 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -19,29 +17,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
-import java.util.stream.Collectors
-
-/**
- * Finds all defined commands within the project.
- *
- * @return The found commands.
- */
-fun Project.findCommandDefinitions(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.Util.getItems(this).filter {
-        it.isCommandDefinition()
-    }
-}
-
-/**
- * Get all commands that include other files, including backslashes. Use [updateAndGetIncludeCommands] to include custom commands, if possible.
- */
-val defaultIncludeCommands: Set<String>
-    by lazy {
-        LatexRegularCommand.values()
-            .filter { command -> command.arguments.any { it is RequiredFileArgument } }
-            .map { "\\" + it.command }
-            .toSet()
-    }
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /**
  * Inserts a custom c custom command definition.
@@ -59,7 +35,7 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
         else if (cmd.name == LatexGenericRegularCommand.USEPACKAGE.cmd) {
             last = cmd
         }
-        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameter(0) == DefaultEnvironment.DOCUMENT.environmentName) {
+        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameterText(0) == DefaultEnvironment.DOCUMENT.environmentName) {
             last = cmd
             break
         }
@@ -83,19 +59,16 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 }
 
 /**
- * Expand custom commands in a given text once, using its definition in the [LatexCommandsIndex].
+ * Expand custom commands in a given text once, using its definition in the index.
  */
 fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): String? {
+    if(file == null) return null
     var text = inputText
     // Get all the commands that are used in the input text.
     val commandsInText = LatexPsiHelper(project).createFromText(inputText).traverseTyped<LatexCommands>()
-
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
-        val commandExpansion = LatexCommandsIndex.Util.getCommandsByNames(
-            file ?: return null,
-            *CommandMagic.commandDefinitionsAndRedefinitions.toTypedArray()
-        )
+        val commandExpansion = NewCommandsIndex.getByNames(CommandMagic.commandDefinitionsAndRedefinitions, file)
             .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
             ?.getRequiredArgumentValueByName("def")
         text = text.replace(command.text, commandExpansion ?: command.text)
@@ -118,13 +91,3 @@ fun LatexCommands.defaultCommand(): LatexCommand? {
 
 fun LatexCommands.isFigureLabel(): Boolean =
     name in project.getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)
-
-fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Collection<LatexCommands> {
-    val project = originalFile.project
-    val searchFiles = files.stream()
-        .map { obj: PsiFile -> obj.virtualFile }
-        .collect(Collectors.toSet())
-    searchFiles.add(originalFile.virtualFile)
-    val scope = GlobalSearchScope.filesScope(project, searchFiles)
-    return LatexCommandsIndex.Util.getItems(project, scope)
-}
