@@ -189,7 +189,8 @@ class InputFileReference(
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
                 for (rootDirectory in rootDirectories) {
                     targetFile = rootDirectory.findFile(path + processedKey, extensions, supportsAnyExtension)
-                    if (targetFile != null) break
+                    if (targetFile != null)
+                        break
                 }
                 if (targetFile != null) break
             }
@@ -198,8 +199,8 @@ class InputFileReference(
         // Look for packages/files elsewhere using the kpsewhich command.
         if (targetFile == null && lookForInstalledPackages && !element.project.isTestProject()) {
             targetFile = element.getFileNameWithExtensions(processedKey)
-                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
-                .firstNotNullOfOrNull { findFileByPath(it) }
+                .mapNotNull { LatexPackageLocation.getPackageLocation(it, element.project) }
+                .firstNotNullOfOrNull { LocalFileSystem.getInstance().findFileByNioFile(it) }
         }
 
         if (targetFile == null && checkImportPath) targetFile = searchFileByImportPaths(element)?.virtualFile

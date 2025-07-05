@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index.file
 
 import arrow.atomic.AtomicBoolean
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -115,9 +116,9 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
     }
 
     private fun findExternalDirectFileInclusions(project: Project): Set<VirtualFile> {
+        if (DumbService.isDumb(project)) return emptySet()
         // TODO: Use the index to find external direct file inclusions, cache and return them
         return emptySet()
-//        if (DumbService.isDumb(project)) return
         // Don't wait for the result, as somehow this may block the UI? #4055 This function seems to be called quite often so let's hope it's okay to miss it the first time
 //        val includeCommands = NewCommandsIndex.getByNames(CommandMagic.texAndBibliographyIncludeCommands, project)
 //        includeCommands.asSequence().mapNotNull {

@@ -1,9 +1,11 @@
 package nl.hannahsten.texifyidea
 
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 import nl.hannahsten.texifyidea.util.files.psiFile
 
@@ -17,5 +19,7 @@ fun CodeInsightTestFixture.configureByFilesWithMockCache(vararg filenames: Strin
     every { mockService.markCacheOutOfDate() } answers { callOriginal() }
     mockkObject(ReferencedFileSetService.Companion)
     every { ReferencedFileSetService.getInstance() } returns mockService
+    mockkObject(LatexProjectStructure)
+    every { LatexProjectStructure.buildFilesetScopeFor(any(), any()) } returns GlobalSearchScope.filesScope(project, files.map { it.virtualFile })
     openFileInEditor(files.first().virtualFile)
 }

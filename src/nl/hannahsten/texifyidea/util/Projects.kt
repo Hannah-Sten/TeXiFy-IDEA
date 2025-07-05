@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
@@ -18,6 +19,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
@@ -94,6 +96,11 @@ fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
 }
 
+fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
+    if (isDisposed) return emptyList()
+    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<BibtexRunConfiguration>()
+}
+
 /**
  * Get the run configuration that is currently selected.
  */
@@ -145,7 +152,7 @@ fun Project.isLatexProject(): Boolean {
 /**
  * True if we are probably in a unit test.
  */
-fun Project.isTestProject() = name.contains("_temp_") || basePath?.contains("unitTest") == true
+fun Project.isTestProject() = ApplicationManager.getApplication().isUnitTestMode
 
 /**
  * Finds all section marker commands (as defined in [CommandMagic.sectionNameToLevel]) in the project.

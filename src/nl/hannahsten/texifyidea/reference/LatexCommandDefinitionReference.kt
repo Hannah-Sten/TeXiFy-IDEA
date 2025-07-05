@@ -26,7 +26,8 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
             return ResolveResult.EMPTY_ARRAY
         }
         val name = element.name ?: return ResolveResult.EMPTY_ARRAY
-        return NewDefinitionIndex.getByName(name, element.project).mapNotNull { newcommand ->
+        val definitions = NewDefinitionIndex.getByNameInFileSet(name, element.containingFile)
+        return definitions.mapNotNull { newcommand ->
             // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
             // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
             val definedCommand = newcommand.definitionCommand()
