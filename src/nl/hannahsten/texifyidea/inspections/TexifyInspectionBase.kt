@@ -134,7 +134,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         if (file.isSuppressed()) {
             return null
         }
-        // TODO
+        // TODO: improvement can be done for inspections
         return inspectFile(file, manager, isOnTheFly)
             .filter { checkContext(it.psiElement) }
             .toTypedArray()

@@ -12,12 +12,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.completion.LatexCommandsAndEnvironmentsCompletionProvider.Companion.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
@@ -89,6 +89,11 @@ abstract class LatexCommandCompletionProviderBase : CompletionProvider<Completio
     }
 
     abstract fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement>
+
+    protected fun packageName(dependend: Dependend): String {
+        val name = dependend.dependency.name
+        return if (name.isEmpty()) "" else " ($name)"
+    }
 
     protected fun appendCommandLookupElements(cmd: LatexCommand, result: MutableCollection<LookupElementBuilder>) {
         cmd.arguments.optionalPowerSet().forEachIndexed { index, args ->

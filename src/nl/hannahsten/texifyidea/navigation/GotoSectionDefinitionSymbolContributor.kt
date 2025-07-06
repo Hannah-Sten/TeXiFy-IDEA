@@ -17,7 +17,7 @@ class GotoSectionDefinitionSymbolContributor : TexifyGotoSymbolBase<LatexCommand
 //
 //    override fun LatexCommands.createNavigationItem() = NavigationItemUtil.createSectionMarkerNavigationItem(this)
     override fun processElements(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
-        // TODO
+//        NewSpecialCommandsIndex.
     }
 
     override fun extractName(item: LatexCommands): String? {

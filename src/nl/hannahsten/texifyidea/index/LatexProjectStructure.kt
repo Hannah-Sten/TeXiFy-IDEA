@@ -12,9 +12,6 @@ import com.intellij.psi.util.CachedValuesManager
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
-import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
-import nl.hannahsten.texifyidea.util.files.findRootFiles
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.getTexinputsPaths
@@ -27,7 +24,6 @@ import kotlin.io.path.extension
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.pathString
 
-// TODO: Fileset service with cache, finalize the representation of filesets
 // May be modified in the future
 /**
  * A fileset is a set of files that are related to each other, e.g. a main file and its included files (including itself).
@@ -59,30 +55,6 @@ fun pathOrNull(pathText: String?): Path? {
 }
 
 object LatexProjectStructure {
-    /**
-     * This is only a reference and will be removed
-     */
-    private fun buildLatexSearchFiles(baseFile: PsiFile): GlobalSearchScope {
-        val useIndexCache = true
-        val searchFiles = baseFile.referencedFileSet(useIndexCache)
-            .mapNotNullTo(mutableSetOf()) { it.virtualFile }
-        searchFiles.add(baseFile.virtualFile)
-
-        // Add document classes
-        // There can be multiple, e.g., in the case of subfiles, in which case we probably want all items in the super-fileset
-        val roots = baseFile.findRootFiles()
-        for (root in roots) {
-            val docClass = root.documentClassFileInProject() ?: continue
-            searchFiles.add(docClass.virtualFile)
-            docClass.referencedFileSet(useIndexCache).forEach {
-                searchFiles.add(it.virtualFile)
-            }
-        }
-
-        // Search index.
-//        return GlobalSearchScope.filesScope(baseFile.project, searchFiles)
-        TODO()
-    }
 
     private class BuildFilesetPreparation(
         val project: Project,

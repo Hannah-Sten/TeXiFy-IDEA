@@ -7,6 +7,7 @@ import com.intellij.psi.search.DelegatingGlobalSearchScope
 import com.intellij.psi.search.GlobalSearchScope
 
 class LatexFileFilterScope(delegate: GlobalSearchScope) : DelegatingGlobalSearchScope(delegate) {
+    // TODO: it is only a placeholder for now, we may want to filter out files that are not in the source roots
     // Following `JavaSourceFilterScope`
 
     val projectFileIndex: ProjectFileIndex? = project?.let { ProjectRootManager.getInstance(it).fileIndex }
@@ -18,7 +19,6 @@ class LatexFileFilterScope(delegate: GlobalSearchScope) : DelegatingGlobalSearch
         if(projectFileIndex == null) {
             return false
         }
-        // TODO: it is only a placeholder for now, we may want to filter out files that are not in the source roots
         return true
     }
 }

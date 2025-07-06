@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.psi.getLabel
+import nl.hannahsten.texifyidea.psi.getLabelFromOptionalParameter
 import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
 import java.io.IOException
 
@@ -16,7 +16,12 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
     }
 
     override fun createStub(psi: LatexEnvironment, parentStub: StubElement<*>): LatexEnvironmentStub {
-        return LatexEnvironmentStubImpl(parentStub, this, psi.getEnvironmentName(), psi.getLabel() ?: "")
+        val envName = psi.getEnvironmentName()
+        val directLabel = psi.getLabelFromOptionalParameter()
+        // we only record the label if it is specified as an optional parameter
+        // If it is contained in some `\label{}` command inside the environment, it will be indexed separately via the command
+        // If we record it here, we will have duplicates in the index
+        return LatexEnvironmentStubImpl(parentStub, this, envName, directLabel)
     }
 
     override fun getExternalId() = "texify.latex." + super.toString()

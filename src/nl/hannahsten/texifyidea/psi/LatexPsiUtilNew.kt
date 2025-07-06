@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
+import nl.hannahsten.texifyidea.util.parser.traversePruned
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /*
@@ -37,6 +38,18 @@ fun LatexBeginCommand.environmentName(): String? {
     return envIdentifier?.name
 }
 
+fun LatexEnvironment.getLabelFromOptionalParameter(): String? {
+    if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
+        // See if we can find a label option
+        val optionalParameters = getOptionalParameterMapFromParameters(this.beginCommand.parameterList).toStringMap()
+        optionalParameters["label"]?.let { label ->
+            // If the label is specified as an optional parameter, we can return it
+            return label
+        }
+    }
+    return null
+}
+
 /**
  * Find the label of the environment. The method finds labels inside the environment content as well as labels
  * specified via an optional parameter
@@ -47,14 +60,7 @@ fun LatexBeginCommand.environmentName(): String? {
 fun LatexEnvironment.getLabel(): String? {
     val stub = this.stub
     if (stub != null) return stub.label
-    if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
-        // See if we can find a label option
-        val optionalParameters = getOptionalParameterMapFromParameters(this.beginCommand.parameterList).toStringMap()
-        optionalParameters["label"]?.let { label ->
-            // If the label is specified as an optional parameter, we can return it
-            return label
-        }
-    }
+    getLabelFromOptionalParameter()?.let { return it }
     // Not very clean. We don't really need the conventions here, but determine which environments *can* have a
     // label. However, if we didn't use the conventions, we would have to duplicate the information in
     // EnvironmentMagic
@@ -67,7 +73,9 @@ fun LatexEnvironment.getLabel(): String? {
     //  We should whether the label belongs to the outer command or the inner command.
     // The current level 7 is set to make the test pass, but it is not a good solution.
     // Setting it to 2 (environment_content - no_math_content - commands) ignores the nested label commands.
-    val labelCommand = content.traverseCommands(7).firstOrNull {
+    val labelCommand = content.traversePruned(7) {
+        it !is LatexEnvironment // ignore the subtree if we reach another environment
+    }.filterIsInstance<LatexCommands>().firstOrNull {
         it.name in CommandMagic.labels
     } ?: return null
     // In fact, it is a simple \label command
