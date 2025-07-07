@@ -20,6 +20,6 @@ fun CodeInsightTestFixture.configureByFilesWithMockCache(vararg filenames: Strin
     mockkObject(ReferencedFileSetService.Companion)
     every { ReferencedFileSetService.getInstance() } returns mockService
     mockkObject(LatexProjectStructure)
-    every { LatexProjectStructure.buildFilesetScopeFor(any(), any()) } returns GlobalSearchScope.filesScope(project, files.map { it.virtualFile })
+    every { LatexProjectStructure.getFilesetScopeFor(any(), any()) } returns GlobalSearchScope.filesScope(project, files.map { it.virtualFile })
     openFileInEditor(files.first().virtualFile)
 }

@@ -36,7 +36,7 @@ object LatexStubIndexKeys {
 }
 
 object LatexFileBasedIndexKeys {
-    val EXTERNAL_COMMANDS = ID.create<String, String>("nl.hannahsten.texifyidea.external.commands")
+    val EXTERNAL_COMMANDS: ID<String, String> = ID.create("nl.hannahsten.texifyidea.external.commands")
 
 //    val EXTERNAL_ENVIRONMENTS =
 //        ID.create<String, String>("nl.hannahsten.texifyidea.external.environments")

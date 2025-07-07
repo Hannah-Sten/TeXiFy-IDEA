@@ -35,12 +35,18 @@ data class Fileset(
     val root: VirtualFile,
 )
 
+data class FilesetData(
+    val filesets: Set<Fileset>,
+    val relatedFiles: Set<VirtualFile>,
+    val filesetScope: GlobalSearchScope,
+)
+
 data class LatexProjectFilesets(
     val filesets: Set<Fileset>,
-    val mapping: Map<VirtualFile, Set<Fileset>>,
+    val mapping: Map<VirtualFile, FilesetData>,
 ) {
-    fun getFilesetsForFile(file: VirtualFile): Set<Fileset> {
-        return mapping[file] ?: emptySet()
+    fun getData(project: Project, file: VirtualFile): FilesetData? {
+        return mapping[file]
     }
 }
 
@@ -56,22 +62,13 @@ fun pathOrNull(pathText: String?): Path? {
 
 object LatexProjectStructure {
 
+    const val CACHE_EXPIRATION_IN_MS = 5000L // 5 seconds
+
     private class BuildFilesetPreparation(
         val project: Project,
         val texInputPaths: Set<Path>,
         val bibInputPaths: Set<Path>,
     )
-
-    fun getIncludedPackages(file: PsiFile): Set<String> {
-        val project = file.project
-        return getIncludedPackages(project, buildFilesetScopeFor(file, project))
-    }
-
-    fun getIncludedPackages(project: Project, scope: GlobalSearchScope): Set<String> {
-        return NewSpecialCommandsIndex.getAllPackageIncludes(project, scope).flatMap {
-            it.collectSubtreeTyped<LatexParameterText>().map { it.text }
-        }.toSet()
-    }
 
     /**
      *
@@ -105,10 +102,9 @@ object LatexProjectStructure {
             appendFilesFromSourcePaths(sp.bibInputPaths)
         }
         if (commandName in CommandMagic.packageInclusionCommands) {
-//            val res = FilenameIndex.getVirtualFilesByName(relPath.fileName.pathString, GlobalSearchScope.allScope(sp.project))
             // try to find the file in the tex input paths
             val location = LatexPackageLocation.getPackageLocation(path.pathString, sp.project)
-            if(location != null) {
+            if (location != null) {
                 val vf = LocalFileSystem.getInstance().findFileByNioFile(location)
                 if (vf != null) {
                     result.add(vf)
@@ -118,15 +114,16 @@ object LatexProjectStructure {
         // plain way
         if (path.isAbsolute) {
             LocalFileSystem.getInstance().findFileByNioFile(path)?.let { result.add(it) }
-        } else {
+        }
+        else {
             root.parent.findFileByRelativePath(path.invariantSeparatorsPathString)?.let { result.add(it) }
         }
-
-        // /usr/local/texlive/2025/texmf-dist/tex/latex-dev/base/article.cls
     }
 
     /**
-     * Gets the
+     * Gets the directly referred files from the given file relative to the given root file.
+     *
+     * Note: the path of the referred file is relative to the root file, not the file that contains the input command.
      */
     private fun getDirectReferredFiles(
         project: Project,
@@ -180,48 +177,74 @@ object LatexProjectStructure {
     private fun buildFilesetsNoCache(project: Project): LatexProjectFilesets {
         val sp = makePreparation(project)
         val roots = getPossibleRootFiles(project)
-        val filesets = mutableSetOf<Fileset>()
-        val mapping = mutableMapOf<VirtualFile, MutableSet<Fileset>>()
+        val allFilesets = mutableSetOf<Fileset>()
+        val fileSetMapping = mutableMapOf<VirtualFile, MutableSet<Fileset>>()
         for (root in roots) {
             val files = mutableSetOf(root)
             val fileSet = Fileset(files, root)
             val pending = mutableListOf(root)
             while (pending.isNotEmpty()) {
                 val f = pending.removeLast()
-                mapping.computeIfAbsent(f) { mutableSetOf() }.add(fileSet)
+                fileSetMapping.computeIfAbsent(f) { mutableSetOf() }.add(fileSet)
                 val referred = getDirectReferredFiles(project, f, root, sp) // indeed, we may deal with the same file multiple times with different roots
                 referred.forEach {
                     if (files.add(it)) pending.add(it) // new element added
                 }
             }
-            filesets.add(fileSet)
+            allFilesets.add(fileSet)
         }
-        return LatexProjectFilesets(filesets, mapping)
+        val mapping = fileSetMapping.mapValues { (file, filesets) ->
+            val allFiles = filesets.flatMapTo(mutableSetOf(file)) { it.files }
+            val scope = GlobalSearchScope.filesWithLibrariesScope(project, allFiles)
+            FilesetData(filesets, allFiles, scope)
+        }
+        return LatexProjectFilesets(allFilesets, mapping)
     }
 
+    /**
+     * Builds the filesets for the given project, caching the result.
+     */
     fun buildFilesets(project: Project, forceRefresh: Boolean = false): LatexProjectFilesets {
-        val expirationInMs = if (forceRefresh) 0L else 1000L
-
+        val expirationInMs = if (forceRefresh) 0L else CACHE_EXPIRATION_IN_MS
         return TexifyProjectCacheService.getOrCompute(project, expirationInMs, ::buildFilesetsNoCache)
     }
 
-    fun findFilesetsFor(psiFile: PsiFile): Set<Fileset> {
+    /**
+     * Gets the filesets containing the given PsiFile.
+     *
+     */
+    fun getFilesetsFor(psiFile: PsiFile): Set<Fileset> {
         val virtualFile = psiFile.virtualFile ?: return emptySet()
         val project = psiFile.project
-        return CachedValuesManager.getManager(project).getCachedValue(psiFile) {
-            val filesets = buildFilesets(project).getFilesetsForFile(virtualFile)
-            val dependencies = filesets.flatMapTo(mutableSetOf(virtualFile)) { it.files }
-            Result.create(filesets, dependencies)
-        }
+        return buildFilesets(project).getData(project, virtualFile)?.filesets ?: emptySet()
     }
 
-    fun buildFilesetScopeFor(file: PsiFile, project: Project = file.project): GlobalSearchScope {
-        return CachedValuesManager.getManager(project).getCachedValue(file) {
-            val virtualFile = file.virtualFile ?: return@getCachedValue Result.createSingleDependency(GlobalSearchScope.fileScope(file), file)
-            val filesets = buildFilesets(project).getFilesetsForFile(virtualFile)
-            val allFiles = filesets.flatMapTo(mutableSetOf(virtualFile)) { it.files }
-            val result = GlobalSearchScope.filesWithLibrariesScope(project, allFiles)
-            Result.create(result, allFiles)
-        }
+    /**
+     * Gets the search scope containing all the filesets that contain the given PsiFile.
+     */
+    fun getFilesetScopeFor(file: PsiFile, project: Project = file.project): GlobalSearchScope {
+        val virtualFile = file.virtualFile ?: return GlobalSearchScope.fileScope(file)
+        val data = buildFilesets(project).getData(project, virtualFile)
+        return data?.filesetScope ?: GlobalSearchScope.fileScope(file)
+    }
+
+    /**
+     * Gets the related files for the given PsiFile, namely all files that are part of the same fileset as the given file.
+     */
+    fun getRelatedFilesFor(file: PsiFile): Set<VirtualFile> {
+        val project = file.project
+        val virtualFile = file.virtualFile ?: return emptySet()
+        return buildFilesets(project).getData(project, virtualFile)?.relatedFiles ?: setOf(virtualFile)
+    }
+
+    fun getIncludedPackages(file: PsiFile): Set<String> {
+        val project = file.project
+        return getIncludedPackages(project, getFilesetScopeFor(file, project))
+    }
+
+    fun getIncludedPackages(project: Project, scope: GlobalSearchScope): Set<String> {
+        return NewSpecialCommandsIndex.getAllPackageIncludes(project, scope).flatMap {
+            it.collectSubtreeTyped<LatexParameterText>().map { it.text }
+        }.toSet()
     }
 }

@@ -8,9 +8,11 @@ import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
+import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.psi.PsiFile
 import com.intellij.util.concurrency.annotations.RequiresReadLock
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -129,7 +131,9 @@ fun VirtualFile.findTectonicTomlFile(): VirtualFile? {
  * @return All the files that are cross referenced between each other.
  */
 fun PsiFile.referencedFileSet(useIndexCache: Boolean = true): Set<PsiFile> {
-    return ReferencedFileSetService.getInstance().referencedFileSetOf(this, useIndexCache)
+    val project = this.project
+    return LatexProjectStructure.getRelatedFilesFor(this).mapNotNull { it.findPsiFile(project) }.toSet()
+//    return ReferencedFileSetService.getInstance().referencedFileSetOf(this, useIndexCache)
 }
 
 /**

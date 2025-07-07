@@ -317,7 +317,7 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
 fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
-    val scope = LatexProjectStructure.buildFilesetScopeFor(this)
+    val scope = LatexProjectStructure.getFilesetScopeFor(this)
     val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
     return includedPackages(includeCommands, project, onlyDirectInclusions)
 }

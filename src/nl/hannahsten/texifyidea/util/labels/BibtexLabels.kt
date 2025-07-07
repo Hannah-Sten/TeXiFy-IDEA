@@ -27,7 +27,7 @@ fun PsiFile.findBibtexLabelsInFileSetAsSequence(): Sequence<String> = findBibtex
  */
 fun PsiFile.findBibtexItems(): Collection<PsiElement> {
     // TODO: very inefficient, as it will search all bibtex entries in the project
-    val fileset = LatexProjectStructure.buildFilesetScopeFor(this)
+    val fileset = LatexProjectStructure.getFilesetScopeFor(this)
     val allBibtex = NewBibtexEntryIndex.getAllKeys(fileset).flatMap {
         NewBibtexEntryIndex.getByName(it, fileset)
     }

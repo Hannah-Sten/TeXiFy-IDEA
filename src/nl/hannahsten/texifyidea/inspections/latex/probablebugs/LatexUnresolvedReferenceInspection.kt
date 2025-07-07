@@ -40,7 +40,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
 
         val commands = file.traverseCommands()
         val project = file.project
-        val filesetScope = LatexProjectStructure.buildFilesetScopeFor(file)
+        val filesetScope = LatexProjectStructure.getFilesetScopeFor(file)
 
         for (command in commands) {
             if (!CommandMagic.reference.contains(command.name)) {

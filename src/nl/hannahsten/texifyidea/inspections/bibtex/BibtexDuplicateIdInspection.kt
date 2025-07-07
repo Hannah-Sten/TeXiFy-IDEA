@@ -28,7 +28,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val project = file.project
-        val fileset = LatexProjectStructure.buildFilesetScopeFor(file)
+        val fileset = LatexProjectStructure.getFilesetScopeFor(file)
         for (bibtexEntry in file.traverseTyped<BibtexEntry>()) {
             val idName = bibtexEntry.getIdentifier()
             if(NewBibtexEntryIndex.countByName(idName, project, fileset) > 1) {

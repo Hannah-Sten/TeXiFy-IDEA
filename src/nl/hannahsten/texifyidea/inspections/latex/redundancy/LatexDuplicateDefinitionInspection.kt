@@ -33,7 +33,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
         // Find all defined commands.
         val defined = HashMultiset.create<String>()
 //        val definitions = file.definitionsInFileSet().filter { it.name in CommandMagic.regularStrictCommandDefinitions }
-        val fileSetScope = LatexProjectStructure.buildFilesetScopeFor(file)
+        val fileSetScope = LatexProjectStructure.getFilesetScopeFor(file)
         val definitions = NewCommandsIndex.getByNames(CommandMagic.regularStrictCommandDefinitions, file.project, fileSetScope)
         for (command in definitions) {
             if (isInConditionalBranch(command)) continue

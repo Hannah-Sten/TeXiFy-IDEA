@@ -40,7 +40,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Find all duplicates.
-        val scope = LatexProjectStructure.buildFilesetScopeFor(file)
+        val scope = LatexProjectStructure.getFilesetScopeFor(file)
         val inclusionCommands = NewSpecialCommandsIndex.getAllPackageIncludes(file.project, scope)
         val packages = PackageUtils.getPackagesFromCommands(inclusionCommands, CommandMagic.packageInclusionCommands, mutableListOf())
         // When using the subfiles package, there will be multiple \documentclass{subfiles} commands

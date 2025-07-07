@@ -36,7 +36,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     override fun buildFileset(baseFile: PsiFile): GlobalSearchScope {
-        return LatexProjectStructure.buildFilesetScopeFor(baseFile)
+        return LatexProjectStructure.getFilesetScopeFor(baseFile)
     }
 
     val mappingPairs = listOf(

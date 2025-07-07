@@ -31,7 +31,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
             return PlainTypedKey()
         }
 
-        private fun <T> createKeyFromClass(f: Any): TypedKey<T> {
+        private fun <T> createKeyFromFunction(f: suspend (Project) -> T?): TypedKey<T> {
             return TypedKeyFromFunction(f::class)
         }
     }
@@ -67,7 +67,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     }
 
     fun <T> getOrComputeNow(expirationInMs: Long = 1000L, f: (Project) -> T): T {
-        return getOrComputeNow(createKeyFromClass(f), expirationInMs, f)
+        return getOrComputeNow(createKeyFromFunction(f), expirationInMs, f)
     }
 
     private fun <T> getCachedValueOrNull(key: TypedKey<T>, expirationInMs: Long): CacheValueTimed<T>? {
@@ -94,11 +94,11 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     }
 
     fun <T : Any> getOrComputeLater(expirationInMs: Long = 1000L, instantResult: T, f: suspend (Project) -> T?): T {
-        return getOrComputeLater(createKeyFromClass(f), expirationInMs, instantResult, f)
+        return getOrComputeLater(createKeyFromFunction(f), expirationInMs, instantResult, f)
     }
 
     fun <T : Any> getOrComputeLater(expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {
-        return getOrComputeLater(createKeyFromClass(f), expirationInMs, null, f)
+        return getOrComputeLater(createKeyFromFunction(f), expirationInMs, null, f)
     }
 
     fun <T : Any> getOrComputeLater(key: TypedKey<T>, expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {

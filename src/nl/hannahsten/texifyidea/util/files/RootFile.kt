@@ -57,7 +57,7 @@ fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
  */
 fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> {
     val project = this.project
-    return LatexProjectStructure.findFilesetsFor(this).mapNotNullTo(mutableSetOf()) { it.root.findPsiFile(project) }
+    return LatexProjectStructure.getFilesetsFor(this).mapNotNullTo(mutableSetOf()) { it.root.findPsiFile(project) }
 }
 
 /**

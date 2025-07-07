@@ -31,9 +31,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
 
     @RequiresReadLock
     fun getByName(
-        name: String,
-        project: Project,
-        scope: GlobalSearchScope = project.contentSearchScope
+        name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope
     ): Collection<Psi> {
         return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
     }
