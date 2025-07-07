@@ -36,8 +36,15 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         }
     }
 
-    protected val caches: MutableMap<Any, CacheValueTimed<*>> = concurrentMapOf()
-    protected val computingState = ConcurrentHashMap<Any, AtomicBoolean>()
+    protected val caches: MutableMap<TypedKey<*>, CacheValueTimed<*>> = concurrentMapOf()
+    protected val computingState = ConcurrentHashMap<TypedKey<*>, AtomicBoolean>()
+
+    /**
+     * Puts a value in the cache with the given key instantly.
+     */
+    fun <T> put(key: TypedKey<T>, value: T) {
+        caches[key] = CacheValueTimed(value)
+    }
 
     /**
      * Gets a cached value by its key, or null if it does not exist.
@@ -48,19 +55,33 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         return cachedValue as CacheValueTimed<T>
     }
 
-    fun <T> put(key: TypedKey<T>, value: T) {
-        caches[key] = CacheValueTimed(value)
+    /**
+     * Gets a cached value by its key, or null if it does not exist or is expired.
+     */
+    fun <T : Any> getOrNull(key: TypedKey<T>, expirationInMs: Long = 1000L): T? {
+        return getCachedValueOrNull(key, expirationInMs)?.value
     }
 
-    private fun getComputingState(key: Any): AtomicBoolean {
+    private fun getComputingState(key: TypedKey<*>): AtomicBoolean {
         return computingState.computeIfAbsent(key) { AtomicBoolean(false) }
     }
 
+    private fun <T> getCachedValueOrNull(key: TypedKey<T>, expirationInMs: Long): CacheValueTimed<T>? {
+        val cachedValue = getTimed(key) ?: return null
+        if (cachedValue.isExpired(expirationInMs)) return null
+        return cachedValue
+    }
+
+    /**
+     * Gets a cached value by its key, or computes it if it does not exist or is expired.
+     *
+     * The computation is done immediately in the current thread.
+     * If multiple threads call this method with the same key simultaneously, multiple computations may occur.
+     */
     fun <T> getOrComputeNow(key: TypedKey<T>, expirationInMs: Long = 1000L, f: (Project) -> T): T {
-        val cachedValue = getTimed(key)
-        if (cachedValue != null && !cachedValue.isExpired(expirationInMs)) {
-            return cachedValue.value
-        }
+        val cachedValue = getCachedValueOrNull(key, expirationInMs)
+        if (cachedValue != null) return cachedValue.value
+
         val result = f(project)
         put(key, result)
         return result
@@ -70,41 +91,44 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         return getOrComputeNow(createKeyFromFunction(f), expirationInMs, f)
     }
 
-    private fun <T> getCachedValueOrNull(key: TypedKey<T>, expirationInMs: Long): CacheValueTimed<T>? {
-        val cachedValue = getTimed(key) ?: return null
-        if (cachedValue.isExpired(expirationInMs)) return null
-        return cachedValue
-    }
-
-    fun <T : Any> getOrNull(key: TypedKey<T>, expirationInMs: Long = 1000L): T? {
-        return getCachedValueOrNull(key, expirationInMs)?.value
-    }
-
-    fun <S, T : S & Any> getOrComputeLater(
+    /**
+     * Gets a cached value (possibly expired) by its key or the instant result if no cache exists.
+     * If the cache does not exist or is expired, it schedules the computation to be run later, not blocking the current thread.
+     *
+     *
+     * @param suspendComputation the computation to run if the cache is expired or does not exist. May return null to indicate that no value is available.
+     */
+    fun <S, T : S & Any> getAndComputeLater(
         key: TypedKey<T>,
         expirationInMs: Long = 1000L,
         instantResult: S, suspendComputation: suspend (Project) -> T?
     ): S {
-        val cachedValue = getCachedValueOrNull(key, expirationInMs)
-        if (cachedValue != null) {
-            return cachedValue.value
+        val cachedValue = getTimed(key)
+        if(cachedValue == null || cachedValue.isExpired(expirationInMs)) {
+            // If the value is not cached or expired, schedule the computation
+            scheduleCompute(key, suspendComputation)
         }
-        scheduleCompute(key, suspendComputation)
-        return instantResult // Return the instant result while computation is in progress
+        return cachedValue?.value ?: instantResult // Return the instant result while computation is in progress
     }
 
-    fun <T : Any> getOrComputeLater(expirationInMs: Long = 1000L, instantResult: T, f: suspend (Project) -> T?): T {
-        return getOrComputeLater(createKeyFromFunction(f), expirationInMs, instantResult, f)
+    fun <T : Any> getAndComputeLater(expirationInMs: Long = 1000L, instantResult: T, f: suspend (Project) -> T?): T {
+        return getAndComputeLater(createKeyFromFunction(f), expirationInMs, instantResult, f)
     }
 
-    fun <T : Any> getOrComputeLater(expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {
-        return getOrComputeLater(createKeyFromFunction(f), expirationInMs, null, f)
+    fun <T : Any> getAndComputeLater(expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {
+        return getAndComputeLater(createKeyFromFunction(f), expirationInMs, null, f)
     }
 
-    fun <T : Any> getOrComputeLater(key: TypedKey<T>, expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {
-        return getOrComputeLater(key, expirationInMs, null, f)
+    fun <T : Any> getAndComputeLater(key: TypedKey<T>, expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {
+        return getAndComputeLater(key, expirationInMs, null, f)
     }
 
+    /**
+     * Schedules a computation to be run later in a coroutine.
+     * If the computation is already running, nothing happens.
+     *
+     * @param f the computation to run. It should return a value of type T or null if no value is available.
+     */
     fun <T : Any> scheduleCompute(
         key: TypedKey<T>, f: suspend (Project) -> T?
     ) {
@@ -113,6 +137,12 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         }
     }
 
+    /**
+     * Computes a value and updates the cache if the computation is successful.
+     *
+     * You may use this method to manually compute a value and update the cache in some background task,
+     * such as [com.intellij.openapi.startup.ProjectActivity].
+     */
     suspend fun <T : Any> computeAndUpdate(
         key: TypedKey<T>, f: suspend (Project) -> T?
     ) {
