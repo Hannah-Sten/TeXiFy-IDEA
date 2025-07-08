@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix exception #4116
 
 ## [0.10.4] - 2025-07-01
 
