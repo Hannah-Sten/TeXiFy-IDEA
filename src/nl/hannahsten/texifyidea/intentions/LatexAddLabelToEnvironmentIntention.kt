@@ -47,7 +47,7 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
             conventionSettings.getLabelConvention(environment.getEnvironmentName(), LabelConventionType.ENVIRONMENT)?.prefix
                 ?: return
 
-        val createdLabel = getUniqueLabelName(
+        val createdLabel = getUniqueLabelWithPrefix(
             environment.getEnvironmentName().formatAsLabel(),
             prefix, environment.containingFile
         )

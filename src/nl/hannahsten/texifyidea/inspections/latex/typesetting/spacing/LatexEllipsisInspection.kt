@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
-import nl.hannahsten.texifyidea.util.parser.traverseAllTyped
+import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 
 /**
  * @author Sten Wessel
@@ -41,7 +41,7 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.traverseAllTyped<LatexNormalText> { text ->
+        file.forEachChildTyped<LatexNormalText> { text ->
             ProgressManager.checkCanceled()
 
             for (match in PatternMagic.ellipsis.findAll(text.text)) {

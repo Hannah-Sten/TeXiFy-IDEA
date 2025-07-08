@@ -5,10 +5,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
@@ -25,9 +22,6 @@ import java.io.IOException
  * @author Thomas Schouten
  */
 object EvinceInverseSearchListener {
-
-    private val currentCoroutineScope: CoroutineScope
-        get() = TexifyCoroutine.getInstance().coroutineScope
 
     private var sessionConnection: DBusConnection? = null
 
@@ -72,7 +66,7 @@ object EvinceInverseSearchListener {
 
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
-        currentCoroutineScope.launch {
+        TexifyCoroutine.runInBackground {
             // Delay execution and hope everything is ready (#3995)
             delay(1000)
             try {
@@ -122,6 +116,5 @@ object EvinceInverseSearchListener {
         syncSourceHandler?.close()
         // Properly close the connection
         sessionConnection?.close()
-        currentCoroutineScope.cancel(kotlinx.coroutines.CancellationException(("Unloading the plugin")))
     }
 }

@@ -3,13 +3,12 @@ package nl.hannahsten.texifyidea.inspections.latex.typesetting
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.get
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.util.regex.Matcher
 
 /**
@@ -35,7 +34,8 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
         // It is impossible to determine whether this option is actually set (think scoping, but this option can also be
         // turned of with \mathtoolsset{centercolon=false})
         // Thus, whenever someone fiddles with this, we turn off the inspection to prevent false positives.
-        file.commandsInFileSet(useIndexCache = false).any { it.name == "\\mathtoolsset" && it.requiredParameter(0)?.contains("centercolon") == true }
+        NewCommandsIndex.getByNameInFileSet("\\mathtoolsset", file)
+            .any { it.requiredParameterText(0)?.contains("centercolon") == true }
     }
 ) {
 

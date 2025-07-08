@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang.commands
 import arrow.core.NonEmptySet
 import arrow.core.getOrNone
 import arrow.core.nonEmptySetOf
+import nl.hannahsten.texifyidea.lang.LatexPackage
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -30,6 +31,12 @@ object LatexRegularCommand {
     val ALL: Set<LatexCommand> = GENERIC + TEXTCOMP + EURO + TEXT_SYMBOLS + NEW_DEFINITIONS + MATHTOOLS +
         XCOLOR + XPARSE + NATBIB + BIBLATEX + SIUNITX + ALGORITHMICX + IFS + LISTINGS + LOREM_IPSUM + GLOSSARY + TODO
 
+    val defaultCommands: Set<LatexCommand> = ALL.filter { it.dependency == LatexPackage.DEFAULT }.toSet()
+
+    val lookupFromPackage: Map<String, Set<LatexCommand>> = ALL
+        .groupBy { it.dependency.name }
+        .mapValues { it.value.toSet() }
+
     private val lookup = HashMap<String, NonEmptySet<LatexCommand>>()
     private val lookupDisplay = HashMap<String, NonEmptySet<LatexCommand>>()
 
@@ -42,11 +49,15 @@ object LatexRegularCommand {
         }
     }
 
+    val lookupWithSlash = lookup.mapKeys { "\\${it.key}" }
+
     @JvmStatic
     fun values() = ALL
 
     @JvmStatic
     operator fun get(command: String) = lookup[command]
+
+    fun getWithSlash(command: String) = lookupWithSlash[command]
 
     @JvmStatic
     fun findByDisplay(display: String) = lookupDisplay[display]

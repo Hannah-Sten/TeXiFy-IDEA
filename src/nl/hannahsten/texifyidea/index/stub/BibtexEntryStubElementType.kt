@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.BibtexLanguage
-import nl.hannahsten.texifyidea.index.BibtexEntryIndex
+import nl.hannahsten.texifyidea.index.BibtexEntryIndexKey
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.impl.BibtexEntryImpl
 import nl.hannahsten.texifyidea.util.parser.getAuthors
@@ -38,6 +38,6 @@ open class BibtexEntryStubElementType(debugName: String) : IStubElementType<Bibt
     override fun getExternalId() = "texify.bibtex." + super.toString()
 
     override fun indexStub(stub: BibtexEntryStub, sink: IndexSink) {
-        sink.occurrence(BibtexEntryIndex().key, stub.name ?: "")
+        sink.occurrence(BibtexEntryIndexKey.KEY, stub.name ?: "")
     }
 }

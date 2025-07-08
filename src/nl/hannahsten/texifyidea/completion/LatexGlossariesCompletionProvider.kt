@@ -48,14 +48,14 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
         val lookupItems = glossaryCommands.mapNotNull { command: LatexCommands ->
             when (command.name) {
                 NEWACRONYM.cmd, NEWABBREVIATION.cmd -> {
-                    val params = command.getRequiredParameters()
+                    val params = command.requiredParametersText()
                     val label = params.getOrNull(0) ?: return@mapNotNull null
                     val short = params.getOrNull(1) ?: return@mapNotNull null
                     val description = command.requiredParameters().getOrNull(2) ?: return@mapNotNull null
                     buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
                 NEWGLOSSARYENTRY.cmd -> {
-                    val label = command.getRequiredParameters().getOrNull(0) ?: return@mapNotNull null
+                    val label = command.requiredParametersText().getOrNull(0) ?: return@mapNotNull null
                     val options =
                         command.requiredParameters().getOrNull(1)?.strictKeyValPairList ?: return@mapNotNull null
                     val optionsMap = getOptionsMap(options)
@@ -64,7 +64,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     buildLookupElement(command, label, short, description)
                 }
                 LONGNEWGLOSSARYENTRY.cmd -> {
-                    val label = command.getRequiredParameters().getOrNull(0) ?: return@mapNotNull null
+                    val label = command.requiredParametersText().getOrNull(0) ?: return@mapNotNull null
                     val options =
                         command.requiredParameters().getOrNull(1)?.strictKeyValPairList ?: return@mapNotNull null
                     val optionsMap = getOptionsMap(options)
@@ -73,8 +73,8 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
                 ACRO.cmd, NEWACRO.cmd, ACRODEF.cmd -> {
-                    val acronym = command.getRequiredParameters().getOrNull(0) ?: return@mapNotNull null
-                    val fullName = command.getRequiredParameters().getOrNull(1) ?: return@mapNotNull null
+                    val acronym = command.requiredParametersText().getOrNull(0) ?: return@mapNotNull null
+                    val fullName = command.requiredParametersText().getOrNull(1) ?: return@mapNotNull null
                     buildLookupElement(command, acronym, "", fullName)
                 }
                 else -> {
