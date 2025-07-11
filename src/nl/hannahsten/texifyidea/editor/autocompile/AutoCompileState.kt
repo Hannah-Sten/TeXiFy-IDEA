@@ -6,6 +6,7 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -83,12 +84,14 @@ object AutoCompileState {
         runConfig.isAutoCompiling = true
 
         // If the run config is already running, this may trigger a dialog asking the user whether to stop and rerun
-        ExecutionManager.getInstance(proj).restartRunProfile(
-            proj,
-            DefaultRunExecutor.getRunExecutorInstance(),
-            ExecutionTargetManager.getInstance(proj).activeTarget,
-            runConfigSettings,
-            null
-        )
+        runInEdt {
+            ExecutionManager.getInstance(proj).restartRunProfile(
+                proj,
+                DefaultRunExecutor.getRunExecutorInstance(),
+                ExecutionTargetManager.getInstance(proj).activeTarget,
+                runConfigSettings,
+                null
+            )
+        }
     }
 }
