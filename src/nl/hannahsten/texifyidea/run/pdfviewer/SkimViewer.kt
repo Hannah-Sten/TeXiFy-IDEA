@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
@@ -11,10 +12,19 @@ import com.intellij.openapi.project.Project
  */
 object SkimViewer : SystemPdfViewer("Skim", "skim") {
 
+    @Volatile
     private var pdfFilePath: String? = null
 
     override val isFocusSupported: Boolean
         get() = true
+
+
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
+        if (pdfFilePath == null || pdfFilePath != pdfPath) {
+            pdfFilePath = pdfPath
+        }
+        // TODO: Implement a way to open the pdf file in Skim, e.g. using GeneralCommandLine.
+    }
 
     /**
      * Execute a forward search, opens the pdf file in Skim with the line that corresponds to the cursor roughly in the center.

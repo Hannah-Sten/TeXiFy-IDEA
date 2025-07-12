@@ -53,7 +53,7 @@ fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
 }
 
 /**
- * Gets the set of files that are the root files of `this` file, using [ReferencedFileSetCache.getSetFromCache].
+ * Gets the set of files that are the root files of `this` file, using [LatexProjectStructure.getFilesetsFor].
  */
 fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> {
     val project = this.project

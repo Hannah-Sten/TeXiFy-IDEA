@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 class NewLabelsIndexEx : NewLatexCompositeTransformedStubIndex<StubElement<LatexComposite>, LatexComposite>(LatexComposite::class.java) {
     override fun getVersion(): Int {
-        return 101
+        return 102
     }
 
     override fun getKey(): StubIndexKey<String, LatexComposite> {

@@ -142,7 +142,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 args.isNotEmpty()
             }
             .withLanguage(LatexLanguage),
-        LatexGraphicsPathProvider()
+        LatexGraphicsPathProvider
     )
 
     /**

@@ -11,7 +11,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.util.*
-import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -19,7 +18,6 @@ import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.isTestProject
@@ -58,35 +56,6 @@ fun PsiFile.documentClass(): String? {
         .filter { it.name == "\\documentclass" }
         .firstOrNull()
         ?.requiredParameterText(0)
-}
-
-/**
- * Scans the whole document (recursively) for all referenced/included files, except installed LaTeX packages.
- * Never use this directly, use the cached [referencedFileSet] instead.
- *
- * @return A collection containing all the PsiFiles that are referenced from this file.
- */
-@RequiresReadLock
-internal fun PsiFile.referencedFiles(rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean): Set<PsiFile> {
-    // Using a single set avoids infinite loops
-    val result = mutableSetOf<PsiFile>()
-    referencedFiles(result, rootFile, isImportPackageUsed, usesLuatexPaths)
-    return result
-}
-
-@RequiresReadLock
-internal fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, isImportPackageUsed: Boolean, usesLuatexPaths: Boolean) {
-    NewSpecialCommandsIndex.getAllFileInputs(project).forEach { command ->
-        if (!command.isValid) return@forEach
-        command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile, true, checkImportPath = isImportPackageUsed, checkAddToLuatexPath = usesLuatexPaths) }
-            .forEach {
-                // Do not re-add all referenced files if we already did that
-                if (it in files) return@forEach
-                files.add(it)
-                it.referencedFiles(files, rootFile, isImportPackageUsed, usesLuatexPaths)
-            }
-    }
 }
 
 /**

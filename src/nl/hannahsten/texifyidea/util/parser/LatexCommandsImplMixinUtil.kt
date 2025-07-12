@@ -27,7 +27,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
     // There may be multiple commands with this name, just guess the first one
     val command = LatexCommand.lookup(this.name)?.firstOrNull()
-        // If not found, maybe it is an alias (user defined command) of a known command
+    // If not found, maybe it is an alias (user defined command) of a known command
         ?: getOriginalCommandFromAlias(this.name ?: return emptyList(), project)
         ?: return emptyList()
 
@@ -69,7 +69,7 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
 
     // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
     // We reference it because we include the preamble of that file, so it is in the file set (partially)
-    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && SUBFILES.name in requiredParametersText() && getOptionalParameterMap().isNotEmpty()) {
+    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && requiredParametersText().any { it.endsWith(SUBFILES.name) } && getOptionalParameterMap().isNotEmpty()) {
         val range = this.findFirstChildOfType(LatexParameter::class)?.textRangeInParent
         if (range != null) {
             inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), supportsAnyExtension = true))
@@ -88,16 +88,16 @@ fun extractLabelReferences(element: LatexCommands, requiredParameters: List<Late
 
     // Find the command parameters which are a label reference
     return (
-        LatexCommand.lookup(element.name)
-            ?.firstOrNull()
-            ?.arguments
-            ?.withIndex()
-            ?.filter { it.value.type == Argument.Type.LABEL }
-            // Use the known parameter indices to match with the actual parameters
-            ?.mapNotNull { requiredParameters.getOrNull(it.index) }
-            ?.ifEmpty { listOf(defaultParameter) }
-            ?: listOf(defaultParameter)
-        )
+            LatexCommand.lookup(element.name)
+                ?.firstOrNull()
+                ?.arguments
+                ?.withIndex()
+                ?.filter { it.value.type == Argument.Type.LABEL }
+                // Use the known parameter indices to match with the actual parameters
+                ?.mapNotNull { requiredParameters.getOrNull(it.index) }
+                ?.ifEmpty { listOf(defaultParameter) }
+                ?: listOf(defaultParameter)
+            )
         .flatMap { param ->
             extractSubParameterRanges(param).map { range ->
                 LatexLabelReference(

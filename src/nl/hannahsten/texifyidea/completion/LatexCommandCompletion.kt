@@ -142,7 +142,7 @@ object LatexNormalCommandCompletionProvider : LatexCommandCompletionProviderBase
         )
         addStubIndexCustomCommands(
             parameters, context, result, project, filesetScope,
-            NewSpecialCommandsIndex.getAllCommandDef(project, filesetScope)
+            NewSpecialCommandsIndex.getAllRegularCommandDef(project, filesetScope)
         )
         result.addLookupAdvertisement(getKindWords())
     }
@@ -167,7 +167,7 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
         )
         addStubIndexCustomCommands(
             parameters, context, result, project, filesetScope,
-            NewSpecialCommandsIndex.getAllMathCommandDef(project, filesetScope)
+            NewSpecialCommandsIndex.getAllCommandDef(project, filesetScope)
         )
         // This lookup advertisement is added only for math commands
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")

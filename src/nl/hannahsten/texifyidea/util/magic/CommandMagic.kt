@@ -3,6 +3,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.ui.Gray
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
@@ -287,7 +288,7 @@ object CommandMagic {
         DECLARE_PAIRED_DELIMITER_XPP.cmd
     )
 
-    val defaultIncludeCommands = LatexRegularCommand.values()
+    val allFileIncludeCommands = LatexRegularCommand.values()
         .filter { command -> command.arguments.any { it is RequiredFileArgument } }
         .map { it.commandWithSlash }
         .toSet()
@@ -366,6 +367,8 @@ object CommandMagic {
 
     val graphicPathsCommandNames = graphicPathsCommands.mapTo(mutableSetOf()) { it.name }
 
+    val graphicBackages = graphicPathsCommands.mapTo(mutableSetOf()) { it.dependency }.also { it.remove(LatexPackage.DEFAULT) }
+
     /**
      * Commands that should not have the given file extensions.
      */
@@ -403,7 +406,7 @@ object CommandMagic {
     /**
      * Extensions that should only be scanned for the provided include commands.
      */
-    val includeOnlyExtensions: Map<String, Set<String>> = mapOf(
+    val includeAndExtensions: Map<String, Set<String>> = mapOf(
         INPUT.cmd to hashSetOf("tex"),
         INCLUDE.cmd to hashSetOf("tex"),
         INCLUDEONLY.cmd to hashSetOf("tex"),
@@ -421,9 +424,9 @@ object CommandMagic {
     /**
      * Commands that include bib files.
      */
-    val bibliographyIncludeCommands: Set<String> = includeOnlyExtensions.entries.filter { it.value.contains("bib") }.map { it.key }.toSet()
+    val bibliographyIncludeCommands: Set<String> = includeAndExtensions.entries.filter { it.value.contains("bib") }.map { it.key }.toSet()
 
-    val texAndBibliographyIncludeCommands: Set<String> = includeOnlyExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
+    val texAndBibliographyIncludeCommands: Set<String> = includeAndExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
 
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.

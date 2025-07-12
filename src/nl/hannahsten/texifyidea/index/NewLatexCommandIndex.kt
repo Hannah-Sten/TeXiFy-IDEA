@@ -26,7 +26,7 @@ val NewCommandsIndex = NewCommandsIndexEx()
  */
 class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
     override fun getVersion(): Int {
-        return 1002
+        return 1003
     }
 
     override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {

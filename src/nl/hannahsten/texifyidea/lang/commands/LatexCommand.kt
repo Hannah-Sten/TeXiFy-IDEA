@@ -85,6 +85,12 @@ interface LatexCommand : Described, Dependend {
 
     fun <T : Argument> getArgumentsOf(clazz: Class<T>) = getArgumentsOf(clazz.kotlin)
 
+    /**
+     * Gets the required arguments of this command.
+     */
+    val requiredArguments: List<RequiredArgument>
+        get() = arguments.filterIsInstance<RequiredArgument>()
+
     companion object {
 
         /**

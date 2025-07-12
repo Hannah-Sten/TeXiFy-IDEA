@@ -17,7 +17,7 @@ object SpecialKeys {
     const val ENV_DEFINITIONS = "env_def"
     const val ALL_DEFINITIONS = "all_def"
     const val PACKAGE_INCLUDES = "package_includes"
-    const val MATH_COMMAND_DEFINITION = "math_cmd_def"
+    const val REGULAR_COMMAND_DEFINITION = "non_math_cmd_def"
 }
 
 /**
@@ -40,12 +40,12 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     val mappingPairs = listOf(
-        CommandMagic.defaultIncludeCommands to SpecialKeys.FILE_INPUTS,
+        CommandMagic.allFileIncludeCommands to SpecialKeys.FILE_INPUTS,
         CommandMagic.commandDefinitionsAndRedefinitions to SpecialKeys.COMMAND_DEFINITIONS,
         CommandMagic.environmentDefinitions to SpecialKeys.ENV_DEFINITIONS,
         CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
-        CommandMagic.mathCommandDefinitions to SpecialKeys.MATH_COMMAND_DEFINITION
+        CommandMagic.regularCommandDefinitionsAndRedefinitions to SpecialKeys.REGULAR_COMMAND_DEFINITION
     )
 
     override val specialKeys: Set<String> = mappingPairs.map { it.second }.toSet()
@@ -82,8 +82,8 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
     }
 
-    fun getAllMathCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
-        return getByName(SpecialKeys.MATH_COMMAND_DEFINITION, project, scope)
+    fun getAllRegularCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
+        return getByName(SpecialKeys.REGULAR_COMMAND_DEFINITION, project, scope)
     }
 
     fun getAllEnvDef(project: Project): Collection<LatexCommands> {
@@ -102,18 +102,6 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         processByName(SpecialKeys.ENV_DEFINITIONS, scope.project!!, scope, filter, processor)
     }
 
-    /*
-    fun getCommandsInFiles(files: MutableSet<PsiFile>, originalFile: PsiFile): Collection<LatexCommands> {
-        val project = originalFile.project
-        val searchFiles = files.stream()
-            .map { obj: PsiFile -> obj.virtualFile }
-            .collect(Collectors.toSet())
-        searchFiles.add(originalFile.virtualFile)
-        val scope = GlobalSearchScope.filesScope(project, searchFiles)
-        return NewSpecialCommandsIndex.getAll(project, scope)
-    }
-
-     */
     fun getAllCommandDefRelated(originalFile: PsiFile): Collection<LatexCommands> {
         return getAllCommandDef(originalFile.project)
     }

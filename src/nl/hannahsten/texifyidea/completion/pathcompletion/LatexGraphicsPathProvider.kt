@@ -9,14 +9,13 @@ import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.io.File
 
 /**
  * Autocompletion roots based on graphicspaths.
  */
-class LatexGraphicsPathProvider : LatexPathProviderBase() {
+object LatexGraphicsPathProvider : LatexPathProviderBase() {
 
     override fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile> {
         val paths = getProjectRoots()
@@ -96,8 +95,8 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
     /**
      * Get all the graphics paths defined by one \graphicspaths command.
      */
-    private fun LatexCommands.getGraphicsPaths(): List<String> {
-        if (!CommandMagic.graphicPathsCommands.map { it.cmd }.contains(name)) return emptyList()
+    fun LatexCommands.getGraphicsPaths(): List<String> {
+        if (!CommandMagic.graphicPathsCommandNames.contains(name)) return emptyList()
         val first = parameterList.firstNotNullOfOrNull { it.requiredParam } ?: return emptyList()
         return first.collectSubtreeTyped<LatexNormalText>().mapNotNull {
             val text = it.text

@@ -168,7 +168,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun testSubfilesInclusions() {
-        myFixture.testHighlighting("subfilestest/subdir/onedown.tex", "subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/main.tex")
+        myFixture.testHighlighting("subfilestest/subdir/onedown.tex", "subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/main.tex", "subfilestest/subfiles.cls")
     }
 
     fun testSubfilesReferenceToMain() {
@@ -211,7 +211,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //    }
 
     fun updateIncludeCommandsBlocking(project: Project) {
-        for (command in CommandMagic.defaultIncludeCommands) {
+        for (command in CommandMagic.allFileIncludeCommands) {
             CommandManager.updateAliases(setOf(command), project)
         }
     }

@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.reference
 
+import com.intellij.openapi.project.DumbService
 import com.intellij.psi.*
+import com.intellij.util.indexing.DumbModeAccessType
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.isInsideDefinition
@@ -26,7 +28,9 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
             return ResolveResult.EMPTY_ARRAY
         }
         val name = element.name ?: return ResolveResult.EMPTY_ARRAY
-        val definitions = NewDefinitionIndex.getByNameInFileSet(name, element.containingFile)
+        val file = element.containingFile
+        if(DumbService.isDumb(file.project)) return ResolveResult.EMPTY_ARRAY
+        val definitions = NewDefinitionIndex.getByNameInFileSet(name, file)
         return definitions.mapNotNull { newcommand ->
             // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
             // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand

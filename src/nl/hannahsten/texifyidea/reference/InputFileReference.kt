@@ -1,20 +1,14 @@
 package nl.hannahsten.texifyidea.reference
 
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.findDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.algorithm.BFS
-import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
@@ -27,7 +21,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 class InputFileReference(
     element: LatexCommands,
     val range: TextRange,
-    val extensions: List<String>,
+    val extensions: Collection<String>,
     val supportsAnyExtension: Boolean,
 ) : PsiReferenceBase<LatexCommands>(element) {
 
@@ -99,132 +93,13 @@ class InputFileReference(
         // because this function is used to find the file set so that would cause an infinite loop
 
         if (!element.isValid) return null
-
-        // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
-        val searchPaths = mutableListOf<String>()
-        val containingFile = element.containingFile
-        // Find the sources root of the current file.
-        // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootFiles = if (givenRootFile != null) setOf(givenRootFile) else containingFile.findRootFiles()
-            // If the current file is a root file, then we assume paths have to be relative to this file. In particular, when using subfiles then parts that are relative to one of the other root files should not be valid
-            .let {
-                if (containingFile in it || it.isEmpty()) listOf(containingFile) else it
-            }
-            .mapNotNull { it.virtualFile }
-        val rootDirectories = rootFiles.mapNotNull { it.parent }.toMutableList()
-
-        // Check environment variables
-        searchPaths += getTexinputsPaths(element.project, rootFiles, expandPaths = true, latexmkSearchDirectory = containingFile?.virtualFile?.parent)
-
-        // BIBINPUTS
-        // Not used for building the fileset, so we can use the fileset to lookup the BIBINPUTS environment variable
-        if (!isBuildingFileset && (element.name in CommandMagic.bibliographyIncludeCommands || extensions.contains("bib"))) {
-            val bibRunConfigs = containingFile.getBibtexRunConfigurations()
-            if (bibRunConfigs.any { config -> config.environmentVariables.envs.keys.any { it == "BIBINPUTS" } }) {
-                // When using BIBINPUTS, the file will only be sought relative to BIBINPUTS
-                searchPaths.clear()
-                searchPaths.addAll(bibRunConfigs.mapNotNull { it.environmentVariables.envs["BIBINPUTS"] })
-            }
+        val files = LatexProjectStructure.commandReferringFiles(element)
+        if (files.isEmpty()) {
+            // If the command does not refer to any files, we cannot resolve it
+            return null
         }
-
-        // Overrides the default for commands from the graphicx package
-        val extensions = if (!isBuildingFileset) {
-            val command = LatexCommand.lookup(element.name)?.firstOrNull()
-            if (command?.dependency == LatexPackage.GRAPHICX) {
-                // We cannot use the file set at this point, so we take the first command in the project and hope for the best
-                NewCommandsIndex.getByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, element.project,)
-                    .firstOrNull()
-                    ?.requiredParameterText(0)
-                    ?.split(",")
-                    // Graphicx requires the dot to be included
-                    ?.map { it.trim(' ', '.') } ?: extensions
-            }
-            else {
-                extensions
-            }
-        }
-        else {
-            extensions
-        }
-
-        var processedKey = expandCommandsOnce(key, element.project, file = rootFiles.firstOrNull()?.psiFile(element.project)) ?: key
-        // Leading and trailing whitespaces seem to be ignored, at least it holds for \include-like commands
-        processedKey = processedKey.trim()
-
-        // This command has a hardcoded path, this is difficult to detect automatically
-        if (element.name == LatexGenericRegularCommand.TIKZFIG.commandWithSlash || element.name == LatexGenericRegularCommand.CTIKZFIG.commandWithSlash) {
-            rootDirectories.addAll(rootDirectories.mapNotNull { it.findDirectory("figures") })
-        }
-
-        var targetFile: VirtualFile? = null
-
-        // Try to find the target file directly from the given path
-        @Suppress("KotlinConstantConditions")
-        if (targetFile == null) {
-            for (rootDirectory in rootDirectories) {
-                targetFile = rootDirectory.findFile(filePath = processedKey, extensions, supportsAnyExtension)
-                if (targetFile != null) break
-            }
-        }
-
-        // Try content roots, also for non-MiKTeX situations to allow using this as a workaround in case references can't be resolved the regular way
-        if (targetFile == null) {
-            for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
-                targetFile = moduleRoot.findFile(processedKey, extensions, supportsAnyExtension)
-                if (targetFile != null) break
-            }
-        }
-
-        // Try graphicspaths
-        if (targetFile == null) {
-            // If we are not building the fileset, we can make use of it
-            if (!isBuildingFileset) {
-                val includedPackages = containingFile.includedPackages()
-                if (CommandMagic.graphicPathsCommands.any { includedPackages.contains(it.dependency) }) {
-                    // Add the graphics paths to the search paths
-                    searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsInFileSet(containingFile))
-                }
-            }
-            for (searchPath in searchPaths) {
-                val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
-                for (rootDirectory in rootDirectories) {
-                    targetFile = rootDirectory.findFile(path + processedKey, extensions, supportsAnyExtension)
-                    if (targetFile != null)
-                        break
-                }
-                if (targetFile != null) break
-            }
-        }
-
-        // Look for packages/files elsewhere using the kpsewhich command.
-        if (targetFile == null && lookForInstalledPackages && !element.project.isTestProject()) {
-            targetFile = element.getFileNameWithExtensions(processedKey)
-                .mapNotNull { LatexPackageLocation.getPackageLocation(it, element.project) }
-                .firstNotNullOfOrNull { LocalFileSystem.getInstance().findFileByNioFile(it) }
-        }
-
-        if (targetFile == null && checkImportPath) targetFile = searchFileByImportPaths(element)?.virtualFile
-
-        // \externaldocument uses the .aux file in the output directory, we are only interested in the source file, but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
-        // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are
-        if (!isBuildingFileset && targetFile == null && element.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
-            targetFile = findAnywhereInProject(processedKey)
-        }
-
-        // addtoluatexpath package
-        if (targetFile == null && checkAddToLuatexPath) {
-            // TODO
-            // Reused cached values (provided shortly after project open) for performance reasons
-//            for (path in LatexIndexableSetContributor.Cache.externalDirectFileInclusions.getOrDefault(element.project, emptySet())) {
-//                targetFile = path.findFile(processedKey, extensions, supportsAnyExtension)
-//                if (targetFile != null) break
-//            }
-        }
-
-        if (targetFile == null) return null
-
         // Return a reference to the target file.
-        return PsiManager.getInstance(element.project).findFile(targetFile)
+        return PsiManager.getInstance(element.project).findFile(files.first())
     }
 
     /**
@@ -269,7 +144,7 @@ class InputFileReference(
      * the command that includes a file, and the name of the file.
      */
     private fun LatexCommands.getFileNameWithExtensions(fileName: String): Set<String> {
-        val extension = CommandMagic.includeOnlyExtensions[this.commandToken.text] ?: emptySet()
+        val extension = CommandMagic.includeAndExtensions[this.commandToken.text] ?: emptySet()
         return extension.map { "$fileName.$it" }.toSet() + setOf(fileName)
     }
 }

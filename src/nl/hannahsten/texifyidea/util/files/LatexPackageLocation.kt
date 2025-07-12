@@ -30,8 +30,8 @@ object LatexPackageLocation {
      * Fill cache with all paths of all files in the LaTeX installation.
      * Note: this can take a long time.
      */
-    fun updateLocationWithKpsewhichSuspend(project: Project) {
-        TexifyProjectCacheService.getInstance(project).getOrComputeNow(cacheKey, EXPIRATION_TIME, ::computeLocationWithKpsewhich)
+    suspend fun updateLocationWithKpsewhichSuspend(project: Project) {
+        TexifyProjectCacheService.getInstance(project).computeAndUpdate(cacheKey, ::computeLocationWithKpsewhich)
     }
 
     /**
@@ -74,7 +74,7 @@ object LatexPackageLocation {
      * Get the full path to the location of the package with the given name, or null in case there was any problem.
      * Note that if the package is not yet in the cache and multiple callers try to get it concurrently, then
      * the kpsewhich method will still be executed as much as there are callers.
-     * If needed, this can be avoided using coroutines with a mutex (see [ReferencedFileSetCache]).
+     * If needed, this can be avoided using coroutines with a mutex (see [TexifyProjectCacheService]).
      *
      * @param name Package name with extension.
      */

@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.impl.NonBlockingReadActionImpl
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.observable.util.lockOrSkip
 import com.intellij.openapi.project.Project
@@ -7,19 +9,20 @@ import com.jetbrains.rd.util.ConcurrentHashMap
 import com.jetbrains.rd.util.concurrentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
 
-abstract class ProjectCacheService(val project: Project, private val coroutineScope: CoroutineScope) {
-
-    class CacheValueTimed<T>(
-        val value: T,
-        val timestamp: Long = System.currentTimeMillis(),
-    ) {
-        fun isExpired(expirationInMs: Long): Boolean {
-            return System.currentTimeMillis() - timestamp >= expirationInMs
-        }
+class CacheValueTimed<T>(
+    val value: T,
+    val timestamp: Long = System.currentTimeMillis(),
+) {
+    fun isExpired(expirationInMs: Long): Boolean {
+        return System.currentTimeMillis() - timestamp >= expirationInMs
     }
+}
+
+abstract class ProjectCacheService(val project: Project, private val coroutineScope: CoroutineScope) {
 
     interface TypedKey<T>
 
@@ -96,6 +99,8 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * If the cache does not exist or is expired, it schedules the computation to be run later, not blocking the current thread.
      *
      *
+     * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
+     *
      * @param suspendComputation the computation to run if the cache is expired or does not exist. May return null to indicate that no value is available.
      */
     fun <S, T : S & Any> getAndComputeLater(
@@ -127,6 +132,8 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * Schedules a computation to be run later in a coroutine.
      * If the computation is already running, nothing happens.
      *
+     * It is guaranteed that [f] will not run in parallel with itself for the same key.
+     *
      * @param f the computation to run. It should return a value of type T or null if no value is available.
      */
     fun <T : Any> scheduleCompute(
@@ -142,6 +149,8 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      *
      * You may use this method to manually compute a value and update the cache in some background task,
      * such as [com.intellij.openapi.startup.ProjectActivity].
+     *
+     * It is guaranteed that [f] will not run in parallel with itself for the same key.
      */
     suspend fun <T : Any> computeAndUpdate(
         key: TypedKey<T>, f: suspend (Project) -> T?

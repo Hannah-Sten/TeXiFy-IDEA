@@ -13,7 +13,7 @@ var isUpdatingIncludeAliases = AtomicBoolean(false)
 fun updateAndGetIncludeCommands(project: Project): Set<String> {
     // For performance reasons, do not wait until the update (which requires index access) is done
 //    updateIncludeCommandsAliasesAsync(project)
-    return CommandMagic.defaultIncludeCommands.map { CommandManager.getAliases(it) }.flatten().toSet()
+    return CommandMagic.allFileIncludeCommands.map { CommandManager.getAliases(it) }.flatten().toSet()
 }
 
 fun updateIncludeCommandsAliasesAsync(project: Project) {
@@ -22,7 +22,7 @@ fun updateIncludeCommandsAliasesAsync(project: Project) {
         runInBackgroundWithoutProgress {
             try {
                 // Because every command has different parameters and behaviour (e.g. allowed file types), we keep track of them separately
-                for (command in CommandMagic.defaultIncludeCommands) {
+                for (command in CommandMagic.allFileIncludeCommands) {
                     smartReadAction(project) {
                         CommandManager.updateAliases(setOf(command), project)
                     }
@@ -44,5 +44,5 @@ fun getOriginalCommandFromAlias(commandName: String, project: Project): LatexCom
         // If we can't find anything, trigger an update so that maybe we have the information next time
 //        updateIncludeCommandsAliasesAsync(project)
     }
-    return LatexCommand.lookup(aliasSet.firstOrNull { it in CommandMagic.defaultIncludeCommands })?.first()
+    return LatexCommand.lookup(aliasSet.firstOrNull { it in CommandMagic.allFileIncludeCommands })?.first()
 }

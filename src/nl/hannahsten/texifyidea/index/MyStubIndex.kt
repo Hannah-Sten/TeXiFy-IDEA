@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
@@ -34,6 +35,13 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope
     ): Collection<Psi> {
         return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
+    }
+
+    @RequiresReadLock
+    fun getByName(
+        name: String, project: Project, file: VirtualFile
+    ): Collection<Psi> {
+        return getByName(name, project, GlobalSearchScope.fileScope(project, file))
     }
 
     @RequiresReadLock
@@ -78,14 +86,20 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
 
     @RequiresReadLock
     fun getByNames(
-        names: Collection<String>,
-        project: Project,
+        names: Collection<String>, project: Project,
         scope: GlobalSearchScope = project.contentSearchScope
     ): List<Psi> {
         val wrappedScope = wrapSearchScope(scope)
         return names.flatMap { name ->
             StubIndex.getElements(key, name, project, wrappedScope, clazz)
         }
+    }
+
+    @RequiresReadLock
+    fun getByNames(
+        names: Collection<String>, project: Project, file: VirtualFile,
+    ): List<Psi> {
+        return getByNames(names, project, GlobalSearchScope.fileScope(project, file))
     }
 
     @RequiresReadLock
