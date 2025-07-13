@@ -288,6 +288,9 @@ object CommandMagic {
         DECLARE_PAIRED_DELIMITER_XPP.cmd
     )
 
+    /**
+     * All the commands that may define regular commands, whether it exists or not.
+     */
     val allFileIncludeCommands = LatexRegularCommand.values()
         .filter { command -> command.arguments.any { it is RequiredFileArgument } }
         .map { it.commandWithSlash }
@@ -367,7 +370,7 @@ object CommandMagic {
 
     val graphicPathsCommandNames = graphicPathsCommands.mapTo(mutableSetOf()) { it.name }
 
-    val graphicBackages = graphicPathsCommands.mapTo(mutableSetOf()) { it.dependency }.also { it.remove(LatexPackage.DEFAULT) }
+    val graphicPackages = graphicPathsCommands.mapTo(mutableSetOf()) { it.dependency }.also { it.remove(LatexPackage.DEFAULT) }
 
     /**
      * Commands that should not have the given file extensions.

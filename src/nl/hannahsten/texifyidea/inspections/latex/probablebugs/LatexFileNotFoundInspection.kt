@@ -11,12 +11,14 @@ import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
@@ -42,7 +44,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Get commands of this file.
-        val commands = file.commandsInFile()
+        val commands = file.traverseCommands()
 
         // Loop through commands of file
         for (command in commands) {
@@ -64,7 +66,10 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
     private fun createQuickFixes(reference: InputFileReference, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
         val fileName = reference.key
-        val extensions = reference.extensions
+        val commandName = reference.element.name
+        val extensions = LatexCommand.lookup(commandName)?.firstOrNull()?.arguments?.flatMap {
+            (it as? RequiredFileArgument)?.supportedExtensions ?: emptyList()
+        } ?: emptyList()
 
         // CTAN packages are no targets of the InputFileReference, so we check them here and don't show a warning if a CTAN package is included
         if (extensions.contains("sty")) {
@@ -81,7 +86,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         // Find expected extension
         val extension = fileName.getFileExtension().ifEmpty {
-            reference.extensions.firstOrNull()
+            extensions.firstOrNull()
         } ?: "tex"
 
         descriptors.add(

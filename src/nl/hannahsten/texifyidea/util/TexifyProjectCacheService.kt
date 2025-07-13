@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.impl.NonBlockingReadActionImpl
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.observable.util.lockOrSkip
 import com.intellij.openapi.project.Project
@@ -9,7 +7,6 @@ import com.jetbrains.rd.util.ConcurrentHashMap
 import com.jetbrains.rd.util.concurrentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
 
@@ -19,6 +16,10 @@ class CacheValueTimed<T>(
 ) {
     fun isExpired(expirationInMs: Long): Boolean {
         return System.currentTimeMillis() - timestamp >= expirationInMs
+    }
+
+    fun isNotExpired(expirationInMs: Long): Boolean {
+        return !isExpired(expirationInMs)
     }
 }
 

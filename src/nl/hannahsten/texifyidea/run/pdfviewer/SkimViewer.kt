@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
@@ -17,7 +16,6 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
 
     override val isFocusSupported: Boolean
         get() = true
-
 
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
         if (pdfFilePath == null || pdfFilePath != pdfPath) {

@@ -34,7 +34,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     private var resultSet: CompletionResultSet? = null
     private var validExtensions: Set<String>? = null
     private var absolutePathSupport = true
-    private var supportsAnyExtension = true
 
     companion object {
 
@@ -51,7 +50,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         if (parentCommand is RequiredFileArgument) {
             validExtensions = parentCommand.supportedExtensions
             absolutePathSupport = parentCommand.isAbsolutePathSupported
-            supportsAnyExtension = parentCommand.supportsAnyExtension
         }
 
         var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile) ?: autocompleteText

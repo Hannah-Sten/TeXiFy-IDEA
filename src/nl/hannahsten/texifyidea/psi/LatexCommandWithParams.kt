@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
+import nl.hannahsten.texifyidea.util.parser.toStringMap
+
 /**
  * Defines a command possibly with parameters in LaTeX, such as `\alpha`, `\sqrt{x}` or `\frac{1}{2}`.
  *
@@ -28,6 +30,10 @@ interface LatexCommandWithParams : LatexComposite {
                 c == '{' || c == '}' || c.isWhitespace()
             }
         }
+    }
+
+    fun optionalParameterTextMap(): Map<String, String> {
+        return getOptionalParameterMap().toStringMap()
     }
 
     /**

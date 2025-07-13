@@ -172,7 +172,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun testSubfilesReferenceToMain() {
-        myFixture.testHighlighting("subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/subdir/onedown.tex", "subfilestest/main.tex")
+        myFixture.testHighlighting("subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/subdir/onedown.tex", "subfilestest/main.tex", "subfilestest/subfiles.cls")
     }
 
 // java.lang.Throwable: Stub index points to a file without PSI: file = temp:///src/subfiles/dir1, file type = com.intellij.openapi.fileTypes.UnknownFileType@35570dc3

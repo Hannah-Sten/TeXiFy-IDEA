@@ -107,4 +107,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         this.greenStub?.let { return it.requiredParams.getOrNull(idx) }
         return super.requiredParameterText(idx)
     }
+
+    override fun optionalParameterTextMap(): Map<String, String> {
+        this.greenStub?.let { return it.optionalParams }
+        return super.optionalParameterTextMap()
+    }
 }

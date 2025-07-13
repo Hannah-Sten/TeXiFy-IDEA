@@ -164,7 +164,7 @@ fun LatexCommands.findIndentation(): String {
  */
 fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
     return references.filterIsInstance<InputFileReference>()
-        .mapNotNull { it.resolve(includeInstalledPackages) }
+        .mapNotNull { it.resolve() }
 }
 
 /**

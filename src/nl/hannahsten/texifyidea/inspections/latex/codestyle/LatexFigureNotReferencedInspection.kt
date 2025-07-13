@@ -19,7 +19,6 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.isFigureLabel
-import nl.hannahsten.texifyidea.util.labels.findLabelingCommandsInFile
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
@@ -73,15 +72,6 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
                 isOntheFly
             )
         }
-
-    /**
-     * Find all commands in the file that label a figure.
-     */
-    private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
-        file.findLabelingCommandsInFile()
-            .filter(LatexCommands::isFigureLabel)
-            .associateBy(LatexCommands::labelName)
-            .toMutableMap()
 
     class RemoveFigureFix(label: SmartPsiElementPointer<LatexParameterText>) : SafeDeleteFix(label.element as PsiElement) {
 

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.parser
 
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -70,6 +71,30 @@ inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
         }
     }
     return false
+}
+
+/**
+ * Returns the start offset of this PsiElement in the given ancestor, or -1 if the ancestor is not a parent of this PsiElement.
+ */
+fun PsiElement.startOffsetInAncestor(ancestor: PsiElement): Int {
+    // If the ancestor is not a parent, return -1
+    var current: PsiElement? = this
+    var startOffset = 0
+    while (current != null && current != ancestor) {
+        startOffset += current.startOffsetInParent
+        current = current.parent
+    }
+    return if (current == null) -1 else startOffset // ancestor not found in the parent chain
+}
+
+/**
+ * Returns the text range of this PsiElement in the given ancestor, or null if the ancestor is not a parent of this PsiElement.
+ */
+fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
+    // If the ancestor is not a parent, return null
+    val startOffset = this.startOffsetInAncestor(ancestor)
+    if(startOffset < 0) return null
+    return TextRange.from(startOffset, this.textLength)
 }
 
 /**
@@ -164,31 +189,31 @@ fun PsiElement.traverse(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequ
     }
 }
 
-private fun PsiElement.traversePruned0(depth: Int = Int.MAX_VALUE, filterSubtree: (PsiElement) -> Boolean): Sequence<PsiElement> = sequence {
+private fun PsiElement.traversePruned0(depth: Int = Int.MAX_VALUE, pruneIf: (PsiElement) -> Boolean): Sequence<PsiElement> = sequence {
     val element = this@traversePruned0
-    if (depth < 0 || !filterSubtree(element)) return@sequence
+    if (depth < 0 || pruneIf(element)) return@sequence
     yield(element)
     if (depth == 0) return@sequence
     forEachDirectChild { c ->
-        yieldAll(c.traversePruned0(depth - 1, filterSubtree))
+        yieldAll(c.traversePruned0(depth - 1, pruneIf))
     }
 }
 
 /**
  * Traverse the PSI tree and yield each element (including this element),
- * but prune the traversal (and the subtree) if the element does not match the given predicate.
+ * but prune the traversal (and the subtree) if the element matches the given predicate.
  * Note that the root element is never pruned.
  *
  *
  * @param depth The maximum depth to traverse the PSI tree.
- * @param filterSubtree The predicate to filter the subtree. If it returns false for an element, the whole subtree of that element (inclusive) is not traversed.
+ * @param pruneIf The predicate to prune the subtree. If it returns true for an element, the whole subtree of that element (inclusive) is not traversed.
  */
-fun PsiElement.traversePruned(depth: Int = Int.MAX_VALUE, filterSubtree: (PsiElement) -> Boolean): Sequence<PsiElement> = sequence {
+fun PsiElement.traversePruneIf(depth: Int = Int.MAX_VALUE, pruneIf: (PsiElement) -> Boolean): Sequence<PsiElement> = sequence {
     if (depth < 0) return@sequence
-    yield(this@traversePruned)
+    yield(this@traversePruneIf)
     if (depth == 0) return@sequence
     forEachDirectChild { c ->
-        yieldAll(c.traversePruned0(depth - 1, filterSubtree))
+        yieldAll(c.traversePruned0(depth - 1, pruneIf))
     }
 }
 

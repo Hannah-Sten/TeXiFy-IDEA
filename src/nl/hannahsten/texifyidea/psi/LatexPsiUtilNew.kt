@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
-import nl.hannahsten.texifyidea.util.parser.traversePruned
+import nl.hannahsten.texifyidea.util.parser.traversePruneIf
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /*
@@ -73,8 +73,8 @@ fun LatexEnvironment.getLabel(): String? {
     //  We should whether the label belongs to the outer command or the inner command.
     // The current level 7 is set to make the test pass, but it is not a good solution.
     // Setting it to 2 (environment_content - no_math_content - commands) ignores the nested label commands.
-    val labelCommand = content.traversePruned(7) {
-        it !is LatexEnvironment // ignore the subtree if we reach another environment
+    val labelCommand = content.traversePruneIf(7) {
+        it is LatexEnvironment // ignore the subtree if we reach another environment
     }.filterIsInstance<LatexCommands>().firstOrNull {
         it.name in CommandMagic.labels
     } ?: return null
@@ -241,4 +241,19 @@ inline fun LatexCommandWithParams.forEachOptionalParameter(
             action(kvPair.optionalKeyValKey, kvPair.keyValValue)
         }
     }
+}
+
+private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
+    return this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
+}
+
+fun LatexRequiredParam.getParameterTexts(): Sequence<LatexParameterText> {
+    return getParameterTexts0()
+}
+
+fun LatexOptionalParam.getParameterTexts(): Sequence<LatexParameterText> {
+    return getParameterTexts0()
+}
+fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> {
+    return getParameterTexts0()
 }

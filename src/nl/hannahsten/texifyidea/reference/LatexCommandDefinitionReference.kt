@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.openapi.project.DumbService
 import com.intellij.psi.*
-import com.intellij.util.indexing.DumbModeAccessType
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.isInsideDefinition

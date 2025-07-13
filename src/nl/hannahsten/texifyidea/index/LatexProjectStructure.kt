@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.codeInsight.hints.ParameterHintsPass
 import com.intellij.codeInsight.hints.ParameterHintsPassFactory
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.application.writeAction
@@ -9,6 +8,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
@@ -28,7 +28,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexOptionalParam
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.ProjectCacheService
@@ -39,9 +38,9 @@ import nl.hannahsten.texifyidea.util.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
-import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.projectSearchScope
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
@@ -81,7 +80,6 @@ data class LatexProjectFilesets(
     }
 }
 
-
 fun pathOrNull(pathText: String?): Path? {
     if (pathText.isNullOrBlank()) return null
     return try {
@@ -98,14 +96,18 @@ object LatexProjectStructure {
      */
     private val countOfBuilding = AtomicInteger(0)
 
-    object UserDataKeys {
+    private object UserDataKeys {
         /**
          * Stores the files that are referenced by the latex command.
          */
-        val FILE_REFERENCE = Key.create<CacheValueTimed<Set<VirtualFile>>>("latex.command.reference.files")
+        val FILE_REFERENCE = Key.create<
+            CacheValueTimed<
+                Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+                >
+            >("latex.command.reference.files")
     }
 
-    const val CACHE_EXPIRATION_IN_MS = 5_000L // 5 seconds
+    const val CACHE_EXPIRATION_IN_MS = 1_000L // 5 seconds
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -144,16 +146,71 @@ object LatexProjectStructure {
 
     private fun Path.findVirtualFile(): VirtualFile? = LocalFileSystem.getInstance().findFileByNioFile(this)
 
-    private fun processFilesUnderRootDirs(path: Path, rootDirs: Collection<VirtualFile>, nextFile: (VirtualFile) -> Unit) {
-        if (path.isAbsolute) {
-            path.findVirtualFile()?.let { nextFile(it) }
-            return
-        }
-        for (sourcePath in rootDirs) {
-            sourcePath.findFileByRelativePath(path.invariantSeparatorsPathString)?.let { file ->
+    private fun processElementsWithPaths0(
+        elements: List<Sequence<Path>>,
+        refInfoMap: List<MutableSet<VirtualFile>>,
+        info: FilesetInfo,
+        nextFile: (VirtualFile) -> Unit,
+        action: (Path, (VirtualFile) -> Unit) -> Unit
+    ) {
+        elements.forEachIndexed { i, paths ->
+            val newNextFile: (VirtualFile) -> Unit = { file ->
+                refInfoMap[i].add(file)
                 nextFile(file)
             }
+            paths.forEach { path ->
+                action(path, newNextFile)
+            }
+//            updateOrMergeRefData(paramText, references, info)
         }
+    }
+
+    private inline fun processElementsWithPaths(
+        elements: List<Sequence<Path>>,
+        refInfoMap: List<MutableSet<VirtualFile>>,
+        info: FilesetInfo,
+        noinline nextFile: (VirtualFile) -> Unit,
+        crossinline action: (Path) -> VirtualFile?
+    ) {
+        processElementsWithPaths0(elements, refInfoMap, info, nextFile) { path, func ->
+            action(path)?.apply(func)
+        }
+//        elements.forEach { (paramText, paths) ->
+//            val references = mutableListOf<VirtualFile>()
+//            paths.forEach { path ->
+//                action(path).forEach {
+//                    references.add(it)
+//                    nextFile(it)
+//                }
+//            }
+//            updateOrMergeRefData(paramText, references, info)
+//        }
+    }
+
+    private fun processFilesUnderRootDirs(
+        elements: List<Sequence<Path>>,
+        refInfoMap: List<MutableSet<VirtualFile>>,
+        info: FilesetInfo, rootDirs: Collection<VirtualFile>,
+        nextFile: (VirtualFile) -> Unit
+    ) {
+        processElementsWithPaths0(elements, refInfoMap, info, nextFile) { path, func ->
+            if (path.isAbsolute) path.findVirtualFile()?.apply(func)
+            else rootDirs.forEach { sourcePath ->
+                sourcePath.findFileByRelativePath(path.invariantSeparatorsPathString)?.apply(func)
+            }
+        }
+    }
+
+    private fun splitTextAndBuildRanges(text: String, delim: String, startOffset0: Int = 0): List<Pair<TextRange, String>> {
+        val splits = text.split(delim)
+        val result = ArrayList<Pair<TextRange, String>>(splits.size)
+        var startOffset = startOffset0
+        for (s in splits) {
+            val range = TextRange(startOffset, startOffset + s.length)
+            result.add(range to s)
+            startOffset += s.length + delim.length // move the start offset to the next split
+        }
+        return result
     }
 
     private fun findReferredFiles(
@@ -161,9 +218,9 @@ object LatexProjectStructure {
         info: FilesetInfo,
         nextFile: (VirtualFile) -> Unit
     ) {
+        // remark: we should only use stub-based information here for performance reasons
         val commandName = command.name ?: return
         val reqParamTexts = command.requiredParametersText()
-
 
         val cmd = LatexCommand.lookup(commandName)?.firstOrNull() ?: return
         val dependency = cmd.dependency
@@ -172,29 +229,55 @@ object LatexProjectStructure {
         val configuredExtensions = if (dependency == LatexPackage.GRAPHICX) info.declareGraphicsExtensions else null
 
         // let us locate the sub
-        val pathTextAndExt = cmd.requiredArguments.zip(reqParamTexts).mapNotNullTo(mutableListOf()) { (argument, paramText) ->
-            if (argument !is RequiredFileArgument) return@mapNotNullTo null
-            val pathTexts = if (argument.commaSeparatesArguments) paramText.split(",") else listOf(paramText)
-            val extensions = configuredExtensions ?: argument.supportedExtensions
-            pathTexts to extensions
-        }
+        val rangesAndTextsWithExt: MutableList<Pair<List<String>, Set<String>>> = mutableListOf()
         // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
         // We reference it because we include the preamble of that file, so it is in the file set (partially)
         if (commandName == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && reqParamTexts.any { it.endsWith(SUBFILES.name) }) {
             // try to find the main file in the optional parameter map
-            command.findFirstChildTyped<LatexOptionalParam>()?.text?.trim('[', ']')?.let {
-                pathTextAndExt.add(
-                    listOf(it) to setOf("tex")
+            command.optionalParameterTextMap().entries.firstOrNull()?.let { (k, v) ->
+                // the value should be empty, we only care about the key, see Latex.bnf
+                rangesAndTextsWithExt.add(
+                    listOf(k) to setOf("tex")
                 )
+//                val contentText = param.text.let { it.substring(1, it.length - 1) }
+//                val contentStartOffset = param.startOffsetInAncestor(command) + 1
+//                val rangeAndTexts = TextRange.from(contentStartOffset, contentText.length) to contentText
+//                rangesAndTextsWithExt.add(
+//                    listOf(rangeAndTexts) to setOf("tex")
+//                )
             }
         }
+        cmd.requiredArguments.zip(reqParamTexts).mapNotNullTo(rangesAndTextsWithExt) { (argument, contentText) ->
+            if (argument !is RequiredFileArgument) return@mapNotNullTo null
+//                val contentText = param.let { it.substring(1, it.length - 1) }
+//                val contentStartOffset = param.startOffsetInAncestor(command) + 1
+//                    param.getParameterTexts().map { it.textRangeInAncestor(param)!!.shiftRight(paramStartOffset) to it.text }
+//                    splitTextAndBuildRanges(contentText, ",", contentStartOffset)
+            val paramTexts = if (argument.commaSeparatesArguments) {
+                contentText.split(PatternMagic.parameterSplit)
+            }
+            else listOf(contentText)
 
-        // TODO file name not null
+            val extensions = configuredExtensions ?: argument.supportedExtensions
+            paramTexts to extensions
+        }
 
-        val pathAndExts = pathTextAndExt.flatMap { (pathTexts, extensions) ->
-            pathTexts.asSequence().mapNotNull { pathOrNull(it.trim()) }.flatMap {
-                if (it.extension.isNotEmpty()) sequenceOf(it)
-                else extensions.asSequence().map { ext -> it.resolveSibling("${it.fileName.pathString}.$ext") }
+        val extractedRefTexts = rangesAndTextsWithExt.flatMap { it.first }
+
+        var pathWithExts = rangesAndTextsWithExt.flatMap { (paramTexts, extensions) ->
+            val noExtensionProvided = extensions.isEmpty()
+            val extensionSeq = extensions.asSequence()
+            paramTexts.asSequence().map { text ->
+                pathOrNull(text.trim())?.let { path ->
+                    if (path.extension.isNotEmpty() || noExtensionProvided) {
+                        sequenceOf(path)
+                    }
+                    else {
+                        path.fileName?.pathString?.let { fileName ->
+                            extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") }
+                        }
+                    }
+                } ?: emptySequence()
             }
         }
 
@@ -204,31 +287,26 @@ object LatexProjectStructure {
             searchDirs = searchDirs + searchDirs.mapNotNull { it.findDirectory("figures") }
         }
 
+        if (dependency in CommandMagic.graphicPackages && info.graphicsSuffix.isNotEmpty()) {
+            val graphicsSuffix = info.graphicsSuffix.asSequence()
+            pathWithExts = pathWithExts.map { paths ->
+                val allPathWithSuffix = paths.flatMap { path -> graphicsSuffix.map { suffix -> suffix.resolve(path) } }
+                (paths + allPathWithSuffix)
+            }
+        }
+
+        val refInfoMap: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
+
         if (commandName in CommandMagic.packageInclusionCommands) {
-            pathAndExts.forEach { it ->
-                LatexPackageLocation.getPackageLocation(it.pathString, info.project)?.findVirtualFile()?.let {
-                    nextFile(it)
-                }
+            processElementsWithPaths(pathWithExts, refInfoMap, info, nextFile) {
+                LatexPackageLocation.getPackageLocation(it.pathString, info.project)?.findVirtualFile()
             }
         }
 
         if (commandName in CommandMagic.bibliographyIncludeCommands) {
             // For bibliography files, we can search in the bib input paths
-            pathAndExts.forEach { path ->
-                processFilesUnderRootDirs(path, info.bibInputPaths, nextFile)
-            }
+            processFilesUnderRootDirs(pathWithExts, refInfoMap, info, info.bibInputPaths, nextFile)
         }
-
-        if (dependency in CommandMagic.graphicBackages) {
-            // For graphics paths, we can search in the graphics paths
-            info.graphicsSuffix.forEach { suffix ->
-                pathAndExts.forEach {
-                    processFilesUnderRootDirs(suffix.resolve(it), searchDirs, nextFile)
-                }
-            }
-        }
-
-
 
         if (commandName == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
             // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
@@ -236,14 +314,18 @@ object LatexProjectStructure {
             // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are,
             // but we still include the files anyway, so that the user can navigate to them.
             // try to find everywhere in the project
-            pathAndExts.forEach {
-                FilenameIndex.getVirtualFilesByName(it.fileName.pathString, info.project.projectSearchScope).forEach(nextFile)
+            processElementsWithPaths0(pathWithExts, refInfoMap, info, nextFile) { path, function ->
+                FilenameIndex.processFilesByName(path.fileName.pathString, true, info.project.projectSearchScope) {
+                    if (it.isValid) function(it)
+                    true
+                }
             }
         }
+        processFilesUnderRootDirs(pathWithExts, refInfoMap, info, searchDirs, nextFile)
 
-        pathAndExts.forEach { path ->
-            processFilesUnderRootDirs(path, searchDirs, nextFile)
-        }
+        val savedData = extractedRefTexts to refInfoMap
+
+        updateOrMergeRefData(command, savedData, info)
     }
 
     /**
@@ -298,19 +380,29 @@ object LatexProjectStructure {
         }
     }
 
-    private fun updateOrMergeRefData(command: PsiElement, files: List<VirtualFile>, info: FilesetInfo) {
+    private fun updateOrMergeRefData(command: PsiElement, refInfoMap: Pair<List<String>, List<MutableSet<VirtualFile>>>, info: FilesetInfo) {
         val existingRef = command.getUserData(UserDataKeys.FILE_REFERENCE)
-        if (existingRef != null && existingRef.timestamp == info.timestamp) {
+        if (existingRef == null || existingRef.timestamp < info.timestamp) {
+            // overwrite the existing reference
+            command.putUserData(UserDataKeys.FILE_REFERENCE, CacheValueTimed(refInfoMap, info.timestamp))
+        }
+        else if (existingRef.timestamp == info.timestamp) {
             // If the marker is the same, update the files
-            val existingFiles = existingRef.value
-            val updatedFiles = existingFiles + files
+            val existingFiles = existingRef.value.second
+            val (names, newFiles) = refInfoMap
+            val updatedFiles = if (newFiles.size != existingFiles.size) {
+                // this should not happen as the parsing process is the same, but just in case
+                refInfoMap
+            }
+            else {
+                names to List(newFiles.size) { index ->
+                    newFiles[index] + existingFiles[index]
+                }
+            }
             command.putUserData(UserDataKeys.FILE_REFERENCE, CacheValueTimed(updatedFiles, info.timestamp))
         }
-        else {
-            // If there is no existing reference, create a new one
-            command.putUserData(UserDataKeys.FILE_REFERENCE, CacheValueTimed(files.toSet(), info.timestamp))
-        }
-        // remark: as it is guaranteed by the cache service that the fileset update will not run in parallel with itself, we can safely update the user data without interference
+        // remark: as it is guaranteed by the cache service that the fileset update will not run in parallel with itself,
+        // we can safely update the user data without interference
     }
 
     /**
@@ -331,7 +423,7 @@ object LatexProjectStructure {
         processNewInformation(project, file, info)
 
         fileInputCommands.forEach {
-            findReferredFiles(it, file, info,nextFile)
+            findReferredFiles(it, file, info, nextFile)
         }
     }
 
@@ -369,7 +461,6 @@ object LatexProjectStructure {
             project, texInputPaths, bibInputPaths, projectInfo.timestamp, root
         )
     }
-
 
     private fun recursiveBuildFileset(
         file: VirtualFile, files: MutableSet<VirtualFile>,
@@ -429,7 +520,6 @@ object LatexProjectStructure {
         }
         return LatexProjectFilesets(allFilesets, mapping)
     }
-
 
     private val CACHE_KEY = ProjectCacheService.createKey<LatexProjectFilesets>()
 
@@ -508,22 +598,33 @@ object LatexProjectStructure {
     }
 
     /**
+     * Gets the most recent file reference information for the given command, which is computed during the fileset building process.
+     * Returns a map where the keys are plain texts ranges in the command that are references and the values are sets of virtual files that are referenced.
      *
+     * Note that the returned data may not be valid.
+     *
+     * The reason that only plain texts are returned is that no further information can be obtained from stub-based commands,
      */
-    fun commandReferringFiles(command: LatexCommands): Set<VirtualFile> {
+    fun commandFileReferenceInfo(command: LatexCommands): Pair<List<String>, List<Set<VirtualFile>>>? {
         val project = command.project
-        if (DumbService.isDumb(project)) return emptySet()
-        val projectFS = getFilesets(project) // call for an update if needed
-        command.getUserData(UserDataKeys.FILE_REFERENCE)?.let { return it.value } // if it is already available, return it
+        if (DumbService.isDumb(project)) return null
 
-        val root = command.containingFile.virtualFile ?: return emptySet()
-        if (projectFS == null || root in projectFS.mapping) {
-            return emptySet()
+        val data = command.getUserData(UserDataKeys.FILE_REFERENCE)
+        if (data != null && data.isNotExpired(CACHE_EXPIRATION_IN_MS)) {
+            // If the data is already computed and not expired, return it
+            return data.value
         }
+        val projectFS = getFilesets(project) // call for an update if needed
+        val root = command.containingFile.virtualFile ?: return null
+        if (projectFS == null || root in projectFS.mapping) {
+            // if the file is already in the mapping, we should totally rely on the computed data
+            return data?.value
+        }
+
         // If the file is not in the mapping, it means it is not part of any fileset, so we manually build it as a root file
         val projectInfo = makePreparation(project)
         buildFilesetFromRoot(root, project, projectInfo)
 
-        return command.getUserData(UserDataKeys.FILE_REFERENCE)?.value ?: emptySet()
+        return command.getUserData(UserDataKeys.FILE_REFERENCE)?.value
     }
 }

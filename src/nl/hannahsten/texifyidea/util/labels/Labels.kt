@@ -7,12 +7,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.reference.InputFileReference
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
  * Finds all the defined labels in the fileset of the file.
@@ -47,33 +42,6 @@ fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
     return NewLabelsIndex.getAllLabels(fileset).asSequence().flatMap {
         NewLabelsIndex.getByName(it, fileset)
     }
-}
-
-/**
- * Make a sequence of all commands in the file set that specify a label. This does not include commands which define a label via an
- * optional parameter.
- */
-fun PsiFile.findLabelingCommandsInFileSet(): Sequence<LatexCommands> {
-    // If using the xr package to include label definitions in external files, include those external files when searching for labeling commands in the fileset
-    val externalCommands = this.findXrPackageExternalDocuments().flatMap { it.commandsInFileSet() }
-    return (this.commandsInFileSet() + externalCommands).asSequence().findLatexCommandsLabels(this.project)
-}
-
-/**
- * Find external files which contain label definitions, as used by the xr package, which are called with \externaldocument anywhere in the fileset.
- */
-fun PsiFile.findXrPackageExternalDocuments(): List<PsiFile> {
-    return this.commandsInFileSet()
-        .filter { it.name == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash }
-        .flatMap { it.references.filterIsInstance<InputFileReference>() }
-        .mapNotNull { it.findAnywhereInProject(it.key)?.psiFile(project) }
-}
-
-/**
- * @see [findLabelingCommandsInFileSet] but then only for commands in this file.
- */
-fun PsiFile.findLabelingCommandsInFile(): Sequence<LatexCommands> {
-    return this.traverseCommands().findLatexCommandsLabels(this.project)
 }
 
 /*
