@@ -18,6 +18,7 @@ object SpecialKeys {
     const val ALL_DEFINITIONS = "all_def"
     const val PACKAGE_INCLUDES = "package_includes"
     const val REGULAR_COMMAND_DEFINITION = "non_math_cmd_def"
+    const val GLOSSARY_ENTRY = "glossary_entry"
 }
 
 /**
@@ -32,7 +33,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     override fun getVersion(): Int {
-        return 102
+        return 103
     }
 
     override fun buildFileset(baseFile: PsiFile): GlobalSearchScope {
@@ -45,7 +46,8 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         CommandMagic.environmentDefinitions to SpecialKeys.ENV_DEFINITIONS,
         CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
-        CommandMagic.regularCommandDefinitionsAndRedefinitions to SpecialKeys.REGULAR_COMMAND_DEFINITION
+        CommandMagic.regularCommandDefinitionsAndRedefinitions to SpecialKeys.REGULAR_COMMAND_DEFINITION,
+        CommandMagic.glossaryEntry to SpecialKeys.GLOSSARY_ENTRY
     )
 
     override val specialKeys: Set<String> = mappingPairs.map { it.second }.toSet()
@@ -108,6 +110,13 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
 
     fun getAllEnvDefRelated(originalFile: PsiFile): Collection<LatexCommands> {
         return getAllEnvDef(originalFile.project)
+    }
+
+    /**
+     * Get all glossary entries in the fileset of the given file.
+     */
+    fun getAllGlossaryEntries(originalFile: PsiFile): Collection<LatexCommands> {
+        return getByNameInFileSet(SpecialKeys.GLOSSARY_ENTRY, originalFile)
     }
 }
 

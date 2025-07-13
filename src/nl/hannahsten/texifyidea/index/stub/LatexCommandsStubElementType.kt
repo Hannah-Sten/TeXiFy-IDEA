@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import java.io.IOException
 import java.util.regex.Pattern
@@ -98,10 +97,6 @@ class LatexCommandsStubElementType(debugName: String) :
         NewSpecialCommandsIndex.sinkIndex(sink, token) // all commands classified
         NewDefinitionIndex.sinkIndex(stub, sink) // record definitions
         NewLabelsIndex.sinkIndexCommand(stub, sink) // labels
-
-        if (token in CommandMagic.glossaryEntry && stub.requiredParams.isNotEmpty()) {
-            sink.occurrence(LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY, stub.requiredParams[0])
-        }
     }
 
     private fun deserialiseList(string: String): List<String> {

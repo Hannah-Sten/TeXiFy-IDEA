@@ -6,7 +6,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
-import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
@@ -44,7 +44,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
-        val glossaryCommands = LatexGlossaryEntryIndex.Util.getItemsInFileSet(parameters.originalFile)
+        val glossaryCommands = NewSpecialCommandsIndex.getAllGlossaryEntries(parameters.originalFile)
         val lookupItems = glossaryCommands.mapNotNull { command: LatexCommands ->
             when (command.name) {
                 NEWACRONYM.cmd, NEWABBREVIATION.cmd -> {

@@ -43,3 +43,23 @@ class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommands
 }
 
 val NewDefinitionIndex = NewDefinitionIndexEx()
+
+// class NewGlossaryEntryIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
+//    override fun getVersion(): Int {
+//        return 1
+//    }
+//
+//    override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
+//        val command = stub.commandToken
+//        if (command !in CommandMagic.glossaryEntry) return
+//        val requiredParam = stub.requiredParams
+//        if( requiredParam.isEmpty()) return
+//        sink.occurrence(key, requiredParam[0])
+//    }
+//
+//    override fun getKey(): StubIndexKey<String, LatexCommands> {
+//        return LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY
+//    }
+// }
+//
+// val NewGlossaryEntryIndex = NewGlossaryEntryIndexEx()
