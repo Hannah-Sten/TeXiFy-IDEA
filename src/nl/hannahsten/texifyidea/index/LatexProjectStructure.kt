@@ -11,14 +11,11 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
-import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.CachedValueProvider.Result
-import com.intellij.psi.util.CachedValuesManager
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -403,10 +400,7 @@ object LatexProjectStructure {
     ) {
         if (!file.isValid) return
         val project = info.project
-        val psiFile = file.findPsiFile(project) ?: return
-        val fileInputCommands = CachedValuesManager.getCachedValue(psiFile) {
-            Result.create(NewSpecialCommandsIndex.getAllFileInputs(project, file), file)
-        }
+        val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
 
         processNewInformation(project, file, info)
 
@@ -539,6 +533,14 @@ object LatexProjectStructure {
     }
 
     /**
+     * Checks if the filesets are available for the given project, and potentially schedules a recomputation.
+     */
+    fun isProjectFilesetsAvailable(project: Project): Boolean {
+        return getFilesets(project) != null
+//        return TexifyProjectCacheService.getInstance(project).getOrNull(CACHE_KEY) != null
+    }
+
+    /**
      * Gets the filesets containing the given PsiFile.
      *
      */
@@ -590,10 +592,12 @@ object LatexProjectStructure {
      *
      * Note that the returned data may not be valid.
      *
-     * The reason that only plain texts are returned is that no further information can be obtained from stub-based commands,
+     * The reason that only plain texts are returned is that no further information can be obtained from stub-based commands.
+     *
+     *
+     * @see nl.hannahsten.texifyidea.reference.InputFileReference
      */
-    fun commandFileReferenceInfo(command: LatexCommands): Pair<List<String>, List<Set<VirtualFile>>>? {
-        val project = command.project
+    fun commandFileReferenceInfo(command: LatexCommands, project: Project = command.project): Pair<List<String>, List<Set<VirtualFile>>>? {
         if (DumbService.isDumb(project)) return null
 
         val data = command.getUserData(UserDataKeys.FILE_REFERENCE)

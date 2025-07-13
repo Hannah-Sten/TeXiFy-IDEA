@@ -6,11 +6,13 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import org.jdom.filter2.Filters.element
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -62,6 +64,46 @@ class InputFileReference(
                 command.parent.node.replaceChild(oldNode, newNode)
             }
             return command
+        }
+
+        /**
+         * Use a text-based search to find the text ranges of the command parameters that refer to files.
+         */
+        private fun recoverTextRanges(command: LatexCommands, refData: Pair<List<String>, List<Set<VirtualFile>>>?): List<Triple<String, TextRange, Set<VirtualFile>>> {
+            refData ?: return emptyList()
+            val commandText = command.text
+            var offset = 0
+            return refData.first.zip(refData.second).mapNotNull { (refText, files) ->
+                val shift = commandText.indexOf(refText, offset)
+                if (shift < 0) return@mapNotNull null
+                // If the text is not found, it means the command was modified and the reference is no longer valid, but we still want to return some files
+                offset = shift
+                Triple(refText, TextRange.from(offset, refText.length), files)
+            }
+        }
+
+        /**
+         * Get files included by this command built from the fileset information in the project structure.
+         */
+        fun getIncludedFiles(command: LatexCommands, includePackages: Boolean = true): List<PsiFile> {
+            val proj = command.project
+            val refInfo = LatexProjectStructure.commandFileReferenceInfo(command, proj) ?: return emptyList()
+            val manager = PsiManager.getInstance(proj)
+            return refInfo.second.flatten().mapNotNull { f -> manager.findFile(f) }
+        }
+
+        /**
+         * Check if the command includes other files, and if so return [InputFileReference] instances for them.
+         * This method is called continuously, so it should be really fast.
+         *
+         * Use this instead of command.references.filterIsInstance<InputFileReference>(), to avoid resolving references of types that will not be needed.
+         */
+        fun getFileArgumentsReferences(commands: LatexCommands): List<InputFileReference> {
+            val rawInfo = LatexProjectStructure.commandFileReferenceInfo(commands)
+            val refInfoMap = recoverTextRanges(commands, rawInfo)
+            return refInfoMap.map { (text, range, files) ->
+                InputFileReference(commands, text, range, files)
+            }
         }
     }
 

@@ -15,13 +15,13 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 import java.util.*
@@ -134,8 +134,10 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         if (includeCommandsElements.count() != Cache.includedFiles.size) {
             runInBackgroundWithoutProgress {
                 smartReadAction(element.project) {
+                    val showPackages = TexifySettings.getInstance().showPackagesInStructureView
                     val newIncludes = includeCommandsElements.associate {
-                        Pair(it.createSmartPointer(), it.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView).map { it.createSmartPointer() })
+                        var allIncludeFiles = InputFileReference.getIncludedFiles(it)
+                        Pair(it.createSmartPointer(), allIncludeFiles.map { it.createSmartPointer() })
                     }
                     // Clear cache to avoid it becoming outdated too much
                     Cache.includedFiles.clear()

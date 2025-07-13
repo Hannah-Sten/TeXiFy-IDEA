@@ -9,6 +9,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -23,7 +24,6 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.getFileArgumentsReferences
 import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import java.util.*
 
@@ -40,7 +40,11 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
     override fun getDisplayName() = "File not found"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
+    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+        if(!LatexProjectStructure.isProjectFilesetsAvailable(file.project)) {
+            // Let us wait until the project filesets are available.
+            return emptyList()
+        }
         val descriptors = descriptorList()
 
         // Get commands of this file.
@@ -53,7 +57,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val referencesList = command.getFileArgumentsReferences()
+            val referencesList = InputFileReference.getFileArgumentsReferences(command)
             for (reference in referencesList) {
                 if (reference.resolve() == null) {
                     createQuickFixes(reference, descriptors, manager, isOntheFly)

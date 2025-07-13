@@ -14,8 +14,8 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.includedPackages
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 
 /**
  * @author Sten Wessel
@@ -45,7 +45,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         val commands = NewCommandsIndex.getByNameInFileSet("\\bibliography", file).asSequence() +
             NewCommandsIndex.getByNameInFileSet("\\addbibresource", file)
         commands.forEach { command ->
-            for ((filePath, fileName) in command.getIncludedFiles(false).map { it.virtualFile.path to it.name }) {
+            for ((filePath, fileName) in InputFileReference.getIncludedFiles(command, false).map { it.virtualFile.path to it.name }) {
                 groupedIncludes.getOrPut(filePath to fileName) { mutableListOf() }.add(command)
             }
         }

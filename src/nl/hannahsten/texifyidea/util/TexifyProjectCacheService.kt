@@ -51,7 +51,9 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     }
 
     /**
-     * Gets a cached value by its key, or null if it does not exist.
+     * Gets a timed cached value by its key, or `null` if it does not exist.
+     *
+     * You can manually check if the value is expired by calling [CacheValueTimed.isExpired].
      */
     fun <T> getTimed(key: TypedKey<T>): CacheValueTimed<T>? {
         val cachedValue = caches[key] ?: return null
@@ -60,10 +62,12 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     }
 
     /**
-     * Gets a cached value by its key, or null if it does not exist or is expired.
+     * Gets a cached value by its key, or `null` if it does not exist.
+     *
+     * Note that this method does not check for expiration.
      */
-    fun <T : Any> getOrNull(key: TypedKey<T>, expirationInMs: Long = 1000L): T? {
-        return getCachedValueOrNull(key, expirationInMs)?.value
+    fun <T : Any> getOrNull(key: TypedKey<T>): T? {
+        return getTimed(key)?.value
     }
 
     private fun getComputingState(key: TypedKey<*>): AtomicBoolean {

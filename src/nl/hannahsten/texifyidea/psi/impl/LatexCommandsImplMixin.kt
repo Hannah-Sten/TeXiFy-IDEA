@@ -11,6 +11,7 @@ import com.intellij.psi.tree.IElementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexCommandDefinitionReference
 import nl.hannahsten.texifyidea.structure.latex.LatexPresentationFactory
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -67,11 +68,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
      */
     override fun getReferences(): Array<PsiReference> {
         val result = mutableListOf<PsiReference>()
-        // If it is a reference to a label (used for autocompletion, do not confuse with reference resolving from LatexParameterText)
-//
         // If it is a reference to a file
+        result.addAll(InputFileReference.getFileArgumentsReferences(this))
         val firstParam = requiredParameters().getOrNull(0)
-        result.addAll(this.getFileArgumentsReferences())
         if (CommandMagic.urls.contains(this.getName()) && firstParam != null) {
             result.addAll(this.extractUrlReferences(firstParam))
         }

@@ -2,103 +2,14 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.regex.Pattern
-
-/**
- * Use a text-based search to find the text ranges of the command parameters that refer to files.
- */
-private fun recoverTextRanges(command: LatexCommands, refData: Pair<List<String>, List<Set<VirtualFile>>>?): List<Triple<String, TextRange, Set<VirtualFile>>> {
-    refData ?: return emptyList()
-    val commandText = command.text
-    var offset = 0
-    return refData.first.zip(refData.second).mapNotNull { (refText, files) ->
-        val shift = commandText.indexOf(refText, offset)
-        if (shift < 0) return@mapNotNull null
-        // If the text is not found, it means the command was modified and the reference is no longer valid, but we still want to return some files
-        offset = shift
-        Triple(refText, TextRange.from(offset, refText.length), files)
-    }
-}
-
-/**
- * Check if the command includes other files, and if so return [InputFileReference] instances for them.
- * This method is called continuously, so it should be really fast.
- *
- * Use this instead of command.references.filterIsInstance<InputFileReference>(), to avoid resolving references of types that will not be needed.
- */
-fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
-    val rawInfo = LatexProjectStructure.commandFileReferenceInfo(this)
-    val refInfoMap = recoverTextRanges(this, rawInfo)
-    return refInfoMap.map { (text, range, files) ->
-        InputFileReference(this, text, range, files)
-    }
-//    val inputFileReferences = mutableListOf<InputFileReference>()
-//    refInfoMap.forEach { range, references ->
-//        InputFileReference()
-//    }
-//    // There may be multiple commands with this name, just guess the first one
-//    val command = LatexCommand.lookup(this.name)?.firstOrNull()
-//    // If not found, maybe it is an alias (user defined command) of a known command
-//        ?: getOriginalCommandFromAlias(this.name ?: return emptyList(), project)
-//        ?: return emptyList()
-//
-//    // Arguments from the LatexCommand (so the command as hardcoded in e.g. LatexRegularCommand)
-//    val requiredArguments = command.arguments.mapNotNull { it as? RequiredArgument }
-//    val requiredParameters = this.requiredParameters()
-//    // Find file references within required parameters and across required parameters (think \referencing{reference1,reference2}{reference3} )
-//    for (i in requiredParameters.indices) {
-//        // Find the corresponding requiredArgument
-//        val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else continue
-//
-//        // Check if the actual argument is a file argument or continue with the next argument
-//        val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
-//        val extensions = fileArgument.supportedExtensions
-//
-//        // Find text range of parameters, relative to command startoffset
-//        val requiredParameter = requiredParameters[i]
-//        val textOffset = this.textOffset
-//        val subParamRanges = if (requiredArgument.commaSeparatesArguments) {
-//            extractSubParameterRanges(requiredParameter).map {
-//                it.shiftRight(requiredParameter.textOffset - textOffset)
-//            }
-//        }
-//        else if (requiredParameter.findFirstChildOfType(LatexParameterText::class)?.children?.size == 1 && requiredParameter.findFirstChildOfType(LatexCommands::class) != null) {
-//            // Special case if there is a single command instead of text, we ignore it. Example: \subfix from the subfiles package, can be ignored for our purposes
-//            val newRequiredParameter = requiredParameter.findFirstChildOfType(LatexCommands::class)?.requiredParameters()?.firstOrNull() ?: requiredParameter
-//            if (newRequiredParameter.textRange.startOffset - textOffset < 0) continue
-//            listOf(newRequiredParameter.textRange.shrink(1).shiftLeft(textOffset))
-//        }
-//        else {
-//            if (requiredParameter.textRange.startOffset - textOffset < 0) continue
-//            listOf(requiredParameter.textRange.shrink(1).shiftLeft(textOffset))
-//        }
-//
-//        for (subParamRange in subParamRanges) {
-//            inputFileReferences.add(InputFileReference(this, subParamRange, extensions, supportsAnyExtension = fileArgument.supportsAnyExtension))
-//        }
-//    }
-//
-//    // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
-//    // We reference it because we include the preamble of that file, so it is in the file set (partially)
-//    if (name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && requiredParametersText().any { it.endsWith(SUBFILES.name) } && getOptionalParameterMap().isNotEmpty()) {
-//        val range = this.findFirstChildOfType(LatexParameter::class)?.textRangeInParent
-//        if (range != null) {
-//            inputFileReferences.add(InputFileReference(this, range.shrink(1), listOf("tex"), supportsAnyExtension = true))
-//        }
-//    }
-
-//    return inputFileReferences
-}
 
 /**
  * Create label references from the command parameter given, assuming it is a known command with label referencing parameters.

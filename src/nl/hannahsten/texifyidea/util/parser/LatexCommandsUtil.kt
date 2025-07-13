@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -12,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentation
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
@@ -154,15 +152,6 @@ fun LatexCommands.findIndentation(): String {
     val document = file.document() ?: return ""
     val lineNumber = document.getLineNumber(textOffset)
     return document.lineIndentation(lineNumber)
-}
-
-/**
- * Get files included by this command.
- * @param includeInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
- */
-fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
-    return references.filterIsInstance<InputFileReference>()
-        .mapNotNull { it.resolve() }
 }
 
 /**
