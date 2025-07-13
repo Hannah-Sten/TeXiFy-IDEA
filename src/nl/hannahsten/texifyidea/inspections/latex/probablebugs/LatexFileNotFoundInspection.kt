@@ -124,7 +124,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 .newFileFullPath ?: return
 
             runWriteAction {
-                val expandedFilePath = expandCommandsOnce(newFilePath, file.project, file) ?: newFilePath
+                val expandedFilePath = expandCommandsOnce(newFilePath, file.project, file.virtualFile)
                 var fileNameRelativeToRoot = writeToFileUndoable(project, expandedFilePath, "", root, extension)
 
                 val command = (cmd as? LatexCommands)?.name

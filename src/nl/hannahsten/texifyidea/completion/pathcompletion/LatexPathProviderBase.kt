@@ -52,7 +52,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             absolutePathSupport = parentCommand.isAbsolutePathSupported
         }
 
-        var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile) ?: autocompleteText
+        var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile.virtualFile)
 
         // Process the expanded text again
         finalCompleteText = processAutocompleteText(finalCompleteText)

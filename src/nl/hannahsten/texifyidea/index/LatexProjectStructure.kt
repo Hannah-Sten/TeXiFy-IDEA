@@ -1,9 +1,8 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.codeInsight.hints.ParameterHintsPassFactory
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.smartReadAction
-import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -32,6 +31,7 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.ProjectCacheService
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
+import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import nl.hannahsten.texifyidea.util.getBibtexRunConfigurations
@@ -107,7 +107,7 @@ object LatexProjectStructure {
             >("latex.command.reference.files")
     }
 
-    const val CACHE_EXPIRATION_IN_MS = 1_000L // 5 seconds
+    const val CACHE_EXPIRATION_IN_MS = 5_000L // 5 seconds
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -161,7 +161,6 @@ object LatexProjectStructure {
             paths.forEach { path ->
                 action(path, newNextFile)
             }
-//            updateOrMergeRefData(paramText, references, info)
         }
     }
 
@@ -175,16 +174,6 @@ object LatexProjectStructure {
         processElementsWithPaths0(elements, refInfoMap, info, nextFile) { path, func ->
             action(path)?.apply(func)
         }
-//        elements.forEach { (paramText, paths) ->
-//            val references = mutableListOf<VirtualFile>()
-//            paths.forEach { path ->
-//                action(path).forEach {
-//                    references.add(it)
-//                    nextFile(it)
-//                }
-//            }
-//            updateOrMergeRefData(paramText, references, info)
-//        }
     }
 
     private fun processFilesUnderRootDirs(
@@ -213,6 +202,14 @@ object LatexProjectStructure {
         return result
     }
 
+    private fun pathTextExtraProcessing(
+        text: String, command: LatexCommands, file: VirtualFile, info: FilesetInfo
+    ): String {
+        var result = expandCommandsOnce(text, info.project, file)
+        result = result.trim()
+        return result
+    }
+
     private fun findReferredFiles(
         command: LatexCommands, file: VirtualFile,
         info: FilesetInfo,
@@ -234,25 +231,15 @@ object LatexProjectStructure {
         // We reference it because we include the preamble of that file, so it is in the file set (partially)
         if (commandName == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && reqParamTexts.any { it.endsWith(SUBFILES.name) }) {
             // try to find the main file in the optional parameter map
-            command.optionalParameterTextMap().entries.firstOrNull()?.let { (k, v) ->
+            command.optionalParameterTextMap().entries.firstOrNull()?.let { (k, _) ->
                 // the value should be empty, we only care about the key, see Latex.bnf
                 rangesAndTextsWithExt.add(
                     listOf(k) to setOf("tex")
                 )
-//                val contentText = param.text.let { it.substring(1, it.length - 1) }
-//                val contentStartOffset = param.startOffsetInAncestor(command) + 1
-//                val rangeAndTexts = TextRange.from(contentStartOffset, contentText.length) to contentText
-//                rangesAndTextsWithExt.add(
-//                    listOf(rangeAndTexts) to setOf("tex")
-//                )
             }
         }
         cmd.requiredArguments.zip(reqParamTexts).mapNotNullTo(rangesAndTextsWithExt) { (argument, contentText) ->
             if (argument !is RequiredFileArgument) return@mapNotNullTo null
-//                val contentText = param.let { it.substring(1, it.length - 1) }
-//                val contentStartOffset = param.startOffsetInAncestor(command) + 1
-//                    param.getParameterTexts().map { it.textRangeInAncestor(param)!!.shiftRight(paramStartOffset) to it.text }
-//                    splitTextAndBuildRanges(contentText, ",", contentStartOffset)
             val paramTexts = if (argument.commaSeparatesArguments) {
                 contentText.split(PatternMagic.parameterSplit)
             }
@@ -267,8 +254,9 @@ object LatexProjectStructure {
         var pathWithExts = rangesAndTextsWithExt.flatMap { (paramTexts, extensions) ->
             val noExtensionProvided = extensions.isEmpty()
             val extensionSeq = extensions.asSequence()
-            paramTexts.asSequence().map { text ->
-                pathOrNull(text.trim())?.let { path ->
+            paramTexts.asSequence().map { it ->
+                val text = pathTextExtraProcessing(it, command, file, info)
+                pathOrNull(text)?.let { path ->
                     if (path.extension.isNotEmpty() || noExtensionProvided) {
                         sequenceOf(path)
                     }
@@ -529,12 +517,11 @@ object LatexProjectStructure {
                 buildFilesetsNow(project)
             }.also {
                 // refresh the inspections
-                @Suppress("UnstableApiUsage")
-                writeAction {
-                    ParameterHintsPassFactory.forceHintsUpdateOnNextPass()
-                    // refresh the inspections to update the filesets
+                if(!ApplicationManager.getApplication().isUnitTestMode) {
                     DaemonCodeAnalyzer.getInstance(project).restart()
                 }
+                // there will be an exception if we try to restart the daemon in unit tests
+                // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
             }
         }
     }

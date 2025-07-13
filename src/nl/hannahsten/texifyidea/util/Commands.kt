@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -13,7 +14,6 @@ import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
@@ -61,15 +61,16 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 /**
  * Expand custom commands in a given text once, using its definition in the index.
  */
-fun expandCommandsOnce(inputText: String, project: Project, file: PsiFile?): String? {
-    if(file == null) return null
+fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?): String {
+    file ?: return inputText
+    if(!inputText.contains('\\')) return inputText // No commands to expand, return the text as is
     var text = inputText
     // Get all the commands that are used in the input text.
     val commandsInText = LatexPsiHelper(project).createFromText(inputText).traverseTyped<LatexCommands>()
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
-        val commandExpansion = NewCommandsIndex.getByNames(CommandMagic.commandDefinitionsAndRedefinitions, file)
-            .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
+        val name = command.name ?: continue
+        val commandExpansion = NewDefinitionIndex.getByName(name, project, file).firstOrNull()
             ?.getRequiredArgumentValueByName("def")
         text = text.replace(command.text, commandExpansion ?: command.text)
     }

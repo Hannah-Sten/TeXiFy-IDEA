@@ -105,10 +105,8 @@ fun PsiElement.previousCommand(): LatexCommands? {
  */
 fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
     // Find all pre-defined commands that define `this` command.
-    val requiredArgIndices = LatexRegularCommand[
-        name?.substring(1)
-            ?: return null
-    ]
+    val name = this.name ?: return null
+    val requiredArgIndices = LatexRegularCommand.getWithSlash(name)
         // Find the index of their required parameter named [argument].
         ?.map {
             it.arguments.filterIsInstance<RequiredArgument>()
