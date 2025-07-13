@@ -9,6 +9,8 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.util.ProgramParametersConfigurator
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runReadAction
@@ -39,6 +41,7 @@ import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
 import kotlin.io.path.Path
+import kotlin.io.path.exists
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -108,7 +111,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
 
-        val workingDirectory = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
+        val workingDirectoryPath = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
+        val workingDirectory = Path(workingDirectoryPath)
+        if (workingDirectory.exists().not()) {
+            Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectoryPath", NotificationType.ERROR).notify(environment.project)
+            throw ExecutionException("Could not find working directory $workingDirectoryPath for file $mainFile")
+        }
 
         val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
             ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
@@ -120,7 +128,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (SystemInfo.isWindows && command.sumOf { it.length } > 10_000) {
             throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
         }
-        val commandLine = GeneralCommandLine(command).withWorkingDirectory(Path(workingDirectory))
+        val commandLine = GeneralCommandLine(command).withWorkingDirectory(workingDirectory)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withEnvironment(envVariables)
         val handler = runWithModalProgressBlocking(environment.project, "Creating command line process...") {
