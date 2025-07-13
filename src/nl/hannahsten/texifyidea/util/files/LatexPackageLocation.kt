@@ -46,7 +46,7 @@ object LatexPackageLocation {
         // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.
         // We cannot rely on ls-R databases because they are not always populated, and running mktexlsr may run into permission issues.
         val executableName = LatexSdkUtil.getExecutableName("kpsewhich", project)
-        val texPaths = runCommand(executableName, "article.sty", "plain.bst", timeout = 10)
+        val texPaths = runCommand(executableName, "article.cls", "plain.bst", timeout = 10)
         // See NativeTexliveSdk.getDefaultStyleFilesPath which does the same thing, but for a specific file
         // This ensures that the library root folders are consistent
 
@@ -55,7 +55,11 @@ object LatexPackageLocation {
             return emptyMap()
         }
         if (texPaths == null) return emptyMap()
-        val rootFolders = texPaths.lines().mapNotNull { pathOrNull(it)?.parent?.parent }
+        // this should be like
+        // /usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
+        // /usr/local/texlive/2023/texmf-dist/bibtex/bst/base/plain.bst
+        val rootFolders = texPaths.lines().mapNotNull { pathOrNull(it)?.parent?.parent?.parent }
+        // /usr/local/texlive/2025/texmf-dist/tex and /usr/local/texlive/2023/texmf-dist/bibtex/bst/
         // search all the subdirectories of the root folders
         val result = mutableMapOf<String, Path>()
         rootFolders.forEach { root ->

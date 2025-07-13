@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
 import arrow.atomic.AtomicBoolean
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -9,6 +8,7 @@ import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.forEachWithProgress
 import com.intellij.util.indexing.IndexableSetContributor
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
@@ -110,57 +110,14 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         roots.addAll(getTexinputsPaths(project, rootFiles = listOf(), expandPaths = false).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) })
 
         // Using the index while building it may be problematic, cache the result and hope it doesn't create too much trouble
-        roots.addAll(findExternalDirectFileInclusions(project))
+        findExternalDirectFileInclusionsTo(project, roots)
         Log.debug("Indexing source roots $roots")
         return roots
     }
 
-    private fun findExternalDirectFileInclusions(project: Project): Set<VirtualFile> {
-        if (DumbService.isDumb(project)) return emptySet()
-        // TODO: Use the index to find external direct file inclusions, cache and return them
-        return emptySet()
-        // Don't wait for the result, as somehow this may block the UI? #4055 This function seems to be called quite often so let's hope it's okay to miss it the first time
-//        val includeCommands = NewCommandsIndex.getByNames(CommandMagic.texAndBibliographyIncludeCommands, project)
-//        includeCommands.asSequence().mapNotNull {
-//            it.requiredParameterText(0)
-//        }
-
-//        runInBackgroundNonBlocking(project, "Searching for inclusions by absolute path...") { reporter ->
-//            try {
-//                // Bibliography and direct input commands
-//
-//                val commandNames =
-//                val includeCommands = smartReadAction(project) {
-//                    NewCommandsIndex.getByNames(commandNames, project)
-//                }
-//
-//                val workSize = includeCommands.size
-//                val externalFiles = includeCommands
-//                    // We can't add single files, so take the parent
-//                    .mapNotNull {
-//                        reporter.sizedStep((PROGRESS_SIZE / workSize)) {
-//                            val path = smartReadAction(project) { if (!it.isValid) null else it.requiredParameterText(0) } ?: return@sizedStep null
-//                            val file = if (File(path).isAbsolute) {
-//                                LocalFileSystem.getInstance().findFileByPath(path)
-//                            }
-//                            else {
-//                                smartReadAction(project) { if (!it.isValid) null else it.containingFile.parent }?.virtualFile?.findFileByRelativePath(path)
-//                            }
-//                            smartReadAction(project) { file?.parent }
-//                        }
-//                    }
-//                    .toMutableList()
-//
-//                // addtoluatexpath package
-//                val luatexPathDirectories = smartReadAction(project) { addToLuatexPathSearchDirectories(project) }
-//                externalFiles.addAll(luatexPathDirectories)
-//
-//                Cache.externalDirectFileInclusions[project] = externalFiles.toSet()
-//            }
-//            finally {
-//                Cache.cacheFillInProgress.set(false)
-//            }
-//    }
+    private fun findExternalDirectFileInclusionsTo(project: Project, roots: MutableSet<VirtualFile>) {
+        val filesets = LatexProjectStructure.getFilesets(project) ?: return
+        filesets.mapping.keys.filterTo(roots) { it.isValid }
     }
 
     override fun getAdditionalRootsToIndex(): Set<VirtualFile> {
