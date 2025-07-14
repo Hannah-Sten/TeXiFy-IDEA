@@ -64,8 +64,8 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.FILE_INPUTS, project)
     }
 
-    fun getAllFileInputs(file: PsiFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.FILE_INPUTS, file.project, GlobalSearchScope.fileScope(file))
+    fun getAllFileInputsInFileset(file: PsiFile): Collection<LatexCommands> {
+        return getByNameInFileSet(SpecialKeys.FILE_INPUTS, file)
     }
 
     fun getAllFileInputs(project: Project, file: VirtualFile): Collection<LatexCommands> {
@@ -74,10 +74,6 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
 
     fun getAllPackageIncludes(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
         return getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
-    }
-
-    fun getAllPackageIncludes(file: PsiFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.PACKAGE_INCLUDES, file)
     }
 
     fun getAllCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {

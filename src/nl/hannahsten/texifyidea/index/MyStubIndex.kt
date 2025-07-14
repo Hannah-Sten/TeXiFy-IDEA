@@ -20,10 +20,6 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     val clazz: Class<Psi>,
 ) : StringStubIndexExtension<Psi>() {
 
-    protected open fun wrapSearchScope(scope: GlobalSearchScope): GlobalSearchScope {
-        return scope
-    }
-
     protected open fun buildFileset(
         baseFile: PsiFile,
     ): GlobalSearchScope {
@@ -34,7 +30,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     fun getByName(
         name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope
     ): Collection<Psi> {
-        return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
+        return StubIndex.getElements(key, name, project, scope, clazz)
     }
 
     @RequiresReadLock
@@ -89,7 +85,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         names: Collection<String>, project: Project,
         scope: GlobalSearchScope = project.contentSearchScope
     ): List<Psi> {
-        val wrappedScope = wrapSearchScope(scope)
+        val wrappedScope = scope
         return names.flatMap { name ->
             StubIndex.getElements(key, name, project, wrappedScope, clazz)
         }
@@ -148,7 +144,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
 
     @RequiresReadLock
     fun processByName(name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope, idFilter: IdFilter?, processor: Processor<in Psi>): Boolean {
-        return StubIndex.getInstance().processElements(key, name, project, wrapSearchScope(scope), idFilter, clazz, processor)
+        return StubIndex.getInstance().processElements(key, name, project, scope, idFilter, clazz, processor)
     }
 
     /**
@@ -164,7 +160,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         scope: GlobalSearchScope = project.contentSearchScope,
         action: (Psi) -> Boolean
     ): Boolean {
-        return StubIndexKt.traverseElements(key, name, project, wrapSearchScope(scope), action)
+        return StubIndexKt.traverseElements(key, name, project, scope, action)
     }
 
     @RequiresReadLock
@@ -175,14 +171,14 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         filter: IdFilter? = null,
         action: (Psi) -> Unit
     ) {
-        StubIndexKt.forEachElement(key, name, project, wrapSearchScope(scope), action)
+        StubIndexKt.forEachElement(key, name, project, scope, action)
     }
 
     fun getByNameInFileSet(name: String, file: PsiFile): Collection<Psi> {
         // Setup search set.
         val project = file.project
         val scope = buildFileset(file)
-        return StubIndex.getElements(key, name, project, wrapSearchScope(scope), clazz)
+        return StubIndex.getElements(key, name, project, scope, clazz)
     }
 
     fun getByNamesInFileSet(name: Set<String>, file: PsiFile): Collection<Psi> {

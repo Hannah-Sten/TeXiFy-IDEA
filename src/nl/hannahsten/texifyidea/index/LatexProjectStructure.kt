@@ -24,7 +24,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.ProjectCacheService
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
@@ -37,7 +36,6 @@ import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.projectSearchScope
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
@@ -575,15 +573,25 @@ object LatexProjectStructure {
         return getFilesets(project)?.getData(virtualFile)?.relatedFiles ?: setOf(virtualFile)
     }
 
-    fun getIncludedPackages(file: PsiFile): Set<String> {
+    fun getIncludedPackagesInFileset(file: PsiFile): Set<String> {
         val project = file.project
         return getIncludedPackages(project, getFilesetScopeFor(file, project))
     }
 
     fun getIncludedPackages(project: Project, scope: GlobalSearchScope): Set<String> {
-        return NewSpecialCommandsIndex.getAllPackageIncludes(project, scope).flatMap {
-            it.collectSubtreeTyped<LatexParameterText>().map { it.text }
-        }.toSet()
+        val result = mutableSetOf<String>()
+        NewSpecialCommandsIndex.getAllPackageIncludes(project, scope).forEach {
+            // use stub-based resolution
+            it.requiredParametersText().forEach { paramText ->
+                paramText.split(PatternMagic.parameterSplit).forEach { param ->
+                    val packageName = param.trim()
+                    if (packageName.isNotEmpty()) {
+                        result.add(packageName)
+                    }
+                }
+            }
+        }
+        return result
     }
 
     /**

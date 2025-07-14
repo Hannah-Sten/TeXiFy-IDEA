@@ -47,7 +47,7 @@ abstract class LatexCommandCompletionProviderBase : CompletionProvider<Completio
         defaultCommands.forEach { appendCommandLookupElements(it, lookupElements) }
         if (!DumbService.isDumb(project)) {
             // let us search for the indexed commands
-            val packages = LatexProjectStructure.getIncludedPackages(file)
+            val packages = LatexProjectStructure.getIncludedPackagesInFileset(file)
             packages.forEach { packageName ->
                 lookupFromPackage[packageName]?.forEach {
                     appendCommandLookupElements(it, lookupElements)

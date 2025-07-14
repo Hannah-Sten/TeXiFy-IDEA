@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -14,9 +13,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import java.util.*
 import kotlin.collections.HashSet
@@ -41,8 +38,9 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
         // Find all duplicates.
         val scope = LatexProjectStructure.getFilesetScopeFor(file)
-        val inclusionCommands = NewSpecialCommandsIndex.getAllPackageIncludes(file.project, scope)
-        val packages = PackageUtils.getPackagesFromCommands(inclusionCommands, CommandMagic.packageInclusionCommands, mutableListOf())
+//        val inclusionCommands = NewSpecialCommandsIndex.getAllPackageIncludes(file.project, scope)
+//        val packages = PackageUtils.getPackagesFromCommands(inclusionCommands, CommandMagic.packageInclusionCommands, mutableListOf())
+        val packages = LatexProjectStructure.getIncludedPackagesInFileset(file)
         // When using the subfiles package, there will be multiple \documentclass{subfiles} commands
         val ignoredPackages = setOf(LatexPackage.SUBFILES.name)
         val covered = HashSet<String>()

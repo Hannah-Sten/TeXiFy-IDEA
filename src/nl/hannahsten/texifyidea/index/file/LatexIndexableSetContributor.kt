@@ -23,13 +23,6 @@ import kotlin.io.path.listDirectoryEntries
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
 
-//    object Cache {
-//        var externalDirectFileInclusions = mutableMapOf<Project, Set<VirtualFile>>()
-//
-//        val cacheFillInProgress = AtomicBoolean(false)
-
-//    }
-
     private val extractedFiles: AtomicBoolean = AtomicBoolean(false)
 
     private fun extractFileIfNecessary(roots: Set<VirtualFile>, project: Project) {

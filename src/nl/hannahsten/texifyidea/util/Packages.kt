@@ -7,8 +7,9 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -317,9 +318,14 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
 fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
-    val scope = LatexProjectStructure.getFilesetScopeFor(this)
-    val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
-    return includedPackages(includeCommands, project, onlyDirectInclusions)
+    val scope = if (onlyDirectInclusions) {
+        GlobalSearchScope.fileScope(this)
+    }
+    else {
+        getFilesetScopeFor(this, project)
+    }
+    val packageNames = LatexProjectStructure.getIncludedPackages(project, scope)
+    return packageNames.map { LatexPackage(it) }.toSet()
 }
 
 /**

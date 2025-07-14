@@ -12,7 +12,7 @@ class LatexFolderProvider : LatexPathProviderBase() {
 
     override fun selectScanRoots(file: PsiFile): List<VirtualFile> {
         val searchDirs = getProjectRoots().toMutableList()
-        NewSpecialCommandsIndex.getAllFileInputs(file).forEach { command ->
+        NewSpecialCommandsIndex.getAllFileInputsInFileset(file).forEach { command ->
             searchDirs.addAll(findRelativeSearchPathsForImportCommands(command))
         }
         return searchDirs
