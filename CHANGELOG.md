@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix incorrect slashes in path on Windows after pasting image
 * Fix exception #4116
 
 ## [0.10.4] - 2025-07-01
