@@ -12,7 +12,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
-import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
+import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
@@ -61,7 +61,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
                     .bold()
                     .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                     .withTypeText(cmd.display)
-                    .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
+                    .withInsertHandler(LatexCommandInsertHandler(args.toList()))
                     .withIcon(TexifyIcons.DOT_COMMAND)
             }
         }
@@ -219,7 +219,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         result.addAllElements(
             commands.flatMap { cmd: LatexCommand ->
                 cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
-                    val handler = if (cmd.isMathMode.not()) LatexNoMathInsertHandler(args.toList())
+                    val handler = if (cmd.isMathMode.not()) LatexCommandInsertHandler(args.toList())
                     else LatexMathInsertHandler(args.toList())
                     LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                         .withPresentableText(cmd.commandWithSlash)

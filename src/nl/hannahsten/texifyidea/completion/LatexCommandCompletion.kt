@@ -13,8 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
-import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
-import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
+import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.Dependend
@@ -148,14 +147,14 @@ object LatexNormalCommandCompletionProvider : LatexCommandCompletionProviderBase
     }
 
     override fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement> {
-        return LatexNoMathInsertHandler(args)
+        return LatexCommandInsertHandler(args)
     }
 }
 
 object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase() {
 
     override fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement> {
-        return LatexMathInsertHandler(args)
+        return LatexCommandInsertHandler(args)
     }
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
@@ -169,6 +168,7 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
             parameters, context, result, project, filesetScope,
             NewSpecialCommandsIndex.getAllCommandDef(project, filesetScope)
         )
+
         // This lookup advertisement is added only for math commands
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
     }

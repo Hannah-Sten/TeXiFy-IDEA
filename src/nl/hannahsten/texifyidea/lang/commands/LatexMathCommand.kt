@@ -18,9 +18,11 @@ object LatexMathCommand {
     private val UNCATEGORIZED_STMARYRD_SYMBOLS: Set<LatexCommand> = LatexUncategorizedStmaryrdSymbols.entries.toSet()
     private val DIFFCOEFF: Set<LatexCommand> = LatexDiffcoeffCommand.entries.toSet()
     private val UPGREEK: Set<LatexCommand> = LatexUpgreekCommand.entries.toSet()
+    private val REGULAR_ALSO_IN_MATH =
+        setOf(LatexGenericRegularCommand.BEGIN, LatexGenericRegularCommand.END, LatexGenericRegularCommand.LABEL)
 
     private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
-        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK
+        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK + REGULAR_ALSO_IN_MATH
 
     val defaultCommands: Set<LatexCommand> = ALL.filter { it.dependency == LatexPackage.DEFAULT }.toSet()
 

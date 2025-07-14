@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.parser.isEnvironmentDefinition
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
+class LatexCommandInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         removeWhiteSpaces(context)
