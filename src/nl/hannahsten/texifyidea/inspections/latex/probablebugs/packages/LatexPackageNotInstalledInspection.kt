@@ -72,32 +72,28 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd || it.name == LatexGenericRegularCommand.REQUIREPACKAGE.cmd }
 
         for (command in commands) {
-            @Suppress("ktlint:standard:property-naming")
-            val `package` = command.requiredParametersText().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
-            if (`package` !in packages) {
-                // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
-                if (
-                    knownNotInstalledPackages.contains(`package`) ||
-                    command.references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }.isEmpty()
-                ) {
+            val references = InputFileReference.getFileArgumentsReferences(command)
+            for (ref in references) {
+                val pack = ref.key
+                if(pack in packages) continue
+                if(knownNotInstalledPackages.contains(pack) && ref.resolve() == null) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
                             "Package is not installed or \\ProvidesPackage is missing",
                             InstallPackage(
                                 SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
-                                `package`,
+                                pack,
                                 knownNotInstalledPackages
                             ),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )
-                    knownNotInstalledPackages.add(`package`)
-                }
-                else {
+                    knownNotInstalledPackages.add(pack)
+                } else {
                     // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
-                    installedPackages.add(`package`)
+                    installedPackages.add(pack)
                 }
             }
         }

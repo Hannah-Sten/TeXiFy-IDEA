@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.observable.util.lockOrSkip
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.ConcurrentHashMap
@@ -173,7 +174,7 @@ class TexifyProjectCacheService(project: Project, coroutineScope: CoroutineScope
 
     companion object {
         fun getInstance(project: Project): TexifyProjectCacheService {
-            return project.getService(TexifyProjectCacheService::class.java)
+            return project.service()
         }
 
         fun <T> getOrCompute(
