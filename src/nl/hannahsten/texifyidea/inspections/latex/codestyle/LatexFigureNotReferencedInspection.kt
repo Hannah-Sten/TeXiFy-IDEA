@@ -15,12 +15,8 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.isFigureLabel
-import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import java.util.*
 
@@ -48,18 +44,6 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
         }
 
         return descriptors
-    }
-
-    private fun removeReferencedLabels(file: PsiFile, figureLabels: MutableMap<String?, LatexCommands>) {
-        val referenceCommands = file.project.getLabelReferenceCommands()
-        for (command in file.commandsInFileSet(useIndexCache = false)) {
-            // Don't resolve references in command definitions
-            if (command.parent?.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitionsAndRedefinitions ||
-                referenceCommands.contains(command.name)
-            ) {
-                command.referencedLabelNames.forEach { figureLabels.remove(it) }
-            }
-        }
     }
 
     private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor? =

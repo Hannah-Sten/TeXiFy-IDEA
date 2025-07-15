@@ -43,17 +43,6 @@ fun PsiFile.referencedFileSet(useIndexCache: Boolean = true): Set<PsiFile> {
 //    return ReferencedFileSetService.getInstance().referencedFileSetOf(this, useIndexCache)
 }
 
-/**
- * Do not use this function
- */
-fun PsiFile.commandsInFileSet(useIndexCache: Boolean = true): Collection<LatexCommands> {
-    // TODO: Replace all the usage of this function
-//    val res = LatexCommandsIndex.Util.getItemsInFileSet(this, useIndexCache)
-//    val res = NewSpecialCommandsIndex.getAllInFileSet(this)
-    // You can create breakpoints in the code to see the size of the returned collection.
-    return emptyList()
-}
-
 fun PsiFile.findExternalDocumentCommand(): LatexCommands? {
     return NewCommandsIndex.getByNameInFileSet(
         LatexGenericRegularCommand.EXTERNALDOCUMENT.command, containingFile.originalFile

@@ -25,6 +25,7 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.LatexStructure
+import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.int
@@ -46,7 +47,7 @@ abstract class LatexCommandCompletionProviderBase : CompletionProvider<Completio
         defaultCommands.forEach { appendCommandLookupElements(it, lookupElements) }
         if (!DumbService.isDumb(project)) {
             // let us search for the indexed commands
-            val packages = LatexProjectStructure.getIncludedPackagesInFileset(file)
+            val packages = PackageUtils.getIncludedPackagesInFileset(file).toSet()
             packages.forEach { packageName ->
                 lookupFromPackage[packageName]?.forEach {
                     appendCommandLookupElements(it, lookupElements)
@@ -134,7 +135,7 @@ object LatexNormalCommandCompletionProvider : LatexCommandCompletionProviderBase
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
-        val filesetScope = LatexProjectStructure.getFilesetScopeFor(parameters.originalFile, project)
+        val filesetScope = LatexProjectStructure.getFilesetScopeFor(parameters.originalFile)
         addPredefinedCommands(
             result, parameters.originalFile, project,
             LatexRegularCommand.defaultCommands, LatexRegularCommand.lookupFromPackage
@@ -159,7 +160,7 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
-        val filesetScope = LatexProjectStructure.getFilesetScopeFor(parameters.originalFile, project)
+        val filesetScope = LatexProjectStructure.getFilesetScopeFor(parameters.originalFile)
         addPredefinedCommands(
             result, parameters.originalFile, project,
             LatexMathCommand.defaultCommands, LatexMathCommand.lookupFromPackage

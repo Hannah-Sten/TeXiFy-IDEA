@@ -69,10 +69,11 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             val project = parameters.editor.project ?: return
 
             val usesTexlive = isTexliveAvailable
-            val packagesInProject = if (!usesTexlive) emptyList()
-            else includedPackages(NewSpecialCommandsIndex.getAllFileInputs(project), project).plus(
-                LatexPackage.DEFAULT
-            )
+//            val packagesInProject = if (!usesTexlive) emptyList()
+//            else includedPackages(NewSpecialCommandsIndex.getAllFileInputs(project), project).plus(
+//                LatexPackage.DEFAULT
+//            )
+            val packagesInProject = emptyList<LatexPackage>()
 
             result.addAllElements(
                 FileBasedIndex.getInstance().getAllKeys(LatexExternalEnvironmentIndex.Cache.id, project)
@@ -170,7 +171,8 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // For example, the (initially) first suggestion for \enquote is the version from the aiaa package, which is unlikely to be correct.
             // Therefore, we limit ourselves to packages included somewhere in the project (directly or indirectly).
             val includeCommands = NewSpecialCommandsIndex.getAllPackageIncludes(project)
-            val packagesInProject = if (!isTexliveAvailable) emptySet() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
+//            val packagesInProject = if (!isTexliveAvailable) emptySet() else includedPackages(includeCommands, project).plus(LatexPackage.DEFAULT)
+            val packagesInProject = emptySet<LatexPackage>() // TODO
             LatexExternalCommandsIndexCache.fillCacheAsync(project, packagesInProject)
             return false
         }

@@ -611,10 +611,14 @@ object LatexProjectStructure {
     /**
      * Gets the search scope containing all the filesets that contain the given PsiFile.
      */
-    fun getFilesetScopeFor(file: PsiFile, project: Project = file.project): GlobalSearchScope {
+    fun getFilesetScopeFor(file: PsiFile): GlobalSearchScope {
         val virtualFile = file.virtualFile ?: return GlobalSearchScope.fileScope(file)
-        val data = getFilesets(project)?.getData(virtualFile)
-        return data?.filesetScope ?: GlobalSearchScope.fileScope(file)
+        val project = file.project
+        return getFilesetScopeFor(virtualFile, project)
+    }
+
+    fun getFilesetScopeFor(file: VirtualFile, project: Project): GlobalSearchScope {
+        return getFilesets(project)?.getData(file)?.filesetScope ?: GlobalSearchScope.fileScope(project, file)
     }
 
     fun getRootfilesFor(file: PsiFile): Set<VirtualFile> {
@@ -631,27 +635,6 @@ object LatexProjectStructure {
         val project = file.project
         val virtualFile = file.virtualFile ?: return emptySet()
         return getFilesets(project)?.getData(virtualFile)?.relatedFiles ?: setOf(virtualFile)
-    }
-
-    fun getIncludedPackagesInFileset(file: PsiFile): Set<String> {
-        val project = file.project
-        return getIncludedPackages(project, getFilesetScopeFor(file, project))
-    }
-
-    fun getIncludedPackages(project: Project, scope: GlobalSearchScope): Set<String> {
-        val result = mutableSetOf<String>()
-        NewSpecialCommandsIndex.getAllPackageIncludes(project, scope).forEach {
-            // use stub-based resolution
-            it.requiredParametersText().forEach { paramText ->
-                paramText.split(PatternMagic.parameterSplit).forEach { param ->
-                    val packageName = param.trim()
-                    if (packageName.isNotEmpty()) {
-                        result.add(packageName)
-                    }
-                }
-            }
-        }
-        return result
     }
 
     /**
