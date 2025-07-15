@@ -8,8 +8,10 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
+import kotlinx.coroutines.delay
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -49,10 +51,14 @@ object AutoCompileState {
      */
     @Synchronized
     fun compilationFinished() {
-        isCompiling.set(false)
-        // Process any pending requests to compile
-        if (recentRequest) {
-            scheduleCompilation()
+        // Here the configuration is still running, so to avoid starting a new run before this one is finished (which may trigger the 'stop and rerun?' dialog, see #4120) we add a small delay
+        runInBackgroundWithoutProgress {
+            delay(100)
+            isCompiling.set(false)
+            // Process any pending requests to compile
+            if (recentRequest) {
+                scheduleCompilation()
+            }
         }
     }
 
