@@ -110,5 +110,5 @@ fun PsiFile.findExternalDocumentCommand(): LatexCommands? {
  * Get all the definitions and redefinitions in the file set.
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
-    return NewSpecialCommandsIndex.getAllCommandDef(this.project)
+    return NewSpecialCommandsIndex.getAllCommandDefInFileset(this)
 }

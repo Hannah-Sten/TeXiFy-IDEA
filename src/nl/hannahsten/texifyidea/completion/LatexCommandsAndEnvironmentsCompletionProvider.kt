@@ -185,8 +185,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
      * If the index was not yet ready, add all of them.
      */
     private fun addNormalCommands(result: CompletionResultSet, project: Project, isIndexReady: Boolean) {
-        val indexedKeys = LatexExternalCommandIndex.getAllKeys(project)
-
+//        val indexedKeys = LatexExternalCommandIndex.getAllKeys(project)
 //        result.addAllElements(
 //            LatexRegularCommand.values().flatMap { cmd ->
 //                /** True if there is a package for which we already have the [cmd] command indexed.  */
@@ -238,7 +237,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
         mode: LatexMode? = null
     ) {
         val file = parameters.originalFile
-        val cmds = NewSpecialCommandsIndex.getAllCommandDefRelated(file).asSequence() + NewSpecialCommandsIndex.getAllEnvDefRelated(file)
+        val cmds = NewSpecialCommandsIndex.getAllCommandDefInFileset(file).asSequence() + NewSpecialCommandsIndex.getAllEnvDefRelated(file)
         for (cmd in cmds) {
             if (mode !== LatexMode.MATH && cmd.name in CommandMagic.mathCommandDefinitions) {
                 continue

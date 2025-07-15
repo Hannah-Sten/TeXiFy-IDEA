@@ -51,7 +51,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
                 return false
 
             val file = element.containingFile
-            val cmds = NewSpecialCommandsIndex.getAllCommandDefRelated(file)
+            val cmds = NewSpecialCommandsIndex.getAllCommandDefInFileset(file)
 
             val candiateUserCommands = cmds.filter { it.isDefinition() && !it.isEnvironmentDefinition() }
 
@@ -65,7 +65,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
         fun resolveInlineCommandDefinition(element: PsiElement): LatexCommands? {
             val file = element.containingFile
 
-            val cmds = NewSpecialCommandsIndex.getAllCommandDefRelated(file)
+            val cmds = NewSpecialCommandsIndex.getAllCommandDefInFileset(file)
 
             val candiateUserCommands = cmds.filter { it.isDefinition() && !it.isEnvironmentDefinition() }
 

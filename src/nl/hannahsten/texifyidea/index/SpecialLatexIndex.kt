@@ -76,8 +76,12 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
     }
 
-    fun getAllCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
+    fun getAllCommandDef(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
         return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
+    }
+
+    fun getAllCommandDefInFileset(file: PsiFile): Collection<LatexCommands> {
+        return getByNameInFileSet(SpecialKeys.COMMAND_DEFINITIONS, file)
     }
 
     fun getAllRegularCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
@@ -98,10 +102,6 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
 
     fun processEnvDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
         processByName(SpecialKeys.ENV_DEFINITIONS, scope.project!!, scope, filter, processor)
-    }
-
-    fun getAllCommandDefRelated(originalFile: PsiFile): Collection<LatexCommands> {
-        return getAllCommandDef(originalFile.project)
     }
 
     fun getAllEnvDefRelated(originalFile: PsiFile): Collection<LatexCommands> {

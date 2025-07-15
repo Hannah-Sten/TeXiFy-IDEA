@@ -104,7 +104,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ) {
         // This loops over all commands, so we don't want to do this again for every command in the file for performance
-        val commandDefinitionsInProject = NewSpecialCommandsIndex.getAllCommandDef(file.project).map { it.definedCommandName() }
+        val commandDefinitionsInProject = NewSpecialCommandsIndex.getAllCommandDefInFileset(file).map { it.definedCommandName() }
 
         file.forEachCommand commandLoop@{ command ->
             // If we are actually defining the command, then it doesn't need any dependency
