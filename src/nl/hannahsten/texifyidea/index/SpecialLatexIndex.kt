@@ -76,6 +76,10 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
     }
 
+    fun getPackageIncludes(project: Project, file: VirtualFile): Collection<LatexCommands> {
+        return getByName(SpecialKeys.PACKAGE_INCLUDES, project, GlobalSearchScope.fileScope(project, file))
+    }
+
     fun getAllCommandDef(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
         return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
     }

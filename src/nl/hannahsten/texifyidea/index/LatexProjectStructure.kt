@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.index
 
+import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.smartReadAction
@@ -11,6 +12,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
+import com.intellij.openapi.vfs.findFile
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -37,6 +39,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.projectSearchScope
+import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
@@ -102,7 +105,7 @@ object LatexProjectStructure {
             >("latex.command.reference.files")
     }
 
-    const val CACHE_EXPIRATION_IN_MS = 5_000L // 5 seconds
+    const val CACHE_EXPIRATION_IN_MS = 5_000L
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -115,6 +118,9 @@ object LatexProjectStructure {
         project.getLatexRunConfigurations().forEach {
             it.mainFile?.let { mainFile -> rootFiles.add(mainFile) }
         }
+        FilenameIndex.getVirtualFilesByName("main.tex", true, project.projectSearchScope)
+            .filter { it.isValid }
+            .forEach { rootFiles.add(it) }
 
         return rootFiles
     }
@@ -134,6 +140,7 @@ object LatexProjectStructure {
         rootDirs: MutableSet<VirtualFile>, bibInputPaths: MutableSet<VirtualFile>,
         timestamp: Long,
         val root: VirtualFile,
+        val files: MutableSet<VirtualFile> = mutableSetOf(root),
         var declareGraphicsExtensions: Set<String>? = null,
         var graphicsSuffix: Set<Path> = emptySet(),
         var luatexPaths: Set<VirtualFile> = emptySet(),
@@ -341,10 +348,10 @@ object LatexProjectStructure {
             val direct = NewCommandsIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project, file)
                 .mapNotNull { it.requiredParameterText(0) }
                 .flatMap { it.split(",") }
-            val viaUsepackage = NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, project, file)
+            val viaUsepackage = NewSpecialCommandsIndex.getPackageIncludes(project, file)
                 .filter { it.requiredParameterText(0) == LatexPackage.ADDTOLUATEXPATH.name }
-                .flatMap { it.getOptionalParameterMap().keys }
-                .flatMap { it.text.split(",") }
+                .flatMap { it.optionalParameterTextMap().keys }
+                .flatMap { it.split(",") }
             val directories = (direct + viaUsepackage).flatMap {
                 val basePath = LocalFileSystem.getInstance().findFileByPath(it.trimEnd('/', '*')) ?: return@flatMap emptyList()
                 if (it.endsWith("/**")) {
@@ -442,63 +449,116 @@ object LatexProjectStructure {
         )
     }
 
-    private fun recursiveBuildFileset(
-        file: VirtualFile, files: MutableSet<VirtualFile>,
-        fileSetInfo: FilesetInfo
-    ) {
+    private fun recursiveBuildFileset(file: VirtualFile, fileSetInfo: FilesetInfo) {
         // indeed, we may deal with the same file multiple times with different roots
         getDirectReferredFiles(file, fileSetInfo) {
-            if (files.add(it)) {
+            if (fileSetInfo.files.add(it)) {
                 // new element added, continue building the fileset
-                recursiveBuildFileset(it, files, fileSetInfo)
+                recursiveBuildFileset(it, fileSetInfo)
             }
         }
     }
 
     private fun buildFilesetFromRoot(
         root: VirtualFile, project: Project, projectInfo: ProjectInfo
-    ): Fileset {
-        val files = mutableSetOf(root)
+    ): FilesetInfo {
         val fileSetInfo = makePreparation(project, root, projectInfo)
-        recursiveBuildFileset(root, files, fileSetInfo)
-        return Fileset(files, root)
+        recursiveBuildFileset(root, fileSetInfo)
+        return fileSetInfo
+    }
+
+    private fun mergeFilesIntoFileset(files: Set<VirtualFile>, fs: FilesetInfo) {
+        for (file in files) {
+            if (fs.files.add(file)) {
+                recursiveBuildFileset(file, fs)
+            }
+        }
+    }
+
+    /**
+     * Check for tectonic.toml files in the project.
+     * These files can input multiple tex files, which would then be in the same file set.
+     * Example file: https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/3773#issuecomment-2503221732
+     * @return List of sets of files included by the same toml file.
+     */
+    private fun findTectonicTomlInclusions(project: Project): List<Set<VirtualFile>> {
+        // Actually, according to https://tectonic-typesetting.github.io/book/latest/v2cli/build.html?highlight=tectonic.toml#remarks Tectonic.toml files can appear in any parent directory, but we only search in the project for now
+        val tomlFiles = FilenameIndex.getVirtualFilesByName("Tectonic.toml", true, project.projectSearchScope)
+        val filesets = tomlFiles.mapNotNull { tomlFile ->
+            val data = TomlMapper().readValue(File(tomlFile.path), Map::class.java)
+            val output = (data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null).firstOrNull() as? Map<*, *>
+            // The Inputs field was added after 0.15.0, at the moment of writing unreleased so we cannot check the version
+            val inputs = if (output?.keys?.contains("inputs") == true) {
+                val inputListMaybe = output.getOrDefault("inputs", listOf("_preamble.tex", "index.tex", "_postamble.tex"))
+                if (inputListMaybe is String) listOf(inputListMaybe) else inputListMaybe as? List<*> ?: return@mapNotNull null
+            }
+            else {
+                // See https://tectonic-typesetting.github.io/book/latest/ref/tectonic-toml.html#contents
+                val preamble = output?.getOrDefault("preamble", "_preamble.tex") as? String ?: return@mapNotNull null
+                val index = output.getOrDefault("index", "index.tex") as? String ?: return@mapNotNull null
+                val postamble = output.getOrDefault("postamble", "_postamble.tex") as? String ?: return@mapNotNull null
+                listOf(preamble, index, postamble)
+            }
+            // Inputs can be either a map "inline" -> String or file name
+            // Actually it can also be just a single file name, but then we don't need all this gymnastics
+            inputs.filterIsInstance<String>().mapNotNull {
+                tomlFile.parent?.findFile("src/$it")
+            }.toSet()
+        }
+        return filesets
     }
 
     fun buildFilesetsNow(project: Project): LatexProjectFilesets {
         countOfBuilding.incrementAndGet()
         val projectInfo = makePreparation(project)
         val roots = getPossibleRootFiles(project)
-        val allFilesets = mutableSetOf<Fileset>()
-        val fileSetMapping = mutableMapOf<VirtualFile, MutableSet<Fileset>>()
+        val allFilesetInfo = mutableListOf<FilesetInfo>()
+        val processedFiles = mutableSetOf<VirtualFile>()
 
         for (root in roots) {
             val fileset = buildFilesetFromRoot(root, project, projectInfo)
-            allFilesets.add(fileset)
-            for (file in fileset.files) {
-                // add the file to the mapping
-                fileSetMapping.computeIfAbsent(file) { mutableSetOf() }.add(fileset)
+            allFilesetInfo.add(fileset)
+            processedFiles.addAll(fileset.files)
+        }
+        // let us try to merge the filesets that are created by Tectonic.toml files
+        val tectonicFilesets = findTectonicTomlInclusions(project)
+        for (files in tectonicFilesets) {
+            if (files.isEmpty()) continue
+            for (fs in allFilesetInfo) {
+                if (fs.root in files) {
+                    // this fileset already contains the root file, we can merge the files
+                    mergeFilesIntoFileset(files, fs)
+                }
             }
         }
-//        // deal with the remaining files
+//      deal with the remaining files, or we can just ignore them?
         val projectFileIndex = ProjectFileIndex.getInstance(project)
         projectFileIndex.iterateContent { vf ->
-            if (vf.fileType == LatexFileType && vf !in fileSetMapping) {
+            if (vf.fileType == LatexFileType && vf !in processedFiles) {
+                // this is a standalone file, not included in any fileset yet
                 val fileset = buildFilesetFromRoot(vf, project, projectInfo)
-                allFilesets.add(fileset)
-                for (file in fileset.files) {
-                    // add the file to the mapping
-                    fileSetMapping.computeIfAbsent(file) { mutableSetOf() }.add(fileset)
-                }
+                allFilesetInfo.add(fileset)
+                processedFiles.addAll(fileset.files)
             }
             true
         }
 
-        val mapping = fileSetMapping.mapValues { (file, filesets) ->
+        // final processing
+        val allFilesets = allFilesetInfo.map { Fileset(it.files, it.root) }.toSet()
+        val mapping: Map<VirtualFile, MutableSet<Fileset>> = buildMap {
+            allFilesets.forEach {
+                it.files.forEach { file ->
+                    getOrPut(file) { mutableSetOf() }.add(it)
+                }
+            }
+        }
+
+        val dataMapping = mapping.mapValues { (file, filesets) ->
             val allFiles = filesets.flatMapTo(mutableSetOf(file)) { it.files }
             val scope = GlobalSearchScope.filesWithLibrariesScope(project, allFiles)
             FilesetData(filesets, allFiles, scope)
         }
-        return LatexProjectFilesets(allFilesets, mapping)
+        return LatexProjectFilesets(allFilesets, dataMapping)
     }
 
     private val CACHE_KEY = ProjectCacheService.createKey<LatexProjectFilesets>()
@@ -509,7 +569,7 @@ object LatexProjectStructure {
                 buildFilesetsNow(project)
             }.also {
                 // refresh the inspections
-                if(!ApplicationManager.getApplication().isUnitTestMode) {
+                if (!ApplicationManager.getApplication().isUnitTestMode) {
                     DaemonCodeAnalyzer.getInstance(project).restart()
                 }
                 // there will be an exception if we try to restart the daemon in unit tests

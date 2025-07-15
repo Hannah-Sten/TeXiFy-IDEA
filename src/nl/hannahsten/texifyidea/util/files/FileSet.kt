@@ -1,9 +1,5 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.fasterxml.jackson.dataformat.toml.TomlMapper
-import com.intellij.openapi.application.smartReadAction
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
 import com.intellij.openapi.vfs.findPsiFile
@@ -13,47 +9,6 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import java.io.File
-
-/**
- * Check for tectonic.toml files in the project.
- * These files can input multiple tex files, which would then be in the same file set.
- * Example file: https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/3773#issuecomment-2503221732
- * @return List of sets of files included by the same toml file.
- */
-suspend fun findTectonicTomlInclusions(project: Project): List<Set<PsiFile>> {
-    // Actually, according to https://tectonic-typesetting.github.io/book/latest/v2cli/build.html?highlight=tectonic.toml#remarks Tectonic.toml files can appear in any parent directory, but we only search in the project for now
-    val tomlFiles = smartReadAction(project) { findTectonicTomlFiles(project) }
-    val filesets = tomlFiles.mapNotNull { tomlFile ->
-        val data = TomlMapper().readValue(File(tomlFile.path), Map::class.java)
-        val output = (data.getOrDefault("output", null) as? List<*> ?: return@mapNotNull null).firstOrNull() as? Map<*, *>
-        // The Inputs field was added after 0.15.0, at the moment of writing unreleased so we cannot check the version
-        val inputs = if (output?.keys?.contains("inputs") == true) {
-            val inputListMaybe = output.getOrDefault("inputs", listOf("_preamble.tex", "index.tex", "_postamble.tex"))
-            if (inputListMaybe is String) listOf(inputListMaybe) else inputListMaybe as? List<*> ?: return@mapNotNull null
-        }
-        else {
-            // See https://tectonic-typesetting.github.io/book/latest/ref/tectonic-toml.html#contents
-            val preamble = output?.getOrDefault("preamble", "_preamble.tex") as? String ?: return@mapNotNull null
-            val index = output.getOrDefault("index", "index.tex") as? String ?: return@mapNotNull null
-            val postamble = output.getOrDefault("postamble", "_postamble.tex") as? String ?: return@mapNotNull null
-            listOf(preamble, index, postamble)
-        }
-        // Inputs can be either a map "inline" -> String or file name
-        // Actually it can also be just a single file name, but then we don't need all this gymnastics
-        inputs.filterIsInstance<String>().mapNotNull {
-            smartReadAction(project) { tomlFile.parent?.findFile("src/$it")?.psiFile(project) }
-        }.toSet()
-    }
-
-    return filesets
-}
-
-private fun findTectonicTomlFiles(project: Project): MutableSet<VirtualFile> {
-    val tomlFiles = mutableSetOf<VirtualFile>()
-    ProjectFileIndex.getInstance(project).iterateContent({ tomlFiles.add(it) }, { it.name == "Tectonic.toml" })
-    return tomlFiles
-}
 
 /**
  * A toml file can be in any parent directory.

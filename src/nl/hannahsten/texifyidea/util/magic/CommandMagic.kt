@@ -368,7 +368,7 @@ object CommandMagic {
 
     val graphicPathsCommands = setOf(GRAPHICSPATH, SVGPATH)
 
-    val graphicPathsCommandNames = graphicPathsCommands.mapTo(mutableSetOf()) { it.name }
+    val graphicPathsCommandNames = graphicPathsCommands.map { it.name }.toSet()
 
     val graphicPackages = graphicPathsCommands.mapTo(mutableSetOf()) { it.dependency }.also { it.remove(LatexPackage.DEFAULT) }
 

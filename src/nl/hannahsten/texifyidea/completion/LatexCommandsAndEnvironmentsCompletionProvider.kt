@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHa
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
-import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Dependend
