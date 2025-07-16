@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getLabel
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
@@ -58,7 +59,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             labeledCommands.remove("\\part")
         }
 
-        file.commandsInFile().filter {
+        file.traverseCommands().filter {
             labeledCommands.contains(it.name) && it.name != "\\item" && !it.hasStar()
         }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
 

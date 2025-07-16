@@ -34,10 +34,12 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Unresolved reference"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+        if (!LatexProjectStructure.isProjectFilesetsAvailable(file.project)) {
+            // If the project filesets are not available, we cannot inspect the file.
+            return emptyList()
+        }
+
         val descriptors = descriptorList()
-
-//        val labels = file.findLatexAndBibtexLabelStringsInFileSet()
-
         val commands = file.traverseCommands()
         val project = file.project
         val filesetScope = LatexProjectStructure.getFilesetScopeFor(file)

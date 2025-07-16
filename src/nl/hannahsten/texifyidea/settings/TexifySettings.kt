@@ -65,6 +65,8 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var autoCompileOption = AutoCompile.OFF
     var pathToSumatra: String? = null
 
+    var filesetExpirationTimeMs: Long = 2000
+
     var hasApprovedDetexify = false
 
     /**
@@ -96,6 +98,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
             pdfViewer = pdfViewer,
             pathToSumatra = pathToSumatra,
             hasApprovedDetexify = hasApprovedDetexify,
+            filesetExpirationTimeMs = filesetExpirationTimeMs,
         )
     }
 
@@ -120,6 +123,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         pdfViewer = state.pdfViewer
         hasApprovedDetexify = state.hasApprovedDetexify
         pathToSumatra = state.pathToSumatra
+        filesetExpirationTimeMs = state.filesetExpirationTimeMs
     }
 
     override fun initializeComponent() {

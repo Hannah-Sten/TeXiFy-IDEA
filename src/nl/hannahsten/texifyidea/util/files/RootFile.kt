@@ -47,7 +47,7 @@ suspend fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
  * multiple root files is preferred over using [findRootFile].
  */
 fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
-    val allRoots = findRootFiles(useIndexCache)
+    val allRoots = findRootFiles()
     // If there are multiple root files, prefer the current one
     return if (this in allRoots) this else allRoots.firstOrNull() ?: this
 }
@@ -55,7 +55,7 @@ fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
 /**
  * Gets the set of files that are the root files of `this` file, using [LatexProjectStructure.getFilesetsFor].
  */
-fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> {
+fun PsiFile.findRootFiles(): Set<PsiFile> {
     val project = this.project
     return LatexProjectStructure.getFilesetsFor(this).mapNotNullTo(mutableSetOf()) { it.root.findPsiFile(project) }
 }

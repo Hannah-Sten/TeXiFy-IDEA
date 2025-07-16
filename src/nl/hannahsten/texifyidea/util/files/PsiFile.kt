@@ -129,7 +129,7 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
 
 /**
  *
- * DO NOT use this method.
+ * DO NOT use this method, use [traverseCommands] instead.
  *
  * @param commandName
  *          The name of the command including a backslash, or `null` for all commands.

@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -46,6 +47,9 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
+            return emptyList()
+        }
+        if (!LatexProjectStructure.isProjectFilesetsAvailable(file.project)) {
             return emptyList()
         }
 

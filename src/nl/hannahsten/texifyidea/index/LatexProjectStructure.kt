@@ -26,6 +26,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.ProjectCacheService
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
@@ -43,6 +44,7 @@ import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.contains
 import kotlin.io.path.Path
 import kotlin.io.path.extension
@@ -92,7 +94,13 @@ object LatexProjectStructure {
     /**
      * The count of building operations, used for debugging purposes.
      */
-    private val countOfBuilding = AtomicInteger(0)
+    val countOfBuilding = AtomicInteger(0)
+    val totalBuildTime = AtomicLong(0)
+
+    const val DEFAULT_CACHE_EXPIRATION_IN_MS = 2_000L
+
+    private val expirationTimeInMs: Long
+        get() = TexifySettings.getInstance().filesetExpirationTimeMs
 
     private object UserDataKeys {
         /**
@@ -104,8 +112,6 @@ object LatexProjectStructure {
                 >
             >("latex.command.reference.files")
     }
-
-    const val CACHE_EXPIRATION_IN_MS = 5_000L
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -510,6 +516,7 @@ object LatexProjectStructure {
 
     fun buildFilesetsNow(project: Project): LatexProjectFilesets {
         countOfBuilding.incrementAndGet()
+        val startTime = System.currentTimeMillis()
         val projectInfo = makePreparation(project)
         val roots = getPossibleRootFiles(project)
         val allFilesetInfo = mutableListOf<FilesetInfo>()
@@ -558,6 +565,9 @@ object LatexProjectStructure {
             val scope = GlobalSearchScope.filesWithLibrariesScope(project, allFiles)
             FilesetData(filesets, allFiles, scope)
         }
+
+        val elapsedTime = System.currentTimeMillis() - startTime
+        totalBuildTime.addAndGet(elapsedTime)
         return LatexProjectFilesets(allFilesets, dataMapping)
     }
 
@@ -586,7 +596,7 @@ object LatexProjectStructure {
      * Gets the recently built filesets for the given project and schedule a recomputation if they are not available or expired.
      */
     fun getFilesets(project: Project, callRefresh: Boolean = false): LatexProjectFilesets? {
-        val expirationInMs = if (callRefresh) 0L else CACHE_EXPIRATION_IN_MS
+        val expirationInMs = if (callRefresh) 0L else expirationTimeInMs
         return TexifyProjectCacheService.getInstance(project).getAndComputeLater(CACHE_KEY, expirationInMs, ::buildFilesetsSuspend)
     }
 
@@ -652,7 +662,7 @@ object LatexProjectStructure {
         if (DumbService.isDumb(project)) return null
 
         val data = command.getUserData(UserDataKeys.FILE_REFERENCE)
-        if (data != null && data.isNotExpired(CACHE_EXPIRATION_IN_MS)) {
+        if (data != null && data.isNotExpired(expirationTimeInMs)) {
             // If the data is already computed and not expired, return it
             return data.value
         }
