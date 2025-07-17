@@ -5,6 +5,8 @@
 ### Added
 
 ### Fixed
+* Fix a rare case where an autocompile rerun would try to start before the previous run finished
+* Fix incorrect slashes in path on Windows after pasting image
 * Fix exception #4116
 
 ## [0.10.4] - 2025-07-01
