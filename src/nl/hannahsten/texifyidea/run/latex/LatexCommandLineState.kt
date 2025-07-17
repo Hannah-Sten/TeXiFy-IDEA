@@ -31,6 +31,7 @@ import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -131,6 +132,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val commandLine = GeneralCommandLine(command).withWorkingDirectory(workingDirectory)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
             .withEnvironment(envVariables)
+        Log.debug("Executing ${commandLine.commandLineString} in $workingDirectory")
         val handler = runWithModalProgressBlocking(environment.project, "Creating command line process...") {
             KillableProcessHandler(commandLine)
         }
