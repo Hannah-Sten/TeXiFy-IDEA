@@ -11,7 +11,6 @@ import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.fields.IntegerField
-import com.intellij.ui.dsl.builder.panel
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -183,7 +182,7 @@ class TexifyConfigurable : SearchableConfigurable {
         val label = JBLabel("Fileset refresh period (ms):")
         subPanel.add(label)
         val tips = "The time after which the fileset (formed by \\input, \\usepackage, etc.) is considered expired and will be rebuilt. \n " +
-                "A lower value means quicker response for input files, but also a bit more CPU usage. "
+            "A lower value means quicker response for input files, but also a bit more CPU usage. "
 
         label.toolTipText = tips
         filesetExpirationTimeMs = IntegerField("Fileset expiration time (ms)", 0, Int.MAX_VALUE).apply {
@@ -198,13 +197,13 @@ class TexifyConfigurable : SearchableConfigurable {
 
     override fun isModified(): Boolean {
         return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
-                textidoteOptions?.text != settings.textidoteOptions ||
-                latexIndentOptions?.text != settings.latexIndentOptions ||
-                automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-                htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal ||
-                autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal ||
-                getUISumatraPath() != settings.pathToSumatra ||
-                filesetExpirationTimeMs?.value?.toLong() != settings.filesetExpirationTimeMs
+            textidoteOptions?.text != settings.textidoteOptions ||
+            latexIndentOptions?.text != settings.latexIndentOptions ||
+            automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+            htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal ||
+            autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal ||
+            getUISumatraPath() != settings.pathToSumatra ||
+            filesetExpirationTimeMs?.value?.toLong() != settings.filesetExpirationTimeMs
     }
 
     override fun apply() {
