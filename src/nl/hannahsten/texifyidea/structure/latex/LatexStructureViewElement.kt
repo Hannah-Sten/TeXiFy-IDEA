@@ -137,6 +137,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                     val showPackages = TexifySettings.getInstance().showPackagesInStructureView
                     val newIncludes = includeCommandsElements.associate {
                         var allIncludeFiles = InputFileReference.getIncludedFiles(it)
+                        if(!showPackages){
+                            allIncludeFiles = allIncludeFiles.filter { it.name.endsWith(".tex") || it.name.endsWith(".bib") }
+                        }
                         Pair(it.createSmartPointer(), allIncludeFiles.map { it.createSmartPointer() })
                     }
                     // Clear cache to avoid it becoming outdated too much
