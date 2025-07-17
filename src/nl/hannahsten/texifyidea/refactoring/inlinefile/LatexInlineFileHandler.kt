@@ -84,7 +84,7 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             is LatexFile -> element
             // If the caret was on the `input` command
             is LatexCommands -> {
-                element.references.filterIsInstance<InputFileReference>()[0].resolve() as? LatexFile
+                InputFileReference.getIncludedFiles(element).firstOrNull() as? LatexFile
             }
 
             else -> null

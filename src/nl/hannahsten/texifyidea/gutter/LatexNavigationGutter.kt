@@ -4,7 +4,6 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
-import com.intellij.platform.ide.progress.ModalTaskOwner.project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.TexifyIcons

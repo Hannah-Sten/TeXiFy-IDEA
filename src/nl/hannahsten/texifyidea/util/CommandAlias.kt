@@ -42,7 +42,7 @@ fun getOriginalCommandFromAlias(commandName: String, project: Project): LatexCom
     val aliasSet = CommandManager.getAliases(commandName)
     if (aliasSet.isEmpty()) {
         // If we can't find anything, trigger an update so that maybe we have the information next time
-//        updateIncludeCommandsAliasesAsync(project)
+        updateIncludeCommandsAliasesAsync(project)
     }
     return LatexCommand.lookup(aliasSet.firstOrNull { it in CommandMagic.allFileIncludeCommands })?.first()
 }

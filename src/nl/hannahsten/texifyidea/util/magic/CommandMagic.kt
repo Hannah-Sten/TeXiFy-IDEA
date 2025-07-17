@@ -84,8 +84,8 @@ object CommandMagic {
      */
     val labelReference = LatexRegularCommand.ALL
         .filter { cmd -> cmd.arguments.any { it.type == Argument.Type.LABEL } }
-        .associate {
-            it.commandWithSlash to (it to it.arguments.indexOfFirst { it.type == Argument.Type.LABEL })
+        .associate { cmd ->
+            cmd.commandWithSlash to (cmd to cmd.arguments.indexOfFirst { arg -> arg.type == Argument.Type.LABEL })
         }
 
     /**

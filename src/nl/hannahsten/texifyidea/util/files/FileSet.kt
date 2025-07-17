@@ -37,10 +37,9 @@ fun VirtualFile.findTectonicTomlFile(): VirtualFile? {
  *
  * @return All the files that are cross-referenced between each other.
  */
-fun PsiFile.referencedFileSet(useIndexCache: Boolean = true): Set<PsiFile> {
+fun PsiFile.referencedFileSet(): Set<PsiFile> {
     val project = this.project
     return LatexProjectStructure.getRelatedFilesFor(this).mapNotNull { it.findPsiFile(project) }.toSet()
-//    return ReferencedFileSetService.getInstance().referencedFileSetOf(this, useIndexCache)
 }
 
 fun PsiFile.findExternalDocumentCommand(): LatexCommands? {

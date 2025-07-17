@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import org.jdom.filter2.Filters.element
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.

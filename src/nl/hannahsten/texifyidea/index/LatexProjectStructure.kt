@@ -262,8 +262,8 @@ object LatexProjectStructure {
         var pathWithExts = rangesAndTextsWithExt.flatMap { (paramTexts, extensions) ->
             val noExtensionProvided = extensions.isEmpty()
             val extensionSeq = extensions.asSequence()
-            paramTexts.asSequence().map { it ->
-                val text = pathTextExtraProcessing(it, command, file, info)
+            paramTexts.asSequence().map { text ->
+                val text = pathTextExtraProcessing(text, command, file, info)
                 pathOrNull(text)?.let { path ->
                     if (path.extension.isNotEmpty() || noExtensionProvided) {
                         sequenceOf(path)

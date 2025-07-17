@@ -140,7 +140,7 @@ class LatexTextExtractor : TextExtractor() {
         return LatexCommand.lookup(commandName)
             ?.firstOrNull()
             ?.arguments
-            ?.filter { it is RequiredArgument }
+            ?.filterIsInstance<RequiredArgument>()
             // Do not keep if it is not text
             ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
     }

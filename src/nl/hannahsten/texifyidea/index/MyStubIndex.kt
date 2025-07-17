@@ -85,9 +85,8 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
         names: Collection<String>, project: Project,
         scope: GlobalSearchScope = project.contentSearchScope
     ): List<Psi> {
-        val wrappedScope = scope
         return names.flatMap { name ->
-            StubIndex.getElements(key, name, project, wrappedScope, clazz)
+            StubIndex.getElements(key, name, project, scope, clazz)
         }
     }
 

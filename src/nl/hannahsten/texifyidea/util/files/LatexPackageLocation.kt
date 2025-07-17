@@ -86,9 +86,7 @@ object LatexPackageLocation {
         // Tectonic does not have kpsewhich, but works a little differently
         val projectSdk = LatexSdkUtil.getLatexProjectSdk(project)
         val path = if (projectSdk?.sdkType is TectonicSdk) {
-            (projectSdk.sdkType as TectonicSdk).getPackageLocation(name, projectSdk.homePath).let {
-                pathOrNull(it)
-            }
+            pathOrNull((projectSdk.sdkType as TectonicSdk).getPackageLocation(name, projectSdk.homePath))
         }
         else {
             val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(

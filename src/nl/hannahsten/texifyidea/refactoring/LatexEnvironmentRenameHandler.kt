@@ -20,8 +20,7 @@ class LatexEnvironmentRenameHandler : MemberInplaceRenameHandler() {
     }
 
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext) {
-        val element = getElement(editor, file)
-        if(element == null) return
+        val element = getElement(editor, file) ?: return
         if (checkAvailable(element, editor, dataContext)) {
             doRename(element, editor, dataContext)
         }
@@ -32,14 +31,5 @@ class LatexEnvironmentRenameHandler : MemberInplaceRenameHandler() {
         val currentElement = file.findElementAt(editor.caretModel.offset) ?: return null
         val envIdentifier = currentElement.firstParentOfType<LatexEnvIdentifier>(1) ?: return null
         return envIdentifier
-//        val beginEnd = currentElement.firstParent(3) {
-//            it is LatexBeginCommand || it is LatexEndCommand
-//        } ?: return null
-//
-//        return beginEnd.findFirstChildTyped<LatexEnvIdentifier>()
-//        if(currentElement.firstParentOfType<LatexBeginCommand>(3) == null &&
-//            currentElement.firstParentOfType<LatexEndCommand>(3) == null
-//        ) return null
-//        return currentElement
     }
 }

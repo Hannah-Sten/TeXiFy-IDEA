@@ -30,8 +30,8 @@ abstract class TexifyGotoSymbolBase<Psi> : ChooseByNameContributorEx {
     abstract fun createNavigationItem(item: Psi): NavigationItem?
 
     override fun processNames(processor: Processor<in String>, scope: GlobalSearchScope, filter: IdFilter?) {
-        processElements(scope, filter) {
-            extractName(it)?.let { processor.process(it) } ?: true
+        processElements(scope, filter) { e ->
+            extractName(e)?.let { processor.process(it) } ?: true
         }
     }
 
