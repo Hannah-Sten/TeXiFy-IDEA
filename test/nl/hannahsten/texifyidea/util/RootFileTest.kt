@@ -19,7 +19,7 @@ class RootFileTest : BasePlatformTestCase() {
         myFixture.configureByFiles("contents/level-two/level-two.tex", "main.tex", "contents/level-one.tex", "contents/level-two/level-three.tex")
 //        myFixture.configureByFiles("main.tex", "contents/level-one.tex", "contents/level-two/level-three.tex")
         // calls to rebuild the filesets
-        LatexProjectStructure.buildFilesetsNow(myFixture.project)
+        LatexProjectStructure.testOnlyUpdateFilesets(myFixture.project)
         myFixture.checkHighlighting()
     }
 }

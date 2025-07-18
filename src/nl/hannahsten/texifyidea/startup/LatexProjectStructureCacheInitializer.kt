@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.startup
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import kotlinx.coroutines.Dispatchers
@@ -13,10 +14,11 @@ import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 class LatexProjectStructureCacheInitializer : ProjectActivity {
 
     override suspend fun execute(project: Project) {
+        if(ApplicationManager.getApplication().isUnitTestMode) return
         // Not sure on which thread this is run, run in background to be sure
         withContext(Dispatchers.Default) {
             LatexPackageLocation.updateLocationWithKpsewhichSuspend(project)
-            LatexProjectStructure.updateFilesetsNow(project)
+            LatexProjectStructure.updateFilesetsSuspend(project)
         }
     }
 }

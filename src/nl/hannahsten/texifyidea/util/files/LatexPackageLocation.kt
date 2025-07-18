@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import arrow.atomic.AtomicInt
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.pathOrNull
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -83,16 +84,19 @@ object LatexPackageLocation {
      * @param name Package name with extension.
      */
     fun getPackageLocation(name: String, project: Project): Path? {
+        if(ApplicationManager.getApplication().isUnitTestMode) {
+            return null
+        }
         // Tectonic does not have kpsewhich, but works a little differently
         val projectSdk = LatexSdkUtil.getLatexProjectSdk(project)
         val path = if (projectSdk?.sdkType is TectonicSdk) {
             pathOrNull((projectSdk.sdkType as TectonicSdk).getPackageLocation(name, projectSdk.homePath))
         }
         else {
-            val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(
+            val cache = TexifyProjectCacheService.getInstance(project).getAndComputeLater(
                 cacheKey, EXPIRATION_TIME, ::computeLocationWithKpsewhich
             )
-            cache[name]
+            cache?.get(name)
         }
         return path
     }

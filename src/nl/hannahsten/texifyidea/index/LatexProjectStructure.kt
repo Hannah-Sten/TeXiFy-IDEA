@@ -40,6 +40,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.projectSearchScope
+import org.jetbrains.annotations.TestOnly
 import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
@@ -135,7 +136,7 @@ object LatexProjectStructure {
         val project: Project,
         val rootDirs: Set<VirtualFile>,
         val bibInputPaths: Set<VirtualFile>,
-        val timestamp: Long // a marker to identify the current build process
+        val timestamp: Long = System.currentTimeMillis()
     )
 
     /**
@@ -422,6 +423,7 @@ object LatexProjectStructure {
 
     private fun makePreparation(project: Project): ProjectInfo {
         // Get all bibtex input paths from the run configurations
+        countOfBuilding.incrementAndGet()
         val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
             (config.environmentVariables.envs["BIBINPUTS"])?.let {
                 LocalFileSystem.getInstance().findFileByPath(it)
@@ -439,7 +441,7 @@ object LatexProjectStructure {
          */
 
         return ProjectInfo(
-            project, texInputPaths, bibInputPaths, System.currentTimeMillis() // marker to identify the current build process, can be anything that is unique for the current build
+            project, texInputPaths, bibInputPaths
         )
     }
 
@@ -514,8 +516,7 @@ object LatexProjectStructure {
         return filesets
     }
 
-    fun buildFilesetsNow(project: Project): LatexProjectFilesets {
-        countOfBuilding.incrementAndGet()
+    private fun buildFilesets(project: Project): LatexProjectFilesets {
         val startTime = System.currentTimeMillis()
         val projectInfo = makePreparation(project)
         val roots = getPossibleRootFiles(project)
@@ -573,10 +574,10 @@ object LatexProjectStructure {
 
     private val CACHE_KEY = ProjectCacheService.createKey<LatexProjectFilesets>()
 
-    private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets? {
+    private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets {
         return withBackgroundProgress(project, "Building filesets") {
             smartReadAction(project) {
-                buildFilesetsNow(project)
+                buildFilesets(project)
             }.also {
                 // refresh the inspections
                 if (!ApplicationManager.getApplication().isUnitTestMode) {
@@ -588,8 +589,14 @@ object LatexProjectStructure {
         }
     }
 
-    suspend fun updateFilesetsNow(project: Project) {
+    suspend fun updateFilesetsSuspend(project: Project) {
         TexifyProjectCacheService.getInstance(project).computeAndUpdate(CACHE_KEY, ::buildFilesetsSuspend)
+    }
+
+    @TestOnly
+    fun testOnlyUpdateFilesets(project: Project) {
+        // This is only for testing purposes, to update the filesets without suspending
+        TexifyProjectCacheService.getInstance(project).testOnlyEnsureUpdate(CACHE_KEY, ::buildFilesets)
     }
 
     /**
@@ -659,8 +666,6 @@ object LatexProjectStructure {
      * @see nl.hannahsten.texifyidea.reference.InputFileReference
      */
     fun commandFileReferenceInfo(command: LatexCommands, project: Project = command.project): Pair<List<String>, List<Set<VirtualFile>>>? {
-        if (DumbService.isDumb(project)) return null
-
         val data = command.getUserData(UserDataKeys.FILE_REFERENCE)
         if (data != null && data.isNotExpired(expirationTimeInMs)) {
             // If the data is already computed and not expired, return it
@@ -672,7 +677,7 @@ object LatexProjectStructure {
             // if the file is already in the mapping, we should totally rely on the computed data
             return data?.value
         }
-
+        if (DumbService.isDumb(project)) return null
         // If the file is not in the mapping, it means it is not part of any fileset, so we manually build it as a root file
         val projectInfo = makePreparation(project)
         buildFilesetFromRoot(root, project, projectInfo)

@@ -8,6 +8,8 @@ import com.jetbrains.rd.util.ConcurrentHashMap
 import com.jetbrains.rd.util.concurrentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
 
@@ -151,7 +153,8 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     }
 
     /**
-     * Computes a value and updates the cache if the computation is successful.
+     * Calls to compute a value and updates the cache if the computation is successful.
+     * If there is already a computation in progress for the same key, it will not wait for it to finish and will skip the computation.
      *
      * You may use this method to manually compute a value and update the cache in some background task,
      * such as [com.intellij.openapi.startup.ProjectActivity].
@@ -165,6 +168,23 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         computing.lockOrSkip {
             val result = f(project)
             if (result != null) put(key, result)
+        }
+    }
+
+    @TestOnly
+    fun <T> testOnlyEnsureUpdate(key: TypedKey<T>, f: suspend (Project) -> T) {
+        val computing = getComputingState(key)
+        while(!computing.compareAndSet(false, true)) {
+            // Wait until the computation is done
+            Thread.sleep(1)
+        }
+        try {
+            // Force update the cache
+            val result = runBlocking { f(project) }
+            put(key, result)
+        }
+        finally {
+            computing.set(false) // Reset the computing state
         }
     }
 }
